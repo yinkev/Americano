@@ -1,0 +1,332 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.2</storyId>
+    <title>PDF Content Upload and Processing Pipeline</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-14</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-1.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>to upload lecture PDFs and have them automatically processed</iWant>
+    <soThat>I can access my lecture content within the platform for integrated study</soThat>
+    <tasks>
+- Task 1: Set up storage abstraction layer (5 subtasks)
+- Task 2: Create database models and migrations (5 subtasks)
+- Task 3: Implement PDF upload API endpoint (8 subtasks)
+- Task 4: Set up PaddleOCR service (8 subtasks)
+- Task 5: Implement PDF processing orchestration (8 subtasks)
+- Task 6: Integrate ChatMock for learning objective extraction (8 subtasks)
+- Task 7: Generate embeddings with Google Gemini (8 subtasks)
+- Task 8: Create upload UI component (9 subtasks)
+- Task 9: Create processing status API endpoint (5 subtasks)
+- Task 10: Implement complete processing workflow (8 subtasks)
+- Task 11: Testing and validation (8 subtasks)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. User can upload PDF files up to 50MB in size
+2. System processes PDF and extracts text content using PaddleOCR
+3. Medical terminology and formatting preserved during extraction
+4. Processing status displayed to user with progress indicator
+5. Processed content stored in searchable format
+6. Error handling for corrupted or unsupported files
+7. User can preview extracted content before confirming
+8. File metadata captured (course name, lecture date, instructor)
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <!-- Content Processing Subsystem Architecture -->
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Subsystem 1: Content Processing Pipeline</title>
+        <section>Architecture Pattern (lines 494-520)</section>
+        <snippet>Responsibilities: PDF upload/storage, OCR text extraction (PaddleOCR), GPT-5 content analysis (learning objectives), Gemini embedding generation, content metadata extraction. Key Components: StorageProvider interface, PDFProcessor, ContentAnalyzer, EmbeddingGenerator. Data Models: Lecture, ContentChunk, LearningObjective. Integration Points: PaddleOCR service, ChatMock API (GPT-5), Gemini Embedding API, Local filesystem/Supabase Storage.</snippet>
+      </doc>
+
+      <!-- Database Schema for Content Models -->
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Prisma Schema - Content Processing Models</title>
+        <section>Database Architecture (lines 754-821)</section>
+        <snippet>Lecture model: processingStatus enum (PENDING, PROCESSING, COMPLETED, FAILED), fileUrl (local path or Supabase URL), userId/courseId relations, metadata (weekNumber, topicTags). ContentChunk model: embedding vector(3072) for Gemini embeddings, chunkIndex for ordering, content text field. LearningObjective model: isHighYield boolean, extractedBy GPT-5, lecture relation.</snippet>
+      </doc>
+
+      <!-- Storage Abstraction Layer Design -->
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Storage Abstraction Layer</title>
+        <section>Storage Architecture (lines 1505-1665)</section>
+        <snippet>StorageProvider interface with upload(), getUrl(), delete(), exists() methods. LocalStorageProvider implementation using Node.js fs/promises at ~/americano-data/pdfs/. SupabaseStorageProvider for future cloud migration. Environment-based provider selection via STORAGE_MODE env var (local|cloud). Zero-code migration path: change env variable only.</snippet>
+      </doc>
+
+      <!-- API Endpoint Specifications -->
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Content Processing API Endpoints</title>
+        <section>API Architecture (lines 1202-1253)</section>
+        <snippet>POST /api/content/upload: multipart/form-data with file, courseId, title, weekNumber. Returns lectureId and processingStatus. GET /api/content/processing/:lectureId: Returns status, progress percentage, error details. GET /api/content/lectures/:id: Returns lecture with contentChunks[] and learningObjectives[]. Consistent error response format with success boolean, error code, and message.</snippet>
+      </doc>
+
+      <!-- PRD FR1: PDF Lecture Processing -->
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>FR1: PDF Lecture Processing and Analysis</title>
+        <section>Functional Requirements (lines 71-76)</section>
+        <snippet>Upload and process medical school lecture PDFs using PaddleOCR + OpenAI API. Extract learning objectives, key concepts, and hierarchical content structure. Generate semantic embeddings for content search and relationship mapping. Support multiple file formats (PDF, DOCX, PPTX) with accurate medical content extraction. NFR1 Performance target: &lt;3 seconds PDF processing time for typical medical lecture content.</snippet>
+      </doc>
+
+      <!-- Technology Stack Decisions -->
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Technology Stack - AI/ML Integration</title>
+        <section>Tech Stack Table (lines 197-238)</section>
+        <snippet>PaddleOCR (Python) for medical content extraction. ChatMock (GPT-5 compatible, localhost:8801) for learning objective extraction via OpenAI-compatible API. Google Gemini Embedding-004 for 3072-dimension vector embeddings at $0.15/1M tokens. PostgreSQL 16+ with pgvector extension for vector similarity search. Prisma ORM with TypeScript for type-safe database access.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <!-- No existing code - greenfield project -->
+      <!-- Architecture provides complete implementation blueprint -->
+      <artifact>
+        <path>docs/solution-architecture.md</path>
+        <kind>architecture</kind>
+        <symbol>Source Tree Structure</symbol>
+        <lines>1769-1952</lines>
+        <reason>Complete directory structure showing where to create all files: apps/web/src/app/api/content/, apps/web/src/subsystems/content-processing/, apps/web/src/lib/storage/, apps/web/src/lib/ai/, apps/web/src/components/library/, services/ocr-service/</reason>
+      </artifact>
+
+      <artifact>
+        <path>docs/solution-architecture.md</path>
+        <kind>implementation-guide</kind>
+        <symbol>StorageProvider Interface + Implementations</symbol>
+        <lines>1512-1664</lines>
+        <reason>Complete TypeScript code for storage abstraction layer: StorageProvider interface, LocalStorageProvider class, SupabaseStorageProvider class, getStorageProvider() factory function. Copy-paste ready for implementation.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <typescript>
+        <package>next</package>
+        <version>Latest stable (App Router)</version>
+        <reason>Core framework with API routes and Server Components</reason>
+      </typescript>
+      <typescript>
+        <package>react</package>
+        <version>Latest stable (19+)</version>
+        <reason>UI library required by Next.js</reason>
+      </typescript>
+      <typescript>
+        <package>@prisma/client</package>
+        <version>Latest stable</version>
+        <reason>Type-safe database ORM with pgvector support</reason>
+      </typescript>
+      <typescript>
+        <package>@google/generative-ai</package>
+        <version>Latest stable</version>
+        <reason>Google Gemini Embeddings API client</reason>
+      </typescript>
+      <typescript>
+        <package>openai</package>
+        <version>Latest stable</version>
+        <reason>ChatMock client (OpenAI-compatible API)</reason>
+      </typescript>
+      <typescript>
+        <package>@supabase/supabase-js</package>
+        <version>Latest stable</version>
+        <reason>Future Supabase Storage integration</reason>
+      </typescript>
+
+      <python>
+        <package>paddleocr</package>
+        <version>Latest stable</version>
+        <reason>OCR text extraction from PDFs</reason>
+      </python>
+      <python>
+        <package>fastapi</package>
+        <version>Latest stable</version>
+        <reason>Python service API server for PaddleOCR</reason>
+      </python>
+      <python>
+        <package>uvicorn</package>
+        <version>Latest stable</version>
+        <reason>ASGI server to run FastAPI</reason>
+      </python>
+      <python>
+        <package>python-multipart</package>
+        <version>Latest stable</version>
+        <reason>Multipart file upload support in FastAPI</reason>
+      </python>
+
+      <database>
+        <package>PostgreSQL</package>
+        <version>16+ (latest stable)</version>
+        <reason>Primary database with ACID compliance</reason>
+      </database>
+      <database>
+        <package>pgvector</package>
+        <version>Latest stable</version>
+        <reason>Vector similarity search for embeddings</reason>
+      </database>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+1. **MVP Simplification:** Process PDFs synchronously for MVP (acceptable 2-3 minute wait). User sees "Processing..." spinner until complete. Defer async job queue until production deployment.
+
+2. **Authentication Dependency Workaround:** Story 1.1 (auth) deferred, but Lecture model needs userId foreign key. **Solution:** Create single hardcoded User in database seed. Run: `npx prisma db seed` with seed.ts creating default user with id=cuid().
+
+3. **Storage Migration Path:** Local filesystem (~/americano-data/pdfs/) for MVP. StorageProvider interface enables zero-code Supabase migration. Switch via STORAGE_MODE env variable only. Migration script: `scripts/migrate-storage.js` (create later).
+
+4. **Medical Content Accuracy:** Test OCR with real medical terminology (myocardial infarction, pathophysiology, etc.). Verify >90% accuracy per acceptance criteria #3. Manual review of first 3-5 extracted lectures to validate quality.
+
+5. **Processing Flow Architecture:** Upload PDF → PaddleOCR (text extraction) → ChatMock (learning objective extraction) → Gemini (embedding generation) → Mark COMPLETED. Each step updates Lecture.processingStatus. On any error: mark FAILED with error message stored.
+
+6. **Cost Management:** PaddleOCR (free, local Python service), ChatMock (free, local GPT-5 proxy at localhost:8801), Gemini embeddings (~$0.30 per lecture at $0.15/1M tokens). **Target:** &lt;$1/month for 3-4 lectures during MVP testing.
+
+7. **Content Chunking Strategy:** Maximum chunk size 1000 tokens (~750 words). Overlap 100 tokens between chunks for context preservation. Medical term boundary awareness (don't split "myocardial infarction" across chunks).
+
+8. **Error Handling Patterns:** OCR failure (retry once, then mark FAILED). ChatMock timeout (skip objective extraction, continue with embeddings). Gemini rate limit (exponential backoff, max 3 retries). Corrupted PDF (detect early in upload validation, return user-friendly error).
+
+9. **Performance Targets:** Upload latency &lt;5 seconds for 50MB file. OCR processing 2-3 minutes for 200-page lecture. Objective extraction 30-60 seconds. Embedding generation 1-2 minutes for 200 chunks. **Total end-to-end: &lt;5 minutes for typical lecture.**
+
+10. **File Path Format:** `lectures/{courseId}/{timestamp}-{filename}.pdf` for organized storage and easy cloud migration.
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>StorageProvider</name>
+      <kind>TypeScript Interface</kind>
+      <signature>
+interface StorageProvider {
+  upload(file: File, path: string): Promise&lt;string&gt;;
+  getUrl(path: string): Promise&lt;string&gt;;
+  delete(path: string): Promise&lt;void&gt;;
+  exists(path: string): Promise&lt;boolean&gt;;
+}
+      </signature>
+      <path>docs/solution-architecture.md (lines 1516-1536)</path>
+    </interface>
+
+    <interface>
+      <name>POST /api/content/upload</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: multipart/form-data
+  - file: PDF file
+  - courseId: string
+  - title?: string
+  - weekNumber?: number
+Response: { success: true, data: { lectureId: string, processingStatus: string } }
+      </signature>
+      <path>docs/solution-architecture.md (lines 1204-1213)</path>
+    </interface>
+
+    <interface>
+      <name>GET /api/content/processing/:lectureId</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: GET with lectureId param
+Response: { success: true, data: { status: ProcessingStatus, progress: number, error?: string } }
+      </signature>
+      <path>docs/solution-architecture.md (lines 1233-1237)</path>
+    </interface>
+
+    <interface>
+      <name>Lecture Prisma Model</name>
+      <kind>Database Model</kind>
+      <signature>
+model Lecture {
+  id: String @id @default(cuid())
+  userId: String
+  courseId: String
+  title: String
+  fileName: String
+  fileUrl: String // Local path or Supabase URL
+  fileSize: Int
+  processingStatus: ProcessingStatus @default(PENDING)
+  uploadedAt: DateTime @default(now())
+  processedAt: DateTime?
+  weekNumber: Int?
+  topicTags: String[]
+  contentChunks: ContentChunk[]
+  learningObjectives: LearningObjective[]
+}
+
+enum ProcessingStatus { PENDING, PROCESSING, COMPLETED, FAILED }
+      </signature>
+      <path>docs/solution-architecture.md (lines 754-788)</path>
+    </interface>
+
+    <interface>
+      <name>PaddleOCR Service API</name>
+      <kind>HTTP API</kind>
+      <signature>
+POST http://localhost:8000/extract
+Request: { file_path: string }
+Response: { text: string, confidence: number, pages: Array&lt;{ page_number: number, text: string }&gt; }
+      </signature>
+      <path>docs/stories/story-1.2.md (lines 147-150)</path>
+    </interface>
+
+    <interface>
+      <name>ChatMock (GPT-5) API</name>
+      <kind>HTTP API (OpenAI-compatible)</kind>
+      <signature>
+POST http://localhost:8801/v1/chat/completions
+Request: { model: "gpt-5", messages: Array&lt;{ role: string, content: string }&gt; }
+Response: { choices: Array&lt;{ message: { content: string } }&gt; }
+      </signature>
+      <path>docs/stories/story-1.2.md (lines 152-156)</path>
+    </interface>
+
+    <interface>
+      <name>Gemini Embeddings API</name>
+      <kind>HTTP API</kind>
+      <signature>
+POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent
+Request: { content: { parts: [{ text: string }] } }
+Response: { embedding: { values: number[] } } // 3072 dimensions
+      </signature>
+      <path>docs/stories/story-1.2.md (lines 159-162)</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+Testing deferred for MVP (single user, local development). When implementing tests for production deployment, use: Vitest for unit/integration tests, Playwright for E2E tests. Test structure mirrors src/ directory. Component tests in __tests__ folders. API route tests in app/api/**/__tests__. Focus on critical paths: upload flow, processing pipeline, error handling.
+    </standards>
+
+    <locations>
+apps/web/src/__tests__/
+apps/web/src/app/api/**/__tests__/
+apps/web/src/components/**/__tests__/
+apps/web/src/subsystems/**/__tests__/
+    </locations>
+
+    <ideas>
+AC #1: Test upload with 5MB PDF (small), 50MB PDF (max size), 51MB PDF (reject). Verify file validation, storage write, Lecture record creation with PENDING status.
+
+AC #2-3: Test PaddleOCR integration with sample medical PDF containing terms like "myocardial infarction", "pathophysiology". Verify text extraction accuracy >90%, medical terminology preservation, proper chunking at 1000 tokens.
+
+AC #4: Test processing status polling. Upload PDF, immediately check status (PENDING → PROCESSING → COMPLETED). Verify progress percentage updates during processing.
+
+AC #5: Test embedding generation and storage. Verify ContentChunk records created with embedding vector(3072), searchable via pgvector similarity queries.
+
+AC #6: Test error handling. Upload corrupted PDF (should fail early validation). Simulate PaddleOCR service down (should retry once then FAILED). Simulate Gemini API rate limit (should exponential backoff, max 3 retries).
+
+AC #7: Test content preview. After processing, verify contentChunks queryable, extractedText displayable in UI before final confirmation.
+
+AC #8: Test metadata capture. Upload with courseId, title, weekNumber. Verify all metadata stored in Lecture record, queryable via /api/content/lectures/:id.
+
+Integration test: End-to-end upload → OCR → objectives → embeddings → COMPLETED flow. Verify entire pipeline completes in &lt;5 minutes for 50-page PDF.
+
+Performance test: Measure actual processing time for real PNWU lecture PDF. Verify meets &lt;3 minute target for typical lecture.
+    </ideas>
+  </tests>
+</story-context>

@@ -1,0 +1,321 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>4</storyId>
+    <title>Responsive Web Application Foundation</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-14</generatedAt>
+    <generator>BMAD Story Context Workflow (Fresh Regeneration)</generator>
+    <sourceStoryPath>docs/stories/story-1.4.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>a clean, fast web application that works on all my devices</iWant>
+    <soThat>I can study effectively whether on laptop, tablet, or phone</soThat>
+    <tasks>
+      <task id="1" title="Set up Next.js 15 project structure" ac="3,4">
+        <subtasks count="6">Verify Next.js 15 with App Router, configure Turbopack, set up TypeScript strict mode, configure next.config.js for performance, environment variables structure, .env.local.example template</subtasks>
+      </task>
+      <task id="2" title="Configure Tailwind CSS and design system" ac="1,4">
+        <subtasks count="7">Install Tailwind CSS 4, set up OKLCH color palette (NO gradients), configure responsive breakpoints, add custom typography scale, configure dark mode support (optional), set up animation utilities, create globals.css with Tailwind directives</subtasks>
+      </task>
+      <task id="3" title="Install and configure shadcn/ui" ac="2,4,7">
+        <subtasks count="8">Initialize shadcn/ui, add core components (Button, Card, Dialog, Input, Label, Select), add navigation components (NavigationMenu, DropdownMenu), add feedback components (Toast, AlertDialog, Progress), add form components, add data display (Table, Badge, Separator, Avatar), customize component styles for medical aesthetic, test components on all screen sizes</subtasks>
+      </task>
+      <task id="4" title="Create root layout and navigation" ac="4,5">
+        <subtasks count="8">Build app/layout.tsx with metadata and providers, create Navigation component, implement desktop navigation bar (horizontal), implement mobile hamburger menu (slide-in drawer), add navigation items (Home, Mission, Library, Graph, Progress, Settings), add active state styling, include AI Chat FAB in layout, add breadcrumbs component for deep navigation</subtasks>
+      </task>
+      <task id="5" title="Build dashboard page" ac="1,3,4,6">
+        <subtasks count="8">Create app/page.tsx (dashboard/home page), design responsive grid layout (3 columns desktop, 2 tablet, 1 mobile), create Mission Card component, create Progress Summary component, create Upcoming Reviews component, create Quick Actions component, implement loading states with skeletons, test dashboard responsiveness on all devices</subtasks>
+      </task>
+      <task id="6" title="Implement responsive patterns" ac="1,6">
+        <subtasks count="8">Create responsive container component, implement responsive typography, create grid system utilities, build responsive card layouts, implement responsive tables, add responsive images (srcset, lazy loading), test with Chrome DevTools device emulation, test on real devices</subtasks>
+      </task>
+      <task id="7" title="Optimize touch interactions" ac="2,7">
+        <subtasks count="8">Ensure buttons are minimum 44x44px (Apple HIG), add tap highlight styles, implement swipe gestures (optional), add touch-friendly spacing (8px minimum), make forms keyboard-friendly, add focus states for accessibility, test touch interactions on tablet, test with VoiceOver/TalkBack for screen readers</subtasks>
+      </task>
+      <task id="8" title="Performance optimization" ac="3">
+        <subtasks count="8">Enable Next.js image optimization, implement code splitting for routes, use dynamic imports for heavy components, configure font optimization (next/font), add loading.tsx for instant loading states, implement React Server Components where possible, measure Core Web Vitals (LCP, FID, CLS), target LCP &lt;2.5s, FID &lt;100ms, CLS &lt;0.1</subtasks>
+      </task>
+      <task id="9" title="Set up PWA capabilities" ac="8">
+        <subtasks count="8">Install next-pwa package, configure service worker (sw.js), create web app manifest (manifest.json), add app icons (192x192, 512x512, maskable), configure offline fallback page, enable "Add to Home Screen" prompt, cache core assets for offline access, test PWA installation on mobile devices</subtasks>
+      </task>
+      <task id="10" title="Create error handling and loading states" ac="3,4">
+        <subtasks count="8">Create error.tsx for error boundaries, create not-found.tsx for 404 pages, build loading skeleton components, create error message component with retry, add toast notifications for user feedback, implement optimistic UI updates, create empty state components, test error scenarios (network failure, API errors)</subtasks>
+      </task>
+      <task id="11" title="Build AI Chat FAB component" ac="2,4">
+        <subtasks count="8">Create floating action button (components/ai/chat-fab.tsx), position FAB bottom-right on desktop / bottom-center on mobile, create slide-out chat panel (components/ai/chat-panel.tsx), implement minimize/maximize animations, add chat message list with auto-scroll, create message input with multiline support, add typing indicator and loading states, make FAB accessible (keyboard navigation, ARIA labels)</subtasks>
+      </task>
+      <task id="12" title="Accessibility and standards compliance" ac="2,4,7">
+        <subtasks count="8">Add semantic HTML elements (header, nav, main, footer), ensure proper heading hierarchy (h1 → h2 → h3), add ARIA labels to interactive elements, implement keyboard navigation (Tab, Enter, Escape), test with Lighthouse accessibility audit (target 95+), test with WAVE accessibility tool, verify WCAG 2.1 AA compliance (per NFR4), test with screen readers (VoiceOver, NVDA)</subtasks>
+      </task>
+      <task id="13" title="Testing and validation" ac="All">
+        <subtasks count="8">Test on Chrome, Safari, Firefox, Edge (latest versions), test responsive breakpoints (320px, 768px, 1024px, 1920px), measure page load times (target &lt;2s), test touch interactions on iPad, test with slow 3G network throttling, verify no horizontal scroll on any screen size, test form inputs on mobile keyboard, validate PWA installation and offline functionality</subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Application renders correctly on desktop (1200px+), tablet (768-1199px), and mobile (320-767px)</criterion>
+    <criterion id="2">Touch-friendly interface elements for tablet and mobile usage</criterion>
+    <criterion id="3">Page load times &lt;2 seconds for all core functionality</criterion>
+    <criterion id="4">Consistent design language across all pages and components</criterion>
+    <criterion id="5">Navigation menu adapts to screen size with mobile hamburger menu</criterion>
+    <criterion id="6">Content displays readably without horizontal scrolling on any device</criterion>
+    <criterion id="7">Form inputs and buttons appropriately sized for touch interaction</criterion>
+    <criterion id="8">Progressive Web App (PWA) capabilities for offline access</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/solution-architecture.md" title="Solution Architecture" section="7. Technology Stack and Decisions">
+        <snippet>Frontend Framework: Next.js (latest stable with App Router), UI Library: React (latest stable), Language: TypeScript (latest stable). Styling: Tailwind CSS (latest stable), Component Library: shadcn/ui (latest) - Full library available, install on-demand via `npx shadcn@latest add &lt;component&gt;`. Animation Library: motion.dev (latest stable) - Modern animation library (replaces deprecated Framer Motion), powerful animations, gestures, layout animations, page transitions. State Management: Zustand (latest stable) - Lightweight, TypeScript-first, minimal boilerplate.</snippet>
+      </doc>
+      <doc path="docs/solution-architecture.md" title="Solution Architecture" section="8. Complete Source Tree Structure">
+        <snippet>apps/web/src/app/ - Next.js App Router (layout.tsx, page.tsx, globals.css), apps/web/src/components/ui/ - shadcn/ui components, apps/web/src/components/shared/ - shared components (navigation.tsx, error-boundary.tsx), apps/web/src/components/dashboard/ - dashboard components (mission-card.tsx, progress-summary.tsx, upcoming-reviews.tsx), apps/web/src/components/ai/ - AI components (chat-fab.tsx, chat-panel.tsx), apps/web/tailwind.config.ts - Tailwind configuration, apps/web/next.config.js - Next.js + PWA config</snippet>
+      </doc>
+      <doc path="docs/ux-specification.md" title="UX Specification" section="8. Design System - Soft Gamified Playful Flat Minimal with Glassmorphism">
+        <snippet>Design Aesthetic: Modern, approachable learning platform balancing playful gamification with medical professionalism. Uses flat minimalism as foundation, enhanced with subtle glassmorphism for depth. CRITICAL: ❌ NEVER use gradients. Core Design Principles: Soft Gamification (gentle progress indicators, friendly celebrations, non-intimidating metrics), Playful (rounded corners, smooth animations, warm interactions), Flat Minimal (clean hierarchy, generous whitespace, essential elements only), Glassmorphism Hints (subtle transparency, backdrop blur on cards/modals, layered depth).</snippet>
+      </doc>
+      <doc path="docs/ux-specification.md" title="UX Specification" section="Color Palette (OKLCH Color Space)">
+        <snippet>Primary Colors (OKLCH): Primary Blue: oklch(0.7 0.15 230) (blue-400), Accent Purple: oklch(0.7 0.15 290) (purple-400), Success Green: oklch(0.75 0.15 160) (emerald-400), Warning Amber: oklch(0.8 0.15 85) (amber-400), Error Rose: oklch(0.7 0.15 15) (rose-400). Neutral Palette: Background: #FAFAFA (gray-50), Surface: #FFFFFF with glassmorphism (bg-white/80 backdrop-blur-md), Text Primary: #1F2937 (gray-800), Text Secondary: #6B7280 (gray-500), Border: #E5E7EB (gray-200). Glassmorphism: background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1). NEVER use gradients.</snippet>
+      </doc>
+      <doc path="docs/ux-specification.md" title="UX Specification" section="Typography (Friendly + Readable)">
+        <snippet>Font Family: Primary: Inter (clean, modern, excellent readability), Accent: DM Sans (slightly playful for headings, gamified elements). Type Scale: Hero (Dashboard Mission): 2.25rem (36px), DM Sans Bold, letter-spacing -0.02em; Heading 1: 1.875rem (30px), DM Sans Semibold; Heading 2: 1.5rem (24px), Inter Semibold; Body: 1rem (16px), Inter Regular, line-height 1.6; Small (Captions): 0.875rem (14px), Inter Regular.</snippet>
+      </doc>
+      <doc path="docs/ux-specification.md" title="UX Specification" section="Component Style (Flat Minimal + Glassmorphism)">
+        <snippet>Buttons: Primary CTA - Rounded-lg (8px), solid color bg-blue-400 (NO GRADIENTS), shadow-md, hover:shadow-lg hover:bg-blue-500. Cards: Primary - background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1). Hover: Scale up 2% (transform: scale(1.02)), shadow-xl. Progress Indicators: Progress Bars - Rounded-full, solid emerald fill (NO GRADIENTS), soft glow on completion: background: #34D399; border-radius: 9999px; box-shadow: 0 0 8px rgba(52, 211, 153, 0.4).</snippet>
+      </doc>
+      <doc path="docs/ux-specification.md" title="UX Specification" section="Interaction &amp; Animation (Smooth + Playful)">
+        <snippet>Transitions (Powered by motion.dev): Default: 200ms ease-in-out (buttons, hover states), Page transitions: 300ms ease-out (smoother for navigation), Success celebrations: 400ms spring animation (playful bounce). Note: Use motion.dev for all animations (modern library, NOT deprecated Framer Motion). Hover States: Lift Effect - Translate-y -2px + shadow-lg (cards, buttons), Color Shift - Lighten/darken by 5% (subtle feedback). Loading States: Skeleton - Soft pulse animation, glassmorphism background.</snippet>
+      </doc>
+      <doc path="docs/ux-specification.md" title="UX Specification" section="2.2 Navigation Structure">
+        <snippet>Primary Navigation (Always Visible - Top Bar): [Logo] Americano | [Target Icon] Today's Mission | [Folder Icon] Library | [Brain Icon] Graph | [Chart Icon] Progress | [Search Icon] Search | [Settings Icon] [Avatar]. Global Actions (Not in Nav Bar): AI Assistant - Floating Action Button (FAB) bottom-right, always visible on all screens. Click to expand chat panel, consistent position (never moves), context-aware (knows current page/content). Mobile Navigation (Bottom Bar - Touch-Optimized): Home, Mission, Library, Progress, More. AI Assistant: FAB bottom-right, above nav bar. Search: Pull-down gesture from top.</snippet>
+      </doc>
+      <doc path="docs/PRD-Americano-2025-10-14.md" title="Product Requirements Document" section="NFR4: User Experience">
+        <snippet>Rapid Onboarding: &lt;5 minutes to interactive demo mission. Accessibility: WCAG 2.1 AA compliance (color contrast ratio: 4.5:1 for normal text, 3:1 for large text, focus indicators: 2px solid outline, screen reader support: ARIA labels on all interactive elements, keyboard navigation: all features accessible without mouse). Mobile Responsiveness: Desktop primary, mobile/tablet secondary with PWA capabilities. Performance Budget: Initial JS bundle: &lt;200KB gzipped, LCP (Largest Contentful Paint): &lt;2.5s, FID (First Input Delay): &lt;100ms, CLS (Cumulative Layout Shift): &lt;0.1, Time to Interactive: &lt;3.5s.</snippet>
+      </doc>
+      <doc path="AGENTS.MD" title="Agent Development Protocol" section="CRITICAL: Pre-Implementation Checklist">
+        <snippet>BEFORE writing ANY code file, ALL agents MUST: 1. Stop and Identify - Ask: "Am I about to use a library, framework, or component?" 2. Fetch Latest Documentation - If YES → STOP and fetch current docs: Backend/API/Library Code → Use context7 MCP (Next.js App Router routes, Prisma ORM, any npm package), UI Components → Use shadcn/ui MCP (All React components, Forms, buttons, dialogs, cards, Layout components). 3. Explicit Announcement - Before implementation, agent MUST state: "Fetching latest [TECHNOLOGY] documentation from [context7 MCP / shadcn/ui MCP]..." 4. Review Documentation - Verify current API patterns, check for breaking changes. 5. Then Implement - Use verified current patterns only - never memory/training data.</snippet>
+      </doc>
+      <doc path="AGENTS.MD" title="Agent Development Protocol" section="Technology Stack Reference">
+        <snippet>Always Use Context7 For: Next.js (App Router, Server Components, Server Actions), React (hooks, patterns, latest features), Prisma, TypeScript, motion (motion.dev - modern animation library, replaces deprecated Framer Motion). Always Use shadcn/ui MCP For: ALL shadcn/ui components - The full library is available. Installation: Use `npx shadcn@latest add &lt;component&gt;` to install components on-demand. Global Layout Note: Application uses shadcn/ui Sidebar component with SidebarProvider wrapping the app in root layout, SidebarInset for main content area, glassmorphism styling (bg-white/80 backdrop-blur-md, NO gradients), OKLCH colors from design system.</snippet>
+      </doc>
+      <doc path="AGENTS.MD" title="Agent Development Protocol" section="Tailwind CSS v4 Specific Rules">
+        <snippet>✅ USE: Tailwind v4 CSS-first configuration via @theme directive in globals.css. ✅ USE: Built-in animations (spin, pulse, bounce, etc.). ❌ DO NOT USE: tailwindcss-animate package (Tailwind v3 only, incompatible with v4). ❌ DO NOT USE: tailwind.config.ts/js (deprecated in v4). ✅ FOR ANIMATIONS: Use Tailwind v4 built-in animations now, motion.dev for advanced later.</snippet>
+      </doc>
+      <doc path="AGENTS.MD" title="Agent Development Protocol" section="Design System Rules">
+        <snippet>❌ NEVER use gradients (bg-gradient-*, linear-gradient, radial-gradient). ✅ ALWAYS use OKLCH color space for colors (not hex, not HSL, not RGB). Format: oklch(L C H) where L=lightness (0-1), C=chroma (0-0.4), H=hue (0-360). Example: oklch(0.7 0.15 230) for blue. Rationale: Perceptual uniformity, better accessibility, consistent brightness across hues.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact path="apps/web/src/app/layout.tsx" kind="layout" symbol="RootLayout" lines="1-end" reason="Root layout with SidebarProvider, fonts configuration, metadata API usage">
+        <note>Existing root layout uses shadcn/ui Sidebar with SidebarProvider wrapper, Inter/DM Sans fonts from Google Fonts, Next.js metadata API for SEO</note>
+      </artifact>
+      <artifact path="apps/web/src/app/globals.css" kind="stylesheet" symbol="@theme" lines="1-end" reason="Tailwind v4 CSS-first configuration, custom OKLCH colors, glassmorphism utilities">
+        <note>Tailwind v4 uses @theme directive for configuration (NOT tailwind.config.ts). Contains custom OKLCH color definitions, font variables, glassmorphism utilities</note>
+      </artifact>
+      <artifact path="apps/web/src/components/app-sidebar.tsx" kind="component" symbol="AppSidebar" lines="1-end" reason="Existing global navigation sidebar with shadcn/ui Sidebar component">
+        <note>Already implemented with SidebarHeader, SidebarContent, SidebarFooter, glassmorphism styling, user dropdown, icon collapsible mode</note>
+      </artifact>
+      <artifact path="apps/web/src/components/ui/" kind="directory" symbol="shadcn components" lines="N/A" reason="shadcn/ui components already installed on-demand">
+        <note>Existing components: button.tsx, card.tsx, sidebar.tsx, dropdown-menu.tsx, skeleton.tsx, tooltip.tsx, sheet.tsx, separator.tsx, avatar.tsx. Install additional components as needed via `npx shadcn@latest add &lt;component&gt;`</note>
+      </artifact>
+      <artifact path="apps/web/next.config.ts" kind="config" symbol="nextConfig" lines="1-end" reason="Next.js configuration with App Router, Turbopack, image optimization">
+        <note>Existing config for Next.js 15. May need PWA configuration added (next-pwa integration)</note>
+      </artifact>
+      <artifact path="apps/web/package.json" kind="manifest" symbol="dependencies" lines="1-end" reason="Current npm dependencies including Next.js 15, React 19, TypeScript, Tailwind CSS 4">
+        <note>Check current dependencies before adding new packages. Use pnpm for package management.</note>
+      </artifact>
+    </code>
+    <dependencies>
+      <category name="Core Framework">
+        <package name="next" version="latest stable (15.x with App Router)" purpose="Frontend framework, SSR, RSC, API routes"/>
+        <package name="react" version="latest stable (19.x)" purpose="UI library (required by Next.js)"/>
+        <package name="react-dom" version="latest stable (19.x)" purpose="React DOM renderer"/>
+        <package name="typescript" version="latest stable (5.7.x)" purpose="Type safety, better DX"/>
+      </category>
+      <category name="Styling &amp; UI">
+        <package name="tailwindcss" version="latest stable (4.x)" purpose="Utility-first CSS framework (CSS-first config via @theme)"/>
+        <package name="postcss" version="latest stable" purpose="CSS processing (required by Tailwind)"/>
+        <package name="autoprefixer" version="latest stable" purpose="CSS vendor prefixing (required by Tailwind)"/>
+        <package name="@radix-ui/react-*" version="latest stable" purpose="Accessible UI primitives (shadcn/ui dependencies)"/>
+        <package name="class-variance-authority" version="latest stable" purpose="Component variant management (shadcn/ui)"/>
+        <package name="clsx" version="latest stable" purpose="Conditional classNames utility"/>
+        <package name="tailwind-merge" version="latest stable" purpose="Merge Tailwind classes without conflicts"/>
+      </category>
+      <category name="Fonts">
+        <package name="@next/font" version="built-in (Next.js 15)" purpose="Font optimization (next/font/google for Inter and DM Sans)"/>
+      </category>
+      <category name="Animation">
+        <package name="motion" version="latest stable" purpose="Modern animation library (motion.dev, replaces deprecated Framer Motion)"/>
+        <note>DO NOT install framer-motion (deprecated). Use motion.dev (package: motion) for advanced animations. Tailwind v4 built-in animations for simple cases.</note>
+      </category>
+      <category name="PWA">
+        <package name="next-pwa" version="latest stable" purpose="Progressive Web App support (service worker, manifest.json)"/>
+      </category>
+      <category name="State Management">
+        <package name="zustand" version="latest stable" purpose="Lightweight state management (already installed)"/>
+      </category>
+      <category name="Icons">
+        <package name="lucide-react" version="latest stable" purpose="Icon library (rounded, friendly style)"/>
+      </category>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="C1" category="Documentation-First Development">
+      <rule>BEFORE implementing ANY code that uses external libraries/frameworks/components, agent MUST fetch latest documentation from context7 MCP (for libraries) or shadcn/ui MCP (for UI components)</rule>
+      <rule>Agent MUST explicitly announce: "Fetching latest [TECHNOLOGY] documentation from [context7 MCP / shadcn/ui MCP]..." before implementation</rule>
+      <rule>Use ONLY verified current patterns from fetched documentation - NEVER use memory/training data for library-specific code</rule>
+      <rationale>Ensures up-to-date API usage, prevents deprecated patterns, avoids breaking changes from outdated assumptions</rationale>
+    </constraint>
+    <constraint id="C2" category="Design System - NO GRADIENTS">
+      <rule>❌ NEVER use gradients: bg-gradient-*, linear-gradient(), radial-gradient(), conic-gradient()</rule>
+      <rule>✅ ALWAYS use solid OKLCH colors: oklch(L C H) format where L=lightness (0-1), C=chroma (0-0.4), H=hue (0-360)</rule>
+      <rule>✅ USE glassmorphism for depth: bg-white/80 backdrop-blur-md, soft shadows, rounded corners</rule>
+      <rationale>Design system enforces flat minimal aesthetic with glassmorphism. Gradients violate the established visual language and user expectations.</rationale>
+    </constraint>
+    <constraint id="C3" category="Tailwind CSS v4 Configuration">
+      <rule>✅ USE: @theme directive in globals.css for Tailwind v4 configuration (CSS-first approach)</rule>
+      <rule>❌ DO NOT USE: tailwind.config.ts or tailwind.config.js (deprecated in Tailwind v4)</rule>
+      <rule>❌ DO NOT INSTALL: tailwindcss-animate package (Tailwind v3 only, incompatible with v4)</rule>
+      <rule>✅ USE: Tailwind v4 built-in animations (spin, pulse, bounce, etc.)</rule>
+      <rationale>Tailwind v4 uses CSS-first configuration. tailwindcss-animate causes build errors with v4. Built-in animations cover most use cases.</rationale>
+    </constraint>
+    <constraint id="C4" category="shadcn/ui Component Installation">
+      <rule>✅ Install components on-demand: npx shadcn@latest add &lt;component&gt;</rule>
+      <rule>Full shadcn/ui library is available - 40+ components (Form, Dialog, Table, Select, Toast, Tabs, etc.)</rule>
+      <rule>Fetch latest component API from shadcn/ui MCP BEFORE implementing each component</rule>
+      <rationale>shadcn/ui components are copy-pasted into project, not installed via npm. Always use latest component version from official docs.</rationale>
+    </constraint>
+    <constraint id="C5" category="Animation Library">
+      <rule>✅ USE motion.dev (package: motion) for advanced animations, gestures, layout animations, page transitions</rule>
+      <rule>❌ DO NOT USE framer-motion (deprecated library)</rule>
+      <rule>✅ USE Tailwind v4 built-in animations for simple cases (spin, pulse, bounce)</rule>
+      <rule>Fetch latest motion.dev documentation from context7 MCP before implementing animations</rule>
+      <rationale>motion.dev is the modern replacement for deprecated Framer Motion. Tailwind v4 built-in animations cover simple use cases efficiently.</rationale>
+    </constraint>
+    <constraint id="C6" category="Responsive Design Requirements">
+      <rule>Desktop-first approach (primary use case: desktop for intensive study)</rule>
+      <rule>Mobile/tablet secondary but fully supported (quick reviews between classes)</rule>
+      <rule>Breakpoints: sm (640px), md (768px), lg (1024px), xl (1280px), 2xl (1536px)</rule>
+      <rule>Test responsiveness: Chrome DevTools device emulation + real devices (iPhone, iPad, Android)</rule>
+      <rationale>Medical students primarily study on desktop but need mobile access for quick reviews. All features must work on all screen sizes.</rationale>
+    </constraint>
+    <constraint id="C7" category="Accessibility Standards (WCAG 2.1 AA)">
+      <rule>Color contrast ratio: 4.5:1 for normal text, 3:1 for large text</rule>
+      <rule>Focus indicators: 2px solid outline on all interactive elements</rule>
+      <rule>Screen reader support: ARIA labels on all interactive elements</rule>
+      <rule>Keyboard navigation: All features accessible without mouse (Tab, Enter, Escape)</rule>
+      <rule>Touch targets: Minimum 44x44px (Apple Human Interface Guidelines)</rule>
+      <rationale>NFR4 requirement. Accessibility is not optional - required for extended study sessions and inclusive design.</rationale>
+    </constraint>
+    <constraint id="C8" category="Performance Budget">
+      <rule>Initial JS bundle: &lt;200KB gzipped</rule>
+      <rule>LCP (Largest Contentful Paint): &lt;2.5s</rule>
+      <rule>FID (First Input Delay): &lt;100ms</rule>
+      <rule>CLS (Cumulative Layout Shift): &lt;0.1</rule>
+      <rule>Page load times: &lt;2 seconds for all core functionality</rule>
+      <rationale>NFR1 requirement. Fast page loads critical for study flow preservation and user experience.</rationale>
+    </constraint>
+    <constraint id="C9" category="Global Navigation Layout">
+      <rule>Application uses shadcn/ui Sidebar component (already implemented in app-sidebar.tsx)</rule>
+      <rule>Root layout wraps app with SidebarProvider, uses SidebarInset for main content area</rule>
+      <rule>AI Chat FAB: Floating Action Button bottom-right, always visible on all screens (NOT in sidebar)</rule>
+      <rule>Glassmorphism styling: bg-white/80 backdrop-blur-md on header/footer, OKLCH colors, NO gradients</rule>
+      <rationale>Existing architectural decision. New pages/components must integrate with existing sidebar layout, not replace it.</rationale>
+    </constraint>
+    <constraint id="C10" category="Typography System">
+      <rule>Primary font: Inter (body text) - clean, modern, excellent readability</rule>
+      <rule>Accent font: DM Sans (headings, gamified elements) - slightly playful but professional</rule>
+      <rule>Load fonts via next/font/google for optimization</rule>
+      <rule>Minimum body text size: 16px (1rem) for readability without zoom on mobile</rule>
+      <rationale>UX specification requirement. Fonts chosen for medical student readability during extended study sessions.</rationale>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="Next.js App Router Page" kind="React Server Component">
+      <signature>export default function Page() { return (&lt;div&gt;...&lt;/div&gt;); }</signature>
+      <path>apps/web/src/app/page.tsx (Dashboard), apps/web/src/app/*/page.tsx (other pages)</path>
+      <note>Use React Server Components by default. Add "use client" directive only when needed (interactive features, hooks, event handlers)</note>
+    </interface>
+    <interface name="Next.js Root Layout" kind="React Server Component">
+      <signature>export default function RootLayout({ children }: { children: React.ReactNode }) { return (&lt;html&gt;&lt;body&gt;{children}&lt;/body&gt;&lt;/html&gt;); }</signature>
+      <path>apps/web/src/app/layout.tsx</path>
+      <note>Already implemented with SidebarProvider wrapper, Inter/DM Sans fonts, metadata API. Extend if needed but preserve existing structure.</note>
+    </interface>
+    <interface name="Next.js Loading State" kind="React Server Component">
+      <signature>export default function Loading() { return (&lt;div&gt;Loading skeleton...&lt;/div&gt;); }</signature>
+      <path>apps/web/src/app/loading.tsx (global), apps/web/src/app/*/loading.tsx (page-specific)</path>
+      <note>Use Suspense boundaries with loading.tsx for instant loading states. Show skeleton screens matching page layout.</note>
+    </interface>
+    <interface name="Next.js Error Boundary" kind="React Client Component">
+      <signature>"use client"; export default function Error({ error, reset }: { error: Error; reset: () =&gt; void }) { return (&lt;div&gt;Error: {error.message}&lt;/div&gt;); }</signature>
+      <path>apps/web/src/app/error.tsx (global), apps/web/src/app/*/error.tsx (page-specific)</path>
+      <note>Must be Client Component (uses hooks). Provide retry button using reset() function. Show user-friendly error messages.</note>
+    </interface>
+    <interface name="Next.js Not Found Page" kind="React Server Component">
+      <signature>export default function NotFound() { return (&lt;div&gt;404 - Page Not Found&lt;/div&gt;); }</signature>
+      <path>apps/web/src/app/not-found.tsx</path>
+      <note>Custom 404 page with navigation back to dashboard. Maintain design system consistency.</note>
+    </interface>
+    <interface name="shadcn/ui Button" kind="React Component">
+      <signature>&lt;Button variant="default | destructive | outline | secondary | ghost | link" size="default | sm | lg | icon"&gt;Click me&lt;/Button&gt;</signature>
+      <path>apps/web/src/components/ui/button.tsx</path>
+      <note>Install via: npx shadcn@latest add button. Fetch latest API from shadcn/ui MCP before use. Apply custom OKLCH colors via className.</note>
+    </interface>
+    <interface name="shadcn/ui Card" kind="React Component">
+      <signature>&lt;Card&gt;&lt;CardHeader&gt;&lt;CardTitle&gt;...&lt;/CardTitle&gt;&lt;/CardHeader&gt;&lt;CardContent&gt;...&lt;/CardContent&gt;&lt;/Card&gt;</signature>
+      <path>apps/web/src/components/ui/card.tsx</path>
+      <note>Install via: npx shadcn@latest add card. Apply glassmorphism styling: bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]</note>
+    </interface>
+    <interface name="Zustand Store" kind="State Management">
+      <signature>import { create } from 'zustand'; const useStore = create((set) =&gt; ({ ... }));</signature>
+      <path>apps/web/src/store/*.ts</path>
+      <note>Existing stores: use-user-store.ts. Create new stores as needed for global client-side state (mission state, study session state, chat state).</note>
+    </interface>
+    <interface name="PWA Manifest" kind="JSON Configuration">
+      <signature>{ "name": "Americano", "short_name": "Americano", "description": "...", "start_url": "/", "display": "standalone", "icons": [...] }</signature>
+      <path>apps/web/public/manifest.json</path>
+      <note>Configure for standalone mode (looks like native app). Add app icons in multiple sizes (192x192, 512x512, maskable). Include shortcuts for quick actions.</note>
+    </interface>
+    <interface name="Service Worker" kind="JavaScript Worker">
+      <signature>self.addEventListener('install', (event) =&gt; { ... }); self.addEventListener('fetch', (event) =&gt; { ... });</signature>
+      <path>apps/web/public/sw.js</path>
+      <note>Use next-pwa to auto-generate service worker. Configure cache strategies: network-first for API, cache-first for static assets. Add offline fallback page.</note>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      <standard>Manual testing only for MVP (add automated testing when deploying to production)</standard>
+      <standard>Test on real devices: iPhone (Safari), iPad (Safari), Android phone (Chrome), Desktop (Chrome, Safari, Firefox, Edge)</standard>
+      <standard>Responsive testing: Chrome DevTools device emulation (320px, 768px, 1024px, 1920px breakpoints)</standard>
+      <standard>Accessibility testing: Lighthouse audit (target 95+ score), WAVE tool, screen reader testing (VoiceOver on macOS, NVDA on Windows)</standard>
+      <standard>Performance testing: Chrome DevTools Lighthouse (measure Core Web Vitals), Network throttling (Fast 3G, Slow 3G), Page load time measurement</standard>
+      <standard>PWA testing: Install prompt on mobile, offline functionality, cached assets, manifest.json validation</standard>
+    </standards>
+    <locations>
+      <location>Manual testing checklist in Story 1.4 task 13 (Testing and validation)</location>
+      <location>Chrome DevTools (Lighthouse, Performance, Network tabs)</location>
+      <location>Real devices for touch interaction and responsive testing</location>
+    </locations>
+    <ideas>
+      <test id="T1" ac="1,6">Test responsive layout on all breakpoints (320px, 640px, 768px, 1024px, 1280px, 1920px) - verify no horizontal scroll, proper text wrapping, readable without zoom</test>
+      <test id="T2" ac="2,7">Test touch interactions on iPad - verify all buttons are 44x44px minimum, tap highlights work, no accidental clicks from tight spacing</test>
+      <test id="T3" ac="3">Measure page load times with Lighthouse - target LCP &lt;2.5s, FID &lt;100ms, CLS &lt;0.1, Time to Interactive &lt;3.5s</test>
+      <test id="T4" ac="4">Visual consistency check - verify glassmorphism styling on all cards, OKLCH colors used consistently, NO gradients anywhere, Inter/DM Sans fonts loaded</test>
+      <test id="T5" ac="5">Test navigation responsiveness - desktop shows full sidebar, mobile shows bottom nav with hamburger menu, AI Chat FAB visible in same position on all screens</test>
+      <test id="T6" ac="8">Test PWA installation - verify manifest.json loads, app icon displays, install prompt shows on mobile, app launches in standalone mode, service worker caches assets, offline fallback page works</test>
+      <test id="T7" ac="4">Test error handling - trigger network error (offline mode), verify error.tsx displays friendly message with retry button, 404 page shows for invalid routes</test>
+      <test id="T8" ac="4">Test loading states - verify loading.tsx skeleton displays during page transitions, matches page layout, smooth transition to loaded content</test>
+      <test id="T9" ac="2,7">Test keyboard navigation - verify all interactive elements accessible via Tab, Enter activates buttons, Escape closes modals, focus indicators visible (2px solid outline)</test>
+      <test id="T10" ac="3">Test performance optimization - verify Next.js image optimization active (next/image), code splitting working (check network tab for chunked JS), React Server Components used where possible, fonts optimized (next/font)</test>
+      <test id="T11" ac="4">Test AI Chat FAB component - verify FAB visible bottom-right (desktop) / bottom-center (mobile), click expands chat panel, minimize/maximize animations smooth (motion.dev), keyboard accessible (Ctrl+/), ARIA labels present</test>
+      <test id="T12" ac="ALL">Test accessibility compliance - run Lighthouse accessibility audit (target 95+), run WAVE tool (zero errors), test with VoiceOver (macOS) and NVDA (Windows), verify color contrast ratios (4.5:1 normal text, 3:1 large text)</test>
+    </ideas>
+  </tests>
+</story-context>

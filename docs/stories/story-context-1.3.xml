@@ -1,0 +1,380 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.3</storyId>
+    <title>Basic Content Organization and Management</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-14</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-1.3.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>to organize my uploaded content by course and topic</iWant>
+    <soThat>I can easily find and manage my study materials</soThat>
+    <tasks>
+- Task 1: Implement Course management (7 subtasks) - CRUD operations for courses
+- Task 2: Extend Lecture model for organization (5 subtasks) - Verify courseId and topicTags fields
+- Task 3: Build Course management UI (8 subtasks) - Course list and creation interface
+- Task 4: Create Content Library page (8 subtasks) - Main lecture browsing interface
+- Task 5: Implement tagging system (8 subtasks) - Multi-select tag input with autocomplete
+- Task 6: Build lecture detail view (8 subtasks) - Display metadata and content chunks
+- Task 7: Implement content modification operations (8 subtasks) - Update and delete endpoints
+- Task 8: Implement search functionality (8 subtasks) - PostgreSQL full-text search
+- Task 9: Implement bulk operations (8 subtasks) - Multi-select and bulk actions
+- Task 10: Create folder/nested organization (4 subtasks) - Decision: defer to v2
+- Task 11: Add UI polish and interactions (8 subtasks) - Loading states, optimistic updates
+- Task 12: Testing and validation (8 subtasks) - Manual testing with 100+ lectures
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. User can create course categories (Anatomy, Physiology, etc.)
+2. Uploaded content can be assigned to specific courses
+3. Content can be tagged with topics and keywords
+4. User can rename, delete, or move content between categories
+5. Folder structure supports nested organization
+6. Content list displays with filtering and sorting options
+7. Search functionality finds content by name, tag, or course
+8. Bulk operations available for multiple content items
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <!-- Course Model Schema -->
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Course Model - Database Schema</title>
+        <section>Database Architecture (lines 736-752)</section>
+        <snippet>Course model with fields: id, userId, name, code, term. Relations to User, Lecture[], Card[]. Flat structure for MVP (no nested folders). Each lecture assigned to exactly one course.</snippet>
+      </doc>
+
+      <!-- Lecture Model Schema -->
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Lecture Model - Database Schema</title>
+        <section>Database Architecture (lines 754-781)</section>
+        <snippet>Lecture model with fields: id, userId, courseId, title, processingStatus, weekNumber (Int?), topicTags (String[]). Relations to Course, ContentChunk[], LearningObjective[]. Indexes on courseId and processingStatus for fast filtering.</snippet>
+      </doc>
+
+      <!-- API Endpoints - Content Management -->
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Content Management API Endpoints</title>
+        <section>API Architecture (lines 1238-1253)</section>
+        <snippet>Course APIs: GET/POST /api/content/courses, PATCH/DELETE /api/content/courses/:id. Lecture APIs: GET /api/content/lectures with filters (courseId, status, limit, offset), GET /api/content/lectures/:id for details. Response format: {success: true, data: {...}}.</snippet>
+      </doc>
+
+      <!-- PRD FR12: Content Management -->
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>FR12: Content Management and Organization System</title>
+        <section>Functional Requirements (lines 141-145)</section>
+        <snippet>Hierarchical content organization by course, topic, and learning objective. Tagging system compatible with medical education taxonomies. Personal note-taking and annotation capabilities integrated with content.</snippet>
+      </doc>
+
+      <!-- UX Specification - Content Library Screen -->
+      <doc>
+        <path>docs/ux-specification.md</path>
+        <title>Content Library Screen Design</title>
+        <section>Screen 3: Content Library</section>
+        <snippet>Hierarchical course organization, uploaded lectures, tags, upload center. Table/grid toggle view. Filtering by course, status, tags. Sorting options. Search bar. Empty states for "No lectures yet".</snippet>
+      </doc>
+
+      <!-- Technology Stack - shadcn/ui Components -->
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Technology Stack - Frontend Components</title>
+        <section>Tech Stack Table (lines 980-1020)</section>
+        <snippet>shadcn/ui: Full library available (40+ components). Install on-demand via `npx shadcn@latest add <component>`. Components: Form, Dialog, Table, Select, Toast, Tabs, Input, Button, Card, Badge. Always fetch latest docs via shadcn/ui MCP before implementing.</snippet>
+      </doc>
+
+      <!-- Color System - OKLCH -->
+      <doc>
+        <path>docs/ux-specification.md</path>
+        <title>Design System - Color Palette</title>
+        <section>Visual Design</section>
+        <snippet>Use OKLCH color space for all color specifications. Soft gamified playful flat minimal aesthetic with glassmorphism. NO gradients (strict rule). Medical-professional colors: blue primary, green success, yellow warning, red error.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <!-- Existing Storage Abstraction -->
+      <artifact>
+        <path>docs/solution-architecture.md</path>
+        <kind>architecture</kind>
+        <symbol>StorageProvider Interface + Implementations</symbol>
+        <lines>1512-1664</lines>
+        <reason>Storage abstraction already implemented for PDF uploads. Can reference for understanding file deletion when lectures are removed.</reason>
+      </artifact>
+
+      <!-- Existing Database Schema -->
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database</kind>
+        <symbol>Course and Lecture Models</symbol>
+        <lines>736-781</lines>
+        <reason>Schema already defined with Course and Lecture models. Verify fields exist: courseId foreign key, topicTags String[] array, weekNumber Int?</reason>
+      </artifact>
+
+      <!-- API Response Helpers -->
+      <artifact>
+        <path>docs/solution-architecture.md</path>
+        <kind>implementation-guide</kind>
+        <symbol>successResponse and errorResponse helpers</symbol>
+        <lines>269-294</lines>
+        <reason>Consistent API response format pattern. Use for all new API endpoints: {success: true, data} or {success: false, error: {code, message, details}}.</reason>
+      </artifact>
+
+      <!-- Existing API Structure -->
+      <artifact>
+        <path>apps/web/src/app/api</path>
+        <kind>directory</kind>
+        <symbol>API Routes Structure</symbol>
+        <lines>N/A</lines>
+        <reason>Follow existing pattern from Story 1.2. Create new routes: /api/content/courses, /api/content/lectures with RESTful verbs.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <typescript>
+        <package>next</package>
+        <version>latest</version>
+        <reason>Core framework with App Router + API routes</reason>
+      </typescript>
+      <typescript>
+        <package>react</package>
+        <version>latest</version>
+        <reason>UI library for components</reason>
+      </typescript>
+      <typescript>
+        <package>@prisma/client</package>
+        <version>latest</version>
+        <reason>Type-safe database ORM with existing Course/Lecture models</reason>
+      </typescript>
+      <typescript>
+        <package>lucide-react</package>
+        <version>latest</version>
+        <reason>Icon library for UI (Search, Filter, Tag, Edit, Delete icons)</reason>
+      </typescript>
+      <typescript>
+        <package>tailwind-merge</package>
+        <version>latest</version>
+        <reason>Utility for merging Tailwind classes (cn helper)</reason>
+      </typescript>
+      <typescript>
+        <package>class-variance-authority</package>
+        <version>latest</version>
+        <reason>Component variant management for shadcn/ui components</reason>
+      </typescript>
+
+      <shadcn-components>
+        <component>form</component>
+        <component>dialog</component>
+        <component>input</component>
+        <component>button</component>
+        <component>table</component>
+        <component>select</component>
+        <component>toast</component>
+        <component>tabs</component>
+        <component>card</component>
+        <component>badge</component>
+        <component>dropdown-menu</component>
+        <component>checkbox</component>
+        <reason>Install on-demand via `npx shadcn@latest add <component>`. Always fetch latest docs from shadcn/ui MCP before using.</reason>
+      </shadcn-components>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+1. **MVP Scope - Defer Nested Folders:** Flat course structure sufficient for MVP. Tag-based organization provides flexibility without complexity. Nested folders deferred to v2 based on user requests (Task 10).
+
+2. **Search Implementation:** Basic PostgreSQL full-text search for MVP (simple, works well). Search fields: lecture title, course name, topic tags. NOT implementing semantic search (that's Epic 3 - Story 3.1). Future: integrate with pgvector semantic search.
+
+3. **Tagging System:** Tags stored as String[] in Lecture.topicTags. No dedicated Tag model for MVP (avoid over-engineering). Tag autocomplete from existing lectures. Max 10 tags per lecture, 1-30 characters each. Future: Tag model with usage counts and descriptions.
+
+4. **Filtering Strategy:** Client-side filtering for <100 lectures. Server-side filtering via API query params for scalability. Filter combinations: course + status + tags. Persist filter state in URL query params for shareability.
+
+5. **Bulk Operations:** Batch API endpoint: /api/content/lectures/bulk. Request: {lectureIds: string[], action: 'move'|'tag'|'delete', data: object}. Transaction support via Prisma for consistency. Maximum 50 lectures per bulk operation to prevent timeouts.
+
+6. **Performance Considerations:** Pagination: 50 lectures per page. Eager load course data to avoid N+1 queries (Prisma include). Indexes on Lecture.courseId and Lecture.processingStatus. Consider virtual scrolling for 500+ lectures (future).
+
+7. **UI/UX Patterns:** Library page: Primary view (table/grid toggle). Course page: Secondary view (course-centric). Detail page: Full lecture info + edit. Consistent navigation breadcrumbs. Design system: OKLCH colors, NO gradients, glassmorphism, medical-professional aesthetic.
+
+8. **Delete Cascades:** Deleting Course: Offer options (delete lectures OR move to "Uncategorized"). Deleting Lecture: Cascade delete ContentChunks, LearningObjectives via Prisma onDelete: Cascade. Also delete PDF file from storage using StorageProvider.delete(). Cannot delete Course with lectures (safety check).
+
+9. **Data Validation:** Course name: Required, 1-100 characters. Course code: Optional, 1-20 characters (e.g., "ANAT 505"). Lecture title: Required, 1-200 characters. Tags: Max 10 tags per lecture, 1-30 characters each. Enforce via Zod schemas in API routes.
+
+10. **shadcn/ui Integration:** Always fetch latest component docs via shadcn/ui MCP before implementing. Install components on-demand: `npx shadcn@latest add <component>`. Use OKLCH colors in theme configuration. NO gradients anywhere in design.
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>GET /api/content/courses</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: GET /api/content/courses
+Response: { success: true, data: { courses: Course[] } }
+
+Course type: {
+  id: string
+  userId: string
+  name: string  // "Gross Anatomy (ANAT 505)"
+  code?: string  // "ANAT 505"
+  term?: string  // "Fall 2025"
+  createdAt: Date
+  updatedAt: Date
+}
+      </signature>
+      <path>docs/solution-architecture.md (lines 1240-1241)</path>
+    </interface>
+
+    <interface>
+      <name>POST /api/content/courses</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: POST /api/content/courses
+Body: { name: string, code?: string, term?: string }
+Response: { success: true, data: { course: Course } }
+      </signature>
+      <path>docs/solution-architecture.md (lines 1243-1245)</path>
+    </interface>
+
+    <interface>
+      <name>PATCH /api/content/courses/:id</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: PATCH /api/content/courses/:id
+Body: { name?: string, code?: string, term?: string }
+Response: { success: true, data: { course: Course } }
+      </signature>
+      <path>docs/solution-architecture.md (lines 1247-1249)</path>
+    </interface>
+
+    <interface>
+      <name>DELETE /api/content/courses/:id</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: DELETE /api/content/courses/:id
+Response: { success: true, data: { success: true } }
+Error: Cannot delete course with existing lectures (safety check)
+      </signature>
+      <path>docs/solution-architecture.md (lines 1251-1253)</path>
+    </interface>
+
+    <interface>
+      <name>GET /api/content/lectures</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: GET /api/content/lectures?courseId=:id&status=:status&limit=50&offset=0
+Query params:
+  - courseId?: string (filter by course)
+  - status?: ProcessingStatus (filter by status)
+  - limit?: number (default 50)
+  - offset?: number (pagination)
+Response: { success: true, data: { lectures: Lecture[], total: number, hasMore: boolean } }
+      </signature>
+      <path>docs/solution-architecture.md (lines 1221-1230)</path>
+    </interface>
+
+    <interface>
+      <name>PATCH /api/content/lectures/:id</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: PATCH /api/content/lectures/:id
+Body: {
+  title?: string
+  courseId?: string  // Move to different course
+  weekNumber?: number
+  topicTags?: string[]
+}
+Response: { success: true, data: { lecture: Lecture } }
+      </signature>
+      <path>docs/stories/story-1.3.md (lines 81-88)</path>
+    </interface>
+
+    <interface>
+      <name>DELETE /api/content/lectures/:id</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: DELETE /api/content/lectures/:id
+Response: { success: true, data: { success: true } }
+Side effects:
+  - Cascade delete ContentChunks, LearningObjectives
+  - Delete PDF file from storage (StorageProvider.delete)
+      </signature>
+      <path>docs/stories/story-1.3.md (lines 86-88)</path>
+    </interface>
+
+    <interface>
+      <name>POST /api/content/lectures/bulk</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: POST /api/content/lectures/bulk
+Body: {
+  lectureIds: string[]  // Max 50
+  action: 'move' | 'tag' | 'delete'
+  data: {
+    courseId?: string     // For 'move' action
+    tags?: string[]       // For 'tag' action
+  }
+}
+Response: { success: true, data: { updated: number } }
+      </signature>
+      <path>docs/stories/story-1.3.md (lines 100-109)</path>
+    </interface>
+
+    <interface>
+      <name>GET /api/content/search</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+Request: GET /api/content/search?q=:query&courseId=:courseId
+Query params:
+  - q: string (search query)
+  - courseId?: string (filter by course)
+Response: { success: true, data: { results: Lecture[], total: number } }
+
+Implementation: PostgreSQL full-text search on:
+  - Lecture.title
+  - Course.name (via join)
+  - Lecture.topicTags (array contains)
+      </signature>
+      <path>docs/stories/story-1.3.md (lines 90-99)</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+Testing deferred for MVP (single user, local development). When implementing tests for production deployment, use: Vitest for unit/integration tests, Playwright for E2E tests. Test structure mirrors src/ directory. Component tests in __tests__ folders. API route tests in app/api/**/__tests__. Focus on critical paths: course CRUD, lecture filtering, search, bulk operations.
+    </standards>
+
+    <locations>
+apps/web/src/__tests__/
+apps/web/src/app/api/**/__tests__/
+apps/web/src/components/**/__tests__/
+    </locations>
+
+    <ideas>
+AC #1: Test course creation, update, delete. Verify course list displays all courses. Test course code and term (optional fields). Verify cannot delete course with lectures.
+
+AC #2: Test lecture assignment to course. Verify courseId foreign key constraint. Test moving lecture between courses. Verify course filter shows only lectures for that course.
+
+AC #3: Test adding/removing tags from lecture. Verify tag autocomplete shows existing tags. Test tag filter shows lectures with specific tag. Verify max 10 tags per lecture enforced.
+
+AC #4: Test lecture rename (PATCH /api/content/lectures/:id). Test lecture deletion with cascade (ContentChunks, LearningObjectives deleted). Test PDF file deletion from storage. Test move lecture between courses.
+
+AC #5: Verify nested folders deferred (document decision in Task 10). Test flat course structure works for MVP. Consider future: parentId on Course model.
+
+AC #6: Test lecture list pagination (50 per page). Test filtering by course, status, tags. Test sorting by date, name, course. Verify empty state displays when no lectures.
+
+AC #7: Test PostgreSQL full-text search on title. Test search across course names. Test search across topicTags. Verify search results highlight matches. Test debounced search (300ms delay).
+
+AC #8: Test bulk move (select 10 lectures, move to different course). Test bulk tag (add tag to 5 lectures). Test bulk delete (with confirmation). Verify transaction ensures consistency. Test max 50 lectures limit.
+
+Integration test: Create 3 courses, upload 20 lectures, tag with 5 different tags, filter by course, search by tag, bulk move 5 lectures, verify all operations work together.
+
+Performance test: Test with 100+ lectures. Measure page load time (<2 seconds). Measure search response time (<1 second). Verify pagination reduces initial load.
+    </ideas>
+  </tests>
+</story-context>

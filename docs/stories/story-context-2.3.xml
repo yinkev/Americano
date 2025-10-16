@@ -1,0 +1,412 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.3</storyId>
+    <title>Intelligent Content Prioritization Algorithm</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-15</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-2.3.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>As a medical student</asA>
+    <iWant>I want the platform to prioritize my study topics based on exams and importance</iWant>
+    <soThat>So that I focus on high-impact material when time is limited</soThat>
+    <tasks>
+### Task 1: Design Multi-Factor Prioritization Scoring System (AC: #1, #2, #3, #4)
+- Priority formula: `(examUrgency * 0.30) + (weaknessScore * 0.25) + (highYieldFactor * 0.20) + (prerequisiteFactor * 0.15) + (recencyPenalty * 0.10)`
+- Exam urgency: 1.0 - (daysUntilExam / 90 days window)
+- High-yield: Board exam tags (USMLE/COMLEX = 1.0, NBME = 0.7, none = 0.4)
+- Prerequisite factor: Dependencies of weak areas prioritized
+- Recency penalty: Recently studied (<24hrs) deprioritized
+
+### Task 2: Implement Exam Management Data Model (AC: #1, #6)
+- Create `Exam` model (name, date, courseId, coverageTopics[])
+- Create `CoursePriority` model (userId, courseId, priorityLevel enum)
+- Create `PriorityFeedback` model for adaptive feedback loop
+- Run migrations and add indexes
+
+### Task 3: Build Prioritization Engine Core Logic (AC: #1-#5)
+- Create `PrioritizationEngine` class
+- Implement exam urgency lookup (match coverage topics to objectives)
+- Integrate weakness scores from Story 2.2
+- Implement high-yield flagging (board exam tags)
+- Implement prerequisite traversal (max depth 3, breadth-first)
+- Implement recency penalty (daysSinceLastStudied)
+- Combine all factors with weighted formula
+
+### Task 4: Create Prioritization Explanation System (AC: #7)
+- Design `PriorityExplanation` interface
+- Generate human-readable explanations per factor
+- Create actionable recommendations
+- Visual priority indicators (🔴 CRITICAL 0.8-1.0, 🟠 HIGH 0.6-0.79, 🟡 MEDIUM 0.4-0.59, 🟢 LOW 0.0-0.39)
+
+### Task 5: Build Exam Management APIs (AC: #6)
+- POST /api/exams (create exam)
+- GET /api/exams (list upcoming exams)
+- PATCH /api/exams/:id (update exam)
+- DELETE /api/exams/:id (delete exam)
+- POST /api/courses/:id/priority (set course priority)
+- Zod validation for all endpoints
+
+### Task 6: Build Priority Query API (AC: #3, #4, #5)
+- GET /api/priorities/objectives (prioritized objectives with filters)
+- GET /api/priorities/objectives/:id/explain (detailed explanation)
+- GET /api/priorities/recommendations (top 5-10 for mission generation)
+- Optimize query performance (<500ms target)
+
+### Task 7: Implement Adaptive Feedback Loop (AC: #8)
+- POST /api/priorities/feedback (record user feedback)
+- Implement priority adjustment logic (±5% per feedback, max ±20%)
+- Track algorithm effectiveness analytics
+
+### Task 8: Build Exam Management UI (AC: #6)
+- `ExamDialog` component (add/edit exams)
+- `UpcomingExamsPanel` for dashboard (next 3 exams)
+- `/settings/exams` page (exam management)
+- Exam integration on course pages
+
+### Task 9: Build Priority Visualization UI (AC: #7)
+- `PriorityBadge` component (colored indicators)
+- `PriorityExplanationPanel` component (factor breakdown)
+- Add priority sorting to Library page
+- Create `/priorities` page (priority management)
+
+### Task 10: Integration with Mission Generation (Preparation for Story 2.4) (AC: All)
+- Create `MissionRecommender` utility class
+- Implement mission composition algorithm (2-4 objectives, balanced mix)
+- Create mission preview API
+- Test mission generation with real data
+
+### Task 11: Testing and Validation (AC: All)
+- Test algorithm with edge cases
+- Test exam CRUD operations
+- Test API performance (1000+ objectives <500ms)
+- Manual testing of prioritization UI
+- TypeScript compilation verification
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. Algorithm considers upcoming exam dates and content coverage
+2. High-yield content flagged based on medical education standards
+3. Personal weak areas weighted higher in prioritization
+4. Recently studied content weighted lower to avoid overemphasis
+5. Prerequisite relationships considered in sequencing recommendations
+6. User can input exam dates and course priorities to influence algorithm
+7. Prioritization explanations provided to build user trust
+8. Algorithm adapts based on user feedback and performance outcomes
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <!-- Epic 2: Personal Learning GPS Architecture -->
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Learning Engine Subsystem Design</title>
+        <section>Subsystem 2: Learning Engine (Mission Generation & Spaced Repetition)</section>
+        <snippet>Mission prioritization (exam proximity + weakness + high-yield) algorithm specification. MissionGenerator component with prioritization logic.</snippet>
+      </doc>
+
+      <!-- PRD Functional Requirements -->
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>FR2: Personal Learning GPS and Daily Mission System</title>
+        <section>FR2: Personal Learning GPS and Daily Mission System</section>
+        <snippet>Intelligent prioritization based on exam schedules, personal weaknesses, and high-yield content. Time-boxed study sessions with clear, actionable objectives.</snippet>
+      </doc>
+
+      <!-- Epic 2 Success Criteria -->
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic 2: Personal Learning GPS Success Criteria</title>
+        <section>Epic 2: Personal Learning GPS</section>
+        <snippet>25% reduction in time spent deciding what to study (user reported). Mission generation with intelligent prioritization.</snippet>
+      </doc>
+
+      <!-- Story 2.3 Detailed Requirements -->
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Story 2.3: Intelligent Content Prioritization Algorithm</title>
+        <section>Story 2.3: Intelligent Content Prioritization Algorithm</section>
+        <snippet>Multi-factor scoring algorithm: (examUrgency * 0.30) + (weaknessScore * 0.25) + (highYieldFactor * 0.20) + (prerequisiteFactor * 0.15) + (recencyPenalty * 0.10). Algorithm adapts based on user feedback and performance outcomes.</snippet>
+      </doc>
+
+      <!-- Story 2.2 Performance Tracking (Dependency) -->
+      <doc>
+        <path>docs/stories/story-2.2.md</path>
+        <title>Story 2.2: Personal Performance and Weakness Tracking</title>
+        <section>Prerequisites</section>
+        <snippet>Provides weaknessScore calculation for LearningObjective model. Performance tracking enables Story 2.3's weakness-based prioritization (25% weight in priority algorithm).</snippet>
+      </doc>
+
+      <!-- Story 2.1 Learning Objectives (Dependency) -->
+      <doc>
+        <path>docs/stories/story-2.1.md</path>
+        <title>Story 2.1: Learning Objective Extraction from Content</title>
+        <section>Prerequisites</section>
+        <snippet>Provides boardExamTags field on LearningObjective model (USMLE/COMLEX/NBME). Used for high-yield factor calculation in prioritization algorithm (20% weight).</snippet>
+      </doc>
+    </docs>
+    <code>
+      <!-- Existing Mission Generator (Story 2.4) -->
+      <artifact>
+        <path>apps/web/src/lib/mission-generator.ts</path>
+        <kind>service</kind>
+        <symbol>MissionGenerator.getPrioritizedObjectives</symbol>
+        <lines>106-226</lines>
+        <reason>MVP prioritization algorithm that Story 2.3 will replace/enhance. Currently uses FSRS (40%) + High-yield (30%) + Weak areas (30%).</reason>
+      </artifact>
+
+      <!-- Prisma Database Models -->
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>LearningObjective model</symbol>
+        <lines>120-141</lines>
+        <reason>Already has boardExamTags field for high-yield detection. Will extend with Story 2.2 weakness tracking.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>ObjectivePrerequisite join table</symbol>
+        <lines>149-163</lines>
+        <reason>Existing prerequisite mapping (Story 2.1). Story 2.3 will traverse this for prerequisite factor calculation.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>Mission model</symbol>
+        <lines>169-193</lines>
+        <reason>Mission generation integration point. Story 2.3's PrioritizationEngine will feed into MissionGenerator.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>StudySession model</symbol>
+        <lines>132-156</lines>
+        <reason>Provides lastStudiedAt data (via startedAt field) for recency penalty calculation.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package>@prisma/client</package>
+        <version>latest</version>
+        <purpose>Database ORM for PostgreSQL access</purpose>
+      </node>
+      <node>
+        <package>zod</package>
+        <version>latest</version>
+        <purpose>API validation schemas for exam endpoints</purpose>
+      </node>
+      <node>
+        <package>date-fns</package>
+        <version>latest</version>
+        <purpose>Date calculations for exam urgency and recency penalty</purpose>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    1. **Database Schema Changes Required**: Must create Exam, CoursePriority, and PriorityFeedback models via Prisma migration. Follow existing schema patterns in prisma/schema.prisma.
+
+    2. **PrioritizationEngine Must Not Replace MissionGenerator**: Story 2.3 provides prioritization logic, but Story 2.4's MissionGenerator orchestrates mission composition. Integration should be: PrioritizationEngine.getPrioritizedObjectives() → MissionGenerator.composeMissionObjectives().
+
+    3. **Weakness Score Dependency**: Story 2.2 provides weaknessScore on LearningObjective model. Until Story 2.2 is complete, prioritization algorithm should use heuristic from existing MVP code (lapse count / review count ratio).
+
+    4. **Recency Data Source**: Use StudySession.startedAt as proxy for "lastStudiedAt" until Story 2.2 adds explicit last studied tracking. Calculate recency per objective based on most recent session involving that objective's cards.
+
+    5. **Prerequisite Traversal Limit**: Max depth of 3 levels to prevent infinite loops with circular dependencies. Use breadth-first search algorithm.
+
+    6. **Exam Coverage Matching**: Simple tag-based matching for MVP - exact string match between exam.coverageTopics[] and objective tags. Fuzzy matching (Levenshtein) deferred to v2.
+
+    7. **Priority Score Caching**: Batch calculate all priorities nightly for performance. Cache results for 24 hours. Recalculate on-demand when exams added/updated or user provides feedback.
+
+    8. **User Weight Adjustments**: Per-user priority factor weights stored in User model preferences JSON field. Max ±20% deviation from baseline weights (0.30, 0.25, 0.20, 0.15, 0.10).
+
+    9. **API Response Format**: Use existing API utilities (successResponse, errorResponse) from apps/web/src/lib/api-response.ts. Follow RESTful conventions from Story 1.5.
+
+    10. **Auth Deferred for MVP**: Hardcode userId = "kevy@americano.dev" (existing pattern from previous stories). Full auth will be added in production deployment phase.
+
+    11. **Next.js 15 Async Params**: All route params must be awaited (const params = await props.params). Follow pattern from existing routes in apps/web/src/app/api/.
+
+    12. **Error Handling**: Use ApiError class and withErrorHandler wrapper from Story 1.5. All API errors should be user-friendly with clear messages.
+
+    13. **Zod Validation**: All API endpoints must validate inputs using Zod schemas. Follow existing patterns in apps/web/src/lib/validation/ (if exists) or create new schemas.
+
+    14. **UI Design System**: All components use glassmorphism design (bg-white/95 backdrop-blur-xl), OKLCH colors, NO gradients, Inter/DM Sans fonts. Min 44px touch targets.
+
+    15. **Database Indexes Required**: Critical for performance - add indexes on (userId, date) for exams, (userId, courseId) for priorities. Follow existing index patterns in schema.prisma.
+  </constraints>
+
+  <interfaces>
+    <!-- API Endpoints to Implement -->
+    <api>
+      <endpoint>POST /api/exams</endpoint>
+      <request>{ name: string, date: DateTime, courseId: string, coverageTopics: string[] }</request>
+      <response>{ success: true, data: { exam: Exam } }</response>
+      <validation>Zod schema: name (1-100 chars), date (future), courseId (exists), coverageTopics (1-20 items)</validation>
+    </api>
+
+    <api>
+      <endpoint>GET /api/exams?upcoming=true&courseId=:id</endpoint>
+      <request>Query params: upcoming (bool), courseId (filter)</request>
+      <response>{ success: true, data: { exams: Exam[], nextExam?: Exam } }</response>
+      <validation>Query params optional</validation>
+    </api>
+
+    <api>
+      <endpoint>PATCH /api/exams/:id</endpoint>
+      <request>{ name?: string, date?: DateTime, coverageTopics?: string[] }</request>
+      <response>{ success: true, data: { exam: Exam } }</response>
+      <validation>At least one field required for update</validation>
+    </api>
+
+    <api>
+      <endpoint>DELETE /api/exams/:id</endpoint>
+      <request>Exam ID in params</request>
+      <response>{ success: true, data: {} }</response>
+      <validation>Exam must exist</validation>
+    </api>
+
+    <api>
+      <endpoint>POST /api/courses/:id/priority</endpoint>
+      <request>{ priorityLevel: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" }</request>
+      <response>{ success: true, data: { coursePriority: CoursePriority } }</response>
+      <validation>priorityLevel must be valid enum value</validation>
+    </api>
+
+    <api>
+      <endpoint>GET /api/priorities/objectives?limit=20&courseId=:id&minPriority=0.5</endpoint>
+      <request>Query params: limit (default 20), courseId (filter), minPriority (threshold), excludeRecent (bool)</request>
+      <response>{ success: true, data: { objectives: PrioritizedObjective[], totalCount: number } }</response>
+      <validation>limit (1-100), minPriority (0.0-1.0)</validation>
+    </api>
+
+    <api>
+      <endpoint>GET /api/priorities/objectives/:id/explain</endpoint>
+      <request>Objective ID in params</request>
+      <response>{ success: true, data: { explanation: PriorityExplanation } }</response>
+      <validation>Objective must exist</validation>
+    </api>
+
+    <api>
+      <endpoint>GET /api/priorities/recommendations?limit=10</endpoint>
+      <request>Query param: limit (default 10)</request>
+      <response>{ success: true, data: { recommendations: PrioritizedObjective[], estimatedMinutes: number } }</response>
+      <validation>limit (1-50)</validation>
+    </api>
+
+    <api>
+      <endpoint>POST /api/priorities/feedback</endpoint>
+      <request>{ objectiveId: string, userFeedback: "TOO_HIGH" | "JUST_RIGHT" | "TOO_LOW", notes?: string }</request>
+      <response>{ success: true, data: { adjustmentApplied: boolean } }</response>
+      <validation>userFeedback must be valid enum, notes max 500 chars</validation>
+    </api>
+
+    <!-- TypeScript Interfaces -->
+    <interface>
+      <name>PrioritizationEngine class</name>
+      <signature>
+        class PrioritizationEngine {
+          calculatePriorityScore(objectiveId: string, context: PriorityContext): Promise&lt;number&gt;
+          getPrioritizedObjectives(userId: string, filters?: PriorityFilters, limit?: number): Promise&lt;PrioritizedObjective[]&gt;
+          explainPrioritization(objectiveId: string): Promise&lt;PriorityExplanation&gt;
+        }
+      </signature>
+      <path>apps/web/src/lib/prioritization-engine.ts</path>
+    </interface>
+
+    <interface>
+      <name>PriorityExplanation interface</name>
+      <signature>
+        interface PriorityExplanation {
+          objectiveId: string
+          priorityScore: number
+          factors: { name: string, value: number, weight: number, contribution: number }[]
+          reasoning: string
+          recommendations: string[]
+          visualIndicator: "🔴 CRITICAL" | "🟠 HIGH" | "🟡 MEDIUM" | "🟢 LOW"
+        }
+      </signature>
+      <path>apps/web/src/types/prioritization.ts</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>
+      Manual testing for MVP (automated tests deferred to production deployment). TypeScript compilation verification required (pnpm tsc must pass with 0 errors). Follow existing testing pattern from Stories 1.2-2.4: implement core functionality, verify with manual testing, document edge cases for future test suite.
+    </standards>
+
+    <locations>
+      No automated test directories yet. When implementing tests in future:
+      - apps/web/src/__tests__/lib/prioritization-engine.test.ts
+      - apps/web/src/__tests__/api/exams.test.ts
+      - apps/web/src/__tests__/api/priorities.test.ts
+    </locations>
+
+    <ideas>
+      <!-- Mapped to Acceptance Criteria -->
+
+      <!-- AC#1: Algorithm considers upcoming exam dates and content coverage -->
+      <test id="1.1">Create exam 5 days away, verify affected objectives show examUrgency ≥ 0.85 (CRITICAL priority)</test>
+      <test id="1.2">Create exam 30 days away, verify objectives show examUrgency ≈ 0.67 (HIGH priority)</test>
+      <test id="1.3">Create exam 90+ days away, verify objectives show examUrgency ≈ 0 (LOW priority)</test>
+      <test id="1.4">Verify exam coverage topic matching: exam with "cardiac conduction" matches objectives tagged "cardiac conduction"</test>
+
+      <!-- AC#2: High-yield content flagged based on medical education standards -->
+      <test id="2.1">Verify USMLE/COMLEX tagged objectives receive highYieldFactor = 1.0</test>
+      <test id="2.2">Verify NBME tagged objectives receive highYieldFactor = 0.7</test>
+      <test id="2.3">Verify user-manually-flagged high-yield objectives receive highYieldFactor = 1.0 override</test>
+      <test id="2.4">Verify non-tagged objectives receive baseline highYieldFactor = 0.4</test>
+
+      <!-- AC#3: Personal weak areas weighted higher in prioritization -->
+      <test id="3.1">Verify objectives with weaknessScore > 0.6 receive 25% weight in final priority</test>
+      <test id="3.2">Verify weak areas appear higher in GET /api/priorities/objectives ranking</test>
+      <test id="3.3">Test heuristic fallback when Story 2.2 not complete: lapse count / review count > 0.3 = weak area</test>
+
+      <!-- AC#4: Recently studied content weighted lower to avoid overemphasis -->
+      <test id="4.1">Study objective today, verify recency penalty ≈ 1.0 (high penalty = deprioritized)</test>
+      <test id="4.2">Study objective 3 days ago, verify recency penalty ≈ 0.4 (some penalty)</test>
+      <test id="4.3">Study objective 7+ days ago, verify recency penalty ≈ 0 (no penalty = due for review)</test>
+
+      <!-- AC#5: Prerequisite relationships considered in sequencing recommendations -->
+      <test id="5.1">Mark objective B as weak, verify its prerequisite A shows prerequisiteFactor ≈ 1.0 (high priority)</test>
+      <test id="5.2">Mark prerequisite already mastered, verify prerequisiteFactor ≈ 0.2 (low priority)</test>
+      <test id="5.3">Verify prerequisite traversal depth limit = 3 (no infinite loops)</test>
+      <test id="5.4">Test circular prerequisite handling (A → B → C → A) gracefully handles without crash</test>
+
+      <!-- AC#6: User can input exam dates and course priorities to influence algorithm -->
+      <test id="6.1">Create exam via POST /api/exams, verify priority scores recalculate for affected objectives</test>
+      <test id="6.2">Set course priority to CRITICAL via POST /api/courses/:id/priority, verify objectives prioritized higher</test>
+      <test id="6.3">Update exam date via PATCH /api/exams/:id, verify urgency recalculation</test>
+      <test id="6.4">Delete exam via DELETE /api/exams/:id, verify priorities revert to non-exam baseline</test>
+
+      <!-- AC#7: Prioritization explanations provided to build user trust -->
+      <test id="7.1">Call GET /api/priorities/objectives/:id/explain, verify PriorityExplanation includes all 5 factors</test>
+      <test id="7.2">Verify reasoning field contains top 3 contributing factors in human-readable text</test>
+      <test id="7.3">Verify recommendations field provides actionable guidance ("Study in next 2 days", "Review prerequisites first")</test>
+      <test id="7.4">Verify visual indicator matches priority score ranges (0.8-1.0 = 🔴 CRITICAL, etc.)</test>
+
+      <!-- AC#8: Algorithm adapts based on user feedback and performance outcomes -->
+      <test id="8.1">Submit "TOO_HIGH" feedback via POST /api/priorities/feedback, verify exam urgency weight reduced by 5%</test>
+      <test id="8.2">Submit "TOO_LOW" feedback, verify weakness weight increased by 5%</test>
+      <test id="8.3">Verify weight adjustments capped at ±20% from baseline</test>
+      <test id="8.4">Track feedback patterns, verify algorithm accuracy analytics ("87% based on 45 feedback events")</test>
+
+      <!-- Edge Cases -->
+      <test id="edge.1">No exams scheduled: verify algorithm still prioritizes weak areas and high-yield content</test>
+      <test id="edge.2">Multiple exams same day: verify coverage balanced across all exams</test>
+      <test id="edge.3">All objectives same priority: verify secondary factors (complexity, recency) used for tiebreaking</test>
+      <test id="edge.4">No objectives available: verify GET /api/priorities/objectives returns empty array gracefully</test>
+
+      <!-- Performance -->
+      <test id="perf.1">Query 1000+ objectives, verify GET /api/priorities/objectives response time <500ms</test>
+      <test id="perf.2">Calculate 50+ exam urgencies concurrently, verify calculation time <200ms</test>
+      <test id="perf.3">Verify priority query caching works (second request within 1 hour hits cache)</test>
+    </ideas>
+  </tests>
+</story-context>

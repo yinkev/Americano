@@ -1,0 +1,56 @@
+{
+  "name": "Americano - Medical Learning Platform",
+  "short_name": "Americano",
+  "description": "AI-powered personalized medical education platform for medical students",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#0066cc",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Upload Lecture",
+      "short_name": "Upload",
+      "description": "Upload a new lecture PDF",
+      "url": "/library?action=upload",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Start Study Session",
+      "short_name": "Study",
+      "description": "Begin a new study session",
+      "url": "/study",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Browse Library",
+      "short_name": "Library",
+      "description": "View your lecture library",
+      "url": "/library",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "View Progress",
+      "short_name": "Progress",
+      "description": "Track your learning progress",
+      "url": "/progress",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["education", "productivity", "medical"],
+  "prefer_related_applications": false
+}

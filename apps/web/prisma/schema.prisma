@@ -1,0 +1,673 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector")]
+}
+
+// ============================================
+// SUBSYSTEM 1: Content Processing Pipeline
+// ============================================
+
+model User {
+  id            String   @id @default(cuid())
+  email         String?  @unique
+  name          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Mission preferences (Story 2.4 Task 8)
+  defaultMissionMinutes Int      @default(50)  // 30-90 minute range
+  missionDifficulty     String   @default("AUTO")  // AUTO, EASY, MODERATE, CHALLENGING
+  preferredStudyTime    String?  // HH:MM format (e.g., "07:00", "18:00")
+  autoGenerateMissions  Boolean  @default(true)
+
+  // Performance tracking preferences (Story 2.2 Task 8)
+  performanceTrackingEnabled Boolean @default(true)
+  includeInAnalytics         Boolean @default(true)
+
+  // Relations
+  courses       Course[]
+  lectures      Lecture[]
+  studySessions StudySession[]
+  missions      Mission[]
+  reviews       Review[]
+  exams         Exam[]
+  coursePriorities CoursePriority[]
+  streak        Streak?
+  achievements  Achievement[]
+  studyGoals    StudyGoal[]
+
+  @@map("users")
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String   // "Gross Anatomy (ANAT 505)"
+  code        String?  // "ANAT 505"
+  term        String?  // "Fall 2025"
+  color       String?  // OKLCH color for visual organization (e.g., "oklch(0.7 0.15 230)")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lectures    Lecture[]
+  cards       Card[]
+  exams       Exam[]
+  coursePriorities CoursePriority[]
+
+  @@index([userId])
+  @@map("courses")
+}
+
+model Lecture {
+  id                String   @id @default(cuid())
+  userId            String
+  courseId          String
+  title             String
+  fileName          String
+  fileUrl           String      // Local path or Supabase URL
+  fileSize          Int
+  processingStatus  ProcessingStatus @default(PENDING)
+  uploadedAt        DateTime @default(now())
+  processedAt       DateTime?
+
+  // Processing progress tracking
+  processingProgress Int      @default(0)  // 0-100 percentage
+  totalPages        Int?     // Total number of pages to process
+  processedPages    Int      @default(0)  // Number of pages processed
+  processingStartedAt DateTime?  // When processing started
+  estimatedCompletionAt DateTime?  // ETA for completion
+
+  // Metadata
+  weekNumber        Int?
+  topicTags         String[]
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  contentChunks     ContentChunk[]
+  learningObjectives LearningObjective[]
+  cards             Card[]
+
+  @@index([userId])
+  @@index([courseId])
+  @@index([processingStatus])
+  @@map("lectures")
+}
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model ContentChunk {
+  id          String   @id @default(cuid())
+  lectureId   String
+  content     String   @db.Text
+  embedding   Unsupported("vector(1536)")?  // gemini-embedding-001 (output_dimensionality: 1536)
+  chunkIndex  Int      // Order within lecture
+  pageNumber  Int?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  lecture     Lecture  @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+
+  @@index([lectureId])
+  @@map("content_chunks")
+}
+
+model LearningObjective {
+  id               String              @id @default(cuid())
+  lectureId        String
+  objective        String              @db.Text
+  complexity       ObjectiveComplexity @default(INTERMEDIATE)
+  pageStart        Int?
+  pageEnd          Int?
+  isHighYield      Boolean             @default(false)
+  boardExamTags    String[]            // USMLE Step 1/2/3, COMLEX Level 1/2/3, subject tags
+  extractedBy      String              @default("gpt-5")
+  createdAt        DateTime            @default(now())
+
+  // Performance tracking fields (Story 2.2)
+  masteryLevel     MasteryLevel        @default(NOT_STARTED)
+  totalStudyTimeMs Int                 @default(0)
+  lastStudiedAt    DateTime?
+  weaknessScore    Float               @default(0.5) // 0.0-1.0, higher = weaker
+
+  // Relations
+  lecture        Lecture               @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  cards          Card[]
+  prerequisites  ObjectivePrerequisite[] @relation("Objective")
+  dependents     ObjectivePrerequisite[] @relation("Prerequisite")
+  performanceMetrics PerformanceMetric[]
+  priorityFeedback PriorityFeedback[]
+
+  @@index([lectureId])
+  @@index([isHighYield])
+  @@index([complexity])
+  @@index([masteryLevel])
+  @@index([weaknessScore])
+  @@map("learning_objectives")
+}
+
+enum ObjectiveComplexity {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum MasteryLevel {
+  NOT_STARTED
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  MASTERED
+}
+
+model ObjectivePrerequisite {
+  id             String            @id @default(cuid())
+  objectiveId    String
+  prerequisiteId String
+  strength       Float             @default(1.0)
+
+  // Relations
+  objective      LearningObjective @relation("Objective", fields: [objectiveId], references: [id], onDelete: Cascade)
+  prerequisite   LearningObjective @relation("Prerequisite", fields: [prerequisiteId], references: [id], onDelete: Cascade)
+
+  @@unique([objectiveId, prerequisiteId])
+  @@index([objectiveId])
+  @@index([prerequisiteId])
+  @@map("objective_prerequisites")
+}
+
+// ============================================
+// SUBSYSTEM 2: Learning Engine
+// ============================================
+
+model Mission {
+  id              String   @id @default(cuid())
+  userId          String
+  date            DateTime @default(now())
+  status          MissionStatus @default(PENDING)
+  estimatedMinutes Int
+  completedAt     DateTime?
+  actualMinutes   Int?     // Tracked during study session
+  completedObjectivesCount Int @default(0)
+
+  // Mission content
+  // objectives: JSON array of { objectiveId, estimatedMinutes, completed, completedAt?, notes? }
+  objectives      Json     // Array of MissionObjective objects
+  reviewCardCount Int      @default(0) // Number of cards due for review
+  newContentCount Int      @default(0) // Number of new concepts to learn
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studySessions   StudySession[]
+
+  @@index([userId])
+  @@index([date])
+  @@index([status])
+  @@map("missions")
+}
+
+enum MissionStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  SKIPPED
+}
+
+model Card {
+  id                String   @id @default(cuid())
+  courseId          String
+  lectureId         String?
+  objectiveId       String?
+  front             String   @db.Text
+  back              String   @db.Text
+  cardType          CardType @default(BASIC)
+  createdAt         DateTime @default(now())
+
+  // FSRS state
+  difficulty        Float    @default(0)
+  stability         Float    @default(0)
+  retrievability    Float    @default(0)
+  lastReviewedAt    DateTime?
+  nextReviewAt      DateTime?
+  reviewCount       Int      @default(0)
+  lapseCount        Int      @default(0)
+
+  // Relations
+  course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lecture           Lecture? @relation(fields: [lectureId], references: [id], onDelete: SetNull)
+  objective         LearningObjective? @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+  reviews           Review[]
+
+  @@index([courseId])
+  @@index([nextReviewAt])
+  @@map("cards")
+}
+
+enum CardType {
+  BASIC
+  CLOZE
+  CLINICAL_REASONING
+}
+
+model Review {
+  id              String   @id @default(cuid())
+  userId          String
+  cardId          String
+  sessionId       String?
+  rating          ReviewRating
+  timeSpentMs     Int
+  reviewedAt      DateTime @default(now())
+
+  // FSRS data captured at review time
+  difficultyBefore Float
+  stabilityBefore  Float
+  difficultyAfter  Float
+  stabilityAfter   Float
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card            Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  session         StudySession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([cardId])
+  @@index([reviewedAt])
+  @@map("reviews")
+}
+
+enum ReviewRating {
+  AGAIN   // 1 - Complete lapse
+  HARD    // 2 - Difficult recall
+  GOOD    // 3 - Correct with effort
+  EASY    // 4 - Perfect recall
+}
+
+model StudySession {
+  id              String   @id @default(cuid())
+  userId          String
+  missionId       String?
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+  durationMs      Int?
+
+  // Session stats
+  reviewsCompleted Int     @default(0)
+  newCardsStudied  Int     @default(0)
+
+  // Session notes for reflection (AC #7)
+  sessionNotes    String?  @db.Text
+
+  // Mission integration fields (Story 2.5 Task 1)
+  currentObjectiveIndex Int     @default(0)  // 0-based index of current objective in mission
+  missionObjectives     Json?   // Snapshot of mission objectives at session start for state recovery
+  objectiveCompletions  Json?   // Array of { objectiveId, completedAt, timeSpentMs, selfAssessment, confidenceRating, notes? }
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mission         Mission? @relation(fields: [missionId], references: [id], onDelete: SetNull)
+  reviews         Review[]
+  validationResponses ValidationResponse[]
+
+  @@index([userId])
+  @@index([startedAt])
+  @@map("study_sessions")
+}
+
+// ============================================
+// SUBSYSTEM 3: Knowledge Graph & Search
+// ============================================
+
+model Concept {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?  @db.Text
+  category    String?  // "anatomy", "physiology", "pathology"
+  embedding   Unsupported("vector(1536)")?  // gemini-embedding-001 (output_dimensionality: 1536)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  relatedFrom ConceptRelationship[] @relation("ConceptFrom")
+  relatedTo   ConceptRelationship[] @relation("ConceptTo")
+
+  @@index([category])
+  @@map("concepts")
+}
+
+model ConceptRelationship {
+  id            String   @id @default(cuid())
+  fromConceptId String
+  toConceptId   String
+  relationship  RelationshipType
+  strength      Float    @default(1.0)  // 0.0 to 1.0
+  createdAt     DateTime @default(now())
+
+  // Relations
+  fromConcept   Concept  @relation("ConceptFrom", fields: [fromConceptId], references: [id], onDelete: Cascade)
+  toConcept     Concept  @relation("ConceptTo", fields: [toConceptId], references: [id], onDelete: Cascade)
+
+  @@unique([fromConceptId, toConceptId, relationship])
+  @@index([fromConceptId])
+  @@index([toConceptId])
+  @@map("concept_relationships")
+}
+
+enum RelationshipType {
+  PREREQUISITE  // fromConcept is prerequisite for toConcept
+  RELATED       // General association
+  INTEGRATED    // Cross-course integration
+  CLINICAL      // Clinical application
+}
+
+// ============================================
+// SUBSYSTEM 4: Understanding Validation
+// ============================================
+
+model ValidationPrompt {
+  id          String   @id @default(cuid())
+  promptText  String   @db.Text
+  promptType  PromptType
+  conceptName String
+  expectedCriteria String[] // Key points expected in answer
+  createdAt   DateTime @default(now())
+
+  // Relations
+  responses   ValidationResponse[]
+
+  @@map("validation_prompts")
+}
+
+enum PromptType {
+  EXPLAIN_TO_PATIENT
+  CLINICAL_REASONING
+  CONTROLLED_FAILURE
+}
+
+model ValidationResponse {
+  id          String   @id @default(cuid())
+  promptId    String
+  sessionId   String?
+  userAnswer  String   @db.Text
+  aiEvaluation String  @db.Text
+  score       Float    // 0.0 to 1.0
+  confidence  Float?   // User's self-reported confidence
+  respondedAt DateTime @default(now())
+
+  // Relations
+  prompt      ValidationPrompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  session     StudySession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([promptId])
+  @@index([respondedAt])
+  @@map("validation_responses")
+}
+
+model ComprehensionMetric {
+  id          String   @id @default(cuid())
+  conceptName String
+  date        DateTime @default(now())
+  avgScore    Float    // Average validation score for this concept
+  sampleSize  Int      // Number of validations
+  trend       String?  // "improving", "stable", "declining"
+
+  @@unique([conceptName, date])
+  @@index([conceptName])
+  @@map("comprehension_metrics")
+}
+
+// ============================================
+// SUBSYSTEM 5: Behavioral Analytics
+// ============================================
+
+model BehavioralEvent {
+  id          String   @id @default(cuid())
+  userId      String   // Not FK to allow analytics without user cascade
+  eventType   EventType
+  eventData   Json     // Flexible JSON for event-specific data
+  timestamp   DateTime @default(now())
+
+  @@index([userId])
+  @@index([eventType])
+  @@index([timestamp])
+  @@map("behavioral_events")
+}
+
+enum EventType {
+  MISSION_STARTED
+  MISSION_COMPLETED
+  CARD_REVIEWED
+  VALIDATION_COMPLETED
+  SESSION_STARTED
+  SESSION_ENDED
+  LECTURE_UPLOADED
+  SEARCH_PERFORMED
+  GRAPH_VIEWED
+}
+
+model LearningPattern {
+  id          String   @id @default(cuid())
+  userId      String
+  patternType PatternType
+  patternData Json     // Flexible storage for pattern details
+  confidence  Float    // 0.0 to 1.0 confidence in pattern
+  detectedAt  DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([patternType])
+  @@map("learning_patterns")
+}
+
+enum PatternType {
+  OPTIMAL_STUDY_TIME      // "Best performance at 7-9 AM"
+  STRUGGLE_TOPIC          // "Low retention on physiology"
+  CONTENT_PREFERENCE      // "Prefers visual diagrams"
+  SESSION_LENGTH          // "Optimal 45-minute sessions"
+  DAY_OF_WEEK_PATTERN     // "Struggles on Mondays"
+}
+
+model PerformancePrediction {
+  id            String   @id @default(cuid())
+  userId        String
+  predictedFor  DateTime // Date/time this prediction is for
+  predictionType String  // "struggle_likelihood", "optimal_study_time"
+  prediction    Json     // Prediction details
+  confidence    Float    // Model confidence
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([predictedFor])
+  @@map("performance_predictions")
+}
+
+// Story 2.2: Performance tracking time-series data
+model PerformanceMetric {
+  id                   String            @id @default(cuid())
+  userId               String
+  learningObjectiveId  String
+  date                 DateTime          @default(now())
+  retentionScore       Float             // 0.0-1.0 from FSRS
+  studyTimeMs          Int               // Time spent on this objective today
+  reviewCount          Int               // Number of reviews today
+  correctReviews       Int
+  incorrectReviews     Int
+  createdAt            DateTime          @default(now())
+
+  // Relations
+  learningObjective    LearningObjective @relation(fields: [learningObjectiveId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, learningObjectiveId, date])
+  @@index([userId, date])
+  @@index([learningObjectiveId])
+  @@map("performance_metrics")
+}
+
+// Story 2.3: Intelligent Content Prioritization Algorithm
+model Exam {
+  id              String   @id @default(cuid())
+  userId          String
+  name            String   // "Histology Midterm"
+  date            DateTime
+  courseId        String
+  coverageTopics  String[] // Tags/topics this exam covers
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@index([courseId])
+  @@map("exams")
+}
+
+model CoursePriority {
+  id             String         @id @default(cuid())
+  userId         String
+  courseId       String
+  priorityLevel  PriorityLevel  @default(MEDIUM)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  // Relations
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course         Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("course_priorities")
+}
+
+enum PriorityLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model PriorityFeedback {
+  id                String          @id @default(cuid())
+  userId            String
+  objectiveId       String
+  suggestedPriority Float           // What algorithm suggested
+  userFeedback      FeedbackRating
+  notes             String?         @db.Text
+  createdAt         DateTime        @default(now())
+
+  // Relations
+  learningObjective LearningObjective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([objectiveId])
+  @@map("priority_feedback")
+}
+
+enum FeedbackRating {
+  TOO_HIGH
+  JUST_RIGHT
+  TOO_LOW
+}
+
+// ============================================
+// SUBSYSTEM 6: Gamification
+// ============================================
+
+model Streak {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  currentStreak    Int      @default(0)  // Consecutive days with study activity
+  longestStreak    Int      @default(0)  // Personal best streak
+  lastStudyDate    DateTime?
+  freezesRemaining Int      @default(2)  // Streak protection tokens
+  freezeUsedDates  String[] // ISO date strings of freeze usage
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("streaks")
+}
+
+model Achievement {
+  id          String          @id @default(cuid())
+  userId      String
+  type        AchievementType
+  name        String          // "7-Day Warrior", "First Objective"
+  description String          @db.Text
+  tier        AchievementTier @default(BRONZE)
+  earnedAt    DateTime        @default(now())
+  metadata    Json?           // Additional achievement data (e.g., { "streakDays": 7 })
+
+  // Relations
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@map("achievements")
+}
+
+enum AchievementType {
+  STREAK_MILESTONE    // 7, 30, 100 day streaks
+  OBJECTIVES_COMPLETED // 10, 50, 100 objectives
+  CARDS_MASTERED      // Cards reaching MASTERED state
+  PERFECT_SESSION     // Session with 100% accuracy
+  EARLY_BIRD          // Study before 8 AM
+  NIGHT_OWL           // Study after 10 PM
+}
+
+enum AchievementTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+model StudyGoal {
+  id                String       @id @default(cuid())
+  userId            String
+  goalType          GoalType
+  targetValue       Int          // Minutes or objectives count
+  currentProgress   Int          @default(0)
+  period            GoalPeriod
+  startDate         DateTime
+  endDate           DateTime
+  isCompleted       Boolean      @default(false)
+  completedAt       DateTime?
+  createdAt         DateTime     @default(now())
+
+  // Relations
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([period, startDate])
+  @@map("study_goals")
+}
+
+enum GoalType {
+  TIME_BASED       // Minutes studied
+  OBJECTIVE_BASED  // Objectives completed
+  REVIEW_BASED     // Cards reviewed
+}
+
+enum GoalPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+}

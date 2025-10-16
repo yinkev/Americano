@@ -1,0 +1,217 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.2</storyId>
+    <title>Personal Performance and Weakness Tracking</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-15</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-2.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>the platform to track my performance and identify weak areas</iWant>
+    <soThat>my study recommendations focus on what I need to improve</soThat>
+    <tasks>
+      <task id="1">Design and Implement Performance Tracking Data Models</task>
+      <task id="2">Implement Performance Calculation Engine</task>
+      <task id="3">Build Performance Tracking APIs</task>
+      <task id="4">Create Performance Trend Analysis Component</task>
+      <task id="5">Build Weak Areas Dashboard Component</task>
+      <task id="6">Create Confidence Tracking UI</task>
+      <task id="7">Integrate Performance Data with Spaced Repetition</task>
+      <task id="8">Build Privacy Controls for Performance Data</task>
+      <task id="9">Create Progress Analytics Page</task>
+      <task id="10">Testing and Validation</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">System tracks performance metrics for each learning objective</criterion>
+    <criterion id="2">Weakness identification based on study time, retention, and assessment results</criterion>
+    <criterion id="3">Performance trends visualized over time with clear progress indicators</criterion>
+    <criterion id="4">Confidence levels tracked for different topics and objectives</criterion>
+    <criterion id="5">Comparative analysis showing strong vs. weak knowledge areas</criterion>
+    <criterion id="6">Performance data integrated with spaced repetition algorithms</criterion>
+    <criterion id="7">User can input self-assessment data to improve accuracy</criterion>
+    <criterion id="8">Privacy controls for sensitive performance information</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Subsystem 5 (Behavioral Analytics)</title>
+        <section>Database Schema - Performance Models (lines 1050-1114)</section>
+        <snippet>Defines BehavioralEvent, LearningPattern, and PerformancePrediction models for tracking study patterns, performance trends, and predictive modeling.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - API Architecture</title>
+        <section>Analytics Endpoints (lines 1377-1413)</section>
+        <snippet>Specifies /api/analytics/events, /api/analytics/patterns, /api/analytics/predictions, /api/analytics/dashboard endpoints with request/response formats.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>PRD - FR6: Behavioral Learning Pattern Analysis</title>
+        <section>AI-Powered Personalization (lines 103-107)</section>
+        <snippet>Track individual study patterns, performance trends, engagement metrics. Identify optimal study times, content preferences, difficulty progression. Personal learning style profiling and predictive modeling for struggle detection.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>PRD - FR10: Progress Analytics and Performance Insights</title>
+        <section>AI-Powered Personalization (lines 127-131)</section>
+        <snippet>Comprehensive learning analytics dashboard with visual progress tracking, predictive modeling for exam readiness, performance comparison, learning efficiency metrics and improvement recommendations.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic 2 - Story 2.2 Details</title>
+        <section>Personal Performance and Weakness Tracking (lines 246-267)</section>
+        <snippet>Track performance metrics per objective, weakness identification via study time/retention/assessment, performance trends visualization, confidence levels tracking, comparative analysis, spaced repetition integration, self-assessment data, privacy controls.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic 2 - Goals and Success Criteria</title>
+        <section>Personal Learning GPS Epic (lines 200-221)</section>
+        <snippet>Eliminate "what to study" decision-making. 90%+ mission completion rate, 25%+ reduction in planning time, measurable efficiency improvement, >4.5/5 satisfaction, >85% AI content analysis accuracy.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database schema</kind>
+        <symbol>LearningObjective, Card, Review, StudySession</symbol>
+        <lines>120-295</lines>
+        <reason>Existing models that will be extended with performance tracking fields. LearningObjective needs masteryLevel, totalStudyTimeMs, weaknessScore fields.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/mission-generator.ts</path>
+        <kind>service</kind>
+        <symbol>MissionGenerator</symbol>
+        <lines>1-348</lines>
+        <reason>Existing mission generation logic. Story 2.2 performance metrics will integrate with weak area identification (line 186-206) for enhanced prioritization.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-response.ts</path>
+        <kind>utility</kind>
+        <symbol>successResponse, errorResponse, ErrorCodes</symbol>
+        <lines>1-115</lines>
+        <reason>Standardized API response pattern. All new performance endpoints should use these utilities for consistency.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/db.ts</path>
+        <kind>utility</kind>
+        <symbol>prisma</symbol>
+        <lines>N/A</lines>
+        <reason>Prisma client singleton. Use for all database queries in performance calculation engine and analytics.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package>recharts</package>
+        <version>^2.x</version>
+        <usage>Time-series charts for performance trend visualization (Task 4)</usage>
+      </node>
+      <node>
+        <package>date-fns</package>
+        <version>^2.x</version>
+        <usage>Date manipulation for trend analysis and time-series aggregation</usage>
+      </node>
+      <node>
+        <package>@prisma/client</package>
+        <version>Already installed</version>
+        <usage>Database access for performance metrics and queries</usage>
+      </node>
+      <node>
+        <package>zod</package>
+        <version>Already installed</version>
+        <usage>Request/response validation for performance APIs</usage>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Database schema changes: Extend LearningObjective with masteryLevel enum, totalStudyTimeMs, lastStudiedAt, weaknessScore. Create PerformanceMetric time-series model. Run Prisma migration.</constraint>
+    <constraint>Performance calculation frequency: Batch job runs daily at midnight OR on-demand via API trigger. Real-time updates too expensive for MVP.</constraint>
+    <constraint>Data retention: Performance metrics retained indefinitely unless user requests deletion. Historical data enables trend analysis.</constraint>
+    <constraint>Privacy: All performance data tied to userId, never shared externally. FERPA compliant. User must have privacy controls.</constraint>
+    <constraint>Charting library: Use Recharts (specified in UX spec). Already in dependencies. Supports time-series, bar charts, trend lines.</constraint>
+    <constraint>Database indexes: Critical for performance with 1000+ objectives. Add indexes on (userId, learningObjectiveId, date), (userId, weaknessScore DESC), (userId, masteryLevel).</constraint>
+    <constraint>Auth deferral: Performance APIs hardcoded to kevy@americano.dev for MVP. Add auth when deploying to production.</constraint>
+    <constraint>Weakness score formula: (retentionFactor * 0.4) + (studyTimeFactor * 0.3) + (failureFactor * 0.2) + (confidenceFactor * 0.1). Higher score = weaker area.</constraint>
+    <constraint>Mastery level thresholds: NOT_STARTED (no reviews), BEGINNER (retention < 0.5 OR reviews < 3), INTERMEDIATE (0.5-0.7 retention, 3+ reviews), ADVANCED (0.7-0.9 retention, 5+ reviews), MASTERED (0.9+ retention, 10+ reviews).</constraint>
+    <constraint>Integration with existing systems: Hook into StudySession completion to trigger performance updates. Integrate with MissionGenerator weak area prioritization.</constraint>
+    <constraint>API patterns: Use Next.js 15 async params, Zod validation, successResponse/errorResponse helpers, Prisma client singleton from @/lib/db.</constraint>
+    <constraint>Error handling: Follow existing pattern with ApiError class and withErrorHandler wrapper. Return appropriate HTTP status codes (404, 400, 500).</constraint>
+    <constraint>UI design: Glassmorphism design system (bg-white/80 backdrop-blur-md), OKLCH colors, NO gradients per design system rules. Min 44px touch targets. Responsive breakpoints: 1200px+ (desktop), 768-1199px (tablet), <768px (mobile).</constraint>
+    <constraint>Testing strategy: Manual testing for MVP (create 20+ objectives, complete sessions, trigger batch job, verify charts). Unit tests and E2E tests deferred to production deployment.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>GET /api/performance/objectives/:objectiveId</name>
+      <kind>REST endpoint</kind>
+      <signature>Response: { objective, performanceMetrics: PerformanceMetric[], reviews: Review[], trend: string }</signature>
+      <path>apps/web/src/app/api/performance/objectives/[objectiveId]/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/performance/weak-areas</name>
+      <kind>REST endpoint</kind>
+      <signature>Query: limit (default 10), courseId (optional). Response: { weakAreas: LearningObjective[], totalWeak: number, recommendedFocus: string }</signature>
+      <path>apps/web/src/app/api/performance/weak-areas/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/performance/mastery-summary</name>
+      <kind>REST endpoint</kind>
+      <signature>Response: { notStarted: number, beginner: number, intermediate: number, advanced: number, mastered: number, totalObjectives: number, percentages: Record<MasteryLevel, number> }</signature>
+      <path>apps/web/src/app/api/performance/mastery-summary/route.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/performance/self-assessment</name>
+      <kind>REST endpoint</kind>
+      <signature>Body: { objectiveId: string, confidenceLevel: 1-5, notes?: string }. Response: { success: boolean, weaknessScore: number }</signature>
+      <path>apps/web/src/app/api/performance/self-assessment/route.ts</path>
+    </interface>
+    <interface>
+      <name>PerformanceCalculator class</name>
+      <kind>TypeScript class</kind>
+      <signature>Methods: calculateRetentionScore(reviews[]), calculateWeaknessScore(objective, reviews[]), calculateMasteryLevel(retentionScore, reviewCount, studyTime), identifyWeakAreas(userId, thresholdScore)</signature>
+      <path>apps/web/src/lib/performance-calculator.ts</path>
+    </interface>
+    <interface>
+      <name>PerformanceTrendChart component</name>
+      <kind>React component</kind>
+      <signature>Props: { objectiveId: string, timeRange: '7d' | '30d' | '90d' | 'all', metricType: 'retention' | 'studyTime' | 'reviewCount' }</signature>
+      <path>apps/web/src/components/progress/performance-trend-chart.tsx</path>
+    </interface>
+    <interface>
+      <name>WeakAreasPanel component</name>
+      <kind>React component</kind>
+      <signature>Props: { userId: string, courseFilter?: string, limit?: number }</signature>
+      <path>apps/web/src/components/dashboard/weak-areas-panel.tsx</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>Manual testing for MVP. TypeScript compilation must pass with zero errors. API endpoints tested with Postman/Thunder Client or curl. UI components tested across desktop (1920x1080, 1366x768), tablet (iPad 1024x768), and mobile (iPhone 375x812). Integration testing verifies performance data flows correctly from study sessions → metrics calculation → API endpoints → UI display. Unit tests and E2E tests (Vitest, Playwright) deferred to production deployment.</standards>
+    <locations>
+      <location>apps/web/src/lib/__tests__/performance-calculator.test.ts (future)</location>
+      <location>apps/web/src/app/api/performance/**/*.test.ts (future)</location>
+      <location>Manual testing during development</location>
+    </locations>
+    <ideas>
+      <idea ac="1,2">Test PerformanceCalculator.calculateWeaknessScore() with known data: objective with high study time + low retention should yield high weakness score (>0.6).</idea>
+      <idea ac="1,2">Test PerformanceCalculator.calculateMasteryLevel() transitions: NOT_STARTED → BEGINNER → INTERMEDIATE → ADVANCED → MASTERED as reviews improve.</idea>
+      <idea ac="2">Test weak area identification: create 10 objectives with varied performance, verify API returns top 5 weakest sorted by weaknessScore DESC.</idea>
+      <idea ac="3">Test PerformanceTrendChart renders correctly with 30 days of data. Verify moving average trendline calculation accuracy.</idea>
+      <idea ac="3">Test time range selector: switching between 7d/30d/90d/all correctly filters data and updates chart.</idea>
+      <idea ac="4,7">Test self-assessment API: POST with confidenceLevel 1-5 updates weaknessScore appropriately (low confidence increases weakness).</idea>
+      <idea ac="5">Test MasteryDistribution component: 5 mastery levels (NOT_STARTED, BEGINNER, INTERMEDIATE, ADVANCED, MASTERED) all render with correct percentages.</idea>
+      <idea ac="6">Test integration with MissionGenerator: objectives with high weaknessScore (>0.6) should appear more frequently in generated missions.</idea>
+      <idea ac="6">Test FSRSScheduler integration: weak objectives scheduled for more frequent review than strong objectives.</idea>
+      <idea ac="8">Test privacy controls: toggle "Track performance metrics" OFF should prevent new PerformanceMetric records. Reset button deletes all user performance data with confirmation.</idea>
+      <idea ac="all">Test batch performance calculation job: trigger on-demand, verify all LearningObjective records updated with current weaknessScore and masteryLevel.</idea>
+      <idea ac="all">Edge case testing: objective with no reviews (should show NOT_STARTED), objective with perfect reviews (should show MASTERED), objective with high study time but low retention (high weakness score).</idea>
+    </ideas>
+  </tests>
+</story-context>

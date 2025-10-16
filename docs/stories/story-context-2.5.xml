@@ -1,0 +1,186 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>5</storyId>
+    <title>Time-Boxed Study Session Orchestration</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-15</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/Users/Kyin/Projects/Americano/docs/stories/story-2.5.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a medical student</asA>
+    <iWant>guided study sessions that follow my daily mission</iWant>
+    <soThat>I stay focused and complete objectives efficiently</soThat>
+    <tasks>
+      <task id="1">Extend Study Session Model for Mission Integration (ACs: #1, #4)</task>
+      <task id="2">Build Session Initiation with Mission Loading (AC: #1)</task>
+      <task id="3">Implement Objective-Focused Content Display (AC: #3)</task>
+      <task id="4">Build Objective Timer and Progress Tracking (AC: #2)</task>
+      <task id="5">Implement Spaced Repetition Card Integration (AC: #8)</task>
+      <task id="6">Build Objective Completion Flow (ACs: #5, #6)</task>
+      <task id="7">Implement Automatic Objective Progression (AC: #6)</task>
+      <task id="8">Build Enhanced Session Summary Page (AC: #7)</task>
+      <task id="9">Build Session Pause/Resume with Context Preservation (AC: #4)</task>
+      <task id="10">Create Session Orchestration Settings (AC: #2)</task>
+      <task id="11">Implement Performance Data Collection (ACs: #5, #7)</task>
+      <task id="12">Build Session Analytics API Endpoints</task>
+      <task id="13">Testing and Validation (All ACs)</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Study session initiates with current mission objectives loaded</criterion>
+    <criterion id="2">Timer and progress indicators guide user through each objective</criterion>
+    <criterion id="3">Content automatically presented relevant to current objective</criterion>
+    <criterion id="4">Session can be paused/resumed while maintaining mission context</criterion>
+    <criterion id="5">Completion prompts for each objective with self-assessment options</criterion>
+    <criterion id="6">Automatic progression to next objective when current one completed</criterion>
+    <criterion id="7">Session summary shows objectives completed and time spent</criterion>
+    <criterion id="8">Integration with spaced repetition for review content mixing</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/solution-architecture.md" title="Solution Architecture">
+        <section name="Subsystem 2: Learning Engine">
+          SessionOrchestrator component handles session composition (new content + reviews), warm-up → peak → wind-down flow. StudySession model tracks userId, missionId, startedAt, completedAt, durationMs, reviewsCompleted, newCardsStudied with relations to User, Mission, Review, ValidationResponse.
+        </section>
+      </doc>
+      <doc path="docs/PRD-Americano-2025-10-14.md" title="Product Requirements Document">
+        <section name="FR9: Smart Study Session Orchestration">
+          Intelligent mixing of new content, review material, and comprehension validation. Session length optimization based on individual attention patterns. Break timing and frequency recommendations. Flow state preservation and interruption management.
+        </section>
+      </doc>
+      <doc path="docs/stories/story-context-1.6.xml" title="Story 1.6: Basic Study Session Management">
+        <section name="Foundation Implementation">
+          SessionTimer component with Date.now() accuracy, Zustand state management with localStorage persistence, API endpoints for sessions CRUD (start, pause, resume, complete, notes), analytics APIs (daily/weekly study time, streaks, time-of-day patterns, time-per-topic aggregation).
+        </section>
+      </doc>
+      <doc path="docs/stories/story-context-2.1.xml" title="Story 2.1: Learning Objective Extraction">
+        <section name="Learning Objective Model">
+          LearningObjective model with complexity (BASIC/INTERMEDIATE/ADVANCED), pageStart/pageEnd, boardExamTags, isHighYield flags. ObjectivePrerequisite join table for dependency mapping. Enhanced lecture detail page with objectives display grouped by complexity.
+        </section>
+      </doc>
+      <doc path="docs/stories/story-context-2.4.xml" title="Story 2.4: Daily Mission Generation">
+        <section name="Mission Integration">
+          Mission model with objectives JSON array, status (PENDING/IN_PROGRESS/COMPLETED/SKIPPED), estimatedMinutes. MissionGenerator class creates 2-4 objectives with time balancing (BASIC=12min, INTERMEDIATE=20min, ADVANCED=32min). API endpoints: generate, today, [id], preview, regenerate. Sessions link to missions via missionId FK.
+        </section>
+      </doc>
+      <doc path="docs/stories/story-context-2.2.xml" title="Story 2.2: Performance Tracking">
+        <section name="Performance Metrics">
+          PerformanceMetric model for mastery tracking. MasteryLevel enum (NOT_STARTED, LEARNING, DEVELOPING, PROFICIENT, MASTERED). Self-assessment integration for confidence tracking. Performance calculation updates mastery based on session data.
+        </section>
+      </doc>
+    </docs>
+    <code>
+      <artifact path="apps/web/prisma/schema.prisma" kind="database" symbol="StudySession">
+        Current model has: id, userId, missionId, startedAt, completedAt, durationMs, reviewsCompleted, newCardsStudied, sessionNotes. Relations to User, Mission, Review[], ValidationResponse[]. Story 2.5 Task 1 extends with: currentObjectiveIndex (Int), missionObjectives (Json snapshot), objectiveCompletions (Json array).
+      </artifact>
+      <artifact path="apps/web/prisma/schema.prisma" kind="database" symbol="Mission">
+        Model has objectives (Json array), status (PENDING/IN_PROGRESS/COMPLETED/SKIPPED), estimatedMinutes, relations to StudySession[]. Mission objectives array format: {objectiveId, estimatedMinutes, completed, completedAt?, notes?}.
+      </artifact>
+      <artifact path="apps/web/prisma/schema.prisma" kind="database" symbol="LearningObjective">
+        Complete model with complexity enum, pageStart/pageEnd, boardExamTags[], isHighYield, masteryLevel enum, totalStudyTimeMs, weaknessScore. Relations to Lecture, Card[], ObjectivePrerequisite[], PerformanceMetric[].
+      </artifact>
+      <artifact path="apps/web/src/app/api/learning/sessions/route.ts" kind="api" symbol="POST /api/learning/sessions">
+        Existing endpoint creates session with userId, missionId?. Returns session object. Task 2 enhances to load mission objectives and initialize currentObjectiveIndex=0.
+      </artifact>
+      <artifact path="apps/web/src/app/api/learning/sessions/[id]/pause/route.ts" kind="api">
+        Existing pause endpoint. Task 9 enhances to capture objective state (timer, scroll position, card queue).
+      </artifact>
+      <artifact path="apps/web/src/app/api/learning/sessions/[id]/resume/route.ts" kind="api">
+        Existing resume endpoint. Task 9 enhances to restore exact objective state.
+      </artifact>
+      <artifact path="apps/web/src/app/api/learning/sessions/[id]/complete/route.ts" kind="api">
+        Existing complete endpoint. Task 8 enhances session summary with objective-by-objective breakdown.
+      </artifact>
+      <artifact path="apps/web/src/app/study/page.tsx" kind="component">
+        Current study page from Story 1.6. Task 2-7 transform to mission-objective orchestration flow with ObjectiveContentPanel, ObjectiveTimer, card integration, completion dialogs, auto-progression.
+      </artifact>
+    </code>
+    <dependencies>
+      <package name="@prisma/client" version="latest">Database client for session/mission/objective queries</package>
+      <package name="zod" version="latest">Validation schemas for objective completion, self-assessment APIs</package>
+      <package name="zustand" version="latest">Client state management for session orchestration (currentObjective, timer, progress)</package>
+      <package name="date-fns" version="latest">Time calculations, session duration formatting</package>
+      <package name="recharts" version="latest">Charts for session summary (time per objective, self-assessment radar)</package>
+      <note>All dependencies already installed from previous stories</note>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="1">Database Schema Changes: Extend StudySession model with currentObjectiveIndex (Int), missionObjectives (Json snapshot), objectiveCompletions (Json array of {objectiveId, completedAt, timeSpentMs, selfAssessment}). Migration required.</constraint>
+    <constraint id="2">Mission-Session Integration: Sessions MUST load mission objectives at start. If session.missionId exists, fetch mission.objectives and store snapshot in session.missionObjectives for state recovery.</constraint>
+    <constraint id="3">Objective Timer Accuracy: Use Date.now() calculations like Story 1.6 SessionTimer. Track time per objective separately from total session time. Avoid setInterval drift.</constraint>
+    <constraint id="4">Card Integration: Load 3-5 cards per objective via lectureId or topicTags. Prioritize due cards (FSRS nextReviewAt <= today). Mix: 2-3 review cards + 1-2 new cards.</constraint>
+    <constraint id="5">State Persistence: Zustand store persists to localStorage every state change. Server syncs every 30 seconds. Full sync on pause/complete for crash recovery.</constraint>
+    <constraint id="6">Auto-Progression: After objective completion, wait 2 seconds, load next objective content, reset timer. User can disable auto-advance in settings (defaultMissionMinutes field).</constraint>
+    <constraint id="7">Self-Assessment: Completion dialog requires self-assessment (1-5 stars understanding) and confidence rating (1-5 stars). Optional reflection notes. Updates LearningObjective.masteryLevel via Story 2.2 PerformanceCalculator.</constraint>
+    <constraint id="8">Session Summary: Enhanced /study/sessions/[id] page shows: (1) Mission completion stats (objectives X/Y, time, cards reviewed, accuracy), (2) Objective-by-objective table, (3) Performance insights (time vs estimated delta, accuracy trends).</constraint>
+    <constraint id="9">Pomodoro Mode: Optional settings toggle. 25-min focus blocks, 5-min breaks between objectives, 15-min break after 2 objectives. Timer integrates with objective progression.</constraint>
+    <constraint id="10">Content Loading: Lazy-load lecture content per objective via LearningObjective.lectureId. Preload next objective in background. Show pageStart-pageEnd if available from Story 2.1.</constraint>
+    <constraint id="11">Authentication Deferral: Hardcoded userId = kevy@americano.dev for MVP (single-user). User-aware state isolation already implemented in Story 1.5.</constraint>
+    <constraint id="12">Next.js 15 Async Params: All dynamic route params ([id], [objectiveId]) must be awaited per Next.js 15 pattern.</constraint>
+    <constraint id="13">Error Handling: Use ApiError class from Story 1.5. Zod validation for all POST/PATCH bodies. Return 400 for validation errors, 404 for not found, 500 for server errors.</constraint>
+    <constraint id="14">UI Design System: Glassmorphism design (bg-white/95 backdrop-blur-xl), NO gradients, OKLCH colors, min 44px touch targets, Inter/DM Sans fonts per UX spec.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="POST /api/learning/sessions/:id/objectives/:objectiveId/complete" type="api">
+      Request: {selfAssessment: 1-5, confidenceRating: 1-5, notes?: string, timeSpentMs: number}
+      Response: {nextObjective?: object, missionProgress: {completed: number, total: number}, sessionProgress: object}
+      Updates session.objectiveCompletions, increments currentObjectiveIndex, updates mission objective status, triggers PerformanceMetric update.
+    </interface>
+    <interface name="GET /api/learning/sessions/:id/analytics" type="api">
+      Returns: {objectives: [{objectiveId, time, selfAssessment, cards}], cards: {reviewed, accuracy}, timeBreakdown: object, insights: string[]}
+    </interface>
+    <interface name="useSessionStore" type="zustand">
+      State: {currentObjective, missionProgress, objectiveTimer, sessionState, pausedState}
+      Actions: {startSession, pauseSession, resumeSession, completeObjective, loadNextObjective, extendTime}
+      Persists to localStorage for recovery.
+    </interface>
+    <interface name="ObjectiveContentPanel" type="component">
+      Props: {objective: LearningObjective, lectureId: string, pageStart?: number, pageEnd?: number}
+      Displays: Objective text, complexity badge, lecture source link, page numbers, prerequisite chain, related content links.
+    </interface>
+    <interface name="ObjectiveTimer" type="component">
+      Props: {startedAt: Date, estimatedMinutes: number, onAlertThreshold: (percent: number) => void}
+      Uses Date.now() for accuracy. Visual alerts at 80% (yellow), 100% (red) of estimated time.
+    </interface>
+    <interface name="ObjectiveCompletionDialog" type="component">
+      Props: {objectiveId: string, onComplete: (data) => void}
+      Captures: Self-assessment (1-5 stars), confidence (1-5 stars), optional reflection notes. Submits to complete API.
+    </interface>
+    <interface name="SessionSummaryPage" type="page">
+      Route: /study/sessions/[id]
+      Displays: Mission stats, objective breakdown table, performance charts (Recharts), action buttons (start another, review weak, export).
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>TypeScript compilation with 0 errors (pnpm tsc). Manual testing for MVP. Database migrations verified. API endpoints return correct status codes and response formats. UI components render correctly with glassmorphism design and proper touch targets.</standards>
+    <locations>
+      - API tests: Manual testing via browser/Postman
+      - Component tests: Manual UI testing in browser
+      - Integration tests: Full mission-session flow walkthrough
+      - Database tests: Verify schema updates via Prisma Studio
+    </locations>
+    <ideas>
+      <idea ac="1">Test session initiation with missionId loads first objective correctly. Verify missionObjectives snapshot stored.</idea>
+      <idea ac="2">Test ObjectiveTimer displays correctly, alerts at 80%/100% of estimated time, uses Date.now() accuracy.</idea>
+      <idea ac="3">Test content loading displays lecture pages for current objective, shows pageStart-pageEnd if available.</idea>
+      <idea ac="4">Test pause/resume preserves exact state: currentObjectiveIndex, timer time, card queue position, scroll position.</idea>
+      <idea ac="5">Test objective completion dialog captures self-assessment, confidence, notes. API updates objectiveCompletions JSON.</idea>
+      <idea ac="6">Test auto-progression after completion: 2-second delay, loads next objective, resets timer, updates UI.</idea>
+      <idea ac="7">Test session summary page shows correct stats: X/Y objectives, time breakdown, card accuracy, performance insights.</idea>
+      <idea ac="8">Test card integration: 3-5 cards load per objective, FSRS prioritization works, reviews update FSRS state.</idea>
+      <idea ac="9">Test edge case: Single-objective mission completes correctly, shows summary immediately.</idea>
+      <idea ac="10">Test edge case: All objectives skipped still marks mission COMPLETED with low completion stats.</idea>
+      <idea ac="11">Test edge case: Session with no cards available skips card phase gracefully.</idea>
+      <idea ac="12">Test edge case: Network error during completion recovers correctly, state preserved.</idea>
+      <idea ac="13">Test Pomodoro mode: Break reminders appear correctly, integrate with objective transitions.</idea>
+    </ideas>
+  </tests>
+</story-context>

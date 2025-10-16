@@ -1,0 +1,222 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.1</storyId>
+    <title>Learning Objective Extraction from Content</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-15</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-2.1.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a medical student</asA>
+    <iWant>the platform to automatically identify key learning objectives from my lectures</iWant>
+    <soThat>I understand what I need to master without manually analyzing content</soThat>
+    <tasks>
+- Task 1: Create LearningObjective extraction API endpoint (AC: #1, #2, #6)
+- Task 2: Implement complexity categorization (AC: #3)
+- Task 3: Medical terminology preservation (AC: #4)
+- Task 4: Create objective review and edit UI (AC: #5)
+- Task 5: Link objectives to content sections (AC: #6)
+- Task 6: Prerequisite and dependency mapping (AC: #7)
+- Task 7: AAMC competency integration (AC: #8)
+- Task 8: Background processing integration (AC: #1)
+- Task 9: High-yield content flagging (from PRD FR7)
+- Task 10: Testing and validation (All ACs)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. System analyzes uploaded lecture content using OpenAI API (ChatMock)
+2. Learning objectives extracted and structured hierarchically
+3. Objectives categorized by complexity (basic, intermediate, advanced)
+4. Medical terminology and context preserved in objective descriptions
+5. User can review and edit extracted objectives if needed
+6. Objectives linked to specific content sections and page references
+7. Prerequisites and dependencies identified between objectives
+8. Integration with medical education standards (AAMC competencies)
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>Subsystem 1: Content Processing Pipeline</section>
+        <snippet>Epic Alignment: Epic 1 (FR1). Responsibilities: PDF upload/storage, OCR via PaddleOCR, GPT-5 content analysis for learning objectives, Gemini embedding generation. Key Components: StorageProvider, PDFProcessor, ContentAnalyzer, EmbeddingGenerator. Data Models: Lecture, ContentChunk, LearningObjective (lines 494-520)</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Database Schema</title>
+        <section>LearningObjective Model</section>
+        <snippet>model LearningObjective { id String @id @default(cuid()), lectureId String, objective String @db.Text, isHighYield Boolean @default(false), extractedBy String @default("gpt-5"), createdAt DateTime @default(now()), lecture Lecture @relation(...), cards Card[], @@index([lectureId]), @@index([isHighYield]) } (lines 806-821)</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - API Endpoints</title>
+        <section>AI Integration - Extract Learning Objectives</section>
+        <snippet>POST /api/ai/extract/objectives - Body: { text: string, context?: string } - Response: { objectives[] }. Used for automatic identification of learning objectives from lecture content (lines 1441-1449)</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR7: Content Analysis and Learning Objective Extraction</section>
+        <snippet>Automatic identification of learning objectives from lecture content. High-yield content flagging based on medical education standards. Prerequisite and dependency mapping between topics. Clinical relevance scoring and board exam correlation (lines 109-113)</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic Breakdown</title>
+        <section>Story 2.1: Learning Objective Extraction from Content</section>
+        <snippet>Prerequisites: PDF processing pipeline (Story 1.2). Acceptance Criteria: System analyzes content using OpenAI API, objectives extracted hierarchically, categorized by complexity (basic/intermediate/advanced), medical terminology preserved, user can review/edit, linked to specific sections/page references, prerequisites/dependencies identified, integration with AAMC competencies. Technical Notes: OpenAI GPT-4 prompt engineering for medical content analysis, structured output parsing (lines 224-245)</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-1.2.md</path>
+        <title>Story 1.2 - PDF Content Upload and Processing Pipeline</title>
+        <section>Related Story (Prerequisite)</section>
+        <snippet>Story 1.2 implemented: PDF upload, PaddleOCR integration, ChatMock content analysis, Gemini embeddings, processing orchestration. ChatMock client (apps/web/src/lib/ai/chatmock-client.ts) already available for reuse in objective extraction</snippet>
+      </doc>
+    </docs>
+    <code>
+      <code>
+        <path>apps/web/src/lib/ai/chatmock-client.ts</path>
+        <kind>client</kind>
+        <symbol>ChatMockClient</symbol>
+        <lines></lines>
+        <reason>Existing ChatMock API client for GPT-5 integration. Story 2.1 will extend this client with objective extraction functionality</reason>
+      </code>
+      <code>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>LearningObjective</symbol>
+        <lines>806-821</lines>
+        <reason>Existing LearningObjective model in Prisma schema. Story 2.1 needs to extend this model with new fields: complexity (enum), pageNumber (Int?), aamcCompetencies (String[]), and create ObjectivePrerequisite join table</reason>
+      </code>
+      <code>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>Lecture, ContentChunk</symbol>
+        <lines>754-804</lines>
+        <reason>Related models: Lecture contains processingStatus and relations to LearningObjective. ContentChunk contains page numbers needed for linking objectives to specific sections</reason>
+      </code>
+      <code>
+        <path>apps/web/src/lib/db.ts</path>
+        <kind>utility</kind>
+        <symbol>prisma</symbol>
+        <lines></lines>
+        <reason>Prisma client singleton for database access. Used for creating/updating LearningObjective records</reason>
+      </code>
+      <code>
+        <path>apps/web/src/lib/api-response.ts</path>
+        <kind>utility</kind>
+        <symbol>successResponse, errorResponse</symbol>
+        <lines></lines>
+        <reason>Standard API response helpers for consistent error handling across endpoints</reason>
+      </code>
+    </code>
+    <dependencies>
+      <node>
+        <category>Core Dependencies (Already Installed)</category>
+        <packages>
+          <package name="next" version="latest" />
+          <package name="react" version="latest" />
+          <package name="typescript" version="latest" />
+          <package name="prisma" version="latest" />
+          <package name="@prisma/client" version="latest" />
+          <package name="zod" version="latest" />
+        </packages>
+      </node>
+      <node>
+        <category>AI/ML Dependencies (Already Installed)</category>
+        <packages>
+          <package name="ChatMock" version="GPT-5 compatible" note="localhost:8801/v1/chat/completions" />
+        </packages>
+      </node>
+      <node>
+        <category>UI Dependencies (Already Installed)</category>
+        <packages>
+          <package name="shadcn/ui" version="latest" note="Install components on-demand: npx shadcn@latest add dialog form" />
+        </packages>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Database schema changes required: Add complexity enum (BASIC, INTERMEDIATE, ADVANCED), pageNumber Int? field, aamcCompetencies String[] field to LearningObjective model. Create ObjectivePrerequisite join table</constraint>
+    <constraint>Use existing ChatMock client from Story 1.2 (apps/web/src/lib/ai/chatmock-client.ts). Extend with extractLearningObjectives function</constraint>
+    <constraint>ChatMock prompt engineering critical: System role "medical education expert", preserve medical terminology, structured JSON output format</constraint>
+    <constraint>Medical terminology accuracy >90% required per NFR7. Test with PNWU anatomy/physiology lectures (Dumpling demo user data)</constraint>
+    <constraint>Authentication deferred for MVP - hardcode kevy@americano.dev as default user (per Story 1.5 pattern)</constraint>
+    <constraint>Use Next.js 15 async params pattern: all route params must be awaited (const params = await props.params)</constraint>
+    <constraint>Error handling: Use ApiError class and standardized error response format from Story 1.5</constraint>
+    <constraint>Zod validation required for all API endpoints (request body and response)</constraint>
+    <constraint>UI components: Use shadcn/ui Dialog component for edit functionality, NO gradients (glassmorphism design from UX spec)</constraint>
+    <constraint>Background processing integration: Trigger objective extraction after PDF processing completes (extend processingStatus enum if needed)</constraint>
+    <constraint>Performance target: Objective extraction should complete within 10-30 seconds per lecture (synchronous processing acceptable for MVP)</constraint>
+    <constraint>AAMC competency framework: Use abbreviated codes (PC-1.2, KP-1.1, etc.) stored as String[] - see story Dev Notes for full list</constraint>
+    <constraint>Prerequisite mapping: Fuzzy text matching (80% threshold) to link prerequisite concepts to existing objectives</constraint>
+    <constraint>Design system compliance: Min 44px touch targets, OKLCH colors, Inter/DM Sans fonts, glassmorphism (NO gradients)</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/ai/extract/objectives</name>
+      <kind>REST endpoint</kind>
+      <signature>Body: { lectureId: string } | { text: string, context?: string } → Response: { objectives: LearningObjective[] }</signature>
+      <path>apps/web/src/app/api/ai/extract/objectives/route.ts</path>
+    </interface>
+    <interface>
+      <name>PATCH /api/objectives/:id</name>
+      <kind>REST endpoint</kind>
+      <signature>Body: { objective?: string, complexity?: ObjectiveComplexity, isHighYield?: boolean, aamcCompetencies?: string[] } → Response: { objective: LearningObjective }</signature>
+      <path>apps/web/src/app/api/objectives/[id]/route.ts</path>
+    </interface>
+    <interface>
+      <name>DELETE /api/objectives/:id</name>
+      <kind>REST endpoint</kind>
+      <signature>Response: { success: boolean }</signature>
+      <path>apps/web/src/app/api/objectives/[id]/route.ts</path>
+    </interface>
+    <interface>
+      <name>ObjectiveComplexity Enum</name>
+      <kind>Prisma enum</kind>
+      <signature>enum ObjectiveComplexity { BASIC, INTERMEDIATE, ADVANCED }</signature>
+      <path>apps/web/prisma/schema.prisma</path>
+    </interface>
+    <interface>
+      <name>ObjectivePrerequisite Model</name>
+      <kind>Prisma model</kind>
+      <signature>model ObjectivePrerequisite { id String, objectiveId String, prerequisiteId String, strength Float @default(1.0), objective LearningObjective @relation("Objective"), prerequisite LearningObjective @relation("Prerequisite"), @@unique([objectiveId, prerequisiteId]) }</signature>
+      <path>apps/web/prisma/schema.prisma</path>
+    </interface>
+    <interface>
+      <name>extractLearningObjectives</name>
+      <kind>function signature</kind>
+      <signature>async function extractLearningObjectives(content: string, context: { courseName: string, lectureName: string }): Promise&lt;{ objectives: Array&lt;{ objective: string, complexity: "BASIC"|"INTERMEDIATE"|"ADVANCED", pageNumber?: number, isHighYield: boolean, prerequisites: string[], aamcCompetencies: string[] }&gt; }&gt;</signature>
+      <path>apps/web/src/lib/ai/chatmock-client.ts</path>
+    </interface>
+    <interface>
+      <name>ObjectiveEditDialog Component</name>
+      <kind>React component</kind>
+      <signature>function ObjectiveEditDialog(props: { objective: LearningObjective, onSave: (updated: Partial&lt;LearningObjective&gt;) => void, onDelete: () => void }): JSX.Element</signature>
+      <path>apps/web/src/components/library/objective-edit-dialog.tsx</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Testing framework deferred for MVP (manual testing only). When adding tests: Use Vitest for unit tests, Playwright for E2E. Test files co-located with source (*.test.ts pattern). Focus on API endpoint validation, ChatMock response parsing, medical terminology preservation, prerequisite matching logic</standards>
+    <locations>N/A for MVP - No test infrastructure yet. Future: apps/web/src/**/*.test.ts, apps/web/e2e/**/*.spec.ts</locations>
+    <ideas>
+      <test id="AC1" description="Test ChatMock API integration: Send sample lecture text, verify structured JSON response with objectives array">Maps to AC#1: System analyzes content using OpenAI API</test>
+      <test id="AC2" description="Test hierarchical structure: Verify objectives have correct parent-child relationships (main objective → sub-objectives)">Maps to AC#2: Objectives extracted and structured hierarchically</test>
+      <test id="AC3" description="Test complexity categorization: Verify ChatMock correctly assigns BASIC/INTERMEDIATE/ADVANCED levels based on content difficulty">Maps to AC#3: Categorized by complexity</test>
+      <test id="AC4" description="Test medical terminology preservation: Compare input text (cardiac conduction system) with extracted objective, verify exact medical terms preserved">Maps to AC#4: Medical terminology and context preserved</test>
+      <test id="AC5" description="Test edit/delete UI: Use Playwright to open ObjectiveEditDialog, modify objective text, verify PATCH request sent and database updated">Maps to AC#5: User can review and edit</test>
+      <test id="AC6" description="Test page number linking: Verify ContentChunk.pageNumber correctly extracted and stored in LearningObjective.pageNumber">Maps to AC#6: Linked to specific content sections</test>
+      <test id="AC7" description="Test prerequisite mapping: Verify fuzzy matching (80% threshold) correctly links prerequisite concepts to existing objectives">Maps to AC#7: Prerequisites and dependencies identified</test>
+      <test id="AC8" description="Test AAMC competency tagging: Verify ChatMock response includes valid competency codes (PC-1.2, KP-1.1), stored in aamcCompetencies array">Maps to AC#8: Integration with AAMC competencies</test>
+      <test id="Error" description="Test error handling: Simulate ChatMock timeout, invalid JSON response, verify ApiError thrown with user-friendly message">Error handling validation</test>
+      <test id="Integration" description="Test background processing: Trigger PDF upload, verify objective extraction runs automatically after OCR completes">End-to-end integration test</test>
+    </ideas>
+  </tests>
+</story-context>

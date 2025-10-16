@@ -1,0 +1,258 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.6</storyId>
+    <title>Basic Study Session Management</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-14</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-1.6.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>to start and track study sessions</iWant>
+    <soThat>I can monitor my study time and maintain consistent habits</soThat>
+    <tasks>
+      <task id="1" ac="1,4">Verify StudySession model in Prisma schema</task>
+      <task id="2" ac="1,3,4">Create session management API (start, pause, resume, complete)</task>
+      <task id="3" ac="2">Build session timer component with HH:MM:SS format</task>
+      <task id="4" ac="1,2,3">Create study session page with timer and controls</task>
+      <task id="5" ac="4,7">Build session summary page with notes functionality</task>
+      <task id="6" ac="5,8">Create study history API with date range and aggregation</task>
+      <task id="7" ac="5">Build study history page with filters and pagination</task>
+      <task id="8" ac="6">Create study analytics API (daily/weekly patterns, streak)</task>
+      <task id="9" ac="6">Build analytics dashboard component with charts</task>
+      <task id="10" ac="8">Integrate with content system (time per topic)</task>
+      <task id="11" ac="1,2,3">Implement session state management with Zustand + localStorage</task>
+      <task id="12" ac="6">Add session notifications (Pomodoro, breaks, completion)</task>
+      <task id="13" ac="all">Testing and validation (timer accuracy, persistence, analytics)</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">User can start timed study session with specific content</criterion>
+    <criterion id="2">Session timer displays current elapsed time</criterion>
+    <criterion id="3">User can pause, resume, or end study sessions</criterion>
+    <criterion id="4">Completed sessions saved with duration, content studied, and date</criterion>
+    <criterion id="5">Study history accessible showing past sessions and total study time</criterion>
+    <criterion id="6">Basic analytics showing daily/weekly study patterns</criterion>
+    <criterion id="7">Session notes can be added for reflection and insights</criterion>
+    <criterion id="8">Integration with content system showing time spent per topic</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - StudySession Model</title>
+        <section>Lines 926-947: Database Schema - StudySession</section>
+        <snippet>StudySession model with userId, missionId, startedAt, completedAt, durationMs, reviewsCompleted, newCardsStudied. Relations to User, Mission, Review[], ValidationResponse[]. Indexes on userId and startedAt for efficient queries.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Learning API Endpoints</title>
+        <section>Lines 1272-1294: API Endpoints - Learning Sessions</section>
+        <snippet>POST /api/learning/sessions (start session), POST /api/learning/sessions/:sessionId/review (submit card review), PATCH /api/learning/sessions/:sessionId/complete (complete session). Session stats returned on completion.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Analytics API Endpoints</title>
+        <section>Lines 1377-1413: API Endpoints - Analytics Dashboard</section>
+        <snippet>GET /api/analytics/dashboard?period=:period (today/week/month/all). Returns studyTime, cardsReviewed, retentionRate, strengths, weaknesses. Query params for date range filtering.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - State Management</title>
+        <section>Line 1716: Technology Stack - State Management</section>
+        <snippet>Zustand for client-side global state. Lightweight, TypeScript-first, minimal boilerplate. Use persist middleware for localStorage synchronization.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - UI Components - Study</title>
+        <section>Lines 1856-1858: UI Components Structure</section>
+        <snippet>components/study/ directory for study-related components: session-timer.tsx, session-controls.tsx, session-progress.tsx, session-summary.tsx. All components use glassmorphism design with NO gradients.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-specification.md</path>
+        <title>UX Specification - Design System</title>
+        <section>Design System Guidelines</section>
+        <snippet>CRITICAL: NEVER use gradients in any component. Glassmorphism aesthetic: bg-white/80 backdrop-blur-md, soft shadows, rounded corners, OKLCH colors. Inter font for body, DM Sans for headings. Min 44px touch targets for accessibility.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database-model</kind>
+        <symbol>StudySession</symbol>
+        <lines>227-248</lines>
+        <reason>StudySession model exists with all required fields except sessionNotes. Need to add optional sessionNotes String field for AC #7.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/db.ts</path>
+        <kind>utility</kind>
+        <symbol>prisma</symbol>
+        <lines>all</lines>
+        <reason>Prisma client singleton with query logging and connection pooling. Use for all database operations.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-response.ts</path>
+        <kind>utility</kind>
+        <symbol>successResponse, errorResponse</symbol>
+        <lines>all</lines>
+        <reason>Standardized API response utilities. All endpoints must use these for consistent response format.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-error.ts</path>
+        <kind>utility</kind>
+        <symbol>withErrorHandler, ApiError</symbol>
+        <lines>all</lines>
+        <reason>Error handling middleware with withErrorHandler wrapper for API routes. Standardizes error responses.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/validation.ts</path>
+        <kind>utility</kind>
+        <symbol>Zod schemas</symbol>
+        <lines>all</lines>
+        <reason>Zod validation schemas for request validation. Create schemas for session endpoints (start, pause, resume, complete, notes).</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/content/courses/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET, POST</symbol>
+        <lines>all</lines>
+        <reason>Example API route using successResponse/errorResponse pattern and withErrorHandler. Follow same structure for session APIs.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/ui/</path>
+        <kind>component-library</kind>
+        <symbol>shadcn/ui components</symbol>
+        <lines>N/A</lines>
+        <reason>Full shadcn/ui library available via npx shadcn@latest add. Install Button, Dialog, Form, Toast (Sonner), Tabs as needed. Always fetch latest docs via context7 MCP.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/layout.tsx</path>
+        <kind>layout</kind>
+        <symbol>RootLayout</symbol>
+        <lines>all</lines>
+        <reason>Global layout with SidebarProvider. Study pages integrate with existing sidebar navigation (Dashboard, Library, Study, Progress, Settings).</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <package name="next">15.5.5</package>
+        <package name="react">19.2.0</package>
+        <package name="typescript">5.9.3</package>
+        <package name="@prisma/client">6.17.1</package>
+        <package name="zod">4.1.12</package>
+        <package name="sonner">2.0.7 (Toast notifications)</package>
+        <package name="lucide-react">0.545.0 (Icons)</package>
+        <package name="next-themes">0.4.6</package>
+      </node>
+      <missing>
+        <package name="zustand">Required for session state management - pnpm add zustand</package>
+        <package name="date-fns">Required for date utilities - pnpm add date-fns</package>
+        <package name="recharts">Required for analytics charts - pnpm add recharts</package>
+      </missing>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Authentication deferred: Use hardcoded userId="user-1" (kevy@americano.dev) for all session operations.</constraint>
+    <constraint>All API routes must use Next.js 15 App Router with async params: async (req: Request, { params }: { params: Promise&lt;{ id: string }&gt; })</constraint>
+    <constraint>All API responses must use successResponse/errorResponse from lib/api-response.ts</constraint>
+    <constraint>All API routes must use withErrorHandler wrapper from lib/api-error.ts</constraint>
+    <constraint>All request validation must use Zod schemas from lib/validation.ts</constraint>
+    <constraint>CRITICAL: NEVER use gradients. Glassmorphism design only: bg-white/80 backdrop-blur-md, OKLCH colors.</constraint>
+    <constraint>Min 44px touch targets for all interactive elements (buttons, inputs).</constraint>
+    <constraint>Always fetch latest shadcn/ui and recharts docs via context7 MCP before implementing.</constraint>
+    <constraint>Timer accuracy: Use Date.now() for elapsed time calculation (not setInterval count). setInterval may drift on inactive tabs.</constraint>
+    <constraint>Session persistence: Zustand persist middleware to localStorage. Handle browser refresh by resuming active sessions.</constraint>
+    <constraint>Session recovery: Check localStorage on app load. If active session found, verify server status. If completed, clear local state.</constraint>
+    <constraint>Rate limiting deferred for MVP (single-user local development, no abuse risk).</constraint>
+    <constraint>Analytics caching: Consider caching daily/weekly aggregates for 1 hour (reduce database load). Use simple in-memory cache for MVP.</constraint>
+    <constraint>Chart library: Use recharts (React-friendly, lightweight). Install via pnpm add recharts. Chart types needed: Bar (daily), Line (weekly), Pie (topics).</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/learning/sessions</name>
+      <kind>REST endpoint</kind>
+      <signature>Body: { missionId?: string } → Response: { session: StudySession, nextCard?: Card }</signature>
+      <path>apps/web/src/app/api/learning/sessions/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/learning/sessions/:id</name>
+      <kind>REST endpoint</kind>
+      <signature>Params: { id: string } → Response: { session: StudySession }</signature>
+      <path>apps/web/src/app/api/learning/sessions/[id]/route.ts</path>
+    </interface>
+    <interface>
+      <name>PATCH /api/learning/sessions/:id/pause</name>
+      <kind>REST endpoint</kind>
+      <signature>Params: { id: string } → Response: { session: StudySession }</signature>
+      <path>apps/web/src/app/api/learning/sessions/[id]/pause/route.ts</path>
+    </interface>
+    <interface>
+      <name>PATCH /api/learning/sessions/:id/resume</name>
+      <kind>REST endpoint</kind>
+      <signature>Params: { id: string } → Response: { session: StudySession }</signature>
+      <path>apps/web/src/app/api/learning/sessions/[id]/resume/route.ts</path>
+    </interface>
+    <interface>
+      <name>PATCH /api/learning/sessions/:id/complete</name>
+      <kind>REST endpoint</kind>
+      <signature>Params: { id: string } → Response: { session: StudySession, stats: SessionStats }</signature>
+      <path>apps/web/src/app/api/learning/sessions/[id]/complete/route.ts</path>
+    </interface>
+    <interface>
+      <name>PATCH /api/learning/sessions/:id/notes</name>
+      <kind>REST endpoint</kind>
+      <signature>Body: { notes: string } → Response: { session: StudySession }</signature>
+      <path>apps/web/src/app/api/learning/sessions/[id]/notes/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/learning/sessions</name>
+      <kind>REST endpoint</kind>
+      <signature>Query: { startDate?, endDate?, limit?, offset? } → Response: { sessions: StudySession[], total: number }</signature>
+      <path>apps/web/src/app/api/learning/sessions/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/analytics/study-time</name>
+      <kind>REST endpoint</kind>
+      <signature>Query: { period: "today"|"week"|"month" } → Response: { dailyTime[], weeklyTime[], avgSessionLength, streak }</signature>
+      <path>apps/web/src/app/api/analytics/study-time/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/analytics/time-per-topic</name>
+      <kind>REST endpoint</kind>
+      <signature>Query: {} → Response: { byCourse[], byLecture[], byTag[] }</signature>
+      <path>apps/web/src/app/api/analytics/time-per-topic/route.ts</path>
+    </interface>
+    <interface>
+      <name>useSessionStore</name>
+      <kind>Zustand store</kind>
+      <signature>{ sessionId, startTime, pausedAt, pausedDuration, actions: { startSession, pauseSession, resumeSession, completeSession } }</signature>
+      <path>apps/web/src/store/use-session-store.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Manual testing for MVP. Add Vitest + Playwright when deploying to production. Test timer accuracy by comparing with stopwatch. Verify session persistence across page refresh. Test analytics calculations with sample data (create seed sessions). Test pagination with 100+ sessions (create seed data).</standards>
+    <locations>Manual testing workflow for MVP. Future: apps/web/__tests__/ for unit tests, apps/web/e2e/ for Playwright tests.</locations>
+    <ideas>
+      <idea ac="1">Test session start: Verify session created in database with correct userId, startedAt timestamp, and null completedAt.</idea>
+      <idea ac="2">Test timer accuracy: Compare timer display with stopwatch for 60 seconds. Verify no drift on inactive tabs.</idea>
+      <idea ac="3">Test pause/resume: Verify pausedDuration accumulates correctly. Check state transitions (active → paused → active → completed).</idea>
+      <idea ac="4">Test session completion: Verify durationMs calculated correctly (completedAt - startedAt - pausedDuration). Check session saved with all stats.</idea>
+      <idea ac="5">Test session history: Create 10 sessions, verify all returned. Test date range filter (last 7 days). Verify pagination with 100+ sessions.</idea>
+      <idea ac="6">Test analytics calculations: Seed 30 days of sessions. Verify daily totals sum correctly. Test streak calculation (consecutive days).</idea>
+      <idea ac="7">Test session notes: Save notes, refresh page, verify notes persisted. Test 1000-character limit.</idea>
+      <idea ac="8">Test time-per-topic: Create sessions linked to lectures/courses. Verify aggregation by course, lecture, tag.</idea>
+      <idea ac="all">Test session persistence: Start session, refresh browser, verify session resumes with correct elapsed time.</idea>
+      <idea ac="all">Test session recovery edge case: Session older than 24 hours auto-completes. Verify localStorage cleared and summary shown.</idea>
+    </ideas>
+  </tests>
+</story-context>

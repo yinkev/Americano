@@ -1,0 +1,297 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>5</storyId>
+    <title>Database Schema and API Foundation</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-14</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-1.5.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a developer</asA>
+    <iWant>robust database schema and API design</iWant>
+    <soThat>the platform can scale and support advanced features</soThat>
+    <tasks>
+      - Task 1: Initialize database and Prisma (AC: #1, #8)
+      - Task 2: Create vector indexes for semantic search (AC: #4)
+      - Task 3: Set up Prisma client singleton (AC: #1)
+      - Task 4: Create API response utilities (AC: #6)
+      - Task 5: Implement error handling middleware (AC: #6)
+      - Task 6: Set up request validation (AC: #6)
+      - Task 7: Implement rate limiting (AC: #7) - DEFERRED for MVP
+      - Task 8: Build User CRUD API (AC: #2, #3)
+      - Task 9: Build Course CRUD API (AC: #2)
+      - Task 10: Build Lecture CRUD API (AC: #2)
+      - Task 11: Optimize database queries (AC: #4)
+      - Task 12: Create API documentation (AC: #5)
+      - Task 13: Handle authentication (AC: #3) - DEFERRED for MVP
+      - Task 14: Create database seeding (AC: #1)
+      - Task 15: Testing and validation (All ACs)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Database schema supports users, content, courses, and relationships
+    2. RESTful API endpoints for all core operations (CRUD for users, content)
+    3. API authentication and authorization for all protected endpoints
+    4. Database indexes optimized for common query patterns
+    5. API documentation available for all endpoints
+    6. Error handling and validation for all API requests
+    7. Rate limiting implemented to prevent abuse
+    8. Database migration system for schema updates
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>Complete Prisma Schema</section>
+        <snippet>Complete database schema with 20+ models organized by subsystem (Content Processing, Learning Engine, Knowledge Graph, Understanding Validation, Behavioral Analytics). Includes pgvector extension for 3072-dimension embeddings, foreign key relationships with cascade deletes, and comprehensive indexes for performance optimization.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>Database Indexes Strategy</section>
+        <snippet>Performance-critical queries require: (1) pgvector indexing on ContentChunk.embedding and Concept.embedding using IVFFlat with lists=100 and lists=50 respectively, (2) Index on Card.nextReviewAt for fast mission generation, (3) Indexes on all timestamp fields with userId for user timeline queries, (4) Indexes on Course and Lecture hierarchies for content organization.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>API Architecture</section>
+        <snippet>RESTful Next.js API Routes organized by subsystem with consistent error response format: { success: true, data: {...} } for successes and { success: false, error: { code, message, details } } for errors. All endpoints under /api with subsystem-based nesting: /api/content/*, /api/learning/*, /api/graph/*, /api/validation/*, /api/analytics/*.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>Migration Strategy</section>
+        <snippet>Local development workflow: (1) Initialize Prisma: npx prisma init, (2) Create migration: npx prisma migrate dev --name init, (3) Enable pgvector extension manually: psql americano -c "CREATE EXTENSION IF NOT EXISTS vector;", (4) Create vector indexes from SQL file: psql americano -f prisma/vector-indexes.sql. Cloud migration: (1) Export: pg_dump americano > backup.sql, (2) Import to Supabase, (3) Run migrations: npx prisma migrate deploy.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic Breakdown</title>
+        <section>Epic 1, Story 1.5</section>
+        <snippet>Database Schema and API Foundation - Establish robust database schema with Prisma ORM, implement RESTful API endpoints for core operations (CRUD for users, courses, lectures), set up authentication and authorization, optimize database indexes for common query patterns, document all API endpoints, implement error handling and validation, configure rate limiting to prevent abuse, establish database migration system for schema updates.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements</title>
+        <section>NFR5: Maintainability</section>
+        <snippet>Modular architecture with clear subsystem boundaries, API-first design for frontend-backend separation, comprehensive error handling and validation patterns, TypeScript type safety throughout application, database migration system for schema evolution.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>apps/web/src/lib/db.ts</path>
+        <kind>database-client</kind>
+        <symbol>prisma</symbol>
+        <lines>1-20</lines>
+        <reason>Existing Prisma client singleton for database access - use this pattern for all database operations</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/storage/storage-provider.ts</path>
+        <kind>interface</kind>
+        <symbol>StorageProvider</symbol>
+        <lines>1-15</lines>
+        <reason>Storage abstraction pattern reference - similar pattern should be used for API response utilities</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/content/upload/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>POST</symbol>
+        <lines>all</lines>
+        <reason>Example API route implementation pattern - shows current approach to request handling and response formatting</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/content/courses/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET, POST</symbol>
+        <lines>all</lines>
+        <reason>Existing Course API endpoints - Story 1.5 should enhance/complete these with proper validation and error handling</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/content/courses/[id]/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>PATCH, DELETE</symbol>
+        <lines>all</lines>
+        <reason>Existing Course CRUD operations - should be enhanced with standardized error handling and validation per Story 1.5</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/content/lectures/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET</symbol>
+        <lines>all</lines>
+        <reason>Existing Lecture listing API - should be enhanced with pagination, filtering, and proper error handling</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/content/lectures/[id]/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET, PATCH, DELETE</symbol>
+        <lines>all</lines>
+        <reason>Existing Lecture CRUD operations - should be completed and enhanced with validation per Story 1.5 requirements</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database-schema</kind>
+        <symbol>schema</symbol>
+        <lines>all</lines>
+        <reason>Current Prisma schema - Story 1.5 should verify completeness against solution-architecture.md schema and add any missing models or indexes</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <core>
+          - next@latest (App Router, API Routes, Server Actions)
+          - react@latest (UI components)
+          - typescript@latest (Type safety)
+        </core>
+        <database>
+          - @prisma/client@latest (ORM client)
+          - prisma@latest (CLI and migrations)
+        </database>
+        <validation>
+          - zod@^3.25.76 (Schema validation)
+        </validation>
+        <ai>
+          - @google/generative-ai@latest (Gemini embeddings)
+          - openai@latest (ChatMock client)
+        </ai>
+        <storage>
+          - @supabase/supabase-js@latest (Cloud storage client)
+        </storage>
+        <ui>
+          - @radix-ui/* (shadcn/ui primitives)
+          - lucide-react@^0.545.0 (Icons)
+          - class-variance-authority@^0.7.1 (Component variants)
+          - tailwind-merge@^3.3.1 (Tailwind class merging)
+        </ui>
+      </node>
+      <python>
+        - paddleocr (OCR service)
+        - fastapi (API server for OCR)
+      </python>
+      <system>
+        - PostgreSQL 16+ with pgvector extension
+        - pnpm (package manager)
+      </system>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - Authentication DEFERRED for MVP: Use hardcoded userId = "user-1" for all API calls (single user local development)
+    - Rate limiting DEFERRED for MVP: No abuse risk with single user, implement when deploying for multiple users
+    - Use existing Prisma client singleton from apps/web/src/lib/db.ts
+    - All API responses must follow standard format: { success: true, data } or { success: false, error: { code, message, details } }
+    - Database schema MUST match complete Prisma schema from solution-architecture.md (lines 699-1114)
+    - pgvector indexes created via manual SQL after migration, not in Prisma schema
+    - Error codes must be consistent: VALIDATION_ERROR, NOT_FOUND, UNAUTHORIZED, FORBIDDEN, CONFLICT, INTERNAL_ERROR
+    - All foreign key columns must have indexes for query performance
+    - Synchronous processing acceptable for MVP (2-3 minute wait for PDF uploads is acceptable)
+    - Next.js 15 async params: All route params must be awaited before use
+    - Storage abstraction: Use existing StorageProvider pattern from apps/web/src/lib/storage/
+    - Environment-based configuration: STORAGE_MODE, DATABASE_URL, LOCAL_STORAGE_PATH
+    - Never edit Prisma migrations manually - always use prisma migrate dev
+    - TypeScript strict mode enabled - no any types without explicit justification
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/content/courses</name>
+      <kind>REST endpoint</kind>
+      <signature>Body: { name: string, code?: string, term?: string } → Response: { success: true, data: Course }</signature>
+      <path>apps/web/src/app/api/content/courses/route.ts</path>
+    </interface>
+    <interface>
+      <name>PATCH /api/content/courses/:id</name>
+      <kind>REST endpoint</kind>
+      <signature>Params: { id: string }, Body: { name?: string, code?: string, term?: string } → Response: { success: true, data: Course }</signature>
+      <path>apps/web/src/app/api/content/courses/[id]/route.ts</path>
+    </interface>
+    <interface>
+      <name>DELETE /api/content/courses/:id</name>
+      <kind>REST endpoint</kind>
+      <signature>Params: { id: string } → Response: { success: true, data: { deleted: true } }</signature>
+      <path>apps/web/src/app/api/content/courses/[id]/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/content/lectures</name>
+      <kind>REST endpoint</kind>
+      <signature>Query: { courseId?: string, status?: ProcessingStatus, limit?: number, offset?: number } → Response: { success: true, data: { lectures: Lecture[], total: number, hasMore: boolean } }</signature>
+      <path>apps/web/src/app/api/content/lectures/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/content/lectures/:id</name>
+      <kind>REST endpoint</kind>
+      <signature>Params: { id: string } → Response: { success: true, data: { lecture: Lecture, contentChunks: ContentChunk[], learningObjectives: LearningObjective[] } }</signature>
+      <path>apps/web/src/app/api/content/lectures/[id]/route.ts</path>
+    </interface>
+    <interface>
+      <name>PATCH /api/content/lectures/:id</name>
+      <kind>REST endpoint</kind>
+      <signature>Params: { id: string }, Body: { title?: string, weekNumber?: number, topicTags?: string[] } → Response: { success: true, data: Lecture }</signature>
+      <path>apps/web/src/app/api/content/lectures/[id]/route.ts</path>
+    </interface>
+    <interface>
+      <name>DELETE /api/content/lectures/:id</name>
+      <kind>REST endpoint</kind>
+      <signature>Params: { id: string } → Response: { success: true, data: { deleted: true } } (cascades to ContentChunks, LearningObjectives, deletes PDF from storage)</signature>
+      <path>apps/web/src/app/api/content/lectures/[id]/route.ts</path>
+    </interface>
+    <interface>
+      <name>PrismaClient</name>
+      <kind>Database client</kind>
+      <signature>Singleton instance with query logging in development, connection pooling, timeout configuration</signature>
+      <path>apps/web/src/lib/db.ts</path>
+    </interface>
+    <interface>
+      <name>successResponse&lt;T&gt;(data: T)</name>
+      <kind>Utility function</kind>
+      <signature>Returns: { success: true, data: T }</signature>
+      <path>apps/web/src/lib/api-response.ts (to be created)</path>
+    </interface>
+    <interface>
+      <name>errorResponse(code: string, message: string, details?: unknown)</name>
+      <kind>Utility function</kind>
+      <signature>Returns: { success: false, error: { code: string, message: string, details?: unknown } }</signature>
+      <path>apps/web/src/lib/api-response.ts (to be created)</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing deferred for MVP per solution-architecture.md. Manual testing via Postman or curl acceptable for single-user local development. Add Vitest + Playwright when deploying to production with multiple users. For MVP, verify: (1) All API endpoints return correct status codes and response format, (2) Database constraints (foreign keys, unique fields) are enforced, (3) Cascade deletes work correctly, (4) Validation errors return appropriate field-level details, (5) Query performance with sample data (100+ records).
+    </standards>
+
+    <locations>
+      Testing infrastructure not yet set up. When added, follow Next.js conventions:
+      - API route tests: apps/web/src/app/api/**/*.test.ts
+      - Utility tests: apps/web/src/lib/**/*.test.ts
+      - Integration tests: apps/web/tests/integration/
+      - E2E tests: apps/web/tests/e2e/
+    </locations>
+
+    <ideas>
+      AC #1 (Database schema): Verify User, Course, Lecture, ContentChunk, LearningObjective models exist with correct fields and relationships. Test foreign key constraints enforce data integrity. Verify cascade deletes work (delete Course → cascades to Lectures).
+
+      AC #2 (RESTful APIs): Test full CRUD cycle for Courses (create → read → update → delete). Test full CRUD cycle for Lectures (create → read → update → delete with cascade). Verify User profile GET/PATCH endpoints work correctly. Test pagination and filtering on GET /api/content/lectures.
+
+      AC #3 (Authentication): Verify all endpoints use hardcoded userId = "user-1" for MVP. Document that authentication will be added when deploying for multiple users.
+
+      AC #4 (Database indexes): Run \di in psql to verify indexes exist: idx_lectures_course_id, idx_lectures_processing_status, idx_lectures_uploaded_at, idx_cards_next_review_at, content_chunks_embedding_idx (pgvector), concepts_embedding_idx (pgvector). Test query performance with EXPLAIN ANALYZE on common queries.
+
+      AC #5 (API documentation): Verify API documentation exists in docs/api-endpoints.md or inline in code comments. Check that request/response schemas are documented for all endpoints.
+
+      AC #6 (Error handling and validation): Test invalid inputs return VALIDATION_ERROR with field details. Test missing resources return NOT_FOUND with 404 status. Test all error responses follow standard format: { success: false, error: { code, message, details } }. Test zod validation schemas catch invalid data types and required field violations.
+
+      AC #7 (Rate limiting): Document that rate limiting is deferred for MVP (single user, no abuse risk). Add when deploying for multiple users using Upstash Rate Limit or Vercel Edge Config.
+
+      AC #8 (Database migrations): Test migration system: Create test migration, rollback, re-apply. Verify prisma migrate dev creates migrations directory. Test cloud migration: pg_dump local → import to test database → verify data integrity.
+
+      General: Test API response format consistency across all endpoints. Test error handling for database connection failures. Test Prisma client singleton prevents connection pooling issues. Measure query performance with 100+ lectures to ensure pagination works correctly.
+    </ideas>
+  </tests>
+</story-context>

@@ -1,0 +1,290 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.4</storyId>
+    <title>Daily Mission Generation and Display</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-15</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-2.4.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>clear daily study missions telling me exactly what to accomplish</iWant>
+    <soThat>I can start studying immediately without planning time</soThat>
+    <tasks>
+      <task n="1">Design Mission Data Model and State Machine</task>
+      <task n="2">Implement Mission Generation Algorithm</task>
+      <task n="3">Build Mission Generation API Endpoints</task>
+      <task n="4">Create Mission Card Component for Dashboard</task>
+      <task n="5">Create Mission Preview Component</task>
+      <task n="6">Build Mission Detail Page</task>
+      <task n="7">Implement Mission-Study Session Integration</task>
+      <task n="8">Create Mission Settings and Preferences</task>
+      <task n="9">Implement Mission Feedback and Analytics</task>
+      <task n="10">Build Mission Notification System (Optional)</task>
+      <task n="11">Testing and Validation</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">Daily mission generated automatically based on prioritization algorithm</criterion>
+    <criterion id="AC2">Mission includes 2-4 specific learning objectives with time estimates</criterion>
+    <criterion id="AC3">Clear action items: "Master cardiac conduction system (20 min), Review muscle tissue types (15 min)"</criterion>
+    <criterion id="AC4">Mission complexity adapts to available study time and user capacity</criterion>
+    <criterion id="AC5">Progress tracking for each mission component with completion status</criterion>
+    <criterion id="AC6">Mission preview available night before for planning purposes</criterion>
+    <criterion id="AC7">User can request mission regeneration if circumstances change</criterion>
+    <criterion id="AC8">Completed missions contribute to performance tracking and algorithm improvement</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Subsystem 2: Learning Engine</title>
+        <section>Lines 523-548 - Mission Generation & Spaced Repetition</section>
+        <snippet>Mission Generator component responsible for daily mission creation logic. FSRS Scheduler for custom implementation. Mission prioritization algorithm: exam proximity + weakness + high-yield. Session composition: warm-up → peak → wind-down.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Database Schema</title>
+        <section>Lines 827-847 - Mission Model</section>
+        <snippet>Mission model with id, userId, date, status (PENDING/IN_PROGRESS/COMPLETED/SKIPPED), estimatedMinutes, completedAt, objectives array, reviewCardCount, newContentCount. Includes StudySession relations.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - API Architecture</title>
+        <section>Lines 1258-1270 - Learning Engine API Endpoints</section>
+        <snippet>API endpoints: GET /api/learning/mission/today, POST /api/learning/mission/generate. REST pattern with Next.js API routes, Zod validation, consistent error handling.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>PRD - FR2: Personal Learning GPS</title>
+        <section>Lines 77-81</section>
+        <snippet>Generate personalized daily study missions. Intelligent prioritization based on exam schedules, personal weaknesses, high-yield content. Time-boxed study sessions with clear actionable objectives.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic 2 - Story 2.4 Details</title>
+        <section>Lines 290-309</section>
+        <snippet>Daily mission generation and display. Prerequisites: Prioritization algorithm (Story 2.3), Learning objectives (Story 2.1). 8 acceptance criteria. Technical notes: Daily job scheduler, user preferences, mission state management with progress persistence.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic 2 - Success Criteria</title>
+        <section>Lines 407-410</section>
+        <snippet>90%+ of users complete daily missions regularly. 25%+ reduction in time spent deciding what to study. Measurable improvement in study efficiency metrics.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database-model</kind>
+        <symbol>Mission</symbol>
+        <lines>156-177</lines>
+        <reason>Mission model already defined in Prisma schema with all required fields. Use as-is for Story 2.4 implementation.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database-model</kind>
+        <symbol>LearningObjective</symbol>
+        <lines>107-128</lines>
+        <reason>LearningObjective model includes complexity, isHighYield, boardExamTags needed for mission prioritization. Completed in Story 2.1.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database-model</kind>
+        <symbol>StudySession</symbol>
+        <lines>255-279</lines>
+        <reason>StudySession model includes missionId FK for linking sessions to missions. Integration point for Task 7.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/learning/sessions/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>POST, GET</symbol>
+        <lines>1-157</lines>
+        <reason>Example API route pattern showing Next.js 15 async params, Zod validation, error handling with withErrorHandler, successResponse/errorResponse utilities, user resolution via X-User-Email header.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/dashboard/mission-card.tsx</path>
+        <kind>component</kind>
+        <symbol>MissionCard</symbol>
+        <lines>1-74</lines>
+        <reason>Existing placeholder mission card component with glassmorphism design, OKLCH colors, progress bar, next task preview. Enhance to display real mission data from API.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/store/use-session-store.ts</path>
+        <kind>zustand-store</kind>
+        <symbol>useSessionStore</symbol>
+        <lines>1-119</lines>
+        <reason>Example Zustand store with localStorage persistence showing pattern for mission store. State management for sessionId, timing, user tracking.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-response.ts</path>
+        <kind>utility</kind>
+        <symbol>successResponse, errorResponse</symbol>
+        <lines>referenced</lines>
+        <reason>Standardized API response helpers used across all endpoints. Ensures consistent response format.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-error.ts</path>
+        <kind>utility</kind>
+        <symbol>withErrorHandler</symbol>
+        <lines>referenced</lines>
+        <reason>Error handling middleware wrapper for API routes. Catches errors and returns standardized error responses.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <dependency>next</dependency>
+        <version>^15.5.5</version>
+        <reason>Latest Next.js 15 with App Router, API routes, Server Components</reason>
+      </node>
+      <node>
+        <dependency>react</dependency>
+        <version>^19.2.0</version>
+        <reason>React 19 for UI components</reason>
+      </node>
+      <node>
+        <dependency>@prisma/client</dependency>
+        <version>^6.17.1</version>
+        <reason>Prisma ORM for database operations</reason>
+      </node>
+      <node>
+        <dependency>zod</dependency>
+        <version>^4.1.12</version>
+        <reason>Schema validation for API requests</reason>
+      </node>
+      <node>
+        <dependency>zustand</dependency>
+        <version>^5.0.8</version>
+        <reason>State management for mission store (client-side)</reason>
+      </node>
+      <node>
+        <dependency>date-fns</dependency>
+        <version>^4.1.0</version>
+        <reason>Date utilities for mission generation, date comparisons</reason>
+      </node>
+      <node>
+        <dependency>lucide-react</dependency>
+        <version>^0.545.0</version>
+        <reason>Icons for mission card (Target, ChevronRight, etc.)</reason>
+      </node>
+      <node>
+        <dependency>tailwindcss</dependency>
+        <version>^4.1.14</version>
+        <reason>Styling with OKLCH colors, glassmorphism design</reason>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="1">Mission model schema is already complete in Prisma - use as-is with objectives as JSON String array</constraint>
+    <constraint id="2">Stories 2.2 (Performance Tracking) and 2.3 (Prioritization) are NOT yet implemented - use MVP prioritization logic for Story 2.4</constraint>
+    <constraint id="3">MVP prioritization algorithm: FSRS due dates (nextReviewAt) + high-yield objectives (isHighYield) + weak areas (heuristic based on review history)</constraint>
+    <constraint id="4">Authentication is deferred for MVP - use X-User-Email header (kevy@americano.dev default) to resolve user</constraint>
+    <constraint id="5">All API routes must use Next.js 15 pattern: async params, Zod validation, withErrorHandler wrapper, successResponse/errorResponse</constraint>
+    <constraint id="6">All components must follow design system: glassmorphism (bg-white/80 backdrop-blur-md), OKLCH colors, NO gradients, min 44px touch targets</constraint>
+    <constraint id="7">Mission generation should be fast (<500ms) - defer complex ML-based prioritization to Stories 2.2/2.3</constraint>
+    <constraint id="8">Time estimation algorithm: BASIC=12min, INTERMEDIATE=20min, ADVANCED=32min (base times), adjusted by mastery (if tracked)</constraint>
+    <constraint id="9">Mission preview (AC#6) should NOT save to database - generate on-the-fly for display only</constraint>
+    <constraint id="10">Mission regeneration (AC#7) should delete old mission and create new one - max 3 regenerations per day to prevent abuse</constraint>
+    <constraint id="11">Objective completion tracking is simplified for MVP - store completion status in mission.objectives JSON array</constraint>
+    <constraint id="12">Notification system (Task 10) is optional - defer unless trivial to implement</constraint>
+    <constraint id="13">Use Zustand with localStorage persistence for mission state (current mission, progress) on client side</constraint>
+    <constraint id="14">Mission feedback (Task 9) should collect difficultyRating, relevanceRating, timeAccuracy for future algorithm tuning</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/learning/mission/generate</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Body: { date?: Date, targetMinutes?: number, regenerate?: boolean }
+        Response: { success: true, data: { mission, objectives[] } }
+      </signature>
+      <path>apps/web/src/app/api/learning/mission/generate/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/learning/mission/today</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Query: none
+        Response: { success: true, data: { mission, objectives[], progress } }
+      </signature>
+      <path>apps/web/src/app/api/learning/mission/today/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/learning/mission/:id</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Params: id (mission ID)
+        Response: { success: true, data: { mission, objectives[], studySessions[] } }
+      </signature>
+      <path>apps/web/src/app/api/learning/mission/[id]/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/learning/mission/preview</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Query: date (YYYY-MM-DD, defaults to tomorrow)
+        Response: { success: true, data: { preview: true, objectives[], estimatedMinutes } }
+      </signature>
+      <path>apps/web/src/app/api/learning/mission/preview/route.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/learning/mission/:id/regenerate</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Params: id (mission ID)
+        Body: { targetMinutes?: number }
+        Response: { success: true, data: { mission, objectives[] } }
+      </signature>
+      <path>apps/web/src/app/api/learning/mission/[id]/regenerate/route.ts</path>
+    </interface>
+    <interface>
+      <name>useMissionStore</name>
+      <kind>Zustand store</kind>
+      <signature>
+        State: { currentMission, objectiveProgress, generateMission, regenerateMission, completeObjective }
+        Persistence: localStorage
+      </signature>
+      <path>apps/web/src/store/use-mission-store.ts</path>
+    </interface>
+    <interface>
+      <name>MissionCard</name>
+      <kind>React component</kind>
+      <signature>
+        Props: { mission, onStart, onRegenerate }
+        Displays: mission objectives, progress bar, next task preview
+      </signature>
+      <path>apps/web/src/components/dashboard/mission-card.tsx</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      For Story 2.4 MVP, manual testing is sufficient. TypeScript compilation (pnpm tsc) must pass with 0 errors. Mission generation logic should be tested with various scenarios: no objectives available, many objectives available, mixed complexity, different time targets. UI components should be manually tested for glassmorphism design compliance, OKLCH colors, NO gradients, min 44px touch targets, responsive layouts. Future testing: Unit tests for mission generation algorithm, integration tests for API endpoints, E2E tests for mission workflow.
+    </standards>
+    <locations>
+      No test files required for MVP. Future: apps/web/__tests__/mission-generator.test.ts, apps/web/__tests__/api/mission.test.ts, apps/web/e2e/mission-workflow.spec.ts
+    </locations>
+    <ideas>
+      <test ac="AC1">Test mission auto-generation on first app load - should create mission for today if none exists</test>
+      <test ac="AC2">Test mission contains 2-4 objectives with time estimates - verify objective count and time format</test>
+      <test ac="AC3">Test objective display format matches spec: "Master cardiac conduction system (20 min)"</test>
+      <test ac="AC4">Test mission complexity adapts to targetMinutes parameter - 30min should yield fewer objectives than 60min</test>
+      <test ac="AC5">Test objective completion tracking - mark objective complete, verify mission progress updates</test>
+      <test ac="AC6">Test mission preview generates without saving - verify preview=true flag, no database record created</test>
+      <test ac="AC7">Test mission regeneration - delete old mission, create new one, verify regeneration count limit (max 3/day)</test>
+      <test ac="AC8">Test mission completion updates performance tracking - verify feedback collection, analytics integration</test>
+      <test id="EDGE1">Test mission generation with NO objectives available - should handle gracefully with empty mission or fallback message</test>
+      <test id="EDGE2">Test mission generation with MANY objectives available (100+) - should select optimal 2-4 efficiently</test>
+      <test id="UI1">Test MissionCard component renders correctly - verify glassmorphism, OKLCH colors, NO gradients, min 44px touch targets</test>
+    </ideas>
+  </tests>
+</story-context>
