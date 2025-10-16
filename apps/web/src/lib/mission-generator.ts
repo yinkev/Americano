@@ -8,11 +8,11 @@
  * 3. Weak area heuristic (objectives with more review failures)
  */
 
-import { prisma } from '@/lib/db'
 import type { LearningObjective } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import type {
-  MissionObjective,
   MissionGenerationConstraints,
+  MissionObjective,
   PrioritizedObjective,
 } from '@/types/mission'
 
@@ -39,7 +39,7 @@ export class MissionGenerator {
   async generateDailyMission(
     userId: string,
     targetDate: Date = new Date(),
-    constraints: MissionGenerationConstraints = {}
+    constraints: MissionGenerationConstraints = {},
   ) {
     const {
       targetMinutes = DEFAULT_TARGET_MINUTES,
@@ -51,15 +51,12 @@ export class MissionGenerator {
     } = constraints
 
     // Step 1: Get prioritized objectives using MVP algorithm
-    const prioritizedObjectives = await this.getPrioritizedObjectives(
-      userId,
-      {
-        includeHighYield,
-        includeFSRSDue,
-        includeWeakAreas,
-        limit: 20, // Get top 20 candidates
-      }
-    )
+    const prioritizedObjectives = await this.getPrioritizedObjectives(userId, {
+      includeHighYield,
+      includeFSRSDue,
+      includeWeakAreas,
+      limit: 20, // Get top 20 candidates
+    })
 
     if (prioritizedObjectives.length === 0) {
       // No objectives available - return empty mission
@@ -72,23 +69,18 @@ export class MissionGenerator {
     }
 
     // Step 2: Compose mission with 2-4 objectives
-    const missionObjectives = this.composeMissionObjectives(
-      prioritizedObjectives,
-      {
-        targetMinutes,
-        minObjectives,
-        maxObjectives,
-      }
-    )
+    const missionObjectives = this.composeMissionObjectives(prioritizedObjectives, {
+      targetMinutes,
+      minObjectives,
+      maxObjectives,
+    })
 
     // Step 3: Calculate total time and counts
     const estimatedMinutes = this.estimateMissionDuration(missionObjectives)
-    const newContentCount = missionObjectives.filter(
-      (mo) => !mo.objective?.isHighYield
-    ).length
+    const newContentCount = missionObjectives.filter((mo) => !mo.objective?.isHighYield).length
     const reviewCardCount = await this.getReviewCardCount(
       userId,
-      missionObjectives.map((mo) => mo.objectiveId)
+      missionObjectives.map((mo) => mo.objectiveId),
     )
 
     return {
@@ -110,7 +102,7 @@ export class MissionGenerator {
       includeFSRSDue: boolean
       includeWeakAreas: boolean
       limit: number
-    }
+    },
   ): Promise<PrioritizedObjective[]> {
     // Get all learning objectives for user with related cards
     const objectives = await prisma.learningObjective.findMany({
@@ -155,14 +147,13 @@ export class MissionGenerator {
     // Calculate priority score for each objective
     const scored = objectives.map((obj: any) => {
       let score = 0
-      let reasons: string[] = []
+      const reasons: string[] = []
 
       // Factor 1: FSRS urgency (cards due soon = higher priority)
       if (options.includeFSRSDue && obj.cards.length > 0) {
         const cardsDueSoon = obj.cards.filter((card: any) => {
           if (!card.nextReviewAt) return false
-          const hoursUntilDue =
-            (card.nextReviewAt.getTime() - now.getTime()) / (1000 * 60 * 60)
+          const hoursUntilDue = (card.nextReviewAt.getTime() - now.getTime()) / (1000 * 60 * 60)
           return hoursUntilDue <= 24 && hoursUntilDue >= -24 // Due within ±24 hours
         })
 
@@ -234,7 +225,7 @@ export class MissionGenerator {
       targetMinutes: number
       minObjectives: number
       maxObjectives: number
-    }
+    },
   ): MissionObjective[] {
     const { targetMinutes, minObjectives, maxObjectives } = constraints
     const selected: MissionObjective[] = []
@@ -277,10 +268,7 @@ export class MissionGenerator {
       }
 
       // Stop if we've hit target time
-      if (
-        selected.length >= minObjectives &&
-        totalMinutes >= targetMinutes * 0.8
-      ) {
+      if (selected.length >= minObjectives && totalMinutes >= targetMinutes * 0.8) {
         break
       }
     }
@@ -336,10 +324,7 @@ export class MissionGenerator {
   /**
    * Get count of review cards for mission objectives
    */
-  private async getReviewCardCount(
-    userId: string,
-    objectiveIds: string[]
-  ): Promise<number> {
+  private async getReviewCardCount(userId: string, objectiveIds: string[]): Promise<number> {
     const count = await prisma.card.count({
       where: {
         objectiveId: {

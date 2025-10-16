@@ -10,25 +10,25 @@
  *            (recencyPenalty * 0.10)
  */
 
+import { differenceInDays } from 'date-fns'
 import { prisma } from '@/lib/db'
 import type {
+  ExamUrgencyData,
+  PrerequisiteData,
+  PrioritizedObjective,
   PriorityContext,
   PriorityExplanation,
   PriorityFactor,
   PriorityFilters,
-  PrioritizedObjective,
-  ExamUrgencyData,
-  PrerequisiteData,
 } from '@/types/prioritization'
-import { differenceInDays } from 'date-fns'
 
 // Priority factor weights (must sum to 1.0)
 const WEIGHTS = {
-  EXAM_URGENCY: 0.30,
+  EXAM_URGENCY: 0.3,
   WEAKNESS_SCORE: 0.25,
-  HIGH_YIELD: 0.20,
+  HIGH_YIELD: 0.2,
   PREREQUISITE: 0.15,
-  RECENCY: 0.10,
+  RECENCY: 0.1,
 } as const
 
 // Constants for calculations
@@ -48,9 +48,7 @@ export class PrioritizationEngine {
   /**
    * Calculate priority score for a single objective
    */
-  async calculatePriorityScore(
-    context: PriorityContext
-  ): Promise<number> {
+  async calculatePriorityScore(context: PriorityContext): Promise<number> {
     const { userId, objectiveId, today = new Date() } = context
 
     // Get objective with related data
@@ -112,7 +110,7 @@ export class PrioritizationEngine {
    */
   async getPrioritizedObjectives(
     userId: string,
-    filters: PriorityFilters = {}
+    filters: PriorityFilters = {},
   ): Promise<PrioritizedObjective[]> {
     const { courseId, minPriority = 0, excludeRecent = false, limit = 20 } = filters
     const today = new Date()
@@ -182,7 +180,7 @@ export class PrioritizationEngine {
           priorityScore,
           reason,
         }
-      })
+      }),
     )
 
     // Filter by minimum priority and sort
@@ -195,9 +193,7 @@ export class PrioritizationEngine {
   /**
    * Generate detailed explanation for an objective's priority
    */
-  async explainPrioritization(
-    context: PriorityContext
-  ): Promise<PriorityExplanation> {
+  async explainPrioritization(context: PriorityContext): Promise<PriorityExplanation> {
     const { userId, objectiveId, today = new Date() } = context
 
     // Get objective with related data
@@ -281,9 +277,7 @@ export class PrioritizationEngine {
     const priorityScore = factors.reduce((sum, f) => sum + f.contribution, 0)
 
     // Sort factors by contribution (highest first) for reasoning
-    const topFactors = [...factors]
-      .sort((a, b) => b.contribution - a.contribution)
-      .slice(0, 3)
+    const topFactors = [...factors].sort((a, b) => b.contribution - a.contribution).slice(0, 3)
 
     // Generate reasoning text
     const reasoning = `Priority ${(priorityScore * 100).toFixed(0)}% due to: ${topFactors
@@ -310,11 +304,7 @@ export class PrioritizationEngine {
    * Calculate exam urgency factor (0.0-1.0)
    * Formula: 1.0 - (daysUntilExam / MAX_DAYS_WINDOW)
    */
-  private async calculateExamUrgency(
-    userId: string,
-    objective: any,
-    today: Date
-  ): Promise<number> {
+  private async calculateExamUrgency(userId: string, objective: any, today: Date): Promise<number> {
     // Find upcoming exams for this objective's course
     const upcomingExams = await prisma.exam.findMany({
       where: {
@@ -346,7 +336,7 @@ export class PrioritizationEngine {
 
       const examTopics = exam.coverageTopics.map((t) => t.toLowerCase())
       const isRelevant = examTopics.some((topic) =>
-        objectiveTags.some((tag) => tag.includes(topic) || topic.includes(tag))
+        objectiveTags.some((tag) => tag.includes(topic) || topic.includes(tag)),
       )
 
       if (isRelevant) {
@@ -438,7 +428,7 @@ export class PrioritizationEngine {
     userId: string,
     objective: any,
     priorityScore: number,
-    today: Date
+    today: Date,
   ): Promise<string> {
     const reasons: string[] = []
 
@@ -481,7 +471,7 @@ export class PrioritizationEngine {
     userId: string,
     objective: any,
     urgency: number,
-    today: Date
+    today: Date,
   ): Promise<string> {
     if (urgency <= 0.3) {
       return 'No upcoming exams for this content'
@@ -616,9 +606,7 @@ export class PrioritizationEngine {
   /**
    * Determine visual priority indicator
    */
-  private getVisualIndicator(
-    score: number
-  ): '🔴 CRITICAL' | '🟠 HIGH' | '🟡 MEDIUM' | '🟢 LOW' {
+  private getVisualIndicator(score: number): '🔴 CRITICAL' | '🟠 HIGH' | '🟡 MEDIUM' | '🟢 LOW' {
     if (score >= PRIORITY_THRESHOLDS.CRITICAL) return '🔴 CRITICAL'
     if (score >= PRIORITY_THRESHOLDS.HIGH) return '🟠 HIGH'
     if (score >= PRIORITY_THRESHOLDS.MEDIUM) return '🟡 MEDIUM'

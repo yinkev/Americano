@@ -1,20 +1,20 @@
 // src/lib/storage/index.ts
 
-import { LocalStorageProvider } from './local-storage-provider';
-import { SupabaseStorageProvider } from './supabase-storage-provider';
-import type { StorageProvider } from './storage-provider';
+import { LocalStorageProvider } from './local-storage-provider'
+import type { StorageProvider } from './storage-provider'
+import { SupabaseStorageProvider } from './supabase-storage-provider'
 
 export function getStorageProvider(): StorageProvider {
-  const mode = process.env.STORAGE_MODE || 'local';
+  const mode = process.env.STORAGE_MODE || 'local'
 
   switch (mode) {
     case 'local':
-      return new LocalStorageProvider();
+      return new LocalStorageProvider()
     case 'cloud':
-      return new SupabaseStorageProvider();
+      return new SupabaseStorageProvider()
     default:
-      throw new Error(`Unknown storage mode: ${mode}`);
+      throw new Error(`Unknown storage mode: ${mode}`)
   }
 }
 
-export type { StorageProvider } from './storage-provider';
+export type { StorageProvider } from './storage-provider'

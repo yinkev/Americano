@@ -1,9 +1,9 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 interface UserState {
-  userEmail: string;
-  setUserEmail: (email: string) => void;
+  userEmail: string
+  setUserEmail: (email: string) => void
 }
 
 export const useUserStore = create<UserState>()(
@@ -14,6 +14,6 @@ export const useUserStore = create<UserState>()(
     }),
     {
       name: 'americano-user-storage',
-    }
-  )
-);
+    },
+  ),
+)

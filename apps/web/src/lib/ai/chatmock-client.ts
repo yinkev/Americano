@@ -1,31 +1,31 @@
-import OpenAI from 'openai';
+import OpenAI from 'openai'
 
-export type ObjectiveComplexity = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
+export type ObjectiveComplexity = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
 
 export interface ExtractedObjective {
-  objective: string;
-  complexity: ObjectiveComplexity;
-  pageStart?: number;
-  pageEnd?: number;
-  isHighYield: boolean;
-  prerequisites: string[];
-  boardExamTags: string[]; // USMLE Step 1/2/3, COMLEX Level 1/2/3, NBME subject tags
+  objective: string
+  complexity: ObjectiveComplexity
+  pageStart?: number
+  pageEnd?: number
+  isHighYield: boolean
+  prerequisites: string[]
+  boardExamTags: string[] // USMLE Step 1/2/3, COMLEX Level 1/2/3, NBME subject tags
 }
 
 export interface ExtractionResponse {
-  objectives: ExtractedObjective[];
-  error?: string;
+  objectives: ExtractedObjective[]
+  error?: string
 }
 
 export interface ExtractionContext {
-  courseName: string;
-  lectureName: string;
-  pageNumbers?: number[];
+  courseName: string
+  lectureName: string
+  pageNumbers?: number[]
 }
 
 export class ChatMockClient {
-  private client: OpenAI;
-  private readonly CHATMOCK_URL = process.env.CHATMOCK_URL || 'http://localhost:8801';
+  private client: OpenAI
+  private readonly CHATMOCK_URL = process.env.CHATMOCK_URL || 'http://localhost:8801'
 
   constructor() {
     this.client = new OpenAI({
@@ -33,7 +33,7 @@ export class ChatMockClient {
       apiKey: 'not-needed', // ChatMock doesn't require API key
       timeout: 120000, // 2 minute timeout
       maxRetries: 0, // Don't retry failed requests
-    });
+    })
   }
 
   /**
@@ -45,7 +45,7 @@ export class ChatMockClient {
    */
   async extractLearningObjectives(
     lectureText: string,
-    context: ExtractionContext
+    context: ExtractionContext,
   ): Promise<ExtractionResponse> {
     try {
       const systemPrompt = `You are a medical education expert analyzing lecture content for osteopathic medical students.
@@ -102,7 +102,7 @@ Return a JSON object with this exact structure:
       "boardExamTags": ["USMLE-Step1-Cardio", "COMLEX-L1-Anatomy", "NBME-Cardiovascular"]
     }
   ]
-}`;
+}`
 
       const userContent = `Context:
 - Course: ${context.courseName}
@@ -115,7 +115,7 @@ If explicit objectives are stated, extract them. If not, use your medical educat
 
 Lecture content:
 
-${lectureText}`;
+${lectureText}`
 
       const response = await this.client.chat.completions.create({
         model: 'gpt-5',
@@ -125,50 +125,50 @@ ${lectureText}`;
         ],
         temperature: 0.3, // Lower temperature for more consistent extraction
         max_tokens: 16000, // High limit to ensure comprehensive extraction never truncates
-      });
+      })
 
-      const content = response.choices[0]?.message?.content;
+      const content = response.choices[0]?.message?.content
 
       if (!content) {
-        throw new Error('No response from ChatMock');
+        throw new Error('No response from ChatMock')
       }
 
       // Strip thinking tags if present (GPT-5 reasoning tokens)
       // Extract JSON from response - handle both pure JSON and thinking-wrapped responses
-      let jsonContent = content;
+      let jsonContent = content
 
       // Remove <think>...</think> blocks
-      jsonContent = jsonContent.replace(/<think>[\s\S]*?<\/think>/gi, '');
+      jsonContent = jsonContent.replace(/<think>[\s\S]*?<\/think>/gi, '')
 
       // Extract JSON object (find first { to last })
-      const jsonStart = jsonContent.indexOf('{');
-      const jsonEnd = jsonContent.lastIndexOf('}') + 1;
+      const jsonStart = jsonContent.indexOf('{')
+      const jsonEnd = jsonContent.lastIndexOf('}') + 1
 
       if (jsonStart === -1 || jsonEnd === 0) {
-        throw new Error('No JSON object found in response');
+        throw new Error('No JSON object found in response')
       }
 
-      jsonContent = jsonContent.substring(jsonStart, jsonEnd).trim();
+      jsonContent = jsonContent.substring(jsonStart, jsonEnd).trim()
 
       // Parse JSON response
-      const parsed = JSON.parse(jsonContent);
+      const parsed = JSON.parse(jsonContent)
 
       // Validate complexity values
-      const validComplexities: ObjectiveComplexity[] = ['BASIC', 'INTERMEDIATE', 'ADVANCED'];
+      const validComplexities: ObjectiveComplexity[] = ['BASIC', 'INTERMEDIATE', 'ADVANCED']
       const objectives = (parsed.objectives || []).map((obj: any) => ({
         ...obj,
         complexity: validComplexities.includes(obj.complexity) ? obj.complexity : 'INTERMEDIATE',
         prerequisites: obj.prerequisites || [],
         boardExamTags: obj.boardExamTags || [],
-      }));
+      }))
 
-      return { objectives };
+      return { objectives }
     } catch (error) {
-      console.error('ChatMock extraction error:', error);
+      console.error('ChatMock extraction error:', error)
       return {
         objectives: [],
         error: error instanceof Error ? error.message : 'Unknown error',
-      };
+      }
     }
   }
 }

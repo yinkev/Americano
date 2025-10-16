@@ -1,18 +1,18 @@
-import { prisma } from '@/lib/db';
-import { ChatMockClient } from '@/lib/ai/chatmock-client';
+import { ChatMockClient } from '@/lib/ai/chatmock-client'
+import { prisma } from '@/lib/db'
 
 interface AnalysisResult {
-  success: boolean;
-  objectivesCount?: number;
-  error?: string;
+  success: boolean
+  objectivesCount?: number
+  error?: string
 }
 
 export class ContentAnalyzer {
-  private chatMockClient: ChatMockClient;
-  private readonly MAX_TEXT_LENGTH = 30000; // Max chars to send to GPT-5
+  private chatMockClient: ChatMockClient
+  private readonly MAX_TEXT_LENGTH = 30000 // Max chars to send to GPT-5
 
   constructor() {
-    this.chatMockClient = new ChatMockClient();
+    this.chatMockClient = new ChatMockClient()
   }
 
   /**
@@ -21,21 +21,21 @@ export class ContentAnalyzer {
    */
   private parsePageNumber(pageNumber: any): number | null {
     if (pageNumber === null || pageNumber === undefined) {
-      return null;
+      return null
     }
 
     // If it's already a number, return it
     if (typeof pageNumber === 'number') {
-      return pageNumber;
+      return pageNumber
     }
 
     // If it's a string, parse it as an integer
     if (typeof pageNumber === 'string') {
-      const parsed = parseInt(pageNumber, 10);
-      return isNaN(parsed) ? null : parsed;
+      const parsed = parseInt(pageNumber, 10)
+      return isNaN(parsed) ? null : parsed
     }
 
-    return null;
+    return null
   }
 
   /**
@@ -52,41 +52,41 @@ export class ContentAnalyzer {
             orderBy: { chunkIndex: 'asc' },
           },
         },
-      });
+      })
 
       if (!lecture) {
-        throw new Error(`Lecture ${lectureId} not found`);
+        throw new Error(`Lecture ${lectureId} not found`)
       }
 
       if (!lecture.contentChunks || lecture.contentChunks.length === 0) {
-        throw new Error('No content chunks found for lecture');
+        throw new Error('No content chunks found for lecture')
       }
 
       // Combine chunks into full text (truncate if too long)
       const fullText = lecture.contentChunks
         .map((chunk) => chunk.content)
         .join('\n\n')
-        .slice(0, this.MAX_TEXT_LENGTH);
+        .slice(0, this.MAX_TEXT_LENGTH)
 
       // Extract page numbers from content chunks
       const pageNumbers = lecture.contentChunks
         .map((chunk) => chunk.pageNumber)
-        .filter((page): page is number => page !== null);
+        .filter((page): page is number => page !== null)
 
       // Call ChatMock to extract objectives
       const result = await this.chatMockClient.extractLearningObjectives(fullText, {
         courseName: lecture.course.name,
         lectureName: lecture.title,
         pageNumbers: pageNumbers.length > 0 ? pageNumbers : undefined,
-      });
+      })
 
       if (result.error) {
-        console.warn('ChatMock extraction had error, skipping objectives:', result.error);
+        console.warn('ChatMock extraction had error, skipping objectives:', result.error)
         // Don't throw - continue processing without objectives
         return {
           success: true,
           objectivesCount: 0,
-        };
+        }
       }
 
       // Save objectives to database with prerequisite mapping
@@ -95,7 +95,7 @@ export class ContentAnalyzer {
         const existingObjectives = await prisma.learningObjective.findMany({
           where: { lectureId },
           select: { id: true, objective: true },
-        });
+        })
 
         // Create objectives and map prerequisites
         for (const extracted of result.objectives) {
@@ -111,7 +111,7 @@ export class ContentAnalyzer {
               boardExamTags: extracted.boardExamTags,
               extractedBy: 'gpt-5',
             },
-          });
+          })
 
           // Map prerequisites using fuzzy text matching (80% threshold)
           if (extracted.prerequisites && extracted.prerequisites.length > 0) {
@@ -123,11 +123,11 @@ export class ContentAnalyzer {
                     id: existing.id,
                     similarity: this.calculateSimilarity(
                       prereqText.toLowerCase(),
-                      existing.objective.toLowerCase()
+                      existing.objective.toLowerCase(),
                     ),
                   }))
                   .filter((match) => match.similarity >= 0.8)
-                  .sort((a, b) => b.similarity - a.similarity);
+                  .sort((a, b) => b.similarity - a.similarity)
 
                 return matches.length > 0
                   ? {
@@ -135,16 +135,16 @@ export class ContentAnalyzer {
                       prerequisiteId: matches[0].id,
                       strength: matches[0].similarity,
                     }
-                  : null;
+                  : null
               })
-              .filter((link): link is NonNullable<typeof link> => link !== null);
+              .filter((link): link is NonNullable<typeof link> => link !== null)
 
             // Create prerequisite relationships
             if (prerequisiteLinks.length > 0) {
               await prisma.objectivePrerequisite.createMany({
                 data: prerequisiteLinks,
                 skipDuplicates: true,
-              });
+              })
             }
           }
         }
@@ -153,15 +153,15 @@ export class ContentAnalyzer {
       return {
         success: true,
         objectivesCount: result.objectives?.length || 0,
-      };
+      }
     } catch (error) {
-      console.error('Content analysis error:', error);
+      console.error('Content analysis error:', error)
       // Don't fail the entire processing pipeline if objectives fail
       return {
         success: true, // Continue processing
         objectivesCount: 0,
         error: error instanceof Error ? error.message : 'Unknown error',
-      };
+      }
     }
   }
 
@@ -170,45 +170,45 @@ export class ContentAnalyzer {
    * Returns a value between 0 (no similarity) and 1 (identical)
    */
   private calculateSimilarity(str1: string, str2: string): number {
-    const longer = str1.length > str2.length ? str1 : str2;
-    const shorter = str1.length > str2.length ? str2 : str1;
+    const longer = str1.length > str2.length ? str1 : str2
+    const shorter = str1.length > str2.length ? str2 : str1
 
     if (longer.length === 0) {
-      return 1.0;
+      return 1.0
     }
 
-    const distance = this.levenshteinDistance(longer, shorter);
-    return (longer.length - distance) / longer.length;
+    const distance = this.levenshteinDistance(longer, shorter)
+    return (longer.length - distance) / longer.length
   }
 
   /**
    * Calculate Levenshtein distance between two strings
    */
   private levenshteinDistance(str1: string, str2: string): number {
-    const matrix: number[][] = [];
+    const matrix: number[][] = []
 
     for (let i = 0; i <= str2.length; i++) {
-      matrix[i] = [i];
+      matrix[i] = [i]
     }
 
     for (let j = 0; j <= str1.length; j++) {
-      matrix[0][j] = j;
+      matrix[0][j] = j
     }
 
     for (let i = 1; i <= str2.length; i++) {
       for (let j = 1; j <= str1.length; j++) {
         if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
+          matrix[i][j] = matrix[i - 1][j - 1]
         } else {
           matrix[i][j] = Math.min(
             matrix[i - 1][j - 1] + 1, // substitution
             matrix[i][j - 1] + 1, // insertion
-            matrix[i - 1][j] + 1 // deletion
-          );
+            matrix[i - 1][j] + 1, // deletion
+          )
         }
       }
     }
 
-    return matrix[str2.length][str1.length];
+    return matrix[str2.length][str1.length]
   }
 }

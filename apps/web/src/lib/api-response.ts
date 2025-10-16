@@ -2,20 +2,20 @@
 // Standardized response format for all API endpoints
 
 export type SuccessResponse<T> = {
-  success: true;
-  data: T;
-};
+  success: true
+  data: T
+}
 
 export type ErrorResponse = {
-  success: false;
+  success: false
   error: {
-    code: string;
-    message: string;
-    details?: unknown;
-  };
-};
+    code: string
+    message: string
+    details?: unknown
+  }
+}
 
-export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;
+export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse
 
 /**
  * Create a standardized success response
@@ -29,7 +29,7 @@ export function successResponse<T>(data: T): SuccessResponse<T> {
   return {
     success: true,
     data,
-  };
+  }
 }
 
 /**
@@ -45,24 +45,20 @@ export function successResponse<T>(data: T): SuccessResponse<T> {
  *   { status: 404 }
  * );
  */
-export function errorResponse(
-  code: string,
-  message: string,
-  details?: unknown
-): ErrorResponse {
+export function errorResponse(code: string, message: string, details?: unknown): ErrorResponse {
   const error: ErrorResponse = {
     success: false,
     error: {
       code,
       message,
     },
-  };
-
-  if (details) {
-    error.error.details = details;
   }
 
-  return error;
+  if (details) {
+    error.error.details = details
+  }
+
+  return error
 }
 
 /**
@@ -87,15 +83,12 @@ export const ErrorCodes = {
   CREATE_FAILED: 'CREATE_FAILED',
   UPDATE_FAILED: 'UPDATE_FAILED',
   DELETE_FAILED: 'DELETE_FAILED',
-} as const;
+} as const
 
 /**
  * Map HTTP status codes to error responses
  */
-export function getErrorResponseForStatus(
-  status: number,
-  message?: string
-): ErrorResponse {
+export function getErrorResponseForStatus(status: number, message?: string): ErrorResponse {
   const defaultMessages: Record<number, { code: string; message: string }> = {
     400: { code: ErrorCodes.BAD_REQUEST, message: 'Bad request' },
     401: { code: ErrorCodes.UNAUTHORIZED, message: 'Unauthorized' },
@@ -103,14 +96,11 @@ export function getErrorResponseForStatus(
     404: { code: ErrorCodes.NOT_FOUND, message: 'Resource not found' },
     409: { code: ErrorCodes.CONFLICT, message: 'Resource conflict' },
     500: { code: ErrorCodes.INTERNAL_ERROR, message: 'Internal server error' },
-  };
+  }
 
-  const defaultError = defaultMessages[status] || defaultMessages[500];
+  const defaultError = defaultMessages[status] || defaultMessages[500]
 
-  return errorResponse(
-    defaultError.code,
-    message || defaultError.message
-  );
+  return errorResponse(defaultError.code, message || defaultError.message)
 }
 
 /**
@@ -120,7 +110,7 @@ export class ApiError extends Error {
   constructor(
     message: string,
     public statusCode: number = 500,
-    public code: string = ErrorCodes.INTERNAL_ERROR
+    public code: string = ErrorCodes.INTERNAL_ERROR,
   ) {
     super(message)
     this.name = 'ApiError'
@@ -130,9 +120,7 @@ export class ApiError extends Error {
 /**
  * Higher-order function to wrap route handlers with error handling
  */
-export function withErrorHandler<T extends (...args: any[]) => Promise<Response>>(
-  handler: T
-): T {
+export function withErrorHandler<T extends (...args: any[]) => Promise<Response>>(handler: T): T {
   return (async (...args: Parameters<T>) => {
     try {
       return await handler(...args)
@@ -140,16 +128,13 @@ export function withErrorHandler<T extends (...args: any[]) => Promise<Response>
       console.error('API Error:', error)
 
       if (error instanceof ApiError) {
-        return Response.json(
-          errorResponse(error.code, error.message),
-          { status: error.statusCode }
-        )
+        return Response.json(errorResponse(error.code, error.message), { status: error.statusCode })
       }
 
       // Default to 500 for unexpected errors
       return Response.json(
         errorResponse(ErrorCodes.INTERNAL_ERROR, 'An unexpected error occurred'),
-        { status: 500 }
+        { status: 500 },
       )
     }
   }) as T

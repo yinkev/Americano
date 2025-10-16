@@ -33,11 +33,7 @@ export const updateExamSchema = z.object({
       message: 'Exam date must be in the future',
     })
     .optional(),
-  coverageTopics: z
-    .array(z.string().min(1).max(100))
-    .min(1)
-    .max(20)
-    .optional(),
+  coverageTopics: z.array(z.string().min(1).max(100)).min(1).max(20).optional(),
 })
 
 export type UpdateExamInput = z.infer<typeof updateExamSchema>
