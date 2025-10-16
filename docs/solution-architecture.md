@@ -601,29 +601,49 @@ Based on the 5 epics and functional requirements, the system is organized into 6
 ---
 
 #### **Subsystem 5: Behavioral Analytics & Personalization**
-**Epic Alignment:** Epic 5 (Behavioral Learning Twin - FR6, FR8, FR10)
+**Epic Alignment:** Epic 5 (Behavioral Learning Twin - FR6, FR8, FR10) + Story 2.6 (Mission Analytics)
 
 **Responsibilities:**
 - Learning pattern analysis (optimal study times, content preferences)
 - Predictive modeling (struggle detection, performance forecasting)
 - Cognitive load monitoring
 - Adaptive difficulty adjustment
+- **Mission performance analytics and correlation analysis (Story 2.6)**
+- **Automatic mission difficulty adaptation (Story 2.6)**
+- **Weekly/monthly insights generation (Story 2.6)**
 
 **Key Components:**
 - `BehavioralAnalyzer` (pattern detection from study history)
 - `PredictiveModel` (forecast struggles, optimal timing)
 - `CognitiveLoadMonitor` (detect stress, burnout signals)
 - `DifficultyAdapter` (adjust content complexity dynamically)
+- **`MissionAnalyticsEngine` (calculate completion rates, performance correlations, Pearson correlation)**
+- **`MissionAdaptationEngine` (detect patterns, generate recommendations, auto-adjust mission difficulty)**
+- **`MissionInsightsEngine` (generate weekly insights, detect anomalies, identify strengths/weaknesses)**
+- **`MissionSuccessCalculator` (weighted success score: completion 30% + performance 25% + time 20% + feedback 15% + streak 10%)**
 
 **Data Models:**
 - `BehavioralEvent` (timestamped study actions, performance)
 - `LearningPattern` (identified patterns: morning physiology struggles, etc.)
 - `PerformancePrediction` (forecasted struggle areas, confidence intervals)
+- **`MissionAnalytics` (daily/weekly/monthly aggregates: completion rate, time accuracy, success scores)**
+- **`MissionFeedback` (user ratings: helpfulness 1-5, relevance 1-5, pace feedback)**
+- **`MissionStreak` (gamification: current streak, longest streak, last completed date)**
+- **`MissionReview` (automated weekly/monthly reviews with summaries, highlights, insights)**
 
 **Analytics Queries:**
 - Time-series analysis of study performance
 - Cohort analysis (you vs. yourself over time)
 - Retention curve fitting
+- **Mission completion trends over 7/30/90 days**
+- **Statistical correlation between mission completion and mastery improvement (p-value, confidence intervals)**
+- **Pattern detection for adaptive difficulty (low/high completion, time inaccuracy, skipped types)**
+
+**Implementation Files (Story 2.6):**
+- `apps/web/src/lib/mission-analytics-engine.ts` (398 lines)
+- `apps/web/src/lib/mission-adaptation-engine.ts` (360 lines)
+- `apps/web/src/lib/mission-insights-engine.ts` (387 lines)
+- `apps/web/src/lib/mission-success-calculator.ts` (149 lines)
 
 ---
 

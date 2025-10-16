@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import { TimePerObjectiveChart } from '@/components/study/charts/time-per-objective-chart';
 import { SelfAssessmentRadarChart } from '@/components/study/charts/self-assessment-radar-chart';
 import { AccuracyTrendsChart } from '@/components/study/charts/accuracy-trends-chart';
+import { MissionFeedbackDialog } from '@/components/missions/feedback-dialog';
 
 interface ObjectiveCompletion {
   objectiveId: string;
@@ -70,6 +71,8 @@ export default function SessionSummaryPage({
   const [notes, setNotes] = useState('');
   const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -81,6 +84,14 @@ export default function SessionSummaryPage({
         const data = await response.json();
         setSession(data.data.session);
         setNotes(data.data.session.sessionNotes || '');
+
+        // Show feedback dialog if mission exists and feedback hasn't been submitted yet
+        if (data.data.session.mission && !feedbackSubmitted) {
+          // Delay showing the dialog slightly for better UX
+          setTimeout(() => {
+            setShowFeedbackDialog(true);
+          }, 1000);
+        }
       } catch (error) {
         console.error('Error fetching session:', error);
         toast.error('Failed to load session');
@@ -90,7 +101,7 @@ export default function SessionSummaryPage({
     };
 
     fetchSession();
-  }, [id]);
+  }, [id, feedbackSubmitted]);
 
   // Summary actions (8.3)
   const handleStartAnotherMission = async () => {
@@ -780,6 +791,19 @@ View full summary: ${window.location.href}`;
             </Button>
           </div>
         </div>
+
+        {/* Mission Feedback Dialog - Story 2.6 Task B */}
+        {session.mission && (
+          <MissionFeedbackDialog
+            missionId={session.mission.id}
+            open={showFeedbackDialog}
+            onOpenChange={setShowFeedbackDialog}
+            onSubmit={() => {
+              setFeedbackSubmitted(true);
+              setShowFeedbackDialog(false);
+            }}
+          />
+        )}
       </div>
     </div>
   );

@@ -33,6 +33,9 @@ model User {
   performanceTrackingEnabled Boolean @default(true)
   includeInAnalytics         Boolean @default(true)
 
+  // Story 2.6: Mission adaptation tracking
+  lastMissionAdaptation DateTime?  // Throttle adaptations to max 1/week
+
   // Relations
   courses       Course[]
   lectures      Lecture[]
@@ -44,6 +47,8 @@ model User {
   streak        Streak?
   achievements  Achievement[]
   studyGoals    StudyGoal[]
+  missionStreak MissionStreak?
+  missionReviews MissionReview[]
 
   @@map("users")
 }
@@ -212,9 +217,14 @@ model Mission {
   reviewCardCount Int      @default(0) // Number of cards due for review
   newContentCount Int      @default(0) // Number of new concepts to learn
 
+  // Story 2.6: Mission analytics fields
+  successScore      Float?         // 0.0-1.0 composite success metric (Task 9)
+  difficultyRating  Int?           // User feedback 1-5 (Task 4)
+
   // Relations
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   studySessions   StudySession[]
+  feedback        MissionFeedback[]
 
   @@index([userId])
   @@index([date])
@@ -670,4 +680,105 @@ enum GoalPeriod {
   DAILY
   WEEKLY
   MONTHLY
+}
+
+// ============================================
+// Story 2.6: Mission Performance Analytics
+// ============================================
+
+model MissionAnalytics {
+  id                    String          @id @default(cuid())
+  userId                String
+  date                  DateTime        @default(now())
+  period                AnalyticsPeriod // DAILY, WEEKLY, MONTHLY
+
+  missionsGenerated     Int
+  missionsCompleted     Int
+  missionsSkipped       Int
+  avgCompletionRate     Float           // 0.0-1.0
+  avgTimeAccuracy       Float           // 1.0 - abs(actual-estimated)/estimated
+  avgDifficultyRating   Float           // User feedback 1-5
+  avgSuccessScore       Float           // Composite mission success metric
+
+  createdAt             DateTime        @default(now())
+
+  @@unique([userId, date, period])
+  @@index([userId, date])
+  @@map("mission_analytics")
+}
+
+enum AnalyticsPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+model MissionFeedback {
+  id                      String      @id @default(cuid())
+  userId                  String
+  missionId               String
+
+  helpfulnessRating       Int         // 1-5: Did this mission help you learn?
+  relevanceScore          Int         // 1-5: Were objectives relevant to your goals?
+  paceRating              PaceRating
+  improvementSuggestions  String?     @db.Text
+
+  submittedAt             DateTime    @default(now())
+
+  // Relations
+  mission                 Mission     @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([missionId])
+  @@map("mission_feedback")
+}
+
+enum PaceRating {
+  TOO_SLOW
+  JUST_RIGHT
+  TOO_FAST
+}
+
+model MissionStreak {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  currentStreak     Int       @default(0)
+  longestStreak     Int       @default(0)
+  lastCompletedDate DateTime?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("mission_streaks")
+}
+
+model MissionReview {
+  id              String       @id @default(cuid())
+  userId          String
+  period          ReviewPeriod // WEEK, MONTH
+  startDate       DateTime
+  endDate         DateTime
+
+  summary         Json         // { missionsCompleted, totalTime, avgSuccessScore }
+  highlights      Json         // { longestStreak, bestPerformance, topObjectives[] }
+  insights        Json         // { patterns[], correlations[], improvements[] }
+  recommendations Json         // { actionItems[], adjustments[] }
+
+  generatedAt     DateTime     @default(now())
+
+  // Relations
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, period, startDate])
+  @@index([userId, generatedAt])
+  @@map("mission_reviews")
+}
+
+enum ReviewPeriod {
+  WEEK
+  MONTH
 }

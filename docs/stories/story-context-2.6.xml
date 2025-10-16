@@ -1,0 +1,393 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.6</storyId>
+    <title>Mission Performance Analytics and Adaptation</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-15</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-2.6.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a medical student</asA>
+    <iWant>to see how well I'm completing missions and how they're helping me learn</iWant>
+    <soThat>I can trust the system and see my improvement over time</soThat>
+    <tasks>
+### Task 1: Design Mission Analytics Data Models (AC: #1, #2, #8)
+- 1.1: Create `MissionAnalytics` aggregate model
+- 1.2: Extend `MissionFeedback` model (from Story 2.4)
+- 1.3: Create `MissionStreak` model
+- 1.4: Run Prisma migration for new models
+
+### Task 2: Implement Mission Analytics Calculation Engine (AC: #2, #3)
+- 2.1: Create `MissionAnalyticsEngine` class
+- 2.2: Implement completion rate calculation
+- 2.3: Implement performance correlation analysis
+- 2.4: Implement adaptive difficulty algorithm
+
+### Task 3: Build Mission Analytics Dashboard (AC: #1, #5, #6)
+- 3.1: Create `/analytics/missions` page
+- 3.2: Design `MissionCompletionChart` component
+- 3.3: Create `PerformanceCorrelationPanel` component
+- 3.4: Build `MissionEffectivenessTable` component
+- 3.5: Implement mission vs. free-study comparison
+
+### Task 4: Create Mission Feedback Collection UI (AC: #4)
+- 4.1: Design post-mission feedback dialog
+- 4.2: Create `/missions/:id/feedback` feedback page
+- 4.3: Implement feedback aggregation
+- 4.4: Display feedback summary to user
+
+### Task 5: Build Mission Adaptation Logic (AC: #3, #7)
+- 5.1: Create `MissionAdaptationEngine` class
+- 5.2: Implement completion pattern detection
+- 5.3: Implement automatic mission adjustments
+- 5.4: Create manual adaptation controls
+
+### Task 6: Implement Mission Recommendations System (AC: #7)
+- 6.1: Create GET `/api/missions/recommendations` endpoint
+- 6.2: Build recommendation generation logic
+- 6.3: Create `RecommendationsPanel` component
+- 6.4: Implement recommendation success tracking
+
+### Task 7: Build Weekly/Monthly Review System (AC: #5)
+- 7.1: Create automated review generation
+- 7.2: Design `MissionReview` model
+- 7.3: Create `/analytics/reviews` page
+- 7.4: Build `ReviewCard` component
+- 7.5: Add review notifications
+
+### Task 8: Create Mission History and Reflection Tools (AC: #8)
+- 8.1: Build `/missions/history` page
+- 8.2: Design `MissionTimeline` component
+- 8.3: Add reflection prompts
+- 8.4: Create mission comparison tool
+
+### Task 9: Implement Mission Success Scoring (AC: #2)
+- 9.1: Define mission success score formula
+- 9.2: Calculate mission success scores
+- 9.3: Display success scores in UI
+- 9.4: Create success benchmarks
+
+### Task 10: Build Mission Analytics API Endpoints (AC: All)
+- 10.1: Create GET `/api/analytics/missions/summary` endpoint
+- 10.2: Create GET `/api/analytics/missions/trends` endpoint
+- 10.3: Create GET `/api/analytics/missions/correlation` endpoint
+- 10.4: Create GET `/api/analytics/missions/recommendations` endpoint
+- 10.5: Implement Zod validation for all endpoints
+
+### Task 11: Create Mission Insights Engine (AC: #2, #5)
+- 11.1: Build `MissionInsightsEngine` class
+- 11.2: Implement insight generation algorithms
+- 11.3: Create `InsightsPanel` component on dashboard
+- 11.4: Add insight notifications
+
+### Task 12: Testing and Validation (AC: All)
+- 12.1: Test analytics calculations
+- 12.2: Test adaptation engine
+- 12.3: Test UI components with real data
+- 12.4: Test feedback loop
+- 12.5: Performance testing
+- 12.6: TypeScript compilation verification
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. Mission completion statistics displayed in personal dashboard
+2. Success metrics show correlation between mission completion and performance improvement
+3. Mission difficulty automatically adapts based on completion patterns
+4. User feedback system for mission relevance and effectiveness
+5. Weekly/monthly reviews showing mission impact on learning outcomes
+6. Comparative analysis of mission-guided vs. free-form study effectiveness
+7. Recommendations for optimal mission complexity and duration
+8. Historical mission data accessible for personal reflection
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <artifact>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>Subsystem 5: Behavioral Analytics</section>
+        <snippet>Lines 605-627: Behavioral Analytics subsystem responsibilities include learning pattern analysis, predictive modeling, cognitive load monitoring, and adaptive difficulty adjustment. Key components: BehavioralAnalyzer, PredictiveModel, CognitiveLoadMonitor, DifficultyAdapter.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>API Architecture: /api/analytics/* endpoints</section>
+        <snippet>Lines 1377-1413: Analytics API endpoints include behavioral event tracking, learning patterns, performance predictions, and dashboard analytics with period-based queries (today/week/month/all).</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR10: Progress Analytics and Performance Insights</section>
+        <snippet>Lines 127-131: Comprehensive learning analytics dashboard with retention curves, mastery progression, time investment analysis, comparative analytics (you vs. yourself over time), exam readiness prediction, and behavioral pattern insights.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements Document</title>
+        <section>Epic 2 Success Criteria</section>
+        <snippet>Lines 407-411: Success metrics include 90%+ mission completion rate, 25%+ reduction in "what to study" decision time, 85%+ user agreement that missions feel personalized, measurable correlation between mission completion and improved performance.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic Breakdown</title>
+        <section>Story 2.6 Details</section>
+        <snippet>Lines 335-355: Mission Performance Analytics provides feedback loop to validate and improve mission effectiveness through completion tracking, success metrics, adaptive difficulty, user feedback, weekly/monthly reviews, and recommendations system.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/stories/story-2.6.md</path>
+        <title>Story 2.6 - Complete Context Manifest</title>
+        <section>Context Manifest (Lines 308-910)</section>
+        <snippet>Comprehensive context already exists in story file including: current mission flow from Stories 2.4 & 2.5, performance tracking from Story 2.2, data models, analytics architecture, adaptive difficulty integration, feedback system, success score formula, weekly/monthly reviews, dashboard visualization requirements, API architecture, integration points, architectural constraints, and technical reference details.</snippet>
+      </artifact>
+    </docs>
+    <code>
+      <artifact>
+        <path>apps/web/src/lib/mission-generator.ts</path>
+        <kind>service</kind>
+        <symbol>MissionGenerator</symbol>
+        <lines>1-342</lines>
+        <reason>Existing mission generation algorithm from Story 2.4. Story 2.6 adds adaptive difficulty integration via User preferences (defaultMissionMinutes, missionDifficulty) to adjust complexity based on completion patterns.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/performance-calculator.ts</path>
+        <kind>service</kind>
+        <symbol>PerformanceCalculator</symbol>
+        <lines>1-757</lines>
+        <reason>Existing performance tracking engine from Story 2.2. Story 2.6 uses calculateSessionAnalytics() and updatePerformanceFromSession() for performance correlation analysis. Provides mastery progression data for success score calculation.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/types/mission.ts</path>
+        <kind>types</kind>
+        <symbol>MissionWithObjectives, MissionObjective</symbol>
+        <lines>1-77</lines>
+        <reason>TypeScript interfaces for mission data structures. Story 2.6 extends Mission model with successScore and difficultyRating fields for analytics.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database</kind>
+        <symbol>Mission, StudySession, LearningObjective, PerformanceMetric, Streak, Achievement</symbol>
+        <lines>199-673</lines>
+        <reason>Existing database models. Story 2.6 adds MissionAnalytics, MissionFeedback, MissionStreak, MissionReview models plus Mission.successScore/difficultyRating fields and User.lastMissionAdaptation field.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/db.ts</path>
+        <kind>utility</kind>
+        <symbol>prisma</symbol>
+        <lines>entire file</lines>
+        <reason>Prisma client singleton for database access. Used by all analytics engines for data queries and aggregations.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-response.ts</path>
+        <kind>utility</kind>
+        <symbol>successResponse, errorResponse, withErrorHandler</symbol>
+        <lines>entire file</lines>
+        <reason>Standardized API response utilities from Story 1.5. All analytics endpoints use these patterns for consistent error handling.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/dashboard/mission-card.tsx</path>
+        <kind>component</kind>
+        <symbol>MissionCard</symbol>
+        <lines>entire file</lines>
+        <reason>Existing mission display component from Story 2.4. Story 2.6 adds success score badge and streak indicator to this card.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/study/sessions/[id]/page.tsx</path>
+        <kind>page</kind>
+        <symbol>SessionSummaryPage</symbol>
+        <lines>entire file</lines>
+        <reason>Session summary page from Story 2.5. Story 2.6 extends with MissionFeedbackDialog (post-mission feedback collection) after session completion.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="node">
+        <package>@prisma/client</package>
+        <package>zod</package>
+        <package>recharts</package>
+        <package>date-fns</package>
+        <package>zustand</package>
+        <package>next</package>
+        <package>react</package>
+        <package>typescript</package>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+1. **Database Schema Changes**: Add 4 new models (MissionAnalytics, MissionFeedback, MissionStreak, MissionReview) with appropriate indexes. Extend Mission model with successScore/difficultyRating fields. Extend User model with lastMissionAdaptation field. Create Prisma migration.
+
+2. **Analytics Calculation Frequency**: Daily batch job at midnight for aggregate calculations (avoid real-time for MVP). Real-time updates only for critical metrics like streak. Nightly batch job documented but manual API trigger acceptable for MVP.
+
+3. **Adaptation Throttling**: Max 1 auto-adaptation per week to prevent oscillation. Enforce via User.lastMissionAdaptation timestamp check (must be >7 days ago before allowing new adaptation).
+
+4. **Statistical Significance**: Correlations require minimum 7 data points (7 days of missions). Display confidence levels (LOW/MEDIUM/HIGH) based on sample size and p-value. Show "insufficient data" message if &lt;7 missions.
+
+5. **Success Score Formula**: Implement exact weighted formula: completionRate(30%) + performanceImprovement(25%) + timeAccuracy(20%) + feedbackRating(15%) + streakBonus(10%). Each component normalized to 0.0-1.0 range. Final score 0.0-1.0. Detailed calculation logic provided in story Context Manifest lines 926-958.
+
+6. **Integration with Story 2.2**: Use existing PerformanceCalculator.calculateSessionAnalytics() for performance correlation data. DO NOT duplicate mastery calculation logic. Reference existing weakness scoring and mastery progression.
+
+7. **Integration with Story 2.4**: MissionGenerator.generateDailyMission() needs new parameters to accept adaptive User preferences (defaultMissionMinutes, missionDifficulty). Check User.lastMissionAdaptation before applying adaptations.
+
+8. **Integration with Story 2.5**: Extend existing ObjectiveCompletionDialog component with feedback prompts (Tasks 4.1-4.2). Session summary page triggers feedback dialog after mission completion.
+
+9. **Auth Deferral (MVP)**: Use hardcoded kevy@americano.dev via X-User-Email header for MVP (same pattern as existing endpoints). No auth middleware yet. Production requires Story 1.1 integration.
+
+10. **Next.js 15 Async Params**: All dynamic route params ([id], [period]) must be awaited before use. Follow existing patterns from Stories 1.2-2.5.
+
+11. **Error Handling**: Use withErrorHandler wrapper, ApiError class, ErrorCodes enum, successResponse/errorResponse from Story 1.5. Consistent error structure across all endpoints.
+
+12. **Zod Validation**: All API endpoints require Zod schemas for request validation (query params, body, path params). Follow existing patterns from Stories 2.2-2.5.
+
+13. **UI Design System**: Glassmorphism design (bg-white/80 backdrop-blur-md), OKLCH colors, NO gradients, min 44px touch targets, Inter/DM Sans fonts. Follow existing UX specification and AGENTS.MD guidelines.
+
+14. **Recharts Library**: Use existing Recharts ^2.x installation for all charts. Follow patterns from Story 2.2 (PerformanceTrendChart, MasteryDistributionChart). Line charts, scatterplots, bar charts for analytics dashboard.
+
+15. **Data Retention**: Mission analytics retained indefinitely. Raw mission data retention documented as "delete after 1 year (keep aggregates)" but NOT enforced in MVP. Production cleanup job deferred.
+
+16. **Privacy Controls**: All analytics are personal (single user MVP). No cross-user comparisons. Anonymized leaderboards deferred to v2.
+
+17. **Database Indexes**: Critical for time-series queries. Add composite indexes on (userId, date) for MissionAnalytics and MissionReview models. Index missionId on MissionFeedback.
+
+18. **Chart Data Sampling**: For &gt;90 days of data, sample data points to reduce API payload size. Client-side sampling acceptable for MVP.
+
+19. **Caching Strategy**: Cache analytics queries for 1 hour. Invalidate on new mission completion. Implementation optional for MVP (can optimize later).
+
+20. **Performance Targets**: Analytics queries &lt;1 second for 90 days of data, chart rendering &lt;500ms, recommendation generation &lt;300ms. Test with Task 12.5.
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>MissionAnalyticsEngine</name>
+      <kind>TypeScript class</kind>
+      <signature>
+class MissionAnalyticsEngine {
+  async calculateDailyAnalytics(userId: string, date?: Date): Promise&lt;MissionAnalytics&gt;
+  async calculateCompletionRate(userId: string, period: '7d' | '30d' | '90d' | 'all'): Promise&lt;number&gt;
+  async detectPerformanceCorrelation(userId: string): Promise&lt;{ correlationCoefficient, pValue, sampleSize, confidence, insight }&gt;
+  async recommendMissionAdjustments(userId: string): Promise&lt;{ adjustments, confidence }&gt;
+}
+      </signature>
+      <path>apps/web/src/lib/mission-analytics-engine.ts</path>
+    </interface>
+    <interface>
+      <name>MissionAdaptationEngine</name>
+      <kind>TypeScript class</kind>
+      <signature>
+class MissionAdaptationEngine {
+  async analyzeUserPatterns(userId: string): Promise&lt;{ patterns }&gt;
+  generateAdaptationRecommendations(patterns: any[]): { recommendations }
+  async applyAdaptations(userId: string, recommendations: any[]): Promise&lt;void&gt;
+}
+      </signature>
+      <path>apps/web/src/lib/mission-adaptation-engine.ts</path>
+    </interface>
+    <interface>
+      <name>MissionInsightsEngine</name>
+      <kind>TypeScript class</kind>
+      <signature>
+class MissionInsightsEngine {
+  async generateWeeklyInsights(userId: string): Promise&lt;Insights[]&gt;
+  async detectAnomalies(userId: string): Promise&lt;Anomalies[]&gt;
+  async identifyStrengths(userId: string): Promise&lt;Strengths[]&gt;
+  async identifyImprovementAreas(userId: string): Promise&lt;Improvements[]&gt;
+}
+      </signature>
+      <path>apps/web/src/lib/mission-insights-engine.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/analytics/missions/summary</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/analytics/missions/summary?period=7d|30d|90d|all
+Response: { completionRate, streak, successScore, missions, insights[] }</signature>
+      <path>apps/web/src/app/api/analytics/missions/summary/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/analytics/missions/trends</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/analytics/missions/trends?metric=completion_rate|avg_duration|success_score&amp;granularity=daily|weekly|monthly
+Response: { data: [{date, value}], metadata }</signature>
+      <path>apps/web/src/app/api/analytics/missions/trends/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/analytics/missions/correlation</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/analytics/missions/correlation
+Response: { correlationCoefficient, pValue, sampleSize, confidence, dataPoints[], insight }</signature>
+      <path>apps/web/src/app/api/analytics/missions/correlation/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/analytics/missions/recommendations</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/analytics/missions/recommendations
+Response: { recommendations[], rationale }</signature>
+      <path>apps/web/src/app/api/analytics/missions/recommendations/route.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/missions/:id/feedback</name>
+      <kind>REST endpoint</kind>
+      <signature>POST /api/missions/:id/feedback
+Body: { helpfulnessRating: 1-5, relevanceScore: 1-5, paceRating: TOO_SLOW|JUST_RIGHT|TOO_FAST, improvementSuggestions? }
+Response: { success, message, aggregatedFeedback }</signature>
+      <path>apps/web/src/app/api/missions/[id]/feedback/route.ts</path>
+    </interface>
+    <interface>
+      <name>MissionCompletionChart</name>
+      <kind>React component</kind>
+      <signature>Recharts-based line/bar chart component. Props: { data, period, metric }. Displays mission completion trends over time with filters.</signature>
+      <path>apps/web/src/components/analytics/mission-completion-chart.tsx</path>
+    </interface>
+    <interface>
+      <name>PerformanceCorrelationPanel</name>
+      <kind>React component</kind>
+      <signature>Recharts scatterplot component. Props: { correlationData }. Displays mission completion rate vs. mastery improvement with trendline and R² value.</signature>
+      <path>apps/web/src/components/analytics/performance-correlation-panel.tsx</path>
+    </interface>
+    <interface>
+      <name>MissionEffectivenessTable</name>
+      <kind>React component</kind>
+      <signature>Sortable table component. Props: { data, onSort, onExport }. Columns: Week, Missions completed, Avg difficulty, Objectives mastered, Study time, Improvement %. Export to CSV functionality.</signature>
+      <path>apps/web/src/components/analytics/mission-effectiveness-table.tsx</path>
+    </interface>
+    <interface>
+      <name>RecommendationsPanel</name>
+      <kind>React component</kind>
+      <signature>Recommendations display component. Props: { recommendations[], onApply, onDismiss }. Shows top 3-5 personalized mission recommendations with action buttons.</signature>
+      <path>apps/web/src/components/analytics/mission-recommendations-panel.tsx</path>
+    </interface>
+    <interface>
+      <name>FeedbackDialog</name>
+      <kind>React component</kind>
+      <signature>Post-mission feedback dialog. Props: { missionId, onSubmit, onClose }. Collects helpfulness rating (1-5 stars), relevance score (1-5 stars), pace rating (3 options), improvement suggestions (optional text).</signature>
+      <path>apps/web/src/components/missions/feedback-dialog.tsx</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+Manual testing required for MVP (user reviews implementation). TypeScript compilation verification (pnpm tsc) must pass with 0 errors. Unit tests and E2E tests documented for future implementation (Story 2.6.1). Test analytics calculations for accuracy (completion rate, correlation coefficient, success score formula). Test adaptation triggers at correct thresholds (70% low, 90% high). Test UI components with real data (30-90 days of mission history). Performance testing for analytics queries (&lt;1s for 90 days), chart rendering (&lt;500ms), recommendation generation (&lt;300ms).
+    </standards>
+    <locations>
+- apps/web/src/lib/__tests__/ (for engine unit tests - future)
+- apps/web/src/components/__tests__/ (for component tests - future)
+- apps/web/__tests__/e2e/ (for E2E tests - future)
+    </locations>
+    <ideas>
+AC#1: Test mission completion statistics display on dashboard (streak, completion rate, success score visible)
+AC#2: Test performance correlation calculation (Pearson coefficient, p-value, confidence levels with 7+ missions)
+AC#2: Test success score formula accuracy (verify all 5 components: completion 30%, improvement 25%, time 20%, feedback 15%, streak 10%)
+AC#3: Test adaptive difficulty triggers (simulate 7 days &lt;70% completion → verify complexity reduced)
+AC#3: Test adaptation throttling (verify max 1 adaptation per week enforcement via User.lastMissionAdaptation)
+AC#4: Test feedback collection flow (post-mission dialog → API submission → aggregation → display summary)
+AC#5: Test weekly/monthly review generation (aggregate stats, highlights, insights, recommendations)
+AC#6: Test mission vs. free-study comparison (track study sessions with/without missions, compare outcomes)
+AC#7: Test recommendation generation (optimal duration, complexity, timing suggestions with rationale)
+AC#8: Test mission history timeline view (filter by completion status, date range, difficulty; sort by date/success score)
+Edge case: Test with 0 missions completed (should show "insufficient data" message gracefully)
+Edge case: Test with &lt;7 missions (correlation should show LOW confidence or "not enough data")
+Performance: Test analytics queries with 90 days of data (&lt;1 second response time)
+Performance: Test chart rendering with large datasets (&lt;500ms render time)
+    </ideas>
+  </tests>
+</story-context>

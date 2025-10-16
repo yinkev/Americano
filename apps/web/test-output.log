@@ -1,0 +1,1270 @@
+
+> @americano/web@0.1.0 test /Users/kyin/Projects/Americano/apps/web
+> jest
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/kyin/package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /Users/kyin/Projects/Americano/apps/web/pnpm-lock.yaml
+
+FAIL src/__tests__/components/review-card.test.tsx
+  ● ReviewCard › Basic Rendering › should display date range correctly
+
+    TestingLibraryElementError: Unable to find an element with the text: /Oct 9 - Oct 15, 2025/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-xl border text-card-foreground shadow bg-white/80 backdrop-blur-md border-white/20"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-start justify-between"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex-1"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center gap-2 mb-2"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-calendar h-4 w-4 text-[oklch(0.6_0.15_250)]"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"24"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"24"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M8 2v4"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M16 2v4"[39m
+                    [36m/>[39m
+                    [36m<rect[39m
+                      [33mheight[39m=[32m"18"[39m
+                      [33mrx[39m=[32m"2"[39m
+                      [33mwidth[39m=[32m"18"[39m
+                      [33mx[39m=[32m"3"[39m
+                      [33my[39m=[32m"4"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M3 10h18"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"font-semibold tracking-tight text-lg"[39m
+                  [36m>[39m
+                    [0mWeekly[0m
+                    [0m Review[0m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-700 border-green-500/20"[39m
+                  [36m>[39m
+                    [0mEXCELLENT[0m
+                  [36m</div>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-sm text-muted-foreground"[39m
+                [36m>[39m
+                  [0mOct 8 - Oct 14, 2025[0m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 ml-2"[39m
+                [33mdata-slot[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-chevron-down h-4 w-4"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-6 pt-0"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"grid grid-cols-2 md:grid-cols-4 gap-4 mb-4"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"space-y-1"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-sm text-muted-foreground"[39m
+                [36m>[39m
+                  [0mCompleted[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-2xl font-bold text-[oklch(0.5_0.15_250)]"[39m
+                [36m>[39m
+                  [0m6[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+                [36m>[39m
+                  [0mmissions[0m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"space-y-1"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-sm text-muted-foreground"[39m
+                [36m>[39m
+                  [0mCompletion Rate[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-2xl font-bold text-green-600"[39m
+                [36m>[39m
+                  [0m86[0m
+                  [0m%[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+                [36m>[39m
+                  [0mOptimal range[0m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"space-y-1"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-sm text-muted-foreground"[39m
+                [36m>[39m
+                  [0mStudy Time[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-2xl font-bold text-[oklch(0.5_0.15_250)]"[39m
+                [36m>[39m
+                  [0m6[0m
+                  [0mh[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+                [36m>[39m
+                  [0m360[0m
+                  [0m min total[0m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"space-y-1"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-sm text-muted-foreground"[39m
+                [36m>[39m
+                  [0mStreak[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-2xl font-bold text-[oklch(0.5_0.15_250)]"[39m
+                [36m>[39m
+                  [0m5[0m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+                [36m>[39m
+                  [0mdays[0m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</body>[39m
+
+      103 |
+      104 |       // Check for formatted date range (format may vary by locale)
+    > 105 |       expect(screen.getByText(/Oct 9 - Oct 15, 2025/i)).toBeInTheDocument();
+          |                     ^
+      106 |     });
+      107 |
+      108 |     it('should display success rating badge', () => {
+
+      at Object.getElementError (node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (src/__tests__/components/review-card.test.tsx:105:21)
+
+  ● ReviewCard › Summary Stats Display › should display completion rate with correct color
+
+    expect(element).toHaveClass("text-blue-600")
+
+    Expected the element to have class:
+      text-blue-600
+    Received:
+      text-2xl font-bold text-green-600
+
+      128 |       const completionRate = screen.getByText('86%'); // 85.7% rounded
+      129 |       expect(completionRate).toBeInTheDocument();
+    > 130 |       expect(completionRate).toHaveClass('text-blue-600'); // 70-90% range
+          |                              ^
+      131 |       expect(screen.getByText('Optimal range')).toBeInTheDocument();
+      132 |     });
+      133 |
+
+      at Object.toHaveClass (src/__tests__/components/review-card.test.tsx:130:30)
+
+  ● ReviewCard › Completion Rate Colors › should show green for rate >= 0.85
+
+    expect(element).toHaveClass("text-blue-600")
+
+    Expected the element to have class:
+      text-blue-600
+    Received:
+      text-2xl font-bold text-green-600
+
+      190 |
+      191 |       const completionRate = screen.getByText('86%');
+    > 192 |       expect(completionRate).toHaveClass('text-blue-600'); // Actually 0.857, in 0.7-0.9 range
+          |                              ^
+      193 |     });
+      194 |
+      195 |     it('should show yellow for rate 0.5-0.69', () => {
+
+      at Object.toHaveClass (src/__tests__/components/review-card.test.tsx:192:30)
+
+  ● ReviewCard › Accessibility › should have semantic HTML structure
+
+    expect(received).toBeInTheDocument()
+
+    received value must be an HTMLElement or an SVGElement.
+    Received has value: null
+
+      537 |
+      538 |       // Check for proper card structure
+    > 539 |       expect(container.querySelector('[class*="Card"]')).toBeInTheDocument();
+          |                                                          ^
+      540 |     });
+      541 |   });
+      542 |
+
+      at __EXTERNAL_MATCHER_TRAP__ (node_modules/.pnpm/expect@30.2.0/node_modules/expect/build/index.js:2240:22)
+      at Object.throwingMatcher [as toBeInTheDocument] (node_modules/.pnpm/expect@30.2.0/node_modules/expect/build/index.js:2241:6)
+      at Object.toBeInTheDocument (src/__tests__/components/review-card.test.tsx:539:58)
+
+FAIL src/__tests__/lib/mission-analytics.test.ts
+  ● MissionAnalyticsEngine › calculateDailyAnalytics › should calculate daily analytics for completed missions
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      30 |           id: '1',
+      31 |           userId: 'user1',
+    > 32 |           status: MissionStatus.COMPLETED,
+         |                                 ^
+      33 |           objectives: [
+      34 |             { objectiveId: 'obj1', completed: true },
+      35 |             { objectiveId: 'obj2', completed: true },
+
+      at Object.COMPLETED (src/__tests__/lib/mission-analytics.test.ts:32:33)
+
+  ● MissionAnalyticsEngine › calculateDailyAnalytics › should handle edge case: all missions skipped
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      109 |         {
+      110 |           id: '1',
+    > 111 |           status: MissionStatus.SKIPPED,
+          |                                 ^
+      112 |           objectives: [],
+      113 |           estimatedMinutes: 60,
+      114 |           actualMinutes: null,
+
+      at Object.SKIPPED (src/__tests__/lib/mission-analytics.test.ts:111:33)
+
+  ● MissionAnalyticsEngine › calculateDailyAnalytics › should handle edge case: zero time for accuracy calculation
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      133 |         {
+      134 |           id: '1',
+    > 135 |           status: MissionStatus.COMPLETED,
+          |                                 ^
+      136 |           objectives: [{ objectiveId: 'obj1', completed: true }],
+      137 |           estimatedMinutes: 0, // Edge case: zero estimated time
+      138 |           actualMinutes: 5,
+
+      at Object.COMPLETED (src/__tests__/lib/mission-analytics.test.ts:135:33)
+
+  ● MissionAnalyticsEngine › calculateCompletionRate › should calculate 7-day completion rate correctly
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      156 |     it('should calculate 7-day completion rate correctly', async () => {
+      157 |       const mockMissions = [
+    > 158 |         { id: '1', status: MissionStatus.COMPLETED },
+          |                                          ^
+      159 |         { id: '2', status: MissionStatus.COMPLETED },
+      160 |         { id: '3', status: MissionStatus.COMPLETED },
+      161 |         { id: '4', status: MissionStatus.COMPLETED },
+
+      at Object.COMPLETED (src/__tests__/lib/mission-analytics.test.ts:158:42)
+
+  ● MissionAnalyticsEngine › calculateCompletionRate › should calculate 30-day completion rate correctly
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      176 |       const mockMissions = Array.from({ length: 30 }, (_, i) => ({
+      177 |         id: `mission-${i}`,
+    > 178 |         status: i < 25 ? MissionStatus.COMPLETED : MissionStatus.SKIPPED,
+          |                                        ^
+      179 |       }));
+      180 |
+      181 |       (prisma.mission.findMany as jest.Mock).mockResolvedValue(mockMissions);
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:178:40)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:176:34)
+
+  ● MissionAnalyticsEngine › calculateCompletionRate › should calculate 90-day completion rate correctly
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      190 |       const mockMissions = Array.from({ length: 90 }, (_, i) => ({
+      191 |         id: `mission-${i}`,
+    > 192 |         status: i < 81 ? MissionStatus.COMPLETED : MissionStatus.SKIPPED,
+          |                                        ^
+      193 |       }));
+      194 |
+      195 |       (prisma.mission.findMany as jest.Mock).mockResolvedValue(mockMissions);
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:192:40)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:190:34)
+
+  ● MissionAnalyticsEngine › calculateCompletionRate › should calculate all-time completion rate
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      204 |       const mockMissions = Array.from({ length: 100 }, (_, i) => ({
+      205 |         id: `mission-${i}`,
+    > 206 |         status: i < 75 ? MissionStatus.COMPLETED : MissionStatus.SKIPPED,
+          |                                        ^
+      207 |       }));
+      208 |
+      209 |       (prisma.mission.findMany as jest.Mock).mockResolvedValue(mockMissions);
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:206:40)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:204:34)
+
+  ● MissionAnalyticsEngine › detectPerformanceCorrelation › should calculate positive Pearson correlation
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      230 |         id: `mission-${i}`,
+      231 |         userId: 'user1',
+    > 232 |         status: MissionStatus.COMPLETED,
+          |                               ^
+      233 |         objectives: [
+      234 |           { objectiveId: 'obj1', completed: true },
+      235 |           { objectiveId: 'obj2', completed: i > 5 }, // Higher completion later
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:232:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:229:34)
+
+  ● MissionAnalyticsEngine › detectPerformanceCorrelation › should return low confidence for insufficient data
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      259 |       const mockMissions = Array.from({ length: 5 }, (_, i) => ({
+      260 |         id: `mission-${i}`,
+    > 261 |         status: MissionStatus.COMPLETED,
+          |                               ^
+      262 |         objectives: [{ objectiveId: 'obj1', completed: true }],
+      263 |         studySessions: [{ reviews: [{ rating: 'GOOD' }] }],
+      264 |       }));
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:261:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:259:34)
+
+  ● MissionAnalyticsEngine › detectPerformanceCorrelation › should calculate high confidence with sufficient data
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      280 |         return {
+      281 |           id: `mission-${i}`,
+    > 282 |           status: MissionStatus.COMPLETED,
+          |                                 ^
+      283 |           objectives: [
+      284 |             { objectiveId: 'obj1', completed: i > 10 },
+      285 |             { objectiveId: 'obj2', completed: i > 20 },
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:282:33)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:278:34)
+
+  ● MissionAnalyticsEngine › detectPerformanceCorrelation › should generate appropriate insights for strong correlation
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      307 |       const mockMissions = Array.from({ length: 15 }, (_, i) => ({
+      308 |         id: `mission-${i}`,
+    > 309 |         status: MissionStatus.COMPLETED,
+          |                               ^
+      310 |         objectives: [
+      311 |           { objectiveId: 'obj1', completed: true },
+      312 |           { objectiveId: 'obj2', completed: true },
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:309:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:307:34)
+
+  ● MissionAnalyticsEngine › recommendMissionAdjustments › should recommend reducing duration for low completion
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      338 |         id: `mission-${i}`,
+      339 |         estimatedMinutes: 60,
+    > 340 |         status: i < 5 ? MissionStatus.COMPLETED : MissionStatus.SKIPPED, // 50% completion
+          |                                       ^
+      341 |       }));
+      342 |
+      343 |       (prisma.mission.findMany as jest.Mock).mockResolvedValue(mockMissions);
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:340:39)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:337:34)
+
+  ● MissionAnalyticsEngine › recommendMissionAdjustments › should recommend increasing complexity for high completion
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      357 |         id: `mission-${i}`,
+      358 |         estimatedMinutes: 60,
+    > 359 |         status: i < 10 ? MissionStatus.COMPLETED : MissionStatus.SKIPPED, // 100% completion
+          |                                        ^
+      360 |         actualMinutes: 55,
+      361 |       }));
+      362 |
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:359:40)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:356:34)
+
+  ● MissionAnalyticsEngine › recommendMissionAdjustments › should recommend adding objectives for finishing early
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      377 |         estimatedMinutes: 60,
+      378 |         actualMinutes: 40, // Consistently 20 min early
+    > 379 |         status: MissionStatus.COMPLETED,
+          |                               ^
+      380 |       }));
+      381 |
+      382 |       (prisma.mission.findMany as jest.Mock).mockResolvedValue(mockMissions);
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:379:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:375:34)
+
+  ● MissionAnalyticsEngine › recommendMissionAdjustments › should return empty adjustments for insufficient data
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      397 |       const mockMissions = Array.from({ length: 5 }, () => ({
+      398 |         id: 'mission',
+    > 399 |         status: MissionStatus.COMPLETED,
+          |                               ^
+      400 |         estimatedMinutes: 60,
+      401 |       }));
+      402 |
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:399:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:397:34)
+
+  ● MissionAnalyticsEngine › recommendMissionAdjustments › should not recommend adjustments for optimal completion rate
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      415 |         estimatedMinutes: 60,
+      416 |         actualMinutes: 58,
+    > 417 |         status: i < 8 ? MissionStatus.COMPLETED : MissionStatus.SKIPPED,
+          |                                       ^
+      418 |       }));
+      419 |
+      420 |       (prisma.mission.findMany as jest.Mock).mockResolvedValue(mockMissions);
+
+      at COMPLETED (src/__tests__/lib/mission-analytics.test.ts:417:39)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-analytics.test.ts:413:34)
+
+  ● MissionAnalyticsEngine › Edge Cases › should handle missions with no objectives
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      433 |         {
+      434 |           id: '1',
+    > 435 |           status: MissionStatus.COMPLETED,
+          |                                 ^
+      436 |           objectives: [], // Empty objectives array
+      437 |           estimatedMinutes: 60,
+      438 |           actualMinutes: 60,
+
+      at Object.COMPLETED (src/__tests__/lib/mission-analytics.test.ts:435:33)
+
+  ● MissionAnalyticsEngine › Edge Cases › should handle null/undefined values gracefully
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      455 |         {
+      456 |           id: '1',
+    > 457 |           status: MissionStatus.COMPLETED,
+          |                                 ^
+      458 |           objectives: [{ objectiveId: 'obj1', completed: true }],
+      459 |           estimatedMinutes: 60,
+      460 |           actualMinutes: null, // No actual time recorded
+
+      at Object.COMPLETED (src/__tests__/lib/mission-analytics.test.ts:457:33)
+
+  ● MissionAnalyticsEngine › Success Score Calculation › should calculate weighted success score components
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      493 |         {
+      494 |           id: '1',
+    > 495 |           status: MissionStatus.COMPLETED,
+          |                                 ^
+      496 |           objectives: [
+      497 |             { objectiveId: 'obj1', completed: true },
+      498 |             { objectiveId: 'obj2', completed: true },
+
+      at Object.COMPLETED (src/__tests__/lib/mission-analytics.test.ts:495:33)
+
+  ● MissionAnalyticsEngine › Success Score Calculation › should verify success score formula components
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      534 |         {
+      535 |           id: '1',
+    > 536 |           status: MissionStatus.COMPLETED,
+          |                                 ^
+      537 |           objectives: [{ objectiveId: 'obj1', completed: true }],
+      538 |           estimatedMinutes: 60,
+      539 |           actualMinutes: 60,
+
+      at Object.COMPLETED (src/__tests__/lib/mission-analytics.test.ts:536:33)
+
+FAIL src/__tests__/performance/analytics-performance.test.ts
+  ● Console
+
+    console.log
+      Adaptation recommendations: 0.08ms
+
+      at Object.log (src/__tests__/performance/analytics-performance.test.ts:172:15)
+
+    console.log
+      Aggregation query: 0.02ms
+
+      at Object.log (src/__tests__/performance/analytics-performance.test.ts:410:15)
+
+    console.log
+      Empty dataset: 0.02ms
+
+      at Object.log (src/__tests__/performance/analytics-performance.test.ts:463:15)
+
+  ● Mission Analytics Performance Benchmarks › Analytics Query Performance › should calculate 7-day analytics within 1 second
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:57:28)
+
+  ● Mission Analytics Performance Benchmarks › Analytics Query Performance › should calculate 30-day analytics within 1 second
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:71:28)
+
+  ● Mission Analytics Performance Benchmarks › Analytics Query Performance › should calculate 90-day analytics within 1 second
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:85:28)
+
+  ● Mission Analytics Performance Benchmarks › Analytics Query Performance › should calculate daily analytics for date within 500ms
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:99:28)
+
+  ● Mission Analytics Performance Benchmarks › Analytics Query Performance › should handle large dataset (365 days) efficiently
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:113:28)
+
+  ● Mission Analytics Performance Benchmarks › Recommendation Generation Performance › should generate mission adjustments within 300ms
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:129:28)
+
+  ● Mission Analytics Performance Benchmarks › Recommendation Generation Performance › should analyze user patterns within 250ms
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:143:28)
+
+  ● Mission Analytics Performance Benchmarks › Correlation Calculation Performance › should calculate performance correlation within 800ms
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:178:28)
+
+  ● Mission Analytics Performance Benchmarks › Correlation Calculation Performance › should handle minimum data (7 missions) efficiently
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:192:28)
+
+  ● Mission Analytics Performance Benchmarks › Chart Data Preparation Performance › should prepare chart data for 30 days within 500ms
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:208:28)
+
+  ● Mission Analytics Performance Benchmarks › Chart Data Preparation Performance › should aggregate weekly data efficiently
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:235:28)
+
+  ● Mission Analytics Performance Benchmarks › Concurrent Request Performance › should handle 10 concurrent analytics requests within 2 seconds
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:265:28)
+
+  ● Mission Analytics Performance Benchmarks › Concurrent Request Performance › should handle mixed operation types concurrently
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:285:28)
+
+  ● Mission Analytics Performance Benchmarks › Memory Usage and Optimization › should not cause memory leaks with repeated calls
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:308:28)
+
+  ● Mission Analytics Performance Benchmarks › Memory Usage and Optimization › should efficiently handle large objective arrays
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      328 |       const mockMissions = Array.from({ length: 10 }, (_, i) => ({
+      329 |         id: `mission-${i}`,
+    > 330 |         status: MissionStatus.COMPLETED,
+          |                               ^
+      331 |         objectives: Array.from({ length: 50 }, (_, j) => ({
+      332 |           objectiveId: `obj-${j}`,
+      333 |           completed: j % 2 === 0,
+
+      at COMPLETED (src/__tests__/performance/analytics-performance.test.ts:330:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/performance/analytics-performance.test.ts:328:34)
+
+  ● Mission Analytics Performance Benchmarks › Database Query Optimization › should use indexed queries for date range filtering
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:357:28)
+
+  ● Mission Analytics Performance Benchmarks › Stress Testing › should handle 100 missions without degradation
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:416:28)
+
+  ● Mission Analytics Performance Benchmarks › Stress Testing › should handle rapid sequential requests
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:430:28)
+
+  ● Mission Analytics Performance Benchmarks › Edge Case Performance › should handle single mission efficiently
+
+    TypeError: Cannot read properties of undefined (reading 'SKIPPED')
+
+      31 |       id: `mission-${i}`,
+      32 |       userId: 'user1',
+    > 33 |       status: i % 5 === 0 ? MissionStatus.SKIPPED : MissionStatus.COMPLETED,
+         |                                           ^
+      34 |       date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Daily missions going back
+      35 |       objectives: [
+      36 |         { objectiveId: 'obj1', completed: true },
+
+      at SKIPPED (src/__tests__/performance/analytics-performance.test.ts:33:43)
+          at Function.from (<anonymous>)
+      at from (src/__tests__/performance/analytics-performance.test.ts:30:18)
+      at Object.generateMockMissions (src/__tests__/performance/analytics-performance.test.ts:467:28)
+
+  ● Mission Analytics Performance Benchmarks › Edge Case Performance › should handle missions with no feedback efficiently
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      481 |       const mockMissions = Array.from({ length: 30 }, (_, i) => ({
+      482 |         id: `mission-${i}`,
+    > 483 |         status: MissionStatus.COMPLETED,
+          |                               ^
+      484 |         objectives: [{ objectiveId: 'obj1', completed: true }],
+      485 |         feedback: [], // No feedback
+      486 |         estimatedMinutes: 60,
+
+      at COMPLETED (src/__tests__/performance/analytics-performance.test.ts:483:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/performance/analytics-performance.test.ts:481:34)
+
+FAIL src/__tests__/lib/mission-adaptation.test.ts
+  ● MissionAdaptationEngine › analyzeUserPatterns › should detect LOW_COMPLETION pattern
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      29 |         id: `mission-${i}`,
+      30 |         userId: 'user1',
+    > 31 |         status: i < 5 ? MissionStatus.COMPLETED : MissionStatus.SKIPPED, // 50% completion
+         |                                       ^
+      32 |         objectives: [
+      33 |           { objectiveId: 'obj1', completed: i < 5 },
+      34 |           { objectiveId: 'obj2', completed: false },
+
+      at COMPLETED (src/__tests__/lib/mission-adaptation.test.ts:31:39)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-adaptation.test.ts:28:34)
+
+  ● MissionAdaptationEngine › analyzeUserPatterns › should detect HIGH_COMPLETION pattern
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      55 |       const mockMissions = Array.from({ length: 10 }, (_, i) => ({
+      56 |         id: `mission-${i}`,
+    > 57 |         status: MissionStatus.COMPLETED,
+         |                               ^
+      58 |         objectives: [
+      59 |           { objectiveId: 'obj1', completed: true },
+      60 |           { objectiveId: 'obj2', completed: true },
+
+      at COMPLETED (src/__tests__/lib/mission-adaptation.test.ts:57:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-adaptation.test.ts:55:34)
+
+  ● MissionAdaptationEngine › analyzeUserPatterns › should detect TIME_INACCURACY pattern
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      81 |       const mockMissions = Array.from({ length: 10 }, (_, i) => ({
+      82 |         id: `mission-${i}`,
+    > 83 |         status: MissionStatus.COMPLETED,
+         |                               ^
+      84 |         estimatedMinutes: 60,
+      85 |         actualMinutes: 90, // Consistently 30 min late
+      86 |         objectives: [{ objectiveId: 'obj1', completed: true }],
+
+      at COMPLETED (src/__tests__/lib/mission-adaptation.test.ts:83:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-adaptation.test.ts:81:34)
+
+  ● MissionAdaptationEngine › analyzeUserPatterns › should detect SKIPPED_TYPES pattern
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      106 |       const mockMissions = Array.from({ length: 10 }, (_, i) => ({
+      107 |         id: `mission-${i}`,
+    > 108 |         status: MissionStatus.COMPLETED,
+          |                               ^
+      109 |         objectives: [
+      110 |           { objectiveId: 'obj1', completed: true },
+      111 |           { objectiveId: 'obj2', completed: false }, // Always skipped
+
+      at COMPLETED (src/__tests__/lib/mission-adaptation.test.ts:108:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-adaptation.test.ts:106:34)
+
+  ● MissionAdaptationEngine › analyzeUserPatterns › should return empty patterns for insufficient data
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      126 |       const mockMissions = Array.from({ length: 5 }, (_, i) => ({
+      127 |         id: `mission-${i}`,
+    > 128 |         status: MissionStatus.COMPLETED,
+          |                               ^
+      129 |         objectives: [{ objectiveId: 'obj1', completed: true }],
+      130 |         feedback: [],
+      131 |       }));
+
+      at COMPLETED (src/__tests__/lib/mission-adaptation.test.ts:128:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-adaptation.test.ts:126:34)
+
+  ● MissionAdaptationEngine › analyzeUserPatterns › should calculate confidence scores correctly
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      141 |       const mockMissions = Array.from({ length: 10 }, (_, i) => ({
+      142 |         id: `mission-${i}`,
+    > 143 |         status: i < 3 ? MissionStatus.COMPLETED : MissionStatus.SKIPPED, // 30% completion
+          |                                       ^
+      144 |         objectives: [
+      145 |           { objectiveId: 'obj1', completed: i < 3 },
+      146 |         ],
+
+      at COMPLETED (src/__tests__/lib/mission-adaptation.test.ts:143:39)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-adaptation.test.ts:141:34)
+
+  ● MissionAdaptationEngine › analyzeUserPatterns › should handle multiple patterns simultaneously
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      164 |       const mockMissions = Array.from({ length: 10 }, (_, i) => ({
+      165 |         id: `mission-${i}`,
+    > 166 |         status: i < 5 ? MissionStatus.COMPLETED : MissionStatus.SKIPPED,
+          |                                       ^
+      167 |         estimatedMinutes: 60,
+      168 |         actualMinutes: i < 5 ? 90 : null, // Late on completed missions
+      169 |         objectives: [
+
+      at COMPLETED (src/__tests__/lib/mission-adaptation.test.ts:166:39)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-adaptation.test.ts:164:34)
+
+  ● MissionAdaptationEngine › applyAdaptations › should apply REDUCE_DURATION adaptation
+
+    TypeError: Cannot read properties of undefined (reading 'findUnique')
+
+      366 |       };
+      367 |
+    > 368 |       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+          |                    ^
+      369 |       (prisma.user.update as jest.Mock).mockResolvedValue({});
+      370 |
+      371 |       const recommendations = [
+
+      at Object.findUnique (src/__tests__/lib/mission-adaptation.test.ts:368:20)
+
+  ● MissionAdaptationEngine › applyAdaptations › should apply ADJUST_DIFFICULTY adaptation
+
+    TypeError: Cannot read properties of undefined (reading 'findUnique')
+
+      396 |       };
+      397 |
+    > 398 |       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+          |                    ^
+      399 |       (prisma.user.update as jest.Mock).mockResolvedValue({});
+      400 |
+      401 |       const recommendations = [
+
+      at Object.findUnique (src/__tests__/lib/mission-adaptation.test.ts:398:20)
+
+  ● MissionAdaptationEngine › applyAdaptations › should enforce 7-day cooldown period
+
+    TypeError: Cannot read properties of undefined (reading 'findUnique')
+
+      429 |       };
+      430 |
+    > 431 |       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+          |                    ^
+      432 |
+      433 |       const recommendations = [
+      434 |         {
+
+      at Object.findUnique (src/__tests__/lib/mission-adaptation.test.ts:431:20)
+
+  ● MissionAdaptationEngine › applyAdaptations › should allow adaptation after cooldown expires
+
+    TypeError: Cannot read properties of undefined (reading 'findUnique')
+
+      456 |       };
+      457 |
+    > 458 |       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+          |                    ^
+      459 |       (prisma.user.update as jest.Mock).mockResolvedValue({});
+      460 |
+      461 |       const recommendations = [
+
+      at Object.findUnique (src/__tests__/lib/mission-adaptation.test.ts:458:20)
+
+  ● MissionAdaptationEngine › applyAdaptations › should only apply HIGH priority recommendations
+
+    TypeError: Cannot read properties of undefined (reading 'findUnique')
+
+      481 |       };
+      482 |
+    > 483 |       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+          |                    ^
+      484 |       (prisma.user.update as jest.Mock).mockResolvedValue({});
+      485 |
+      486 |       const recommendations = [
+
+      at Object.findUnique (src/__tests__/lib/mission-adaptation.test.ts:483:20)
+
+  ● MissionAdaptationEngine › applyAdaptations › should enforce minimum duration of 30 minutes
+
+    TypeError: Cannot read properties of undefined (reading 'findUnique')
+
+      512 |       };
+      513 |
+    > 514 |       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+          |                    ^
+      515 |       (prisma.user.update as jest.Mock).mockResolvedValue({});
+      516 |
+      517 |       const recommendations = [
+
+      at Object.findUnique (src/__tests__/lib/mission-adaptation.test.ts:514:20)
+
+  ● MissionAdaptationEngine › applyAdaptations › should throw error for non-existent user
+
+    TypeError: Cannot read properties of undefined (reading 'findUnique')
+
+      535 |
+      536 |     it('should throw error for non-existent user', async () => {
+    > 537 |       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+          |                    ^
+      538 |
+      539 |       const recommendations = [
+      540 |         {
+
+      at Object.findUnique (src/__tests__/lib/mission-adaptation.test.ts:537:20)
+
+  ● MissionAdaptationEngine › applyAdaptations › should log adaptation history in user preferences
+
+    TypeError: Cannot read properties of undefined (reading 'findUnique')
+
+      558 |       };
+      559 |
+    > 560 |       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+          |                    ^
+      561 |       (prisma.user.update as jest.Mock).mockResolvedValue({});
+      562 |
+      563 |       const recommendations = [
+
+      at Object.findUnique (src/__tests__/lib/mission-adaptation.test.ts:560:20)
+
+  ● MissionAdaptationEngine › Edge Cases › should handle oscillation prevention (conflicting patterns)
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      586 |       const mockMissions = Array.from({ length: 10 }, (_, i) => ({
+      587 |         id: `mission-${i}`,
+    > 588 |         status: i % 2 === 0 ? MissionStatus.COMPLETED : MissionStatus.SKIPPED,
+          |                                             ^
+      589 |         objectives: [
+      590 |           { objectiveId: 'obj1', completed: i % 2 === 0 },
+      591 |         ],
+
+      at COMPLETED (src/__tests__/lib/mission-adaptation.test.ts:588:45)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-adaptation.test.ts:586:34)
+
+  ● MissionAdaptationEngine › Edge Cases › should handle manual overrides preservation
+
+    TypeError: Cannot read properties of undefined (reading 'findUnique')
+
+      611 |       };
+      612 |
+    > 613 |       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+          |                    ^
+      614 |       (prisma.user.update as jest.Mock).mockResolvedValue({});
+      615 |
+      616 |       const recommendations = [
+
+      at Object.findUnique (src/__tests__/lib/mission-adaptation.test.ts:613:20)
+
+  ● MissionAdaptationEngine › Edge Cases › should handle zero objectives case
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      638 |       const mockMissions = Array.from({ length: 10 }, (_, i) => ({
+      639 |         id: `mission-${i}`,
+    > 640 |         status: MissionStatus.COMPLETED,
+          |                               ^
+      641 |         objectives: [], // No objectives
+      642 |         feedback: [],
+      643 |       }));
+
+      at COMPLETED (src/__tests__/lib/mission-adaptation.test.ts:640:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/lib/mission-adaptation.test.ts:638:34)
+
+  ● MissionAdaptationEngine › Edge Cases › should handle concurrent adaptation requests
+
+    TypeError: Cannot read properties of undefined (reading 'findUnique')
+
+      658 |       };
+      659 |
+    > 660 |       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+          |                    ^
+      661 |       (prisma.user.update as jest.Mock).mockResolvedValue({});
+      662 |
+      663 |       const recommendations = [
+
+      at Object.findUnique (src/__tests__/lib/mission-adaptation.test.ts:660:20)
+
+FAIL src/__tests__/integration/feedback-loop.test.ts
+  ● Mission Feedback Loop Integration › Feedback Submission › should prevent duplicate feedback for same mission
+
+    TypeError: Cannot read properties of undefined (reading 'mockResolvedValue')
+
+      90 |
+      91 |     it('should prevent duplicate feedback for same mission', async () => {
+    > 92 |       (prisma.missionFeedback.findFirst as jest.Mock).mockResolvedValue({
+         |                                                       ^
+      93 |         id: 'existing-feedback',
+      94 |         missionId: 'mission-1',
+      95 |         userId: 'user1',
+
+      at Object.mockResolvedValue (src/__tests__/integration/feedback-loop.test.ts:92:55)
+
+  ● Mission Feedback Loop Integration › Adaptation Triggers from Feedback › should trigger adaptation for low helpfulness ratings
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      218 |       const mockMissions = Array.from({ length: 7 }, (_, i) => ({
+      219 |         id: `mission-${i}`,
+    > 220 |         status: MissionStatus.COMPLETED,
+          |                               ^
+      221 |         objectives: [{ objectiveId: 'obj1', completed: i < 2 }], // Low completion
+      222 |         feedback: [{ helpfulnessRating: 2 }], // Low rating
+      223 |       }));
+
+      at COMPLETED (src/__tests__/integration/feedback-loop.test.ts:220:31)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/integration/feedback-loop.test.ts:218:34)
+
+  ● Mission Feedback Loop Integration › Adaptation Triggers from Feedback › should combine feedback with completion data for recommendations
+
+    TypeError: Cannot read properties of undefined (reading 'COMPLETED')
+
+      284 |       const mockMissions = Array.from({ length: 10 }, (_, i) => ({
+      285 |         id: `mission-${i}`,
+    > 286 |         status: i < 9 ? MissionStatus.COMPLETED : MissionStatus.SKIPPED,
+          |                                       ^
+      287 |         objectives: [
+      288 |           { objectiveId: 'obj1', completed: true },
+      289 |           { objectiveId: 'obj2', completed: true },
+
+      at COMPLETED (src/__tests__/integration/feedback-loop.test.ts:286:39)
+          at Function.from (<anonymous>)
+      at Object.from (src/__tests__/integration/feedback-loop.test.ts:284:34)
+
+PASS src/__tests__/components/smoke.test.tsx
+PASS src/__tests__/smoke.test.ts
+
+Test Suites: 5 failed, 2 passed, 7 total
+Tests:       66 failed, 91 passed, 157 total
+Snapshots:   0 total
+Time:        1.009 s
+Ran all test suites.
+ ELIFECYCLE  Test failed. See above for more details.
