@@ -16,8 +16,6 @@ async function main() {
     create: {
       email: 'integration-test@americano.dev',
       name: 'Integration Test User',
-      behavioralAnalysisEnabled: true,
-      learningStyleProfilingEnabled: true,
     },
   });
   console.log(`✓ Test user created: ${testUser.name} (${testUser.id})`);
@@ -123,7 +121,6 @@ async function main() {
           newContentCount: Math.floor(Math.random() * 5) + 2,
           successScore: performanceScore / 100,
           difficultyRating: Math.floor(Math.random() * 5) + 1,
-          intensityLevel: cognitiveLoad > 70 ? 'HIGH' : cognitiveLoad > 40 ? 'MEDIUM' : 'LOW',
         },
       });
 

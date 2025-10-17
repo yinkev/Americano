@@ -1,0 +1,329 @@
+/**
+ * RecommendationsPanel Component
+ *
+ * Displays top 5 behavioral recommendations sorted by priority.
+ * Features:
+ * - Card layout with category badges
+ * - Confidence rating (5-star system)
+ * - Expandable evidence list
+ * - "Apply This" action button
+ * - Applied state tracking
+ *
+ * Story 5.6: Behavioral Insights Dashboard - Task 5 (Recommendations)
+ */
+
+'use client'
+
+import { useEffect, useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { AlertCircle, Check, ChevronDown, ChevronUp, Lightbulb, Star } from 'lucide-react'
+
+type RecommendationCategory = 'TIMING' | 'DURATION' | 'CONTENT' | 'DIFFICULTY' | 'STRATEGY'
+
+interface Recommendation {
+  id: string
+  userId: string
+  title: string
+  description: string
+  category: RecommendationCategory
+  priority: number
+  confidence: number
+  evidence: string[]
+  actionable: boolean
+  appliedAt: Date | null
+}
+
+interface RecommendationsPanelProps {
+  userId: string
+  isLoading?: boolean
+}
+
+// Category styling
+const CATEGORY_CONFIG: Record<
+  RecommendationCategory,
+  {
+    label: string
+    color: string
+  }
+> = {
+  TIMING: {
+    label: 'Timing',
+    color: 'bg-blue-600 text-white',
+  },
+  DURATION: {
+    label: 'Duration',
+    color: 'bg-purple-600 text-white',
+  },
+  CONTENT: {
+    label: 'Content',
+    color: 'bg-green-600 text-white',
+  },
+  DIFFICULTY: {
+    label: 'Difficulty',
+    color: 'bg-orange-600 text-white',
+  },
+  STRATEGY: {
+    label: 'Strategy',
+    color: 'bg-pink-600 text-white',
+  },
+}
+
+// Render confidence stars
+const ConfidenceStars = ({ confidence }: { confidence: number }) => {
+  const filledStars = Math.round(confidence * 5)
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`h-4 w-4 ${
+            star <= filledStars
+              ? 'fill-yellow-400 text-yellow-400'
+              : 'fill-gray-200 text-gray-200'
+          }`}
+        />
+      ))}
+      <span className="text-sm text-muted-foreground ml-1">
+        {Math.round(confidence * 100)}%
+      </span>
+    </div>
+  )
+}
+
+// Individual recommendation card
+const RecommendationCard = ({
+  recommendation,
+  onApply,
+  isApplying,
+}: {
+  recommendation: Recommendation
+  onApply: (id: string) => void
+  isApplying: boolean
+}) => {
+  const [expanded, setExpanded] = useState(false)
+  const [showFullDescription, setShowFullDescription] = useState(false)
+  const categoryConfig = CATEGORY_CONFIG[recommendation.category]
+  const isApplied = recommendation.appliedAt !== null
+
+  const truncatedDescription =
+    recommendation.description.length > 150
+      ? recommendation.description.slice(0, 150) + '...'
+      : recommendation.description
+
+  return (
+    <Card className="bg-white/50 hover:shadow-md transition-shadow">
+      <CardContent className="p-4">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <h3 className="font-semibold text-lg">{recommendation.title}</h3>
+              <Badge className={categoryConfig.color}>{categoryConfig.label}</Badge>
+              {isApplied && (
+                <Badge className="bg-green-600 text-white">
+                  <Check className="h-3 w-3 mr-1" />
+                  Applied
+                </Badge>
+              )}
+            </div>
+            <ConfidenceStars confidence={recommendation.confidence} />
+          </div>
+        </div>
+
+        {/* Description */}
+        <p className="text-sm text-muted-foreground mb-3">
+          {showFullDescription ? recommendation.description : truncatedDescription}
+          {recommendation.description.length > 150 && (
+            <button
+              onClick={() => setShowFullDescription(!showFullDescription)}
+              className="text-blue-600 hover:underline ml-1"
+            >
+              {showFullDescription ? 'Show less' : 'Read more'}
+            </button>
+          )}
+        </p>
+
+        {/* Evidence section */}
+        {recommendation.evidence.length > 0 && (
+          <div className="mb-3">
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {expanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+              Evidence ({recommendation.evidence.length})
+            </button>
+            {expanded && (
+              <ul className="mt-2 space-y-1 pl-6">
+                {recommendation.evidence.map((item, index) => (
+                  <li key={index} className="text-sm text-muted-foreground list-disc">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
+        {/* Action button */}
+        {recommendation.actionable && !isApplied && (
+          <Button
+            onClick={() => onApply(recommendation.id)}
+            disabled={isApplying}
+            size="sm"
+            className="w-full"
+          >
+            {isApplying ? 'Applying...' : 'Apply This'}
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+export function RecommendationsPanel({
+  userId,
+  isLoading: isLoadingProp = false,
+}: RecommendationsPanelProps) {
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [applyingId, setApplyingId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const response = await fetch(
+          `/api/analytics/behavioral-insights/recommendations?userId=${userId}`
+        )
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch recommendations')
+        }
+
+        const data = await response.json()
+        if (data.success && data.recommendations) {
+          // Sort by priority (highest first)
+          const sorted = [...data.recommendations].sort((a, b) => b.priority - a.priority)
+          setRecommendations(sorted.slice(0, 5)) // Top 5
+        } else {
+          throw new Error('Invalid response format')
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchRecommendations()
+  }, [userId])
+
+  const handleApply = async (id: string) => {
+    try {
+      setApplyingId(id)
+      const response = await fetch(
+        `/api/analytics/behavioral-insights/recommendations/${id}/apply`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId }),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to apply recommendation')
+      }
+
+      const data = await response.json()
+      if (data.success) {
+        // Update local state
+        setRecommendations(
+          recommendations.map((rec) =>
+            rec.id === id ? { ...rec, appliedAt: new Date() } : rec
+          )
+        )
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to apply recommendation')
+    } finally {
+      setApplyingId(null)
+    }
+  }
+
+  // Empty state
+  if (!isLoading && !isLoadingProp && recommendations.length === 0 && !error) {
+    return (
+      <Card className="bg-white/80 backdrop-blur-md">
+        <CardContent className="flex flex-col items-center justify-center py-12">
+          <Lightbulb className="h-12 w-12 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No Recommendations Yet</h3>
+          <p className="text-muted-foreground text-center max-w-md">
+            Keep studying to unlock personalized recommendations based on your learning patterns
+          </p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <Card className="bg-white/80 backdrop-blur-md border-red-200">
+        <CardContent className="flex flex-col items-center justify-center py-12">
+          <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Error Loading Recommendations</h3>
+          <p className="text-muted-foreground text-center">{error}</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Loading state
+  if (isLoading || isLoadingProp) {
+    return (
+      <Card className="bg-white/80 backdrop-blur-md animate-pulse">
+        <CardHeader>
+          <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-32 bg-gray-200 rounded"></div>
+          ))}
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <Card className="bg-white/80 backdrop-blur-md">
+      <CardHeader>
+        <CardTitle>Personalized Recommendations</CardTitle>
+        <CardDescription>
+          Top {recommendations.length} evidence-based suggestions to optimize your learning
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {recommendations.map((recommendation) => (
+          <RecommendationCard
+            key={recommendation.id}
+            recommendation={recommendation}
+            onApply={handleApply}
+            isApplying={applyingId === recommendation.id}
+          />
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
