@@ -9,8 +9,8 @@
 
 ## Current Status
 **Current Phase:** 4-Implementation (In Progress)
-**Current Workflow:** Epic 2 Complete! (100%)
-**Overall Progress:** Epic 1: 100% complete (5/5 stories) | Epic 2: 100% complete (6/6 stories - 2.1, 2.2, 2.3, 2.4, 2.5, 2.6 all done!)
+**Current Workflow:** story-ready (Story 4.3) - Complete
+**Overall Progress:** Epic 1: 100% complete (5/5 stories) | Epic 2: 100% complete (6/6 stories) | Epic 4: 100% ready (6/6 stories approved, 0 implemented)
 **Project Level:** 3 (Full Product - SaaS MVP with subsystems and integrations)
 
 ## Phase Completion
@@ -50,27 +50,84 @@
 | 10 | story-approved | DEV | Planned | Mark complete, advance queue |
 
 ## Next Action
-**What to do next:** 🎉 Epic 2 Complete! Choose next epic: Epic 3 (Knowledge Graph), Epic 4 (Understanding Validation), or Epic 5 (Behavioral Learning Twin)
+**What to do next:** 🎉 <span style="color: cyan;">**ALL EPIC 4 STORIES READY!** Implement any of Stories 4.1, 4.2, 4.3, 4.4, 4.5, 4.6 (6 stories ready!)</span>
 
-**Command to run:** Load SM agent and run `create-story` workflow to draft stories for next epic
+**Command to run:** Run `*dev-story` to implement any Epic 4 story (4.1/4.2/4.3/4.4/4.5/4.6)
 
-**Agent to load:** SM agent (bmad/bmm/agents/sm.md)
+**Agent to load:** DEV agent (bmad/bmm/agents/dev.md) for implementation
 
-**Note:** Epic 1 (Core Learning Infrastructure) ✅ 100% COMPLETE (5/5 stories). Epic 2 (Personal Learning GPS) ✅ 100% COMPLETE (6/6 stories - Stories 2.1, 2.2, 2.3, 2.4, 2.5, 2.6 all done!). Epic 2 completion delivers full Learning GPS vision: missions + performance tracking + prioritization + orchestration + analytics feedback loop. Ready to begin Epic 3 (Knowledge Graph) or Epic 4 (Understanding Validation).
+**Recommended Implementation Order**: 4.1 (foundation) → 4.2 (clinical reasoning) → 4.3 (failure) → 4.4 (calibration) → 4.5 (adaptive) → 4.6 (analytics)
+
+**Note:** ✅ Story 4.3 marked Ready for development. Context file: docs/stories/story-context-4.3.xml. Comprehensive guidance includes: Challenge identification engine, vulnerability scoring algorithm (overconfidence 40% + partial understanding 30% + recent mistakes 30%), challenge question generator with near-miss distractors, corrective feedback engine with emotional anchoring, retry scheduler (intervals: +1, +3, +7, +14, +30 days), failure pattern detector, ChallengeModeDialog component, confidence recalibration dashboard, common pitfalls dashboard, session integration (1 challenge per session after 2-3 objectives). Ready for DEV agent implementation.
 
 ## Implementation Progress (Phase 4 Only)
 
 ### IN PROGRESS (Approved for Development)
 
-No stories currently in progress. Epic 2 complete!
+**Story 4.1**: Natural Language Comprehension Prompts
+- **File**: docs/stories/story-4.1.md
+- **Status**: ContextReadyDraft
+- **Epic**: 4 (Understanding Validation Engine)
+- **Priority**: High (Foundation story)
+- **Estimate**: ~13 points (10 tasks, 70+ subtasks)
+- **Context File**: docs/stories/story-context-4.1.xml (generated 2025-10-16)
+- **Action**: Ready for DEV agent implementation via `*dev-story` workflow
 
-### TODO (Next Stories - Needs Drafting)
+**Story 4.3**: Controlled Failure and Memory Anchoring
+- **File**: docs/stories/story-4.3.md
+- **Status**: Ready
+- **Epic**: 4 (Understanding Validation Engine)
+- **Priority**: High
+- **Estimate**: ~13 points (12 tasks, 70+ subtasks)
+- **Context File**: docs/stories/story-context-4.3.xml (generated 2025-10-16)
+- **Action**: Ready for DEV agent implementation via `*dev-story` workflow
 
-No stories in TODO. Epic 2 complete!
+**Story 4.5**: Adaptive Questioning and Progressive Assessment
+- **File**: docs/stories/story-4.5.md
+- **Status**: Ready
+- **Epic**: 4 (Understanding Validation Engine)
+- **Priority**: Medium (Fifth story in Epic 4, implements intelligent assessment adaptation)
+- **Estimate**: ~13 points (13 tasks, 70+ subtasks)
+- **Context File**: docs/stories/story-context-4.5.xml (regenerated 2025-10-16)
+- **Action**: Ready for DEV agent implementation via `*dev-story` workflow
 
-### Backlog (Not Yet Drafted)
+**Story 4.6**: Comprehensive Understanding Analytics
+- **File**: docs/stories/story-4.6.md
+- **Status**: Ready
+- **Epic**: 4 (Understanding Validation Engine)
+- **Priority**: High (Final story in Epic 4, synthesizes all validation capabilities)
+- **Estimate**: ~13 points (13 tasks, 70+ subtasks)
+- **Context File**: docs/stories/story-context-4.6.xml (regenerated 2025-10-16)
+- **Action**: Ready for DEV agent implementation via `*dev-story` workflow
+
+**Story 4.2**: Clinical Reasoning Scenario Assessment
+- **File**: docs/stories/story-4.2.md
+- **Status**: Ready
+- **Epic**: 4 (Understanding Validation Engine)
+- **Priority**: High (Second story in Epic 4, builds on Story 4.1)
+- **Estimate**: ~13 points (10 tasks, 60+ subtasks)
+- **Context File**: docs/stories/story-context-4.2.xml (generated 2025-10-16)
+- **Action**: Ready for DEV agent implementation via `*dev-story` workflow
+
+**Story 4.4**: Confidence Calibration and Metacognitive Assessment
+- **File**: docs/stories/story-4.4.md
+- **Status**: Ready
+- **Epic**: 4 (Understanding Validation Engine)
+- **Priority**: High (Fourth story in Epic 4, builds metacognitive layer)
+- **Estimate**: ~10 points (11 tasks, 60+ subtasks)
+- **Context File**: docs/stories/story-context-4.4.xml (59KB, generated 2025-10-16)
+- **Action**: Ready for DEV agent implementation via `*dev-story` workflow
+
+### TODO (Next Story - Needs Review)
+
+(No stories in TODO - All Epic 4 stories are now ready for development!)
+
+### Backlog (Remaining Epic 4 Stories - Drafted, Awaiting Review)
+
+(No stories in backlog - All Epic 4 stories approved and ready!)
+
+**Other Epics**:
 - Epic 3: Stories 3.1-3.6 (Knowledge Graph)
-- Epic 4: Stories 4.1-4.6 (Understanding Validation)
 - Epic 5: Stories 5.1-5.6 (Behavioral Learning Twin)
 
 ### Deferred (Not MVP Critical)
@@ -296,3 +353,36 @@ No stories in TODO. Epic 2 complete!
 **2025-10-15 (Story 2.6 Context Generated)**: Completed story-context workflow for Story 2.6 (Mission Performance Analytics and Adaptation). Context file: `docs/stories/story-context-2.6.xml`. Story 2.6 already had comprehensive Context Manifest (lines 308-910) created by context-gathering agent in previous session. Generated implementation guidance including: 6 architecture documentation references (Solution Architecture Behavioral Analytics subsystem, API architecture, PRD FR10, Epic 2 success criteria, existing story context manifest), 8 existing code artifacts (MissionGenerator from Story 2.4, PerformanceCalculator from Story 2.2, mission types, Prisma schema, API utilities, components), complete dependency list (all packages already installed), 20 development constraints (database schema changes for 4 new models, analytics calculation frequency, adaptation throttling, statistical significance requirements, success score formula, integration with Stories 2.2/2.4/2.5), 13 interface definitions (3 engine classes: MissionAnalyticsEngine/MissionAdaptationEngine/MissionInsightsEngine, 5 API endpoints, 5 React components), testing standards and 13 test ideas mapped to all 8 acceptance criteria plus edge cases. Story file status updated to ContextReadyDraft. **Next**: Load DEV agent and run `dev-story` to implement Story 2.6 with full context.
 
 **2025-10-16 (Story 2.6 APPROVED AND COMPLETE - EPIC 2 100% COMPLETE!)**: Story 2.6 (Mission Performance Analytics and Adaptation) approved and marked done by DEV agent. All acceptance criteria met, TypeScript compilation clean (0 errors). Moved from IN PROGRESS → DONE. **🎉 EPIC 2 COMPLETE! (100% - 6/6 stories)**. Epic 2 delivers complete Learning GPS vision: missions (Story 2.4) + performance tracking (Story 2.2) + intelligent prioritization (Story 2.3) + orchestration (Story 2.5) + analytics/adaptation feedback loop (Story 2.6) + objective extraction (Story 2.1). **Total Project Progress**: Epic 1 (100% - 5/5 stories), Epic 2 (100% - 6/6 stories), 11 stories complete (~129 points). **Next**: User decision - begin Epic 3 (Knowledge Graph), Epic 4 (Understanding Validation), or Epic 5 (Behavioral Learning Twin). Load SM agent and run `create-story` workflow to draft next epic.
+
+**2025-10-16 (Story 4.1 Created - Epic 4 Begins)**: Completed create-story for Story 4.1 (Natural Language Comprehension Prompts). Story file: `docs/stories/story-4.1.md`. Status: Draft (needs review). **Epic 4 (Understanding Validation Engine) officially begins!** Story 4.1 is the foundation story enabling "Explain to a patient" comprehension validation - core market differentiator that competitors (Anki, AMBOSS, UWorld) don't offer. Comprehensive task breakdown includes: (1) Database schema extensions (ValidationPrompt, ValidationResponse, ComprehensionMetric), (2) AI Evaluation Engine (ChatMock/GPT-5 with structured rubric), (3) Prompt Generation Engine (varied prompt structures), (4) Comprehension scoring (4-dimensional: terminology 20%, relationships 30%, application 30%, clarity 20%), (5) Confidence calibration tracking, (6) Session integration with Story 2.5, (7) Comprehension analytics page with Recharts. 10 major tasks with 70+ subtasks covering complete implementation. **Story Highlights**: Multi-dimensional AI evaluation, confidence calibration detection (overconfident/underconfident), historical trend tracking, seamless session flow integration. **Next**: Review drafted story, run `*story-ready` to approve for development, then implement or continue drafting remaining Epic 4 stories (4.2-4.6).
+
+**2025-10-16 (Epic 4 Complete - ALL 6 Stories Drafted!)**: 🎉 **Epic 4 (Understanding Validation Engine) 100% PLANNED!** Completed create-story for all 6 Epic 4 stories (4.1-4.6). **Story Files**: `docs/stories/story-4.1.md` through `story-4.6.md`. Status: All Draft (needs review). **Epic 4 delivers comprehensive understanding validation system beyond competitors:**
+
+- **Story 4.1 (Foundation)**: Natural Language Comprehension Prompts - "Explain to a patient" validation (10 tasks, ~13 pts)
+- **Story 4.2**: Clinical Reasoning Scenario Assessment - Multi-stage clinical cases with competency scoring (10 tasks, ~13 pts)
+- **Story 4.3**: Controlled Failure and Memory Anchoring - Productive failure with emotional encoding, retry scheduling (12 tasks, ~13 pts)
+- **Story 4.4**: Confidence Calibration and Metacognitive Assessment - Calibration tracking with Pearson correlation, metacognitive reflection (11 tasks, ~10 pts)
+- **Story 4.5**: Adaptive Questioning and Progressive Assessment - IRT-based adaptive testing, knowledge graph follow-ups, mastery verification (13 tasks, ~13 pts)
+- **Story 4.6**: Comprehensive Understanding Analytics - Multi-dimensional dashboard, predictive analytics, AI-powered insights (13 tasks, ~13 pts)
+
+**Epic 4 Total**: 6 stories, ~75 points, 400+ detailed subtasks. **Technical Highlights**: ChatMock (GPT-5) AI evaluation across all validation types, multi-dimensional scoring (comprehension, clinical reasoning, calibration), IRT adaptive testing, predictive analytics (exam success probability, forgetting curves), emotional memory anchoring, metacognitive reflection prompts, privacy-first peer benchmarking. **Market Differentiation**: No competitor (Anki, AMBOSS, UWorld, RemNote) offers this level of understanding validation - validates genuine comprehension vs pattern recognition/memorization. **Next**: Review all 6 stories, prioritize implementation order (recommend 4.1 → 4.2 → 4.3 → 4.5 → 4.6 → 4.4), run `*story-ready` on Story 4.1 to begin.
+
+**2025-10-16 (Story 4.1 Marked Ready for Development)**: Story 4.1 (Natural Language Comprehension Prompts) marked ready for development by SM agent. Story file updated to Status: Ready. Moved from TODO → IN PROGRESS. Story 4.2 moved BACKLOG → TODO. This is the FOUNDATION story for Epic 4 - enables all other validation types. **Next**: Run `*story-context` workflow to generate implementation context, then `*dev-story` to implement Story 4.1.
+
+**2025-10-16 (Story 4.2 Context Generated)**: Completed story-context workflow for Story 4.2 (Clinical Reasoning Scenario Assessment). Context file: `docs/stories/story-context-4.2.xml`. Generated comprehensive implementation guidance including: 6 architecture documentation references (Epic 4 subsystem, database schema, API architecture, PRD, epic details, technical notes), 10 code artifacts (Prisma models, ChatMock client, API utilities, validation schemas, Zustand store, component patterns), complete dependency list (all packages already installed), 15 development constraints (database schema, ChatMock prompts, scenario generation, evaluation rubric, session integration, UI design), 7 interface definitions (5 API endpoints, 2 engines/evaluators, Zustand store, 2 React components), testing standards and 17 test ideas mapped to acceptance criteria plus edge cases and performance tests. Story file status updated to ContextReadyDraft. **Next**: Run `*story-ready` to approve Story 4.2 for development, then `*dev-story` to implement.
+
+**2025-10-16 (Story 4.1 Context Generated)**: Completed story-context workflow for Story 4.1 (Natural Language Comprehension Prompts). Context file: `docs/stories/story-context-4.1.xml`. Generated comprehensive implementation guidance including: 9 documentation references (PRD FR5, solution architecture Subsystem 4, Epic 4 breakdown, UX specification, API documentation, AGENTS.MD protocol, existing foundation stories 2.1/2.4/2.5, Prisma schema, design system compliance), 8 code artifacts (ChatMockClient from Story 2.1, MissionGenerator from Story 2.4, API utilities from Story 1.5, existing study components and session management), complete dependency list (all 20+ packages already installed: @prisma/client, zod, zustand, date-fns, recharts, openai, React, Next.js, shadcn/ui radix-ui components), 14 development constraints (Prisma schema extensions for ValidationPrompt/ValidationResponse/ComprehensionMetric models, ChatMock (GPT-5) integration with medical terminology preservation, prompt generation with 3 template types, 4-dimensional scoring rubric, confidence calibration formula, session integration timing, glassmorphism UI design NO gradients, OKLCH colors, min 44px targets, Next.js 15 async params, error handling, Zod validation, authentication deferral, performance targets <2s generation, <5s evaluation, <100ms metrics query), 7 interface definitions (3 API endpoints: POST /api/validation/prompts/generate, POST /api/validation/responses, GET /api/validation/metrics/:objectiveId, 3 TypeScript classes: ValidationPromptGenerator, ResponseEvaluator, ConfidenceCalibrator, ComprehensionPromptDialog React component, Prisma database models), testing standards (Jest + React Testing Library with 70%+ coverage targets for critical paths), 17 comprehensive test ideas mapped to 8 acceptance criteria covering prompt generation variation, component rendering, AI evaluation rubric testing, score calculation verification, feedback display, session integration, analytics page, confidence calibration, and error handling. Story file status updated to ContextReadyDraft (indicating context generated and ready for DEV implementation). **File Created**: docs/stories/story-context-4.1.xml (~30KB). **Next**: Load DEV agent and run `dev-story` workflow to implement Story 4.1 with full context guidance. This is the FOUNDATION story for Epic 4's understanding validation system - generates "Explain to a patient" prompts, evaluates comprehension with AI rubric, tracks calibration and trends, integrates seamlessly into study sessions.
+
+**2025-10-16 (Story 4.3 Marked Ready for Development)**: Story 4.3 (Controlled Failure and Memory Anchoring) marked ready for development by SM agent in #yolo mode. Story file updated to Status: Ready. Moved to IN PROGRESS section alongside Story 4.1. Story 4.4 moved to TODO. Context file already exists: `docs/stories/story-context-4.3.xml`. This story implements productive failure as a learning tool through: challenge identification engine with vulnerability scoring (overconfidence 40% + partial understanding 30% + recent mistakes 30%), challenge question generator with near-miss distractors targeting misconceptions, corrective feedback engine with emotional anchoring and memory mnemonics, retry scheduler using spaced intervals (+1, +3, +7, +14, +30 days), failure pattern detector for systematic error identification, ChallengeModeDialog with growth mindset framing (orange theme, not red), confidence recalibration dashboard (scatter plot, calibration metrics), common pitfalls dashboard, and session integration (1 challenge per session after 2-3 objectives for optimal memory encoding). **Next**: Load DEV agent and run `*dev-story` to implement Story 4.3.
+
+**2025-10-16 (Story 4.6 Context Mismatch - CRITICAL WORKFLOW ERROR)**: ⚠️ **CRITICAL ISSUE DETECTED AND CORRECTED**: Attempted story-ready workflow for Story 4.6, but discovered context file (story-context-4.6.xml) was generated for WRONG story. Context described "AI Interaction Quality Monitoring" (system admin monitoring feature) instead of actual Story 4.6 "Comprehensive Understanding Analytics" (multi-dimensional understanding dashboard from Epic 4, lines 650-666 in epics document). **Root Cause**: Context generation workflow error - unknown how "AI Quality Monitoring" context was generated instead of "Understanding Analytics" context. **Resolution**: (1) Deleted incorrect context file (story-context-4.6.xml), (2) Updated Story 4.6 status to "Draft (Context Mismatch - Needs Regeneration)", (3) Documented issue in status file and story file. **Impact**: Story 4.6 cannot proceed to story-ready or implementation until correct context regenerated via *story-context workflow. **Prevention**: Always verify context XML title/metadata matches source story before marking story ready. **Next**: User must run *story-context workflow for Story 4.6 to generate correct "Comprehensive Understanding Analytics" context (multi-dimensional dashboard, predictive analytics, AI-powered insights per Epic 4 specification) before attempting *story-ready again.
+
+**2025-10-16 (Story 4.6 Context Regenerated - ISSUE RESOLVED)**: ✅ **Story 4.6 context successfully regenerated** via story-context workflow execution in #yolo mode. Context file: `docs/stories/story-context-4.6.xml` now correctly describes "Comprehensive Understanding Analytics" dashboard with all 8 acceptance criteria, 13 major tasks, comprehensive implementation guidance. **Context Highlights**: Multi-dimensional dashboard consolidating Stories 4.1-4.5 validation metrics, understanding vs memorization comparison (gap detection with "Illusion of Knowledge" alerts), AI-powered pattern analysis using ChatMock (GPT-5), longitudinal progress tracking with milestone/regression detection, predictive analytics (exam success probability, forgetting curves, mastery date estimates), cross-objective correlation analysis (heatmap, network graph), peer benchmarking (privacy-first opt-in, minimum 50 users), AI-generated recommendations (daily insights, weekly priorities, intervention suggestions). **Technical Details**: 10 architecture documentation references (PRD, solution architecture, existing analytics patterns from Story 2.6, dashboard patterns from Story 2.2, ChatMock integration from Story 2.1), 11 existing code artifacts (PerformanceCorrelationPanel with Recharts ScatterChart pattern, PerformanceTrendChart with time-series visualization, existing ChatMock client, API utilities, Prisma schema models), complete dependency list (Recharts, jsPDF for PDF export, React Query for caching, all packages already installed), 20 development constraints (database schema extensions for UnderstandingPrediction/PeerBenchmark/DailyInsight models, performance targets <2s dashboard load, ChatMock temperature 0.5 for insights, nightly aggregation cron job with Redis caching 15-min TTL, FERPA-compliant peer benchmarking privacy controls, glassmorphism design NO gradients, OKLCH colors, min 44px touch targets, Next.js 15 async params, proper error handling), 20 interface definitions (8 GET API endpoints, 7 TypeScript calculation engine classes, 5 React components with Recharts visualizations), comprehensive testing standards (Vitest unit tests for calculation engines, React Testing Library component tests, performance tests with large datasets 100 objectives/1000 validation responses, 13 test ideas mapped to all 8 acceptance criteria plus edge cases). **Story Status**: Updated to ContextReadyDraft. **Workflow Status**: Updated TODO section with context file reference. **Next**: Run `*story-ready` workflow to approve Story 4.6 for development, then implement via `*dev-story` with full context guidance. Story 4.6 is final Epic 4 story - completing it will deliver complete Understanding Validation Engine with premium analytics dashboard that competitors (Anki, AMBOSS, UWorld) cannot match.
+
+**2025-10-16 (Story 4.5 Marked Ready for Development)**: Story 4.5 (Adaptive Questioning and Progressive Assessment) marked ready for development by SM agent. Story file updated to Status: Ready. Moved from TODO → IN PROGRESS alongside Stories 4.1, 4.3. Context file regenerated: `docs/stories/story-context-4.5.xml` (36KB). Story implements adaptive IRT-based assessment with real-time difficulty adjustment, knowledge graph follow-ups, mastery verification protocol, question bank management, progressive complexity revelation, and session orchestration. **Next**: DEV agent to implement Story 4.5 via `*dev-story` workflow.
+
+**2025-10-16 (Story 4.6 Marked Ready for Development)**: Story 4.6 (Comprehensive Understanding Analytics) marked ready for development by SM agent. Story file updated to Status: Ready. Moved from TODO → IN PROGRESS alongside Stories 4.1, 4.3, 4.5. Context file regenerated: `docs/stories/story-context-4.6.xml` (48KB). Final Epic 4 story consolidating all validation dimensions (Stories 4.1-4.5) into unified analytics dashboard. Implements multi-dimensional dashboard (6 metrics), understanding vs memorization comparison, AI-powered pattern analysis via ChatMock (GPT-5), longitudinal progress tracking, predictive analytics (exam success, forgetting curves, mastery dates), cross-objective correlations, privacy-first peer benchmarking (opt-in, 50-user minimum, FERPA compliance), AI-generated recommendations (daily insights, weekly priorities). Premium feature demonstrating platform sophistication with 20 development constraints and 20 interface definitions. **Significance**: Completing Story 4.6 delivers complete Understanding Validation Engine with premium analytics that no competitor (Anki, AMBOSS, UWorld) can match. **Next**: DEV agent to implement Story 4.6 via `*dev-story` workflow.
+
+**2025-10-16 (Story 4.2 Marked Ready for Development)**: Story 4.2 (Clinical Reasoning Scenario Assessment) marked ready for development by SM agent. Story file already had Status: Ready. Moved from TODO → IN PROGRESS alongside Stories 4.1, 4.3, 4.5, 4.6. Context file: `docs/stories/story-context-4.2.xml` (23KB, generated 2025-10-16). Implements multi-stage clinical case scenarios with interactive progression (history → exam → labs → diagnosis → treatment), AI-powered reasoning evaluation via ChatMock (GPT-5) with 4-dimensional competency scoring (data gathering 20%, diagnosis 30%, management 30%, clinical reasoning 20%), detailed feedback with cognitive bias detection, session integration (1 scenario per 3-4 objectives for INTERMEDIATE+ mastery), clinical reasoning analytics page with competency radar charts. Scenarios map to USMLE/COMLEX blueprint topics. **Next**: DEV agent to implement Story 4.2 via `*dev-story` workflow.
+
+**2025-10-16 (Story 4.4 Marked Ready - ALL EPIC 4 STORIES NOW READY!)**: 🎉 Story 4.4 (Confidence Calibration and Metacognitive Assessment) marked ready for development by SM agent. Story file already had Status: Ready. Moved from TODO → IN PROGRESS completing Epic 4 preparation. **MILESTONE**: All 6 Epic 4 stories (4.1, 4.2, 4.3, 4.4, 4.5, 4.6) are now approved and ready for development! Story 4.4 implements confidence capture (pre/post assessment 5-point scale), calibration calculation (delta = confidence - score, Pearson correlation tracking), immediate calibration feedback (overconfident/underconfident/calibrated categories with 15-point thresholds), metacognitive reflection prompts (10 question bank, randomized selection), calibration trends dashboard (confidence vs score scatter plot, correlation coefficient with interpretation), metacognitive interventions (triggered at correlation < 0.5 over 10+ assessments), peer calibration comparison (opt-in, anonymized, 20-user minimum). **Epic 4 Status**: Complete preparation - 6/6 stories ready, 0 in TODO, 0 in backlog. Total estimate: ~75 points. **Next**: DEV agent to implement any Epic 4 story via `*dev-story` workflow. Epic 4 delivers complete Understanding Validation Engine differentiating Americano from all competitors.

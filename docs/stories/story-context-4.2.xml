@@ -1,0 +1,331 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.2</storyId>
+    <title>Clinical Reasoning Scenario Assessment</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-4.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>solve clinical reasoning scenarios that test my ability to apply knowledge</iWant>
+    <soThat>I can validate my clinical decision-making skills and identify gaps in my diagnostic reasoning</soThat>
+    <tasks>
+      <task n="1">Database Schema Extensions (AC#7, #8)</task>
+      <task n="2">Scenario Generation Engine (AC#1, #8)</task>
+      <task n="3">Interactive Case Component (AC#2)</task>
+      <task n="4">Clinical Reasoning Evaluator (AC#3, #4)</task>
+      <task n="5">Feedback Display (AC#5)</task>
+      <task n="6">API Endpoints (AC#1, #3, #7)</task>
+      <task n="7">Session Integration (AC#6)</task>
+      <task n="8">Clinical Reasoning Analytics (AC#7, #8)</task>
+      <task n="9">Scenario Difficulty Scaling (AC#1)</task>
+      <task n="10">Testing and Validation (AC: All)</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">System generates clinical case scenarios from learning objectives with multi-step cases, questions testing diagnostic reasoning, alignment with USMLE/COMLEX formats, and difficulty varying with objective complexity</criterion>
+    <criterion id="AC2">User progresses through scenario in stages (history → exam → labs → diagnosis → treatment) with incremental information, decision points, additional information requests, and branching scenarios</criterion>
+    <criterion id="AC3">AI evaluates diagnostic reasoning process via differential diagnosis breadth/prioritization, test ordering appropriateness, treatment plan safety/efficacy, and clinical reasoning pathway (0-100)</criterion>
+    <criterion id="AC4">Multi-dimensional scoring across clinical competencies: Data gathering (20%), Diagnosis (30%), Management (30%), Clinical reasoning (20%), with overall composite score</criterion>
+    <criterion id="AC5">User receives specific feedback on reasoning strengths/weaknesses, missed red flags, optimal diagnostic pathway, identified cognitive biases, teaching points, and resources</criterion>
+    <criterion id="AC6">Clinical scenarios integrate into study sessions appearing after INTERMEDIATE+ mastery, with 1 scenario per 3-4 objectives, 5-15 minute time-boxing, and results tracked in Session Summary</criterion>
+    <criterion id="AC7">System tracks clinical reasoning performance over time via ClinicalReasoningMetric model with Progress page showing competency radar chart (4 dimensions) identifying weak competencies</criterion>
+    <criterion id="AC8">Scenarios map to USMLE/COMLEX blueprint topics via board exam tags, track coverage across organ systems, and prioritize high-yield exam topics</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Subsystem 4: Understanding Validation Engine</title>
+        <section>Lines 574-625 - Clinical Reasoning Validation Subsystem</section>
+        <snippet>Clinical Reasoning Scenarios component generates multi-stage case scenarios with patient presentations, histories, physical exam findings. Questions test diagnostic reasoning, treatment planning, differential diagnosis. Difficulty varies with objective complexity (BASIC → single-step, ADVANCED → multi-step with comorbidities). Evaluation engine uses ChatMock (GPT-5) with scoring rubric across 4 competencies.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Database Schema (Epic 4)</title>
+        <section>Lines 900-950 - Validation Models</section>
+        <snippet>ClinicalScenario model stores generated case scenarios with difficulty, type, case structure JSON. ScenarioResponse stores user responses, reasoning, evaluation results. ClinicalReasoningMetric aggregates performance over time per competency with boardExamTopic tracking.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>PRD - FR5: Understanding Validation</title>
+        <section>Lines 145-165</section>
+        <snippet>Multi-dimensional understanding validation: Comprehension testing (explain concepts), Clinical reasoning (solve scenarios), Confidence calibration (track overconfidence/underconfidence), Productive failure (learn from mistakes). Differentiates from competitors by validating genuine understanding vs pattern recognition/memorization.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic 4 - Story 4.2 Details</title>
+        <section>Lines 850-920</section>
+        <snippet>Clinical Reasoning Scenario Assessment builds on Story 4.1 (Comprehension Prompts). Generates clinical case scenarios from learning objectives with USMLE/COMLEX case formats. Multi-stage progression: patient presentation → history → physical exam → labs → diagnosis → treatment. Evaluates diagnostic reasoning across 4 competencies. Tracks performance trends. High-yield exam topics. Difficulty scaling BASIC→INTERMEDIATE→ADVANCED.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic 4 - Story 4.2 Technical Notes</title>
+        <section>Lines 1745-1835</section>
+        <snippet>Case Structure JSON format: chiefComplaint, demographics, history (presenting/past/medications/social), physicalExam (vitals/general/cardiovascular/respiratory), labs (available/options), questions array with stage/prompt/options/correctAnswer/reasoning. Evaluation Rubric via ChatMock with 4-competency scoring. Competency weights: DataGathering(0.20) + Diagnosis(0.30) + Management(0.30) + Reasoning(0.20). Session integration via SessionOrchestrator for triggering scenarios at INTERMEDIATE+ mastery.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - API Architecture (Epic 4)</title>
+        <section>Lines 1580-1620 - Understanding Validation Endpoints</section>
+        <snippet>API endpoints for clinical scenarios: POST /api/validation/scenarios/generate (objectiveId, difficulty), POST /api/validation/scenarios/submit (scenarioId, sessionId, userChoices, userReasoning), GET /api/validation/scenarios/metrics (clinical reasoning history, competencyAverages, weakCompetencies). REST pattern with Next.js API routes, Zod validation, error handling.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database-model</kind>
+        <symbol>LearningObjective</symbol>
+        <lines>141-174</lines>
+        <reason>Contains complexity, boardExamTags, masteryLevel fields used to determine scenario difficulty and exam alignment. Foundation for scenario generation from objectives.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database-model</kind>
+        <symbol>ValidationPrompt, ValidationResponse, ComprehensionMetric</symbol>
+        <lines>397-466</lines>
+        <reason>Story 4.1 validation models already created. ClinicalScenario, ScenarioResponse, ClinicalReasoningMetric models must be added as extensions for Story 4.2.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>enum</kind>
+        <symbol>ObjectiveComplexity, PromptType, RelationshipType</symbol>
+        <lines>176-391</lines>
+        <reason>ObjectiveComplexity enum needed for difficulty scaling. PromptType enum exists with CLINICAL_REASONING option. RelationshipType enum useful for prerequisite/comorbidity mapping in scenarios.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/ai/chatmock-client.ts</path>
+        <kind>class</kind>
+        <symbol>ChatMockClient</symbol>
+        <lines>26-174</lines>
+        <reason>Existing ChatMock client for GPT-5 API calls. Reuse pattern from Story 2.1 for scenario generation and evaluation prompts. Extend with new methods for clinical scenario tasks.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-response.ts</path>
+        <kind>utility</kind>
+        <symbol>successResponse, errorResponse</symbol>
+        <reason>Standardized API response helpers used across all endpoints. Ensures consistent response format for scenario endpoints.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-error.ts</path>
+        <kind>utility</kind>
+        <symbol>ApiError, withErrorHandler</symbol>
+        <reason>Error handling middleware for API routes. Catches errors and returns standardized error responses for scenario endpoints.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/validation.ts</path>
+        <kind>validation-schemas</kind>
+        <symbol>Zod schemas</symbol>
+        <lines>1-213</lines>
+        <reason>Existing validation schemas pattern. Create new schemas for scenario generation/submission/evaluation requests following same structure.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/store/use-session-store.ts</path>
+        <kind>zustand-store</kind>
+        <symbol>useSessionStore</symbol>
+        <reason>Example Zustand store for session state. Create clinical scenario store for tracking user choices, time, progress through case stages.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/dashboard/mission-card.tsx</path>
+        <kind>component</kind>
+        <symbol>MissionCard</symbol>
+        <reason>Example component pattern with glassmorphism design (bg-white/80 backdrop-blur-md). Follow same design patterns for ClinicalCaseDialog component.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <dependency>next</dependency>
+        <version>^15.5.5</version>
+        <reason>Latest Next.js 15 with App Router, API routes, Server Components</reason>
+      </node>
+      <node>
+        <dependency>react</dependency>
+        <version>^19.2.0</version>
+        <reason>React 19 for UI components (ClinicalCaseDialog, ClinicalFeedbackPanel)</reason>
+      </node>
+      <node>
+        <dependency>@prisma/client</dependency>
+        <version>^6.17.1</version>
+        <reason>Prisma ORM for database operations on ClinicalScenario, ScenarioResponse, ClinicalReasoningMetric models</reason>
+      </node>
+      <node>
+        <dependency>zod</dependency>
+        <version>^4.1.12</version>
+        <reason>Schema validation for scenario generation/submission API requests</reason>
+      </node>
+      <node>
+        <dependency>zustand</dependency>
+        <version>^5.0.8</version>
+        <reason>State management for clinical scenario workflow (user choices, timer, progress tracking)</reason>
+      </node>
+      <node>
+        <dependency>date-fns</dependency>
+        <version>^4.1.0</version>
+        <reason>Date utilities for scenario timing, time spent tracking, deadline management</reason>
+      </node>
+      <node>
+        <dependency>lucide-react</dependency>
+        <version>^0.545.0</version>
+        <reason>Icons for scenario UI (ChevronRight, Clock, CheckCircle, AlertCircle, etc.)</reason>
+      </node>
+      <node>
+        <dependency>recharts</dependency>
+        <version>^2.12.0</version>
+        <reason>Charts for competency radar chart (4 dimensions), scenario type breakdown, board exam coverage visualization</reason>
+      </node>
+      <node>
+        <dependency>tailwindcss</dependency>
+        <version>^4.1.14</version>
+        <reason>Styling with OKLCH colors, glassmorphism design (NO gradients), responsive layouts</reason>
+      </node>
+      <node>
+        <dependency>openai</dependency>
+        <version>^4.71.3</version>
+        <reason>OpenAI SDK for ChatMock client integration (already present from Story 2.1)</reason>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="1">ClinicalScenario model schema must be added to Prisma schema with caseText as JSON storing multi-stage case structure (chief complaint, history, exam, labs, questions)</constraint>
+    <constraint id="2">ScenarioResponse model must track userChoices JSON, reasoning text, score, competencyScores JSON, respondedAt timestamp for all user scenario submissions</constraint>
+    <constraint id="3">ClinicalReasoningMetric model aggregates performance over time with userId, scenarioType, competencyScores JSON, boardExamTopic, date for analytics/tracking</constraint>
+    <constraint id="4">ChatMock (GPT-5) for scenario generation uses temperature 0.4 (creative but consistent). Evaluation uses temperature 0.3 (consistent scoring). Max tokens 4000 for complex scenarios.</constraint>
+    <constraint id="5">Scenario generation triggered for objectives with masteryLevel >= INTERMEDIATE (as per AC#6 Session Integration requirement)</constraint>
+    <constraint id="6">Difficulty scaling: BASIC=single-step diagnosis/classic presentation, INTERMEDIATE=multi-step workup/differential required, ADVANCED=complex comorbidities/rare conditions/5+ decision points</constraint>
+    <constraint id="7">Evaluation rubric scores 4 competencies (0-100 each): DataGathering(20%), Diagnosis(30%), Management(30%), ClinicalReasoning(20%) with weighted overall score calculation</constraint>
+    <constraint id="8">Session integration: Check if objective.masteryLevel >= INTERMEDIATE, skip if scenario completed in last 14 days, trigger condition: 3-4 objectives since last scenario</constraint>
+    <constraint id="9">Scenario frequency limit: 1 scenario per 3-4 objectives to prevent user fatigue (AC#6)</constraint>
+    <constraint id="10">Time-boxing: scenarios should take 5-15 minutes depending on complexity. Display timer in UI. Track time spent for scoring adjustment.</constraint>
+    <constraint id="11">All API routes must follow Next.js 15 pattern: async params, Zod validation, withErrorHandler wrapper, successResponse/errorResponse utilities, X-User-Email header for user resolution</constraint>
+    <constraint id="12">All components must follow design system: glassmorphism (bg-white/95 backdrop-blur-xl), OKLCH colors, NO gradients, min 44px touch targets, responsive layouts</constraint>
+    <constraint id="13">Authentication deferred for MVP - use X-User-Email header (kevy@americano.dev default) to resolve user</constraint>
+    <constraint id="14">Board exam topic tagging: Use objectives.boardExamTags to tag scenarios (e.g., USMLE-Step2-Cardiology, COMLEX-L2-Internal-Medicine). Track coverage metrics.</constraint>
+    <constraint id="15">Prerequisite/comorbidity checking: When generating scenarios, consider ObjectivePrerequisite relationships to ensure cases don't require untaught prerequisites (map to content level in case)</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/validation/scenarios/generate</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Body: { objectiveId: string, difficulty?: "BASIC"|"INTERMEDIATE"|"ADVANCED" }
+        Response: { success: true, data: { scenario: ClinicalScenario } }
+        Error: { success: false, error: { code: string, message: string } }
+      </signature>
+      <path>apps/web/src/app/api/validation/scenarios/generate/route.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/validation/scenarios/submit</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Body: { scenarioId: string, sessionId?: string, userChoices: JSON, userReasoning: string }
+        Response: { success: true, data: { evaluation, score: number, competencyScores, feedback } }
+      </signature>
+      <path>apps/web/src/app/api/validation/scenarios/submit/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/validation/scenarios/:id</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Params: id (scenario ID)
+        Response: { success: true, data: { scenario: ClinicalScenario } }
+      </signature>
+      <path>apps/web/src/app/api/validation/scenarios/[id]/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/validation/scenarios/metrics</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Query: dateRange?: "7days"|"30days"|"90days", scenarioType?: string
+        Response: { success: true, data: { metrics: ClinicalReasoningMetric[], competencyAverages, weakCompetencies[] } }
+      </signature>
+      <path>apps/web/src/app/api/validation/scenarios/metrics/route.ts</path>
+    </interface>
+    <interface>
+      <name>ClinicalScenarioGenerator</name>
+      <kind>TypeScript class</kind>
+      <signature>
+        Methods: generateScenario(objectiveId: string, difficulty: string): Promise&lt;ClinicalScenario&gt;
+        Constructs ChatMock prompt for case generation. Generates multi-stage case structure. Parses response into structured caseText JSON. Stores in database.
+      </signature>
+      <path>apps/web/src/lib/clinical-scenario-generator.ts</path>
+    </interface>
+    <interface>
+      <name>ClinicalReasoningEvaluator</name>
+      <kind>TypeScript class</kind>
+      <signature>
+        Methods: evaluateReasoning(scenarioId: string, userChoices: JSON, userReasoning: string): Promise&lt;EvaluationResult&gt;
+        Constructs ChatMock prompt with evaluation rubric. Parses AI response into competency scores. Calculates weighted overall score. Extracts strengths[], weaknesses[], missedFindings[], cognitiveBiases[].
+      </signature>
+      <path>apps/web/src/lib/clinical-reasoning-evaluator.ts</path>
+    </interface>
+    <interface>
+      <name>useClinicalScenarioStore</name>
+      <kind>Zustand store</kind>
+      <signature>
+        State: { currentScenario, userChoices, currentStage, timeSpent, sessionId }
+        Methods: setCurrentScenario, addChoice, nextStage, previousStage, requestInfo, submit
+        Persistence: sessionStorage (clear on session end)
+      </signature>
+      <path>apps/web/src/store/use-clinical-scenario-store.ts</path>
+    </interface>
+    <interface>
+      <name>ClinicalCaseDialog</name>
+      <kind>React component</kind>
+      <signature>
+        Props: { scenario: ClinicalScenario, onSubmit: (choices, reasoning) =&gt; void, onClose: () =&gt; void, sessionId?: string }
+        Displays: stage-based progression, patient info card, decision points, timer, submit button
+        Design: glassmorphism, OKLCH colors, NO gradients, min 44px touch targets
+      </signature>
+      <path>apps/web/src/components/study/ClinicalCaseDialog.tsx</path>
+    </interface>
+    <interface>
+      <name>ClinicalFeedbackPanel</name>
+      <kind>React component</kind>
+      <signature>
+        Props: { evaluation: EvaluationResult, scenario: ClinicalScenario, onReview: () =&gt; void, onNext: () =&gt; void }
+        Displays: overall score with progress ring, competency radar chart, strengths/weaknesses, cognitive biases, teaching points
+        Design: glassmorphism, OKLCH colors, responsive
+      </signature>
+      <path>apps/web/src/components/study/ClinicalFeedbackPanel.tsx</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      For Story 4.2 MVP, manual testing is sufficient. TypeScript compilation (pnpm tsc) must pass with 0 errors. Scenario generation should be tested with various objectives: different complexity levels (BASIC, INTERMEDIATE, ADVANCED), different board exam tags, different clinical topics. AI evaluation should be tested with: correct reasoning, partially correct reasoning, incorrect reasoning to verify scoring makes sense. UI components manually tested for glassmorphism compliance, OKLCH colors, NO gradients, min 44px touch targets, responsive layouts. Session integration tested: scenarios appear at correct time (mastery >= INTERMEDIATE), frequency control enforced (1 per 3-4 objectives, not within 14 days), time tracking accurate. Future testing: Unit tests for scenario/evaluation engines, integration tests for API endpoints, E2E tests for full case workflow with session integration.
+    </standards>
+    <locations>
+      No test files required for MVP. Future: apps/web/__tests__/clinical-scenario-generator.test.ts, apps/web/__tests__/clinical-reasoning-evaluator.test.ts, apps/web/__tests__/api/scenarios.test.ts, apps/web/e2e/clinical-scenario-workflow.spec.ts
+    </locations>
+    <ideas>
+      <test ac="AC1">Test scenario generation from objective - should create multi-stage case with patient presentation, history, physical exam, labs, questions matching objective topic</test>
+      <test ac="AC1">Test difficulty scaling - BASIC scenario should have simple diagnosis, ADVANCED should have comorbidities/rare conditions</test>
+      <test ac="AC1">Test board exam alignment - scenario should be tagged with correct USMLE/COMLEX topics from objective.boardExamTags</test>
+      <test ac="AC2">Test stage-based progression - verify stages display in order (Chief Complaint → History → Physical Exam → Labs → Questions)</test>
+      <test ac="AC2">Test information requests - "Request More Info" buttons should show labs/imaging options with cost indicators</test>
+      <test ac="AC2">Test branching scenarios - user choices should affect next stage presentation</test>
+      <test ac="AC3">Test AI evaluation accuracy - submit correct, partially correct, incorrect reasoning; verify evaluation scores make sense</test>
+      <test ac="AC4">Test competency scoring - verify 4 competencies scored (Data, Diagnosis, Management, Reasoning) and weighted correctly</test>
+      <test ac="AC5">Test feedback display - should show strengths, weaknesses, missed findings, cognitive biases, optimal pathway, teaching points</test>
+      <test ac="AC6">Test session integration - scenario should appear after objective reaches INTERMEDIATE mastery, be time-boxed 5-15 min</test>
+      <test ac="AC7">Test performance tracking - ClinicalReasoningMetric saved, can query history, weak competencies identified</test>
+      <test ac="AC8">Test exam coverage - scenarios tagged with board exam topics, dashboard shows coverage by organ system</test>
+      <test id="UI1">Test ClinicalCaseDialog renders correctly - verify glassmorphism, OKLCH colors, NO gradients, min 44px touch targets</test>
+      <test id="UI2">Test ClinicalFeedbackPanel renders correctly - verify radar chart displays all 4 dimensions, colors match competency types</test>
+      <test id="EDGE1">Test scenario with no previous content reviewed - should handle prerequisites gracefully</test>
+      <test id="EDGE2">Test scenario generation with many high-yield topics - should prioritize best clinical cases</test>
+      <test id="PERF1">Test scenario generation performance - should complete in &lt; 3 seconds for MVP</test>
+      <test id="PERF2">Test evaluation performance - should complete in &lt; 5 seconds for MVP</test>
+    </ideas>
+  </tests>
+</story-context>
