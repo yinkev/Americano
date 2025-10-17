@@ -1,0 +1,279 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.2</storyId>
+    <title>Knowledge Graph Construction and Visualization</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-3.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>to see how different concepts connect to each other</iWant>
+    <soThat>I can understand relationships and build integrated knowledge</soThat>
+    <tasks>
+      <task id="1">Extend Database Schema for Knowledge Graph (AC: #1, #2, #7)</task>
+      <task id="2">Build Knowledge Graph Construction Engine (AC: #1, #2, #7)</task>
+      <task id="3">Create Graph Visualization API Endpoints (AC: #3, #4, #5)</task>
+      <task id="4">Build Interactive Graph Visualization UI (AC: #3, #4, #5)</task>
+      <task id="5">Implement User Annotations and Custom Connections (AC: #6)</task>
+      <task id="6">Integrate with Learning Objectives (AC: #8)</task>
+      <task id="7">Implement Graph Filters and Search (AC: #4)</task>
+      <task id="8">Performance Optimization and Real-Time Updates (AC: #7)</task>
+      <task id="9">Testing and Validation (All ACs)</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Knowledge graph automatically constructed from content relationships</criterion>
+    <criterion id="2">Concepts linked based on semantic similarity and co-occurrence</criterion>
+    <criterion id="3">Interactive visualization showing concept nodes and relationship edges</criterion>
+    <criterion id="4">Graph navigation allows drilling down into specific concept areas</criterion>
+    <criterion id="5">Relationship strength indicated through visual cues (line thickness, proximity)</criterion>
+    <criterion id="6">User can add custom connections and annotations to graph</criterion>
+    <criterion id="7">Graph updates dynamically as new content added to platform</criterion>
+    <criterion id="8">Integration with learning objectives showing prerequisite pathways</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Knowledge Graph Subsystem</title>
+        <section>Subsystem 3: Knowledge Graph & Semantic Search (Lines 551-575)</section>
+        <snippet>Responsibilities include knowledge graph construction, semantic search via pgvector, content recommendation, and cross-course integration. Key components: KnowledgeGraphBuilder, SemanticSearchEngine, ConceptLinker, RecommendationEngine.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Database Schema</title>
+        <section>Database Architecture - Concept Models (Lines 711-1135)</section>
+        <snippet>Complete Prisma schema with Concept model (name, description, category, embedding vector(1536)), ConceptRelationship model (fromConceptId, toConceptId, relationship type PREREQUISITE/RELATED/INTEGRATED/CLINICAL, strength 0.0-1.0), and pgvector indexes for similarity search.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Graph API Endpoints</title>
+        <section>API Endpoints (Lines 1330-1366)</section>
+        <snippet>Graph endpoints: /api/graph/concepts (retrieval with traversal depth), /api/graph/concepts/:id (concept details and relationships), /api/graph/concepts/:id/content (related content). Semantic search via /api/graph/search with filters.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Technology Stack</title>
+        <section>Technology Stack - Vector DB and Visualization (Lines 1722-1804)</section>
+        <snippet>PostgreSQL 16 + pgvector extension for vector similarity. Gemini embedding-001 (1536 dimensions). React Flow for knowledge graph visualization. Semantic search using pgvector cosine distance operator.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-3.1.md</path>
+        <title>Story 3.1 - Semantic Search Implementation</title>
+        <section>Acceptance Criteria and Tasks</section>
+        <snippet>Prerequisites for Story 3.2: Embedding pipeline (Gemini 1536d), semantic search engine with pgvector, search API endpoints, SearchQuery/SearchClick analytics models. Search performance target: &lt;1s response time.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>PRD - Knowledge Graph Requirements</title>
+        <section>FR3: Knowledge Graph Foundation</section>
+        <snippet>Unified knowledge graph linking lecture content, First Aid, and external resources. Semantic search across all content using Gemini embeddings. Content relationship visualization and conflict detection. Success criteria: &lt;1s search response, 70%+ user satisfaction with relevance.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>apps/web/src/lib/semantic-search-service.ts</path>
+        <kind>service</kind>
+        <symbol>SemanticSearchService</symbol>
+        <lines>1-200</lines>
+        <reason>Full vector similarity search implementation with hybrid search, filtering, and ranking. Can be extended to search concepts using existing pgvector cosine distance algorithm.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/ai/gemini-client.ts</path>
+        <kind>service</kind>
+        <symbol>GeminiClient</symbol>
+        <lines>1-150</lines>
+        <reason>Embedding generation using gemini-embedding-001 (1536d). Provides generateEmbedding() and generateBatchEmbeddings() methods with rate limiting and error handling for concept embeddings.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/ai/chatmock-client.ts</path>
+        <kind>service</kind>
+        <symbol>ChatMockClient</symbol>
+        <lines>1-100</lines>
+        <reason>GPT-5 based extraction service. Can be adapted to extract medical concepts, relationships, and clinical applications from lecture content using specialized prompts.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/embedding-service.ts</path>
+        <kind>service</kind>
+        <symbol>EmbeddingService</symbol>
+        <lines>1-150</lines>
+        <reason>Rate-limited wrapper around GeminiClient (100 RPM, 1000 RPD). Provides batch processing with automatic delays and usage monitoring for concept embedding generation.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>Concept, ConceptRelationship, RelationshipType</symbol>
+        <lines>349-394</lines>
+        <reason>Database models for knowledge graph. Concept model with vector(1536) embedding, ConceptRelationship with user annotation support (isUserDefined, userNote, createdBy), RelationshipType enum (PREREQUISITE, RELATED, INTEGRATED, CLINICAL).</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-error.ts</path>
+        <kind>utility</kind>
+        <symbol>ApiError, withErrorHandler</symbol>
+        <lines>1-80</lines>
+        <reason>Standard error handling with ApiError class and withErrorHandler HOF. Use for graph API route error handling following established patterns.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-response.ts</path>
+        <kind>utility</kind>
+        <symbol>successResponse, errorResponse</symbol>
+        <lines>1-50</lines>
+        <reason>Standard response formatting utilities. Use for all graph API endpoints to maintain consistent response structure.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/search/route.ts</path>
+        <kind>controller</kind>
+        <symbol>POST handler</symbol>
+        <lines>1-100</lines>
+        <reason>Reference implementation for search API with validation, rate limiting, async analytics logging. Follow this pattern for graph API endpoints.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/subsystems/knowledge-graph/validation.ts</path>
+        <kind>utility</kind>
+        <symbol>parseRequestBody, parseQueryParams</symbol>
+        <lines>1-80</lines>
+        <reason>Zod validation helpers for request parsing. Create graph-specific schemas following these patterns for concept and relationship validation.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/rate-limiter.ts</path>
+        <kind>utility</kind>
+        <symbol>RateLimiter, searchRateLimiter</symbol>
+        <lines>1-100</lines>
+        <reason>Sliding window rate limiter (20 req/min per user). Apply to graph API endpoints to prevent abuse and ensure performance.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package name="@xyflow/react" version="latest" status="installed">Graph visualization library for interactive node-edge diagrams</package>
+        <package name="@prisma/client" version="^6.17.1" status="installed">Database ORM with Concept and ConceptRelationship models</package>
+        <package name="@google/generative-ai" version="^0.24.1" status="installed">Gemini AI for embeddings (gemini-embedding-001, 1536 dimensions)</package>
+        <package name="openai" version="^6.3.0" status="installed">ChatMock/GPT-5 for concept extraction</package>
+        <package name="zod" version="^4.1.12" status="installed">Request validation and schema parsing</package>
+        <package name="react" version="^19.2.0" status="installed">React framework</package>
+        <package name="next" version="^15.5.5" status="installed">Next.js App Router</package>
+        <package name="lucide-react" version="^0.545.0" status="installed">Icons for graph UI</package>
+        <package name="recharts" version="^3.2.1" status="installed">Optional for graph statistics charts</package>
+        <package name="date-fns" version="^4.1.0" status="installed">Date utilities</package>
+        <package name="tailwind-merge" version="^3.3.1" status="installed">CSS class merging</package>
+        <package name="class-variance-authority" version="^0.7.1" status="installed">Component variants</package>
+      </node>
+      <devDependencies>
+        <package name="typescript" version="^5.9.3" status="installed">TypeScript support</package>
+        <package name="prisma" version="^6.17.1" status="installed">Database migrations</package>
+        <package name="@types/node" version="^24.7.2" status="installed">Node.js type definitions</package>
+        <package name="@types/react" version="^19.2.2" status="installed">React type definitions</package>
+      </devDependencies>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="1">@xyflow/react is installed and ready for Task 4 graph visualization implementation</constraint>
+    <constraint id="2">Use existing Concept and ConceptRelationship models from Prisma schema - DO NOT recreate</constraint>
+    <constraint id="3">Relationship strength formula: (semantic_similarity * 0.4) + (co_occurrence * 0.3) + (prerequisite_confidence * 0.3), normalized to 0.0-1.0</constraint>
+    <constraint id="4">Semantic similarity threshold: >0.75 for RELATED relationships</constraint>
+    <constraint id="5">Co-occurrence threshold: ≥3 chunks for INTEGRATED relationships</constraint>
+    <constraint id="6">Use EmbeddingService (rate-limited, 100 RPM, 1000 RPD) for all embedding generation - NOT direct GeminiClient</constraint>
+    <constraint id="7">Leverage existing ChatMockClient for concept extraction - Adapt extractLearningObjectives pattern</constraint>
+    <constraint id="8">Follow Next.js 15 App Router patterns with async params - Check latest docs via context7 MCP</constraint>
+    <constraint id="9">All API routes must use withErrorHandler HOF and standard successResponse/errorResponse format</constraint>
+    <constraint id="10">Apply searchRateLimiter pattern to graph API endpoints (20 req/min per user)</constraint>
+    <constraint id="11">Graph visualization must support zoom, pan, node selection, and drill-down (depth 2 traversal)</constraint>
+    <constraint id="12">Visual cues required: line thickness based on strength, proximity based on relationship, color by relationship type</constraint>
+    <constraint id="13">User-defined relationships: Set isUserDefined=true, createdBy=userId, allow deletion only by creator</constraint>
+    <constraint id="14">System-generated relationships: isUserDefined=false, cannot be deleted by users</constraint>
+    <constraint id="15">Prerequisite pathways: Map from ObjectivePrerequisite relationships (Story 2.1) to Concept relationships</constraint>
+    <constraint id="16">Performance target: Graph load time <2s for 100 nodes, <5s for 500 nodes (NFR1)</constraint>
+    <constraint id="17">Incremental graph updates: Trigger rebuild only on new content upload, avoid full rebuilds</constraint>
+    <constraint id="18">Graph pagination: Limit initial render to 100 nodes, implement load-more or virtualization for large graphs</constraint>
+    <constraint id="19">AGENTS.MD protocol: Read AGENTS.MD before implementation, use context7 for React Flow and Next.js 15 latest docs</constraint>
+    <constraint id="20">Glassmorphism design system: NO gradients, OKLCH colors, min 44px touch targets, backdrop-blur effects</constraint>
+  </constraints>
+  <interfaces>
+    <api>
+      <endpoint method="GET" path="/api/graph/concepts">
+        <description>Retrieve knowledge graph nodes and edges with optional filtering and traversal depth</description>
+        <queryParams>category?: string, depth?: number (default 2), limit?: number (default 100)</queryParams>
+        <response>{ nodes: Concept[], edges: ConceptRelationship[], total: number }</response>
+      </endpoint>
+      <endpoint method="GET" path="/api/graph/concepts/:id">
+        <description>Get specific concept with all direct relationships (depth 1)</description>
+        <response>{ concept: Concept, relatedConcepts: Concept[], relationships: ConceptRelationship[] }</response>
+      </endpoint>
+      <endpoint method="GET" path="/api/graph/concepts/:id/content">
+        <description>Get all content linked to a concept (lectures, cards, objectives)</description>
+        <response>{ lectures: Lecture[], cards: Card[], objectives: LearningObjective[] }</response>
+      </endpoint>
+      <endpoint method="POST" path="/api/graph/relationships">
+        <description>Create user-defined relationship with annotation</description>
+        <requestBody>{ fromConceptId: string, toConceptId: string, relationship: RelationshipType, userNote?: string }</requestBody>
+        <response>{ relationship: ConceptRelationship }</response>
+      </endpoint>
+      <endpoint method="DELETE" path="/api/graph/relationships/:id">
+        <description>Delete user-defined relationship (only if isUserDefined=true and createdBy matches userId)</description>
+        <response>{ success: true }</response>
+      </endpoint>
+      <endpoint method="GET" path="/api/graph/objectives/:objectiveId/prerequisites">
+        <description>Get prerequisite pathway for learning objective</description>
+        <response>{ objective: LearningObjective, prerequisitePath: Concept[], relationshipStrengths: number[] }</response>
+      </endpoint>
+    </api>
+    <class name="KnowledgeGraphBuilder">
+      <method>buildGraphFromContent(lectureId?: string): Promise&lt;void&gt; - Trigger graph construction from lecture content</method>
+      <method>extractConcepts(contentChunks: ContentChunk[]): Promise&lt;Concept[]&gt; - Extract concepts using ChatMock and generate embeddings</method>
+      <method>identifyRelationships(concepts: Concept[]): Promise&lt;ConceptRelationship[]&gt; - Detect relationships via semantic similarity, co-occurrence, and prerequisites</method>
+      <method>calculateRelationshipStrength(concept1: Concept, concept2: Concept): number - Compute strength score (0.0-1.0)</method>
+    </class>
+    <component name="KnowledgeGraph">
+      <description>Main React Flow visualization component with nodes, edges, controls, and background</description>
+      <props>concepts: Concept[], relationships: ConceptRelationship[], onNodeClick: (conceptId: string) =&gt; void</props>
+    </component>
+    <component name="ConceptNode">
+      <description>Custom React Flow node component with category color, size based on relationship count, and hover tooltip</description>
+      <props>data: { concept: Concept }</props>
+    </component>
+    <component name="RelationshipEdge">
+      <description>Custom React Flow edge component with relationship type color, thickness based on strength</description>
+      <props>data: { relationship: ConceptRelationship }</props>
+    </component>
+    <component name="GraphFilters">
+      <description>Filter sidebar with category multi-select, relationship type filter, search bar</description>
+      <props>onFilterChange: (filters: GraphFilters) =&gt; void</props>
+    </component>
+  </interfaces>
+  <tests>
+    <standards>No automated tests required for MVP per solution-architecture.md. Manual testing for graph construction, visualization, and user interactions. Focus on functional validation and performance benchmarking.</standards>
+    <locations>
+      <location>apps/web/src/subsystems/knowledge-graph/__tests__/ - Unit tests for KnowledgeGraphBuilder (if created post-MVP)</location>
+      <location>apps/web/src/app/api/graph/__tests__/ - API route tests (if created post-MVP)</location>
+      <location>apps/web/src/components/graph/__tests__/ - Component tests (if created post-MVP)</location>
+    </locations>
+    <ideas>
+      <idea ac="1">Test concept extraction from sample lectures - Verify ChatMock extracts correct concept names, descriptions, categories</idea>
+      <idea ac="1">Test embedding generation - Verify Gemini generates 1536-dimension vectors for concepts</idea>
+      <idea ac="2">Test semantic similarity detection - Verify concepts with >0.75 similarity create RELATED relationships</idea>
+      <idea ac="2">Test co-occurrence detection - Verify concepts appearing in ≥3 chunks create INTEGRATED relationships with correct strength</idea>
+      <idea ac="2">Test prerequisite mapping - Verify ObjectivePrerequisite relationships map to Concept PREREQUISITE relationships</idea>
+      <idea ac="3">Test React Flow rendering - Verify nodes and edges display correctly with proper layout</idea>
+      <idea ac="3">Test graph loading - Verify graph loads in <2s for 100 nodes, <5s for 500 nodes</idea>
+      <idea ac="4">Test zoom and pan - Verify mouse wheel zoom and drag-to-pan work correctly</idea>
+      <idea ac="4">Test node drill-down - Verify double-click shows depth 2 subgraph with related concepts</idea>
+      <idea ac="5">Test visual cues - Verify line thickness matches relationship strength (1-5px for 0.0-1.0)</idea>
+      <idea ac="5">Test relationship colors - Verify PREREQUISITE (orange), RELATED (gray), INTEGRATED (cyan), CLINICAL (magenta)</idea>
+      <idea ac="6">Test user annotation creation - POST /api/graph/relationships creates relationship with isUserDefined=true</idea>
+      <idea ac="6">Test user annotation deletion - DELETE /api/graph/relationships/:id only works for user-defined relationships</idea>
+      <idea ac="7">Test incremental updates - Verify new lecture upload triggers graph rebuild without full recalculation</idea>
+      <idea ac="8">Test prerequisite pathway - GET /api/graph/objectives/:id/prerequisites returns ordered concept path</idea>
+      <idea ac="performance">Test large graph rendering - Verify 500+ nodes render without freezing UI (WebGL or virtualization)</idea>
+      <idea ac="performance">Test API response time - Verify GET /api/graph/concepts returns in <500ms</idea>
+      <idea ac="edge-case">Test circular dependencies - Verify algorithm detects and breaks circular prerequisite chains</idea>
+      <idea ac="edge-case">Test empty graph - Verify UI shows "Upload lectures to build graph" message</idea>
+      <idea ac="edge-case">Test single concept - Verify graph displays isolated node correctly</idea>
+    </ideas>
+  </tests>
+</story-context>
