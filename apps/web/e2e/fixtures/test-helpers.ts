@@ -225,7 +225,7 @@ export async function zoomGraphOut(page: Page, steps: number = 1): Promise<void>
  */
 export async function setClusteringMode(page: Page, mode: 'course' | 'topic'): Promise<void> {
   const clusterButton = page.locator('button:has-text("Toggle Cluster")').first();
-  const currentMode = await page.locator('text=/Clustered by: (Course|Topic)/).textContent();
+  const currentMode = await page.locator('text=/Clustered by: (Course|Topic)/').textContent();
 
   const needsToggle =
     (mode === 'course' && currentMode?.includes('Topic')) ||
