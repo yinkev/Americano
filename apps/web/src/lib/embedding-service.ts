@@ -3,15 +3,23 @@
  *
  * Features:
  * - Rate limiting (60 requests/minute as per Gemini API limits)
- * - Exponential backoff retry logic
+ * - Sophisticated retry logic with error classification
+ * - Exponential backoff with jitter
+ * - Circuit breaker pattern
  * - Batch processing with configurable batch sizes
  * - Error handling and logging
  * - Type-safe interfaces
  *
  * Epic 3 - Story 3.1 - Task 1.3
+ * Enhanced with RetryService integration
  */
 
 import { GeminiClient } from './ai/gemini-client'
+import {
+  retryService,
+  DEFAULT_POLICIES,
+  type RetryAttempt,
+} from './retry/retry-service'
 
 /**
  * Configuration for the embedding service
@@ -27,6 +35,10 @@ export interface EmbeddingServiceConfig {
   maxRetries?: number
   /** Callback when rate limit warning threshold reached (default: 80%) */
   onRateLimitWarning?: (usage: RateLimitUsage) => void
+  /** Callback when retry attempt occurs */
+  onRetry?: (attempts: RetryAttempt[]) => void
+  /** Enable detailed retry logging (default: true) */
+  enableRetryLogging?: boolean
 }
 
 /**
@@ -37,6 +49,12 @@ export interface EmbeddingResult {
   embedding: number[]
   /** Error message if generation failed */
   error?: string
+  /** Whether the error is permanent (non-retryable) */
+  permanent?: boolean
+  /** Number of retry attempts made */
+  attempts?: number
+  /** Total time spent including retries (ms) */
+  totalTimeMs?: number
 }
 
 /**
@@ -69,6 +87,8 @@ export interface RateLimitUsage {
   dailyQuotaUsedPercent: number
   /** Percentage of per-minute quota used (0-100) */
   minuteQuotaUsedPercent: number
+  /** Remaining requests available in the current minute window */
+  availableRequests: number
   /** Warning if approaching limits */
   warning?: string
 }
@@ -89,8 +109,11 @@ export interface RateLimitUsage {
  */
 export class EmbeddingService {
   private geminiClient: GeminiClient
-  private config: Required<Omit<EmbeddingServiceConfig, 'onRateLimitWarning'>>
+  private config: Required<
+    Omit<EmbeddingServiceConfig, 'onRateLimitWarning' | 'onRetry'>
+  >
   private onRateLimitWarning?: (usage: RateLimitUsage) => void
+  private onRetry?: (attempts: RetryAttempt[]) => void
   private requestTimestamps: number[] = []
   private dailyRequestTimestamps: number[] = []
 
@@ -101,31 +124,38 @@ export class EmbeddingService {
       maxRequestsPerDay: config.maxRequestsPerDay ?? 1000, // Gemini API: 1000 RPD
       batchSize: config.batchSize ?? 100,
       maxRetries: config.maxRetries ?? 3,
+      enableRetryLogging: config.enableRetryLogging ?? true,
     }
     this.onRateLimitWarning = config.onRateLimitWarning
+    this.onRetry = config.onRetry
   }
 
   /**
    * Generate embedding for a single text chunk
-   * Includes rate limiting and retry logic
+   * Includes rate limiting and sophisticated retry logic with error classification
    *
    * @param text - Text to generate embedding for
-   * @returns Promise with embedding result
+   * @returns Promise with embedding result (never throws, returns Result type)
    *
    * @example
    * ```typescript
    * const result = await service.generateEmbedding('Cardiac conduction system pathways')
    * if (!result.error) {
-   *   console.log('Embedding dimensions:', result.embedding.length) // 1536
+   *   console.log('Embedding dimensions:', result.embedding.length) // 768
+   * } else {
+   *   console.error('Error:', result.error, 'Permanent:', result.permanent)
    * }
    * ```
    */
   async generateEmbedding(text: string): Promise<EmbeddingResult> {
-    // Validate input
+    // Validate input - permanent error, don't retry
     if (!text || text.trim().length === 0) {
       return {
         embedding: [],
         error: 'Empty text provided',
+        permanent: true,
+        attempts: 0,
+        totalTimeMs: 0,
       }
     }
 
@@ -143,22 +173,66 @@ export class EmbeddingService {
     // Check if approaching limits and trigger warning
     this.checkRateLimitWarning()
 
-    // Delegate to GeminiClient (which has built-in retry logic)
-    return await this.geminiClient.generateEmbedding(text)
+    // Execute with retry logic using the production-ready RetryService
+    const result = await retryService.execute(
+      async () => {
+        const embeddingResult = await this.geminiClient.generateEmbedding(text)
+
+        // If GeminiClient returned an error, throw it so retry logic can handle it
+        if (embeddingResult.error) {
+          throw new Error(embeddingResult.error)
+        }
+
+        return embeddingResult.embedding
+      },
+      {
+        maxAttempts: this.config.maxRetries,
+        ...DEFAULT_POLICIES.GEMINI_API,
+      },
+      'embedding-service'
+    )
+
+    // Notify retry callback if provided
+    if (this.onRetry && result.retryHistory.length > 0) {
+      this.onRetry(result.retryHistory)
+    }
+
+    // Convert RetryResult to EmbeddingResult
+    if (result.value) {
+      return {
+        embedding: result.value,
+        attempts: result.attempts,
+        totalTimeMs: result.totalTimeMs,
+      }
+    } else {
+      const isPermanent = result.error?.name === 'PermanentError'
+      return {
+        embedding: [],
+        error: result.error?.message || 'Unknown error',
+        permanent: isPermanent,
+        attempts: result.attempts,
+        totalTimeMs: result.totalTimeMs,
+      }
+    }
   }
 
   /**
    * Generate embeddings for multiple text chunks with optimized batch processing
-   * Automatically handles rate limiting across batches
+   * Automatically handles rate limiting, retries, and error classification
    *
    * @param texts - Array of texts to generate embeddings for
-   * @returns Promise with batch embedding results including error tracking
+   * @returns Promise with batch embedding results including detailed error tracking
    *
    * @example
    * ```typescript
    * const chunks = ['Chunk 1', 'Chunk 2', 'Chunk 3']
    * const result = await service.generateBatchEmbeddings(chunks)
    * console.log(`Success: ${result.successCount}, Failed: ${result.failureCount}`)
+   *
+   * // Check for permanent errors (won't succeed even with retry)
+   * result.errors.forEach((error, index) => {
+   *   console.log(`Text ${index}: ${error}`)
+   * })
    * ```
    */
   async generateBatchEmbeddings(texts: string[]): Promise<BatchEmbeddingResult> {
@@ -167,20 +241,51 @@ export class EmbeddingService {
     let successCount = 0
     let failureCount = 0
 
+    // Track batch statistics
+    const batchStartTime = Date.now()
+    const totalTexts = texts.length
+
+    if (this.config.enableRetryLogging) {
+      console.log(
+        `[EmbeddingService] Starting batch processing: ${totalTexts} texts in batches of ${this.config.batchSize}`
+      )
+    }
+
     // Process in configurable batches
     for (let i = 0; i < texts.length; i += this.config.batchSize) {
       const batch = texts.slice(i, i + this.config.batchSize)
       const batchStartIndex = i
+      const batchNumber = Math.floor(i / this.config.batchSize) + 1
+      const totalBatches = Math.ceil(texts.length / this.config.batchSize)
 
-      // Process batch with rate limiting
+      if (this.config.enableRetryLogging) {
+        console.log(
+          `[EmbeddingService] Processing batch ${batchNumber}/${totalBatches} (${batch.length} texts)`
+        )
+      }
+
+      // Process batch with rate limiting and retry logic
       const batchResults = await Promise.all(
         batch.map(async (text, batchIndex) => {
           const result = await this.generateEmbedding(text)
           const originalIndex = batchStartIndex + batchIndex
 
           if (result.error) {
-            errors.set(originalIndex, result.error)
+            // Store detailed error information
+            const errorMessage = result.permanent
+              ? `[PERMANENT] ${result.error}`
+              : result.error
+            errors.set(originalIndex, errorMessage)
             failureCount++
+
+            // Log permanent errors (these won't succeed even with retry)
+            if (result.permanent && this.config.enableRetryLogging) {
+              console.error(
+                `[EmbeddingService] Permanent error for text ${originalIndex}: ${result.error}`,
+                result.errorDetails?.type
+              )
+            }
+
             return []
           } else {
             successCount++
@@ -194,6 +299,20 @@ export class EmbeddingService {
       // Add delay between batches to respect rate limits
       if (i + this.config.batchSize < texts.length) {
         await this.delay(1000) // 1 second between batches
+      }
+    }
+
+    const batchElapsedTime = Date.now() - batchStartTime
+
+    // Log batch summary
+    if (this.config.enableRetryLogging) {
+      console.log(
+        `[EmbeddingService] Batch complete: ${successCount} success, ${failureCount} failed in ${(batchElapsedTime / 1000).toFixed(1)}s`
+      )
+      if (failureCount > 0) {
+        console.warn(
+          `[EmbeddingService] Failed texts: ${Array.from(errors.keys()).join(', ')}`
+        )
       }
     }
 
@@ -325,6 +444,7 @@ export class EmbeddingService {
 
     const minutePercent = (recentMinuteRequests.length / this.config.maxRequestsPerMinute) * 100
     const dayPercent = (recentDayRequests.length / this.config.maxRequestsPerDay) * 100
+    const availableRequests = Math.max(0, this.config.maxRequestsPerMinute - recentMinuteRequests.length)
 
     return {
       requestsInLastMinute: recentMinuteRequests.length,
@@ -333,6 +453,7 @@ export class EmbeddingService {
       maxRequestsPerDay: this.config.maxRequestsPerDay,
       minuteQuotaUsedPercent: minutePercent,
       dailyQuotaUsedPercent: dayPercent,
+      availableRequests,
     }
   }
 

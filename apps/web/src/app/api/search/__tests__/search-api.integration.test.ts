@@ -548,9 +548,7 @@ describe('POST /api/search - Integration Tests', () => {
         results: [],
         total: 0,
         latency: 200,
-        metadata: {},
-        pagination: { hasNext: false, hasPrevious: false },
-      })
+      } as any)
 
       const request = new NextRequest('http://localhost:3000/api/search', {
         method: 'POST',

@@ -14,7 +14,7 @@
  * Run with: npm run test:integration
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals'
 import { SemanticSearchService } from '../semantic-search-service'
 import { embeddingService } from '../embedding-service'
 import { PrismaClient } from '@/generated/prisma'

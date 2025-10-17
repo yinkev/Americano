@@ -12,6 +12,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
 import { PrismaClient } from '@/generated/prisma'
+import { logSearchQuery } from '@/lib/search-analytics-service'
 
 // Mock Prisma
 jest.mock('@/lib/db', () => ({
@@ -27,40 +28,25 @@ jest.mock('@/lib/db', () => ({
 
 import { prisma } from '@/lib/db'
 
+type AsyncMock<TReturn = any> = jest.MockedFunction<(...args: any[]) => Promise<TReturn>>
+
+type SearchQueryMock = {
+  searchQuery: {
+    create: AsyncMock<any>
+    findMany: AsyncMock<any[]>
+    count: AsyncMock<number>
+    deleteMany: AsyncMock<{ count: number }>
+  }
+}
+
 describe('Search Analytics Logging', () => {
-  const mockPrisma = prisma as jest.Mocked<typeof prisma>
+  const mockPrisma = prisma as unknown as SearchQueryMock
 
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   describe('logSearchQuery', () => {
-    // Import the logging function (we'll test it indirectly through the API)
-    const logSearchQuery = async (analytics: {
-      userId: string
-      query: string
-      filters: any
-      resultCount: number
-      topResultId?: string
-      responseTimeMs: number
-      timestamp: Date
-    }) => {
-      try {
-        await prisma.searchQuery.create({
-          data: {
-            userId: analytics.userId,
-            query: analytics.query,
-            filters: analytics.filters as any,
-            resultCount: analytics.resultCount,
-            topResultId: analytics.topResultId,
-            responseTimeMs: analytics.responseTimeMs,
-            timestamp: analytics.timestamp,
-          },
-        })
-      } catch (error) {
-        console.error('Failed to log search query:', error)
-      }
-    }
 
     it('should log search query with all required fields', async () => {
       mockPrisma.searchQuery.create.mockResolvedValue({
@@ -72,6 +58,7 @@ describe('Search Analytics Logging', () => {
         topResultId: 'result-001',
         responseTimeMs: 450,
         timestamp: new Date(),
+        clicks: [], // Empty array for the relation
       } as any)
 
       await logSearchQuery({

@@ -9,7 +9,7 @@
 
 import { prisma } from '@/lib/db';
 import { MissionAdaptationEngine } from '@/lib/mission-adaptation-engine';
-import { MissionStatus } from '@/generated/prisma';
+import { MissionStatus, PaceRating } from '@/generated/prisma';
 
 // Mock Prisma client
 jest.mock('@/lib/db');
@@ -29,7 +29,7 @@ describe('Mission Feedback Loop Integration', () => {
         userId: 'user1',
         helpfulnessRating: 5,
         relevanceScore: 4,
-        paceRating: 'JUST_RIGHT',
+        paceRating: PaceRating.JUST_RIGHT,
         improvementSuggestions: 'Great mission, maybe add more examples',
       };
 
@@ -55,7 +55,7 @@ describe('Mission Feedback Loop Integration', () => {
         userId: 'user1',
         helpfulnessRating: 6, // Invalid: out of range
         relevanceScore: 0, // Invalid: out of range
-        paceRating: 'JUST_RIGHT',
+        paceRating: PaceRating.JUST_RIGHT,
       };
 
       // In production, this would be validated by Zod schema
@@ -72,7 +72,7 @@ describe('Mission Feedback Loop Integration', () => {
         userId: 'user1',
         helpfulnessRating: 4,
         relevanceScore: 4,
-        paceRating: 'JUST_RIGHT',
+        paceRating: PaceRating.JUST_RIGHT,
         improvementSuggestions: null, // Optional field
       };
 
@@ -445,7 +445,7 @@ describe('Mission Feedback Loop Integration', () => {
           userId: 'user1',
           helpfulnessRating: 4,
           relevanceScore: 4,
-          paceRating: 'JUST_RIGHT',
+          paceRating: PaceRating.JUST_RIGHT,
         },
       });
 

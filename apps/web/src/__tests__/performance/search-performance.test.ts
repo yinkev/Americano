@@ -23,18 +23,21 @@ import { semanticSearchEngine } from '@/subsystems/knowledge-graph/semantic-sear
 import { GeminiClient } from '@/lib/ai/gemini-client'
 
 describe('Search Performance Benchmarks', () => {
-  const mockGeminiClient = GeminiClient as jest.Mocked<typeof GeminiClient>
+  const mockGeminiClient = GeminiClient as jest.MockedClass<typeof GeminiClient>
 
   beforeAll(() => {
     // Setup performance-realistic mocks
-    mockGeminiClient.prototype.generateEmbedding = jest.fn().mockImplementation(async () => {
-      // Simulate realistic API latency
-      await new Promise(resolve => setTimeout(resolve, 150))
-      return {
-        embedding: Array(1536).fill(0).map(() => Math.random()),
-        error: undefined,
-      }
-    })
+    const generateEmbeddingMock = jest
+      .fn(async () => {
+        // Simulate realistic API latency
+        await new Promise(resolve => setTimeout(resolve, 150))
+        return {
+          embedding: Array(1536).fill(0).map(() => Math.random()),
+          error: undefined,
+        }
+      }) as unknown as jest.MockedFunction<GeminiClient['generateEmbedding']>
+
+    mockGeminiClient.prototype.generateEmbedding = generateEmbeddingMock
   })
 
   describe('Embedding Generation Performance', () => {
@@ -85,7 +88,18 @@ describe('Search Performance Benchmarks', () => {
   describe('Search Latency Benchmarks', () => {
     it('should complete semantic search under 1 second (AC #8)', async () => {
       // Mock search engine for performance testing
-      const mockSearch = jest.fn().mockResolvedValue({
+      const mockSearch = jest.fn<() => Promise<{
+        results: Array<{
+          id: string
+          type: string
+          title: string
+          snippet: string
+          similarity: number
+          metadata: Record<string, unknown>
+        }>
+        total: number
+        latency: number
+      }>>().mockResolvedValue({
         results: [
           {
             id: 'result-1',

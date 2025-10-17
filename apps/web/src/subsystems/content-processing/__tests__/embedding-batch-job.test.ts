@@ -32,6 +32,24 @@ jest.mock('@/lib/embedding-service', () => ({
   },
 }))
 
+type AsyncMock<T = any> = jest.MockedFunction<(...args: any[]) => Promise<T>>
+
+const prismaMock = prisma as unknown as {
+  lecture: {
+    findUnique: AsyncMock<any>
+    update: AsyncMock<any>
+  }
+  contentChunk: {
+    findMany: AsyncMock<any[]>
+  }
+  $queryRaw: AsyncMock<any>
+  $executeRaw: AsyncMock<number>
+}
+
+const embeddingServiceMock = embeddingService as unknown as {
+  generateBatchEmbeddings: AsyncMock<any>
+}
+
 describe('EmbeddingBatchJob', () => {
   let batchJob: EmbeddingBatchJob
 
@@ -61,10 +79,10 @@ describe('EmbeddingBatchJob', () => {
       const mockEmbeddings = [new Array(1536).fill(0.1)]
 
       // Mock finding lectures with missing embeddings
-      jest.mocked(prisma.$queryRaw).mockResolvedValue(mockLectures)
+      prismaMock.$queryRaw.mockResolvedValue(mockLectures)
 
       // Mock lecture lookups
-      jest.mocked(prisma.lecture.findUnique)
+      prismaMock.lecture.findUnique
         .mockResolvedValueOnce({
           id: 'lec-1',
           title: 'Lecture 1',
@@ -75,12 +93,12 @@ describe('EmbeddingBatchJob', () => {
         } as any)
 
       // Mock chunk lookups
-      jest.mocked(prisma.contentChunk.findMany)
+      prismaMock.contentChunk.findMany
         .mockResolvedValueOnce(mockChunksLec1 as any)
         .mockResolvedValueOnce(mockChunksLec2 as any)
 
       // Mock embedding generation
-      jest.mocked(embeddingService.generateBatchEmbeddings)
+      embeddingServiceMock.generateBatchEmbeddings
         .mockResolvedValueOnce({
           embeddings: Array(2).fill(mockEmbeddings[0]),
           errors: new Map(),
@@ -95,8 +113,8 @@ describe('EmbeddingBatchJob', () => {
         })
 
       // Mock database updates
-      jest.mocked(prisma.lecture.update).mockResolvedValue({} as any)
-      jest.mocked(prisma.$executeRaw).mockResolvedValue(1)
+      prismaMock.lecture.update.mockResolvedValue({} as any)
+      prismaMock.$executeRaw.mockResolvedValue(1)
 
       // Execute
       const result = await batchJob.processLecturesWithMissingEmbeddings()
@@ -110,7 +128,7 @@ describe('EmbeddingBatchJob', () => {
     })
 
     it('should handle no lectures with missing embeddings', async () => {
-      jest.mocked(prisma.$queryRaw).mockResolvedValue([])
+      prismaMock.$queryRaw.mockResolvedValue([])
 
       const result = await batchJob.processLecturesWithMissingEmbeddings()
 
@@ -125,10 +143,10 @@ describe('EmbeddingBatchJob', () => {
         { id: 'lec-2', title: 'Lecture 2', missingCount: 2 },
       ]
 
-      jest.mocked(prisma.$queryRaw).mockResolvedValue(mockLectures)
+      prismaMock.$queryRaw.mockResolvedValue(mockLectures)
 
       // First lecture succeeds
-      jest.mocked(prisma.lecture.findUnique)
+      prismaMock.lecture.findUnique
         .mockResolvedValueOnce({
           id: 'lec-1',
           title: 'Lecture 1',
@@ -138,21 +156,21 @@ describe('EmbeddingBatchJob', () => {
           title: 'Lecture 2',
         } as any)
 
-      jest.mocked(prisma.contentChunk.findMany)
+      prismaMock.contentChunk.findMany
         .mockResolvedValueOnce([
           { id: 'chunk-1', content: 'Content 1' },
         ] as any)
         .mockRejectedValueOnce(new Error('Database error'))
 
-      jest.mocked(embeddingService.generateBatchEmbeddings).mockResolvedValue({
+      embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: [new Array(1536).fill(0.1)],
         errors: new Map(),
         successCount: 1,
         failureCount: 0,
       })
 
-      jest.mocked(prisma.lecture.update).mockResolvedValue({} as any)
-      jest.mocked(prisma.$executeRaw).mockResolvedValue(1)
+      prismaMock.lecture.update.mockResolvedValue({} as any)
+      prismaMock.$executeRaw.mockResolvedValue(1)
 
       const result = await batchJob.processLecturesWithMissingEmbeddings()
 
@@ -170,17 +188,17 @@ describe('EmbeddingBatchJob', () => {
     it('should generate embeddings for a single lecture', async () => {
       const lectureId = 'lec-123'
 
-      jest.mocked(prisma.lecture.findUnique).mockResolvedValue({
+      prismaMock.lecture.findUnique.mockResolvedValue({
         id: lectureId,
         title: 'Test Lecture',
       } as any)
 
-      jest.mocked(prisma.contentChunk.findMany).mockResolvedValue([
+      prismaMock.contentChunk.findMany.mockResolvedValue([
         { id: 'chunk-1', content: 'Content 1' },
         { id: 'chunk-2', content: 'Content 2' },
       ] as any)
 
-      jest.mocked(embeddingService.generateBatchEmbeddings).mockResolvedValue({
+      embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: [
           new Array(1536).fill(0.1),
           new Array(1536).fill(0.2),
@@ -190,8 +208,8 @@ describe('EmbeddingBatchJob', () => {
         failureCount: 0,
       })
 
-      jest.mocked(prisma.lecture.update).mockResolvedValue({} as any)
-      jest.mocked(prisma.$executeRaw).mockResolvedValue(1)
+      prismaMock.lecture.update.mockResolvedValue({} as any)
+      prismaMock.$executeRaw.mockResolvedValue(1)
 
       const result = await batchJob.processLectureEmbeddings(lectureId)
 
@@ -204,13 +222,13 @@ describe('EmbeddingBatchJob', () => {
     it('should handle lecture with no missing embeddings', async () => {
       const lectureId = 'lec-123'
 
-      jest.mocked(prisma.lecture.findUnique).mockResolvedValue({
+      prismaMock.lecture.findUnique.mockResolvedValue({
         id: lectureId,
         title: 'Test Lecture',
       } as any)
 
-      jest.mocked(prisma.contentChunk.findMany).mockResolvedValue([])
-      jest.mocked(prisma.lecture.update).mockResolvedValue({} as any)
+      prismaMock.contentChunk.findMany.mockResolvedValue([])
+      prismaMock.lecture.update.mockResolvedValue({} as any)
 
       const result = await batchJob.processLectureEmbeddings(lectureId)
 
@@ -222,19 +240,19 @@ describe('EmbeddingBatchJob', () => {
     it('should track partial embedding failures', async () => {
       const lectureId = 'lec-123'
 
-      jest.mocked(prisma.lecture.findUnique).mockResolvedValue({
+      prismaMock.lecture.findUnique.mockResolvedValue({
         id: lectureId,
         title: 'Test Lecture',
       } as any)
 
-      jest.mocked(prisma.contentChunk.findMany).mockResolvedValue([
+      prismaMock.contentChunk.findMany.mockResolvedValue([
         { id: 'chunk-1', content: 'Content 1' },
         { id: 'chunk-2', content: 'Content 2' },
         { id: 'chunk-3', content: 'Content 3' },
       ] as any)
 
       // First embedding succeeds, second and third fail
-      jest.mocked(embeddingService.generateBatchEmbeddings).mockResolvedValue({
+      embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: [new Array(1536).fill(0.1), [], []],
         errors: new Map([
           [1, 'API rate limit'],
@@ -244,8 +262,8 @@ describe('EmbeddingBatchJob', () => {
         failureCount: 2,
       })
 
-      jest.mocked(prisma.lecture.update).mockResolvedValue({} as any)
-      jest.mocked(prisma.$executeRaw).mockResolvedValue(1)
+      prismaMock.lecture.update.mockResolvedValue({} as any)
+      prismaMock.$executeRaw.mockResolvedValue(1)
 
       const result = await batchJob.processLectureEmbeddings(lectureId)
 
@@ -258,29 +276,29 @@ describe('EmbeddingBatchJob', () => {
     it('should update lecture status correctly through lifecycle', async () => {
       const lectureId = 'lec-123'
 
-      jest.mocked(prisma.lecture.findUnique).mockResolvedValue({
+      prismaMock.lecture.findUnique.mockResolvedValue({
         id: lectureId,
         title: 'Test Lecture',
       } as any)
 
-      jest.mocked(prisma.contentChunk.findMany).mockResolvedValue([
+      prismaMock.contentChunk.findMany.mockResolvedValue([
         { id: 'chunk-1', content: 'Content 1' },
       ] as any)
 
-      jest.mocked(embeddingService.generateBatchEmbeddings).mockResolvedValue({
+      embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: [new Array(1536).fill(0.1)],
         errors: new Map(),
         successCount: 1,
         failureCount: 0,
       })
 
-      jest.mocked(prisma.lecture.update).mockResolvedValue({} as any)
-      jest.mocked(prisma.$executeRaw).mockResolvedValue(1)
+      prismaMock.lecture.update.mockResolvedValue({} as any)
+      prismaMock.$executeRaw.mockResolvedValue(1)
 
       await batchJob.processLectureEmbeddings(lectureId)
 
       // Verify status progression: EMBEDDING � COMPLETED
-      const updateCalls = jest.mocked(prisma.lecture.update).mock.calls
+      const updateCalls = prismaMock.lecture.update.mock.calls
 
       // Should update to EMBEDDING status
       expect(updateCalls).toContainEqual([
@@ -319,24 +337,24 @@ describe('EmbeddingBatchJob', () => {
         { id: 'lec-5', title: 'Lecture 5', missingCount: 1 },
       ]
 
-      jest.mocked(prisma.$queryRaw).mockResolvedValue(mockLectures)
-      jest.mocked(prisma.lecture.findUnique).mockImplementation(({ where }) =>
+      prismaMock.$queryRaw.mockResolvedValue(mockLectures)
+      prismaMock.lecture.findUnique.mockImplementation((params: any) =>
         Promise.resolve({
-          id: where.id,
-          title: `Lecture ${where.id}`,
+          id: params.where.id,
+          title: `Lecture ${params.where.id}`,
         } as any)
       )
-      jest.mocked(prisma.contentChunk.findMany).mockResolvedValue([
+      prismaMock.contentChunk.findMany.mockResolvedValue([
         { id: 'chunk-1', content: 'Content' },
       ] as any)
-      jest.mocked(embeddingService.generateBatchEmbeddings).mockResolvedValue({
+      embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: [new Array(1536).fill(0.1)],
         errors: new Map(),
         successCount: 1,
         failureCount: 0,
       })
-      jest.mocked(prisma.lecture.update).mockResolvedValue({} as any)
-      jest.mocked(prisma.$executeRaw).mockResolvedValue(1)
+      prismaMock.lecture.update.mockResolvedValue({} as any)
+      prismaMock.$executeRaw.mockResolvedValue(1)
 
       const result = await batchJobWithLimit.processLecturesWithMissingEmbeddings()
 
@@ -349,7 +367,7 @@ describe('EmbeddingBatchJob', () => {
     it('should update embedding progress during processing', async () => {
       const lectureId = 'lec-123'
 
-      jest.mocked(prisma.lecture.findUnique).mockResolvedValue({
+      prismaMock.lecture.findUnique.mockResolvedValue({
         id: lectureId,
         title: 'Test Lecture',
       } as any)
@@ -360,19 +378,19 @@ describe('EmbeddingBatchJob', () => {
         content: `Content ${i + 1}`,
       }))
 
-      jest.mocked(prisma.contentChunk.findMany).mockResolvedValue(
+      prismaMock.contentChunk.findMany.mockResolvedValue(
         mockChunks as any
       )
 
-      jest.mocked(embeddingService.generateBatchEmbeddings).mockResolvedValue({
+      embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: Array(10).fill(new Array(1536).fill(0.1)),
         errors: new Map(),
         successCount: 10,
         failureCount: 0,
       })
 
-      jest.mocked(prisma.lecture.update).mockResolvedValue({} as any)
-      jest.mocked(prisma.$executeRaw).mockResolvedValue(1)
+      prismaMock.lecture.update.mockResolvedValue({} as any)
+      prismaMock.$executeRaw.mockResolvedValue(1)
 
       await batchJob.processLectureEmbeddings(lectureId)
 

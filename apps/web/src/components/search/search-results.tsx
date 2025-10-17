@@ -1,14 +1,23 @@
 "use client"
 
 import * as React from "react"
-import { FileText, ChevronLeft, ChevronRight } from "lucide-react"
+import { FileText, ChevronLeft, ChevronRight, Network, List } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { SearchResultItem } from "./search-result-item"
 import type { SearchResult } from "./search-result-item"
+import dynamic from "next/dynamic"
+
+// Dynamic import for SearchGraphView to avoid SSR issues
+const SearchGraphView = dynamic(
+  () => import("./search-graph-view"),
+  { ssr: false }
+)
 
 export type { SearchResult }
+
+type ViewMode = 'list' | 'graph'
 
 interface SearchResultsProps {
   results: SearchResult[]
@@ -18,14 +27,15 @@ interface SearchResultsProps {
   searchQuery?: string
   onPageChange?: (page: number) => void
   onResultClick?: (result: SearchResult) => void
+  onExpandSearch?: (nodeId: string, type: string) => void
   className?: string
 }
 
 const RESULTS_PER_PAGE = 20
 
 /**
- * SearchResults component displays search results with pagination
- * Uses SearchResultItem for individual results with highlighting support
+ * SearchResults component displays search results with pagination and graph view
+ * Uses SearchResultItem for list view and SearchGraphView for graph visualization
  */
 export function SearchResults({
   results,
@@ -35,8 +45,10 @@ export function SearchResults({
   searchQuery,
   onPageChange,
   onResultClick,
+  onExpandSearch,
   className,
 }: SearchResultsProps) {
+  const [viewMode, setViewMode] = React.useState<ViewMode>('list')
   if (isLoading) {
     return (
       <div className={cn("space-y-4", className)} role="status" aria-live="polite" aria-label="Loading search results">
@@ -90,25 +102,64 @@ export function SearchResults({
 
   return (
     <div className={cn("space-y-4", className)} role="region" aria-label="Search results">
-      {/* Results Count */}
+      {/* Results Count and View Toggle */}
       <div className="flex items-center justify-between px-1">
         <p className="text-sm text-muted-foreground" role="status" aria-live="polite">
           Showing {((currentPage - 1) * RESULTS_PER_PAGE) + 1} - {Math.min(currentPage * RESULTS_PER_PAGE, results.length)} of {results.length} results
         </p>
+
+        {/* View Mode Toggle */}
+        <div className="flex items-center gap-1 bg-white/60 backdrop-blur-md rounded-lg p-1 border border-white/40">
+          <Button
+            variant={viewMode === 'list' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('list')}
+            className="h-8 px-3"
+            aria-label="List view"
+          >
+            <List className="h-4 w-4 mr-1" />
+            List
+          </Button>
+          <Button
+            variant={viewMode === 'graph' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('graph')}
+            className="h-8 px-3"
+            aria-label="Graph view"
+          >
+            <Network className="h-4 w-4 mr-1" />
+            Graph
+          </Button>
+        </div>
       </div>
 
-      {/* Results List */}
-      <div className="space-y-3" role="list">
-        {results.map((result) => (
-          <div key={result.id} role="listitem">
-            <SearchResultItem
-              result={result}
-              searchQuery={searchQuery}
-              onClick={onResultClick}
-            />
-          </div>
-        ))}
-      </div>
+      {/* Results View */}
+      {viewMode === 'list' ? (
+        <div className="space-y-3" role="list">
+          {results.map((result) => (
+            <div key={result.id} role="listitem">
+              <SearchResultItem
+                result={result}
+                searchQuery={searchQuery}
+                onClick={onResultClick}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="h-[600px] rounded-xl border border-white/40 overflow-hidden">
+          <SearchGraphView
+            results={results}
+            onNodeClick={onResultClick ? (nodeId: string) => {
+              const result = results.find(r => r.id === nodeId)
+              if (result) {
+                onResultClick(result)
+              }
+            } : undefined}
+            onExpandSearch={onExpandSearch}
+          />
+        </div>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (

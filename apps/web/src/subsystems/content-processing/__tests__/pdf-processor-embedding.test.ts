@@ -39,6 +39,28 @@ jest.mock('@/lib/content-chunker', () => ({
   },
 }))
 
+type AsyncMock<T = any> = jest.MockedFunction<(...args: any[]) => Promise<T>>
+
+const prismaMock = prisma as unknown as {
+  lecture: {
+    findUnique: AsyncMock<any>
+    update: AsyncMock<any>
+  }
+  contentChunk: {
+    create: AsyncMock<any>
+    findMany: AsyncMock<any[]>
+  }
+  $executeRaw: AsyncMock<number>
+}
+
+const embeddingServiceMock = embeddingService as unknown as {
+  generateBatchEmbeddings: AsyncMock<any>
+}
+
+const contentChunkerMock = contentChunker as unknown as {
+  chunkText: AsyncMock<any>
+}
+
 describe('PDFProcessor - Embedding Generation', () => {
   let processor: PDFProcessor
 
@@ -65,11 +87,25 @@ describe('PDFProcessor - Embedding Generation', () => {
       const mockChunks = [
         {
           content: 'Chunk 1 content',
-          metadata: { chunkIndex: 0, pageNumber: 1, tokenCount: 100, wordCount: 75, charCount: 300 },
+          metadata: {
+            lectureId,
+            chunkIndex: 0,
+            pageNumber: 1,
+            tokenCount: 100,
+            wordCount: 75,
+            charCount: 300,
+          },
         },
         {
           content: 'Chunk 2 content',
-          metadata: { chunkIndex: 1, pageNumber: 1, tokenCount: 120, wordCount: 90, charCount: 360 },
+          metadata: {
+            lectureId,
+            chunkIndex: 1,
+            pageNumber: 1,
+            tokenCount: 120,
+            wordCount: 90,
+            charCount: 360,
+          },
         },
       ]
 
@@ -79,23 +115,23 @@ describe('PDFProcessor - Embedding Generation', () => {
       ]
 
       // Mock Prisma calls
-      jest.mocked(prisma.lecture.findUnique).mockResolvedValue(mockLecture as any)
-      jest.mocked(prisma.lecture.update).mockResolvedValue(mockLecture as any)
-      jest.mocked(contentChunker.chunkText).mockResolvedValue(mockChunks)
-      jest.mocked(prisma.contentChunk.create)
+      prismaMock.lecture.findUnique.mockResolvedValue(mockLecture as any)
+      prismaMock.lecture.update.mockResolvedValue(mockLecture as any)
+      contentChunkerMock.chunkText.mockResolvedValue(mockChunks)
+      prismaMock.contentChunk.create
         .mockResolvedValueOnce({ id: 'chunk-1', ...mockChunks[0] } as any)
         .mockResolvedValueOnce({ id: 'chunk-2', ...mockChunks[1] } as any)
-      jest.mocked(prisma.contentChunk.findMany).mockResolvedValue([
+      prismaMock.contentChunk.findMany.mockResolvedValue([
         { id: 'chunk-1', content: mockChunks[0].content },
         { id: 'chunk-2', content: mockChunks[1].content },
       ] as any)
-      jest.mocked(embeddingService.generateBatchEmbeddings).mockResolvedValue({
+      embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: mockEmbeddings,
         errors: new Map(),
         successCount: 2,
         failureCount: 0,
       })
-      jest.mocked(prisma.$executeRaw).mockResolvedValue(1)
+      prismaMock.$executeRaw.mockResolvedValue(1)
 
       // Execute
       const result = await processor.processLecture(lectureId)
@@ -136,8 +172,8 @@ describe('PDFProcessor - Embedding Generation', () => {
     it('should handle lecture not found error', async () => {
       const lectureId = 'nonexistent-lecture'
 
-      jest.mocked(prisma.lecture.findUnique).mockResolvedValue(null)
-      jest.mocked(prisma.lecture.update).mockResolvedValue({} as any)
+      prismaMock.lecture.findUnique.mockResolvedValue(null)
+      prismaMock.lecture.update.mockResolvedValue({} as any)
 
       const result = await processor.processLecture(lectureId)
 
@@ -164,23 +200,30 @@ describe('PDFProcessor - Embedding Generation', () => {
       const mockChunks = [
         {
           content: 'Chunk 1 content',
-          metadata: { chunkIndex: 0, pageNumber: 1, tokenCount: 100, wordCount: 75, charCount: 300 },
+          metadata: {
+            lectureId,
+            chunkIndex: 0,
+            pageNumber: 1,
+            tokenCount: 100,
+            wordCount: 75,
+            charCount: 300,
+          },
         },
       ]
 
-      jest.mocked(prisma.lecture.findUnique).mockResolvedValue(mockLecture as any)
-      jest.mocked(prisma.lecture.update).mockResolvedValue(mockLecture as any)
-      jest.mocked(contentChunker.chunkText).mockResolvedValue(mockChunks)
-      jest.mocked(prisma.contentChunk.create).mockResolvedValue({
+      prismaMock.lecture.findUnique.mockResolvedValue(mockLecture as any)
+      prismaMock.lecture.update.mockResolvedValue(mockLecture as any)
+      contentChunkerMock.chunkText.mockResolvedValue(mockChunks)
+      prismaMock.contentChunk.create.mockResolvedValue({
         id: 'chunk-1',
         ...mockChunks[0],
       } as any)
-      jest.mocked(prisma.contentChunk.findMany).mockResolvedValue([
+      prismaMock.contentChunk.findMany.mockResolvedValue([
         { id: 'chunk-1', content: mockChunks[0].content },
       ] as any)
 
       // Mock embedding failure
-      jest.mocked(embeddingService.generateBatchEmbeddings).mockResolvedValue({
+      embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: [[]],
         errors: new Map([[0, 'API rate limit exceeded']]),
         successCount: 0,
@@ -204,8 +247,8 @@ describe('PDFProcessor - Embedding Generation', () => {
         fileUrl: 'file:///path/to/empty.pdf',
       }
 
-      jest.mocked(prisma.lecture.findUnique).mockResolvedValue(mockLecture as any)
-      jest.mocked(prisma.lecture.update).mockResolvedValue(mockLecture as any)
+      prismaMock.lecture.findUnique.mockResolvedValue(mockLecture as any)
+      prismaMock.lecture.update.mockResolvedValue(mockLecture as any)
 
       // Note: The processor uses placeholder text extraction, so it won't actually be empty
       // This test would be more relevant with actual OCR integration
@@ -227,6 +270,7 @@ describe('PDFProcessor - Embedding Generation', () => {
       const mockChunks = Array.from({ length: 25 }, (_, i) => ({
         content: `Chunk ${i + 1} content`,
         metadata: {
+          lectureId,
           chunkIndex: i,
           pageNumber: 1,
           tokenCount: 100,
@@ -239,20 +283,20 @@ describe('PDFProcessor - Embedding Generation', () => {
         new Array(1536).fill(0.1)
       )
 
-      jest.mocked(prisma.lecture.findUnique).mockResolvedValue(mockLecture as any)
-      jest.mocked(prisma.lecture.update).mockResolvedValue(mockLecture as any)
-      jest.mocked(contentChunker.chunkText).mockResolvedValue(mockChunks)
+      prismaMock.lecture.findUnique.mockResolvedValue(mockLecture as any)
+      prismaMock.lecture.update.mockResolvedValue(mockLecture as any)
+      contentChunkerMock.chunkText.mockResolvedValue(mockChunks)
 
       // Mock chunk creation
       mockChunks.forEach((chunk, i) => {
-        jest.mocked(prisma.contentChunk.create).mockResolvedValueOnce({
+        prismaMock.contentChunk.create.mockResolvedValueOnce({
           id: `chunk-${i + 1}`,
           ...chunk,
         } as any)
       })
 
       // Mock batched embedding generation
-      jest.mocked(prisma.contentChunk.findMany).mockImplementation(
+      prismaMock.contentChunk.findMany.mockImplementation(
         ({ where }: any) => {
           const ids = where.id.in
           return Promise.resolve(
@@ -264,14 +308,14 @@ describe('PDFProcessor - Embedding Generation', () => {
         }
       )
 
-      jest.mocked(embeddingService.generateBatchEmbeddings).mockResolvedValue({
+      embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: Array(10).fill(new Array(1536).fill(0.1)),
         errors: new Map(),
         successCount: 10,
         failureCount: 0,
       })
 
-      jest.mocked(prisma.$executeRaw).mockResolvedValue(1)
+      prismaMock.$executeRaw.mockResolvedValue(1)
 
       const result = await processor.processLecture(lectureId)
 
@@ -279,13 +323,11 @@ describe('PDFProcessor - Embedding Generation', () => {
       expect(result.chunkCount).toBe(25)
 
       // Verify progress was updated multiple times (once per batch)
-      const progressCalls = vi
-        .mocked(prisma.lecture.update)
-        .mock.calls.filter(
-          (call) =>
-            call[0].data && 'embeddingProgress' in call[0].data &&
-            call[0].data.embeddingProgress !== 1.0
-        )
+      const progressCalls = prismaMock.lecture.update.mock.calls.filter(
+        (call: any[]) =>
+          call[0].data && 'embeddingProgress' in call[0].data &&
+          call[0].data.embeddingProgress !== 1.0
+      )
 
       expect(progressCalls.length).toBeGreaterThan(0)
     })
@@ -303,24 +345,31 @@ describe('PDFProcessor - Embedding Generation', () => {
       const mockChunks = [
         {
           content: 'Test content',
-          metadata: { chunkIndex: 0, pageNumber: 1, tokenCount: 50, wordCount: 37, charCount: 150 },
+          metadata: {
+            lectureId,
+            chunkIndex: 0,
+            pageNumber: 1,
+            tokenCount: 50,
+            wordCount: 37,
+            charCount: 150,
+          },
         },
       ]
 
       const correctDimensionEmbedding = new Array(1536).fill(0.1)
 
-      jest.mocked(prisma.lecture.findUnique).mockResolvedValue(mockLecture as any)
-      jest.mocked(prisma.lecture.update).mockResolvedValue(mockLecture as any)
-      jest.mocked(contentChunker.chunkText).mockResolvedValue(mockChunks)
-      jest.mocked(prisma.contentChunk.create).mockResolvedValue({
+      prismaMock.lecture.findUnique.mockResolvedValue(mockLecture as any)
+      prismaMock.lecture.update.mockResolvedValue(mockLecture as any)
+      contentChunkerMock.chunkText.mockResolvedValue(mockChunks)
+      prismaMock.contentChunk.create.mockResolvedValue({
         id: 'chunk-1',
         ...mockChunks[0],
       } as any)
-      jest.mocked(prisma.contentChunk.findMany).mockResolvedValue([
+      prismaMock.contentChunk.findMany.mockResolvedValue([
         { id: 'chunk-1', content: mockChunks[0].content },
       ] as any)
 
-      jest.mocked(embeddingService.generateBatchEmbeddings).mockResolvedValue({
+      embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: [correctDimensionEmbedding],
         errors: new Map(),
         successCount: 1,
@@ -328,11 +377,11 @@ describe('PDFProcessor - Embedding Generation', () => {
       })
 
       let capturedEmbedding: number[] | null = null
-      jest.mocked(prisma.$executeRaw).mockImplementation((...args: any[]) => {
+      prismaMock.$executeRaw.mockImplementation((...args: any[]) => {
         // Extract embedding from SQL query
         const embeddingStr = args[1] // Second parameter after template
         if (embeddingStr) {
-          capturedEmbedding = JSON.parse(embeddingStr)
+          capturedEmbedding = JSON.parse(embeddingStr) as number[]
         }
         return Promise.resolve(1)
       })
@@ -340,7 +389,13 @@ describe('PDFProcessor - Embedding Generation', () => {
       await processor.processLecture(lectureId)
 
       expect(capturedEmbedding).not.toBeNull()
-      expect(capturedEmbedding?.length).toBe(1536)
+
+      const embedding = capturedEmbedding
+      if (!embedding) {
+        throw new Error('Embedding was not captured for assertion')
+      }
+
+      expect((embedding as number[]).length).toBe(1536)
     })
   })
 })

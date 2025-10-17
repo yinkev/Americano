@@ -464,8 +464,8 @@ curl http://localhost:3000/api/search/suggestions \\
  * 3. Run: npm test
  */
 
-// Type helper for test assertions
-const expect = {
+// Type helper for test documentation (not actual expect function)
+const testExpectations = {
   any: (constructor: any) => `<${constructor.name}>`,
   arrayContaining: (items: any[]) => `array containing ${JSON.stringify(items)}`,
   objectContaining: (obj: any) => `object containing ${JSON.stringify(obj)}`,

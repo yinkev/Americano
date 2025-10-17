@@ -197,13 +197,29 @@ export interface RateLimitResult {
 }
 
 /**
- * Singleton instance for search API rate limiting
- * Story 3.1 requirement: 20 searches per minute per user
+ * Singleton instances for different API rate limiting
+ * Story 3.6 Task 9.3: Rate limiting implementation
  */
+
+/** Search endpoint: 60 searches per minute per user */
 export const searchRateLimiter = new RateLimiter({
-  maxRequests: 20,
+  maxRequests: 60,
   windowMs: 60000, // 1 minute
   keyPrefix: 'search',
+})
+
+/** Autocomplete endpoint: 120 requests per minute per user */
+export const autocompleteRateLimiter = new RateLimiter({
+  maxRequests: 120,
+  windowMs: 60000, // 1 minute
+  keyPrefix: 'autocomplete',
+})
+
+/** Export endpoint: 10 exports per hour per user */
+export const exportRateLimiter = new RateLimiter({
+  maxRequests: 10,
+  windowMs: 3600000, // 1 hour
+  keyPrefix: 'export',
 })
 
 /**

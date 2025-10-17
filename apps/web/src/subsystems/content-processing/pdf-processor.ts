@@ -16,6 +16,7 @@ interface ProcessingResult {
   success: boolean
   chunks?: Array<{ content: string; chunkIndex: number }>
   embeddingCount?: number
+  chunkCount?: number
   error?: string
 }
 
@@ -110,6 +111,7 @@ export class PDFProcessor {
           chunkIndex: index,
         })),
         embeddingCount,
+        chunkCount: contentChunks.length,
       }
     } catch (error) {
       const errorMessage =

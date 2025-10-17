@@ -153,6 +153,9 @@ import { parseRequestBody, searchRequestSchema } from '@/subsystems/knowledge-gr
 import { semanticSearchEngine } from '@/subsystems/knowledge-graph/semantic-search'
 import { prisma } from '@/lib/db'
 import type { SearchAnalytics } from '@/subsystems/knowledge-graph/types'
+import { QueryBuilder } from '@/lib/query-builder'
+import { searchCache, SearchCache } from '@/lib/search-cache'
+import { performanceMonitor, withPerformanceTracking } from '@/lib/performance-monitor'
 
 /**
  * POST /api/search handler
@@ -187,15 +190,105 @@ async function handler(request: Request) {
   const { query, limit, offset, filters } = validation.data
 
   try {
-    // Perform semantic search
-    const searchResults = await semanticSearchEngine.search(query, {
-      limit,
-      offset,
-      filters,
-    })
+    // Story 3.6 Task 9.1: Check cache first
+    const isComplexQuery = SearchCache.isComplexQuery(query, filters as any)
+    const cachedResults = searchCache.get(query, filters as any)
+
+    if (cachedResults) {
+      // Cache hit - return cached results
+      const totalLatency = Date.now() - startTime
+
+      // Record cache hit metric
+      performanceMonitor.record({
+        type: 'search',
+        operation: 'POST /api/search',
+        durationMs: totalLatency,
+        success: true,
+        metadata: {
+          userId: user.id,
+          query,
+          resultCount: cachedResults.total,
+          cacheHit: true,
+        },
+        timestamp: new Date(),
+      })
+
+      return Response.json(
+        successResponse({
+          results: cachedResults.results,
+          total: cachedResults.total,
+          latency: totalLatency,
+          query,
+          filters: filters || {},
+          pagination: {
+            limit,
+            offset,
+            hasMore: offset + cachedResults.results.length < cachedResults.total,
+          },
+          cached: true, // Indicate cache hit
+          cacheStats: searchCache.getStats(),
+        })
+      )
+    }
+
+    // Cache miss - proceed with search
+    // Story 3.6 Task 1.4: Advanced Query Parsing
+    // Parse the query for boolean operators and field-specific syntax
+    const queryBuilder = new QueryBuilder()
+    const parsedQuery = queryBuilder.parseQuery(query)
+
+    // Check for parsing errors
+    if (parsedQuery.errors.length > 0) {
+      return Response.json(
+        errorResponse(
+          'INVALID_QUERY',
+          `Invalid query syntax: ${parsedQuery.errors[0]}`,
+          { errors: parsedQuery.errors }
+        ),
+        { status: 400 }
+      )
+    }
+
+    // Build semantic and filter queries
+    const semanticQuery = queryBuilder.buildSemanticQuery(parsedQuery)
+    const advancedFilters = queryBuilder.buildFilterQuery(parsedQuery)
+
+    // Merge user filters with advanced query filters
+    const mergedFilters = {
+      ...filters,
+      ...advancedFilters,
+    }
+
+    // Perform semantic search with advanced filters
+    const searchResults = await semanticSearchEngine.search(
+      semanticQuery.embeddingText,
+      {
+        limit,
+        offset,
+        filters: mergedFilters,
+      }
+    )
 
     const { results, total, latency: searchLatency } = searchResults
     const totalLatency = Date.now() - startTime
+
+    // Story 3.6 Task 9.1: Store results in cache
+    searchCache.set(query, filters as any, results as any, total, isComplexQuery)
+
+    // Story 3.6 Task 9.5: Record performance metric
+    performanceMonitor.record({
+      type: 'search',
+      operation: 'POST /api/search',
+      durationMs: totalLatency,
+      success: true,
+      metadata: {
+        userId: user.id,
+        query,
+        resultCount: total,
+        cacheHit: false,
+      },
+      timestamp: new Date(),
+    })
 
     // Log search query for analytics (async, non-blocking)
     // Story 3.1 Task 6: Search History and Analytics
@@ -212,7 +305,7 @@ async function handler(request: Request) {
       console.error('Failed to log search query:', error)
     })
 
-    // Return search results
+    // Return search results with query execution plan
     return Response.json(
       successResponse({
         results,
@@ -224,6 +317,21 @@ async function handler(request: Request) {
           limit,
           offset,
           hasMore: offset + results.length < total,
+        },
+        // Story 3.6 Task 1.4: Include query execution plan for debugging
+        queryPlan: {
+          original: query,
+          parsed: parsedQuery.metadata,
+          semanticWeight: semanticQuery.weight,
+          hasAdvancedSyntax: parsedQuery.ast !== null,
+        },
+        // Story 3.6 Task 9: Performance metrics
+        cached: false,
+        cacheStats: searchCache.getStats(),
+        performanceStats: {
+          totalLatency,
+          searchLatency,
+          cacheEnabled: true,
         },
       })
     )
@@ -269,10 +377,14 @@ async function logSearchQuery(analytics: SearchAnalytics): Promise<void> {
 }
 
 /**
- * Export POST handler with rate limiting and error handling
- * Rate limit: 20 requests per minute per user
+ * Export POST handler with rate limiting, performance tracking, and error handling
+ * Story 3.6 Task 9: Rate limit 60 searches/minute, performance monitoring
  */
 export const POST = withRateLimit(
   searchRateLimiter,
-  withErrorHandler(handler)
+  withPerformanceTracking(
+    'search',
+    'POST /api/search',
+    withErrorHandler(handler)
+  )
 )

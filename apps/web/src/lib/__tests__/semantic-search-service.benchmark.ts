@@ -524,4 +524,5 @@ if (require.main === module) {
   main().catch(console.error)
 }
 
-export { SemanticSearchBenchmark, BenchmarkResult, PerformanceMetrics }
+export { SemanticSearchBenchmark }
+export type { BenchmarkResult, PerformanceMetrics }

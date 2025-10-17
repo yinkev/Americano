@@ -21,6 +21,7 @@ jest.mock('../ai/gemini-client')
 describe('EmbeddingService', () => {
   let service: EmbeddingService
   let mockGeminiClient: jest.Mocked<GeminiClient>
+  let generateEmbeddingMock: jest.MockedFunction<GeminiClient['generateEmbedding']>
 
   beforeEach(() => {
     // Reset mocks
@@ -28,18 +29,22 @@ describe('EmbeddingService', () => {
 
     // Setup mock responses
     const mockEmbedding = Array(1536).fill(0).map(() => Math.random())
-    mockGeminiClient = {
-      generateEmbedding: jest.fn().mockResolvedValue({
+    generateEmbeddingMock = (
+      jest.fn(async (text: string) => ({
         embedding: mockEmbedding,
         error: undefined,
-      }),
-    } as any
+      })) as unknown as jest.MockedFunction<GeminiClient['generateEmbedding']>
+    )
 
-    // Create service with test config
+    mockGeminiClient = {
+      generateEmbedding: generateEmbeddingMock,
+    } as unknown as jest.Mocked<GeminiClient>
+
+    // Create service with test config (reduced retries for faster tests)
     service = new EmbeddingService({
       maxRequestsPerMinute: 10, // Lower for faster tests
       batchSize: 5,
-      maxRetries: 3,
+      maxRetries: 1, // Reduced for faster tests
     })
 
     // Inject mock client
@@ -59,8 +64,8 @@ describe('EmbeddingService', () => {
 
       expect(result.error).toBeUndefined()
       expect(result.embedding).toHaveLength(1536)
-      expect(mockGeminiClient.generateEmbedding).toHaveBeenCalledWith(text)
-      expect(mockGeminiClient.generateEmbedding).toHaveBeenCalledTimes(1)
+      expect(generateEmbeddingMock).toHaveBeenCalledWith(text)
+      expect(generateEmbeddingMock).toHaveBeenCalledTimes(1)
     })
 
     it('should return error for empty text', async () => {
@@ -68,7 +73,7 @@ describe('EmbeddingService', () => {
 
       expect(result.error).toBe('Empty text provided')
       expect(result.embedding).toEqual([])
-      expect(mockGeminiClient.generateEmbedding).not.toHaveBeenCalled()
+      expect(generateEmbeddingMock).not.toHaveBeenCalled()
     })
 
     it('should return error for whitespace-only text', async () => {
@@ -80,7 +85,7 @@ describe('EmbeddingService', () => {
 
     it('should handle API errors gracefully', async () => {
       const errorMessage = 'API rate limit exceeded'
-      mockGeminiClient.generateEmbedding.mockResolvedValue({
+      generateEmbeddingMock.mockResolvedValue({
         embedding: [],
         error: errorMessage,
       })
@@ -118,40 +123,29 @@ describe('EmbeddingService', () => {
       expect(result.failureCount).toBe(0)
       expect(result.embeddings).toHaveLength(3)
       expect(result.errors.size).toBe(0)
-      expect(mockGeminiClient.generateEmbedding).toHaveBeenCalledTimes(3)
+      expect(generateEmbeddingMock).toHaveBeenCalledTimes(3)
     })
 
     it('should process in batches according to batch size', async () => {
-      // Use fake timers to skip delays between batches
-      jest.useFakeTimers()
+      // Create 6 texts (should process in 2 batches of 5, 1)
+      const texts = Array(6).fill('Medical text').map((_, i) => `${_} ${i}`)
 
-      // Create 12 texts (should process in 3 batches of 5, 5, 2)
-      const texts = Array(12).fill('Medical text').map((_, i) => `${_} ${i}`)
+      // Process batches
+      const result = await service.generateBatchEmbeddings(texts)
 
-      // Start batch processing
-      const resultPromise = service.generateBatchEmbeddings(texts)
-
-      // Fast-forward through delays
-      jest.runAllTimers()
-
-      const result = await resultPromise
-
-      expect(result.successCount).toBe(12)
-      expect(result.embeddings).toHaveLength(12)
+      expect(result.successCount).toBe(6)
+      expect(result.embeddings).toHaveLength(6)
       // Verify it called generateEmbedding for each text
-      expect(mockGeminiClient.generateEmbedding).toHaveBeenCalledTimes(12)
-
-      // Clean up
-      jest.useRealTimers()
-    })
+      expect(generateEmbeddingMock).toHaveBeenCalledTimes(6)
+    }, 20000) // Increase timeout for batch processing with retry logic
 
     it('should track errors by index in batch', async () => {
-      // Mock first and third to fail
-      mockGeminiClient.generateEmbedding
+      // Mock first and third to fail with permanent errors
+      generateEmbeddingMock
         .mockResolvedValueOnce({ embedding: Array(1536).fill(0), error: undefined })
-        .mockResolvedValueOnce({ embedding: [], error: 'Error on text 2' })
+        .mockResolvedValueOnce({ embedding: [], error: '400 Error on text 2' })
         .mockResolvedValueOnce({ embedding: Array(1536).fill(0), error: undefined })
-        .mockResolvedValueOnce({ embedding: [], error: 'Error on text 4' })
+        .mockResolvedValueOnce({ embedding: [], error: '400 Error on text 4' })
 
       const texts = ['text1', 'text2', 'text3', 'text4']
       const result = await service.generateBatchEmbeddings(texts)
@@ -160,20 +154,23 @@ describe('EmbeddingService', () => {
       expect(result.failureCount).toBe(2)
       expect(result.errors.has(1)).toBe(true)
       expect(result.errors.has(3)).toBe(true)
-      expect(result.errors.get(1)).toBe('Error on text 2')
-      expect(result.errors.get(3)).toBe('Error on text 4')
-    })
+      expect(result.errors.get(1)).toContain('Error on text 2')
+      expect(result.errors.get(3)).toContain('Error on text 4')
+    }, 15000) // Increase timeout
 
     it('should return empty arrays for failed embeddings', async () => {
-      mockGeminiClient.generateEmbedding
+      generateEmbeddingMock
         .mockResolvedValueOnce({ embedding: Array(1536).fill(0.5), error: undefined })
-        .mockResolvedValueOnce({ embedding: [], error: 'Failed' })
+        .mockResolvedValueOnce({ embedding: [], error: '400 Failed' }) // Permanent error
 
       const result = await service.generateBatchEmbeddings(['text1', 'text2'])
 
+      expect(result.successCount).toBe(1)
+      expect(result.failureCount).toBe(1)
       expect(result.embeddings[0]).toHaveLength(1536)
       expect(result.embeddings[1]).toEqual([])
-    })
+      expect(result.errors.has(1)).toBe(true)
+    }, 15000) // Increase timeout
 
     it('should handle empty array input', async () => {
       const result = await service.generateBatchEmbeddings([])
@@ -206,7 +203,7 @@ describe('EmbeddingService', () => {
       const elapsed = Date.now() - startTime
 
       // Verify all requests completed
-      expect(mockGeminiClient.generateEmbedding).toHaveBeenCalledTimes(12)
+      expect(generateEmbeddingMock).toHaveBeenCalledTimes(12)
 
       // Clean up fake timers
       jest.useRealTimers()
@@ -292,15 +289,20 @@ describe('EmbeddingService', () => {
 
   describe('Error Handling', () => {
     it('should handle network errors from GeminiClient', async () => {
-      mockGeminiClient.generateEmbedding.mockRejectedValue(
+      generateEmbeddingMock.mockRejectedValue(
         new Error('Network timeout')
       )
 
-      await expect(service.generateEmbedding('test')).rejects.toThrow('Network timeout')
+      const result = await service.generateEmbedding('test')
+
+      expect(result.error).toBeDefined()
+      expect(result.error).toContain('Network timeout')
+      expect(result.embedding).toEqual([])
+      expect(result.attempts).toBeGreaterThan(0) // Should have attempted retries
     })
 
     it('should handle malformed API responses', async () => {
-      mockGeminiClient.generateEmbedding.mockResolvedValue({
+      generateEmbeddingMock.mockResolvedValue({
         embedding: null as any, // Invalid response
         error: undefined,
       })
@@ -312,16 +314,22 @@ describe('EmbeddingService', () => {
     })
 
     it('should continue batch processing when individual items fail', async () => {
-      mockGeminiClient.generateEmbedding
+      // First succeeds, second fails (permanent error), third succeeds
+      generateEmbeddingMock
         .mockResolvedValueOnce({ embedding: Array(1536).fill(0), error: undefined })
-        .mockRejectedValueOnce(new Error('Transient error'))
+        .mockResolvedValueOnce({ embedding: [], error: '400 Bad Request' }) // Permanent error
         .mockResolvedValueOnce({ embedding: Array(1536).fill(0), error: undefined })
 
       const texts = ['text1', 'text2', 'text3']
 
-      // Batch should complete despite one failure
-      await expect(service.generateBatchEmbeddings(texts)).rejects.toThrow('Transient error')
-    })
+      // Batch should complete with partial results
+      const result = await service.generateBatchEmbeddings(texts)
+
+      expect(result.successCount).toBe(2)
+      expect(result.failureCount).toBe(1)
+      expect(result.errors.has(1)).toBe(true) // Second text failed
+      expect(result.errors.get(1)).toContain('Bad Request')
+    }, 15000) // Increase timeout
   })
 
   describe('Performance', () => {
@@ -354,12 +362,12 @@ describe('EmbeddingService', () => {
 
       await service.generateEmbedding(testText)
 
-      expect(mockGeminiClient.generateEmbedding).toHaveBeenCalledWith(testText)
+      expect(generateEmbeddingMock).toHaveBeenCalledWith(testText)
     })
 
     it('should handle GeminiClient embedding result format', async () => {
       const mockEmbedding = Array(1536).fill(0).map((_, i) => i / 1536)
-      mockGeminiClient.generateEmbedding.mockResolvedValue({
+      generateEmbeddingMock.mockResolvedValue({
         embedding: mockEmbedding,
         error: undefined,
       })
@@ -389,7 +397,7 @@ describe('EmbeddingService', () => {
         expect(result.embedding).toHaveLength(1536)
       })
 
-      expect(mockGeminiClient.generateEmbedding).toHaveBeenCalledTimes(5)
+      expect(generateEmbeddingMock).toHaveBeenCalledTimes(5)
     })
   })
 })

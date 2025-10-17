@@ -16,6 +16,39 @@ import { prisma } from '@/lib/db'
 import { Prisma } from '@/generated/prisma'
 
 /**
+ * Log a search query for analytics
+ * Task 6.1: Search query logging
+ *
+ * @param params - Search logging parameters
+ */
+export async function logSearchQuery(params: {
+  userId: string
+  query: string
+  filters: any
+  resultCount: number
+  topResultId?: string
+  responseTimeMs: number
+  timestamp: Date
+}): Promise<void> {
+  try {
+    await prisma.searchQuery.create({
+      data: {
+        userId: params.userId,
+        query: params.query,
+        filters: params.filters as any,
+        resultCount: params.resultCount,
+        topResultId: params.topResultId,
+        responseTimeMs: params.responseTimeMs,
+        timestamp: params.timestamp,
+      },
+    })
+  } catch (error) {
+    console.error('Failed to log search query:', error)
+    // Don't throw - analytics logging should not break user experience
+  }
+}
+
+/**
  * Track a search result click
  * Task 6.2: Track click-through rates on search results
  *
@@ -459,9 +492,331 @@ export async function getSearchAnalyticsSummary(
 }
 
 /**
+ * Story 3.6 Task 5.1: Daily/weekly/monthly aggregation queries
+ * Get search volume aggregated by time period
+ *
+ * @param userId - User ID (optional)
+ * @param period - Aggregation period (7d, 30d, 90d)
+ * @returns Time-series data of search volume
+ */
+export async function getSearchVolumeOverTime(
+  userId?: string,
+  period: '7d' | '30d' | '90d' = '30d'
+): Promise<Array<{ date: string; count: number; avgResponseTimeMs: number }>> {
+  try {
+    const days = parseInt(period) // 7, 30, or 90
+    const since = new Date()
+    since.setDate(since.getDate() - days)
+
+    // Aggregate searches by day
+    const results = await prisma.$queryRaw<
+      Array<{ date: Date; count: bigint; avgResponseTime: number }>
+    >`
+      SELECT
+        DATE(timestamp) as date,
+        COUNT(*) as count,
+        AVG("responseTimeMs")::float as "avgResponseTime"
+      FROM search_queries
+      WHERE
+        timestamp >= ${since}
+        ${userId ? Prisma.sql`AND "userId" = ${userId}` : Prisma.empty}
+        AND "isAnonymized" = false
+      GROUP BY DATE(timestamp)
+      ORDER BY date ASC
+    `
+
+    return results.map((r) => ({
+      date: r.date.toISOString().split('T')[0], // YYYY-MM-DD format
+      count: Number(r.count),
+      avgResponseTimeMs: r.avgResponseTime || 0,
+    }))
+  } catch (error) {
+    console.error('Failed to get search volume over time:', error)
+    return []
+  }
+}
+
+/**
+ * Story 3.6 Task 5.1: Get searches by content type distribution
+ *
+ * @param userId - User ID (optional)
+ * @param timeWindowDays - Time window in days (default: 30)
+ * @returns Content type distribution
+ */
+export async function getSearchesByContentType(
+  userId?: string,
+  timeWindowDays: number = 30
+): Promise<Array<{ contentType: string; count: number; percentage: number }>> {
+  try {
+    const since = new Date()
+    since.setDate(since.getDate() - timeWindowDays)
+
+    // Get total searches
+    const totalSearches = await prisma.searchQuery.count({
+      where: {
+        timestamp: { gte: since },
+        ...(userId && { userId }),
+        isAnonymized: false,
+      },
+    })
+
+    if (totalSearches === 0) {
+      return []
+    }
+
+    // Get searches by content type from SearchClick data
+    const results = await prisma.$queryRaw<
+      Array<{ resultType: string; count: bigint }>
+    >`
+      SELECT
+        sc."resultType" as "resultType",
+        COUNT(*) as count
+      FROM search_clicks sc
+      INNER JOIN search_queries sq ON sc."searchQueryId" = sq.id
+      WHERE
+        sc.timestamp >= ${since}
+        ${userId ? Prisma.sql`AND sc."userId" = ${userId}` : Prisma.empty}
+      GROUP BY sc."resultType"
+      ORDER BY count DESC
+    `
+
+    return results.map((r) => ({
+      contentType: r.resultType,
+      count: Number(r.count),
+      percentage: (Number(r.count) / totalSearches) * 100,
+    }))
+  } catch (error) {
+    console.error('Failed to get searches by content type:', error)
+    return []
+  }
+}
+
+/**
+ * Story 3.6 Task 5.2: Gap analysis algorithm
+ * Identify high-frequency searches with low content matches
+ *
+ * Priority scoring: (search_frequency × (1 - avg_result_count / 10))
+ * Higher score = more urgent content gap
+ *
+ * @param userId - User ID (optional)
+ * @param timeWindowDays - Time window in days (default: 30)
+ * @param limit - Maximum gaps to return (default: 20)
+ * @returns Content gaps with priority scores
+ */
+export async function getContentGaps(
+  userId?: string,
+  timeWindowDays: number = 30,
+  limit: number = 20
+): Promise<
+  Array<{
+    query: string
+    searchFrequency: number
+    avgResultCount: number
+    priorityScore: number
+    lastSearched: Date
+  }>
+> {
+  try {
+    const since = new Date()
+    since.setDate(since.getDate() - timeWindowDays)
+
+    // Find queries with high frequency but low result counts (<3 results)
+    const results = await prisma.$queryRaw<
+      Array<{
+        query: string
+        frequency: bigint
+        avgResults: number
+        lastSearched: Date
+      }>
+    >`
+      SELECT
+        query,
+        COUNT(*) as frequency,
+        AVG("resultCount")::float as "avgResults",
+        MAX(timestamp) as "lastSearched"
+      FROM search_queries
+      WHERE
+        timestamp >= ${since}
+        ${userId ? Prisma.sql`AND "userId" = ${userId}` : Prisma.empty}
+        AND "isAnonymized" = false
+        AND "resultCount" < 3
+      GROUP BY query
+      HAVING COUNT(*) >= 2
+      ORDER BY COUNT(*) DESC, "avgResults" ASC
+      LIMIT ${limit}
+    `
+
+    // Calculate priority scores
+    return results.map((r) => {
+      const frequency = Number(r.frequency)
+      const avgResults = r.avgResults || 0
+      // Priority formula: higher frequency + lower results = higher priority
+      const priorityScore = frequency * (1 - avgResults / 10)
+
+      return {
+        query: r.query,
+        searchFrequency: frequency,
+        avgResultCount: avgResults,
+        priorityScore: Math.round(priorityScore * 100) / 100, // Round to 2 decimals
+        lastSearched: r.lastSearched,
+      }
+    })
+  } catch (error) {
+    console.error('Failed to get content gaps:', error)
+    return []
+  }
+}
+
+/**
+ * Story 3.6 Task 5.1: Get top queries by click-through rate
+ *
+ * @param userId - User ID (optional)
+ * @param timeWindowDays - Time window in days (default: 30)
+ * @param limit - Maximum queries to return (default: 20)
+ * @returns Top queries with CTR metrics
+ */
+export async function getTopQueriesByCTR(
+  userId?: string,
+  timeWindowDays: number = 30,
+  limit: number = 20
+): Promise<
+  Array<{
+    query: string
+    searches: number
+    clicks: number
+    ctr: number
+    avgPosition: number
+  }>
+> {
+  try {
+    const since = new Date()
+    since.setDate(since.getDate() - timeWindowDays)
+
+    const results = await prisma.$queryRaw<
+      Array<{
+        query: string
+        searches: bigint
+        clicks: bigint
+        avgPosition: number
+      }>
+    >`
+      SELECT
+        sq.query,
+        COUNT(DISTINCT sq.id) as searches,
+        COUNT(sc.id) as clicks,
+        AVG(sc.position)::float as "avgPosition"
+      FROM search_queries sq
+      LEFT JOIN search_clicks sc ON sq.id = sc."searchQueryId"
+      WHERE
+        sq.timestamp >= ${since}
+        ${userId ? Prisma.sql`AND sq."userId" = ${userId}` : Prisma.empty}
+        AND sq."isAnonymized" = false
+      GROUP BY sq.query
+      HAVING COUNT(DISTINCT sq.id) >= 2
+      ORDER BY (COUNT(sc.id)::float / COUNT(DISTINCT sq.id)) DESC
+      LIMIT ${limit}
+    `
+
+    return results.map((r) => {
+      const searches = Number(r.searches)
+      const clicks = Number(r.clicks)
+      const ctr = searches > 0 ? clicks / searches : 0
+
+      return {
+        query: r.query,
+        searches,
+        clicks,
+        ctr: Math.round(ctr * 1000) / 10, // Convert to percentage, round to 1 decimal
+        avgPosition: Math.round((r.avgPosition || 0) * 10) / 10,
+      }
+    })
+  } catch (error) {
+    console.error('Failed to get top queries by CTR:', error)
+    return []
+  }
+}
+
+/**
+ * Story 3.6 Task 5.1: Comprehensive analytics for dashboard
+ * Combines all metrics into a single response for the dashboard
+ *
+ * @param userId - User ID (optional)
+ * @param period - Time period (7d, 30d, 90d)
+ * @returns Complete analytics dashboard data
+ */
+export async function getDashboardAnalytics(
+  userId?: string,
+  period: '7d' | '30d' | '90d' = '30d'
+): Promise<{
+  summary: {
+    totalSearches: number
+    avgResponseTimeMs: number
+    overallCTR: number
+    contentGapsCount: number
+  }
+  volumeOverTime: Array<{ date: string; count: number; avgResponseTimeMs: number }>
+  topQueries: Array<{ query: string; count: number; avgResults: number }>
+  contentTypeDistribution: Array<{
+    contentType: string
+    count: number
+    percentage: number
+  }>
+  contentGaps: Array<{
+    query: string
+    searchFrequency: number
+    avgResultCount: number
+    priorityScore: number
+    lastSearched: Date
+  }>
+  topQueriesByCTR: Array<{
+    query: string
+    searches: number
+    clicks: number
+    ctr: number
+    avgPosition: number
+  }>
+}> {
+  const days = parseInt(period) // 7, 30, or 90
+
+  // Fetch all analytics in parallel for performance
+  const [
+    performanceMetrics,
+    ctrAnalytics,
+    volumeOverTime,
+    topQueries,
+    contentTypeDistribution,
+    contentGaps,
+    topQueriesByCTR,
+  ] = await Promise.all([
+    getSearchPerformanceMetrics(userId, days),
+    getClickThroughRateAnalytics(userId, days),
+    getSearchVolumeOverTime(userId, period),
+    getPopularSearches(userId, 20, days),
+    getSearchesByContentType(userId, days),
+    getContentGaps(userId, days, 20),
+    getTopQueriesByCTR(userId, days, 20),
+  ])
+
+  return {
+    summary: {
+      totalSearches: performanceMetrics.totalSearches,
+      avgResponseTimeMs: performanceMetrics.avgResponseTimeMs,
+      overallCTR: ctrAnalytics.overallCTR,
+      contentGapsCount: contentGaps.length,
+    },
+    volumeOverTime,
+    topQueries,
+    contentTypeDistribution,
+    contentGaps,
+    topQueriesByCTR,
+  }
+}
+
+/**
  * Export all analytics functions as a service
  */
 export const searchAnalyticsService = {
+  logSearchQuery,
   trackSearchClick,
   getPopularSearches,
   getZeroResultQueries,
@@ -471,4 +826,10 @@ export const searchAnalyticsService = {
   anonymizeOldSearchQueries,
   deleteAnonymizedSearchData,
   getSearchAnalyticsSummary,
+  // Story 3.6 Task 5: New analytics functions
+  getSearchVolumeOverTime,
+  getSearchesByContentType,
+  getContentGaps,
+  getTopQueriesByCTR,
+  getDashboardAnalytics,
 }

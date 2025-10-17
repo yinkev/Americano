@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { retryService, DEFAULT_POLICIES, PermanentError } from '../retry/retry-service'
 
 interface EmbeddingResult {
   embedding: number[]
@@ -22,22 +23,29 @@ export class GeminiClient {
   /**
    * Generate embeddings for a single text chunk
    * Uses RETRIEVAL_DOCUMENT task type for optimal search/retrieval performance
+   * Now includes production-ready retry logic with circuit breaker
    */
   async generateEmbedding(text: string): Promise<EmbeddingResult> {
-    try {
-      const model = this.genAI.getGenerativeModel({ model: this.model })
+    const result = await retryService.execute(
+      async () => {
+        const model = this.genAI.getGenerativeModel({ model: this.model })
+        const result = await model.embedContent(text)
+        return result.embedding.values
+      },
+      DEFAULT_POLICIES.GEMINI_API,
+      'gemini-embedding',
+    )
 
-      const result = await model.embedContent(text)
-
-      return {
-        embedding: result.embedding.values,
-      }
-    } catch (error) {
-      console.error('Gemini embedding error:', error)
+    if (result.error) {
+      console.error('Gemini embedding error after retries:', result.error.message)
       return {
         embedding: [],
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: result.error.message,
       }
+    }
+
+    return {
+      embedding: result.value!,
     }
   }
 
@@ -54,9 +62,7 @@ export class GeminiClient {
       const batch = texts.slice(i, i + BATCH_SIZE)
 
       // Generate embeddings for batch with retry logic
-      const batchResults = await Promise.all(
-        batch.map((text) => this.generateEmbeddingWithRetry(text)),
-      )
+      const batchResults = await Promise.all(batch.map((text) => this.generateEmbedding(text)))
 
       results.push(...batchResults)
 
@@ -67,39 +73,6 @@ export class GeminiClient {
     }
 
     return results
-  }
-
-  /**
-   * Generate embedding with exponential backoff retry
-   */
-  private async generateEmbeddingWithRetry(text: string, maxRetries = 3): Promise<EmbeddingResult> {
-    let lastError: Error | undefined
-
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-      try {
-        const result = await this.generateEmbedding(text)
-
-        if (result.error) {
-          throw new Error(result.error)
-        }
-
-        return result
-      } catch (error) {
-        lastError = error instanceof Error ? error : new Error('Unknown error')
-
-        // Exponential backoff: 1s, 2s, 4s
-        if (attempt < maxRetries - 1) {
-          const delayMs = 2 ** attempt * 1000
-          console.warn(`Retry ${attempt + 1}/${maxRetries} after ${delayMs}ms...`)
-          await this.delay(delayMs)
-        }
-      }
-    }
-
-    return {
-      embedding: [],
-      error: lastError?.message || 'Max retries exceeded',
-    }
   }
 
   /**

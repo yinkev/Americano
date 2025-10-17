@@ -33,8 +33,10 @@ jest.mock('@neondatabase/serverless', () => ({
 }))
 
 describe('SemanticSearchService', () => {
+  type SqlExecutor = (...args: any[]) => Promise<any[]>
   let searchService: SemanticSearchService
-  let mockSql: Mock
+  let mockSql: jest.MockedFunction<SqlExecutor>
+  const embeddingServiceMock = jest.mocked(embeddingService)
 
   // Mock embedding vector (1536 dimensions)
   const mockQueryEmbedding = Array(1536).fill(0).map((_, i) => Math.random())
@@ -84,12 +86,12 @@ describe('SemanticSearchService', () => {
     jest.clearAllMocks()
 
     // Setup mock SQL function
-    mockSql = jest.fn()
+    mockSql = jest.fn(async () => []) as jest.MockedFunction<SqlExecutor>
     searchService = new SemanticSearchService()
     ;(searchService as any).sql = mockSql
 
     // Mock embedding service
-    ;(embeddingService.generateEmbedding as Mock).mockResolvedValue({
+    embeddingServiceMock.generateEmbedding.mockResolvedValue({
       embedding: mockQueryEmbedding,
       error: undefined,
     })
@@ -108,7 +110,7 @@ describe('SemanticSearchService', () => {
       const response = await searchService.search(params)
 
       // Verify embedding was generated
-      expect(embeddingService.generateEmbedding).toHaveBeenCalledWith(params.query)
+      expect(embeddingServiceMock.generateEmbedding).toHaveBeenCalledWith(params.query)
 
       // Verify results
       expect(response.results).toHaveLength(3)
@@ -468,7 +470,7 @@ describe('SemanticSearchService', () => {
 
   describe('Error Handling', () => {
     it('should throw error if embedding generation fails', async () => {
-      ;(embeddingService.generateEmbedding as Mock).mockResolvedValue({
+      embeddingServiceMock.generateEmbedding.mockResolvedValue({
         embedding: [],
         error: 'API rate limit exceeded',
       })
@@ -541,7 +543,7 @@ describe('SemanticSearchService', () => {
       await searchService.searchLectures('anatomy', 10)
 
       // Verify the search was called with lecture type filter
-      expect(embeddingService.generateEmbedding).toHaveBeenCalledWith('anatomy')
+      expect(embeddingServiceMock.generateEmbedding).toHaveBeenCalledWith('anatomy')
     })
 
     it('should search only chunks when using searchChunks()', async () => {
@@ -549,7 +551,7 @@ describe('SemanticSearchService', () => {
 
       await searchService.searchChunks('physiology', 10)
 
-      expect(embeddingService.generateEmbedding).toHaveBeenCalledWith('physiology')
+      expect(embeddingServiceMock.generateEmbedding).toHaveBeenCalledWith('physiology')
     })
   })
 

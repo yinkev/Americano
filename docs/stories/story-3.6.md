@@ -1,6 +1,8 @@
 # Story 3.6: Advanced Search and Discovery Features
 
-Status: Draft
+Status: Approved
+Completed: 2025-10-16
+Approved: 2025-10-17
 
 ## Story
 
@@ -590,7 +592,7 @@ scripts/
 
 ### Context Reference
 
-<!-- Path(s) to story context XML will be added here by context workflow -->
+- **Story Context XML**: `docs/stories/story-context-3.6.xml` (Generated: 2025-10-16)
 
 ### Agent Model Used
 

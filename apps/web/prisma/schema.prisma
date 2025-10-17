@@ -1,14 +1,14 @@
 // prisma/schema.prisma
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../src/generated/prisma"
   previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
   extensions = [pgvector(map: "vector")]
 }
 
@@ -17,57 +17,57 @@ datasource db {
 // ============================================
 
 model User {
-  id            String   @id @default(cuid())
-  email         String?  @unique
-  name          String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id        String   @id @default(cuid())
+  email     String?  @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Mission preferences (Story 2.4 Task 8)
-  defaultMissionMinutes Int      @default(50)  // 30-90 minute range
-  missionDifficulty     String   @default("AUTO")  // AUTO, EASY, MODERATE, CHALLENGING
-  preferredStudyTime    String?  // HH:MM format (e.g., "07:00", "18:00")
-  autoGenerateMissions  Boolean  @default(true)
+  defaultMissionMinutes Int     @default(50) // 30-90 minute range
+  missionDifficulty     String  @default("AUTO") // AUTO, EASY, MODERATE, CHALLENGING
+  preferredStudyTime    String? // HH:MM format (e.g., "07:00", "18:00")
+  autoGenerateMissions  Boolean @default(true)
 
   // Performance tracking preferences (Story 2.2 Task 8)
   performanceTrackingEnabled Boolean @default(true)
   includeInAnalytics         Boolean @default(true)
 
   // Story 2.6: Mission adaptation tracking
-  lastMissionAdaptation DateTime?  // Throttle adaptations to max 1/week
+  lastMissionAdaptation DateTime? // Throttle adaptations to max 1/week
 
   // Relations
-  courses       Course[]
-  lectures      Lecture[]
-  studySessions StudySession[]
-  missions      Mission[]
-  reviews       Review[]
-  exams         Exam[]
+  courses          Course[]
+  lectures         Lecture[]
+  studySessions    StudySession[]
+  missions         Mission[]
+  reviews          Review[]
+  exams            Exam[]
   coursePriorities CoursePriority[]
-  streak        Streak?
-  achievements  Achievement[]
-  studyGoals    StudyGoal[]
-  missionStreak MissionStreak?
-  missionReviews MissionReview[]
+  streak           Streak?
+  achievements     Achievement[]
+  studyGoals       StudyGoal[]
+  missionStreak    MissionStreak?
+  missionReviews   MissionReview[]
 
   @@map("users")
 }
 
 model Course {
-  id          String   @id @default(cuid())
-  userId      String
-  name        String   // "Gross Anatomy (ANAT 505)"
-  code        String?  // "ANAT 505"
-  term        String?  // "Fall 2025"
-  color       String?  // OKLCH color for visual organization (e.g., "oklch(0.7 0.15 230)")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  userId    String
+  name      String // "Gross Anatomy (ANAT 505)"
+  code      String? // "ANAT 505"
+  term      String? // "Fall 2025"
+  color     String? // OKLCH color for visual organization (e.g., "oklch(0.7 0.15 230)")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lectures    Lecture[]
-  cards       Card[]
-  exams       Exam[]
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lectures         Lecture[]
+  cards            Card[]
+  exams            Exam[]
   coursePriorities CoursePriority[]
 
   @@index([userId])
@@ -75,35 +75,36 @@ model Course {
 }
 
 model Lecture {
-  id                String   @id @default(cuid())
-  userId            String
-  courseId          String
-  title             String
-  fileName          String
-  fileUrl           String      // Local path or Supabase URL
-  fileSize          Int
-  processingStatus  ProcessingStatus @default(PENDING)
-  uploadedAt        DateTime @default(now())
-  processedAt       DateTime?
+  id               String           @id @default(cuid())
+  userId           String
+  courseId         String
+  title            String
+  fileName         String
+  fileUrl          String // Local path or Supabase URL
+  fileSize         Int
+  processingStatus ProcessingStatus @default(PENDING)
+  uploadedAt       DateTime         @default(now())
+  processedAt      DateTime?
 
   // Processing progress tracking
-  processingProgress Int      @default(0)  // 0-100 percentage
-  totalPages        Int?     // Total number of pages to process
-  processedPages    Int      @default(0)  // Number of pages processed
-  processingStartedAt DateTime?  // When processing started
-  estimatedCompletionAt DateTime?  // ETA for completion
-  embeddingProgress Float    @default(0)  // 0.0-1.0 embedding generation progress
+  processingProgress    Int       @default(0) // 0-100 percentage
+  totalPages            Int? // Total number of pages to process
+  processedPages        Int       @default(0) // Number of pages processed
+  processingStartedAt   DateTime? // When processing started
+  estimatedCompletionAt DateTime? // ETA for completion
+  embeddingProgress     Float     @default(0) // 0.0-1.0 embedding generation progress
 
   // Metadata
-  weekNumber        Int?
-  topicTags         String[]
+  weekNumber Int?
+  topicTags  String[]
 
   // Relations
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  contentChunks     ContentChunk[]
+  user               User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course             Course                   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  contentChunks      ContentChunk[]
   learningObjectives LearningObjective[]
-  cards             Card[]
+  cards              Card[]
+  firstAidMappings   LectureFirstAidMapping[]
 
   @@index([userId])
   @@index([courseId])
@@ -121,46 +122,50 @@ enum ProcessingStatus {
 }
 
 model ContentChunk {
-  id          String   @id @default(cuid())
-  lectureId   String
-  content     String   @db.Text
-  embedding   Unsupported("vector(1536)")?  // gemini-embedding-001 (output_dimensionality: 1536)
-  chunkIndex  Int      // Order within lecture
-  pageNumber  Int?
-  createdAt   DateTime @default(now())
+  id         String                       @id @default(cuid())
+  lectureId  String
+  content    String                       @db.Text
+  embedding  Unsupported("vector(1536)")? // gemini-embedding-001 (output_dimensionality: 1536)
+  chunkIndex Int // Order within lecture
+  pageNumber Int?
+  createdAt  DateTime                     @default(now())
 
   // Relations
-  lecture     Lecture  @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  lecture             Lecture                 @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  recommendationsFrom ContentRecommendation[] @relation("SourceContent")
+  recommendationsTo   ContentRecommendation[] @relation("RecommendedContent")
+  conflictsAsSourceA  Conflict[]              @relation("SourceAConflicts")
+  conflictsAsSourceB  Conflict[]              @relation("SourceBConflicts")
 
   @@index([lectureId])
   @@map("content_chunks")
 }
 
 model LearningObjective {
-  id               String              @id @default(cuid())
-  lectureId        String
-  objective        String              @db.Text
-  complexity       ObjectiveComplexity @default(INTERMEDIATE)
-  pageStart        Int?
-  pageEnd          Int?
-  isHighYield      Boolean             @default(false)
-  boardExamTags    String[]            // USMLE Step 1/2/3, COMLEX Level 1/2/3, subject tags
-  extractedBy      String              @default("gpt-5")
-  createdAt        DateTime            @default(now())
+  id            String              @id @default(cuid())
+  lectureId     String
+  objective     String              @db.Text
+  complexity    ObjectiveComplexity @default(INTERMEDIATE)
+  pageStart     Int?
+  pageEnd       Int?
+  isHighYield   Boolean             @default(false)
+  boardExamTags String[] // USMLE Step 1/2/3, COMLEX Level 1/2/3, subject tags
+  extractedBy   String              @default("gpt-5")
+  createdAt     DateTime            @default(now())
 
   // Performance tracking fields (Story 2.2)
-  masteryLevel     MasteryLevel        @default(NOT_STARTED)
-  totalStudyTimeMs Int                 @default(0)
+  masteryLevel     MasteryLevel @default(NOT_STARTED)
+  totalStudyTimeMs Int          @default(0)
   lastStudiedAt    DateTime?
-  weaknessScore    Float               @default(0.5) // 0.0-1.0, higher = weaker
+  weaknessScore    Float        @default(0.5) // 0.0-1.0, higher = weaker
 
   // Relations
-  lecture        Lecture               @relation(fields: [lectureId], references: [id], onDelete: Cascade)
-  cards          Card[]
-  prerequisites  ObjectivePrerequisite[] @relation("Objective")
-  dependents     ObjectivePrerequisite[] @relation("Prerequisite")
+  lecture            Lecture                 @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  cards              Card[]
+  prerequisites      ObjectivePrerequisite[] @relation("Objective")
+  dependents         ObjectivePrerequisite[] @relation("Prerequisite")
   performanceMetrics PerformanceMetric[]
-  priorityFeedback PriorityFeedback[]
+  priorityFeedback   PriorityFeedback[]
 
   @@index([lectureId])
   @@index([isHighYield])
@@ -185,14 +190,14 @@ enum MasteryLevel {
 }
 
 model ObjectivePrerequisite {
-  id             String            @id @default(cuid())
+  id             String @id @default(cuid())
   objectiveId    String
   prerequisiteId String
-  strength       Float             @default(1.0)
+  strength       Float  @default(1.0)
 
   // Relations
-  objective      LearningObjective @relation("Objective", fields: [objectiveId], references: [id], onDelete: Cascade)
-  prerequisite   LearningObjective @relation("Prerequisite", fields: [prerequisiteId], references: [id], onDelete: Cascade)
+  objective    LearningObjective @relation("Objective", fields: [objectiveId], references: [id], onDelete: Cascade)
+  prerequisite LearningObjective @relation("Prerequisite", fields: [prerequisiteId], references: [id], onDelete: Cascade)
 
   @@unique([objectiveId, prerequisiteId])
   @@index([objectiveId])
@@ -205,29 +210,29 @@ model ObjectivePrerequisite {
 // ============================================
 
 model Mission {
-  id              String   @id @default(cuid())
-  userId          String
-  date            DateTime @default(now())
-  status          MissionStatus @default(PENDING)
-  estimatedMinutes Int
-  completedAt     DateTime?
-  actualMinutes   Int?     // Tracked during study session
-  completedObjectivesCount Int @default(0)
+  id                       String        @id @default(cuid())
+  userId                   String
+  date                     DateTime      @default(now())
+  status                   MissionStatus @default(PENDING)
+  estimatedMinutes         Int
+  completedAt              DateTime?
+  actualMinutes            Int? // Tracked during study session
+  completedObjectivesCount Int           @default(0)
 
   // Mission content
   // objectives: JSON array of { objectiveId, estimatedMinutes, completed, completedAt?, notes? }
-  objectives      Json     // Array of MissionObjective objects
-  reviewCardCount Int      @default(0) // Number of cards due for review
-  newContentCount Int      @default(0) // Number of new concepts to learn
+  objectives      Json // Array of MissionObjective objects
+  reviewCardCount Int  @default(0) // Number of cards due for review
+  newContentCount Int  @default(0) // Number of new concepts to learn
 
   // Story 2.6: Mission analytics fields
-  successScore      Float?         // 0.0-1.0 composite success metric (Task 9)
-  difficultyRating  Int?           // User feedback 1-5 (Task 4)
+  successScore     Float? // 0.0-1.0 composite success metric (Task 9)
+  difficultyRating Int? // User feedback 1-5 (Task 4)
 
   // Relations
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  studySessions   StudySession[]
-  feedback        MissionFeedback[]
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studySessions StudySession[]
+  feedback      MissionFeedback[]
 
   @@index([userId])
   @@index([date])
@@ -243,29 +248,29 @@ enum MissionStatus {
 }
 
 model Card {
-  id                String   @id @default(cuid())
-  courseId          String
-  lectureId         String?
-  objectiveId       String?
-  front             String   @db.Text
-  back              String   @db.Text
-  cardType          CardType @default(BASIC)
-  createdAt         DateTime @default(now())
+  id          String   @id @default(cuid())
+  courseId    String
+  lectureId   String?
+  objectiveId String?
+  front       String   @db.Text
+  back        String   @db.Text
+  cardType    CardType @default(BASIC)
+  createdAt   DateTime @default(now())
 
   // FSRS state
-  difficulty        Float    @default(0)
-  stability         Float    @default(0)
-  retrievability    Float    @default(0)
-  lastReviewedAt    DateTime?
-  nextReviewAt      DateTime?
-  reviewCount       Int      @default(0)
-  lapseCount        Int      @default(0)
+  difficulty     Float     @default(0)
+  stability      Float     @default(0)
+  retrievability Float     @default(0)
+  lastReviewedAt DateTime?
+  nextReviewAt   DateTime?
+  reviewCount    Int       @default(0)
+  lapseCount     Int       @default(0)
 
   // Relations
-  course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lecture           Lecture? @relation(fields: [lectureId], references: [id], onDelete: SetNull)
-  objective         LearningObjective? @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
-  reviews           Review[]
+  course    Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lecture   Lecture?           @relation(fields: [lectureId], references: [id], onDelete: SetNull)
+  objective LearningObjective? @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+  reviews   Review[]
 
   @@index([courseId])
   @@index([nextReviewAt])
@@ -279,13 +284,13 @@ enum CardType {
 }
 
 model Review {
-  id              String   @id @default(cuid())
-  userId          String
-  cardId          String
-  sessionId       String?
-  rating          ReviewRating
-  timeSpentMs     Int
-  reviewedAt      DateTime @default(now())
+  id          String       @id @default(cuid())
+  userId      String
+  cardId      String
+  sessionId   String?
+  rating      ReviewRating
+  timeSpentMs Int
+  reviewedAt  DateTime     @default(now())
 
   // FSRS data captured at review time
   difficultyBefore Float
@@ -294,9 +299,9 @@ model Review {
   stabilityAfter   Float
 
   // Relations
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  card            Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  session         StudySession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card    Card          @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  session StudySession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([cardId])
@@ -305,36 +310,36 @@ model Review {
 }
 
 enum ReviewRating {
-  AGAIN   // 1 - Complete lapse
-  HARD    // 2 - Difficult recall
-  GOOD    // 3 - Correct with effort
-  EASY    // 4 - Perfect recall
+  AGAIN // 1 - Complete lapse
+  HARD // 2 - Difficult recall
+  GOOD // 3 - Correct with effort
+  EASY // 4 - Perfect recall
 }
 
 model StudySession {
-  id              String   @id @default(cuid())
-  userId          String
-  missionId       String?
-  startedAt       DateTime @default(now())
-  completedAt     DateTime?
-  durationMs      Int?
+  id          String    @id @default(cuid())
+  userId      String
+  missionId   String?
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  durationMs  Int?
 
   // Session stats
-  reviewsCompleted Int     @default(0)
-  newCardsStudied  Int     @default(0)
+  reviewsCompleted Int @default(0)
+  newCardsStudied  Int @default(0)
 
   // Session notes for reflection (AC #7)
-  sessionNotes    String?  @db.Text
+  sessionNotes String? @db.Text
 
   // Mission integration fields (Story 2.5 Task 1)
-  currentObjectiveIndex Int     @default(0)  // 0-based index of current objective in mission
-  missionObjectives     Json?   // Snapshot of mission objectives at session start for state recovery
-  objectiveCompletions  Json?   // Array of { objectiveId, completedAt, timeSpentMs, selfAssessment, confidenceRating, notes? }
+  currentObjectiveIndex Int   @default(0) // 0-based index of current objective in mission
+  missionObjectives     Json? // Snapshot of mission objectives at session start for state recovery
+  objectiveCompletions  Json? // Array of { objectiveId, completedAt, timeSpentMs, selfAssessment, confidenceRating, notes? }
 
   // Relations
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  mission         Mission? @relation(fields: [missionId], references: [id], onDelete: SetNull)
-  reviews         Review[]
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mission             Mission?             @relation(fields: [missionId], references: [id], onDelete: SetNull)
+  reviews             Review[]
   validationResponses ValidationResponse[]
 
   @@index([userId])
@@ -347,44 +352,52 @@ model StudySession {
 // ============================================
 
 model Concept {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  description String?  @db.Text
-  category    String?  // "anatomy", "physiology", "pathology"
-  embedding   Unsupported("vector(1536)")?  // gemini-embedding-001 (output_dimensionality: 1536)
-  createdAt   DateTime @default(now())
+  id          String                       @id @default(cuid())
+  name        String                       @unique
+  description String?                      @db.Text
+  category    String? // "anatomy", "physiology", "pathology"
+  embedding   Unsupported("vector(1536)")? // gemini-embedding-001 (output_dimensionality: 1536)
+  createdAt   DateTime                     @default(now())
 
   // Relations
-  relatedFrom ConceptRelationship[] @relation("ConceptFrom")
-  relatedTo   ConceptRelationship[] @relation("ConceptTo")
+  relatedFrom      ConceptRelationship[]    @relation("ConceptFrom")
+  relatedTo        ConceptRelationship[]    @relation("ConceptTo")
+  conflicts        Conflict[]
+  firstAidMappings FirstAidConceptMapping[]
 
   @@index([category])
   @@map("concepts")
 }
 
 model ConceptRelationship {
-  id            String   @id @default(cuid())
+  id            String           @id @default(cuid())
   fromConceptId String
   toConceptId   String
   relationship  RelationshipType
-  strength      Float    @default(1.0)  // 0.0 to 1.0
-  createdAt     DateTime @default(now())
+  strength      Float            @default(1.0) // 0.0 to 1.0
+  createdAt     DateTime         @default(now())
+
+  // User annotations (Story 3.2 Task 1.3)
+  isUserDefined Boolean @default(false)
+  userNote      String? @db.Text
+  createdBy     String? // userId for custom connections
 
   // Relations
-  fromConcept   Concept  @relation("ConceptFrom", fields: [fromConceptId], references: [id], onDelete: Cascade)
-  toConcept     Concept  @relation("ConceptTo", fields: [toConceptId], references: [id], onDelete: Cascade)
+  fromConcept Concept @relation("ConceptFrom", fields: [fromConceptId], references: [id], onDelete: Cascade)
+  toConcept   Concept @relation("ConceptTo", fields: [toConceptId], references: [id], onDelete: Cascade)
 
   @@unique([fromConceptId, toConceptId, relationship])
   @@index([fromConceptId])
   @@index([toConceptId])
+  @@index([isUserDefined])
   @@map("concept_relationships")
 }
 
 enum RelationshipType {
-  PREREQUISITE  // fromConcept is prerequisite for toConcept
-  RELATED       // General association
-  INTEGRATED    // Cross-course integration
-  CLINICAL      // Clinical application
+  PREREQUISITE // fromConcept is prerequisite for toConcept
+  RELATED // General association
+  INTEGRATED // Cross-course integration
+  CLINICAL // Clinical application
 }
 
 // ============================================
@@ -392,15 +405,15 @@ enum RelationshipType {
 // ============================================
 
 model ValidationPrompt {
-  id          String   @id @default(cuid())
-  promptText  String   @db.Text
-  promptType  PromptType
-  conceptName String
+  id               String     @id @default(cuid())
+  promptText       String     @db.Text
+  promptType       PromptType
+  conceptName      String
   expectedCriteria String[] // Key points expected in answer
-  createdAt   DateTime @default(now())
+  createdAt        DateTime   @default(now())
 
   // Relations
-  responses   ValidationResponse[]
+  responses ValidationResponse[]
 
   @@map("validation_prompts")
 }
@@ -412,18 +425,18 @@ enum PromptType {
 }
 
 model ValidationResponse {
-  id          String   @id @default(cuid())
-  promptId    String
-  sessionId   String?
-  userAnswer  String   @db.Text
-  aiEvaluation String  @db.Text
-  score       Float    // 0.0 to 1.0
-  confidence  Float?   // User's self-reported confidence
-  respondedAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  promptId     String
+  sessionId    String?
+  userAnswer   String   @db.Text
+  aiEvaluation String   @db.Text
+  score        Float // 0.0 to 1.0
+  confidence   Float? // User's self-reported confidence
+  respondedAt  DateTime @default(now())
 
   // Relations
-  prompt      ValidationPrompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
-  session     StudySession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  prompt  ValidationPrompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  session StudySession?    @relation(fields: [sessionId], references: [id], onDelete: SetNull)
 
   @@index([promptId])
   @@index([respondedAt])
@@ -434,9 +447,9 @@ model ComprehensionMetric {
   id          String   @id @default(cuid())
   conceptName String
   date        DateTime @default(now())
-  avgScore    Float    // Average validation score for this concept
-  sampleSize  Int      // Number of validations
-  trend       String?  // "improving", "stable", "declining"
+  avgScore    Float // Average validation score for this concept
+  sampleSize  Int // Number of validations
+  trend       String? // "improving", "stable", "declining"
 
   @@unique([conceptName, date])
   @@index([conceptName])
@@ -448,11 +461,11 @@ model ComprehensionMetric {
 // ============================================
 
 model BehavioralEvent {
-  id          String   @id @default(cuid())
-  userId      String   // Not FK to allow analytics without user cascade
-  eventType   EventType
-  eventData   Json     // Flexible JSON for event-specific data
-  timestamp   DateTime @default(now())
+  id        String    @id @default(cuid())
+  userId    String // Not FK to allow analytics without user cascade
+  eventType EventType
+  eventData Json // Flexible JSON for event-specific data
+  timestamp DateTime  @default(now())
 
   @@index([userId])
   @@index([eventType])
@@ -470,16 +483,20 @@ enum EventType {
   LECTURE_UPLOADED
   SEARCH_PERFORMED
   GRAPH_VIEWED
+  RECOMMENDATION_VIEWED
+  RECOMMENDATION_CLICKED
+  RECOMMENDATION_DISMISSED
+  RECOMMENDATION_RATED
 }
 
 model LearningPattern {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   userId      String
   patternType PatternType
-  patternData Json     // Flexible storage for pattern details
-  confidence  Float    // 0.0 to 1.0 confidence in pattern
-  detectedAt  DateTime @default(now())
-  lastSeenAt  DateTime @default(now())
+  patternData Json // Flexible storage for pattern details
+  confidence  Float // 0.0 to 1.0 confidence in pattern
+  detectedAt  DateTime    @default(now())
+  lastSeenAt  DateTime    @default(now())
 
   @@index([userId])
   @@index([patternType])
@@ -487,21 +504,21 @@ model LearningPattern {
 }
 
 enum PatternType {
-  OPTIMAL_STUDY_TIME      // "Best performance at 7-9 AM"
-  STRUGGLE_TOPIC          // "Low retention on physiology"
-  CONTENT_PREFERENCE      // "Prefers visual diagrams"
-  SESSION_LENGTH          // "Optimal 45-minute sessions"
-  DAY_OF_WEEK_PATTERN     // "Struggles on Mondays"
+  OPTIMAL_STUDY_TIME // "Best performance at 7-9 AM"
+  STRUGGLE_TOPIC // "Low retention on physiology"
+  CONTENT_PREFERENCE // "Prefers visual diagrams"
+  SESSION_LENGTH // "Optimal 45-minute sessions"
+  DAY_OF_WEEK_PATTERN // "Struggles on Mondays"
 }
 
 model PerformancePrediction {
-  id            String   @id @default(cuid())
-  userId        String
-  predictedFor  DateTime // Date/time this prediction is for
-  predictionType String  // "struggle_likelihood", "optimal_study_time"
-  prediction    Json     // Prediction details
-  confidence    Float    // Model confidence
-  createdAt     DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  predictedFor   DateTime // Date/time this prediction is for
+  predictionType String // "struggle_likelihood", "optimal_study_time"
+  prediction     Json // Prediction details
+  confidence     Float // Model confidence
+  createdAt      DateTime @default(now())
 
   @@index([userId])
   @@index([predictedFor])
@@ -510,19 +527,19 @@ model PerformancePrediction {
 
 // Story 2.2: Performance tracking time-series data
 model PerformanceMetric {
-  id                   String            @id @default(cuid())
-  userId               String
-  learningObjectiveId  String
-  date                 DateTime          @default(now())
-  retentionScore       Float             // 0.0-1.0 from FSRS
-  studyTimeMs          Int               // Time spent on this objective today
-  reviewCount          Int               // Number of reviews today
-  correctReviews       Int
-  incorrectReviews     Int
-  createdAt            DateTime          @default(now())
+  id                  String   @id @default(cuid())
+  userId              String
+  learningObjectiveId String
+  date                DateTime @default(now())
+  retentionScore      Float // 0.0-1.0 from FSRS
+  studyTimeMs         Int // Time spent on this objective today
+  reviewCount         Int // Number of reviews today
+  correctReviews      Int
+  incorrectReviews    Int
+  createdAt           DateTime @default(now())
 
   // Relations
-  learningObjective    LearningObjective @relation(fields: [learningObjectiveId], references: [id], onDelete: Cascade)
+  learningObjective LearningObjective @relation(fields: [learningObjectiveId], references: [id], onDelete: Cascade)
 
   @@unique([userId, learningObjectiveId, date])
   @@index([userId, date])
@@ -532,18 +549,18 @@ model PerformanceMetric {
 
 // Story 2.3: Intelligent Content Prioritization Algorithm
 model Exam {
-  id              String   @id @default(cuid())
-  userId          String
-  name            String   // "Histology Midterm"
-  date            DateTime
-  courseId        String
-  coverageTopics  String[] // Tags/topics this exam covers
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(cuid())
+  userId         String
+  name           String // "Histology Midterm"
+  date           DateTime
+  courseId       String
+  coverageTopics String[] // Tags/topics this exam covers
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   // Relations
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@index([userId, date])
   @@index([courseId])
@@ -551,16 +568,16 @@ model Exam {
 }
 
 model CoursePriority {
-  id             String         @id @default(cuid())
-  userId         String
-  courseId       String
-  priorityLevel  PriorityLevel  @default(MEDIUM)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id            String        @id @default(cuid())
+  userId        String
+  courseId      String
+  priorityLevel PriorityLevel @default(MEDIUM)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   // Relations
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course         Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
   @@map("course_priorities")
@@ -574,13 +591,13 @@ enum PriorityLevel {
 }
 
 model PriorityFeedback {
-  id                String          @id @default(cuid())
+  id                String         @id @default(cuid())
   userId            String
   objectiveId       String
-  suggestedPriority Float           // What algorithm suggested
+  suggestedPriority Float // What algorithm suggested
   userFeedback      FeedbackRating
-  notes             String?         @db.Text
-  createdAt         DateTime        @default(now())
+  notes             String?        @db.Text
+  createdAt         DateTime       @default(now())
 
   // Relations
   learningObjective LearningObjective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
@@ -601,18 +618,18 @@ enum FeedbackRating {
 // ============================================
 
 model Streak {
-  id               String   @id @default(cuid())
-  userId           String   @unique
-  currentStreak    Int      @default(0)  // Consecutive days with study activity
-  longestStreak    Int      @default(0)  // Personal best streak
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  currentStreak    Int       @default(0) // Consecutive days with study activity
+  longestStreak    Int       @default(0) // Personal best streak
   lastStudyDate    DateTime?
-  freezesRemaining Int      @default(2)  // Streak protection tokens
+  freezesRemaining Int       @default(2) // Streak protection tokens
   freezeUsedDates  String[] // ISO date strings of freeze usage
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   // Relations
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("streaks")
@@ -622,14 +639,14 @@ model Achievement {
   id          String          @id @default(cuid())
   userId      String
   type        AchievementType
-  name        String          // "7-Day Warrior", "First Objective"
+  name        String // "7-Day Warrior", "First Objective"
   description String          @db.Text
   tier        AchievementTier @default(BRONZE)
   earnedAt    DateTime        @default(now())
-  metadata    Json?           // Additional achievement data (e.g., { "streakDays": 7 })
+  metadata    Json? // Additional achievement data (e.g., { "streakDays": 7 })
 
   // Relations
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([type])
@@ -637,12 +654,12 @@ model Achievement {
 }
 
 enum AchievementType {
-  STREAK_MILESTONE    // 7, 30, 100 day streaks
+  STREAK_MILESTONE // 7, 30, 100 day streaks
   OBJECTIVES_COMPLETED // 10, 50, 100 objectives
-  CARDS_MASTERED      // Cards reaching MASTERED state
-  PERFECT_SESSION     // Session with 100% accuracy
-  EARLY_BIRD          // Study before 8 AM
-  NIGHT_OWL           // Study after 10 PM
+  CARDS_MASTERED // Cards reaching MASTERED state
+  PERFECT_SESSION // Session with 100% accuracy
+  EARLY_BIRD // Study before 8 AM
+  NIGHT_OWL // Study after 10 PM
 }
 
 enum AchievementTier {
@@ -653,20 +670,20 @@ enum AchievementTier {
 }
 
 model StudyGoal {
-  id                String       @id @default(cuid())
-  userId            String
-  goalType          GoalType
-  targetValue       Int          // Minutes or objectives count
-  currentProgress   Int          @default(0)
-  period            GoalPeriod
-  startDate         DateTime
-  endDate           DateTime
-  isCompleted       Boolean      @default(false)
-  completedAt       DateTime?
-  createdAt         DateTime     @default(now())
+  id              String     @id @default(cuid())
+  userId          String
+  goalType        GoalType
+  targetValue     Int // Minutes or objectives count
+  currentProgress Int        @default(0)
+  period          GoalPeriod
+  startDate       DateTime
+  endDate         DateTime
+  isCompleted     Boolean    @default(false)
+  completedAt     DateTime?
+  createdAt       DateTime   @default(now())
 
   // Relations
-  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([period, startDate])
@@ -674,9 +691,9 @@ model StudyGoal {
 }
 
 enum GoalType {
-  TIME_BASED       // Minutes studied
-  OBJECTIVE_BASED  // Objectives completed
-  REVIEW_BASED     // Cards reviewed
+  TIME_BASED // Minutes studied
+  OBJECTIVE_BASED // Objectives completed
+  REVIEW_BASED // Cards reviewed
 }
 
 enum GoalPeriod {
@@ -690,20 +707,20 @@ enum GoalPeriod {
 // ============================================
 
 model MissionAnalytics {
-  id                    String          @id @default(cuid())
-  userId                String
-  date                  DateTime        @default(now())
-  period                AnalyticsPeriod // DAILY, WEEKLY, MONTHLY
+  id     String          @id @default(cuid())
+  userId String
+  date   DateTime        @default(now())
+  period AnalyticsPeriod // DAILY, WEEKLY, MONTHLY
 
-  missionsGenerated     Int
-  missionsCompleted     Int
-  missionsSkipped       Int
-  avgCompletionRate     Float           // 0.0-1.0
-  avgTimeAccuracy       Float           // 1.0 - abs(actual-estimated)/estimated
-  avgDifficultyRating   Float           // User feedback 1-5
-  avgSuccessScore       Float           // Composite mission success metric
+  missionsGenerated   Int
+  missionsCompleted   Int
+  missionsSkipped     Int
+  avgCompletionRate   Float // 0.0-1.0
+  avgTimeAccuracy     Float // 1.0 - abs(actual-estimated)/estimated
+  avgDifficultyRating Float // User feedback 1-5
+  avgSuccessScore     Float // Composite mission success metric
 
-  createdAt             DateTime        @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([userId, date, period])
   @@index([userId, date])
@@ -717,19 +734,20 @@ enum AnalyticsPeriod {
 }
 
 model MissionFeedback {
-  id                      String      @id @default(cuid())
-  userId                  String
-  missionId               String
+  id        String @id @default(cuid())
+  userId    String
+  missionId String
 
-  helpfulnessRating       Int         // 1-5: Did this mission help you learn?
-  relevanceScore          Int         // 1-5: Were objectives relevant to your goals?
-  paceRating              PaceRating
-  improvementSuggestions  String?     @db.Text
+  helpfulnessRating      Int // 1-5: Did this mission help you learn?
+  relevanceScore         Int // 1-5: Were objectives relevant to your goals?
+  paceRating             PaceRating
+  improvementSuggestions String?    @db.Text
 
-  submittedAt             DateTime    @default(now())
+  createdAt   DateTime @default(now())
+  submittedAt DateTime @default(now())
 
   // Relations
-  mission                 Mission     @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([missionId])
@@ -749,32 +767,32 @@ model MissionStreak {
   longestStreak     Int       @default(0)
   lastCompletedDate DateTime?
 
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("mission_streaks")
 }
 
 model MissionReview {
-  id              String       @id @default(cuid())
-  userId          String
-  period          ReviewPeriod // WEEK, MONTH
-  startDate       DateTime
-  endDate         DateTime
+  id        String       @id @default(cuid())
+  userId    String
+  period    ReviewPeriod // WEEK, MONTH
+  startDate DateTime
+  endDate   DateTime
 
-  summary         Json         // { missionsCompleted, totalTime, avgSuccessScore }
-  highlights      Json         // { longestStreak, bestPerformance, topObjectives[] }
-  insights        Json         // { patterns[], correlations[], improvements[] }
-  recommendations Json         // { actionItems[], adjustments[] }
+  summary         Json // { missionsCompleted, totalTime, avgSuccessScore }
+  highlights      Json // { longestStreak, bestPerformance, topObjectives[] }
+  insights        Json // { patterns[], correlations[], improvements[] }
+  recommendations Json // { actionItems[], adjustments[] }
 
-  generatedAt     DateTime     @default(now())
+  generatedAt DateTime @default(now())
 
   // Relations
-  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, period, startDate])
   @@index([userId, generatedAt])
@@ -791,44 +809,604 @@ enum ReviewPeriod {
 // ============================================
 
 model SearchQuery {
-  id            String   @id @default(cuid())
-  userId        String
-  query         String   @db.Text
-  filters       Json?    // { courseIds?: string[], dateRange?: { start, end }, contentTypes?: string[] }
-  resultCount   Int      @default(0)
-  topResultId   String?  // ID of the top result for analytics
-  responseTimeMs Int?    // Performance tracking
-  timestamp     DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  query          String   @db.Text
+  filters        Json? // { courseIds?: string[], dateRange?: { start, end }, contentTypes?: string[] }
+  resultCount    Int      @default(0)
+  topResultId    String? // ID of the top result for analytics
+  responseTimeMs Int? // Performance tracking
+  timestamp      DateTime @default(now())
 
   // Privacy: anonymized after 90 days (GDPR compliance)
-  isAnonymized  Boolean  @default(false)
-  anonymizedAt  DateTime?
+  isAnonymized Boolean   @default(false)
+  anonymizedAt DateTime?
 
   // Relations
-  clicks        SearchClick[]
+  clicks SearchClick[]
 
   @@index([userId, timestamp])
   @@index([timestamp])
   @@index([isAnonymized])
+  // Story 3.6 Task 9.4: Composite indexes for query optimization
+  @@index([userId, resultCount, timestamp])
+  // Note: Text column indexing in PostgreSQL uses hash by default for equality checks
+  @@index([userId, query, timestamp])
   @@map("search_queries")
 }
 
 // Task 6.2: Track click-through rates on search results
 model SearchClick {
-  id              String   @id @default(cuid())
-  searchQueryId   String
-  userId          String
-  resultId        String   // ID of clicked result (lectureId, objectiveId, etc.)
-  resultType      String   // "lecture" | "chunk" | "objective" | "concept"
-  position        Int      // Position in search results (0-based)
-  similarity      Float?   // Similarity score of clicked result
-  timestamp       DateTime @default(now())
+  id            String   @id @default(cuid())
+  searchQueryId String
+  userId        String
+  resultId      String // ID of clicked result (lectureId, objectiveId, etc.)
+  resultType    String // "lecture" | "chunk" | "objective" | "concept"
+  position      Int // Position in search results (0-based)
+  similarity    Float? // Similarity score of clicked result
+  timestamp     DateTime @default(now())
 
   // Relations
-  searchQuery     SearchQuery @relation(fields: [searchQueryId], references: [id], onDelete: Cascade)
+  searchQuery SearchQuery @relation(fields: [searchQueryId], references: [id], onDelete: Cascade)
 
   @@index([searchQueryId])
   @@index([userId, timestamp])
   @@index([resultId, resultType])
   @@map("search_clicks")
+}
+
+// ============================================
+// Story 3.6: Advanced Search and Discovery Features
+// ============================================
+
+// Task 2.2: Search suggestion model for autocomplete
+model SearchSuggestion {
+  id             String         @id @default(cuid())
+  term           String         @unique
+  suggestionType SuggestionType
+  frequency      Int            @default(1) // How often this term is searched
+  lastUsed       DateTime       @default(now())
+  metadata       Json? // { source: "medical_term" | "content_title" | "concept", category?: string }
+  createdAt      DateTime       @default(now())
+
+  @@index([term, frequency])
+  @@index([suggestionType])
+  @@index([lastUsed])
+  @@map("search_suggestions")
+}
+
+enum SuggestionType {
+  MEDICAL_TERM // Medical terminology
+  PREVIOUS_SEARCH // User's search history
+  CONTENT_TITLE // From lecture titles
+  CONCEPT // From knowledge graph concepts
+  LEARNING_OBJECTIVE // From extracted objectives
+}
+
+// Task 3.1: Saved search model with alert configuration
+model SavedSearch {
+  id             String         @id @default(cuid())
+  userId         String
+  name           String // User-provided name
+  query          String         @db.Text
+  filters        Json? // { courseIds?, dateRange?, contentTypes?, minSimilarity? }
+  alertEnabled   Boolean        @default(false)
+  alertFrequency AlertFrequency @default(IMMEDIATE)
+  lastRun        DateTime?
+  resultCount    Int? // Results from last run
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  // Relations
+  alerts SearchAlert[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("saved_searches")
+}
+
+enum AlertFrequency {
+  IMMEDIATE // Check on every new content addition
+  DAILY // Daily digest
+  WEEKLY // Weekly summary
+}
+
+// Task 3.3: Search alerts for notifying about new matching content
+model SearchAlert {
+  id               String   @id @default(cuid())
+  savedSearchId    String
+  userId           String
+  triggeredBy      String // Content ID that triggered the alert
+  triggeredType    String // "lecture" | "chunk" | "concept"
+  newResultCount   Int // Number of new results
+  lastNotified     DateTime @default(now())
+  notificationSent Boolean  @default(false)
+  viewed           Boolean  @default(false)
+  createdAt        DateTime @default(now())
+
+  // Relations
+  savedSearch SavedSearch @relation(fields: [savedSearchId], references: [id], onDelete: Cascade)
+
+  @@index([savedSearchId])
+  @@index([userId])
+  @@index([notificationSent])
+  @@index([createdAt])
+  @@map("search_alerts")
+}
+
+// Task 5.1: Search analytics aggregation model
+model SearchAnalytics {
+  id               String   @id @default(cuid())
+  userId           String? // Null for platform-wide analytics
+  date             DateTime @default(now())
+  query            String   @db.Text
+  searchCount      Int      @default(1)
+  avgResultCount   Float
+  avgSimilarity    Float? // Average top result similarity
+  avgClickPosition Float? // Average position of clicked results
+  zeroResultCount  Int      @default(0) // How many times this query returned 0 results
+
+  @@unique([userId, date, query])
+  @@index([userId, date])
+  @@index([date])
+  @@index([query])
+  @@map("search_analytics")
+}
+
+// ============================================
+// Story 3.5: Context-Aware Content Recommendations
+// ============================================
+
+model ContentRecommendation {
+  id                   String               @id @default(cuid())
+  userId               String
+  recommendedContentId String
+  sourceContentId      String? // Content that triggered recommendation
+  score                Float // 0.0 to 1.0
+  reasoning            String               @db.Text // Human-readable explanation
+  status               RecommendationStatus @default(PENDING)
+  contextType          String // 'session', 'objective', 'mission'
+  contextId            String // sessionId, objectiveId, missionId
+  sourceType           ContentSourceType // Source of recommended content
+  createdAt            DateTime             @default(now())
+  viewedAt             DateTime?
+  dismissedAt          DateTime?
+
+  // Relations
+  recommendedContent ContentChunk             @relation("RecommendedContent", fields: [recommendedContentId], references: [id], onDelete: Cascade)
+  sourceContent      ContentChunk?            @relation("SourceContent", fields: [sourceContentId], references: [id], onDelete: SetNull)
+  feedback           RecommendationFeedback[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([contextType, contextId])
+  @@index([createdAt])
+  @@index([userId, contextType, contextId]) // Composite for cache lookups
+  @@map("content_recommendations")
+}
+
+enum RecommendationStatus {
+  PENDING
+  VIEWED
+  DISMISSED
+  RATED
+}
+
+enum ContentSourceType {
+  LECTURE
+  FIRST_AID
+  EXTERNAL_ARTICLE
+  CONCEPT_NOTE
+  USER_NOTE
+}
+
+model RecommendationFeedback {
+  id               String   @id @default(cuid())
+  recommendationId String
+  userId           String
+  rating           Int // 1-5 stars
+  feedbackText     String?  @db.Text
+  helpful          Boolean? // Was this recommendation helpful?
+  createdAt        DateTime @default(now())
+
+  // Relations
+  recommendation ContentRecommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+
+  @@index([recommendationId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("recommendation_feedback")
+}
+
+model RecommendationAnalytics {
+  id                   String   @id @default(cuid())
+  userId               String
+  date                 DateTime @default(now())
+  totalRecommendations Int
+  viewedCount          Int
+  clickedCount         Int
+  dismissedCount       Int
+  avgRating            Float?
+  avgEngagementTimeMs  Int?
+  topSourceTypes       Json // Array of {type, count}
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("recommendation_analytics")
+}
+
+// ============================================
+// Story 3.4: Content Conflict Detection
+// ============================================
+
+model Source {
+  id               String     @id @default(cuid())
+  name             String     @unique
+  type             SourceType
+  credibilityScore Int // 0-100 scale based on authority and evidence level
+  medicalSpecialty String? // "cardiology", "neurology", etc.
+  lastUpdated      DateTime?
+  metadata         Json? // { publisher, edition, authors[], url?, doi? }
+  createdAt        DateTime   @default(now())
+
+  // Relations
+  userPreferences UserSourcePreference[]
+
+  @@index([type])
+  @@index([credibilityScore])
+  @@map("sources")
+}
+
+enum SourceType {
+  FIRST_AID
+  LECTURE
+  TEXTBOOK
+  JOURNAL
+  GUIDELINE
+  USER_NOTES
+}
+
+model Conflict {
+  id                String           @id @default(cuid())
+  conceptId         String? // Link to knowledge graph concept (optional)
+  sourceAChunkId    String? // Lecture content chunk (optional)
+  sourceBChunkId    String? // Lecture content chunk (optional)
+  sourceAFirstAidId String? // First Aid section (Story 3.3 Task 5.3)
+  sourceBFirstAidId String? // First Aid section (Story 3.3 Task 5.3)
+  conflictType      ConflictType
+  severity          ConflictSeverity
+  description       String           @db.Text
+  status            ConflictStatus   @default(ACTIVE)
+  createdAt         DateTime         @default(now())
+  resolvedAt        DateTime?
+
+  // Relations
+  concept         Concept?             @relation(fields: [conceptId], references: [id], onDelete: SetNull)
+  sourceAChunk    ContentChunk?        @relation("SourceAConflicts", fields: [sourceAChunkId], references: [id], onDelete: Cascade)
+  sourceBChunk    ContentChunk?        @relation("SourceBConflicts", fields: [sourceBChunkId], references: [id], onDelete: Cascade)
+  sourceAFirstAid FirstAidSection?     @relation("FirstAidSourceA", fields: [sourceAFirstAidId], references: [id], onDelete: Cascade)
+  sourceBFirstAid FirstAidSection?     @relation("FirstAidSourceB", fields: [sourceBFirstAidId], references: [id], onDelete: Cascade)
+  resolutions     ConflictResolution[]
+  history         ConflictHistory[]
+  flags           ConflictFlag[]
+
+  @@index([conceptId, status])
+  @@index([severity])
+  @@index([status])
+  @@index([createdAt])
+  @@map("conflicts")
+}
+
+enum ConflictType {
+  DOSAGE
+  CONTRAINDICATION
+  MECHANISM
+  TREATMENT
+  DIAGNOSIS
+  PROGNOSIS
+  OTHER
+}
+
+enum ConflictSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ConflictStatus {
+  ACTIVE
+  RESOLVED
+  DISMISSED
+  UNDER_REVIEW
+}
+
+model ConflictResolution {
+  id                String   @id @default(cuid())
+  conflictId        String
+  resolvedBy        String // userId or "system"
+  resolution        String   @db.Text
+  preferredSourceId String?
+  evidence          String?  @db.Text
+  resolvedAt        DateTime @default(now())
+  notes             String?  @db.Text
+
+  // Relations
+  conflict Conflict @relation(fields: [conflictId], references: [id], onDelete: Cascade)
+
+  @@index([conflictId])
+  @@index([resolvedAt])
+  @@map("conflict_resolutions")
+}
+
+model ConflictHistory {
+  id         String          @id @default(cuid())
+  conflictId String
+  changeType ChangeType
+  oldStatus  ConflictStatus?
+  newStatus  ConflictStatus?
+  changedBy  String // userId or "system"
+  changedAt  DateTime        @default(now())
+  notes      String?         @db.Text
+
+  // Relations
+  conflict Conflict @relation(fields: [conflictId], references: [id], onDelete: Cascade)
+
+  @@index([conflictId])
+  @@index([changedAt])
+  @@map("conflict_history")
+}
+
+enum ChangeType {
+  DETECTED
+  RESOLVED
+  REOPENED
+  DISMISSED
+  EVIDENCE_UPDATED
+  SOURCE_UPDATED
+}
+
+model ConflictFlag {
+  id                String   @id @default(cuid())
+  conflictId        String? // Null if flagging new potential conflict
+  userId            String
+  sourceAChunkId    String?
+  sourceBChunkId    String?
+  sourceAFirstAidId String? // Story 3.3 Task 5.4
+  sourceBFirstAidId String? // Story 3.3 Task 5.4
+  description       String   @db.Text
+  userNotes         String?  @db.Text
+  flaggedAt         DateTime @default(now())
+  status            String   @default("PENDING") // PENDING, REVIEWED, APPROVED, REJECTED
+
+  // Relations
+  conflict Conflict? @relation(fields: [conflictId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
+  @@index([flaggedAt])
+  @@map("conflict_flags")
+}
+
+model UserSourcePreference {
+  id         String     @id @default(cuid())
+  userId     String
+  sourceId   String
+  trustLevel TrustLevel
+  priority   Int // 1-N ranking for automatic resolution
+  notes      String?    @db.Text
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  // Relations
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sourceId])
+  @@index([userId])
+  @@index([priority])
+  @@map("user_source_preferences")
+}
+
+enum TrustLevel {
+  HIGH
+  MEDIUM
+  LOW
+  BLOCKED
+}
+
+// ============================================
+// Story 3.3: First Aid Integration
+// ============================================
+
+// Task 1.4: First Aid Section model
+model FirstAidSection {
+  id          String  @id @default(cuid())
+  userId      String // User who uploaded this First Aid content
+  edition     String // "2026", "2025", etc.
+  year        Int // 2026, 2025
+  system      String // "Cardiovascular", "Respiratory", "GI", etc.
+  section     String // Major section title
+  subsection  String? // Optional subsection
+  pageNumber  Int // Page in physical book
+  content     String  @db.Text
+  isHighYield Boolean @default(false) // Starred content
+
+  // Structure preservation (Task 1.2)
+  mnemonics            String[] // List of mnemonics in this section
+  clinicalCorrelations String[] // Clinical application notes
+  visualMarkers        Json? // { stars: boolean, boxes: string[], diagrams: string[] }
+
+  // Embeddings for semantic search (Task 1.3)
+  embedding Unsupported("vector(1536)")? // gemini-embedding-001
+
+  // Copyright and access control (Task 7.1)
+  encryptionKeyHash String? // User-specific encryption key hash
+  accessCount       Int       @default(0) // Track access for rate limiting
+  lastAccessedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  lectureMappings    LectureFirstAidMapping[]
+  conflictsAsSourceA Conflict[]               @relation("FirstAidSourceA")
+  conflictsAsSourceB Conflict[]               @relation("FirstAidSourceB")
+  conceptMappings    FirstAidConceptMapping[]
+
+  @@index([userId])
+  @@index([edition, system])
+  @@index([isHighYield])
+  @@index([pageNumber])
+  @@map("first_aid_sections")
+}
+
+// Task 2.2: Lecture-to-First Aid mapping
+model LectureFirstAidMapping {
+  id                String          @id @default(cuid())
+  lectureId         String
+  firstAidSectionId String
+  confidence        Float // 0.0-1.0 similarity score
+  priority          MappingPriority @default(STANDARD)
+
+  // Mapping rationale (Task 2.4)
+  rationale     String?          @db.Text
+  userFeedback  MappingFeedback? // User validation
+  feedbackNotes String?          @db.Text
+
+  // Metadata
+  autoMapped  Boolean   @default(true) // Auto-generated vs manual
+  mappedAt    DateTime  @default(now())
+  validatedAt DateTime?
+
+  // Relations
+  lecture         Lecture         @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  firstAidSection FirstAidSection @relation(fields: [firstAidSectionId], references: [id], onDelete: Cascade)
+
+  @@unique([lectureId, firstAidSectionId])
+  @@index([lectureId])
+  @@index([firstAidSectionId])
+  @@index([confidence])
+  @@index([priority])
+  @@map("lecture_first_aid_mappings")
+}
+
+enum MappingPriority {
+  HIGH_YIELD // Starred First Aid content
+  STANDARD // Normal mapping
+  SUGGESTED // Low confidence, needs review
+}
+
+enum MappingFeedback {
+  HELPFUL
+  NOT_HELPFUL
+  SOMEWHAT_HELPFUL
+}
+
+// First Aid Guideline model (from user requirements)
+model FirstAidGuideline {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String   @db.Text
+  category    String // "CPR", "Bleeding", "Burns", etc.
+  edition     String // "2024 Edition"
+  publishedAt DateTime
+
+  // Vector embedding for semantic search
+  embedding Unsupported("vector(1536)")?
+
+  // Relationships
+  conceptMappings FirstAidConceptMapping[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([edition])
+  @@map("first_aid_guidelines")
+}
+
+// First Aid Concept Mapping model (from user requirements)
+model FirstAidConceptMapping {
+  id String @id @default(cuid())
+
+  // Foreign keys - flexible to support both guidelines and sections
+  guidelineId String?
+  guideline   FirstAidGuideline? @relation(fields: [guidelineId], references: [id], onDelete: Cascade)
+
+  sectionId String?
+  section   FirstAidSection? @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  conceptId String
+  concept   Concept @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+
+  // Mapping metadata
+  relevanceScore Float       @default(0.5) // 0-1 score
+  mappingType    MappingType // DIRECT, CONTEXTUAL, PROCEDURAL
+  sourceSection  String? // Section within guideline/section
+
+  createdAt DateTime @default(now())
+
+  @@unique([guidelineId, conceptId])
+  @@unique([sectionId, conceptId])
+  @@index([conceptId])
+  @@index([relevanceScore])
+  @@index([mappingType])
+  @@map("first_aid_concept_mappings")
+}
+
+// First Aid Version model (from user requirements)
+model FirstAidVersion {
+  id           String   @id @default(cuid())
+  edition      String   @unique // "2024 Edition"
+  publishedAt  DateTime
+  downloadedAt DateTime @default(now())
+  isActive     Boolean  @default(true)
+  sourceUrl    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([publishedAt])
+  @@map("first_aid_versions")
+}
+
+enum MappingType {
+  DIRECT // Guideline directly mentions concept
+  CONTEXTUAL // Related by context/symptoms
+  PROCEDURAL // Part of same procedure/protocol
+}
+
+// Task 6.1: First Aid edition tracking
+model FirstAidEdition {
+  id            String   @id @default(cuid())
+  userId        String // User who owns this edition
+  year          Int // 2026, 2025
+  versionNumber String // "2026.1", "2025.0"
+  uploadedAt    DateTime @default(now())
+  isActive      Boolean  @default(true) // Latest edition
+
+  // Edition management (Task 6.2)
+  changeLog          String?              @db.Text // What changed from previous edition
+  mappingStatus      EditionMappingStatus @default(PENDING)
+  processingProgress Int                  @default(0) // 0-100 percentage
+
+  // Metadata
+  sectionCount   Int @default(0)
+  highYieldCount Int @default(0)
+  totalPages     Int @default(0)
+
+  @@unique([userId, year])
+  @@index([userId, isActive])
+  @@index([year])
+  @@map("first_aid_editions")
+}
+
+enum EditionMappingStatus {
+  PENDING // Not yet processed
+  IN_PROGRESS // Currently mapping
+  COMPLETED // All mappings done
+  FAILED // Processing failed
 }
