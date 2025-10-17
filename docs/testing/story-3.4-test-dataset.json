@@ -1,0 +1,663 @@
+{
+  "testDataset": {
+    "version": "1.0",
+    "description": "Medical content test dataset for Story 3.4 conflict detection validation",
+    "totalCases": 30,
+    "categories": {
+      "truePositives": 12,
+      "trueNegatives": 10,
+      "edgeCases": 8
+    }
+  },
+  "truePositives": [
+    {
+      "id": "TP-001",
+      "category": "DOSAGE_CONFLICT",
+      "severity": "HIGH",
+      "sourceA": {
+        "content": "Aspirin 81mg once daily is recommended for cardiovascular prophylaxis in high-risk patients with no history of bleeding.",
+        "type": "lecture",
+        "credibility": 75
+      },
+      "sourceB": {
+        "content": "Aspirin 325mg loading dose followed by 81mg daily is the standard treatment for acute myocardial infarction.",
+        "type": "first_aid",
+        "credibility": 95
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Context-dependent: prophylaxis vs acute treatment. NOT a true conflict."
+      },
+      "notes": "This is actually a TRUE NEGATIVE - different clinical contexts"
+    },
+    {
+      "id": "TP-002",
+      "category": "DOSAGE_CONFLICT",
+      "severity": "CRITICAL",
+      "sourceA": {
+        "content": "Epinephrine 1mg IV bolus every 3-5 minutes for cardiac arrest per ACLS guidelines.",
+        "type": "guideline",
+        "credibility": 95
+      },
+      "sourceB": {
+        "content": "Epinephrine 0.1mg IV is the recommended dose for cardiac arrest resuscitation.",
+        "type": "lecture",
+        "credibility": 70
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "DOSAGE",
+        "severity": "CRITICAL",
+        "reason": "10x dosage error - potentially life-threatening"
+      },
+      "notes": "CRITICAL conflict - dosage error could be fatal"
+    },
+    {
+      "id": "TP-003",
+      "category": "CONTRAINDICATION",
+      "severity": "HIGH",
+      "sourceA": {
+        "content": "Beta-blockers are absolutely contraindicated in patients with acute decompensated heart failure and should never be administered.",
+        "type": "lecture",
+        "credibility": 70
+      },
+      "sourceB": {
+        "content": "Beta-blockers are recommended in stable heart failure patients with reduced ejection fraction (HFrEF) to improve mortality. Initiate at low doses once euvolemic.",
+        "type": "first_aid",
+        "credibility": 95
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "CONTRAINDICATION",
+        "severity": "HIGH",
+        "reason": "Acute decompensated vs stable HFrEF - important clinical distinction"
+      },
+      "notes": "True conflict with important nuance about acute vs chronic heart failure"
+    },
+    {
+      "id": "TP-004",
+      "category": "MECHANISM",
+      "severity": "MEDIUM",
+      "sourceA": {
+        "content": "Aspirin irreversibly inhibits cyclooxygenase-1 (COX-1) and cyclooxygenase-2 (COX-2) enzymes, preventing platelet aggregation.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "sourceB": {
+        "content": "Aspirin selectively inhibits COX-2, the inflammatory cyclooxygenase isoform, which is why it has anti-inflammatory effects.",
+        "type": "lecture",
+        "credibility": 70
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "MECHANISM",
+        "severity": "MEDIUM",
+        "reason": "Aspirin is NON-selective (inhibits both COX-1 and COX-2). Source B is incorrect."
+      },
+      "notes": "Source B confuses aspirin with selective COX-2 inhibitors (e.g., celecoxib)"
+    },
+    {
+      "id": "TP-005",
+      "category": "TREATMENT",
+      "severity": "HIGH",
+      "sourceA": {
+        "content": "Antibiotics are not indicated for viral upper respiratory infections and should be avoided to prevent antibiotic resistance.",
+        "type": "guideline",
+        "credibility": 95
+      },
+      "sourceB": {
+        "content": "Prescribe amoxicillin 500mg TID for 10 days for all patients with cold symptoms to prevent secondary bacterial infections.",
+        "type": "lecture",
+        "credibility": 65
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "TREATMENT",
+        "severity": "HIGH",
+        "reason": "Direct contradiction - guideline says no antibiotics, lecture says prescribe. Lecture promotes antibiotic overuse."
+      },
+      "notes": "Clear treatment protocol conflict - guideline is correct"
+    },
+    {
+      "id": "TP-006",
+      "category": "DIAGNOSIS",
+      "severity": "HIGH",
+      "sourceA": {
+        "content": "Myocardial infarction is diagnosed when troponin levels exceed the 99th percentile with dynamic changes (rise or fall) and clinical evidence of ischemia.",
+        "type": "guideline",
+        "credibility": 95
+      },
+      "sourceB": {
+        "content": "Any troponin elevation above normal range (>0.04 ng/mL) indicates myocardial infarction and requires immediate catheterization.",
+        "type": "lecture",
+        "credibility": 70
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "DIAGNOSIS",
+        "severity": "HIGH",
+        "reason": "Oversimplified criteria in Source B - troponin can be elevated in many conditions (CKD, PE, sepsis, myocarditis)"
+      },
+      "notes": "Diagnostic criteria conflict - Source B could lead to overdiagnosis and unnecessary procedures"
+    },
+    {
+      "id": "TP-007",
+      "category": "PROGNOSIS",
+      "severity": "MEDIUM",
+      "sourceA": {
+        "content": "Pancreatic adenocarcinoma has a 5-year survival rate of approximately 10-12% with modern chemotherapy regimens.",
+        "type": "journal",
+        "credibility": 90
+      },
+      "sourceB": {
+        "content": "Pancreatic cancer has a poor prognosis with a 5-year survival rate of only 2-3%, making it one of the deadliest malignancies.",
+        "type": "lecture",
+        "credibility": 70
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "PROGNOSIS",
+        "severity": "MEDIUM",
+        "reason": "Numerical discrepancy in survival rates - likely due to outdated data in lecture (pre-FOLFIRINOX/Gem-Abraxane era)"
+      },
+      "notes": "Prognostic data conflict - journal reflects recent therapeutic advances"
+    },
+    {
+      "id": "TP-008",
+      "category": "NUMERICAL_CONFLICT",
+      "severity": "MEDIUM",
+      "sourceA": {
+        "content": "Normal adult resting heart rate ranges from 60-100 beats per minute, with athletes often having rates as low as 40-60 bpm.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "sourceB": {
+        "content": "Bradycardia is defined as heart rate <70 bpm and requires evaluation for underlying cardiac pathology.",
+        "type": "lecture",
+        "credibility": 70
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "OTHER",
+        "severity": "MEDIUM",
+        "reason": "Incorrect bradycardia threshold in Source B - standard definition is <60 bpm, not <70 bpm"
+      },
+      "notes": "Numerical threshold conflict - Source B has incorrect definition"
+    },
+    {
+      "id": "TP-009",
+      "category": "CERTAINTY_CONFLICT",
+      "severity": "LOW",
+      "sourceA": {
+        "content": "ACE inhibitors commonly cause a persistent dry cough in 10-20% of patients due to increased bradykinin levels.",
+        "type": "first_aid",
+        "credibility": 95
+      },
+      "sourceB": {
+        "content": "ACE inhibitors rarely cause side effects. Cough is an uncommon adverse reaction occurring in less than 5% of patients.",
+        "type": "lecture",
+        "credibility": 70
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "OTHER",
+        "severity": "MEDIUM",
+        "reason": "Frequency disagreement - 'commonly 10-20%' vs 'rarely <5%'. First Aid is more accurate."
+      },
+      "notes": "Certainty/frequency conflict - Source B underestimates a well-known side effect"
+    },
+    {
+      "id": "TP-010",
+      "category": "OPPOSING_TERMS",
+      "severity": "HIGH",
+      "sourceA": {
+        "content": "Statin therapy has been shown to significantly reduce cardiovascular events and mortality in high-risk patients with elevated LDL cholesterol.",
+        "type": "journal",
+        "credibility": 90
+      },
+      "sourceB": {
+        "content": "Recent studies suggest statins are ineffective for primary prevention and may increase all-cause mortality due to adverse effects.",
+        "type": "lecture",
+        "credibility": 65
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "TREATMENT",
+        "severity": "HIGH",
+        "reason": "Direct contradiction - 'reduce mortality' vs 'increase mortality'. Source B contradicts overwhelming evidence."
+      },
+      "notes": "Clear opposing terms conflict - Source B is medically inaccurate"
+    },
+    {
+      "id": "TP-011",
+      "category": "DOSAGE_CONFLICT",
+      "severity": "CRITICAL",
+      "sourceA": {
+        "content": "Warfarin is typically initiated at 5mg daily for most adult patients, with dose adjustments based on INR monitoring.",
+        "type": "guideline",
+        "credibility": 95
+      },
+      "sourceB": {
+        "content": "Start warfarin at 10mg daily for therapeutic anticoagulation. Lower doses (2-3mg) are insufficient for adequate INR elevation.",
+        "type": "lecture",
+        "credibility": 70
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "DOSAGE",
+        "severity": "CRITICAL",
+        "reason": "Dangerous overdosing recommendation - 10mg initial dose increases bleeding risk significantly"
+      },
+      "notes": "CRITICAL dosage conflict - Source B recommendation could cause life-threatening bleeding"
+    },
+    {
+      "id": "TP-012",
+      "category": "TEMPORAL_CONFLICT",
+      "severity": "MEDIUM",
+      "sourceA": {
+        "content": "Acute appendicitis requires urgent surgical intervention within 24 hours to prevent perforation and peritonitis.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "sourceB": {
+        "content": "Appendicitis can be managed conservatively with antibiotics for 7-10 days, reserving surgery for complicated cases only.",
+        "type": "journal",
+        "credibility": 85
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "TREATMENT",
+        "severity": "MEDIUM",
+        "reason": "Treatment approach conflict - traditional surgery vs conservative antibiotic management. Recent evidence supports both approaches depending on patient factors."
+      },
+      "notes": "Evolving treatment paradigm - both sources have validity in different clinical contexts"
+    }
+  ],
+  "trueNegatives": [
+    {
+      "id": "TN-001",
+      "category": "TERMINOLOGY_VARIANTS",
+      "sourceA": {
+        "content": "Myocardial infarction (MI) occurs when coronary artery occlusion leads to myocardial cell death.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "sourceB": {
+        "content": "A heart attack happens when a blocked artery prevents blood from reaching the heart muscle, causing tissue damage.",
+        "type": "lecture",
+        "credibility": 75
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Medical terminology variants - 'MI', 'myocardial infarction', and 'heart attack' are synonyms"
+      },
+      "notes": "Should NOT be flagged as conflict - just different terminology levels"
+    },
+    {
+      "id": "TN-002",
+      "category": "LEVEL_OF_DETAIL",
+      "sourceA": {
+        "content": "Diabetes mellitus is a metabolic disorder characterized by hyperglycemia.",
+        "type": "lecture",
+        "credibility": 75
+      },
+      "sourceB": {
+        "content": "Diabetes mellitus is a complex metabolic disease resulting from insulin deficiency (Type 1) or insulin resistance (Type 2), leading to chronic hyperglycemia. Long-term complications include retinopathy, nephropathy, neuropathy, and accelerated cardiovascular disease. Diagnostic criteria include fasting glucose ≥126 mg/dL or HbA1c ≥6.5%.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Different levels of detail - simplified vs comprehensive explanation. No contradiction."
+      },
+      "notes": "NOT a conflict - just different depths of explanation"
+    },
+    {
+      "id": "TN-003",
+      "category": "CONTEXT_DEPENDENT",
+      "sourceA": {
+        "content": "Aspirin 81mg daily for cardiovascular prophylaxis in patients with prior MI or stroke.",
+        "type": "guideline",
+        "credibility": 95
+      },
+      "sourceB": {
+        "content": "Aspirin 325mg loading dose for acute coronary syndrome presentation.",
+        "type": "guideline",
+        "credibility": 95
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Context-dependent dosing - secondary prevention (81mg) vs acute treatment (325mg). Both correct in their contexts."
+      },
+      "notes": "NOT a conflict - different clinical scenarios require different doses"
+    },
+    {
+      "id": "TN-004",
+      "category": "UPDATED_KNOWLEDGE",
+      "sourceA": {
+        "content": "Peptic ulcer disease is primarily caused by chronic NSAIDuse and stress, requiring long-term acid suppression therapy.",
+        "type": "lecture",
+        "credibility": 60,
+        "year": 1990
+      },
+      "sourceB": {
+        "content": "Helicobacter pylori infection is the leading cause of peptic ulcer disease, and eradication therapy with triple antibiotic regimen cures the majority of cases.",
+        "type": "journal",
+        "credibility": 90,
+        "year": 2024
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Updated medical knowledge - not a contradiction, but evolution of understanding. Source A is outdated (pre-H. pylori discovery)."
+      },
+      "notes": "NOT a conflict - represents advancement in medical knowledge over time"
+    },
+    {
+      "id": "TN-005",
+      "category": "POPULATION_SPECIFIC",
+      "sourceA": {
+        "content": "Amoxicillin dosing for otitis media: Pediatric patients 10-20 mg/kg/dose twice daily.",
+        "type": "guideline",
+        "credibility": 95
+      },
+      "sourceB": {
+        "content": "Amoxicillin 500mg three times daily for adult otitis media treatment.",
+        "type": "guideline",
+        "credibility": 95
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Population-specific dosing - pediatric vs adult. Both correct for their respective populations."
+      },
+      "notes": "NOT a conflict - different patient populations require different dosing strategies"
+    },
+    {
+      "id": "TN-006",
+      "category": "STYLISTIC_DIFFERENCES",
+      "sourceA": {
+        "content": "Hypertension may cause headaches, dizziness, and visual disturbances in some patients.",
+        "type": "lecture",
+        "credibility": 75
+      },
+      "sourceB": {
+        "content": "Hypertension can lead to symptoms such as headaches, vertigo, and blurred vision.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Stylistic differences - 'may cause' vs 'can lead to', 'dizziness' vs 'vertigo'. Same meaning, different wording."
+      },
+      "notes": "NOT a conflict - just stylistic variation with synonymous terms"
+    },
+    {
+      "id": "TN-007",
+      "category": "COMPLEMENTARY_INFO",
+      "sourceA": {
+        "content": "Type 1 diabetes is characterized by autoimmune destruction of pancreatic beta cells, leading to absolute insulin deficiency.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "sourceB": {
+        "content": "Type 1 diabetes typically presents in childhood or adolescence with polyuria, polydipsia, and weight loss. Patients require lifelong insulin therapy.",
+        "type": "lecture",
+        "credibility": 75
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Complementary information - Source A explains pathophysiology, Source B describes clinical presentation. No contradiction."
+      },
+      "notes": "NOT a conflict - sources provide different but compatible aspects of the same disease"
+    },
+    {
+      "id": "TN-008",
+      "category": "MINOR_NUMERICAL_DIFFERENCE",
+      "sourceA": {
+        "content": "Normal body temperature is approximately 98.6°F (37°C), with a normal range of 97-99°F.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "sourceB": {
+        "content": "Average normal body temperature is 98.2°F, though individual variation exists within the 97-99°F range.",
+        "type": "journal",
+        "credibility": 85
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Minor numerical difference within normal variation (98.6 vs 98.2°F). Both acknowledge normal range. Not clinically significant."
+      },
+      "notes": "NOT a conflict - minor variation within acceptable ranges"
+    },
+    {
+      "id": "TN-009",
+      "category": "MECHANISM_ELABORATION",
+      "sourceA": {
+        "content": "Beta-blockers reduce heart rate and blood pressure by blocking beta-adrenergic receptors.",
+        "type": "lecture",
+        "credibility": 75
+      },
+      "sourceB": {
+        "content": "Beta-blockers competitively inhibit catecholamine binding to beta-1 and beta-2 adrenergic receptors. Beta-1 blockade in the heart decreases chronotropy and inotropy, while beta-2 blockade in vascular smooth muscle prevents vasodilation.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Mechanism elaboration - Source A provides simplified overview, Source B provides detailed molecular mechanism. No contradiction."
+      },
+      "notes": "NOT a conflict - different levels of mechanistic detail"
+    },
+    {
+      "id": "TN-010",
+      "category": "UNCERTAINTY_WORDING",
+      "sourceA": {
+        "content": "Statins usually reduce LDL cholesterol by 30-50% depending on dose and patient factors.",
+        "type": "guideline",
+        "credibility": 95
+      },
+      "sourceB": {
+        "content": "Statins commonly achieve 30-50% LDL reduction, though individual response varies.",
+        "type": "lecture",
+        "credibility": 75
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Uncertainty wording - 'usually' vs 'commonly'. Synonymous adverbs, same quantitative claim (30-50%)."
+      },
+      "notes": "NOT a conflict - different adverbs with essentially the same meaning"
+    }
+  ],
+  "edgeCases": [
+    {
+      "id": "EC-001",
+      "category": "SUBTLE_CONTRADICTION",
+      "sourceA": {
+        "content": "Metformin is contraindicated in patients with creatinine clearance <30 mL/min due to risk of lactic acidosis.",
+        "type": "guideline",
+        "credibility": 95
+      },
+      "sourceB": {
+        "content": "Metformin should be dose-reduced in mild renal impairment (CrCl 30-60 mL/min) but is generally well-tolerated.",
+        "type": "lecture",
+        "credibility": 75
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Both sources agree on CrCl <30 contraindication. Source B adds information about mild impairment. Compatible, not contradictory."
+      },
+      "notes": "Edge case - could be misinterpreted as conflict but sources actually agree on critical threshold"
+    },
+    {
+      "id": "EC-002",
+      "category": "IMPLICIT_CONTRADICTION",
+      "sourceA": {
+        "content": "Thrombolytic therapy with tPA significantly reduces mortality in acute ischemic stroke when administered within 4.5 hours of symptom onset.",
+        "type": "journal",
+        "credibility": 90
+      },
+      "sourceB": {
+        "content": "Thrombolytics in stroke show no mortality benefit but may improve functional outcomes in select patients.",
+        "type": "lecture",
+        "credibility": 70
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "TREATMENT",
+        "severity": "HIGH",
+        "reason": "Implicit contradiction - 'reduces mortality' vs 'no mortality benefit'. Important treatment efficacy disagreement."
+      },
+      "notes": "Edge case - requires semantic understanding that 'reduces mortality' contradicts 'no mortality benefit'"
+    },
+    {
+      "id": "EC-003",
+      "category": "EVOLVING_CONSENSUS",
+      "sourceA": {
+        "content": "Tight glycemic control (HbA1c <6.5%) is recommended for all diabetic patients to prevent microvascular complications.",
+        "type": "lecture",
+        "credibility": 70,
+        "year": 2010
+      },
+      "sourceB": {
+        "content": "Individualized HbA1c targets (6.5-8.0%) are preferred based on patient age, comorbidities, and hypoglycemia risk, as overly tight control may increase mortality.",
+        "type": "guideline",
+        "credibility": 95,
+        "year": 2024
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "TREATMENT",
+        "severity": "MEDIUM",
+        "reason": "Evolving medical consensus - older 'one-size-fits-all' approach vs modern 'individualized targets'. Source B reflects updated evidence (ACCORD trial)."
+      },
+      "notes": "Edge case - represents evolution in clinical practice guidelines over time"
+    },
+    {
+      "id": "EC-004",
+      "category": "CONDITIONAL_STATEMENT",
+      "sourceA": {
+        "content": "ACE inhibitors are first-line therapy for hypertension in diabetic patients with proteinuria due to renal protective effects.",
+        "type": "guideline",
+        "credibility": 95
+      },
+      "sourceB": {
+        "content": "Avoid ACE inhibitors in bilateral renal artery stenosis as they can precipitate acute kidney injury.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Conditional statements - Source A describes indication, Source B describes contraindication. Both true in their respective contexts."
+      },
+      "notes": "Edge case - requires understanding that indication and contraindication are not contradictory when conditions differ"
+    },
+    {
+      "id": "EC-005",
+      "category": "RANGE_OVERLAP",
+      "sourceA": {
+        "content": "Normal serum sodium ranges from 135-145 mEq/L. Values below 135 indicate hyponatremia.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "sourceB": {
+        "content": "Serum sodium levels of 136-142 mEq/L are considered normal in most clinical laboratories.",
+        "type": "journal",
+        "credibility": 85
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Overlapping ranges with slight variation (135-145 vs 136-142). Within acceptable lab variation. Not clinically significant."
+      },
+      "notes": "Edge case - numerical ranges overlap substantially, minor differences due to lab variability"
+    },
+    {
+      "id": "EC-006",
+      "category": "NEGATION_OF_SIDE_EFFECT",
+      "sourceA": {
+        "content": "Statins rarely cause significant myopathy, occurring in less than 1% of patients. Muscle symptoms are often non-specific and unrelated to statin use.",
+        "type": "lecture",
+        "credibility": 70
+      },
+      "sourceB": {
+        "content": "Statin-associated muscle symptoms (SAMS) affect 10-25% of patients in clinical practice, though severe rhabdomyolysis is rare.",
+        "type": "journal",
+        "credibility": 90
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "OTHER",
+        "severity": "MEDIUM",
+        "reason": "Significant frequency discrepancy - '<1% rarely cause myopathy' vs '10-25% muscle symptoms'. Source A underestimates patient-reported muscle symptoms."
+      },
+      "notes": "Edge case - conflict in adverse effect frequency, clinically important for patient counseling"
+    },
+    {
+      "id": "EC-007",
+      "category": "GUIDELINE_DISAGREEMENT",
+      "sourceA": {
+        "content": "Screening mammography should begin at age 40 for average-risk women (American Cancer Society, 2024).",
+        "type": "guideline",
+        "credibility": 95,
+        "organization": "ACS"
+      },
+      "sourceB": {
+        "content": "Routine screening mammography is recommended starting at age 50 for average-risk women (US Preventive Services Task Force, 2024).",
+        "type": "guideline",
+        "credibility": 95,
+        "organization": "USPSTF"
+      },
+      "expectedResult": {
+        "conflictDetected": true,
+        "conflictType": "OTHER",
+        "severity": "MEDIUM",
+        "reason": "Guideline disagreement - different reputable organizations recommend different screening ages (40 vs 50). Both credible, represents legitimate medical debate."
+      },
+      "notes": "Edge case - conflict between authoritative guidelines, not error but legitimate clinical controversy"
+    },
+    {
+      "id": "EC-008",
+      "category": "PHARMACOKINETIC_DETAIL",
+      "sourceA": {
+        "content": "Warfarin has a half-life of 36-42 hours and takes 5-7 days to reach steady-state anticoagulation.",
+        "type": "textbook",
+        "credibility": 90
+      },
+      "sourceB": {
+        "content": "Warfarin's anticoagulant effect peaks at 72-96 hours after initiation due to Factor II's long half-life (60 hours).",
+        "type": "journal",
+        "credibility": 85
+      },
+      "expectedResult": {
+        "conflictDetected": false,
+        "reason": "Complementary pharmacokinetic information - drug half-life vs peak effect. Different but compatible concepts. No contradiction."
+      },
+      "notes": "Edge case - requires pharmacology knowledge to understand these are different but related concepts"
+    }
+  ],
+  "usageInstructions": {
+    "purpose": "This dataset is designed to validate the conflict detection algorithm's accuracy across various medical content scenarios.",
+    "howToUse": [
+      "1. Load test cases into ConflictDetector service",
+      "2. Run detectConflicts() for each source pair",
+      "3. Compare actual results with expectedResult",
+      "4. Calculate precision, recall, and accuracy metrics",
+      "5. Identify patterns in false positives and false negatives",
+      "6. Refine detection algorithm based on results"
+    ],
+    "metricCalculation": {
+      "truePositive": "Algorithm correctly identifies conflict when expectedResult.conflictDetected = true",
+      "falsePositive": "Algorithm identifies conflict when expectedResult.conflictDetected = false",
+      "trueNegative": "Algorithm correctly does NOT identify conflict when expectedResult.conflictDetected = false",
+      "falseNegative": "Algorithm does NOT identify conflict when expectedResult.conflictDetected = true",
+      "precision": "TP / (TP + FP)",
+      "recall": "TP / (TP + FN)",
+      "accuracy": "(TP + TN) / Total",
+      "falsePositiveRate": "FP / (FP + TN)"
+    }
+  },
+  "expectedOutcome": {
+    "minimumAcceptablePrecision": 0.85,
+    "minimumAcceptableRecall": 0.85,
+    "maximumAcceptableFPR": 0.10,
+    "minimumOverallAccuracy": 0.90
+  }
+}

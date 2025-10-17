@@ -23,6 +23,13 @@
   ],
   "shortcuts": [
     {
+      "name": "Search Content",
+      "short_name": "Search",
+      "description": "Search medical content and lectures",
+      "url": "/search/mobile",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
       "name": "Upload Lecture",
       "short_name": "Upload",
       "description": "Upload a new lecture PDF",
@@ -42,15 +49,12 @@
       "description": "View your lecture library",
       "url": "/library",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "View Progress",
-      "short_name": "Progress",
-      "description": "Track your learning progress",
-      "url": "/progress",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ],
   "categories": ["education", "productivity", "medical"],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
 }

@@ -1,0 +1,1566 @@
+{
+  "config": {
+    "configFile": "/Users/kyin/Projects/Americano-epic3/apps/web/playwright.config.ts",
+    "rootDir": "/Users/kyin/Projects/Americano-epic3/apps/web/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/junit.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/kyin/Projects/Americano-epic3/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/kyin/Projects/Americano-epic3/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/kyin/Projects/Americano-epic3/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/kyin/Projects/Americano-epic3/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/kyin/Projects/Americano-epic3/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/kyin/Projects/Americano-epic3/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/kyin/Projects/Americano-epic3/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/Users/kyin/Projects/Americano-epic3/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/kyin/Projects/Americano-epic3/apps/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/Users/kyin/Projects/Americano-epic3/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.0",
+    "workers": 6,
+    "webServer": {
+      "command": "pnpm dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "epic3/first-aid-integration.e2e.test.ts",
+      "file": "epic3/first-aid-integration.e2e.test.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "First Aid Integration - Complete Workflow",
+          "file": "epic3/first-aid-integration.e2e.test.ts",
+          "line": 351,
+          "column": 19,
+          "specs": [
+            {
+              "title": "1. First Aid page loads successfully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-584737f2afd75597f718",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 361,
+              "column": 3
+            },
+            {
+              "title": "2. Scroll position tracked as user scrolls",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-ca3f339448a94a50e0a1",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 388,
+              "column": 3
+            },
+            {
+              "title": "3. Related concepts loaded contextually",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-7464ebce20005bbc2fd3",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 411,
+              "column": 3
+            },
+            {
+              "title": "4. Cross-references displayed in sidebar",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-5bc0af9ead03f9566c93",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 437,
+              "column": 3
+            },
+            {
+              "title": "5. Cache hit on revisit (<5ms)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-51ccd841638dae72d045",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 467,
+              "column": 3
+            },
+            {
+              "title": "6. Click reference navigates correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-40bb390eee25a4cc5f27",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 505,
+              "column": 3
+            },
+            {
+              "title": "7. Multiple sections cached independently",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-b6d252b9b227bc7c57c8",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 532,
+              "column": 3
+            },
+            {
+              "title": "8. Edition update detected by scheduled job",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-2246dcc6e36341394bba",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 576,
+              "column": 3
+            },
+            {
+              "title": "9. User notified of available edition update",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-230c911487f4bc6c8604",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 614,
+              "column": 3
+            },
+            {
+              "title": "10. Contextual loading with scroll debounce optimization",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-c6eb81b38c930064dd64",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 661,
+              "column": 3
+            },
+            {
+              "title": "1. First Aid page loads successfully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-0ef90f9b7f389162db3b",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 361,
+              "column": 3
+            },
+            {
+              "title": "2. Scroll position tracked as user scrolls",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-512728c58ded5bf21c3a",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 388,
+              "column": 3
+            },
+            {
+              "title": "3. Related concepts loaded contextually",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-f336672e1c0310a73661",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 411,
+              "column": 3
+            },
+            {
+              "title": "4. Cross-references displayed in sidebar",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-a988292fc32cbe7e4231",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 437,
+              "column": 3
+            },
+            {
+              "title": "5. Cache hit on revisit (<5ms)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-0b174093a8a526de6e9a",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 467,
+              "column": 3
+            },
+            {
+              "title": "6. Click reference navigates correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-4f48b9b3fc4ec2c6187d",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 505,
+              "column": 3
+            },
+            {
+              "title": "7. Multiple sections cached independently",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-ed1c94c0351b75e2186d",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 532,
+              "column": 3
+            },
+            {
+              "title": "8. Edition update detected by scheduled job",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-320d81bc2edb6c3293ef",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 576,
+              "column": 3
+            },
+            {
+              "title": "9. User notified of available edition update",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-d3a816f51501f19d681d",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 614,
+              "column": 3
+            },
+            {
+              "title": "10. Contextual loading with scroll debounce optimization",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-cedb9e8cb29d3d8abe68",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 661,
+              "column": 3
+            },
+            {
+              "title": "1. First Aid page loads successfully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-73d5c72a48e0f5ead285",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 361,
+              "column": 3
+            },
+            {
+              "title": "2. Scroll position tracked as user scrolls",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-6820cb4f498d5c394192",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 388,
+              "column": 3
+            },
+            {
+              "title": "3. Related concepts loaded contextually",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-43adbbbf898dadc664b8",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 411,
+              "column": 3
+            },
+            {
+              "title": "4. Cross-references displayed in sidebar",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-e580abfb51e3f2075244",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 437,
+              "column": 3
+            },
+            {
+              "title": "5. Cache hit on revisit (<5ms)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-1c84f7041e6180262cd6",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 467,
+              "column": 3
+            },
+            {
+              "title": "6. Click reference navigates correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-548cb9ea1ee2e2fbfd1a",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 505,
+              "column": 3
+            },
+            {
+              "title": "7. Multiple sections cached independently",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-f5af91320b4541ae685a",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 532,
+              "column": 3
+            },
+            {
+              "title": "8. Edition update detected by scheduled job",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-0f8c28e6bb78fc4c54e3",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 576,
+              "column": 3
+            },
+            {
+              "title": "9. User notified of available edition update",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-55983954975b51c3710a",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 614,
+              "column": 3
+            },
+            {
+              "title": "10. Contextual loading with scroll debounce optimization",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-bc55882220a79ec13c8e",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 661,
+              "column": 3
+            },
+            {
+              "title": "1. First Aid page loads successfully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-a4b935f9916eeb84eb63",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 361,
+              "column": 3
+            },
+            {
+              "title": "2. Scroll position tracked as user scrolls",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-240d4a8d94548d725f22",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 388,
+              "column": 3
+            },
+            {
+              "title": "3. Related concepts loaded contextually",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-d791c1e6b8572fe222d2",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 411,
+              "column": 3
+            },
+            {
+              "title": "4. Cross-references displayed in sidebar",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-c48fb77b322ca8f679a9",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 437,
+              "column": 3
+            },
+            {
+              "title": "5. Cache hit on revisit (<5ms)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-1f1e1cf21954d1df6fa8",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 467,
+              "column": 3
+            },
+            {
+              "title": "6. Click reference navigates correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-a8da30ae3ca0a7006bee",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 505,
+              "column": 3
+            },
+            {
+              "title": "7. Multiple sections cached independently",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-169470708cd28ded63d5",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 532,
+              "column": 3
+            },
+            {
+              "title": "8. Edition update detected by scheduled job",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-cea2227c0eb55984dd62",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 576,
+              "column": 3
+            },
+            {
+              "title": "9. User notified of available edition update",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-132fca6ba1dc0b7722fd",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 614,
+              "column": 3
+            },
+            {
+              "title": "10. Contextual loading with scroll debounce optimization",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-ce635eac9967b0406a02",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 661,
+              "column": 3
+            },
+            {
+              "title": "1. First Aid page loads successfully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-ad3ef9c8282aeabc5d0b",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 361,
+              "column": 3
+            },
+            {
+              "title": "2. Scroll position tracked as user scrolls",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-25dca1b7bbf59edd9a23",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 388,
+              "column": 3
+            },
+            {
+              "title": "3. Related concepts loaded contextually",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-a3cbe46936d0323da259",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 411,
+              "column": 3
+            },
+            {
+              "title": "4. Cross-references displayed in sidebar",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-8f50f1735455f7e83317",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 437,
+              "column": 3
+            },
+            {
+              "title": "5. Cache hit on revisit (<5ms)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-605deaf61ba785379744",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 467,
+              "column": 3
+            },
+            {
+              "title": "6. Click reference navigates correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-66fc913821e9f730fa63",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 505,
+              "column": 3
+            },
+            {
+              "title": "7. Multiple sections cached independently",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-ad3630257006b546d92d",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 532,
+              "column": 3
+            },
+            {
+              "title": "8. Edition update detected by scheduled job",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-6092fbc33c10f3ac83e6",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 576,
+              "column": 3
+            },
+            {
+              "title": "9. User notified of available edition update",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-ea229299e9cabacf8229",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 614,
+              "column": 3
+            },
+            {
+              "title": "10. Contextual loading with scroll debounce optimization",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-6b5ef6ef1e7180b84af0",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 661,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "First Aid Integration - Error Handling",
+          "file": "epic3/first-aid-integration.e2e.test.ts",
+          "line": 696,
+          "column": 19,
+          "specs": [
+            {
+              "title": "11. Handles API errors gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-5ec92f9c213f244aa5fa",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 700,
+              "column": 3
+            },
+            {
+              "title": "12. Reload button works after error and recovers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-c702bd6d02a9d648ce3a",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 726,
+              "column": 3
+            },
+            {
+              "title": "11. Handles API errors gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-b4a36b2c22165503d445",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 700,
+              "column": 3
+            },
+            {
+              "title": "12. Reload button works after error and recovers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-36b5be706ee8e38b8511",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 726,
+              "column": 3
+            },
+            {
+              "title": "11. Handles API errors gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-f5aa24f8c2e5f0743638",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 700,
+              "column": 3
+            },
+            {
+              "title": "12. Reload button works after error and recovers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-292dfa049faec04843e2",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 726,
+              "column": 3
+            },
+            {
+              "title": "11. Handles API errors gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-05bcb93147ce40681c4e",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 700,
+              "column": 3
+            },
+            {
+              "title": "12. Reload button works after error and recovers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-7b17b048c2e95730e496",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 726,
+              "column": 3
+            },
+            {
+              "title": "11. Handles API errors gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-ddfccd7f870565f79e6b",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 700,
+              "column": 3
+            },
+            {
+              "title": "12. Reload button works after error and recovers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-c6dcd12107570ce122d8",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 726,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "First Aid Integration - Performance & Accessibility",
+          "file": "epic3/first-aid-integration.e2e.test.ts",
+          "line": 776,
+          "column": 19,
+          "specs": [
+            {
+              "title": "13. First Aid content loads within SLA",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-7cd95d6f9e6d480a3b08",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 780,
+              "column": 3
+            },
+            {
+              "title": "14. Cross-references are keyboard navigable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-9dffa6beb3c3a71fa181",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 796,
+              "column": 3
+            },
+            {
+              "title": "13. First Aid content loads within SLA",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-c4604e98cdae80bcac22",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 780,
+              "column": 3
+            },
+            {
+              "title": "14. Cross-references are keyboard navigable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-bebc2aafeb49a5555b6a",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 796,
+              "column": 3
+            },
+            {
+              "title": "13. First Aid content loads within SLA",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-a0da850f4c70f147e477",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 780,
+              "column": 3
+            },
+            {
+              "title": "14. Cross-references are keyboard navigable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-7368266bb3d9485409ca",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 796,
+              "column": 3
+            },
+            {
+              "title": "13. First Aid content loads within SLA",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-9263935f423639680e7c",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 780,
+              "column": 3
+            },
+            {
+              "title": "14. Cross-references are keyboard navigable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-7d5ace5a50b2626967e8",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 796,
+              "column": 3
+            },
+            {
+              "title": "13. First Aid content loads within SLA",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-4440a21e92366dd551c4",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 780,
+              "column": 3
+            },
+            {
+              "title": "14. Cross-references are keyboard navigable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a03b9836aeaa5a19385f-5188edd6451fe6393402",
+              "file": "epic3/first-aid-integration.e2e.test.ts",
+              "line": 796,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-17T11:12:05.083Z",
+    "duration": 16.649,
+    "expected": 0,
+    "skipped": 70,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

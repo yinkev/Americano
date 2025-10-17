@@ -1,0 +1,382 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.6</storyId>
+    <title>Advanced Search and Discovery Features</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-3.6.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a medical student</asA>
+    <iWant>powerful search tools that help me explore and discover content</iWant>
+    <soThat>I can efficiently find information and make unexpected connections</soThat>
+    <tasks>
+      ### Task 1: Implement Advanced Search Query Parser (AC: #1)
+      - Boolean operators (AND, OR, NOT) with parentheses grouping
+      - Field-specific search syntax (title:, course:, date:, author:)
+      - QueryBuilder utility class for parsing and execution
+      - Update search API endpoint with advanced query support
+
+      ### Task 2: Build Search Suggestions and Autocomplete (AC: #2)
+      - Search suggestion engine with medical terms, previous searches
+      - Autocomplete data model (SearchSuggestion)
+      - Autocomplete API endpoint with debouncing
+      - Autocomplete UI component with keyboard navigation
+
+      ### Task 3: Implement Saved Searches and Alerts (AC: #3)
+      - SavedSearch data model with alert configuration
+      - Saved search API endpoints (CRUD operations)
+      - Search alerts system with background job
+      - Saved searches UI with management controls
+
+      ### Task 4: Visual Search with Knowledge Graph Integration (AC: #4)
+      - Graph-based search result view using React Flow
+      - Result clustering by course/topic/similarity
+      - Graph navigation controls (zoom, pan, filters)
+      - Expand search from graph nodes
+
+      ### Task 5: Search Analytics and Insights (AC: #5)
+      - SearchAnalytics data model for aggregation
+      - Analytics collection (async logging)
+      - Analytics dashboard with charts
+      - Gap analysis for content recommendations
+
+      ### Task 6: Search Result Export Functionality (AC: #6)
+      - Export API endpoint with multiple formats
+      - JSON export implementation
+      - CSV export implementation
+      - Markdown export implementation
+      - Export UI controls
+
+      ### Task 7: Study Session Search Integration (AC: #7)
+      - In-session search widget with keyboard shortcut
+      - Contextual search from current study content
+      - Add to current session feature
+      - Session search history tracking
+
+      ### Task 8: Mobile-Optimized Search Interface (AC: #8)
+      - Mobile-first search layout
+      - Mobile search interactions (voice, pull-to-refresh)
+      - Mobile performance optimization
+      - Offline search capabilities
+
+      ### Task 9: Search Performance Optimization (AC: #1, #8)
+      - Search result caching (Redis or in-memory)
+      - Complex query execution optimization
+      - Query optimization (stop words, normalization)
+      - Search rate limiting
+
+      ### Task 10: Testing and Quality Assurance
+      - Advanced query parsing tests
+      - Autocomplete accuracy tests
+      - Saved searches and alerts tests
+      - Graph view performance tests
+      - Export functionality tests
+      - Mobile testing
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Advanced search supports boolean operators, field-specific queries</criterion>
+    <criterion id="2">Search suggestions and autocomplete based on content and user history</criterion>
+    <criterion id="3">Saved searches and search alerts for new relevant content</criterion>
+    <criterion id="4">Visual search interface showing results in knowledge graph format</criterion>
+    <criterion id="5">Search analytics showing most common queries and gap areas</criterion>
+    <criterion id="6">Export functionality for search results and related content</criterion>
+    <criterion id="7">Search integration with study sessions for seamless workflow</criterion>
+    <criterion id="8">Mobile-optimized search interface for quick lookup during study</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Subsystem 3: Knowledge Graph & Semantic Search</title>
+        <section>Section 3 - Subsystem Design (lines 551-575)</section>
+        <snippet>Knowledge Graph subsystem provides semantic search, concept extraction, and graph visualization. Uses pgvector with 1536-dimension embeddings from Gemini, React Flow for interactive visualization.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - API Endpoints</title>
+        <section>Search API Specification (lines 1332-1344)</section>
+        <snippet>Search API endpoints: POST /api/graph/search for semantic queries, GET /api/graph/autocomplete for suggestions, filtering/pagination support.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Technology Stack</title>
+        <section>Frontend Libraries (line 1740)</section>
+        <snippet>React Flow (via @xyflow/react) for knowledge graph and search result visualization with interactive nodes and edges.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR15: Advanced Search & Discovery (lines 159-163)</section>
+        <snippet>Natural language semantic search with autocomplete, saved searches, visual graph exploration, export capabilities.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements Document</title>
+        <section>NFR1: Performance Requirements (lines 167-171)</section>
+        <snippet>Search latency target: &lt;1 second for simple queries, &lt;2 seconds for complex boolean queries, autocomplete &lt;100ms.</snippet>
+      </doc>
+      <doc>
+        <path>docs/AGENTS.MD</path>
+        <title>Agent Development Protocol</title>
+        <section>Technology Stack - Always Use Context7 For</section>
+        <snippet>Fetch latest Next.js, React, Prisma documentation from context7 MCP before implementation. React Flow library available for graph visualization.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>apps/web/src/subsystems/knowledge-graph/semantic-search.ts</path>
+        <kind>service</kind>
+        <symbol>SemanticSearchEngine</symbol>
+        <lines>1-400</lines>
+        <reason>Core semantic search engine from Story 3.1 to extend with advanced query parsing and boolean operators</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/semantic-search-service.ts</path>
+        <kind>service</kind>
+        <symbol>SemanticSearchService</symbol>
+        <lines>1-350</lines>
+        <reason>Search service with hybrid search (70% vector + 30% keyword), filtering, pagination - foundation for advanced search</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/search-analytics-service.ts</path>
+        <kind>service</kind>
+        <symbol>SearchAnalyticsService</symbol>
+        <lines>1-200</lines>
+        <reason>Existing analytics service from Story 3.1 to extend with gap analysis and recommendation features</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/search/search-bar.tsx</path>
+        <kind>component</kind>
+        <symbol>SearchBar</symbol>
+        <lines>1-150</lines>
+        <reason>Existing search bar component to enhance with autocomplete and advanced query UI</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/search/search-results.tsx</path>
+        <kind>component</kind>
+        <symbol>SearchResults</symbol>
+        <lines>1-200</lines>
+        <reason>Search results display component to add graph view toggle and export controls</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/search/search-filters.tsx</path>
+        <kind>component</kind>
+        <symbol>SearchFilters</symbol>
+        <lines>1-180</lines>
+        <reason>Filter component to extend with field-specific query builders</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/graph/knowledge-graph.tsx</path>
+        <kind>component</kind>
+        <symbol>KnowledgeGraph</symbol>
+        <lines>1-400</lines>
+        <reason>React Flow graph visualization from Story 3.2 to adapt for search results display</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/hooks/use-search.ts</path>
+        <kind>hook</kind>
+        <symbol>useSearch</symbol>
+        <lines>1-100</lines>
+        <reason>Search state management hook to extend with saved searches and history</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/search/route.ts</path>
+        <kind>api_route</kind>
+        <symbol>POST handler</symbol>
+        <lines>1-150</lines>
+        <reason>Main search API endpoint to extend with boolean query parsing</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>SearchQuery, SearchClick models</symbol>
+        <lines>1-500</lines>
+        <reason>Existing search tracking models to extend with SavedSearch, SearchAlert, SearchAnalytics models</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package name="@prisma/client" version="^6.17.1" />
+        <package name="@xyflow/react" version="^12.8.6" />
+        <package name="zod" version="^4.1.12" />
+        <package name="zustand" version="^5.0.8" />
+        <package name="next" version="^15.5.5" />
+        <package name="react" version="^19.2.0" />
+        <package name="date-fns" version="^4.1.0" />
+        <package name="recharts" version="^3.2.1" />
+        <package name="lucide-react" version="^0.545.0" />
+        <package name="html-to-image" version="^1.11.13" />
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="database">Extend Prisma schema with SavedSearch, SearchSuggestion, SearchAlert, SearchAnalytics models</constraint>
+    <constraint type="performance">Simple queries &lt;1s, complex boolean queries &lt;2s, autocomplete &lt;100ms response time</constraint>
+    <constraint type="caching">Implement in-memory cache with TTL for common queries, invalidate on content updates</constraint>
+    <constraint type="boolean_parsing">Max 5 boolean operators per query, 3 nesting levels for parentheses</constraint>
+    <constraint type="autocomplete">Debounce client-side at 150ms, prioritize medical terminology over common words</constraint>
+    <constraint type="export">Max 1000 results per export, support JSON/CSV/Markdown formats, streaming for large files</constraint>
+    <constraint type="graph_view">Limit visible nodes to 200 max, implement clustering and progressive loading</constraint>
+    <constraint type="rate_limiting">60 searches/min per user, 120 autocomplete/min, 10 exports/hour</constraint>
+    <constraint type="authentication">Use hardcoded kevy@americano.dev for MVP, defer multi-user auth</constraint>
+    <constraint type="next_patterns">Use Next.js 15 App Router with async params, Server Components for data fetching</constraint>
+    <constraint type="error_handling">Use ApiError class and withErrorHandler wrapper, consistent error responses</constraint>
+    <constraint type="validation">Zod validation for all API inputs, sanitize boolean operators to prevent injection</constraint>
+    <constraint type="ui_design">Glassmorphism design (NO gradients), OKLCH colors, min 44px touch targets for mobile</constraint>
+    <constraint type="testing">No automated tests required for MVP per architecture, manual testing focus</constraint>
+    <constraint type="privacy">GDPR/CCPA compliance - search history private to user, analytics aggregated anonymously</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>QueryBuilder</name>
+      <kind>TypeScript class</kind>
+      <signature>
+        class QueryBuilder {
+          parseQuery(query: string): ParsedQuery
+          buildSemanticQuery(parsed: ParsedQuery): SemanticQuery
+          buildFilterQuery(parsed: ParsedQuery): FilterQuery
+        }
+      </signature>
+      <path>apps/web/src/lib/query-builder.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/graph/autocomplete</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        GET /api/graph/autocomplete?q={partial}&limit={number}
+        Response: { suggestions: Suggestion[], total: number }
+        Suggestion: { text, type, metadata, score }
+      </signature>
+      <path>apps/web/src/app/api/graph/autocomplete/route.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/graph/searches/save</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        POST /api/graph/searches/save
+        Body: { name, query, filters, alertEnabled }
+        Response: { savedSearch: SavedSearch }
+      </signature>
+      <path>apps/web/src/app/api/graph/searches/save/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/graph/searches/saved</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        GET /api/graph/searches/saved
+        Response: { searches: SavedSearch[] }
+      </signature>
+      <path>apps/web/src/app/api/graph/searches/saved/route.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/graph/search/export</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        POST /api/graph/search/export
+        Body: { query, filters, format: 'json'|'csv'|'markdown' }
+        Response: File download with Content-Type header
+      </signature>
+      <path>apps/web/src/app/api/graph/search/export/route.ts</path>
+    </interface>
+    <interface>
+      <name>SearchAutocomplete</name>
+      <kind>React component</kind>
+      <signature>
+        interface SearchAutocompleteProps {
+          query: string
+          onSelect: (suggestion: string) => void
+          className?: string
+        }
+      </signature>
+      <path>apps/web/src/components/search/search-autocomplete.tsx</path>
+    </interface>
+    <interface>
+      <name>SearchGraphView</name>
+      <kind>React component</kind>
+      <signature>
+        interface SearchGraphViewProps {
+          results: SearchResult[]
+          onNodeClick: (nodeId: string) => void
+          onExpandSearch: (nodeId: string) => void
+        }
+      </signature>
+      <path>apps/web/src/components/search/search-graph-view.tsx</path>
+    </interface>
+    <interface>
+      <name>SavedSearches</name>
+      <kind>React component</kind>
+      <signature>
+        interface SavedSearchesProps {
+          userId: string
+          onRunSearch: (searchId: string) => void
+        }
+      </signature>
+      <path>apps/web/src/components/search/saved-searches.tsx</path>
+    </interface>
+    <interface>
+      <name>InSessionSearch</name>
+      <kind>React component</kind>
+      <signature>
+        interface InSessionSearchProps {
+          missionId?: string
+          currentObjective?: string
+          onAddToSession: (contentId: string) => void
+        }
+      </signature>
+      <path>apps/web/src/components/study/in-session-search.tsx</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Per solution-architecture.md, no automated tests required for MVP. Focus on manual testing of core functionality. Testing infrastructure established in Story 3.1 using Jest for unit tests, @testing-library/react for component tests, Playwright for E2E tests. Code coverage target: 80% when tests are implemented post-MVP.</standards>
+    <locations>
+      <location>apps/web/src/lib/__tests__/</location>
+      <location>apps/web/src/app/api/**/__tests__/</location>
+      <location>apps/web/src/components/**/__tests__/</location>
+      <location>apps/web/src/__tests__/performance/</location>
+      <location>apps/web/e2e/</location>
+    </locations>
+    <ideas>
+      <idea ac="1">Test boolean query parsing with AND/OR/NOT operators and nested parentheses</idea>
+      <idea ac="1">Test field-specific queries (title:, course:, date:) with validation</idea>
+      <idea ac="1">Test query complexity limits (max 5 operators, 3 nesting levels)</idea>
+      <idea ac="1">Test invalid query syntax handling with helpful error messages</idea>
+      <idea ac="2">Test autocomplete ranking algorithm with medical terminology dataset</idea>
+      <idea ac="2">Test autocomplete debouncing (150ms) and caching</idea>
+      <idea ac="2">Test autocomplete keyboard navigation (Up/Down arrows, Enter, Escape)</idea>
+      <idea ac="3">Test saved search CRUD operations</idea>
+      <idea ac="3">Test search alert triggering when new content matches</idea>
+      <idea ac="3">Test alert frequency respect (daily, weekly)</idea>
+      <idea ac="4">Test graph view rendering with 50, 100, 200 nodes</idea>
+      <idea ac="4">Test graph clustering by course/topic/similarity</idea>
+      <idea ac="4">Test graph navigation controls (zoom, pan, filter)</idea>
+      <idea ac="4">Test expand search from graph nodes</idea>
+      <idea ac="5">Test analytics data collection (async logging)</idea>
+      <idea ac="5">Test analytics dashboard charts (most searched, frequency over time)</idea>
+      <idea ac="5">Test gap analysis (high search volume, low content)</idea>
+      <idea ac="6">Test export in all formats (JSON, CSV, Markdown)</idea>
+      <idea ac="6">Test large export performance (1000 results)</idea>
+      <idea ac="6">Test export data integrity</idea>
+      <idea ac="7">Test in-session search widget (keyboard shortcut Cmd/Ctrl+K)</idea>
+      <idea ac="7">Test contextual search pre-population</idea>
+      <idea ac="7">Test add to current session feature</idea>
+      <idea ac="8">Test mobile search layout responsiveness</idea>
+      <idea ac="8">Test mobile touch interactions</idea>
+      <idea ac="8">Test mobile performance on slow connections (4G)</idea>
+      <idea ac="8">Test offline search capabilities with service worker</idea>
+      <idea ac="performance">Load test: 100 concurrent complex queries</idea>
+      <idea ac="performance">Test cache effectiveness and hit rate (&gt;40% target)</idea>
+      <idea ac="performance">Test autocomplete response time &lt;100ms</idea>
+      <idea ac="performance">Test simple search &lt;1s, complex boolean &lt;2s</idea>
+    </ideas>
+  </tests>
+</story-context>

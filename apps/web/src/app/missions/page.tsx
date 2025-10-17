@@ -43,8 +43,14 @@ export default async function MissionsPage() {
   const completionRate = totalMissions > 0 ? (completedMissions / totalMissions) * 100 : 0
   const avgObjectives = missions.length > 0
     ? missions.reduce((sum, m) => {
-        const objs = JSON.parse(m.objectives as string) as Array<unknown>
-        return sum + objs.length
+        try {
+          const objectivesStr = m.objectives as string
+          if (!objectivesStr) return sum
+          const objs = JSON.parse(objectivesStr) as Array<unknown>
+          return sum + (Array.isArray(objs) ? objs.length : 0)
+        } catch {
+          return sum
+        }
       }, 0) / missions.length
     : 0
 
@@ -117,10 +123,26 @@ export default async function MissionsPage() {
             ) : (
               <div className="space-y-3">
                 {missions.map(mission => {
-                  const objectives = JSON.parse(mission.objectives as string) as Array<{
+                  let objectives: Array<{
                     objectiveId: string
                     completed: boolean
-                  }>
+                  }> = []
+
+                  try {
+                    const objectivesStr = mission.objectives as string
+                    if (objectivesStr) {
+                      objectives = JSON.parse(objectivesStr) as Array<{
+                        objectiveId: string
+                        completed: boolean
+                      }>
+                      if (!Array.isArray(objectives)) {
+                        objectives = []
+                      }
+                    }
+                  } catch {
+                    objectives = []
+                  }
+
                   const completedCount = mission.completedObjectivesCount || objectives.filter(o => o.completed).length
                   const totalCount = objectives.length
                   const rate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0

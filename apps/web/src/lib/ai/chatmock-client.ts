@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+import { retryService, DEFAULT_POLICIES } from '../retry/retry-service'
 
 export type ObjectiveComplexity = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
 
@@ -32,12 +33,13 @@ export class ChatMockClient {
       baseURL: `${this.CHATMOCK_URL}/v1`,
       apiKey: 'not-needed', // ChatMock doesn't require API key
       timeout: 120000, // 2 minute timeout
-      maxRetries: 0, // Don't retry failed requests
+      maxRetries: 0, // Don't retry - handled by RetryService
     })
   }
 
   /**
    * Extract learning objectives from medical lecture text using GPT-5
+   * Now includes production-ready retry logic with circuit breaker
    *
    * @param lectureText - The full text content of the lecture
    * @param context - Context about the lecture (course, name, page numbers)
@@ -47,8 +49,9 @@ export class ChatMockClient {
     lectureText: string,
     context: ExtractionContext,
   ): Promise<ExtractionResponse> {
-    try {
-      const systemPrompt = `You are a medical education expert analyzing lecture content for osteopathic medical students.
+    const result = await retryService.execute(
+      async () => {
+        const systemPrompt = `You are a medical education expert analyzing lecture content for osteopathic medical students.
 
 Your task is to identify and formulate learning objectives from medical lectures, using deep reasoning to understand what students should learn.
 
@@ -117,58 +120,81 @@ Lecture content:
 
 ${lectureText}`
 
-      const response = await this.client.chat.completions.create({
-        model: 'gpt-5',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userContent },
-        ],
-        temperature: 0.3, // Lower temperature for more consistent extraction
-        max_tokens: 16000, // High limit to ensure comprehensive extraction never truncates
-      })
+        const response = await this.client.chat.completions.create({
+          model: 'gpt-5',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userContent },
+          ],
+          temperature: 0.3, // Lower temperature for more consistent extraction
+          max_tokens: 16000, // High limit to ensure comprehensive extraction never truncates
+        })
 
-      const content = response.choices[0]?.message?.content
+        const content = response.choices[0]?.message?.content
 
-      if (!content) {
-        throw new Error('No response from ChatMock')
-      }
+        if (!content) {
+          throw new Error('No response from ChatMock')
+        }
 
-      // Strip thinking tags if present (GPT-5 reasoning tokens)
-      // Extract JSON from response - handle both pure JSON and thinking-wrapped responses
-      let jsonContent = content
+        // Strip thinking tags if present (GPT-5 reasoning tokens)
+        // Extract JSON from response - handle both pure JSON and thinking-wrapped responses
+        let jsonContent = content
 
-      // Remove <think>...</think> blocks
-      jsonContent = jsonContent.replace(/<think>[\s\S]*?<\/think>/gi, '')
+        // Remove <think>...</think> blocks
+        jsonContent = jsonContent.replace(/<think>[\s\S]*?<\/think>/gi, '')
 
-      // Extract JSON object (find first { to last })
-      const jsonStart = jsonContent.indexOf('{')
-      const jsonEnd = jsonContent.lastIndexOf('}') + 1
+        // Extract JSON object (find first { to last })
+        const jsonStart = jsonContent.indexOf('{')
+        const jsonEnd = jsonContent.lastIndexOf('}') + 1
 
-      if (jsonStart === -1 || jsonEnd === 0) {
-        throw new Error('No JSON object found in response')
-      }
+        if (jsonStart === -1 || jsonEnd === 0) {
+          throw new Error('No JSON object found in response')
+        }
 
-      jsonContent = jsonContent.substring(jsonStart, jsonEnd).trim()
+        jsonContent = jsonContent.substring(jsonStart, jsonEnd).trim()
 
-      // Parse JSON response
-      const parsed = JSON.parse(jsonContent)
+        // Parse JSON response
+        const parsed = JSON.parse(jsonContent)
 
-      // Validate complexity values
-      const validComplexities: ObjectiveComplexity[] = ['BASIC', 'INTERMEDIATE', 'ADVANCED']
-      const objectives = (parsed.objectives || []).map((obj: any) => ({
-        ...obj,
-        complexity: validComplexities.includes(obj.complexity) ? obj.complexity : 'INTERMEDIATE',
-        prerequisites: obj.prerequisites || [],
-        boardExamTags: obj.boardExamTags || [],
-      }))
+        // Validate complexity values
+        const validComplexities: ObjectiveComplexity[] = ['BASIC', 'INTERMEDIATE', 'ADVANCED']
+        const objectives = (parsed.objectives || []).map((obj: any) => ({
+          ...obj,
+          complexity: validComplexities.includes(obj.complexity) ? obj.complexity : 'INTERMEDIATE',
+          prerequisites: obj.prerequisites || [],
+          boardExamTags: obj.boardExamTags || [],
+        }))
 
-      return { objectives }
-    } catch (error) {
-      console.error('ChatMock extraction error:', error)
+        return { objectives }
+      },
+      DEFAULT_POLICIES.CHATMOCK_API,
+      'chatmock-extraction',
+    )
+
+    if (result.error) {
+      console.error('ChatMock extraction error after retries:', result.error.message)
       return {
         objectives: [],
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: result.error.message,
       }
     }
+
+    return result.value!
+  }
+
+  async createChatCompletion(
+    params: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming,
+  ): Promise<OpenAI.Chat.Completions.ChatCompletion> {
+    const result = await retryService.execute(
+      async () => this.client.chat.completions.create(params),
+      DEFAULT_POLICIES.CHATMOCK_API,
+      'chatmock-completion',
+    )
+
+    if (result.error) {
+      throw result.error
+    }
+
+    return result.value!
   }
 }

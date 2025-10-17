@@ -1,0 +1,228 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.4</storyId>
+    <title>Content Conflict Detection and Resolution</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-3.4.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a medical student</asA>
+    <iWant>to know when different sources provide conflicting information</iWant>
+    <soThat>I can understand discrepancies and focus on authoritative sources</soThat>
+    <tasks>
+## Tasks Summary
+
+### Task 1: Implement Semantic Conflict Detection Algorithm (AC: #1, #2)
+- 1.1: Design conflict detection algorithm with semantic similarity analysis
+- 1.2: Create ConflictDetector service class with detection methods
+- 1.3: Implement contradiction pattern detection (medical, linguistic, numerical)
+- 1.4: Create conflict database schema (Conflict, ConflictType, ConflictSeverity enums)
+
+### Task 2: Build Source Credibility Database (AC: #3, #8)
+- 2.1: Create source authority ranking system (0-100 credibility scale)
+- 2.2: Implement evidence-based medicine (EBM) hierarchy
+- 2.3: Create source metadata enrichment
+- 2.4: Build user preference system (UserSourcePreference model)
+
+### Task 3: Develop Conflict Visualization Interface (AC: #2, #3, #5)
+- 3.1: Create conflict detection UI components (warning badges, severity colors)
+- 3.2: Build ConflictDetailModal component (side-by-side comparison)
+- 3.3: Design ConflictComparisonView component (two-column layout)
+- 3.4: Implement conflict notification system
+
+### Task 4: Create Conflict API Endpoints (AC: #1, #4, #6)
+- 4.1: Build conflict detection API (POST /api/conflicts/detect)
+- 4.2: Implement conflict management endpoints (GET/PATCH/DELETE)
+- 4.3: Create user flagging API (POST /api/conflicts/flag)
+- 4.4: Implement conflict resolution tracking (POST /api/conflicts/:id/resolve)
+
+### Task 5: Integrate Evidence-Based Medicine (EBM) Principles (AC: #7)
+- 5.1: Build EBM evaluation framework (EBMEvaluator class)
+- 5.2: Implement evidence hierarchy integration
+- 5.3: Create clinical guideline integration
+- 5.4: Build evidence citation system
+
+### Task 6: Implement Historical Conflict Tracking (AC: #6)
+- 6.1: Design conflict history schema (ConflictHistory model)
+- 6.2: Create conflict timeline component
+- 6.3: Implement conflict evolution tracking
+- 6.4: Build conflict analytics dashboard
+
+### Task 7: Create Conflict Resolution Workflow (AC: #5)
+- 7.1: Implement AI-powered resolution suggestions (GPT-5)
+- 7.2: Build resolution recommendation engine
+- 7.3: Create guided resolution flow
+- 7.4: Implement collaborative resolution features
+
+### Task 8: Testing and Validation (AC: #1-8)
+- 8.1: Test conflict detection accuracy (>85% true positive, <10% false positive)
+- 8.2: Test source credibility system
+- 8.3: Test conflict resolution workflow
+- 8.4: Performance and scalability testing (<500ms per concept scan)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. System automatically detects conflicting information between sources
+2. Conflicts highlighted with clear explanation of differences
+3. Source credibility and authority indicated to guide user decisions
+4. User can flag additional conflicts for community review
+5. Conflict resolution suggestions provided when possible
+6. Historical tracking of how conflicts were resolved or evolved
+7. Integration with evidence-based medicine principles for evaluation
+8. User preference system for prioritizing specific sources
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/solution-architecture.md" title="Solution Architecture" section="Subsystem 3: Knowledge Graph & Semantic Search">
+        Knowledge graph construction, semantic search via pgvector, content recommendation engine, cross-course integration detection. Key components: KnowledgeGraphBuilder, SemanticSearchEngine, ConceptLinker, RecommendationEngine. Data models: Concept, ConceptRelationship (prerequisite, related, integrated), SearchIndex with pgvector embeddings.
+      </doc>
+      <doc path="docs/PRD-Americano-2025-10-14.md" title="Product Requirements Document" section="FR3: Knowledge Graph Foundation">
+        FR3: Unified content linking across lectures, semantic search using Gemini embeddings, cross-course integration insights, First Aid integration, prerequisite identification. Target: <1s search response, 70%+ satisfaction with search relevance.
+      </doc>
+      <doc path="docs/epics-Americano-2025-10-14.md" title="Epic Breakdown" section="Epic 3: Knowledge Graph and Semantic Search">
+        Story 3.4 focuses on detecting when different sources (First Aid, lectures, textbooks) provide conflicting information using semantic similarity + GPT-5 powered contradiction detection. User can flag additional conflicts for community review, track historical resolution, get evidence-based resolution suggestions.
+      </doc>
+      <doc path="docs/ux-specification.md" title="UX Specification" section="Knowledge Graph & Search Interface">
+        Interactive visualization, semantic search integration, conflict indicators with severity color coding, responsive design with glassmorphism aesthetics (NO gradients), OKLCH color space, min 44px touch targets.
+      </doc>
+      <doc path="docs/stories/story-3.1.md" title="Story 3.1: Semantic Search" section="Implementation">
+        Semantic search using Gemini embeddings (1536 dimensions), pgvector cosine similarity, hybrid search (70% vector + 30% keyword), <1s performance target. EmbeddingService, SemanticSearchService already implemented.
+      </doc>
+      <doc path="docs/stories/story-3.2.md" title="Story 3.2: Knowledge Graph" section="Implementation">
+        Knowledge graph with React Flow visualization, concept relationships (PREREQUISITE, RELATED, INTEGRATED, CLINICAL), relationship strength formula (semantic_similarity*0.4 + co_occurrence*0.3 + prerequisite*0.3). ConceptNode, ConceptRelationship models already exist.
+      </doc>
+    </docs>
+    <code>
+      <artifact path="apps/web/src/subsystems/knowledge-graph/semantic-search.ts" kind="service" symbol="SemanticSearchEngine" lines="24-216" reason="Existing semantic search infrastructure for finding similar content chunks, can be leveraged for conflict detection via vector similarity threshold >0.85">
+        SemanticSearchEngine class provides search(), searchLectures(), searchChunks(), searchObjectives() methods. Includes distanceToSimilarity() converter and highlightTerms() for snippet generation. Will be used to identify topically similar content for conflict analysis.
+      </artifact>
+      <artifact path="apps/web/prisma/schema.prisma" kind="schema" symbol="Concept, ConceptRelationship, ContentChunk, LearningObjective" lines="1-200, 349-395" reason="Database models for knowledge graph and content. Need to extend with Conflict, Source, ConflictResolution models">
+        ContentChunk model has embedding vector(1536) for semantic similarity. Concept/ConceptRelationship for knowledge graph. Need to add: Source (credibility scoring), Conflict (conflict tracking), ConflictResolution (historical tracking), UserSourcePreference (user trust settings).
+      </artifact>
+      <artifact path="apps/web/src/lib/gemini-client.ts" kind="client" symbol="GeminiClient" lines="all" reason="Gemini embeddings client for generating embeddings during conflict detection, already handles rate limiting and batch processing">
+        Existing Gemini client for text-embedding-001 model with 1536 dimensions, rate limiting (100 RPM, 1000 RPD), batch processing. Will be used by ConflictDetector for semantic similarity analysis.
+      </artifact>
+      <artifact path="apps/web/src/lib/ai/chatmock-client.ts" kind="client" symbol="ChatMockClient" lines="all" reason="ChatMock (GPT-5) client for AI-powered contradiction analysis and resolution suggestions">
+        ChatMock client for GPT-5 API calls. Will be used to analyze complex contradictions, generate conflict explanations, and provide resolution recommendations with reasoning.
+      </artifact>
+      <artifact path="apps/web/src/lib/api-response.ts" kind="utility" symbol="successResponse, errorResponse" lines="all" reason="Standardized API response format for conflict detection endpoints">
+        Consistent API response wrappers. Use for all conflict API endpoints: /api/conflicts/detect, /api/conflicts/flag, /api/conflicts/:id/resolve.
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package name="@prisma/client" version="^6.17.1">Prisma ORM client for database operations (already installed)</package>
+        <package name="@google/generative-ai" version="^0.24.1">Gemini API for embeddings (already installed)</package>
+        <package name="openai" version="^6.3.0">OpenAI SDK for ChatMock GPT-5 integration (already installed)</package>
+        <package name="zod" version="^4.1.12">Schema validation for API endpoints (already installed)</package>
+        <package name="next" version="^15.5.5">Next.js framework with App Router (already installed)</package>
+        <package name="react" version="^19.2.0">React UI library (already installed)</package>
+        <package name="lucide-react" version="^0.545.0">Icon library for conflict indicators (already installed)</package>
+        <package name="@radix-ui/react-dialog" version="^1.1.15">shadcn/ui Dialog for ConflictDetailModal (already installed)</package>
+        <package name="recharts" version="^3.2.1">Charts for conflict analytics dashboard (already installed)</package>
+        <package name="date-fns" version="^4.1.0">Date utilities for conflict timestamps (already installed)</package>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+1. **Use Existing Infrastructure**: Leverage SemanticSearchEngine (Story 3.1) for similarity detection, knowledge graph (Story 3.2) for concept context, GeminiClient and ChatMockClient for AI analysis
+2. **Database Schema Changes**: Add 8 new models (Source, Conflict, ConflictResolution, ConflictHistory, ConflictFlag, UserSourcePreference) and 6 enums via Prisma migration
+3. **Semantic Conflict Detection**: Use cosine similarity >0.85 threshold to identify topically similar chunks, then analyze for contradictions using NLP patterns + GPT-5
+4. **Source Credibility**: Implement 0-100 credibility scoring (First Aid: 95, journals: 90, guidelines: 95, lectures: 70-85, user notes: 50) with EBM hierarchy integration
+5. **Performance Target**: <500ms per concept scan for background jobs, <200ms conflict list retrieval, <300ms conflict detail modal load
+6. **Next.js 15 App Router**: All API routes must use async params pattern: `async function GET(req: Request, { params }: { params: Promise<{ id: string }> })`
+7. **Error Handling**: Use ApiError class with withErrorHandler wrapper, consistent errorResponse format across all endpoints
+8. **Zod Validation**: Validate all API request bodies and query params with Zod schemas before processing
+9. **UI Design System**: Glassmorphism aesthetics (bg-white/80 backdrop-blur-md), OKLCH colors, NO gradients, min 44px touch targets, severity color coding (LOW=yellow, MEDIUM=orange, HIGH=red, CRITICAL=dark red)
+10. **GPT-5 Integration**: Use ChatMockClient for contradiction analysis, resolution suggestions, and conflict explanations. Temperature 0.3 for consistency, max_tokens 16000
+11. **Medical Context Awareness**: Handle nuanced medical differences (dosage variations, treatment protocols), normalize medical terminology before comparison
+12. **Background Processing**: Run conflict detection in background jobs, not real-time during study sessions. Cache results, invalidate when sources update
+13. **Historical Tracking**: Never delete conflicts, only update status to RESOLVED. Maintain complete audit trail via ConflictHistory model with all state changes
+14. **Privacy Compliance**: User-flagged conflicts private by default, no external sharing, FERPA-compliant conflict data handling
+15. **Testing**: Manual testing for MVP (no automated tests required per solution-architecture.md), focus on medical accuracy validation with sample conflicts
+  </constraints>
+
+  <interfaces>
+    <interface name="POST /api/conflicts/detect" kind="REST endpoint" signature='{ conceptId: string, sourceIds?: string[] } => { conflicts: Conflict[], total: number }' path="apps/web/src/app/api/conflicts/detect/route.ts">
+      Detect conflicts for a specific concept across sources. Background job endpoint with rate limiting.
+    </interface>
+    <interface name="GET /api/conflicts" kind="REST endpoint" signature='?status=string&severity=string&conceptId=string&limit=number&offset=number => { conflicts: Conflict[], total: number, hasMore: boolean }' path="apps/web/src/app/api/conflicts/route.ts">
+      List conflicts with filtering (status, severity, concept, source) and pagination (20/page).
+    </interface>
+    <interface name="GET /api/conflicts/:id" kind="REST endpoint" signature='{ id: string } => { conflict: Conflict, sourceAContent: ContentChunk, sourceBContent: ContentChunk, resolution?: ConflictResolution }' path="apps/web/src/app/api/conflicts/[id]/route.ts">
+      Get full conflict details with source content and resolution history.
+    </interface>
+    <interface name="POST /api/conflicts/flag" kind="REST endpoint" signature='{ sourceAChunkId: string, sourceBChunkId: string, description: string, userNotes?: string } => { conflict: Conflict, flaggedBy: string }' path="apps/web/src/app/api/conflicts/flag/route.ts">
+      User-initiated conflict flagging with community review queue integration (AC #4).
+    </interface>
+    <interface name="POST /api/conflicts/:id/resolve" kind="REST endpoint" signature='{ resolution: string, preferredSourceId: string, evidence?: string } => { conflict: Conflict, resolution: ConflictResolution }' path="apps/web/src/app/api/conflicts/[id]/resolve/route.ts">
+      Resolve conflict with evidence and preferred source selection. Creates ConflictResolution record and ConflictHistory entry (AC #6).
+    </interface>
+    <interface name="ConflictDetector" kind="TypeScript class" signature='class ConflictDetector { detectConflicts(sourceA: ContentChunk, sourceB: ContentChunk): Promise<Conflict | null>; scanAllSources(conceptId: string): Promise<Conflict[]>; analyzeConflict(conflict: Conflict): Promise<ConflictAnalysis> }' path="apps/web/src/subsystems/knowledge-graph/conflict-detector.ts">
+      Core conflict detection engine. Uses semantic similarity + contradiction pattern detection + GPT-5 analysis.
+    </interface>
+    <interface name="EBMEvaluator" kind="TypeScript class" signature='class EBMEvaluator { evaluateSource(source: Source): EBMRating; compareEvidence(conflictId: string): EBMComparison }' path="apps/web/src/lib/ebm-evaluator.ts">
+      Evidence-based medicine evaluation framework for source credibility and conflict resolution guidance (AC #7).
+    </interface>
+    <interface name="ConflictIndicator" kind="React component" signature='({ conflictSeverity: ConflictSeverity, onClick: () => void }) => JSX.Element' path="apps/web/src/components/conflicts/conflict-indicator.tsx">
+      Warning badge component with severity color coding and click handler for modal.
+    </interface>
+    <interface name="ConflictDetailModal" kind="React component" signature='({ conflictId: string, isOpen: boolean, onClose: () => void }) => JSX.Element' path="apps/web/src/components/conflicts/conflict-detail-modal.tsx">
+      Side-by-side conflict comparison modal with source attribution, difference explanation, resolution suggestions, and user actions (AC #2, #3, #5).
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      No automated tests required for MVP per solution-architecture.md Section 2, line 386. Focus on manual testing with medical accuracy validation. Future testing: Jest for unit tests, Playwright for E2E tests.
+    </standards>
+    <locations>
+      Future test locations: apps/web/src/__tests__/ (unit tests), apps/web/src/subsystems/knowledge-graph/__tests__/ (integration tests), apps/web/e2e/ (Playwright E2E tests)
+    </locations>
+    <ideas>
+      <test id="1" ac="1" description="Test semantic conflict detection with known contradictory medical content (aspirin dosing: prophylaxis 81mg vs acute MI 325mg)">
+        Create sample ContentChunks with contradictory dosage recommendations. Verify ConflictDetector identifies conflict with DOSAGE type and appropriate severity. Test cosine similarity threshold >0.85 works correctly.
+      </test>
+      <test id="2" ac="1" description="Test contradiction pattern detection with medical terminology variations (MI vs myocardial infarction vs heart attack)">
+        Verify medical term normalization before contradiction analysis. Ensure ConflictDetector recognizes semantic equivalence while detecting actual contradictions in treatment protocols.
+      </test>
+      <test id="3" ac="2" description="Test conflict visualization UI with side-by-side comparison">
+        Manually test ConflictDetailModal displays conflicting content with highlighted differences, source attribution, credibility scores, and clear explanation of discrepancies.
+      </test>
+      <test id="4" ac="3" description="Test source credibility display and ranking">
+        Verify Source credibility scores correctly calculated (First Aid: 95, lectures: 70-85). Test EBMEvaluator assigns proper evidence levels. Check UI displays credibility indicators clearly.
+      </test>
+      <test id="5" ac="4" description="Test user conflict flagging workflow">
+        Test POST /api/conflicts/flag creates ConflictFlag record with PENDING status. Verify user-flagged conflicts appear in review queue. Test spam prevention with rate limiting.
+      </test>
+      <test id="6" ac="5" description="Test AI-powered resolution suggestions">
+        Test GPT-5 analyzes conflicts and generates resolution recommendations with confidence scores and reasoning. Verify multi-factor analysis (credibility + EBM + recency + user prefs).
+      </test>
+      <test id="7" ac="6" description="Test historical conflict tracking">
+        Create conflict → Resolve → Reopen → Resolve again. Verify ConflictHistory captures all state changes with timestamps, changed_by, and notes. Test conflict timeline component displays full lifecycle.
+      </test>
+      <test id="8" ac="7" description="Test EBM principles integration">
+        Verify EBM hierarchy (systematic reviews > RCTs > expert opinion) influences resolution recommendations. Test clinical guideline integration overrides lower-evidence sources.
+      </test>
+      <test id="9" ac="8" description="Test user source preference system">
+        Create UserSourcePreference records with custom trust levels and priorities. Verify resolution recommendations respect user preferences. Test settings UI for preference management.
+      </test>
+      <test id="10" ac="1-8" description="End-to-end conflict workflow">
+        Upload conflicting lectures → Background job detects conflicts → Dashboard shows conflict notification → User opens ConflictDetailModal → Reviews side-by-side comparison → Accepts AI resolution suggestion → Conflict marked resolved → History recorded. Verify complete flow works seamlessly.
+      </test>
+      <test id="11" ac="1" description="Test conflict detection performance">
+        Scan 100 concepts for conflicts, measure time. Target: <500ms per concept. Verify pgvector indexes used efficiently, caching works, batch processing parallel.
+      </test>
+      <test id="12" ac="1-8" description="Test edge cases">
+        1. Conflict between >2 sources, 2. Circular conflict resolution references, 3. Conflict in prerequisite chain, 4. Source update resolves conflict automatically, 5. User dismisses false positive conflict, 6. Multiple users flag same conflict.
+      </test>
+    </ideas>
+  </tests>
+</story-context>
