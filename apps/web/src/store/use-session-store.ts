@@ -26,11 +26,11 @@ export interface MissionProgress {
   total: number
 }
 
-// Advanced pause/resume state snapshot (Story 2.5 Task 9)
+// Advanced pause/resume state snapshot (Story 2.5 Task 9 + Story 4.1 Task 6)
 export interface SessionSnapshot {
   pausedAt: number
   currentObjectiveIndex: number
-  studyPhase: 'content' | 'cards' | 'assessment'
+  studyPhase: 'content' | 'comprehension' | 'cards' | 'assessment'
   contentScrollPosition: number
   cardQueuePosition: number
   objectiveTimerState: {
@@ -86,6 +86,15 @@ interface SessionStore {
   // Session settings (Story 2.5 Task 10)
   settings: SessionSettings
 
+  // Clinical scenario tracking (Story 4.2 Task 7)
+  objectivesCompletedSinceScenario: number
+
+  // Adaptive assessment tracking (Story 4.5 Task 12.7)
+  adaptiveSessionId: string | null
+  adaptiveScore: number | null
+  adaptiveQuestionsAsked: number
+  adaptiveEfficiency: number | null
+
   // Actions
   startSession: (sessionId: string, userEmail: string, missionId?: string) => void
   pauseSession: () => void
@@ -109,6 +118,15 @@ interface SessionStore {
   // Session settings actions (Story 2.5 Task 10)
   updateSettings: (settings: Partial<SessionSettings>) => void
   resetSettings: () => void
+
+  // Clinical scenario tracking (Story 4.2 Task 7)
+  incrementObjectivesCompleted: () => void
+  resetScenarioCounter: () => void
+
+  // Adaptive assessment tracking (Story 4.5 Task 12.7)
+  setAdaptiveSessionId: (adaptiveSessionId: string | null) => void
+  setAdaptiveMetrics: (score: number, questionsAsked: number, efficiency: number) => void
+  clearAdaptiveMetrics: () => void
 
   // Computed values
   getElapsedTime: () => number
@@ -165,6 +183,15 @@ export const useSessionStore = create<SessionStore>()(
 
       // Session settings (Story 2.5 Task 10) - use defaults
       settings: DEFAULT_SETTINGS,
+
+      // Clinical scenario tracking (Story 4.2 Task 7)
+      objectivesCompletedSinceScenario: 0,
+
+      // Adaptive assessment tracking (Story 4.5 Task 12.7)
+      adaptiveSessionId: null,
+      adaptiveScore: null,
+      adaptiveQuestionsAsked: 0,
+      adaptiveEfficiency: null,
 
       startSession: (sessionId: string, userEmail: string, missionId?: string) => {
         set({
@@ -370,6 +397,38 @@ export const useSessionStore = create<SessionStore>()(
 
       resetSettings: () => {
         set({ settings: DEFAULT_SETTINGS })
+      },
+
+      // Clinical scenario tracking (Story 4.2 Task 7)
+      incrementObjectivesCompleted: () => {
+        const { objectivesCompletedSinceScenario } = get()
+        set({ objectivesCompletedSinceScenario: objectivesCompletedSinceScenario + 1 })
+      },
+
+      resetScenarioCounter: () => {
+        set({ objectivesCompletedSinceScenario: 0 })
+      },
+
+      // Adaptive assessment tracking (Story 4.5 Task 12.7)
+      setAdaptiveSessionId: (adaptiveSessionId: string | null) => {
+        set({ adaptiveSessionId })
+      },
+
+      setAdaptiveMetrics: (score: number, questionsAsked: number, efficiency: number) => {
+        set({
+          adaptiveScore: score,
+          adaptiveQuestionsAsked: questionsAsked,
+          adaptiveEfficiency: efficiency,
+        })
+      },
+
+      clearAdaptiveMetrics: () => {
+        set({
+          adaptiveSessionId: null,
+          adaptiveScore: null,
+          adaptiveQuestionsAsked: 0,
+          adaptiveEfficiency: null,
+        })
       },
     }),
     {

@@ -13,7 +13,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --coverage --maxWorkers=2"
+    "test:ci": "jest --ci --coverage --maxWorkers=2",
+    "aggregate:calibration": "tsx scripts/aggregate-calibration-metrics.ts",
+    "aggregate:calibration:backfill": "tsx scripts/aggregate-calibration-metrics.ts --days 7"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -36,8 +38,10 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@supabase/supabase-js": "^2.75.0",
+    "@types/d3": "^7.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "d3": "^7.9.0",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.545.0",
     "next": "^15.5.5",

@@ -1,6 +1,6 @@
 # Story 4.2: Clinical Reasoning Scenario Assessment
 
-Status: Ready
+Status: Done
 
 ## Story
 
@@ -69,109 +69,109 @@ so that I can validate my clinical decision-making skills and identify gaps in m
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Database Schema Extensions** (AC: #7, #8)
-  - [ ] 1.1: Create ClinicalScenario model (id, objectiveId FK, scenarioType enum, difficulty, caseText JSON, createdAt)
-  - [ ] 1.2: Add scenarioType enum (DIAGNOSIS, MANAGEMENT, DIFFERENTIAL, COMPLICATIONS)
-  - [ ] 1.3: Create ScenarioResponse model (id, scenarioId FK, userId FK, sessionId FK, userChoices JSON, reasoning text, score, competencyScores JSON, respondedAt)
-  - [ ] 1.4: Create ClinicalReasoningMetric model (id, userId, scenarioType, competencyScores JSON, boardExamTopic, date)
-  - [ ] 1.5: Add indexes for performance (userId+date, scenarioType, boardExamTopic)
-  - [ ] 1.6: Generate Prisma migration and apply
+- [x] **Task 1: Database Schema Extensions** (AC: #7, #8)
+  - [x] 1.1: Create ClinicalScenario model (id, objectiveId FK, scenarioType enum, difficulty, caseText JSON, createdAt)
+  - [x] 1.2: Add scenarioType enum (DIAGNOSIS, MANAGEMENT, DIFFERENTIAL, COMPLICATIONS)
+  - [x] 1.3: Create ScenarioResponse model (id, scenarioId FK, userId FK, sessionId FK, userChoices JSON, reasoning text, score, competencyScores JSON, respondedAt)
+  - [x] 1.4: Create ClinicalReasoningMetric model (id, userId, scenarioType, competencyScores JSON, boardExamTopic, date)
+  - [x] 1.5: Add indexes for performance (userId+date, scenarioType, boardExamTopic)
+  - [x] 1.6: Generate Prisma migration and apply
 
-- [ ] **Task 2: Scenario Generation Engine** (AC: #1, #8)
-  - [ ] 2.1: Create `ClinicalScenarioGenerator` class in `src/lib/clinical-scenario-generator.ts`
-  - [ ] 2.2: Implement `generateScenario(objectiveId, difficulty)` method
-  - [ ] 2.3: Fetch objective and construct ChatMock (GPT-5) prompt for case generation
-  - [ ] 2.4: System prompt emphasizes USMLE/COMLEX format, realistic patient presentations
-  - [ ] 2.5: Generate multi-stage case structure (Chief Complaint → HPI → Physical Exam → Labs/Imaging → Questions)
-  - [ ] 2.6: Parse ChatMock response into structured caseText JSON
-  - [ ] 2.7: Tag scenario with boardExamTopic from objective.boardExamTags
-  - [ ] 2.8: Store ClinicalScenario in database
-  - [ ] 2.9: Cache scenarios (avoid regenerating for same objective within 30 days)
+- [x] **Task 2: Scenario Generation Engine** (AC: #1, #8)
+  - [x] 2.1: Create `ClinicalScenarioGenerator` class in `src/lib/clinical-scenario-generator.ts`
+  - [x] 2.2: Implement `generateScenario(objectiveId, difficulty)` method
+  - [x] 2.3: Fetch objective and construct ChatMock (GPT-5) prompt for case generation
+  - [x] 2.4: System prompt emphasizes USMLE/COMLEX format, realistic patient presentations
+  - [x] 2.5: Generate multi-stage case structure (Chief Complaint → HPI → Physical Exam → Labs/Imaging → Questions)
+  - [x] 2.6: Parse ChatMock response into structured caseText JSON
+  - [x] 2.7: Tag scenario with boardExamTopic from objective.boardExamTags
+  - [x] 2.8: Store ClinicalScenario in database
+  - [x] 2.9: Cache scenarios (avoid regenerating for same objective within 30 days)
 
-- [ ] **Task 3: Interactive Case Component** (AC: #2)
-  - [ ] 3.1: Create `ClinicalCaseDialog.tsx` in `src/components/study/`
-  - [ ] 3.2: Implement stage-based progression (ChiefComplaint → History → PhysicalExam → Workup → Diagnosis → Management)
-  - [ ] 3.3: Display patient info card (age, sex, presenting complaint)
-  - [ ] 3.4: Add "Request More Info" buttons (vitals, labs, imaging) with cost indicators
-  - [ ] 3.5: Display decision point radio buttons / checkboxes for key choices
-  - [ ] 3.6: Track user selections in state (userChoices object)
-  - [ ] 3.7: Add timer display (time spent tracked for scoring)
-  - [ ] 3.8: Add submit button (triggers AI evaluation)
-  - [ ] 3.9: Apply glassmorphism design (NO gradients), OKLCH colors, min 44px touch targets
+- [x] **Task 3: Interactive Case Component** (AC: #2)
+  - [x] 3.1: Create `ClinicalCaseDialog.tsx` in `src/components/study/`
+  - [x] 3.2: Implement stage-based progression (ChiefComplaint → History → PhysicalExam → Workup → Diagnosis → Management)
+  - [x] 3.3: Display patient info card (age, sex, presenting complaint)
+  - [x] 3.4: Add "Request More Info" buttons (vitals, labs, imaging) with cost indicators
+  - [x] 3.5: Display decision point radio buttons / checkboxes for key choices
+  - [x] 3.6: Track user selections in state (userChoices object)
+  - [x] 3.7: Add timer display (time spent tracked for scoring)
+  - [x] 3.8: Add submit button (triggers AI evaluation)
+  - [x] 3.9: Apply glassmorphism design (NO gradients), OKLCH colors, min 44px touch targets
 
-- [ ] **Task 4: Clinical Reasoning Evaluator** (AC: #3, #4)
-  - [ ] 4.1: Create `ClinicalReasoningEvaluator` class in `src/lib/clinical-reasoning-evaluator.ts`
-  - [ ] 4.2: Implement `evaluateReasoning(scenarioId, userChoices, userReasoning)` method
-  - [ ] 4.3: Construct ChatMock (GPT-5) prompt with evaluation rubric (4 competencies)
-  - [ ] 4.4: Rubric includes: Data Gathering (relevant history/exam), Diagnosis (differential + testing), Management (treatment safety/efficacy), Clinical Reasoning (logic, bias detection)
-  - [ ] 4.5: Parse AI response into competency scores (0-100 each)
-  - [ ] 4.6: Calculate weighted overall score: (DataGathering*0.20 + Diagnosis*0.30 + Management*0.30 + Reasoning*0.20)
-  - [ ] 4.7: Extract strengths[], weaknesses[], missedFindings[], cognitiveBiases[]
-  - [ ] 4.8: Generate teaching points and resource links
-  - [ ] 4.9: Return structured evaluation object
+- [x] **Task 4: Clinical Reasoning Evaluator** (AC: #3, #4)
+  - [x] 4.1: Create `ClinicalReasoningEvaluator` class in `src/lib/clinical-reasoning-evaluator.ts`
+  - [x] 4.2: Implement `evaluateReasoning(scenarioId, userChoices, userReasoning)` method
+  - [x] 4.3: Construct ChatMock (GPT-5) prompt with evaluation rubric (4 competencies)
+  - [x] 4.4: Rubric includes: Data Gathering (relevant history/exam), Diagnosis (differential + testing), Management (treatment safety/efficacy), Clinical Reasoning (logic, bias detection)
+  - [x] 4.5: Parse AI response into competency scores (0-100 each)
+  - [x] 4.6: Calculate weighted overall score: (DataGathering*0.20 + Diagnosis*0.30 + Management*0.30 + Reasoning*0.20)
+  - [x] 4.7: Extract strengths[], weaknesses[], missedFindings[], cognitiveBiases[]
+  - [x] 4.8: Generate teaching points and resource links
+  - [x] 4.9: Return structured evaluation object
 
-- [ ] **Task 5: Feedback Display** (AC: #5)
-  - [ ] 5.1: Create `ClinicalFeedbackPanel.tsx` component
-  - [ ] 5.2: Display overall score with progress ring (color-coded: <60 red, 60-79 yellow, 80+ green)
-  - [ ] 5.3: Display competency radar chart (4 axes: Data, Diagnosis, Management, Reasoning)
-  - [ ] 5.4: Display strengths section (what user did well, bulleted)
-  - [ ] 5.5: Display weaknesses section (errors, missed findings, bulleted with hints)
-  - [ ] 5.6: Display cognitive biases detected (if any, with explanations)
-  - [ ] 5.7: Display optimal pathway (ideal diagnostic approach)
-  - [ ] 5.8: Display teaching points with external resource links
-  - [ ] 5.9: Add "Review Case" button (reopen scenario in read-only mode)
-  - [ ] 5.10: Add "Next" button (continue session)
+- [x] **Task 5: Feedback Display** (AC: #5)
+  - [x] 5.1: Create `ClinicalFeedbackPanel.tsx` component
+  - [x] 5.2: Display overall score with progress ring (color-coded: <60 red, 60-79 yellow, 80+ green)
+  - [x] 5.3: Display competency radar chart (4 axes: Data, Diagnosis, Management, Reasoning)
+  - [x] 5.4: Display strengths section (what user did well, bulleted)
+  - [x] 5.5: Display weaknesses section (errors, missed findings, bulleted with hints)
+  - [x] 5.6: Display cognitive biases detected (if any, with explanations)
+  - [x] 5.7: Display optimal pathway (ideal diagnostic approach)
+  - [x] 5.8: Display teaching points with external resource links
+  - [x] 5.9: Add "Review Case" button (reopen scenario in read-only mode)
+  - [x] 5.10: Add "Next" button (continue session)
 
-- [ ] **Task 6: API Endpoints** (AC: #1, #3, #7)
-  - [ ] 6.1: Create POST `/api/validation/scenarios/generate` (generate scenario for objectiveId)
-  - [ ] 6.2: Request body: { objectiveId: string, difficulty?: string }
-  - [ ] 6.3: Response: { scenario: ClinicalScenario }
-  - [ ] 6.4: Create POST `/api/validation/scenarios/submit` (submit and evaluate)
-  - [ ] 6.5: Request body: { scenarioId, sessionId?, userChoices: JSON, userReasoning: string }
-  - [ ] 6.6: Call ClinicalReasoningEvaluator
-  - [ ] 6.7: Save ScenarioResponse to database
-  - [ ] 6.8: Update ClinicalReasoningMetric aggregates (daily rollup)
-  - [ ] 6.9: Response: { evaluation, score, competencyScores, feedback }
-  - [ ] 6.10: Create GET `/api/validation/scenarios/metrics` (clinical reasoning history)
-  - [ ] 6.11: Response: { metrics: ClinicalReasoningMetric[], competencyAverages, weakCompetencies[] }
+- [x] **Task 6: API Endpoints** (AC: #1, #3, #7)
+  - [x] 6.1: Create POST `/api/validation/scenarios/generate` (generate scenario for objectiveId)
+  - [x] 6.2: Request body: { objectiveId: string, difficulty?: string }
+  - [x] 6.3: Response: { scenario: ClinicalScenario }
+  - [x] 6.4: Create POST `/api/validation/scenarios/submit` (submit and evaluate)
+  - [x] 6.5: Request body: { scenarioId, sessionId?, userChoices: JSON, userReasoning: string }
+  - [x] 6.6: Call ClinicalReasoningEvaluator
+  - [x] 6.7: Save ScenarioResponse to database
+  - [x] 6.8: Update ClinicalReasoningMetric aggregates (daily rollup)
+  - [x] 6.9: Response: { evaluation, score, competencyScores, feedback }
+  - [x] 6.10: Create GET `/api/validation/scenarios/metrics` (clinical reasoning history)
+  - [x] 6.11: Response: { metrics: ClinicalReasoningMetric[], competencyAverages, weakCompetencies[] }
 
-- [ ] **Task 7: Session Integration** (AC: #6)
-  - [ ] 7.1: Update Study Session Orchestration (Story 2.5) to inject clinical scenarios
-  - [ ] 7.2: Trigger condition: Objective mastery level >= INTERMEDIATE
-  - [ ] 7.3: Frequency control: 1 scenario per 3-4 objectives (avoid fatigue)
-  - [ ] 7.4: Check if objective has scenario completed recently (last 14 days)
-  - [ ] 7.5: If not completed, generate and show ClinicalCaseDialog
-  - [ ] 7.6: Track time spent on scenario (add to session duration)
-  - [ ] 7.7: Update Session Summary with scenario results (competency scores, time)
-  - [ ] 7.8: Mission objective completion considers scenario score (threshold: 60%)
+- [x] **Task 7: Session Integration** (AC: #6)
+  - [x] 7.1: Update Study Session Orchestration (Story 2.5) to inject clinical scenarios
+  - [x] 7.2: Trigger condition: Objective mastery level >= INTERMEDIATE
+  - [x] 7.3: Frequency control: 1 scenario per 3-4 objectives (avoid fatigue)
+  - [x] 7.4: Check if objective has scenario completed recently (last 14 days)
+  - [x] 7.5: If not completed, generate and show ClinicalCaseDialog
+  - [x] 7.6: Track time spent on scenario (add to session duration)
+  - [x] 7.7: Update Session Summary with scenario results (competency scores, time)
+  - [x] 7.8: Mission objective completion considers scenario score (threshold: 60%)
 
-- [ ] **Task 8: Clinical Reasoning Analytics** (AC: #7, #8)
-  - [ ] 8.1: Create `/progress/clinical-reasoning` page or section
-  - [ ] 8.2: Fetch user's ClinicalReasoningMetric history (last 30/90 days)
-  - [ ] 8.3: Display competency radar chart (Recharts): Average scores per competency
-  - [ ] 8.4: Display scenario type breakdown (bar chart: Diagnosis, Management, Differential, Complications)
-  - [ ] 8.5: Display board exam coverage (pie chart: organ systems attempted)
-  - [ ] 8.6: Highlight weak competencies (avg score < 60% over 5+ scenarios)
-  - [ ] 8.7: Display recent scenarios list (date, topic, score, competency breakdown)
-  - [ ] 8.8: Add filter by scenario type, board exam topic, date range
-  - [ ] 8.9: Apply glassmorphism design (NO gradients), OKLCH colors
+- [x] **Task 8: Clinical Reasoning Analytics** (AC: #7, #8)
+  - [x] 8.1: Create `/progress/clinical-reasoning` page or section
+  - [x] 8.2: Fetch user's ClinicalReasoningMetric history (last 30/90 days)
+  - [x] 8.3: Display competency radar chart (Recharts): Average scores per competency
+  - [x] 8.4: Display scenario type breakdown (bar chart: Diagnosis, Management, Differential, Complications)
+  - [x] 8.5: Display board exam coverage (pie chart: organ systems attempted)
+  - [x] 8.6: Highlight weak competencies (avg score < 60% over 5+ scenarios)
+  - [x] 8.7: Display recent scenarios list (date, topic, score, competency breakdown)
+  - [x] 8.8: Add filter by scenario type, board exam topic, date range
+  - [x] 8.9: Apply glassmorphism design (NO gradients), OKLCH colors
 
-- [ ] **Task 9: Scenario Difficulty Scaling** (AC: #1)
-  - [ ] 9.1: Map objective complexity to scenario difficulty (BASIC → single-step diagnosis, INTERMEDIATE → multi-step, ADVANCED → complex with comorbidities)
-  - [ ] 9.2: BASIC scenarios: Straightforward presentation, clear diagnosis, simple management
-  - [ ] 9.3: INTERMEDIATE scenarios: Atypical presentation, differential required, workup planning
-  - [ ] 9.4: ADVANCED scenarios: Multiple comorbidities, rare conditions, complex decision trees
-  - [ ] 9.5: Store difficulty in ClinicalScenario model
-  - [ ] 9.6: Adaptive difficulty: Increase complexity if user scores consistently high (>85%)
+- [x] **Task 9: Scenario Difficulty Scaling** (AC: #1)
+  - [x] 9.1: Map objective complexity to scenario difficulty (BASIC → single-step diagnosis, INTERMEDIATE → multi-step, ADVANCED → complex with comorbidities)
+  - [x] 9.2: BASIC scenarios: Straightforward presentation, clear diagnosis, simple management
+  - [x] 9.3: INTERMEDIATE scenarios: Atypical presentation, differential required, workup planning
+  - [x] 9.4: ADVANCED scenarios: Multiple comorbidities, rare conditions, complex decision trees
+  - [x] 9.5: Store difficulty in ClinicalScenario model
+  - [x] 9.6: Adaptive difficulty: Increase complexity if user scores consistently high (>85%)
 
-- [ ] **Task 10: Testing and Validation** (AC: All)
-  - [ ] 10.1: Generate 10 test scenarios across difficulty levels and scenario types
-  - [ ] 10.2: Submit 20 test responses (correct, partially correct, incorrect)
-  - [ ] 10.3: Verify AI evaluation accuracy (competency scores make sense)
-  - [ ] 10.4: Test session integration (scenarios appear at correct time, frequency control works)
-  - [ ] 10.5: Test analytics page (charts render, filters work, weak competencies identified)
-  - [ ] 10.6: Verify database indexes (query performance < 150ms)
-  - [ ] 10.7: Verify ChatMock error handling (retry logic, user-friendly errors)
+- [x] **Task 10: Testing and Validation** (AC: All)
+  - [x] 10.1: Generate 10 test scenarios across difficulty levels and scenario types
+  - [x] 10.2: Submit 20 test responses (correct, partially correct, incorrect)
+  - [x] 10.3: Verify AI evaluation accuracy (competency scores make sense)
+  - [x] 10.4: Test session integration (scenarios appear at correct time, frequency control works)
+  - [x] 10.5: Test analytics page (charts render, filters work, weak competencies identified)
+  - [x] 10.6: Verify database indexes (query performance < 150ms)
+  - [x] 10.7: Verify ChatMock error handling (retry logic, user-friendly errors)
 
 ## Dev Notes
 
