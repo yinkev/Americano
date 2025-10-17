@@ -11,12 +11,12 @@
  * - Performance optimized for <1 second search latency
  *
  * Architecture:
- * - Uses @neondatabase/serverless for edge-compatible Postgres queries
+ * - Uses Prisma Client for type-safe database queries
  * - Leverages pgvector extension for vector operations
  * - Integrates with existing EmbeddingService for query embeddings
  */
 
-import { neon } from '@neondatabase/serverless'
+import { PrismaClient } from '@/generated/prisma'
 import { embeddingService } from './embedding-service'
 
 /**
@@ -185,16 +185,18 @@ interface KeywordMatch {
  * ```
  */
 export class SemanticSearchService {
-  private sql: ReturnType<typeof neon>
+  private prisma: PrismaClient
 
-  constructor(connectionString?: string) {
-    const dbUrl = connectionString || process.env.DATABASE_URL
+  constructor() {
+    this.prisma = new PrismaClient()
+  }
 
-    if (!dbUrl) {
-      throw new Error('DATABASE_URL environment variable is required')
-    }
-
-    this.sql = neon(dbUrl)
+  /**
+   * Disconnect Prisma client
+   * Should be called on application shutdown
+   */
+  async disconnect(): Promise<void> {
+    await this.prisma.$disconnect()
   }
 
   /**
@@ -413,7 +415,11 @@ export class SemanticSearchService {
     // similarity = 1 - (distance / 2) => distance = 2 * (1 - similarity)
     const maxDistance = 2 * (1 - minSimilarity)
 
-    const query = `
+    params.push(maxDistance)
+    params.push(limit)
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(
+      `
       SELECT
         cc.id,
         cc.content,
@@ -429,13 +435,13 @@ export class SemanticSearchService {
       JOIN lectures l ON cc."lectureId" = l.id
       JOIN courses c ON l."courseId" = c.id
       WHERE cc.embedding IS NOT NULL
-        AND (cc.embedding <=> $1::vector) < ${maxDistance}
+        AND (cc.embedding <=> $1::vector) < $2
         ${whereClause}
       ORDER BY distance
-      LIMIT ${limit}
-    `
-
-    const rows = await this.sql(query, params)
+      LIMIT $${params.length}
+    `,
+      ...params
+    )
 
     return rows.map((row: any) => ({
       id: row.id,
@@ -490,8 +496,12 @@ export class SemanticSearchService {
     const whereClause = whereClauses.length > 0 ? `AND ${whereClauses.join(' AND ')}` : ''
     const maxDistance = 2 * (1 - minSimilarity)
 
+    params.push(maxDistance)
+    params.push(limit)
+
     // Note: Using Unsupported type in Prisma, so we use raw SQL
-    const query = `
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(
+      `
       SELECT
         l.id,
         l.title,
@@ -504,13 +514,13 @@ export class SemanticSearchService {
       FROM lectures l
       JOIN courses c ON l."courseId" = c.id
       WHERE l.embedding IS NOT NULL
-        AND (l.embedding <=> $1::vector) < ${maxDistance}
+        AND (l.embedding <=> $1::vector) < $${params.length - 1}
         ${whereClause}
       ORDER BY distance
-      LIMIT ${limit}
-    `
-
-    const rows = await this.sql(query, params)
+      LIMIT $${params.length}
+    `,
+      ...params
+    )
 
     return rows.map((row: any) => ({
       id: row.id,
@@ -552,7 +562,11 @@ export class SemanticSearchService {
     const whereClause = whereClauses.length > 0 ? `AND ${whereClauses.join(' AND ')}` : ''
     const maxDistance = 2 * (1 - minSimilarity)
 
-    const query = `
+    params.push(maxDistance)
+    params.push(limit)
+
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(
+      `
       SELECT
         c.id,
         c.name,
@@ -561,13 +575,13 @@ export class SemanticSearchService {
         (c.embedding <=> $1::vector) AS distance
       FROM concepts c
       WHERE c.embedding IS NOT NULL
-        AND (c.embedding <=> $1::vector) < ${maxDistance}
+        AND (c.embedding <=> $1::vector) < $${params.length - 1}
         ${whereClause}
       ORDER BY distance
-      LIMIT ${limit}
-    `
-
-    const rows = await this.sql(query, params)
+      LIMIT $${params.length}
+    `,
+      ...params
+    )
 
     return rows.map((row: any) => ({
       id: row.id,
@@ -636,7 +650,8 @@ export class SemanticSearchService {
 
     const whereClause = whereClauses.length > 0 ? `AND ${whereClauses.join(' AND ')}` : ''
 
-    const query = `
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(
+      `
       SELECT
         cc.id,
         ts_rank(to_tsvector('english', cc.content), to_tsquery('english', $1)) AS rank
@@ -646,9 +661,9 @@ export class SemanticSearchService {
         ${whereClause}
       ORDER BY rank DESC
       LIMIT 100
-    `
-
-    const rows = await this.sql(query, params)
+    `,
+      ...params
+    )
 
     return rows.map((row: any) => ({
       id: row.id,
@@ -678,7 +693,8 @@ export class SemanticSearchService {
 
     const whereClause = whereClauses.length > 0 ? `AND ${whereClauses.join(' AND ')}` : ''
 
-    const query = `
+    const rows = await this.prisma.$queryRawUnsafe<any[]>(
+      `
       SELECT
         l.id,
         ts_rank(to_tsvector('english', l.title), to_tsquery('english', $1)) AS rank
@@ -687,9 +703,9 @@ export class SemanticSearchService {
         ${whereClause}
       ORDER BY rank DESC
       LIMIT 100
-    `
-
-    const rows = await this.sql(query, params)
+    `,
+      ...params
+    )
 
     return rows.map((row: any) => ({
       id: row.id,
@@ -782,13 +798,16 @@ export class SemanticSearchService {
    */
   private async getLectureSnippet(lectureId: string, query: string): Promise<string> {
     try {
-      const rows = await this.sql`
+      const rows = await this.prisma.$queryRawUnsafe<any[]>(
+        `
         SELECT content
         FROM content_chunks
-        WHERE "lectureId" = ${lectureId}
+        WHERE "lectureId" = $1
         ORDER BY "chunkIndex"
         LIMIT 1
-      `
+      `,
+        lectureId
+      )
 
       if (rows.length > 0) {
         return this.generateSnippet(rows[0].content, query)
@@ -907,3 +926,13 @@ export class SemanticSearchService {
  * Singleton instance for application-wide use
  */
 export const semanticSearchService = new SemanticSearchService()
+
+/**
+ * Cleanup handler for graceful shutdown
+ * Ensures Prisma disconnects properly on process exit
+ */
+if (typeof process !== 'undefined') {
+  process.on('beforeExit', async () => {
+    await semanticSearchService.disconnect()
+  })
+}
