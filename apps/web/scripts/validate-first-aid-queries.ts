@@ -294,7 +294,7 @@ async function validateQuery2B() {
   console.log('Testing Query 2B: Section-based lookup (semantic)...')
 
   const chunk = await prisma.contentChunk.findFirst({
-    where: { content: { not: null } }, // Use content instead of embedding since embedding is Unsupported
+    where: { content: { not: '' } }, // Use content with not-empty filter instead of embedding since embedding is Unsupported
   })
 
   if (!chunk || !chunk.lectureId) {
