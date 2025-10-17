@@ -98,9 +98,7 @@ import { z } from 'zod'
 const clickTrackingSchema = z.object({
   searchQueryId: z.string().min(1, 'Search query ID is required'),
   resultId: z.string().min(1, 'Result ID is required'),
-  resultType: z.enum(['lecture', 'chunk', 'objective', 'concept'], {
-    errorMap: () => ({ message: 'Invalid result type' }),
-  }),
+  resultType: z.enum(['lecture', 'chunk', 'objective', 'concept']),
   position: z.number().int().min(0, 'Position must be non-negative'),
   similarity: z.number().min(0).max(1).optional(),
 })

@@ -97,7 +97,6 @@
  *         description: Server error
  */
 
-import { NextRequest } from 'next/server'
 import { withErrorHandler } from '@/lib/api-error'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { withRateLimit, searchRateLimiter } from '@/lib/rate-limiter'
@@ -109,7 +108,7 @@ import type { SearchSuggestion } from '@/subsystems/knowledge-graph/types'
  * GET /api/search/suggestions handler
  * Returns autocomplete suggestions based on query
  */
-async function handler(request: NextRequest) {
+async function handler(request: Request) {
   // Get user (MVP: hardcoded to kevy@americano.dev)
   const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev'
   const user = await prisma.user.findUnique({

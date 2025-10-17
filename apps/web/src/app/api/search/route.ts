@@ -146,7 +146,6 @@
  *         description: Server error
  */
 
-import { NextRequest } from 'next/server'
 import { withErrorHandler } from '@/lib/api-error'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { withRateLimit, searchRateLimiter } from '@/lib/rate-limiter'
@@ -159,7 +158,7 @@ import type { SearchAnalytics } from '@/subsystems/knowledge-graph/types'
  * POST /api/search handler
  * Performs semantic search with rate limiting and validation
  */
-async function handler(request: NextRequest) {
+async function handler(request: Request) {
   const startTime = Date.now()
 
   // Get user (MVP: hardcoded to kevy@americano.dev)

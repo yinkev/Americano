@@ -206,8 +206,14 @@ export function SearchFilters({
             >
               <Calendar
                 mode="range"
-                selected={filters.dateRange}
-                onSelect={handleDateRangeChange}
+                selected={filters.dateRange ? { from: filters.dateRange.start, to: filters.dateRange.end } : undefined}
+                onSelect={(range) => {
+                  if (!range || !range.from || !range.to) {
+                    handleDateRangeChange(undefined)
+                  } else {
+                    handleDateRangeChange({ start: range.from, end: range.to })
+                  }
+                }}
                 numberOfMonths={2}
                 className="rounded-xl"
               />

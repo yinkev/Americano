@@ -13,7 +13,7 @@
  */
 
 import { prisma } from '@/lib/db'
-import type { Prisma } from '@/generated/prisma'
+import { Prisma } from '@/generated/prisma'
 
 /**
  * Track a search result click
