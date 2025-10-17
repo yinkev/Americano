@@ -1,6 +1,6 @@
 # Story 5.2: Predictive Analytics for Learning Struggles
 
-Status: Draft
+Status: Approved
 
 ## Story
 
@@ -1193,7 +1193,7 @@ function generateInterventions(prediction: StrugglePrediction, indicators: Strug
 
 ### Context Reference
 
-<!-- Path(s) to story context XML will be added here by context workflow -->
+- Story Context: `/Users/kyin/Projects/Americano-epic5/docs/stories/story-context-5.2.xml`
 
 ### Agent Model Used
 

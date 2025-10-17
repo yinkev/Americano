@@ -1,0 +1,65 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Next.js",
+      "type": "node",
+      "request": "launch",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/apps/web/node_modules/next/dist/bin/next",
+      "args": [
+        "dev",
+        "--turbopack"
+      ],
+      "cwd": "${workspaceFolder}/apps/web",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "FastAPI (ML Service)",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "app.main:app",
+        "--reload",
+        "--port",
+        "8000"
+      ],
+      "cwd": "${workspaceFolder}/services/ml-service",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/services/ml-service"
+      }
+    },
+    {
+      "name": "Next.js + FastAPI",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "cwd": "${workspaceFolder}",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack Development",
+      "configurations": [
+        "Next.js",
+        "FastAPI (ML Service)"
+      ],
+      "stopAll": true
+    }
+  ]
+}

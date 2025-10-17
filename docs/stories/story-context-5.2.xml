@@ -1,0 +1,334 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>5.2</storyId>
+    <title>Predictive Analytics for Learning Struggles</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>/Users/kyin/Projects/Americano-epic5/docs/stories/story-5.2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a medical student</asA>
+    <iWant>the platform to predict when I might struggle with topics</iWant>
+    <soThat>I can receive proactive support before difficulties become problems</soThat>
+    <tasks>
+### Task 1: Design Predictive Model Data Architecture (AC: #1, #5, #6)
+- [ ] 1.1: Create `StrugglePrediction` model for storing predictions
+- [ ] 1.2: Create `StruggleIndicator` model for tracking struggle signals
+- [ ] 1.3: Create `PredictionFeedback` model for user input
+- [ ] 1.4: Extend `PerformancePrediction` model (from solution architecture)
+- [ ] 1.5: Run Prisma migration for predictive analytics models
+
+### Task 2: Implement Feature Engineering Pipeline (AC: #1, #5)
+- [ ] 2.1: Create `StruggleFeatureExtractor` class
+- [ ] 2.2: Implement performance-based features
+- [ ] 2.3: Implement prerequisite and dependency features
+- [ ] 2.4: Implement content complexity features
+- [ ] 2.5: Implement behavioral pattern features
+- [ ] 2.6: Implement contextual features
+- [ ] 2.7: Create normalized feature vector
+
+### Task 3: Build Struggle Prediction ML Model (AC: #1, #5)
+- [ ] 3.1: Create `StrugglePredictionModel` class
+- [ ] 3.2: Implement initial rule-based model (MVP)
+- [ ] 3.3: Implement logistic regression model (Post-MVP)
+- [ ] 3.4: Implement model evaluation and validation
+- [ ] 3.5: Implement incremental learning
+
+### Task 4: Implement Struggle Detection Engine (AC: #1, #2, #3)
+- [ ] 4.1: Create `StruggleDetectionEngine` orchestrator class
+- [ ] 4.2: Implement prediction workflow
+- [ ] 4.3: Implement struggle indicator detection
+- [ ] 4.4: Implement intervention opportunity identification
+
+### Task 5: Build Early Warning System (AC: #2, #3)
+- [ ] 5.1: Create `StruggleAlertSystem` class
+- [ ] 5.2: Implement alert generation logic
+- [ ] 5.3: Implement alert prioritization
+- [ ] 5.4: Implement user notification delivery
+
+### Task 6: Build Proactive Intervention System (AC: #3, #4, #7)
+- [ ] 6.1: Create `InterventionEngine` class
+- [ ] 6.2: Implement intervention strategy library
+- [ ] 6.3: Implement learning pattern-based tailoring
+- [ ] 6.4: Integrate with Mission Generator (Story 2.4)
+
+### Task 7: Implement Prediction Accuracy Tracking (AC: #5, #6, #8)
+- [ ] 7.1: Create `PredictionAccuracyTracker` class
+- [ ] 7.2: Implement outcome capture workflow
+- [ ] 7.3: Calculate prediction accuracy metrics
+- [ ] 7.4: Implement error pattern analysis
+- [ ] 7.5: Generate model improvement recommendations
+
+### Task 8: Build User Feedback Loop (AC: #6)
+- [ ] 8.1: Create feedback UI components
+- [ ] 8.2: Implement feedback collection workflow
+- [ ] 8.3: Integrate feedback into model improvement
+- [ ] 8.4: Implement feedback-driven model updates
+
+### Task 9: Measure Success and Reduction in Difficulties (AC: #8)
+- [ ] 9.1: Create `StruggleReductionAnalyzer` class
+- [ ] 9.2: Implement baseline calculation
+- [ ] 9.3: Implement ongoing struggle tracking
+- [ ] 9.4: Calculate reduction metrics
+- [ ] 9.5: Build success metrics dashboard
+
+### Task 10: Build Struggle Prediction Dashboard (AC: #2, #3, #4)
+- [ ] 10.1: Create `/analytics/struggle-predictions` page
+- [ ] 10.2: Design `StrugglePredictionCard` component
+- [ ] 10.3: Create `InterventionRecommendationPanel` component
+- [ ] 10.4: Build `PredictionAccuracyChart` component
+- [ ] 10.5: Design `StruggleReductionMetrics` component
+
+### Task 11: Build Struggle Prediction APIs (AC: All)
+- [ ] 11.1: Create POST `/api/analytics/predictions/generate` endpoint
+- [ ] 11.2: Create GET `/api/analytics/predictions` endpoint
+- [ ] 11.3: Create GET `/api/analytics/interventions` endpoint
+- [ ] 11.4: Create POST `/api/analytics/interventions/:id/apply` endpoint
+- [ ] 11.5: Create POST `/api/analytics/predictions/:id/feedback` endpoint
+- [ ] 11.6: Create GET `/api/analytics/model-performance` endpoint
+- [ ] 11.7: Create GET `/api/analytics/struggle-reduction` endpoint
+
+### Task 12: Integrate with Daily Mission Generation (AC: #7)
+- [ ] 12.1: Extend `MissionGenerator` to consume predictions
+- [ ] 12.2: Implement prediction-aware mission composition
+- [ ] 12.3: Add prediction context to mission display
+- [ ] 12.4: Implement post-mission outcome capture
+
+### Task 13: Testing and Validation (AC: All)
+- [ ] 13.1: Prepare test data with known struggle patterns
+- [ ] 13.2: Test feature extraction accuracy
+- [ ] 13.3: Test prediction model accuracy
+- [ ] 13.4: Test intervention generation
+- [ ] 13.5: Test alert system
+- [ ] 13.6: Test mission integration
+- [ ] 13.7: Test feedback loop and model improvement
+- [ ] 13.8: Integration testing across stories
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. Predictive model identifies topics likely to cause difficulty for user
+2. Early warning system alerts user to potential struggle areas
+3. Proactive study recommendations before predicted struggles occur
+4. Intervention strategies tailored to user's learning patterns
+5. Prediction accuracy tracked and improved through machine learning
+6. User feedback on prediction accuracy integrated into model improvement
+7. Struggle prediction integrated with daily mission generation
+8. Success rate measured through reduction in actual learning difficulties
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Subsystem 5: Behavioral Analytics &amp; Personalization</title>
+        <section>Lines 604-648</section>
+        <snippet>Behavioral analytics subsystem handles learning pattern analysis, predictive modeling for struggle detection, cognitive load monitoring, and adaptive difficulty adjustment. Includes MissionAnalyticsEngine, PredictiveModel, CognitiveLoadMonitor, and DifficultyAdapter components. Data models include BehavioralEvent, LearningPattern, PerformancePrediction for time-series analysis and retention curve fitting.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>PerformancePrediction Model</title>
+        <section>Lines 1121-1134</section>
+        <snippet>PerformancePrediction model stores forecasts with fields: userId, predictedFor (DateTime), predictionType (struggle_likelihood, optimal_study_time), prediction (Json), confidence (Float), createdAt. Indexes on userId and predictedFor for fast timeline queries.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>FR6: Behavioral Learning Pattern Analysis</title>
+        <section>Lines 103-108</section>
+        <snippet>Track individual study patterns, performance trends, engagement metrics. Identify optimal study times, content preferences, difficulty progression. Personal learning style profiling (visual, auditory, kinesthetic). Predictive modeling for struggle detection and intervention timing.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Epic 5: Behavioral Learning Twin Success Criteria</title>
+        <section>Lines 450-468</section>
+        <snippet>Goal: Develop sophisticated behavioral modeling system that learns individual patterns, predicts struggles, optimizes learning experiences. Success Criteria: 80%+ accuracy in predicting user learning struggles and optimal timing. Measurable improvement in personalization effectiveness. Demonstrated correlation between behavioral insights and academic performance.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-5.1.md</path>
+        <title>Story 5.1: Learning Pattern Recognition and Analysis</title>
+        <section>Full Story</section>
+        <snippet>Foundation story for Epic 5. Creates BehavioralPattern, BehavioralInsight, UserLearningProfile models. Implements 4 analyzers: StudyTimeAnalyzer, SessionDurationAnalyzer, ContentPreferenceAnalyzer, ForgettingCurveAnalyzer. BehavioralPatternEngine orchestrates pattern detection with confidence thresholds. Provides behavioral data foundation for Story 5.2 predictions.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-5.2.md</path>
+        <title>Database Schema Extensions</title>
+        <section>Lines 526-670</section>
+        <snippet>Defines 4 new models: StrugglePrediction (prediction storage, probability, confidence, status, actualOutcome), StruggleIndicator (6 types: LOW_RETENTION, PREREQUISITE_GAP, COMPLEXITY_MISMATCH, COGNITIVE_OVERLOAD, HISTORICAL_STRUGGLE_PATTERN, TOPIC_SIMILARITY_STRUGGLE), InterventionRecommendation (6 types of interventions), PredictionFeedback (user feedback loop).</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database schema</kind>
+        <symbol>BehavioralPattern, UserLearningProfile, PerformancePrediction, LearningObjective, Mission, StudySession</symbol>
+        <lines>1-900</lines>
+        <reason>Database schema includes existing models needed for Story 5.2: BehavioralPattern (Story 5.1 patterns), UserLearningProfile (learning style data), PerformancePrediction (base prediction model to extend), LearningObjective (performance tracking with masteryLevel, weaknessScore), Mission (integration point), StudySession (outcome data source)</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/behavioral-pattern-engine.ts</path>
+        <kind>subsystem class</kind>
+        <symbol>BehavioralPatternEngine</symbol>
+        <lines>1-573</lines>
+        <reason>Story 5.1 pattern engine provides behavioral data foundation. Story 5.2 will use detected patterns (optimal study times, session preferences, historical struggles) as features for struggle prediction model.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/mission-generator.ts</path>
+        <kind>service class</kind>
+        <symbol>MissionGenerator</symbol>
+        <lines>Full file</lines>
+        <reason>Story 2.4 mission generation logic. Story 5.2 Task 12 requires extending MissionGenerator to consume predictions, implement prediction-aware composition, add prediction context to display, and capture post-mission outcomes.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/performance-calculator.ts</path>
+        <kind>service class</kind>
+        <symbol>PerformanceCalculator</symbol>
+        <lines>Full file</lines>
+        <reason>Story 2.2 performance tracking. Provides weakness scoring algorithm, mastery calculations, retention metrics used as features for struggle prediction. Formula: retention 40% + study time 30% + failures 20% + confidence 10%.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/mission-analytics-engine.ts</path>
+        <kind>analytics class</kind>
+        <symbol>MissionAnalyticsEngine</symbol>
+        <lines>398 lines</lines>
+        <reason>Story 2.6 mission analytics. Provides completion rate calculations, performance correlations, success metrics that inform prediction model accuracy tracking and struggle outcome validation.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package>@prisma/client</package>
+        <version>Latest stable</version>
+        <usage>Database ORM for StrugglePrediction, StruggleIndicator, InterventionRecommendation, PredictionFeedback models</usage>
+      </node>
+      <node>
+        <package>zod</package>
+        <version>Latest stable</version>
+        <usage>API request/response validation for prediction endpoints</usage>
+      </node>
+      <node>
+        <package>date-fns</package>
+        <version>Latest stable (already installed)</version>
+        <usage>Date calculations for prediction windows, intervention timing, outcome capture</usage>
+      </node>
+      <node>
+        <package>recharts</package>
+        <version>Latest stable (already installed)</version>
+        <usage>Prediction accuracy charts, struggle reduction metrics visualization, feature importance display</usage>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Database schema changes required: Create 4 new models (StrugglePrediction, StruggleIndicator, InterventionRecommendation, PredictionFeedback) with proper indexes. Extend PerformancePrediction with predictionType, topicId, predictionFeatures fields.</constraint>
+    <constraint>Minimum data requirements for ML model: 6+ weeks study history, 50+ reviews, 20+ sessions. Graceful degradation with rule-based model when insufficient data. Display data sufficiency progress to user.</constraint>
+    <constraint>Feature engineering pipeline: 15+ features across 5 categories (performance-based, prerequisite/dependency, content complexity, behavioral patterns, contextual). All features normalized to 0-1 scale with missing value handling.</constraint>
+    <constraint>Model architecture: MVP uses rule-based model with explicit thresholds. Post-MVP implements logistic regression with incremental learning. Weekly model retraining with new feedback data.</constraint>
+    <constraint>Prediction accuracy targets: Overall accuracy >75%, Recall >70% (prioritize catching struggles), Precision >65%, Calibration within ±10% of actual rate. Track via PredictionAccuracyTracker.</constraint>
+    <constraint>Intervention integration: 6 intervention types (PREREQUISITE_REVIEW, DIFFICULTY_PROGRESSION, CONTENT_FORMAT_ADAPT, COGNITIVE_LOAD_REDUCE, SPACED_REPETITION_BOOST, BREAK_SCHEDULE_ADJUST). Tailor based on UserLearningProfile from Story 5.1.</constraint>
+    <constraint>Mission integration (Task 12): MissionGenerator.getPrioritizedObjectives() must query active StrugglePrediction records, inject prerequisite reviews 1-2 days before predicted struggles, reduce complexity for COMPLEXITY_MISMATCH, add warning context to mission display.</constraint>
+    <constraint>Alert system prioritization: Urgency (days until due) 40%, Prediction confidence 30%, Severity 20%, Cognitive load 10%. Limit to top 3 alerts to avoid overwhelming user. Support dismiss/snooze.</constraint>
+    <constraint>Privacy and ethics: All predictions stored with userId (never shared). User can disable predictive features (opt-out). Clear explanations: "Why this prediction?" with feature breakdown. No punitive consequences for predicted struggles.</constraint>
+    <constraint>Performance optimization: Feature extraction with 1-hour cache TTL. Batch predictions daily (11 PM cron job) for next 7-14 days. Model inference <100ms per prediction. Database indexes on (userId, predictionDate, predictedStruggleProbability).</constraint>
+    <constraint>Auth deferred for MVP: Hardcoded kevy@americano.dev user. All APIs enforce userId context. Add Clerk/Auth.js when deploying to production.</constraint>
+    <constraint>Next.js 15 App Router patterns: API routes with async params, Response.json() wrappers, proper error handling with ApiError class, Zod validation for all request bodies.</constraint>
+    <constraint>UI design system: Glassmorphism (bg-white/80 backdrop-blur-md), OKLCH colors (NO gradients), responsive layouts (desktop-first), min 44px touch targets, ARIA labels for accessibility.</constraint>
+    <constraint>Testing strategy: Manual testing for MVP with synthetic user data (known struggle patterns). Prepare test scenarios: missing prerequisites, low retention, complexity mismatch. Unit tests deferred to production.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/analytics/predictions/generate</name>
+      <kind>REST API endpoint</kind>
+      <signature>Body: { userId: string, daysAhead?: number (default 7) }. Returns: { predictions: StrugglePrediction[], alerts: StruggleAlert[] }</signature>
+      <path>apps/web/src/app/api/analytics/predictions/generate/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/analytics/predictions</name>
+      <kind>REST API endpoint</kind>
+      <signature>Query: status?, minProbability? (default 0.5). Returns stored StrugglePrediction records sorted by prediction date ASC</signature>
+      <path>apps/web/src/app/api/analytics/predictions/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/analytics/interventions</name>
+      <kind>REST API endpoint</kind>
+      <signature>Returns active InterventionRecommendation records filtered by upcoming missions, includes effectiveness scores, grouped by type</signature>
+      <path>apps/web/src/app/api/analytics/interventions/route.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/analytics/interventions/:id/apply</name>
+      <kind>REST API endpoint</kind>
+      <signature>Body: { applyToMissionId?: string }. Applies intervention to mission queue, updates MissionGenerator, returns updated mission</signature>
+      <path>apps/web/src/app/api/analytics/interventions/[id]/apply/route.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/analytics/predictions/:id/feedback</name>
+      <kind>REST API endpoint</kind>
+      <signature>Body: { actualStruggle: boolean, feedbackType: string, comments?: string }. Updates prediction.actualOutcome, creates PredictionFeedback, triggers model improvement</signature>
+      <path>apps/web/src/app/api/analytics/predictions/[id]/feedback/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/analytics/model-performance</name>
+      <kind>REST API endpoint</kind>
+      <signature>Returns { accuracy, precision, recall, f1Score, calibration, lastUpdated, dataPoints, featureImportance }</signature>
+      <path>apps/web/src/app/api/analytics/model-performance/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/analytics/struggle-reduction</name>
+      <kind>REST API endpoint</kind>
+      <signature>Query: period? (week/month/all). Returns { baselineRate, currentRate, reductionPercentage, timeline[], interventionEffectiveness[] }</signature>
+      <path>apps/web/src/app/api/analytics/struggle-reduction/route.ts</path>
+    </interface>
+    <interface>
+      <name>StruggleFeatureExtractor</name>
+      <kind>TypeScript class</kind>
+      <signature>extractFeaturesForObjective(userId, objectiveId): FeatureVector. extractFeaturesForTopic(userId, topicId): FeatureVector. calculateFeatureImportance(): FeatureImportanceScores</signature>
+      <path>apps/web/src/subsystems/behavioral-analytics/struggle-feature-extractor.ts</path>
+    </interface>
+    <interface>
+      <name>StrugglePredictionModel</name>
+      <kind>TypeScript class</kind>
+      <signature>train(trainingData): ModelMetrics. predict(featureVector): PredictionResult. updateModel(newData): UpdateMetrics. getModelPerformance(): PerformanceMetrics</signature>
+      <path>apps/web/src/subsystems/behavioral-analytics/struggle-prediction-model.ts</path>
+    </interface>
+    <interface>
+      <name>StruggleDetectionEngine</name>
+      <kind>TypeScript class</kind>
+      <signature>runPredictions(userId): StrugglePrediction[]. detectUpcomingStruggles(userId, daysAhead): StrugglePrediction[]. analyzeCurrentStruggles(userId): StruggleIndicator[]. identifyInterventionOpportunities(userId): InterventionRecommendation[]</signature>
+      <path>apps/web/src/subsystems/behavioral-analytics/struggle-detection-engine.ts</path>
+    </interface>
+    <interface>
+      <name>InterventionEngine</name>
+      <kind>TypeScript class</kind>
+      <signature>generateInterventions(prediction): Intervention[]. tailorToLearningPattern(intervention, userId): TailoredIntervention. applyIntervention(interventionId): ApplicationResult</signature>
+      <path>apps/web/src/subsystems/behavioral-analytics/intervention-engine.ts</path>
+    </interface>
+    <interface>
+      <name>PredictionAccuracyTracker</name>
+      <kind>TypeScript class</kind>
+      <signature>recordActualOutcome(predictionId, actualStruggle): void. calculateModelAccuracy(timeframe): AccuracyMetrics. analyzeErrorPatterns(): ErrorAnalysis. generateModelImprovementPlan(): ImprovementRecommendations</signature>
+      <path>apps/web/src/subsystems/behavioral-analytics/prediction-accuracy-tracker.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Manual testing approach for MVP (single user). Create synthetic test data with known struggle patterns: user with clear physiology struggles (low retention 30%), strong anatomy (85% retention), missing prerequisite (action potential basics). Test prediction generation, intervention recommendations, alert system, mission integration, feedback loop, accuracy tracking. Unit tests and E2E tests deferred to production deployment.</standards>
+    <locations>apps/web/src/__tests__/subsystems/behavioral-analytics/ for future unit tests. Manual testing via browser at /analytics/struggle-predictions dashboard.</locations>
+    <ideas>
+      <idea ac="1">Test feature extraction accuracy: Verify StruggleFeatureExtractor produces expected features (prerequisite gap = 1.0 for missing prerequisite, historical struggle = 0.8 for past physiology struggles, retention = 0.3 for low retention). Validate normalization (all 0-1). Check data quality score.</idea>
+      <idea ac="1,5">Test prediction model accuracy: Run predictions on test data with known outcome. Verify high probability (>0.7) for cardiac electrophysiology with missing action potential prerequisite. Check prediction reasoning (feature contributions). Compare rule-based vs ML model (post-MVP).</idea>
+      <idea ac="2,3">Test alert system: Trigger alert generation for high-probability prediction (>0.8, <3 days). Verify prioritization (urgent topics first: urgency 40% + confidence 30% + severity 20% + cognitive load 10%). Test notification delivery (in-app badge). Validate dismiss/snooze.</idea>
+      <idea ac="3,4">Test intervention generation: Verify InterventionEngine generates appropriate strategies (prerequisite review for gap, difficulty progression for complexity mismatch, content format adaptation for VARK mismatch). Check tailoring uses UserLearningProfile. Validate timing (1-2 days before).</idea>
+      <idea ac="5,6,8">Test prediction accuracy tracking: Submit user feedback (correct/incorrect). Verify PredictionFeedback recorded. Check model retraining triggered (weekly). Validate accuracy metrics updated (precision, recall, F1). Test calibration (predicted probability vs actual rate per bin).</idea>
+      <idea ac="7">Test mission integration: Generate mission with predicted struggle objective. Verify prerequisite review inserted before main objective. Check complexity reduced appropriately. Validate intervention context displayed. Test post-mission outcome capture.</idea>
+      <idea ac="8">Test struggle reduction metrics: Calculate baseline rate (first 4-6 weeks). Track post-prediction rate. Verify reduction calculation ((baseline - current) / baseline × 100). Target 25%+ reduction. Compare intervention vs non-intervention outcomes.</idea>
+      <idea ac="all">Integration test across stories: Story 5.1 patterns → Feature engineering. Story 2.2 performance → Struggle indicators. Story 2.4 missions → Prediction integration. Story 4.1 validation → Comprehension struggles. End-to-end: Study → Predict → Intervene → Measure.</idea>
+      <idea ac="1">Edge case: Insufficient data (<6 weeks, <20 sessions, <50 reviews). Verify graceful degradation (low confidence predictions, "insufficient data" message, progress bar showing 12/20 sessions needed).</idea>
+      <idea ac="1">Edge case: User opts out of predictions. Verify feature disabled, existing predictions cleared, no new predictions generated.</idea>
+      <idea ac="5">Test false positive handling: User predicted to struggle (>0.7) but performs well. Verify prediction marked FALSE_POSITIVE. Check error pattern analysis identifies misleading features. Test feature weight adjustment.</idea>
+      <idea ac="5">Test false negative handling: User struggles (low performance) but not predicted. Verify retroactive MISSED prediction recorded. Check model learns from missed cases. Test feature addition recommendations.</idea>
+      <idea ac="6">Test feedback loop: Weekly model update cycle. Collect feedback, retrain model, evaluate on test set, deploy if improved. Verify user notification: "Prediction accuracy increased to 78% thanks to your feedback!"</idea>
+    </ideas>
+  </tests>
+</story-context>

@@ -109,6 +109,9 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   takeRecords: jest.fn(),
 }));
 
+// Setup will be imported by individual test files to avoid ESM issues
+// DO NOT import MSW setup here - it causes Jest/ESM conflicts
+
 // Suppress console errors in tests (optional)
 global.console = {
   ...console,

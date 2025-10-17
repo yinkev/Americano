@@ -1,0 +1,618 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/5.6" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>5.6</storyId>
+    <title>Behavioral Insights Dashboard and Self-Awareness</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-5.6.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>to understand my learning patterns and behavioral insights</iWant>
+    <soThat>I can develop better self-awareness and study habits</soThat>
+    <tasks>
+      Task 1: Design Comprehensive Insights Dashboard UI (AC: #1, #2, #3)
+      Task 2: Build Pattern Visualization Components (AC: #1, #2)
+      Task 3: Build Progress Tracking Components (AC: #3, #5, #8)
+      Task 4: Build Self-Awareness Tools (AC: #2, #6)
+      Task 5: Implement Recommendations Engine (AC: #4)
+      Task 6: Build Recommendations UI (AC: #4)
+      Task 7: Implement Goal Setting System (AC: #7)
+      Task 8: Build Goal Setting UI (AC: #7)
+      Task 9: Build Learning Science Education Content (AC: #6)
+      Task 10: Build Performance Correlation Analysis (AC: #8)
+      Task 11: Build Notification System for Insights (AC: #1, #4)
+      Task 12: Build API Endpoints (AC: All)
+      Task 13: Implement Data Export and Privacy (AC: #2)
+      Task 14: Testing and Validation (AC: All)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Behavioral insights dashboard showing learning patterns and trends</criterion>
+    <criterion id="2">Self-awareness tools helping user understand their learning characteristics</criterion>
+    <criterion id="3">Comparison of current patterns with historical performance and improvements</criterion>
+    <criterion id="4">Actionable recommendations for study habit optimization</criterion>
+    <criterion id="5">Progress tracking for behavioral improvements and learning effectiveness</criterion>
+    <criterion id="6">Educational content about learning science and behavioral optimization</criterion>
+    <criterion id="7">Goal setting and tracking for behavioral improvements</criterion>
+    <criterion id="8">Integration with academic performance to show correlation and impact</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <!-- Architecture Documentation -->
+      <artifact>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Subsystem 5: Behavioral Analytics</title>
+        <section>Lines 604-648: Behavioral Analytics & Personalization</section>
+        <snippet>Epic 5 builds strongest competitive moat through behavioral modeling. Story 5.6 is the USER-FACING story that makes all Epic 5 insights visible and actionable. Delivers comprehensive analytics dashboard with pattern visualizations, recommendations engine, goal tracking, and learning science education.</snippet>
+      </artifact>
+
+      <artifact>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Database Models</title>
+        <section>Lines 1073-1134: Behavioral Analytics Models</section>
+        <snippet>BehavioralPattern, BehavioralInsight, UserLearningProfile models from Story 5.1. StrugglePrediction, InterventionRecommendation models from Story 5.2. Story 5.6 adds: BehavioralGoal, Recommendation, AppliedRecommendation, InsightNotification, LearningArticle models.</snippet>
+      </artifact>
+
+      <artifact>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>PRD - Epic 5: Behavioral Learning Twin</title>
+        <section>Lines 450-468: Epic 5 Goals</section>
+        <snippet>Story 5.6 surfaces all behavioral insights to users. Dashboard shows: learning patterns (optimal times, session duration, VARK profile, forgetting curve), performance correlation (behavioral score vs grades), actionable recommendations, goal tracking. UX Principle #9: Personal Learning Reflection. UX Principle #10: Trust Through Transparency.</snippet>
+      </artifact>
+
+      <artifact>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic Breakdown - Story 5.6 Details</title>
+        <section>Lines 808-829: Story 5.6 Full Specification</section>
+        <snippet>14 tasks covering: comprehensive dashboard UI (Patterns/Progress/Goals/Learn tabs), pattern visualization (heatmaps, charts, radar), progress tracking (metrics, correlation analysis, milestones), self-awareness tools (VARK explorer, forgetting curve education, study time optimization), recommendations engine (prioritization algorithm, effectiveness tracking), goal setting system (template-based + custom), learning science education (5 articles with personalized data), performance correlation (Pearson r, statistical analysis), notifications, API endpoints, data export/privacy controls.</snippet>
+      </artifact>
+
+      <artifact>
+        <path>docs/stories/story-5.1.md</path>
+        <title>Story 5.1 - Learning Pattern Recognition (PREREQUISITE)</title>
+        <section>Complete Implementation</section>
+        <snippet>Story 5.1 provides foundation: BehavioralPattern engine (study times, duration, content preferences, forgetting curves), UserLearningProfile model, 4 analyzer classes (StudyTimeAnalyzer, SessionDurationAnalyzer, ContentPreferenceAnalyzer, ForgettingCurveAnalyzer), BehavioralPatternEngine orchestrator, 6 API endpoints (/patterns/analyze, /patterns, /insights, /learning-profile, /study-time-heatmap), privacy controls (export, delete, toggles). Story 5.6 CONSUMES this data via dashboards and visualizations.</snippet>
+      </artifact>
+
+      <artifact>
+        <path>docs/stories/story-5.2.md</path>
+        <title>Story 5.2 - Predictive Analytics for Struggles (PREREQUISITE)</title>
+        <section>Complete Implementation</section>
+        <snippet>Story 5.2 provides: StrugglePrediction model (7-14 day ahead predictions, >75% accuracy), InterventionRecommendation (6 intervention types), PredictionFeedback (user feedback loop), 7 API endpoints (/predictions/generate, /predictions, /interventions, /apply, /feedback, /model-performance, /struggle-reduction), 9 UI components (PredictionCard, InterventionPanel, AccuracyChart, ReductionMetrics). Story 5.6 integrates these predictions/interventions into dashboard and recommendations.</snippet>
+      </artifact>
+
+      <artifact>
+        <path>docs/CLAUDE.md</path>
+        <title>Analytics Implementation Standards</title>
+        <section>Lines 5-18: Quality Bar</section>
+        <snippet>CRITICAL: World-class excellence, research-grade quality standards. Technology stack: Python for all analytics features, subsystems, and components. Applies to: Behavioral analytics subsystems, ML models, data analysis pipelines, prediction engines, statistical analysis components. Story 5.6 dashboard must meet this standard for all analytics visualizations and statistical calculations.</snippet>
+      </artifact>
+    </docs>
+
+    <code>
+      <!-- Existing Story 5.1 Infrastructure -->
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/behavioral-pattern-engine.ts</path>
+        <kind>subsystem</kind>
+        <symbol>BehavioralPatternEngine</symbol>
+        <lines>573 total</lines>
+        <reason>Orchestrator class from Story 5.1. Provides: runFullAnalysis(), detectNewPatterns(), updateExistingPatterns(), generateInsights(). Story 5.6 dashboard calls these methods to display latest patterns and insights.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/study-time-analyzer.ts</path>
+        <kind>subsystem</kind>
+        <symbol>StudyTimeAnalyzer</symbol>
+        <lines>476 total</lines>
+        <reason>From Story 5.1. Provides optimal study time detection, performance peaks, time-of-day effectiveness. Dashboard uses for StudyTimeHeatmap component and time optimization recommendations.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/session-duration-analyzer.ts</path>
+        <kind>subsystem</kind>
+        <symbol>SessionDurationAnalyzer</symbol>
+        <lines>485 total</lines>
+        <reason>From Story 5.1. Provides session duration patterns, optimal duration calculation, fatigue detection. Dashboard uses for session length recommendations and duration optimization goals.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/content-preference-analyzer.ts</path>
+        <kind>subsystem</kind>
+        <symbol>ContentPreferenceAnalyzer</symbol>
+        <lines>392 total</lines>
+        <reason>From Story 5.1. Provides VARK learning style profiling (Visual/Auditory/Kinesthetic/Reading). Dashboard uses for LearningStyleProfile radar chart and content type recommendations.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/forgetting-curve-analyzer.ts</path>
+        <kind>subsystem</kind>
+        <symbol>ForgettingCurveAnalyzer</symbol>
+        <lines>476 total</lines>
+        <reason>From Story 5.1. Calculates personalized forgetting curve (R(t) = R₀ × e^(-kt)). Dashboard uses for ForgettingCurveVisualization component and retention strategy recommendations.</reason>
+      </artifact>
+
+      <!-- Existing Story 5.2 Infrastructure -->
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/struggle-detection-engine.ts</path>
+        <kind>subsystem</kind>
+        <symbol>StruggleDetectionEngine</symbol>
+        <lines>801 total</lines>
+        <reason>From Story 5.2. Provides: runPredictions(), detectUpcomingStruggles(), analyzeCurrentStruggles(). Dashboard integrates predictions into recommendations panel and insights display.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/intervention-engine.ts</path>
+        <kind>subsystem</kind>
+        <symbol>InterventionEngine</symbol>
+        <lines>482 total</lines>
+        <reason>From Story 5.2. Generates 6 intervention types (prerequisite review, difficulty progression, content format adapt, cognitive load reduce, spaced repetition boost, break schedule adjust). Dashboard displays as actionable recommendations.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/prediction-accuracy-tracker.ts</path>
+        <kind>subsystem</kind>
+        <symbol>PredictionAccuracyTracker</symbol>
+        <lines>1135 total</lines>
+        <reason>From Story 5.2. Tracks model performance (precision, recall, F1, calibration). Dashboard shows accuracy trends in model improvement section.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/struggle-reduction-analyzer.ts</path>
+        <kind>subsystem</kind>
+        <symbol>StruggleReductionAnalyzer</symbol>
+        <lines>894 total</lines>
+        <reason>From Story 5.2. Measures struggle rate reduction (baseline vs current). Dashboard shows success metrics and intervention effectiveness.</reason>
+      </artifact>
+
+      <!-- Existing Story 5.1 API Routes -->
+      <artifact>
+        <path>apps/web/src/app/api/analytics/patterns/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET /api/analytics/patterns</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.1. Returns BehavioralPattern[] with filters (patternType, minConfidence, limit). Dashboard Patterns tab fetches data from this endpoint.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/app/api/analytics/insights/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET /api/analytics/insights</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.1. Returns active BehavioralInsight[] (not acknowledged). Dashboard displays top 5 insights with apply/dismiss actions.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/app/api/analytics/learning-profile/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET /api/analytics/learning-profile</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.1. Returns UserLearningProfile (preferredStudyTimes, optimalSessionDuration, learningStyleProfile, forgettingCurve). Dashboard Progress tab shows profile summary.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/app/api/analytics/study-time-heatmap/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET /api/analytics/study-time-heatmap</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.1. Returns 7×24 grid of performance scores by day/hour. Dashboard uses for StudyTimeHeatmap visualization.</reason>
+      </artifact>
+
+      <!-- Existing Story 5.2 API Routes -->
+      <artifact>
+        <path>apps/web/src/app/api/analytics/predictions/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET /api/analytics/predictions</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.2. Returns StrugglePrediction[] with status/probability filters. Dashboard recommendations panel shows upcoming predictions.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/app/api/analytics/interventions/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET /api/analytics/interventions</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.2. Returns InterventionRecommendation[] for upcoming struggles. Dashboard displays as actionable recommendations with apply buttons.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/app/api/analytics/model-performance/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET /api/analytics/model-performance</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.2. Returns accuracy/precision/recall/F1 metrics. Dashboard model improvement section shows performance trends.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/app/api/analytics/struggle-reduction/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET /api/analytics/struggle-reduction</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.2. Returns baselineRate, currentRate, reductionPercentage. Dashboard success metrics show struggle reduction progress.</reason>
+      </artifact>
+
+      <!-- Existing Story 5.1 UI Components -->
+      <artifact>
+        <path>apps/web/src/components/analytics/learning-patterns/StudyTimeHeatmap.tsx</path>
+        <kind>component</kind>
+        <symbol>StudyTimeHeatmap</symbol>
+        <lines>225 total</lines>
+        <reason>From Story 5.1. 7×24 heatmap with OKLCH color gradient. Dashboard Patterns tab displays this visualization. Can be reused or enhanced for Story 5.6.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/components/analytics/learning-patterns/SessionPerformanceChart.tsx</path>
+        <kind>component</kind>
+        <symbol>SessionPerformanceChart</symbol>
+        <lines>202 total</lines>
+        <reason>From Story 5.1. Recharts scatter plot (duration vs performance). Dashboard Progress tab can reuse this chart for temporal trends.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/components/analytics/learning-patterns/LearningStyleProfile.tsx</path>
+        <kind>component</kind>
+        <symbol>LearningStyleProfile</symbol>
+        <lines>177 total</lines>
+        <reason>From Story 5.1. VARK radar chart (4 axes). Dashboard Learn tab uses for self-awareness tools showing learning style breakdown.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/components/analytics/learning-patterns/ForgettingCurveVisualization.tsx</path>
+        <kind>component</kind>
+        <symbol>ForgettingCurveVisualization</symbol>
+        <lines>243 total</lines>
+        <reason>From Story 5.1. Line chart comparing personal vs Ebbinghaus curve. Dashboard Learn tab displays for forgetting curve education.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/components/analytics/learning-patterns/BehavioralInsightsPanel.tsx</path>
+        <kind>component</kind>
+        <symbol>BehavioralInsightsPanel</symbol>
+        <lines>248 total</lines>
+        <reason>From Story 5.1. Displays top 5 insights with apply/dismiss. Dashboard can reuse or enhance for comprehensive recommendations panel.</reason>
+      </artifact>
+
+      <!-- Existing Story 5.2 UI Components -->
+      <artifact>
+        <path>apps/web/src/components/analytics/struggle-prediction-card.tsx</path>
+        <kind>component</kind>
+        <symbol>StrugglePredictionCard</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.2. Displays prediction probability (0-100%), confidence, feature breakdown. Dashboard recommendations section integrates predictions.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/components/analytics/intervention-recommendation-panel.tsx</path>
+        <kind>component</kind>
+        <symbol>InterventionRecommendationPanel</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.2. Lists interventions with apply/dismiss buttons. Dashboard integrates into actionable recommendations section.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/components/analytics/prediction-accuracy-chart.tsx</path>
+        <kind>component</kind>
+        <symbol>PredictionAccuracyChart</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.2. Recharts line chart showing accuracy over time. Dashboard Progress tab shows model improvement trends.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/src/components/analytics/struggle-reduction-metrics.tsx</path>
+        <kind>component</kind>
+        <symbol>StruggleReductionMetrics</symbol>
+        <lines>N/A</lines>
+        <reason>From Story 5.2. Displays baseline vs current struggle rate, reduction percentage. Dashboard success metrics section.</reason>
+      </artifact>
+
+      <!-- Database Schema (Existing Models) -->
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>BehavioralPattern</symbol>
+        <lines>Lines 503-521</lines>
+        <reason>From Story 5.1. 6 pattern types (OPTIMAL_STUDY_TIME, SESSION_DURATION_PREFERENCE, CONTENT_TYPE_PREFERENCE, PERFORMANCE_PEAK, ATTENTION_CYCLE, FORGETTING_CURVE). Dashboard Patterns tab visualizes all pattern types.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>BehavioralInsight</symbol>
+        <lines>Lines 532-551</lines>
+        <reason>From Story 5.1. 4 insight types (STUDY_TIME_OPTIMIZATION, SESSION_LENGTH_ADJUSTMENT, CONTENT_PREFERENCE, RETENTION_STRATEGY). Dashboard displays as actionable recommendations with confidence indicators.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>UserLearningProfile</symbol>
+        <lines>Lines 575-590</lines>
+        <reason>From Story 5.1. Single record per user storing: preferredStudyTimes, optimalSessionDuration, contentPreferences, learningStyleProfile (VARK), personalizedForgettingCurve. Dashboard Progress tab displays profile summary.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>StrugglePrediction</symbol>
+        <lines>Lines 630-654</lines>
+        <reason>From Story 5.2. Stores predictions with probability (0-1), confidence, status (PENDING/CONFIRMED/FALSE_POSITIVE), actualOutcome. Dashboard integrates predictions into recommendations.</reason>
+      </artifact>
+
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>InterventionRecommendation</symbol>
+        <lines>Lines 698-720</lines>
+        <reason>From Story 5.2. 6 intervention types with priority (1-10), status, effectiveness tracking. Dashboard shows as actionable recommendations with apply buttons.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <!-- All packages already installed from Stories 5.1/5.2 -->
+        <package name="@prisma/client" version="latest">Prisma ORM client</package>
+        <package name="zod" version="latest">Request validation</package>
+        <package name="recharts" version="latest">Charts for dashboard visualizations (already used in Stories 5.1/5.2)</package>
+        <package name="date-fns" version="latest">Date utilities for temporal analysis</package>
+        <package name="lucide-react" version="latest">Icons for dashboard UI</package>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="1">
+      <type>DATABASE_SCHEMA</type>
+      <description>Story 5.6 requires NEW database models: BehavioralGoal (goal tracking with progressHistory JSON), Recommendation (recommendation engine output), AppliedRecommendation (effectiveness tracking), InsightNotification (notification system), LearningArticle (learning science education content), ArticleRead (article engagement tracking). Use Prisma migrations. All models must follow existing patterns from Stories 5.1/5.2.</description>
+    </constraint>
+
+    <constraint id="2">
+      <type>ANALYTICS_QUALITY</type>
+      <description>CRITICAL (from CLAUDE.md): World-class excellence, research-grade quality standards. Python technology stack for analytics. All statistical calculations (Pearson correlation, p-values, confidence intervals, trend analysis) must be mathematically rigorous and validated. Dashboard visualizations must accurately represent data with proper error handling for edge cases (insufficient data, missing values).</description>
+    </constraint>
+
+    <constraint id="3">
+      <type>INTEGRATION_STORIES_5.1_5.2</type>
+      <description>Story 5.6 is the USER-FACING dashboard that surfaces insights from Stories 5.1 and 5.2. MUST consume existing APIs and data models. Do NOT duplicate logic from BehavioralPatternEngine, StudyTimeAnalyzer, SessionDurationAnalyzer, ContentPreferenceAnalyzer, ForgettingCurveAnalyzer, StruggleDetectionEngine, InterventionEngine. Dashboard orchestrates and visualizes existing subsystem outputs.</description>
+    </constraint>
+
+    <constraint id="4">
+      <type>TAB_NAVIGATION</type>
+      <description>Dashboard page (/analytics/behavioral-insights) uses TAB navigation with 4 tabs: Patterns (current patterns + evolution timeline), Progress (behavioral metrics + academic correlation + milestones), Goals (active goals + creation + archive), Learn (learning science education). Desktop: full dashboard. Tablet/mobile: tab-based navigation with responsive cards.</description>
+    </constraint>
+
+    <constraint id="5">
+      <type>RECOMMENDATIONS_ENGINE</type>
+      <description>RecommendationsEngine class generates personalized recommendations based on: BehavioralPattern confidence (30%), potential impact (40%), ease of implementation (20%), user readiness (10%). Prioritization algorithm returns top 5 recommendations. Template-based with personalized data insertion. Minimum confidence threshold: 0.7. Track effectiveness via AppliedRecommendation model with before/after metrics.</description>
+    </constraint>
+
+    <constraint id="6">
+      <type>GOAL_SYSTEM</type>
+      <description>BehavioralGoal model tracks: goalType (STUDY_TIME_CONSISTENCY, SESSION_DURATION, CONTENT_DIVERSIFICATION, RETENTION_IMPROVEMENT, CUSTOM), targetMetric, currentValue, targetValue, deadline, progressHistory (JSON array of {date, value} checkpoints). Automated progress tracking via daily job: check study sessions, update currentValue, trigger completion check. GoalManager class orchestrates creation, updates, suggestions.</description>
+    </constraint>
+
+    <constraint id="7">
+      <type>LEARNING_SCIENCE_EDUCATION</type>
+      <description>LearningArticle model stores 5 core articles: (1) Spaced Repetition Science (Ebbinghaus + personal curve), (2) Active Recall Benefits (retrieval practice), (3) VARK Learning Styles (with research nuance), (4) Cognitive Load Theory (intrinsic vs extrinsic), (5) Circadian Rhythms (optimal timing). Each article includes "Your Data" section with user's personal patterns (forgetting curve, VARK profile, optimal times). ArticleRead tracks engagement. Content recommendation based on user patterns (steep curve → spaced repetition article).</description>
+    </constraint>
+
+    <constraint id="8">
+      <type>PERFORMANCE_CORRELATION</type>
+      <description>AcademicPerformanceIntegration service calculates: (1) Behavioral score (composite: consistency 25% + quality 25% + completion 20% + insight application 15% + retention 15%), (2) Pearson correlation coefficient (behavioral score vs exam scores, mission completion vs mastery), (3) Statistical significance (p-value calculation), (4) Time-series data for visualization. Minimum 8 weeks data for reliable correlation. Display: r value, interpretation ("strong positive"), chart with dual-axis (behavioral + academic), key insights with causation warnings.</description>
+    </constraint>
+
+    <constraint id="9">
+      <type>NOTIFICATION_SYSTEM</type>
+      <description>InsightNotification model with types: NEW_PATTERN (confidence ≥0.7), NEW_RECOMMENDATION (high-impact), GOAL_PROGRESS (25%/50%/75% milestones), GOAL_ACHIEVED (completion), MILESTONE_UNLOCKED (achievements). Notification generation logic triggers on: pattern detection, recommendation availability, goal milestones. NotificationBell component in nav with badge count. In-app toasts for high-priority events (goal achieved >0.85 confidence recommendations). User setting to enable/disable.</description>
+    </constraint>
+
+    <constraint id="10">
+      <type>DATA_EXPORT_PRIVACY</type>
+      <description>Extend settings page with Behavioral Insights & Privacy section. Toggles: "Enable behavioral pattern detection" (default ON), "Show insights notifications" (default ON), "Share anonymized patterns for research" (default OFF, future). Export button downloads JSON with: UserLearningProfile, BehavioralPattern[], BehavioralInsight[], BehavioralGoal[], progress history. Delete button with confirmation ("DELETE MY INSIGHTS" typing required) cascades: BehavioralPattern, BehavioralInsight, BehavioralGoal, UserLearningProfile, AppliedRecommendation. Keep BehavioralEvent for potential reanalysis. FERPA-compliant: user owns all learning data.</description>
+    </constraint>
+
+    <constraint id="11">
+      <type>API_ARCHITECTURE</type>
+      <description>NEW API endpoints under /api/analytics/behavioral-insights/: GET /dashboard (comprehensive data), GET /patterns/evolution (time-series), GET /progress (metrics + trends), GET /recommendations (prioritized list), POST /recommendations/:id/apply (apply recommendation), POST /goals (create goal), PATCH /goals/:id/progress (update progress), GET /goals/:id (goal details), GET /correlation (performance correlation data), GET /learning-science/:articleId (article with personalized data). All endpoints: Next.js 15 async params, Zod validation, error handling, successResponse/errorResponse wrappers.</description>
+    </constraint>
+
+    <constraint id="12">
+      <type>AUTHENTICATION</type>
+      <description>Auth deferred for MVP (single user local development). Hardcoded userId = "kevy@americano.dev" for all API endpoints. Document auth integration points for future multi-user deployment (JWT, Clerk, Auth.js v5).</description>
+    </constraint>
+
+    <constraint id="13">
+      <type>DESIGN_SYSTEM</type>
+      <description>All dashboard components use glassmorphism (bg-white/80 backdrop-blur-md), OKLCH colors (NO gradients per CLAUDE.md/AGENTS.MD), shadcn/ui components (install on-demand via "npx shadcn@latest add"), Recharts for visualizations, responsive layouts (desktop: full dashboard, tablet: tabs prioritized, mobile: cards), min 44px touch targets, WCAG 2.1 AA compliance (ARIA labels, keyboard navigation, screen reader support, color-blind friendly palettes with patterns/textures).</description>
+    </constraint>
+
+    <constraint id="14">
+      <type>PERFORMANCE_OPTIMIZATION</type>
+      <description>Dashboard loading: lazy load tabs (only active tab content loaded), charts virtualization for >100 data points, data caching (1 hour TTL, invalidate on new pattern detection), API pagination (limit notifications to 20/page, limit recommendations to top 5), Next.js Image component for article thumbnails. Background jobs: weekly insights generation (Sunday 11 PM cron), daily goal progress tracking, pattern analysis scheduling.</description>
+    </constraint>
+
+    <constraint id="15">
+      <type>TESTING_STRATEGY</type>
+      <description>Manual testing (MVP approach): Generate 12+ weeks behavioral data with diverse patterns, trigger pattern analysis, test each tab (Patterns/Progress/Goals/Learn), create goal + track progress + complete, apply recommendation + verify settings updated, read articles + verify personalized sections, test on desktop/tablet/mobile, verify notifications, test data export/privacy controls. Edge cases: &lt;6 weeks data (show "insufficient data"), no patterns (low confidence), disabled behavioral analysis (show disabled state), no exam scores (correlation unavailable), all goals complete (show CTA).</description>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <!-- NEW API Endpoints for Story 5.6 -->
+    <interface>
+      <name>GET /api/analytics/behavioral-insights/dashboard</name>
+      <kind>REST API endpoint</kind>
+      <signature>GET /api/analytics/behavioral-insights/dashboard</signature>
+      <description>Returns comprehensive dashboard data for all 4 tabs. Response: { patterns: BehavioralPattern[] (top 5), recommendations: Recommendation[] (top 5), goals: BehavioralGoal[] (active with progress), metrics: { consistency, focus, retention, efficiency }, correlationData: { coefficient, pValue, interpretation, timeSeriesData[] } }. Cache for 1 hour, refresh on new pattern detection.</description>
+    </interface>
+
+    <interface>
+      <name>GET /api/analytics/behavioral-insights/patterns/evolution</name>
+      <kind>REST API endpoint</kind>
+      <signature>GET /api/analytics/behavioral-insights/patterns/evolution?weeks=12&amp;patternType=OPTIMAL_STUDY_TIME</signature>
+      <description>Returns time-series data for pattern evolution timeline. Query params: weeks (default 12), patternType (optional filter). Response: Array of { week, patterns[] } with confidence evolution. Used by PatternEvolutionTimeline component.</description>
+    </interface>
+
+    <interface>
+      <name>GET /api/analytics/behavioral-insights/progress</name>
+      <kind>REST API endpoint</kind>
+      <signature>GET /api/analytics/behavioral-insights/progress</signature>
+      <description>Returns progress metrics for Progress tab. Response: { behavioralScore: number (0-100 composite), trends: { consistency, focus, retention, efficiency } with deltas, milestones: Achievement[] (recently unlocked), appliedInsights: { insightId, appliedDate, impact: "improved/neutral/declined", metrics: {before, after} }[] }.</description>
+    </interface>
+
+    <interface>
+      <name>GET /api/analytics/behavioral-insights/recommendations</name>
+      <kind>REST API endpoint</kind>
+      <signature>GET /api/analytics/behavioral-insights/recommendations?includeApplied=false&amp;limit=5</signature>
+      <description>Returns prioritized recommendations from RecommendationsEngine. Query params: includeApplied (default false), limit (default 5). Response: Recommendation[] sorted by priority with confidence, estimated impact, actionable text. Integrates BehavioralInsight from Story 5.1 and InterventionRecommendation from Story 5.2.</description>
+    </interface>
+
+    <interface>
+      <name>POST /api/analytics/behavioral-insights/recommendations/:id/apply</name>
+      <kind>REST API endpoint</kind>
+      <signature>POST /api/analytics/behavioral-insights/recommendations/:id/apply</signature>
+      <description>Applies recommendation to user settings/preferences. Body: { applicationType: "auto" | "manual", settings?: {} }. Creates AppliedRecommendation record with baselineMetrics. If applicationType === "auto", updates user settings (preferredStudyTimes, optimalSessionDuration, mission preferences). Returns: { success: true, updatedSettings, trackingId }.</description>
+    </interface>
+
+    <interface>
+      <name>POST /api/analytics/behavioral-insights/goals</name>
+      <kind>REST API endpoint</kind>
+      <signature>POST /api/analytics/behavioral-insights/goals</signature>
+      <description>Creates new behavioral goal. Body: { goalType, targetMetric, targetValue, deadline, title?, description? }. Validates: targetValue > currentValue, deadline ≤ 90 days, goalType in enum. Returns: { goal: BehavioralGoal }. GoalManager.createGoal() orchestrates.</description>
+    </interface>
+
+    <interface>
+      <name>PATCH /api/analytics/behavioral-insights/goals/:id/progress</name>
+      <kind>REST API endpoint</kind>
+      <signature>PATCH /api/analytics/behavioral-insights/goals/:id/progress</signature>
+      <description>Updates goal progress (manual or automated). Body: { currentValue, note? }. Updates progressHistory JSON array with { date, value }. Checks completion: if currentValue >= targetValue, set status = "completed", completedAt timestamp, generate notification, award badge. Returns: { goal: BehavioralGoal, completed: boolean }.</description>
+    </interface>
+
+    <interface>
+      <name>GET /api/analytics/behavioral-insights/goals/:id</name>
+      <kind>REST API endpoint</kind>
+      <signature>GET /api/analytics/behavioral-insights/goals/:id</signature>
+      <description>Returns full goal details with progress history and related study sessions. Response: { goal: BehavioralGoal, progressHistory: {date, value, note}[], recentActivity: StudySession[] (sessions contributing to goal), projectedCompletion?: Date (trend-based ETA) }.</description>
+    </interface>
+
+    <interface>
+      <name>GET /api/analytics/behavioral-insights/correlation</name>
+      <kind>REST API endpoint</kind>
+      <signature>GET /api/analytics/behavioral-insights/correlation?weeks=12&amp;metric=behavioral</signature>
+      <description>Returns performance correlation analysis. Query params: weeks (default 12), metric ("behavioral" | "mission"). Response: { coefficient: number (Pearson r), pValue: number (statistical significance), interpretation: string ("strong positive" if r>0.7, "moderate" if 0.4-0.7, "weak" if &lt;0.4), timeSeriesData: {date, behavioralScore, academicScore}[], insights: string[] }. Minimum 8 weeks data required.</description>
+    </interface>
+
+    <interface>
+      <name>GET /api/analytics/behavioral-insights/learning-science/:articleId</name>
+      <kind>REST API endpoint</kind>
+      <signature>GET /api/analytics/behavioral-insights/learning-science/:articleId</signature>
+      <description>Returns article content with personalized "Your Data" sections. Fetches LearningArticle by slug (articleId). Injects user's patterns: forgetting curve for spaced-repetition article, VARK profile for learning-styles article, optimal times for circadian-rhythms article. Marks article as read (creates ArticleRead record). Response: { article: LearningArticle, personalizedSections: {}, readStatus: boolean }.</description>
+    </interface>
+
+    <!-- TypeScript Classes/Interfaces -->
+    <interface>
+      <name>RecommendationsEngine</name>
+      <kind>TypeScript class</kind>
+      <signature>class RecommendationsEngine</signature>
+      <description>Methods: generateRecommendations(userId): Recommendation[] (template-based from patterns/insights/interventions), prioritizeRecommendations(recommendations): Recommendation[] (scoring: confidence 30% + impact 40% + ease 20% + readiness 10%, sort DESC, limit top 5, diversify by type), trackRecommendationEffectiveness(userId, recommendationId, applied, outcome): void (AppliedRecommendation record, baseline metrics, 2-week monitoring, outcome calculation).</description>
+    </interface>
+
+    <interface>
+      <name>GoalManager</name>
+      <kind>TypeScript class</kind>
+      <signature>class GoalManager</signature>
+      <description>Methods: createGoal(userId, goalData): BehavioralGoal (validation, template-based or custom), updateGoalProgress(goalId, currentValue): void (update progressHistory, trigger completion check), checkGoalCompletion(goalId): boolean (currentValue >= targetValue, status update, notification generation, badge award), suggestGoals(userId): GoalSuggestion[] (based on BehavioralPattern: optimal time detected → "Study during peak hours 5/7 days", duration suboptimal → "Maintain 45-min sessions for 2 weeks", learning style skewed → "Try 30% kinesthetic content", limit 3 suggestions).</description>
+    </interface>
+
+    <interface>
+      <name>AcademicPerformanceIntegration</name>
+      <kind>TypeScript class</kind>
+      <signature>class AcademicPerformanceIntegration</signature>
+      <description>Methods: trackExamPerformance(userId, examId, score): void (record exam score), calculateBehavioralScore(userId, dateRange): number (composite: consistency 25% + quality 25% + completion 20% + insight application 15% + retention 15%, scale 0-100), correlatePerformance(userId, minWeeks = 8): CorrelationResult (Pearson r, p-value, confidence intervals, time-series data for charts, insights with causation warnings).</description>
+    </interface>
+
+    <!-- React Components -->
+    <interface>
+      <name>LearningPatternsGrid</name>
+      <kind>React component</kind>
+      <signature>&lt;LearningPatternsGrid patterns={BehavioralPattern[]} /&gt;</signature>
+      <description>Grid layout (2×2 desktop, 1×4 mobile). Each pattern card: icon + name, confidence indicator (0-100% badge with color-coding: &lt;60% yellow weak, 60-80% light green moderate, >80% dark green strong), key insight text (1-2 sentences), timestamp "Last detected: 3 days ago", "View details" link to PatternDetailModal. Empty state: "Complete 6 weeks of study to unlock patterns".</description>
+    </interface>
+
+    <interface>
+      <name>PatternEvolutionTimeline</name>
+      <kind>React component</kind>
+      <signature>&lt;PatternEvolutionTimeline evolutionData={{week, patterns}[]} /&gt;</signature>
+      <description>Horizontal timeline: weeks on x-axis, vertical lanes for pattern types, markers for detection events, tooltip on hover with pattern details, interactive click for full snapshot, comparison mode "Show changes since last month". Fetches data from /patterns/evolution API.</description>
+    </interface>
+
+    <interface>
+      <name>PerformanceCorrelationChart</name>
+      <kind>React component (Recharts)</kind>
+      <signature>&lt;PerformanceCorrelationChart correlationData={{coefficient, pValue, timeSeriesData}} /&gt;</signature>
+      <description>Dual-axis line chart: Y-left (behavioral score 0-100), Y-right (academic performance), X-axis (time: weeks/months). Display r value + interpretation ("r = 0.73 strong positive"). Interactive hover for exact values. Annotations for key events ("Started applying optimal study times"). Correlation coefficient with statistical significance (p-value). Causation warning: "Correlation does not imply causation".</description>
+    </interface>
+
+    <interface>
+      <name>BehavioralGoalsSection</name>
+      <kind>React component</kind>
+      <signature>&lt;BehavioralGoalsSection goals={BehavioralGoal[]} onCreateGoal={} /&gt;</signature>
+      <description>Active goals grid (3 cols desktop, 1 mobile). Each card: title + target, progress bar with %, current vs target values, deadline countdown "5 days remaining", status indicator (on track green / at risk yellow / behind red based on trend). "Create New Goal" button opens GoalCreationModal. Empty state: "No active goals. Create your first behavioral goal!"</description>
+    </interface>
+
+    <interface>
+      <name>RecommendationsPanel</name>
+      <kind>React component</kind>
+      <signature>&lt;RecommendationsPanel recommendations={Recommendation[]} onApply={} /&gt;</signature>
+      <description>Card-based layout: top 5 recommendations. Each card: icon (clock for time, ruler for duration), title, description, confidence badge (High 85%+), estimated impact "+12% retention improvement", actions: "Apply Now" button (opens modal for auto/manual/reminder/goal options), "Learn More" link, "Dismiss" icon. Empty state: "Complete more study sessions to unlock recommendations".</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Manual testing (MVP approach) per constraint #15. Generate 12+ weeks behavioral data with diverse patterns. Test each dashboard tab: Patterns (heatmaps, evolution timeline), Progress (metrics, correlation charts, milestones), Goals (creation, progress tracking, completion), Learn (articles, personalized data). Test recommendation application flow (apply → verify settings updated → track effectiveness → before/after comparison). Test goal system end-to-end (create from template → automated progress → completion notification + badge). Test learning science articles (read → personalized sections → resource links). Test notifications (new pattern → new recommendation → goal milestones → toast display → badge count). Test data export/privacy (export JSON completeness → toggle OFF → delete all → cascading deletion → re-enable). Test integration with mission generation (Story 2.4), mission analytics (Story 2.6), exam data correlation. Test on desktop/tablet/mobile devices (responsive layouts, touch targets). Edge cases: &lt;6 weeks data, no detected patterns, disabled analysis, no exam scores, all goals complete.</standards>
+
+    <locations>
+      apps/web/__tests__/ (unit tests - deferred to production)
+      apps/web/src/app/analytics/behavioral-insights/ (manual testing)
+    </locations>
+
+    <ideas>
+      <!-- Test Ideas Mapped to Acceptance Criteria -->
+      <idea ac="1">Test dashboard displays with 12+ weeks data: Verify all 4 tabs load (Patterns/Progress/Goals/Learn), check heatmaps render correctly, validate pattern evolution timeline shows historical changes, test responsive layouts (desktop full dashboard, tablet tabs, mobile cards)</idea>
+
+      <idea ac="2">Test self-awareness tools: Verify VARK radar chart displays with correct percentages, check forgetting curve overlay (personal vs Ebbinghaus), validate study time optimization guide with heatmap, test cognitive load insights with load management tips, verify metacognition prompts and journaling interface</idea>
+
+      <idea ac="3">Test historical comparison: Verify ComparisonSlider shows metrics from 2/4/8 weeks ago with delta indicators (+15% improvement green up arrow), check before/after chart overlays, validate key changes highlighted ("You've increased morning study by 40%"), test pattern evolution timeline shows confidence changes over time</idea>
+
+      <idea ac="4">Test recommendations: Verify RecommendationsEngine generates top 5 prioritized recommendations, check recommendation types (time optimization, duration adjustment, content diversification, retention strategy, consistency building, experiment suggestions), validate confidence badges and estimated impact display, test "Apply Now" functionality (auto/manual/reminder/goal options), verify settings update on apply, track effectiveness before/after metrics</idea>
+
+      <idea ac="5">Test progress tracking: Verify BehavioralMetricsCard displays consistency/focus/retention/efficiency with sparklines, check PerformanceCorrelationChart shows dual-axis behavioral + academic scores, validate MissionImpactAnalysis shows completion vs mastery correlation, test InsightApplicationTracker lists applied insights with before/after impact, verify MilestoneAchievements badge grid with progress to next badge</idea>
+
+      <idea ac="6">Test learning science education: Verify 5 core articles load (Spaced Repetition, Active Recall, VARK, Cognitive Load, Circadian Rhythms), check "Your Data" sections with personalized patterns (forgetting curve, VARK profile, optimal times), validate external resource links work, test article read tracking (ArticleRead model), verify content recommendation based on user patterns (steep curve → spaced repetition article)</idea>
+
+      <idea ac="7">Test goal setting: Verify GoalCreationModal with template goals (study consistency, session duration, content diversification) and custom builder, check goal creation with target/deadline validation (max 90 days), test automated progress tracking (daily job updates currentValue from study sessions), validate goal completion flow (notification + badge award + celebration), verify CompletedGoalsArchive with success metrics and "Set Similar Goal" action</idea>
+
+      <idea ac="8">Test academic performance correlation: Verify AcademicPerformanceIntegration calculates behavioral score (composite formula correct), check Pearson correlation coefficient calculation with p-value, validate statistical significance display, test PerformanceCorrelationChart with dual-axis and annotations, verify key insights with causation warnings, validate MissionMasteryCorrelation scatter plot with trend line</idea>
+
+      <idea ac="all">Test notification system: Verify InsightNotification creation on new pattern (confidence ≥0.7), new recommendation, goal progress (25%/50%/75%), goal achieved, milestone unlocked. Check NotificationBell badge count updates. Test in-app toast for high-priority events (goal achieved, >0.85 confidence recommendations). Validate notification history page with filters (All/Patterns/Recommendations/Goals) and pagination (20/page). Test user setting to enable/disable toast notifications.</idea>
+
+      <idea ac="all">Test data export and privacy: Verify export button downloads JSON with UserLearningProfile, BehavioralPattern[], BehavioralInsight[], BehavioralGoal[], progressHistory. Check JSON completeness and FERPA compliance. Test "Delete all behavioral insights" with two-step confirmation (type "DELETE MY INSIGHTS"). Verify cascading deletion: BehavioralPattern, BehavioralInsight, BehavioralGoal, UserLearningProfile, AppliedRecommendation (keep BehavioralEvent). Test behavioral analysis toggle OFF stops pattern updates. Test re-enable after deletion triggers reanalysis.</idea>
+
+      <idea>Edge case - insufficient data: Test dashboard with &lt;6 weeks data shows "insufficient data" messaging, verify pattern detection skipped, check empty states with progress bars ("Complete 6 more weeks to unlock patterns", "12/20 sessions for learning style profiling")</idea>
+
+      <idea>Edge case - no patterns: Test user with low confidence scores (&lt;0.6), verify no patterns saved, check dashboard shows "No patterns detected yet, keep studying" message with data quality score display</idea>
+
+      <idea>Edge case - disabled analysis: Test user with behavioralAnalysisEnabled = false, verify dashboard shows disabled state with explanation, check pattern analysis skipped, validate re-enable option prominent</idea>
+
+      <idea>Edge case - no exam scores: Test correlation analysis with no exam data, verify message "Add exam scores to see performance correlation", check charts gracefully handle missing data (show behavioral score only)</idea>
+
+      <idea>Edge case - all goals complete: Test user with no active goals, verify CompletedGoalsArchive displays, check "Create new goal" CTA prominent, validate goal suggestions still generated</idea>
+
+      <idea>Integration testing: Verify insights integrate with mission generation (Story 2.4: MissionGenerator uses recommendations), test correlation analysis with real exam data (Story 2.3: Exam model), validate pattern evolution reflects actual behavior changes (Story 5.1: BehavioralPatternEngine), test automated weekly insights generation (cron job Sunday 11 PM), verify struggle predictions integrated into recommendations (Story 5.2: InterventionRecommendation)</idea>
+    </ideas>
+  </tests>
+</story-context>

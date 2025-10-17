@@ -1,6 +1,6 @@
 # Story 5.5: Adaptive Personalization Engine
 
-Status: Draft
+Status: ContextReadyDraft
 
 ## Story
 
@@ -819,7 +819,7 @@ return insights
 
 ### Context Reference
 
-<!-- Path(s) to story context XML will be added here by context workflow -->
+- `docs/stories/story-context-5.5.xml` (Generated: 2025-10-16)
 
 ### Agent Model Used
 

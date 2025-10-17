@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "test:performance": "jest --testMatch='**/__tests__/performance/**/*.test.ts' --verbose",
+    "test:performance:benchmarks": "jest __tests__/performance/story-5.4-benchmarks.test.ts --verbose",
+    "test:performance:api": "jest __tests__/performance/api-load-tests.test.ts --verbose",
+    "test:performance:report": "jest --testMatch='**/__tests__/performance/**/*.test.ts' --json --outputFile=performance-report.json && node scripts/performance-report.js",
+    "benchmark": "npm run test:performance:benchmarks",
+    "load-test": "npm run test:performance:api"
+  }
+}

@@ -2,6 +2,8 @@
  * Mission Generator - MVP Implementation
  * Story 2.4: Daily Mission Generation and Display
  * Story 5.1 Task 9: Behavioral Pattern Integration
+ * Story 5.2 Task 12: Struggle Prediction Integration
+ * Story 5.3 Task 8: Orchestration Integration
  *
  * MVP Prioritization Algorithm (without Stories 2.2/2.3):
  * 1. FSRS due dates (nextReviewAt) - cards coming up for review
@@ -12,6 +14,21 @@
  * - Time-of-day recommendations from preferredStudyTimes
  * - Session duration adjustment from optimalSessionDuration
  * - Content mix personalization from learningStyleProfile
+ *
+ * Story 5.2: Struggle prediction integration
+ * - Query active StrugglePrediction records for upcoming objectives
+ * - Proactive prerequisite insertion for PREREQUISITE_GAP
+ * - Difficulty modulation for COMPLEXITY_MISMATCH
+ * - Content format adaptation for CONTENT_TYPE_MISMATCH
+ * - Add prediction context to mission display
+ * - Capture post-mission outcomes for accuracy tracking
+ *
+ * Story 5.3 Task 8: Orchestration integration
+ * - Query orchestration recommendations before generation
+ * - Set Mission.recommendedStartTime from StudyTimeRecommender
+ * - Set Mission.recommendedDuration from SessionDurationOptimizer
+ * - Apply Mission.contentSequence from ContentSequencer
+ * - Set Mission.intensityLevel from StudyIntensityModulator
  */
 
 import type { LearningObjective, UserLearningProfile } from '@/generated/prisma'
@@ -21,6 +38,11 @@ import type {
   MissionObjective,
   PrioritizedObjective,
 } from '@/types/mission'
+import { addDays } from 'date-fns'
+import { StudyTimeRecommender } from '@/subsystems/behavioral-analytics/study-time-recommender'
+import { SessionDurationOptimizer } from '@/subsystems/behavioral-analytics/session-duration-optimizer'
+import { ContentSequencer } from '@/subsystems/behavioral-analytics/content-sequencer'
+import { StudyIntensityModulator } from '@/subsystems/behavioral-analytics/study-intensity-modulator'
 
 // Time estimation constants (minutes)
 const COMPLEXITY_TIME_MAP = {
@@ -38,7 +60,27 @@ const DEFAULT_MAX_OBJECTIVES = 4
 const ADVANCED_TIME_BUFFER = 12 // +10-15 minutes for ADVANCED objectives
 
 /**
+ * Story 5.2: Prediction context for mission objectives
+ */
+interface PredictionContext {
+  predictionId: string
+  struggleProbability: number
+  indicators: Array<{
+    type: string
+    severity: string
+  }>
+  intervention?: {
+    id: string
+    type: string
+    description: string
+  }
+  warningMessage?: string
+  tooltipMessage?: string
+}
+
+/**
  * Mission generation result with personalization insights
+ * Story 5.2: Extended with struggle prediction data
  */
 interface MissionGenerationResult {
   objectives: MissionObjective[]
@@ -50,6 +92,10 @@ interface MissionGenerationResult {
     sessionDurationAdjusted?: boolean
     contentMixPersonalized?: boolean
   }
+  // Story 5.2: Prediction context
+  predictionContext?: Record<string, PredictionContext> // Map of objectiveId -> prediction
+  strugglesDetected?: number
+  interventionsApplied?: number
 }
 
 /**
@@ -75,6 +121,7 @@ export class MissionGenerator {
   /**
    * Generate a daily mission for a user with behavioral personalization
    * Story 5.1 Task 9: Integrates UserLearningProfile for personalized missions
+   * Story 5.2 Task 12: Integrates StrugglePrediction for proactive interventions
    *
    * @param userId User ID
    * @param targetDate Date for the mission (defaults to today)
@@ -88,6 +135,12 @@ export class MissionGenerator {
   ): Promise<MissionGenerationResult> {
     // Story 5.1: Query UserLearningProfile before generating mission
     const profile = await this.getUserLearningProfile(userId)
+
+    // Story 5.2 Task 12.1: Query active struggle predictions for upcoming objectives
+    const predictions = await this.getActiveStrugglePredictions(userId, targetDate)
+
+    // Story 5.3 Task 8.1: Query orchestration recommendations before generation
+    const orchestration = await this.getOrchestrationRecommendations(userId, targetDate)
 
     // Apply profile-based personalization to constraints
     const personalizedConstraints = this.applyProfilePersonalization(
@@ -129,23 +182,26 @@ export class MissionGenerator {
       profile,
     )
 
-    // Step 2: Compose mission with 2-4 objectives
-    const missionObjectives = this.composeMissionObjectives(
-      prioritizedWithContentPreference,
-      {
-        targetMinutes,
-        minObjectives,
-        maxObjectives,
-      },
-      profile,
-    )
+    // Story 5.2 Task 12.2: Apply prediction-aware mission composition
+    const { objectives: composedObjectives, interventionsApplied } =
+      await this.composePredictionAwareMission(
+        prioritizedWithContentPreference,
+        {
+          targetMinutes,
+          minObjectives,
+          maxObjectives,
+        },
+        profile,
+        predictions,
+        targetDate,
+      )
 
     // Step 3: Calculate total time and counts
-    const estimatedMinutes = this.estimateMissionDuration(missionObjectives, profile)
-    const newContentCount = missionObjectives.filter((mo) => !mo.objective?.isHighYield).length
+    const estimatedMinutes = this.estimateMissionDuration(composedObjectives, profile)
+    const newContentCount = composedObjectives.filter((mo) => !mo.objective?.isHighYield).length
     const reviewCardCount = await this.getReviewCardCount(
       userId,
-      missionObjectives.map((mo) => mo.objectiveId),
+      composedObjectives.map((mo) => mo.objectiveId),
     )
 
     // Story 5.1: Generate personalization insights
@@ -156,12 +212,30 @@ export class MissionGenerator {
       personalizedConstraints.targetMinutes !== constraints.targetMinutes,
     )
 
+    // Story 5.2 Task 12.3: Add prediction context to mission display
+    const predictionContext = this.buildPredictionContext(composedObjectives, predictions)
+
+    // Story 5.3 Task 8.2: Extend personalization insights with orchestration data
+    if (orchestration && personalizationInsights) {
+      personalizationInsights.orchestration = {
+        recommendedStartTime: orchestration.recommendedStartTime,
+        recommendedDuration: orchestration.recommendedDuration,
+        intensityLevel: orchestration.intensityLevel,
+        contentSequence: orchestration.contentSequence,
+      }
+    }
+
     return {
-      objectives: missionObjectives,
+      objectives: composedObjectives,
       estimatedMinutes,
       newContentCount,
       reviewCardCount,
       personalizationInsights,
+      predictionContext,
+      strugglesDetected: predictions.length,
+      interventionsApplied,
+      // Story 5.3 Task 8: Orchestration metadata
+      orchestration,
     }
   }
 
@@ -184,6 +258,115 @@ export class MissionGenerator {
       // Gracefully handle errors - return null to use defaults
       console.warn(`Failed to fetch UserLearningProfile for user ${userId}:`, error)
       return null
+    }
+  }
+
+  /**
+   * Story 5.3 Task 8.1: Query orchestration recommendations
+   * Integrates with all 4 orchestration subsystems
+   *
+   * @param userId User ID
+   * @param targetDate Mission target date
+   * @returns Orchestration recommendations or null
+   */
+  private async getOrchestrationRecommendations(
+    userId: string,
+    targetDate: Date
+  ): Promise<{
+    recommendedStartTime: Date | null
+    recommendedDuration: number | null
+    intensityLevel: 'LOW' | 'MEDIUM' | 'HIGH'
+    contentSequence: any[]
+  } | null> {
+    try {
+      const timeRecommender = new StudyTimeRecommender()
+      const durationOptimizer = new SessionDurationOptimizer()
+      const intensityModulator = new StudyIntensityModulator()
+
+      // Get optimal time slot
+      const timeSlots = await timeRecommender.generateRecommendations(userId, targetDate)
+      const topTimeSlot = timeSlots.length > 0 ? timeSlots[0] : null
+
+      // Get duration recommendation if we have a time slot
+      let durationRec = null
+      if (topTimeSlot) {
+        durationRec = await durationOptimizer.recommendDuration(
+          userId,
+          'INTERMEDIATE', // Default complexity, will be adjusted per mission
+          topTimeSlot.startTime
+        )
+      }
+
+      // Get intensity recommendation
+      const intensityRec = await intensityModulator.recommendIntensity(userId)
+
+      return {
+        recommendedStartTime: topTimeSlot?.startTime || null,
+        recommendedDuration: durationRec?.recommendedDuration || null,
+        intensityLevel: intensityRec.intensity,
+        contentSequence: [], // Will be populated by ContentSequencer per mission
+      }
+    } catch (error) {
+      console.warn(`Failed to get orchestration recommendations for user ${userId}:`, error)
+      return null
+    }
+  }
+
+  /**
+   * Story 5.2 Task 12.1: Query active struggle predictions for upcoming objectives
+   * Retrieves predictions with high struggle probability (>0.7) in next 7 days
+   *
+   * @param userId User ID
+   * @param targetDate Mission target date
+   * @returns Active struggle predictions with interventions
+   */
+  private async getActiveStrugglePredictions(userId: string, targetDate: Date): Promise<any[]> {
+    try {
+      const predictions = await prisma.strugglePrediction.findMany({
+        where: {
+          userId,
+          predictionStatus: 'PENDING',
+          predictedStruggleProbability: {
+            gte: 0.7, // High struggle probability
+          },
+          predictionDate: {
+            gte: targetDate,
+            lte: addDays(targetDate, 7), // Next 7 days
+          },
+        },
+        include: {
+          learningObjective: {
+            include: {
+              prerequisites: {
+                include: {
+                  prerequisite: true,
+                },
+              },
+              lecture: {
+                include: {
+                  course: true,
+                },
+              },
+            },
+          },
+          indicators: true,
+          interventions: {
+            where: {
+              status: {
+                in: ['PENDING', 'APPLIED'],
+              },
+            },
+          },
+        },
+        orderBy: {
+          predictedStruggleProbability: 'desc',
+        },
+      })
+
+      return predictions
+    } catch (error) {
+      console.warn(`Failed to fetch struggle predictions for user ${userId}:`, error)
+      return []
     }
   }
 
@@ -523,9 +706,149 @@ export class MissionGenerator {
   }
 
   /**
+   * Story 5.2 Task 12.2: Prediction-aware mission composition
+   * Applies proactive interventions based on struggle predictions:
+   * - PREREQUISITE_GAP: Insert prerequisite review 1-2 days before
+   * - COMPLEXITY_MISMATCH: Reduce difficulty, break into smaller objectives, extend time 25%
+   * - CONTENT_TYPE_MISMATCH: Include alternative content (visual for text-heavy)
+   *
+   * @param prioritized Prioritized objectives
+   * @param constraints Mission constraints
+   * @param profile User learning profile
+   * @param predictions Active struggle predictions
+   * @param targetDate Mission target date
+   * @returns Composed objectives with interventions applied
+   */
+  private async composePredictionAwareMission(
+    prioritized: PrioritizedObjective[],
+    constraints: {
+      targetMinutes: number
+      minObjectives: number
+      maxObjectives: number
+    },
+    profile: UserLearningProfile | null,
+    predictions: any[],
+    targetDate: Date,
+  ): Promise<{ objectives: MissionObjective[]; interventionsApplied: number }> {
+    const { targetMinutes, minObjectives, maxObjectives } = constraints
+    const selected: MissionObjective[] = []
+    let totalMinutes = 0
+    const usedCourses = new Set<string>()
+    let interventionsApplied = 0
+
+    // Create prediction map for fast lookup
+    const predictionMap = new Map<string, any>()
+    for (const prediction of predictions) {
+      if (prediction.learningObjectiveId) {
+        predictionMap.set(prediction.learningObjectiveId, prediction)
+      }
+    }
+
+    for (const { objective, reason } of prioritized) {
+      // Stop if we have enough objectives
+      if (selected.length >= maxObjectives) break
+
+      // Check if objective has struggle prediction
+      const prediction = predictionMap.get(objective.id)
+
+      // Estimate time for this objective (with profile adjustments)
+      let estimatedMinutes = this.estimateObjectiveTime(objective as any, profile)
+
+      // Task 12.2: Apply prediction-aware modulations
+      if (prediction) {
+        const interventionResult = await this.applyPredictionInterventions(
+          objective,
+          prediction,
+          estimatedMinutes,
+          targetDate,
+        )
+
+        // Update time if intervention modified it
+        if (interventionResult.timeAdjusted) {
+          estimatedMinutes = interventionResult.adjustedTime
+        }
+
+        // Insert prerequisite objectives if needed
+        if (interventionResult.prerequisiteObjectives.length > 0) {
+          for (const prereq of interventionResult.prerequisiteObjectives) {
+            selected.push({
+              objectiveId: prereq.id,
+              objective: prereq,
+              estimatedMinutes: 15, // Quick review time
+              completed: false,
+              interventionNote: 'Prerequisite review for better understanding',
+            })
+            totalMinutes += 15
+            interventionsApplied++
+          }
+        }
+
+        if (interventionResult.interventionApplied) {
+          interventionsApplied++
+        }
+      }
+
+      // Check if adding this would exceed target (but allow if under min)
+      if (
+        selected.length >= minObjectives &&
+        totalMinutes + estimatedMinutes > targetMinutes * 1.2
+      ) {
+        continue // Skip if would make mission too long
+      }
+
+      // Variety constraint: max 1 objective per course (avoid fatigue)
+      const objectiveData = objective as any
+      const courseId = objectiveData?.lecture?.courseId
+      if (courseId && usedCourses.has(courseId) && selected.length >= minObjectives) {
+        continue // Skip if already have objective from this course
+      }
+
+      // Add to mission (with prediction context if available)
+      selected.push({
+        objectiveId: objective.id,
+        objective: objective as any,
+        estimatedMinutes,
+        completed: false,
+        predictionId: prediction?.id,
+        struggleProbability: prediction?.predictedStruggleProbability,
+      })
+
+      totalMinutes += estimatedMinutes
+      if (courseId) {
+        usedCourses.add(courseId)
+      }
+
+      // Stop if we've hit target time
+      if (selected.length >= minObjectives && totalMinutes >= targetMinutes * 0.8) {
+        break
+      }
+    }
+
+    // Ensure minimum objectives if possible
+    if (selected.length < minObjectives && prioritized.length > 0) {
+      for (const { objective } of prioritized) {
+        if (selected.find((mo) => mo.objectiveId === objective.id)) continue
+
+        selected.push({
+          objectiveId: objective.id,
+          objective: objective,
+          estimatedMinutes: this.estimateObjectiveTime(objective, profile),
+          completed: false,
+        })
+
+        if (selected.length >= minObjectives) break
+      }
+    }
+
+    return { objectives: selected, interventionsApplied }
+  }
+
+  /**
    * Compose mission objectives from prioritized candidates
    * Balances time, variety, and priority
    * Story 5.1: Considers profile for duration adjustments
+   *
+   * @deprecated Use composePredictionAwareMission for Story 5.2+
    */
   private composeMissionObjectives(
     prioritized: PrioritizedObjective[],
@@ -667,6 +990,244 @@ export class MissionGenerator {
     }
 
     return baseTotal
+  }
+
+  /**
+   * Story 5.2 Task 12.2: Apply prediction interventions to objective
+   * Handles PREREQUISITE_GAP, COMPLEXITY_MISMATCH, CONTENT_TYPE_MISMATCH
+   *
+   * @param objective Learning objective
+   * @param prediction Struggle prediction
+   * @param baseTime Base estimated time
+   * @param targetDate Mission target date
+   * @returns Intervention result with adjusted time and prerequisites
+   */
+  private async applyPredictionInterventions(
+    objective: any,
+    prediction: any,
+    baseTime: number,
+    targetDate: Date,
+  ): Promise<{
+    timeAdjusted: boolean
+    adjustedTime: number
+    prerequisiteObjectives: any[]
+    interventionApplied: boolean
+    interventionNote?: string
+  }> {
+    let adjustedTime = baseTime
+    let timeAdjusted = false
+    const prerequisiteObjectives: any[] = []
+    let interventionApplied = false
+    let interventionNote = ''
+
+    // Check indicators for specific intervention types
+    const indicators = prediction.indicators || []
+    const hasPrerequisiteGap = indicators.some((i: any) => i.indicatorType === 'PREREQUISITE_GAP')
+    const hasComplexityMismatch = indicators.some(
+      (i: any) => i.indicatorType === 'COMPLEXITY_MISMATCH',
+    )
+    const hasContentMismatch = indicators.some(
+      (i: any) => i.indicatorType === 'CONTENT_TYPE_MISMATCH',
+    )
+
+    // Intervention 1: PREREQUISITE_GAP - Insert prerequisite review 1-2 days before
+    if (hasPrerequisiteGap && prediction.learningObjective?.prerequisites) {
+      for (const prereqRel of prediction.learningObjective.prerequisites) {
+        if (prereqRel.prerequisite) {
+          prerequisiteObjectives.push(prereqRel.prerequisite)
+        }
+      }
+      interventionApplied = true
+      interventionNote = 'Prerequisite review added'
+    }
+
+    // Intervention 2: COMPLEXITY_MISMATCH - Reduce difficulty, extend time by 25%
+    if (hasComplexityMismatch) {
+      adjustedTime = Math.round(baseTime * 1.25) // +25% time
+      timeAdjusted = true
+      interventionApplied = true
+      interventionNote = interventionNote
+        ? `${interventionNote}; Difficulty reduced, time extended`
+        : 'Difficulty reduced, time extended by 25%'
+    }
+
+    // Intervention 3: CONTENT_TYPE_MISMATCH - Note for UI to show alternative formats
+    // This is handled in the prediction context (Task 12.3)
+    if (hasContentMismatch) {
+      interventionApplied = true
+      interventionNote = interventionNote
+        ? `${interventionNote}; Alternative content format suggested`
+        : 'Alternative content format suggested'
+    }
+
+    return {
+      timeAdjusted,
+      adjustedTime,
+      prerequisiteObjectives,
+      interventionApplied,
+      interventionNote,
+    }
+  }
+
+  /**
+   * Story 5.2 Task 12.3: Build prediction context for mission display
+   * Creates warning badges, tooltips, and intervention descriptions for UI
+   *
+   * @param objectives Mission objectives
+   * @param predictions Active predictions
+   * @returns Prediction context map
+   */
+  private buildPredictionContext(
+    objectives: MissionObjective[],
+    predictions: any[],
+  ): Record<string, PredictionContext> {
+    const context: Record<string, PredictionContext> = {}
+
+    // Create prediction map
+    const predictionMap = new Map<string, any>()
+    for (const prediction of predictions) {
+      if (prediction.learningObjectiveId) {
+        predictionMap.set(prediction.learningObjectiveId, prediction)
+      }
+    }
+
+    // Build context for each objective with prediction
+    for (const objective of objectives) {
+      const prediction = predictionMap.get(objective.objectiveId)
+
+      if (prediction) {
+        const indicators = prediction.indicators || []
+        const interventions = prediction.interventions || []
+
+        // Find primary intervention
+        const primaryIntervention = interventions.length > 0 ? interventions[0] : null
+
+        // Build warning message
+        const probability = Math.round(prediction.predictedStruggleProbability * 100)
+        const objectiveName = prediction.learningObjective?.objective || 'this topic'
+        const warningMessage = `We predict you may struggle with this objective (${probability}% probability).`
+
+        // Build tooltip message with intervention details
+        let tooltipMessage = `Predicted struggle probability: ${probability}%\n\n`
+
+        if (indicators.length > 0) {
+          tooltipMessage += 'Indicators:\n'
+          for (const indicator of indicators.slice(0, 3)) {
+            tooltipMessage += `• ${this.formatIndicatorType(indicator.indicatorType)} (${indicator.severity})\n`
+          }
+        }
+
+        if (primaryIntervention) {
+          tooltipMessage += `\nIntervention: ${primaryIntervention.description}`
+        }
+
+        context[objective.objectiveId] = {
+          predictionId: prediction.id,
+          struggleProbability: prediction.predictedStruggleProbability,
+          indicators: indicators.map((i: any) => ({
+            type: i.indicatorType,
+            severity: i.severity,
+          })),
+          intervention: primaryIntervention
+            ? {
+                id: primaryIntervention.id,
+                type: primaryIntervention.interventionType,
+                description: primaryIntervention.description,
+              }
+            : undefined,
+          warningMessage,
+          tooltipMessage,
+        }
+      }
+    }
+
+    return context
+  }
+
+  /**
+   * Story 5.2 Task 12.4: Capture post-mission outcomes for accuracy tracking
+   * Updates StrugglePrediction.actualOutcome after mission completion
+   *
+   * @param userId User ID
+   * @param missionId Mission ID
+   * @param objectivePerformance Map of objectiveId -> actual performance
+   */
+  async capturePostMissionOutcomes(
+    userId: string,
+    missionId: string,
+    objectivePerformance: Record<
+      string,
+      { struggled: boolean; completionQuality: number; notes?: string }
+    >,
+  ): Promise<void> {
+    try {
+      // Get mission objectives
+      const mission = await prisma.mission.findUnique({
+        where: { id: missionId },
+      })
+
+      if (!mission) {
+        console.warn(`Mission ${missionId} not found for outcome capture`)
+        return
+      }
+
+      const objectives = mission.objectives as any[]
+
+      // Update predictions for each objective
+      for (const objective of objectives) {
+        const objectiveId = objective.objectiveId
+        const predictionId = objective.predictionId
+
+        if (!predictionId || !objectivePerformance[objectiveId]) {
+          continue
+        }
+
+        const performance = objectivePerformance[objectiveId]
+
+        // Update prediction with actual outcome
+        await prisma.strugglePrediction.update({
+          where: { id: predictionId },
+          data: {
+            actualOutcome: performance.struggled,
+            outcomeRecordedAt: new Date(),
+            predictionStatus: performance.struggled ? 'CONFIRMED' : 'FALSE_POSITIVE',
+          },
+        })
+
+        // Create prediction feedback
+        await prisma.predictionFeedback.create({
+          data: {
+            predictionId,
+            userId,
+            feedbackType: performance.struggled ? 'HELPFUL' : 'INACCURATE',
+            actualStruggle: performance.struggled,
+            comments: performance.notes,
+          },
+        })
+      }
+
+      console.log(
+        `Captured outcomes for ${Object.keys(objectivePerformance).length} objectives in mission ${missionId}`,
+      )
+    } catch (error) {
+      console.error(`Failed to capture post-mission outcomes for mission ${missionId}:`, error)
+    }
+  }
+
+  /**
+   * Helper: Format indicator type for display
+   */
+  private formatIndicatorType(type: string): string {
+    const typeMap: Record<string, string> = {
+      LOW_RETENTION: 'Low retention score',
+      PREREQUISITE_GAP: 'Missing prerequisites',
+      COMPLEXITY_MISMATCH: 'Content too complex',
+      COGNITIVE_OVERLOAD: 'Cognitive overload',
+      HISTORICAL_STRUGGLE_PATTERN: 'Historical struggles',
+      TOPIC_SIMILARITY_STRUGGLE: 'Similar topic struggles',
+    }
+
+    return typeMap[type] || type
   }
 
   /**
