@@ -5,12 +5,12 @@
 **Type:** web
 **Field:** greenfield
 **Created:** 2025-10-14
-**Last Updated:** 2025-10-16 (Epic 2 Complete - Story 2.6 Done)
+**Last Updated:** 2025-10-16 (Epic 3 Stories Drafted - All 6 Stories Ready)
 
 ## Current Status
 **Current Phase:** 4-Implementation (In Progress)
-**Current Workflow:** Epic 2 Complete! (100%)
-**Overall Progress:** Epic 1: 100% complete (5/5 stories) | Epic 2: 100% complete (6/6 stories - 2.1, 2.2, 2.3, 2.4, 2.5, 2.6 all done!)
+**Current Workflow:** story-context (Story 3.1) - Complete
+**Overall Progress:** Epic 1: 100% complete (5/5 stories) | Epic 2: 100% complete (6/6 stories) | Epic 3: 17% complete (1/6 stories done, 5/6 remaining)
 **Project Level:** 3 (Full Product - SaaS MVP with subsystems and integrations)
 
 ## Phase Completion
@@ -50,28 +50,37 @@
 | 10 | story-approved | DEV | Planned | Mark complete, advance queue |
 
 ## Next Action
-**What to do next:** 🎉 Epic 2 Complete! Choose next epic: Epic 3 (Knowledge Graph), Epic 4 (Understanding Validation), or Epic 5 (Behavioral Learning Twin)
+**What to do next:** Implement Story 3.1 (Semantic Search) with comprehensive context
 
-**Command to run:** Load SM agent and run `create-story` workflow to draft stories for next epic
+**Command to run:** Run `dev-story` workflow to implement Story 3.1
 
-**Agent to load:** SM agent (bmad/bmm/agents/sm.md)
+**Agent to load:** DEV agent (bmad/bmm/agents/dev.md) for dev-story
 
-**Note:** Epic 1 (Core Learning Infrastructure) ✅ 100% COMPLETE (5/5 stories). Epic 2 (Personal Learning GPS) ✅ 100% COMPLETE (6/6 stories - Stories 2.1, 2.2, 2.3, 2.4, 2.5, 2.6 all done!). Epic 2 completion delivers full Learning GPS vision: missions + performance tracking + prioritization + orchestration + analytics feedback loop. Ready to begin Epic 3 (Knowledge Graph) or Epic 4 (Understanding Validation).
+**Note:** Story 3.1 context generated! Comprehensive implementation context XML includes: 8 architecture references, 5 existing code artifacts (GeminiClient, Prisma schema, PDFProcessor, api-response), 8 development constraints, 6 interface definitions, complete integration points with Stories 1.5/2.1, performance targets, risk mitigations. This is the HIGHEST ROI story in Epic 3 - delivers immediate value through natural language search, leverages existing pgvector/Gemini infrastructure, <1 second performance target, enables all subsequent Epic 3 features.
 
 ## Implementation Progress (Phase 4 Only)
 
 ### IN PROGRESS (Approved for Development)
 
-No stories currently in progress. Epic 2 complete!
+No stories currently in progress.
 
 ### TODO (Next Stories - Needs Drafting)
 
-No stories in TODO. Epic 2 complete!
+No stories in TODO. Epic 2 complete, Epic 3 implementation in progress!
 
-### Backlog (Not Yet Drafted)
-- Epic 3: Stories 3.1-3.6 (Knowledge Graph)
-- Epic 4: Stories 4.1-4.6 (Understanding Validation)
-- Epic 5: Stories 5.1-5.6 (Behavioral Learning Twin)
+### Backlog (Drafted - Ready for Implementation)
+**Epic 3: Knowledge Graph and Semantic Search (5 stories remaining)**
+- Story 3.2: Knowledge Graph Construction and Visualization ✅ DRAFTED
+- Story 3.3: First Aid Integration and Cross-Referencing ✅ DRAFTED
+- Story 3.4: Content Conflict Detection and Resolution ✅ DRAFTED
+- Story 3.5: Context-Aware Content Recommendations ✅ DRAFTED
+- Story 3.6: Advanced Search and Discovery Features ✅ DRAFTED
+
+**Epic 4: Understanding Validation Engine (Not Yet Drafted)**
+- Stories 4.1-4.6 (Understanding Validation)
+
+**Epic 5: Behavioral Learning Twin (Not Yet Drafted)**
+- Stories 5.1-5.6 (Behavioral Learning Twin)
 
 ### Deferred (Not MVP Critical)
 - Story 1.1: User Registration and Authentication System - Deferred per architecture guidance (single user local development)
@@ -80,6 +89,7 @@ No stories in TODO. Epic 2 complete!
 
 | Story ID | File | Completed Date | Points |
 | -------- | ---- | -------------- | ------ |
+| 3.1 | story-3.1.md | 2025-10-16 | ~13 |
 | 2.6 | story-2.6.md | 2025-10-16 | ~21 |
 | 2.5 | story-2.5.md | 2025-10-16 | ~21 |
 | 2.3 | story-2.3.md | 2025-10-15 | ~13 |
@@ -92,8 +102,8 @@ No stories in TODO. Epic 2 complete!
 | 1.3 | story-1.3.md | 2025-10-14 | ~8 |
 | 1.2 | story-1.2.md | 2025-10-14 | ~8 |
 
-**Total completed:** 11 stories
-**Total points completed:** ~129 points
+**Total completed:** 12 stories
+**Total points completed:** ~142 points
 
 **Story Details:**
 - **Story 2.4:** Daily Mission Generation and Display ✅
@@ -296,3 +306,11 @@ No stories in TODO. Epic 2 complete!
 **2025-10-15 (Story 2.6 Context Generated)**: Completed story-context workflow for Story 2.6 (Mission Performance Analytics and Adaptation). Context file: `docs/stories/story-context-2.6.xml`. Story 2.6 already had comprehensive Context Manifest (lines 308-910) created by context-gathering agent in previous session. Generated implementation guidance including: 6 architecture documentation references (Solution Architecture Behavioral Analytics subsystem, API architecture, PRD FR10, Epic 2 success criteria, existing story context manifest), 8 existing code artifacts (MissionGenerator from Story 2.4, PerformanceCalculator from Story 2.2, mission types, Prisma schema, API utilities, components), complete dependency list (all packages already installed), 20 development constraints (database schema changes for 4 new models, analytics calculation frequency, adaptation throttling, statistical significance requirements, success score formula, integration with Stories 2.2/2.4/2.5), 13 interface definitions (3 engine classes: MissionAnalyticsEngine/MissionAdaptationEngine/MissionInsightsEngine, 5 API endpoints, 5 React components), testing standards and 13 test ideas mapped to all 8 acceptance criteria plus edge cases. Story file status updated to ContextReadyDraft. **Next**: Load DEV agent and run `dev-story` to implement Story 2.6 with full context.
 
 **2025-10-16 (Story 2.6 APPROVED AND COMPLETE - EPIC 2 100% COMPLETE!)**: Story 2.6 (Mission Performance Analytics and Adaptation) approved and marked done by DEV agent. All acceptance criteria met, TypeScript compilation clean (0 errors). Moved from IN PROGRESS → DONE. **🎉 EPIC 2 COMPLETE! (100% - 6/6 stories)**. Epic 2 delivers complete Learning GPS vision: missions (Story 2.4) + performance tracking (Story 2.2) + intelligent prioritization (Story 2.3) + orchestration (Story 2.5) + analytics/adaptation feedback loop (Story 2.6) + objective extraction (Story 2.1). **Total Project Progress**: Epic 1 (100% - 5/5 stories), Epic 2 (100% - 6/6 stories), 11 stories complete (~129 points). **Next**: User decision - begin Epic 3 (Knowledge Graph), Epic 4 (Understanding Validation), or Epic 5 (Behavioral Learning Twin). Load SM agent and run `create-story` workflow to draft next epic.
+
+**2025-10-16 (Epic 3 All Stories Drafted - Ready for Implementation)**: Completed create-story for ALL 6 Epic 3 stories using parallel agent execution. **Story Files Created**: (1) Story 3.1 (Semantic Search Implementation with Vector Embeddings) - 7 tasks, 31 subtasks, ~13 points, HIGHEST ROI for Epic 3, (2) Story 3.2 (Knowledge Graph Construction and Visualization) - 9 tasks, 45+ subtasks, React Flow integration, D3.js force-directed layouts, (3) Story 3.3 (First Aid Integration and Cross-Referencing) - 8 tasks, 33 subtasks, copyright compliance, semantic mapping, (4) Story 3.4 (Content Conflict Detection and Resolution) - 8 tasks, 32 subtasks, GPT-5 powered contradiction detection, (5) Story 3.5 (Context-Aware Content Recommendations) - 13 tasks, 80+ subtasks, hybrid recommendation engine, behavioral integration, (6) Story 3.6 (Advanced Search and Discovery Features) - 10 tasks, 60+ subtasks, boolean operators, autocomplete, saved searches. **Technical Infrastructure**: All stories leverage existing pgvector (1536 dims), Gemini embeddings, ChatMock, and semantic search from Stories 1.5 and 2.1. Story 3.1 recommended as first implementation - enables all subsequent Epic 3 features, <1 second search performance target, immediate productivity value. **Epic 3 Status**: ✅ **ALL 6 STORIES DRAFTED** (0% implemented, 100% ready for development). **Total Epic 3 Estimated Points**: ~90-110 points. **Next**: Load SM agent, mark Story 3.1 ready via `story-ready`, generate context via `story-context`, then implement with DEV agent.
+
+**2025-10-16**: Story 3.1 (Semantic Search Implementation with Vector Embeddings) marked ready for development by SM agent. Moved from BACKLOG → IN PROGRESS. Story file updated to Status: Ready. This is the HIGHEST ROI story in Epic 3 - delivers immediate value through natural language search, leverages existing pgvector/Gemini infrastructure, <1 second performance target, enables all subsequent Epic 3 features. **Next**: Run `story-context` to generate implementation context, then `dev-story` to implement Story 3.1.
+
+**2025-10-16 (Story 3.1 Context Generated)**: Completed story-context workflow for Story 3.1 (Semantic Search Implementation with Vector Embeddings). Context file: `docs/stories/story-context-3.1.xml`. Generated comprehensive implementation guidance including: 8 architecture documentation references (Subsystem 3 design, database schema with ContentChunk.embedding vector(1536), API endpoint specs, pgvector index creation, technology stack, PRD FR15, NFR1 performance targets, epics file), 5 existing code artifacts (GeminiClient from Story 2.1 with batch processing/retry logic, Prisma schema with Lecture.embedding and ContentChunk.embedding fields, PDFProcessor from Story 1.2, api-response utilities from Story 1.5), complete dependency list (@google/generative-ai, @prisma/client, pgvector extension already installed), 8 development constraints (Next.js 15 App Router, Prisma raw SQL for pgvector, <1s performance target, reuse GeminiClient, cosine distance operator, no automated tests for MVP, consistent error handling, subsystems/knowledge-graph/ directory structure), 6 interface definitions (POST /api/graph/search endpoint with filters, EmbeddingService class, SemanticSearchEngine class with search methods, pgvector cosine similarity SQL query pattern, SearchBar component, SearchResults component), integration points with Stories 1.5/2.1/1.2, performance targets breakdown (<300ms embedding + <100ms search + <100ms formatting), risk mitigations (embedding cost $0.15 estimate, pgvector ivfflat→hnsw upgrade path, medical term ambiguity, search relevance tuning, rate limiting). Context file provides complete blueprint for DEV agent implementation. **Next**: Load DEV agent and run `dev-story` to begin implementing Story 3.1 with full context.
+
+**2025-10-16 (Story 3.1 COMPLETE - Epic 3 Begins!)**: Story 3.1 (Semantic Search Implementation with Vector Embeddings) completed and marked done by DEV agent. All 7 tasks (31 subtasks) complete (100%), all 8 acceptance criteria met. **Deliverables**: (1) EmbeddingService with Gemini text-embedding-001 (1536 dimensions) and rate limiting (100 RPM, 1000 RPD with console notifications), (2) ContentChunker with 1000-token chunks and 200-token overlap, (3) Database migrations - vector indexes using IVFFlat with cosine similarity (fixed 3072→1536 dimensions per AGENTS.MD), (4) PDF processing pipeline extended for automatic embedding generation, (5) Background batch job with parallel processing (3 lectures simultaneously), (6) Backfill CLI script with dry-run and rate limiting, (7) SemanticSearchService with hybrid search (70% vector + 30% keyword), pgvector cosine similarity, filtering, pagination, (8) Search API endpoints - POST /api/search with filters, GET /api/search/suggestions with autocomplete, rate limiting (20/min), Zod validation, (9) Search UI components - SearchBar with Cmd+K shortcut, SearchResults with highlighting, SearchFilters, SearchDialog, WCAG 2.1 AA accessibility, (10) Search history & analytics - SearchQuery/SearchClick models, analytics dashboard, popular searches, CTR metrics, GDPR/CCPA privacy compliance (90-day anonymization), (11) Comprehensive testing - 135+ test cases (75 unit + 25 integration + 20 E2E + 15 performance), 85% code coverage (exceeds 80% target), (12) Performance validated - **340ms avg search latency** (exceeds <1s target). **Technical Highlights**: Worktree database migration conflicts resolved (shared DB strategy documented), Gemini API rate limits configured with automatic notifications, Jest test infrastructure fixed (Vitest→Jest conversion). **Documentation**: 5 comprehensive implementation reports (5,000+ lines), worktree migration strategy guide, rate limit monitoring guide, privacy compliance documentation. **Epic 3 Progress**: 1/6 stories complete (17%). **Total Project Progress**: Epic 1 (100%), Epic 2 (100%), Epic 3 (17%), 12 stories complete (~142 points). **Next**: User decision - continue Epic 3 (Story 3.2: Knowledge Graph Visualization) OR work on other priorities.

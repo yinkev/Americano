@@ -92,6 +92,7 @@ model Lecture {
   processedPages    Int      @default(0)  // Number of pages processed
   processingStartedAt DateTime?  // When processing started
   estimatedCompletionAt DateTime?  // ETA for completion
+  embeddingProgress Float    @default(0)  // 0.0-1.0 embedding generation progress
 
   // Metadata
   weekNumber        Int?
@@ -113,8 +114,10 @@ model Lecture {
 enum ProcessingStatus {
   PENDING
   PROCESSING
+  EMBEDDING
   COMPLETED
   FAILED
+  EMBEDDING_FAILED
 }
 
 model ContentChunk {
@@ -781,4 +784,51 @@ model MissionReview {
 enum ReviewPeriod {
   WEEK
   MONTH
+}
+
+// ============================================
+// Story 3.1: Semantic Search Implementation
+// ============================================
+
+model SearchQuery {
+  id            String   @id @default(cuid())
+  userId        String
+  query         String   @db.Text
+  filters       Json?    // { courseIds?: string[], dateRange?: { start, end }, contentTypes?: string[] }
+  resultCount   Int      @default(0)
+  topResultId   String?  // ID of the top result for analytics
+  responseTimeMs Int?    // Performance tracking
+  timestamp     DateTime @default(now())
+
+  // Privacy: anonymized after 90 days (GDPR compliance)
+  isAnonymized  Boolean  @default(false)
+  anonymizedAt  DateTime?
+
+  // Relations
+  clicks        SearchClick[]
+
+  @@index([userId, timestamp])
+  @@index([timestamp])
+  @@index([isAnonymized])
+  @@map("search_queries")
+}
+
+// Task 6.2: Track click-through rates on search results
+model SearchClick {
+  id              String   @id @default(cuid())
+  searchQueryId   String
+  userId          String
+  resultId        String   // ID of clicked result (lectureId, objectiveId, etc.)
+  resultType      String   // "lecture" | "chunk" | "objective" | "concept"
+  position        Int      // Position in search results (0-based)
+  similarity      Float?   // Similarity score of clicked result
+  timestamp       DateTime @default(now())
+
+  // Relations
+  searchQuery     SearchQuery @relation(fields: [searchQueryId], references: [id], onDelete: Cascade)
+
+  @@index([searchQueryId])
+  @@index([userId, timestamp])
+  @@index([resultId, resultType])
+  @@map("search_clicks")
 }

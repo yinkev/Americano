@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom';
 
+// Create Vitest compatibility layer for tests migrated from Vitest
+globalThis.vi = jest;
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
@@ -62,6 +65,34 @@ jest.mock('@/lib/db', () => ({
       findUnique: jest.fn(),
       upsert: jest.fn(),
     },
+    searchQuery: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      count: jest.fn(),
+      deleteMany: jest.fn(),
+      updateMany: jest.fn(),
+    },
+    searchClick: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      count: jest.fn(),
+      deleteMany: jest.fn(),
+    },
+    lecture: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+    contentChunk: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
+    $queryRaw: jest.fn(),
+    $executeRaw: jest.fn(),
     $transaction: jest.fn((callback) => callback({
       mission: {
         findMany: jest.fn(),

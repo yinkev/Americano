@@ -1,0 +1,381 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.1</storyId>
+    <title>Semantic Search Implementation with Vector Embeddings</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-3.1.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>to search my content using natural language questions</iWant>
+    <soThat>I can quickly find relevant information without remembering exact keywords</soThat>
+    <tasks>
+      <task id="1" name="Configure Embedding Generation Pipeline">
+        <subtask id="1.1">Verify Gemini embedding configuration (text-embedding-001, output_dimensionality: 1536)</subtask>
+        <subtask id="1.2">Update Prisma schema for Lecture embeddings (verify pgvector extension, create vector indexes)</subtask>
+        <subtask id="1.3">Create EmbeddingService utility class with retry logic and rate limiting</subtask>
+        <subtask id="1.4">Implement content chunking strategy (1000 tokens, 200 token overlap)</subtask>
+      </task>
+      <task id="2" name="Implement Embedding Generation on Content Upload">
+        <subtask id="2.1">Extend PDF processing pipeline to generate embeddings after OCR</subtask>
+        <subtask id="2.2">Create batch embedding job with progress tracking</subtask>
+        <subtask id="2.3">Backfill embeddings for existing content</subtask>
+      </task>
+      <task id="3" name="Build Semantic Search Engine">
+        <subtask id="3.1">Create SemanticSearchEngine class with search methods</subtask>
+        <subtask id="3.2">Implement cosine similarity search using pgvector</subtask>
+        <subtask id="3.3">Implement query processing with caching</subtask>
+        <subtask id="3.4">Optimize search performance to meet &lt;1s target</subtask>
+      </task>
+      <task id="4" name="Create Search API Endpoints">
+        <subtask id="4.1">Create /api/graph/search POST endpoint</subtask>
+        <subtask id="4.2">Implement search result formatting</subtask>
+        <subtask id="4.3">Add context snippet generation</subtask>
+        <subtask id="4.4">Implement source attribution</subtask>
+      </task>
+      <task id="5" name="Build Search UI Components">
+        <subtask id="5.1">Create /search page with layout</subtask>
+        <subtask id="5.2">Design SearchBar component with autocomplete</subtask>
+        <subtask id="5.3">Create SearchFilters component</subtask>
+        <subtask id="5.4">Build SearchResults component with pagination</subtask>
+        <subtask id="5.5">Add global search to navigation</subtask>
+      </task>
+      <task id="6" name="Implement Search History and Analytics">
+        <subtask id="6.1">Create SearchHistory data model in Prisma</subtask>
+        <subtask id="6.2">Implement search logging</subtask>
+        <subtask id="6.3">Build search history UI</subtask>
+        <subtask id="6.4">Implement search analytics</subtask>
+      </task>
+      <task id="7" name="Testing and Performance Optimization">
+        <subtask id="7.1">Test embedding generation</subtask>
+        <subtask id="7.2">Test semantic search accuracy</subtask>
+        <subtask id="7.3">Performance benchmarking (&lt;1 second target)</subtask>
+        <subtask id="7.4">Load testing with concurrent requests</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">Content processed into vector embeddings using Gemini text-embedding model</criterion>
+    <criterion id="AC2">Natural language search queries processed and vectorized for similarity matching</criterion>
+    <criterion id="AC3">Search results ranked by semantic relevance with confidence scores</criterion>
+    <criterion id="AC4">Search interface supports complex medical terminology and concepts</criterion>
+    <criterion id="AC5">Results display with context snippets and source attribution</criterion>
+    <criterion id="AC6">Search history maintained for repeated queries and pattern analysis</criterion>
+    <criterion id="AC7">Advanced search filters for content type, course, and date ranges</criterion>
+    <criterion id="AC8">Search performance &lt;1 second for typical queries across full content database</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Subsystem 3: Knowledge Graph &amp; Semantic Search</title>
+        <section>Subsystem 3 (lines 551-575)</section>
+        <snippet>Responsibilities include semantic search via pgvector, knowledge graph construction, content recommendation engine, and cross-course integration detection. Components: SemanticSearchEngine, KnowledgeGraphBuilder, ConceptLinker.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Database Schema</title>
+        <section>Database Schema (lines 810-824)</section>
+        <snippet>ContentChunk model with embedding field: Unsupported("vector(1536)") for Gemini text-embedding-001. Lecture model also includes embedding vector(1536) field. pgvector extension enabled.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - API Endpoints</title>
+        <section>Subsystem 3: Knowledge Graph API (lines 1332-1344)</section>
+        <snippet>POST /api/graph/search endpoint with query string, limit, and filters. Response includes results array with similarity scores and metadata. GET /api/graph/concepts for graph visualization.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Database Indexes Strategy</title>
+        <section>pgvector Index Creation (lines 1146-1154)</section>
+        <snippet>CREATE INDEX content_chunks_embedding_idx ON content_chunks USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100). Similar index for concepts table.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Technology Stack</title>
+        <section>AI/ML Integration (lines 1747-1751)</section>
+        <snippet>Google Gemini text-embedding-001 with 1536 dimensions (configured via output_dimensionality parameter), $0.15/1M tokens. PostgreSQL 16 + pgvector extension. Cosine distance operator (&lt;=&gt;).</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements - FR15: Search &amp; Discovery Engine</title>
+        <section>FR15 (lines 159-163)</section>
+        <snippet>Natural language semantic search across all content with advanced filtering, context-aware results, and recommendation engine. Performance target: &lt;1 second response time.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements - NFR1: Performance</title>
+        <section>NFR1 (lines 167-171)</section>
+        <snippet>Search responses &lt;1 second for typical queries. System must support 1000+ concurrent users with &lt;2s page loads.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epics - Story 3.1 Specification</title>
+        <section>Story 3.1 (lines 382-403)</section>
+        <snippet>Original story specification with focus on semantic search using vector embeddings, pgvector integration, and &lt;1s performance target.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>apps/web/src/lib/ai/gemini-client.ts</path>
+        <kind>service</kind>
+        <symbol>GeminiClient</symbol>
+        <lines>1-112</lines>
+        <reason>Existing Gemini embedding client from Story 2.1. Already configured for text-embedding-001 model with batch processing, retry logic, and rate limiting. REUSE this class by wrapping it in EmbeddingService.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database schema</kind>
+        <symbol>ContentChunk.embedding</symbol>
+        <lines>120-134</lines>
+        <reason>Lecture and ContentChunk models already have embedding vector(1536) fields from Story 1.5. pgvector extension enabled. Vector indexes may need to be created manually via SQL.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database schema</kind>
+        <symbol>Concept.embedding</symbol>
+        <lines>346-360</lines>
+        <reason>Concept model has embedding vector(1536) field for knowledge graph semantic search. Will be used for concept-level similarity matching.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/subsystems/content-processing/pdf-processor.ts</path>
+        <kind>service</kind>
+        <symbol>PDFProcessor</symbol>
+        <lines>full file</lines>
+        <reason>PDF processing pipeline from Story 1.2. Will extend this to call EmbeddingService after text extraction. Update ProcessingStatus enum if needed to track embedding generation state.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-response.ts</path>
+        <kind>utility</kind>
+        <symbol>successResponse, errorResponse</symbol>
+        <lines>full file</lines>
+        <reason>Consistent API response helpers from Story 1.5. Use for all /api/graph/search endpoint responses.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <package name="@google/generative-ai" version="latest">Google Generative AI SDK for embeddings (already installed in Story 2.1)</package>
+        <package name="@prisma/client" version="latest">Prisma ORM client (already installed in Story 1.5)</package>
+        <package name="@neondatabase/serverless" version="optional">For edge-compatible pgvector queries if using Vercel Edge</package>
+      </node>
+      <postgresql>
+        <extension name="pgvector" version="latest stable">PostgreSQL extension for vector similarity search (already enabled in Story 1.5)</extension>
+      </postgresql>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint category="architecture">Follow Next.js 15 App Router patterns: Server Components for initial loads, Client Components for interactivity, API routes for REST endpoints</constraint>
+    <constraint category="database">Use Prisma raw SQL for pgvector queries since vector operations are not supported in Prisma ORM. Connection pooling required for concurrent searches.</constraint>
+    <constraint category="performance">Target &lt;1s total search latency: embedding generation &lt;300ms, similarity search &lt;100ms, result formatting &lt;100ms, network overhead &lt;500ms buffer</constraint>
+    <constraint category="ai-integration">Reuse existing GeminiClient from Story 2.1. Embedding dimensions MUST be 1536 (configured via output_dimensionality parameter in Gemini API, not model name)</constraint>
+    <constraint category="vector-search">Use pgvector cosine distance operator (&lt;=&gt;). Similarity threshold: only return results with similarity &gt; 0.7. ivfflat index with lists=100 for ~10k chunks.</constraint>
+    <constraint category="testing">No automated tests required for MVP per solution-architecture.md. Manual testing with real medical queries sufficient.</constraint>
+    <constraint category="error-handling">Use consistent error response format from api-response.ts. User-friendly messages for Gemini API errors, no results, slow queries.</constraint>
+    <constraint category="code-organization">Create subsystems/knowledge-graph/ directory for SemanticSearchEngine. API routes in app/api/graph/search/route.ts. UI components in components/search/.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/graph/search</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Request Body: { query: string, filters?: { courseId?: string, category?: string, dateRange?: [Date, Date] }, limit?: number }
+        Response: { success: true, data: { results: SearchResult[], total: number, queryTime: number } }
+        SearchResult: { id: string, type: "lecture" | "chunk", title: string, snippet: string, similarity: number, metadata: object }
+      </signature>
+      <path>apps/web/src/app/api/graph/search/route.ts</path>
+    </interface>
+    <interface>
+      <name>EmbeddingService</name>
+      <kind>TypeScript class</kind>
+      <signature>
+        class EmbeddingService {
+          generateEmbedding(text: string): Promise&lt;number[]&gt;
+          generateBatchEmbeddings(texts: string[]): Promise&lt;number[][]&gt;
+        }
+      </signature>
+      <path>apps/web/src/lib/embedding-service.ts</path>
+    </interface>
+    <interface>
+      <name>SemanticSearchEngine</name>
+      <kind>TypeScript class</kind>
+      <signature>
+        class SemanticSearchEngine {
+          search(query: string, filters?: SearchFilters): Promise&lt;SearchResult[]&gt;
+          searchLectures(query: string, limit: number): Promise&lt;LectureSearchResult[]&gt;
+          searchChunks(query: string, limit: number): Promise&lt;ChunkSearchResult[]&gt;
+        }
+      </signature>
+      <path>apps/web/src/subsystems/knowledge-graph/semantic-search.ts</path>
+    </interface>
+    <interface>
+      <name>pgvector Cosine Similarity Query</name>
+      <kind>SQL query pattern</kind>
+      <signature>
+        SELECT *, (embedding &lt;=&gt; $1::vector) AS distance
+        FROM content_chunks
+        ORDER BY distance
+        LIMIT 20
+        -- Convert distance to similarity: similarity = 1 - (distance / 2)
+      </signature>
+      <path>apps/web/src/subsystems/knowledge-graph/semantic-search.ts</path>
+    </interface>
+    <interface>
+      <name>SearchBar Component</name>
+      <kind>React Client Component</kind>
+      <signature>
+        interface SearchBarProps {
+          onSearch: (query: string) =&gt; void
+          placeholder?: string
+          autoFocus?: boolean
+        }
+      </signature>
+      <path>apps/web/src/components/search/search-bar.tsx</path>
+    </interface>
+    <interface>
+      <name>SearchResults Component</name>
+      <kind>React Client Component</kind>
+      <signature>
+        interface SearchResultsProps {
+          results: SearchResult[]
+          isLoading: boolean
+          onResultClick: (result: SearchResult) =&gt; void
+        }
+      </signature>
+      <path>apps/web/src/components/search/search-results.tsx</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      No automated testing framework required for MVP per solution-architecture.md Section 2 line 386. Manual testing approach:
+      - Unit testing: Manual verification of EmbeddingService with sample medical content
+      - Integration testing: End-to-end upload → embed → search → verify results flow
+      - Performance testing: Measure search latency with browser dev tools, verify &lt;1s target
+      - Search accuracy: Manual review of top 10 results for medical test queries
+    </standards>
+
+    <locations>
+      N/A - No test directories for MVP. Future tests would go in:
+      - apps/web/src/__tests__/ (if Vitest added later)
+      - apps/web/e2e/ (if Playwright added later)
+    </locations>
+
+    <ideas>
+      <idea ac="AC1">Test embedding generation: Verify GeminiClient generates 1536-dimension vectors for sample medical text. Test edge cases: empty string, very long text (&gt;2000 tokens), special characters.</idea>
+      <idea ac="AC2">Test query processing: Verify search queries are properly embedded and vectorized. Test caching behavior for repeated queries.</idea>
+      <idea ac="AC3">Test semantic search accuracy: Manual test queries like "How does the heart pump blood?" should return cardiac physiology content. "muscle contraction mechanism" should return physiology/histology lectures. Measure Precision@10.</idea>
+      <idea ac="AC4">Test medical terminology: Search for "MI" (myocardial infarction), "HTN" (hypertension), complex multi-word medical terms. Verify search handles acronyms and synonyms.</idea>
+      <idea ac="AC5">Test result formatting: Verify snippets are 200 characters with proper truncation. Source attribution includes lecture title, course name, page number. "View in context" link works.</idea>
+      <idea ac="AC6">Test search history: Verify searches are logged to database. History UI displays recent searches. Click-to-rerun works with same filters.</idea>
+      <idea ac="AC7">Test filters: Course filter, date range filter, content type filter all properly restrict results. "Clear filters" button resets state.</idea>
+      <idea ac="AC8">Performance benchmarking: Test search latency with 100, 1000, 10000 content chunks. Verify &lt;1 second for all scenarios. Test 10 concurrent requests, verify no degradation.</idea>
+    </ideas>
+  </tests>
+
+  <integrationPoints>
+    <integration>
+      <name>Story 1.5: Database Schema with pgvector</name>
+      <type>Database infrastructure</type>
+      <details>Prisma schema already includes Lecture.embedding and ContentChunk.embedding vector(1536) fields. pgvector extension enabled. May need to manually create vector indexes via SQL: CREATE INDEX content_chunks_embedding_idx ON content_chunks USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100)</details>
+    </integration>
+    <integration>
+      <name>Story 2.1: GeminiClient for Embeddings</name>
+      <type>AI service integration</type>
+      <details>Existing GeminiClient at apps/web/src/lib/ai/gemini-client.ts configured with text-embedding-001 model. Already implements batch processing (100 embeddings per batch), retry logic with exponential backoff, and rate limiting (1s delay between batches). REUSE this by wrapping in EmbeddingService for Story 3.1.</details>
+    </integration>
+    <integration>
+      <name>Story 1.2: PDF Processing Pipeline</name>
+      <type>Content processing workflow</type>
+      <details>Extend PDFProcessor at apps/web/src/subsystems/content-processing/pdf-processor.ts to call EmbeddingService after OCR text extraction. Update ProcessingStatus enum if needed to track embedding generation state (e.g., EMBEDDING, EMBEDDING_FAILED).</details>
+    </integration>
+    <integration>
+      <name>Story 1.5: API Response Patterns</name>
+      <type>API conventions</type>
+      <details>Use successResponse() and errorResponse() helpers from apps/web/src/lib/api-response.ts for consistent /api/graph/search endpoint responses.</details>
+    </integration>
+  </integrationPoints>
+
+  <performanceTargets>
+    <target metric="Total Search Latency" threshold="&lt;1 second" breakdown="Embedding generation &lt;300ms + Similarity search &lt;100ms + Result formatting &lt;100ms + Network overhead &lt;500ms buffer" />
+    <target metric="Embedding Generation" threshold="&lt;300ms per query" notes="Gemini API latency typically 200-300ms. Cache query embeddings with 1 hour TTL for repeated searches." />
+    <target metric="Vector Similarity Search" threshold="&lt;100ms" notes="pgvector ivfflat index provides approximate nearest neighbor (ANN) search. Adjust lists parameter (default 100) as database grows." />
+    <target metric="Concurrent Requests" threshold="10 concurrent searches without degradation" notes="Ensure Prisma connection pool size ≥10. Monitor database query time and memory usage." />
+    <target metric="Search Accuracy" threshold="&gt;80% Precision@10 for medical queries" notes="Top 10 results should be relevant. Tune similarity threshold (default 0.7) if needed." />
+  </performanceTargets>
+
+  <risksMitigations>
+    <risk>
+      <description>Embedding Generation Cost: Gemini API cost $0.15 per 1M tokens. Estimated ~$0.15 for 100 lectures × 10k words.</description>
+      <mitigation>Acceptable for MVP. Optimize batching for scale. Cache query embeddings to reduce API calls.</mitigation>
+    </risk>
+    <risk>
+      <description>pgvector Performance at Scale: ivfflat index trades accuracy for speed. For &gt;100k chunks may need hnsw index.</description>
+      <mitigation>Start with ivfflat (lists=100). Monitor search accuracy. Migrate to hnsw if accuracy drops below threshold.</mitigation>
+    </risk>
+    <risk>
+      <description>Medical Term Ambiguity: "MI" could mean "myocardial infarction" or "mitral insufficiency".</description>
+      <mitigation>Use context from surrounding query terms. Implement query expansion in Epic 3.6 if needed.</mitigation>
+    </risk>
+    <risk>
+      <description>Search Result Relevance: Semantic search may return conceptually related but not directly relevant results.</description>
+      <mitigation>Combine with keyword search (hybrid approach) in future. Tune similarity threshold (default 0.7). Consider query expansion.</mitigation>
+    </risk>
+    <risk>
+      <description>Gemini API Rate Limiting: 60 requests/minute limit may impact backfill script.</description>
+      <mitigation>Implement rate limiting in backfill script: 10 embeddings/minute with 1s delay between batches. Add retry logic with exponential backoff.</mitigation>
+    </risk>
+  </risksMitigations>
+
+  <devNotes>
+    <note category="architecture">Subsystem 3 (Knowledge Graph &amp; Semantic Search) primary implementation location: apps/web/src/subsystems/knowledge-graph/</note>
+    <note category="file-structure">
+      New files to create:
+      - apps/web/src/lib/embedding-service.ts (wraps GeminiClient)
+      - apps/web/src/subsystems/knowledge-graph/semantic-search.ts (SemanticSearchEngine class)
+      - apps/web/src/app/api/graph/search/route.ts (search API endpoint)
+      - apps/web/src/app/search/page.tsx (search UI page)
+      - apps/web/src/components/search/search-bar.tsx
+      - apps/web/src/components/search/search-filters.tsx
+      - apps/web/src/components/search/search-results.tsx
+      - scripts/backfill-embeddings.ts (migration script for existing content)
+    </note>
+    <note category="medical-content">Test queries for validation: "heart anatomy", "action potential", "inflammation process", "chest pain differential". Expected behavior: semantic search should find related concepts even with different wording (e.g., "high blood pressure" returns "hypertension" lectures).</note>
+    <note category="ux-guidelines">
+      Search interface guidelines from ux-specification.md:
+      - Instant feedback with loading state
+      - Progressive disclosure: top 5 results, "Show more" for additional
+      - Context preservation: clicking result opens lecture with search term highlighted
+      - Search suggestions: show recent searches when input empty
+      - Mobile optimization: full-width search bar, swipeable filters
+    </note>
+    <note category="error-handling">
+      User-friendly error messages:
+      - Gemini API error: "Search temporarily unavailable, please try again"
+      - No results: "No results found for '...'. Try adjusting your query or removing filters"
+      - Slow query: Show progress indicator after 2 seconds
+      - Rate limiting: "Too many searches, please wait 1 minute"
+    </note>
+    <note category="vector-index-creation">
+      After Prisma migration, manually create vector indexes via SQL:
+      ```sql
+      CREATE INDEX content_chunks_embedding_idx ON content_chunks USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+      CREATE INDEX concepts_embedding_idx ON concepts USING ivfflat (embedding vector_cosine_ops) WITH (lists = 50);
+      ```
+      Check if indexes exist: SELECT indexname FROM pg_indexes WHERE tablename = 'content_chunks';
+    </note>
+    <note category="decision-needed">
+      Hybrid search (semantic + keyword) vs pure semantic search for MVP?
+      Recommendation from solution-architecture.md: Start with pure semantic, add keyword boosting in Epic 3.6 if needed.
+    </note>
+  </devNotes>
+</story-context>

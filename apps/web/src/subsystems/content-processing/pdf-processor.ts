@@ -1,5 +1,7 @@
 import { ProcessingStatus } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
+import { embeddingService } from '@/lib/embedding-service'
+import { contentChunker } from '@/lib/content-chunker'
 
 interface OCRResponse {
   text: string
@@ -13,6 +15,7 @@ interface OCRResponse {
 interface ProcessingResult {
   success: boolean
   chunks?: Array<{ content: string; chunkIndex: number }>
+  embeddingCount?: number
   error?: string
 }
 
@@ -64,31 +67,72 @@ export class PDFProcessor {
         },
       })
 
-      // Chunk the text
-      const chunks = this.chunkText(extractedText.text)
+      // Chunk the text using ContentChunker for better semantic segmentation
+      const contentChunks = await contentChunker.chunkText({
+        text: extractedText.text,
+        lectureId,
+        pageNumber: 1, // TODO: Extract actual page numbers from OCR response
+      })
 
-      // Create ContentChunk records
-      await this.createContentChunks(lectureId, chunks)
+      // Create ContentChunk records in database (without embeddings initially)
+      const chunkIds = await this.createContentChunks(lectureId, contentChunks)
 
-      // Don't mark as COMPLETED here - let orchestrator do it
-      return {
-        success: true,
-        chunks: chunks.map((content, index) => ({ content, chunkIndex: index })),
-      }
-    } catch (error) {
-      // Update lecture status to FAILED
+      // Update progress (chunking complete - 80% done)
       await prisma.lecture.update({
         where: { id: lectureId },
         data: {
-          processingStatus: ProcessingStatus.FAILED,
+          processingProgress: 80,
+        },
+      })
+
+      // Generate embeddings for all chunks
+      await this.updateLectureStatus(lectureId, 'EMBEDDING')
+      const embeddingCount = await this.generateEmbeddingsForChunks(
+        lectureId,
+        chunkIds
+      )
+
+      // Mark as COMPLETED
+      await prisma.lecture.update({
+        where: { id: lectureId },
+        data: {
+          processingStatus: ProcessingStatus.COMPLETED,
           processedAt: new Date(),
-          processingProgress: 0,
+          processingProgress: 100,
+          embeddingProgress: 1.0,
+        },
+      })
+
+      return {
+        success: true,
+        chunks: contentChunks.map((chunk, index) => ({
+          content: chunk.content,
+          chunkIndex: index,
+        })),
+        embeddingCount,
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error occurred'
+
+      // Determine error status based on failure point
+      const errorStatus = errorMessage.includes('embedding')
+        ? ProcessingStatus.EMBEDDING_FAILED
+        : ProcessingStatus.FAILED
+
+      // Update lecture status to FAILED or EMBEDDING_FAILED
+      await prisma.lecture.update({
+        where: { id: lectureId },
+        data: {
+          processingStatus: errorStatus,
+          processedAt: new Date(),
+          processingProgress: errorStatus === ProcessingStatus.EMBEDDING_FAILED ? 80 : 0,
         },
       })
 
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error: errorMessage,
       }
     }
   }
@@ -224,14 +268,114 @@ export class PDFProcessor {
   /**
    * Create ContentChunk records in database
    */
-  private async createContentChunks(lectureId: string, chunks: string[]): Promise<void> {
-    await prisma.contentChunk.createMany({
-      data: chunks.map((content, index) => ({
-        lectureId,
-        content,
-        chunkIndex: index,
-        // embedding will be added later by EmbeddingGenerator
-      })),
+  private async createContentChunks(
+    lectureId: string,
+    chunks: Array<{ content: string; metadata: any }>
+  ): Promise<string[]> {
+    const chunkIds: string[] = []
+
+    for (const chunk of chunks) {
+      const stored = await prisma.contentChunk.create({
+        data: {
+          lectureId,
+          content: chunk.content,
+          chunkIndex: chunk.metadata.chunkIndex,
+          pageNumber: chunk.metadata.pageNumber,
+          // embedding will be added later
+        },
+      })
+      chunkIds.push(stored.id)
+    }
+
+    return chunkIds
+  }
+
+  /**
+   * Generate embeddings for stored chunks with progress tracking
+   * Epic 3 - Story 3.1 - Task 2.1
+   */
+  private async generateEmbeddingsForChunks(
+    lectureId: string,
+    chunkIds: string[]
+  ): Promise<number> {
+    let successCount = 0
+    const totalChunks = chunkIds.length
+    const batchSize = 10 // Process 10 embeddings at a time
+
+    // Process in batches
+    for (let i = 0; i < chunkIds.length; i += batchSize) {
+      const batchIds = chunkIds.slice(i, i + batchSize)
+
+      // Fetch chunk contents
+      const chunks = await prisma.contentChunk.findMany({
+        where: { id: { in: batchIds } },
+        select: { id: true, content: true },
+      })
+
+      // Generate embeddings for batch
+      const texts = chunks.map((c) => c.content)
+      const batchResult = await embeddingService.generateBatchEmbeddings(texts)
+
+      // Update chunks with embeddings
+      for (let j = 0; j < chunks.length; j++) {
+        const embedding = batchResult.embeddings[j]
+
+        // Only update if embedding was successfully generated
+        if (embedding && embedding.length > 0) {
+          await this.updateChunkEmbedding(chunks[j].id, embedding)
+          successCount++
+        } else {
+          const errorMsg = batchResult.errors.get(j)
+          console.error(
+            `Failed to generate embedding for chunk ${chunks[j].id}: ${errorMsg}`
+          )
+        }
+      }
+
+      // Update progress (embedding generation: 80-100%)
+      const progress = 0.8 + (0.2 * (i + batchIds.length)) / totalChunks
+      await prisma.lecture.update({
+        where: { id: lectureId },
+        data: {
+          embeddingProgress: progress,
+          processingProgress: Math.floor(80 + 20 * progress),
+        },
+      })
+    }
+
+    return successCount
+  }
+
+  /**
+   * Update chunk with generated embedding
+   * Uses raw SQL to update vector column (not supported by Prisma ORM)
+   */
+  private async updateChunkEmbedding(
+    chunkId: string,
+    embedding: number[]
+  ): Promise<void> {
+    const embeddingStr = JSON.stringify(embedding)
+    // Use raw SQL to update vector column
+    await prisma.$executeRaw`
+      UPDATE content_chunks
+      SET embedding = ${embeddingStr}::vector
+      WHERE id = ${chunkId}
+    `
+  }
+
+  /**
+   * Update lecture processing status
+   */
+  private async updateLectureStatus(
+    lectureId: string,
+    status: ProcessingStatus
+  ): Promise<void> {
+    await prisma.lecture.update({
+      where: { id: lectureId },
+      data: {
+        processingStatus: status,
+        embeddingProgress: status === 'EMBEDDING' ? 0 : undefined,
+      },
     })
   }
 }

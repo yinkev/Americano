@@ -1,0 +1,181 @@
+"use client"
+
+import * as React from "react"
+import { FileText, ChevronLeft, ChevronRight } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { SearchResultItem } from "./search-result-item"
+import type { SearchResult } from "./search-result-item"
+
+export type { SearchResult }
+
+interface SearchResultsProps {
+  results: SearchResult[]
+  isLoading?: boolean
+  currentPage?: number
+  totalPages?: number
+  searchQuery?: string
+  onPageChange?: (page: number) => void
+  onResultClick?: (result: SearchResult) => void
+  className?: string
+}
+
+const RESULTS_PER_PAGE = 20
+
+/**
+ * SearchResults component displays search results with pagination
+ * Uses SearchResultItem for individual results with highlighting support
+ */
+export function SearchResults({
+  results,
+  isLoading = false,
+  currentPage = 1,
+  totalPages = 1,
+  searchQuery,
+  onPageChange,
+  onResultClick,
+  className,
+}: SearchResultsProps) {
+  if (isLoading) {
+    return (
+      <div className={cn("space-y-4", className)} role="status" aria-live="polite" aria-label="Loading search results">
+        {[...Array(3)].map((_, i) => (
+          <Card key={i} className="border-white/40 bg-white/80 backdrop-blur-md animate-pulse">
+            <div className="p-6 space-y-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 space-y-3">
+                  <div className="h-4 bg-muted/50 rounded w-1/4" />
+                  <div className="h-6 bg-muted/50 rounded w-3/4" />
+                </div>
+                <div className="h-12 w-16 bg-muted/50 rounded" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-4 bg-muted/50 rounded w-full" />
+                <div className="h-4 bg-muted/50 rounded w-5/6" />
+              </div>
+              <div className="h-4 bg-muted/50 rounded w-2/3" />
+            </div>
+          </Card>
+        ))}
+        <span className="sr-only">Loading search results...</span>
+      </div>
+    )
+  }
+
+  if (results.length === 0) {
+    return (
+      <Card
+        className={cn(
+          "border-white/40 bg-white/80 backdrop-blur-md text-center py-12",
+          className
+        )}
+        role="status"
+        aria-live="polite"
+      >
+        <CardContent className="pt-6">
+          <FileText className="size-12 text-muted-foreground/50 mx-auto mb-4" aria-hidden="true" />
+          <p className="text-lg font-semibold text-foreground mb-2">No results found</p>
+          <p className="text-sm text-muted-foreground">
+            {searchQuery ? (
+              <>No results found for &quot;{searchQuery}&quot;. Try adjusting your search query or filters.</>
+            ) : (
+              <>Try adjusting your search query or filters</>
+            )}
+          </p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <div className={cn("space-y-4", className)} role="region" aria-label="Search results">
+      {/* Results Count */}
+      <div className="flex items-center justify-between px-1">
+        <p className="text-sm text-muted-foreground" role="status" aria-live="polite">
+          Showing {((currentPage - 1) * RESULTS_PER_PAGE) + 1} - {Math.min(currentPage * RESULTS_PER_PAGE, results.length)} of {results.length} results
+        </p>
+      </div>
+
+      {/* Results List */}
+      <div className="space-y-3" role="list">
+        {results.map((result) => (
+          <div key={result.id} role="listitem">
+            <SearchResultItem
+              result={result}
+              searchQuery={searchQuery}
+              onClick={onResultClick}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <nav
+          className="flex items-center justify-center gap-2 pt-4"
+          role="navigation"
+          aria-label="Search results pagination"
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange?.(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="rounded-lg bg-white/60 hover:bg-white/80 border-white/40"
+            aria-label="Go to previous page"
+          >
+            <ChevronLeft className="size-4 mr-1" aria-hidden="true" />
+            Previous
+          </Button>
+
+          <div className="flex items-center gap-1" role="list" aria-label="Page numbers">
+            {[...Array(totalPages)].map((_, i) => {
+              const page = i + 1
+              // Show first, last, current, and adjacent pages
+              if (
+                page === 1 ||
+                page === totalPages ||
+                (page >= currentPage - 1 && page <= currentPage + 1)
+              ) {
+                return (
+                  <Button
+                    key={page}
+                    variant={page === currentPage ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => onPageChange?.(page)}
+                    aria-current={page === currentPage ? "page" : undefined}
+                    aria-label={`${page === currentPage ? "Current page, " : ""}Page ${page}`}
+                    className={cn(
+                      "min-w-9 rounded-lg",
+                      page === currentPage
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-white/60 hover:bg-white/80 border-white/40"
+                    )}
+                  >
+                    {page}
+                  </Button>
+                )
+              } else if (page === currentPage - 2 || page === currentPage + 2) {
+                return <span key={page} className="text-muted-foreground" aria-hidden="true">...</span>
+              }
+              return null
+            })}
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange?.(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="rounded-lg bg-white/60 hover:bg-white/80 border-white/40"
+            aria-label="Go to next page"
+          >
+            Next
+            <ChevronRight className="size-4 ml-1" aria-hidden="true" />
+          </Button>
+        </nav>
+      )}
+    </div>
+  )
+}
