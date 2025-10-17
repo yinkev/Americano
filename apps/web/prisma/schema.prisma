@@ -36,6 +36,11 @@ model User {
   // Story 2.6: Mission adaptation tracking
   lastMissionAdaptation DateTime?  // Throttle adaptations to max 1/week
 
+  // Story 5.1: Behavioral analysis privacy controls
+  behavioralAnalysisEnabled       Boolean @default(true)
+  learningStyleProfilingEnabled   Boolean @default(true)
+  shareAnonymizedPatterns         Boolean @default(false) // Future feature for research
+
   // Relations
   courses       Course[]
   lectures      Lecture[]
@@ -451,6 +456,15 @@ model BehavioralEvent {
   eventData   Json     // Flexible JSON for event-specific data
   timestamp   DateTime @default(now())
 
+  // Story 5.1: Session-level metrics for pattern analysis
+  sessionPerformanceScore Int?              // 0-100, calculated from reviews + validation
+  engagementLevel         EngagementLevel?
+  completionQuality       CompletionQuality?
+  timeOfDay               Int?              // Hour 0-23
+  dayOfWeek               Int?              // 0=Sunday, 6=Saturday
+  contentType             String?           // "lecture", "flashcard", "validation", "clinical_reasoning"
+  difficultyLevel         String?           // "easy", "medium", "hard"
+
   @@index([userId])
   @@index([eventType])
   @@index([timestamp])
@@ -469,6 +483,109 @@ enum EventType {
   GRAPH_VIEWED
 }
 
+enum EngagementLevel {
+  LOW       // <60 score, frequent pauses
+  MEDIUM    // 60-80 score, normal engagement
+  HIGH      // >80 score, flow state indicators
+}
+
+enum CompletionQuality {
+  RUSHED      // Completed too quickly, low performance
+  NORMAL      // Expected pace and performance
+  THOROUGH    // Slow and deliberate, high performance
+}
+
+// Story 5.1: Behavioral Pattern Recognition Models
+
+model BehavioralPattern {
+  id                String         @id @default(cuid())
+  userId            String
+  patternType       BehavioralPatternType
+  patternName       String         // Human-readable: "Morning peak performance"
+  confidence        Float          // 0.0-1.0, statistical confidence
+  evidence          Json           // Supporting data: timestamps, metrics, session IDs
+  detectedAt        DateTime       @default(now())
+  lastSeenAt        DateTime       @default(now())
+  occurrenceCount   Int            @default(1)
+
+  // Relations
+  insights InsightPattern[]
+
+  @@index([userId])
+  @@index([patternType])
+  @@index([confidence])
+  @@map("behavioral_patterns")
+}
+
+enum BehavioralPatternType {
+  OPTIMAL_STUDY_TIME          // Best time-of-day for studying
+  SESSION_DURATION_PREFERENCE // Preferred session length
+  CONTENT_TYPE_PREFERENCE     // Visual vs. text vs. clinical scenarios
+  PERFORMANCE_PEAK            // Multi-hour high-performance windows
+  ATTENTION_CYCLE             // Within-session fatigue patterns
+  FORGETTING_CURVE            // Personal retention decay rate
+}
+
+model BehavioralInsight {
+  id                      String              @id @default(cuid())
+  userId                  String
+  insightType             InsightType
+  title                   String              // "Study during your peak hours"
+  description             String              @db.Text // Detailed explanation
+  actionableRecommendation String             @db.Text // Specific action
+  confidence              Float               // 0.0-1.0
+  createdAt               DateTime            @default(now())
+  acknowledgedAt          DateTime?
+  applied                 Boolean             @default(false)
+
+  // Relations
+  patterns InsightPattern[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([acknowledgedAt])
+  @@map("behavioral_insights")
+}
+
+// Join table for many-to-many relationship between BehavioralInsight and BehavioralPattern
+model InsightPattern {
+  id         String            @id @default(cuid())
+  insightId  String
+  patternId  String
+
+  insight    BehavioralInsight @relation(fields: [insightId], references: [id], onDelete: Cascade)
+  pattern    BehavioralPattern @relation(fields: [patternId], references: [id], onDelete: Cascade)
+
+  @@unique([insightId, patternId])
+  @@index([insightId])
+  @@index([patternId])
+  @@map("insight_patterns")
+}
+
+enum InsightType {
+  STUDY_TIME_OPTIMIZATION     // When to study
+  SESSION_LENGTH_ADJUSTMENT   // How long to study
+  CONTENT_PREFERENCE         // What content types to prioritize
+  RETENTION_STRATEGY         // How to improve retention
+}
+
+model UserLearningProfile {
+  id                        String   @id @default(cuid())
+  userId                    String   @unique
+  preferredStudyTimes       Json     // Array of { dayOfWeek, startHour, endHour }
+  averageSessionDuration    Int      // Minutes
+  optimalSessionDuration    Int      // Minutes (recommended)
+  contentPreferences        Json     // { lectures: 0.4, flashcards: 0.3, validation: 0.2, clinicalReasoning: 0.1 }
+  learningStyleProfile      Json     // VARK: { visual: 0.3, auditory: 0.2, kinesthetic: 0.4, reading: 0.1 }
+  personalizedForgettingCurve Json   // { R0: 0.9, k: 0.15, halfLife: 4.6 }
+  lastAnalyzedAt            DateTime @default(now())
+  dataQualityScore          Float    @default(0.0) // 0.0-1.0, based on data sufficiency
+
+  @@index([userId])
+  @@map("user_learning_profiles")
+}
+
+// Legacy LearningPattern model (kept for backwards compatibility)
 model LearningPattern {
   id          String   @id @default(cuid())
   userId      String

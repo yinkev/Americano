@@ -1,0 +1,1493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context>
+  <metadata>
+    <story-id>5.1</story-id>
+    <story-title>Learning Pattern Recognition and Analysis</story-title>
+    <epic>Epic 5: Behavioral Learning Twin</epic>
+    <priority>Medium</priority>
+    <prerequisites>
+      <prerequisite>Epic 2 complete (6+ weeks behavioral data)</prerequisite>
+      <prerequisite>Story 2.2 (Performance Tracking)</prerequisite>
+      <prerequisite>Story 2.6 (Mission Analytics)</prerequisite>
+      <prerequisite>Story 1.6 (Study Session Management)</prerequisite>
+    </prerequisites>
+    <acceptance-criteria-count>8</acceptance-criteria-count>
+    <task-count>12</task-count>
+  </metadata>
+
+  <business-context>
+    <user-story>
+      As a medical student,
+      I want the platform to learn my unique study patterns and preferences,
+      So that it can optimize my learning experience based on what works best for me.
+    </user-story>
+
+    <business-value>
+      <value-proposition>
+        Creates strongest competitive moat through irreplaceable personalized data.
+        Platform becomes more valuable over time as it learns individual patterns.
+        Drives long-term user retention through continuously improving personalization.
+      </value-proposition>
+      
+      <success-metrics>
+        <metric name="prediction_accuracy" target="80%+">Accuracy in predicting user learning struggles and optimal timing</metric>
+        <metric name="personalization_effectiveness">Measurable improvement in personalization effectiveness over time</metric>
+        <metric name="performance_correlation">Demonstrated correlation between behavioral insights and academic performance</metric>
+        <metric name="user_satisfaction" target="4.0/5+">User satisfaction for behavioral personalization features</metric>
+      </success-metrics>
+    </business-value>
+
+    <user-value>
+      - Elimination of "what to study" decision fatigue through pattern-based recommendations
+      - Proactive optimization of study schedule based on personal performance peaks
+      - Self-awareness of learning style preferences (VARK framework)
+      - Personalized forgetting curve calculations for optimal spaced repetition
+      - Privacy-first behavioral data collection with full user control
+    </user-value>
+  </business-context>
+
+  <technical-context>
+    <architecture>
+      <subsystem>Subsystem 5: Behavioral Analytics and Personalization</subsystem>
+      <location>/Users/kyin/Projects/Americano-epic5/apps/web/src/subsystems/behavioral-analytics/</location>
+      
+      <integration-points>
+        <integration>
+          <system>Story 2.2 Performance Tracking</system>
+          <models>PerformanceMetric, LearningObjective (weaknessScore, masteryLevel)</models>
+          <purpose>Uses retention scores and performance data for pattern analysis</purpose>
+        </integration>
+        
+        <integration>
+          <system>Story 2.6 Mission Analytics</system>
+          <models>MissionAnalytics, MissionFeedback, MissionStreak</models>
+          <purpose>Leverages mission completion patterns for optimal timing detection</purpose>
+          <existing-implementations>
+            - MissionAnalyticsEngine (398 lines): Performance correlation, completion rate tracking
+            - MissionSuccessCalculator (149 lines): Weighted success metrics
+            - MissionInsightsEngine (387 lines): Pattern detection, anomaly detection
+          </existing-implementations>
+        </integration>
+        
+        <integration>
+          <system>Story 1.6 Study Session Management</system>
+          <models>StudySession (durationMs, objectiveCompletions)</models>
+          <purpose>Extracts session-level behavioral patterns (time-of-day, duration, engagement)</purpose>
+        </integration>
+        
+        <integration>
+          <system>Story 2.4 Mission Generation</system>
+          <models>UserLearningProfile consumed by MissionGenerator</models>
+          <purpose>Personalizes mission scheduling, duration, and content based on learned patterns</purpose>
+        </integration>
+      </integration-points>
+
+      <database-schema>
+        <new-models>
+          <model name="BehavioralPattern">
+            <purpose>Store identified learning patterns (optimal study times, session preferences)</purpose>
+            <fields>
+              - id: string (cuid)
+              - userId: string
+              - patternType: PatternType ENUM (OPTIMAL_STUDY_TIME, SESSION_DURATION_PREFERENCE, CONTENT_TYPE_PREFERENCE, PERFORMANCE_PEAK, ATTENTION_CYCLE, FORGETTING_CURVE)
+              - patternName: string (human-readable: "Morning peak performance")
+              - confidence: float (0.0-1.0, statistical confidence)
+              - evidence: JSON (supporting data: timestamps, metrics, session IDs)
+              - detectedAt: DateTime
+              - lastSeenAt: DateTime
+              - occurrenceCount: int (default 1, increments with repeated occurrences)
+            </fields>
+            <indexes>
+              - userId
+              - patternType
+              - confidence
+            </indexes>
+          </model>
+
+          <model name="BehavioralInsight">
+            <purpose>Actionable recommendations based on detected patterns</purpose>
+            <fields>
+              - id: string (cuid)
+              - userId: string
+              - insightType: InsightType ENUM (STUDY_TIME_OPTIMIZATION, SESSION_LENGTH_ADJUSTMENT, CONTENT_PREFERENCE, RETENTION_STRATEGY)
+              - title: string ("Study during your peak hours")
+              - description: string (detailed explanation)
+              - actionableRecommendation: string (specific action)
+              - confidence: float (0.0-1.0)
+              - createdAt: DateTime
+              - acknowledgedAt: DateTime? (when user dismisses/applies)
+              - applied: boolean (default false, tracks user action)
+              - supportingPatternIds: string[] (array of BehavioralPattern IDs)
+            </fields>
+            <indexes>
+              - userId
+              - createdAt
+              - acknowledgedAt
+            </indexes>
+            <relations>
+              - supportingPatterns: BehavioralPattern[] (many-to-many via supportingPatternIds array)
+            </relations>
+          </model>
+
+          <model name="UserLearningProfile">
+            <purpose>Persistent per-user learning preferences and patterns</purpose>
+            <fields>
+              - id: string (cuid)
+              - userId: string (unique)
+              - preferredStudyTimes: JSON (array of {dayOfWeek: 0-6, startHour: 0-23, endHour: 0-23})
+              - averageSessionDuration: int (minutes)
+              - optimalSessionDuration: int (minutes, recommended)
+              - contentPreferences: JSON ({lectures: 0.4, flashcards: 0.3, validation: 0.2, clinicalReasoning: 0.1} summing to 1.0)
+              - learningStyleProfile: JSON (VARK: {visual: 0.3, auditory: 0.2, kinesthetic: 0.4, reading: 0.1} summing to 1.0)
+              - personalizedForgettingCurve: JSON ({R0: 0.9, k: 0.15, halfLife: 4.6})
+              - lastAnalyzedAt: DateTime
+              - dataQualityScore: float (0.0-1.0, based on data sufficiency)
+            </fields>
+            <indexes>
+              - userId (unique)
+            </indexes>
+          </model>
+        </new-models>
+
+        <extended-models>
+          <model name="BehavioralEvent">
+            <existing>Already in schema (lines 447-458 in schema.prisma)</existing>
+            <new-fields>
+              - sessionPerformanceScore: int? (0-100, calculated from reviews + validation)
+              - engagementLevel: EngagementLevel? ENUM (LOW &lt;60, MEDIUM 60-80, HIGH &gt;80)
+              - completionQuality: CompletionQuality? ENUM (RUSHED, NORMAL, THOROUGH)
+              - timeOfDay: int? (hour 0-23)
+              - dayOfWeek: int? (0=Sunday, 6=Saturday)
+              - contentType: string? ("lecture", "flashcard", "validation", "clinical_reasoning")
+              - difficultyLevel: string? ("easy", "medium", "hard")
+            </new-fields>
+            <purpose>Session-level metrics for pattern analysis</purpose>
+          </model>
+        </extended-models>
+
+        <existing-models-leveraged>
+          <model name="PerformanceMetric">
+            <location>schema.prisma lines 509-528</location>
+            <usage>Time-series retention scores for forgetting curve calculation</usage>
+            <key-fields>retentionScore (float 0.0-1.0 from FSRS), reviewCount, date</key-fields>
+          </model>
+
+          <model name="MissionAnalytics">
+            <location>schema.prisma lines 689-708</location>
+            <usage>Mission completion patterns by time-of-day/day-of-week</usage>
+            <key-fields>avgCompletionRate, avgSuccessScore, date, period</key-fields>
+          </model>
+
+          <model name="StudySession">
+            <location>schema.prisma lines 311-340</location>
+            <usage>Session duration, timing, and objective completion tracking</usage>
+            <key-fields>startedAt (DateTime for time-of-day extraction), durationMs, objectiveCompletions (JSON)</key-fields>
+          </model>
+        </existing-models-leveraged>
+      </database-schema>
+
+      <key-algorithms>
+        <algorithm name="Optimal Study Time Detection">
+          <description>
+            Analyzes study sessions grouped by hour-of-day buckets (0-23).
+            Calculates weighted performance score: retention (40%) + completion (30%) + engagement (20%) + subjective (10%).
+            Identifies top 3 time windows with highest performance.
+            Requires minimum 6 weeks study history + 20+ sessions for statistical significance.
+          </description>
+          <implementation>
+            Location: apps/web/src/subsystems/behavioral-analytics/study-time-analyzer.ts
+            Method: analyzeOptimalStudyTimes(userId, minWeeks = 6): StudyTimePattern[]
+          </implementation>
+          <confidence-calculation>
+            confidence = min(1.0, totalSessions / 50)
+            Higher confidence with more data points.
+          </confidence-calculation>
+        </algorithm>
+
+        <algorithm name="Session Duration Optimization">
+          <description>
+            Groups sessions by duration buckets (&lt;30, 30-40, 40-50, 50-60, 60-90, 90+ minutes).
+            Calculates bucket score: performance (50%) + completion (30%) + (1 - fatigue) (20%).
+            Identifies sweet spot duration with highest quality outcomes.
+            Accounts for mission complexity correlation (longer for ADVANCED objectives).
+          </description>
+          <implementation>
+            Location: apps/web/src/subsystems/behavioral-analytics/session-duration-analyzer.ts
+            Method: analyzeSessionDurationPatterns(userId): DurationPattern
+            Method: calculateOptimalDuration(userId): OptimalDurationRecommendation
+          </implementation>
+        </algorithm>
+
+        <algorithm name="Learning Style Profiling (VARK)">
+          <description>
+            Visual: Knowledge graph views + diagram card engagement
+            Auditory: "Explain to patient" prompt performance + text-based study duration
+            Kinesthetic: Clinical reasoning scenario engagement
+            Reading/Writing: Text content duration + note-taking activity
+            Normalizes scores to sum = 1.0
+          </description>
+          <implementation>
+            Location: apps/web/src/subsystems/behavioral-analytics/content-preference-analyzer.ts
+            Method: identifyLearningStyle(userId): LearningStyleProfile
+          </implementation>
+          <calculation>
+            visual = (knowledgeGraphViews * 0.5 + diagramCardEngagement * 0.5)
+            auditory = avgScore(validations.filter(v => v.promptType === "EXPLAIN_TO_PATIENT"))
+            kinesthetic = avgEngagement(sessions.filter(s => s.contentType === "clinical_reasoning"))
+            reading = (textContentDuration * 0.6 + noteTakingActivity * 0.4)
+            Normalize: {visual, auditory, kinesthetic, reading} each / total
+          </calculation>
+        </algorithm>
+
+        <algorithm name="Personalized Forgetting Curve">
+          <description>
+            Exponential decay model: R(t) = R₀ × e^(-kt)
+            R₀ = initial retention, k = personal decay constant, t = days since review
+            Analyzes review history across all cards (minimum 50 reviews, 30+ days).
+            Calculates retention rates at intervals: 1, 3, 7, 14, 30, 90 days.
+            Fits curve using non-linear least squares regression.
+            halfLife = ln(2) / k (days until retention drops to 50%)
+          </description>
+          <implementation>
+            Location: apps/web/src/subsystems/behavioral-analytics/forgetting-curve-analyzer.ts
+            Method: calculatePersonalizedForgettingCurve(userId): ForgettingCurveModel
+          </implementation>
+          <minimum-requirements>
+            - 50+ card reviews
+            - 30+ days of review history
+            - Multiple review cycles per card for interval calculation
+          </minimum-requirements>
+        </algorithm>
+      </key-algorithms>
+
+      <api-endpoints>
+        <endpoint method="POST" path="/api/analytics/patterns/analyze">
+          <description>Triggers full behavioral pattern analysis for user</description>
+          <request-body>
+            {
+              "userId": "string",
+              "forceReanalysis": "boolean?" (default: false)
+            }
+          </request-body>
+          <response>
+            {
+              "patterns": "BehavioralPattern[]",
+              "insights": "BehavioralInsight[]",
+              "profile": "UserLearningProfile"
+            }
+          </response>
+          <business-logic>
+            - Runs BehavioralPatternEngine.runFullAnalysis()
+            - Checks data sufficiency (6 weeks, 20+ sessions)
+            - Saves patterns with confidence >= 0.6
+            - Generates top 5 insights by impact
+            - Updates UserLearningProfile
+          </business-logic>
+        </endpoint>
+
+        <endpoint method="GET" path="/api/analytics/patterns">
+          <description>Retrieve stored behavioral patterns</description>
+          <query-params>
+            - patternType?: PatternType (filter by pattern type)
+            - minConfidence?: float (default: 0.6)
+            - limit?: int (default: 20)
+          </query-params>
+          <response>
+            {
+              "patterns": "BehavioralPattern[]" (sorted by confidence DESC, lastSeenAt DESC)
+            }
+          </response>
+        </endpoint>
+
+        <endpoint method="GET" path="/api/analytics/insights">
+          <description>Retrieve active behavioral insights (not yet acknowledged)</description>
+          <response>
+            {
+              "insights": "BehavioralInsight[]" (includes supportingPatterns with confidence scores)
+            }
+          </response>
+          <sorting>confidence DESC</sorting>
+        </endpoint>
+
+        <endpoint method="GET" path="/api/analytics/learning-profile">
+          <description>Retrieve user learning profile</description>
+          <response>
+            {
+              "profile": "UserLearningProfile | null",
+              "insufficientData": "boolean",
+              "dataRequirements": {
+                "weeksNeeded": "int",
+                "sessionsNeeded": "int"
+              }
+            }
+          </response>
+        </endpoint>
+
+        <endpoint method="PATCH" path="/api/analytics/insights/:id/acknowledge">
+          <description>Mark insight as acknowledged</description>
+          <request-body>
+            {
+              "applied": "boolean?" (track if user applied recommendation)
+            }
+          </request-body>
+          <response>
+            {
+              "insight": "BehavioralInsight" (with updated acknowledgedAt timestamp)
+            }
+          </response>
+        </endpoint>
+
+        <endpoint method="GET" path="/api/analytics/study-time-heatmap">
+          <description>Performance scores by day-of-week and hour-of-day</description>
+          <query-params>
+            - weeks?: int (default: 6, how many weeks to analyze)
+          </query-params>
+          <response>
+            {
+              "heatmapData": [
+                {
+                  "day": "int (0-6)",
+                  "hour": "int (0-23)",
+                  "avgPerformance": "float (0-100)",
+                  "sessionCount": "int"
+                }
+              ],
+              "optimalWindows": [
+                {
+                  "day": "int",
+                  "startHour": "int",
+                  "endHour": "int",
+                  "score": "float"
+                }
+              ]
+            }
+          </response>
+        </endpoint>
+      </api-endpoints>
+    </architecture>
+
+    <existing-implementations-to-leverage>
+      <implementation name="MissionAnalyticsEngine">
+        <location>/Users/kyin/Projects/Americano-epic5/apps/web/src/lib/mission-analytics-engine.ts</location>
+        <lines>398 lines (complete implementation)</lines>
+        <key-methods>
+          - calculateDailyAnalytics(userId, date): Aggregates mission completion stats
+          - calculateCompletionRate(userId, period): Completion rate over time period
+          - detectPerformanceCorrelation(userId): Pearson correlation for mission completion vs mastery
+          - recommendMissionAdjustments(userId): Pattern-based difficulty recommendations
+          - compareMissionVsFreeStudy(userId, period): Mission-guided vs free-form effectiveness
+        </key-methods>
+        <reusable-patterns>
+          - Statistical significance testing (MIN_DATA_POINTS_FOR_CORRELATION = 7)
+          - Pearson correlation calculation with p-value
+          - Time period bucketing (getStartDateForPeriod helper)
+          - Confidence level determination (LOW/MEDIUM/HIGH based on sample size + p-value)
+        </reusable-patterns>
+        <integration-opportunity>
+          Leverage mission completion rate patterns for optimal study time detection.
+          Use correlation methodology for validating behavioral pattern predictions.
+        </integration-opportunity>
+      </implementation>
+
+      <implementation name="PerformanceCalculator">
+        <location>/Users/kyin/Projects/Americano-epic5/apps/web/src/lib/performance-calculator.ts</location>
+        <lines>758 lines (complete implementation)</lines>
+        <key-methods>
+          - calculateRetentionScore(reviews): FSRS-based retention from review history
+          - calculateWeaknessScore(objective, reviews, userConfidence): Weighted weakness (0-1)
+          - calculateMasteryLevel(retentionScore, reviewCount, studyTimeMs): Mastery level determination
+          - identifyWeakAreas(userId, thresholdScore, limit, courseId): Query weak objectives
+          - calculateSessionAnalytics(sessionId): Session-level performance breakdown
+          - updatePerformanceFromSession(sessionId, userId): Update metrics after session
+        </key-methods>
+        <reusable-patterns>
+          - Retention score calculation from FSRS stability values
+          - Weighted scoring formulas (WEAKNESS_WEIGHTS: retention 40%, studyTime 30%, failure 20%, confidence 10%)
+          - Mastery threshold constants (MASTERED_RETENTION: 0.9, ADVANCED: 0.7-0.9, etc.)
+          - Time estimation feedback (actual vs estimated time deltas by complexity)
+        </reusable-patterns>
+        <integration-opportunity>
+          Use calculateRetentionScore for forgetting curve data points.
+          Leverage calculateSessionAnalytics for session-level engagement metrics.
+          Reuse mastery thresholds for performance peak detection.
+        </integration-opportunity>
+      </implementation>
+    </existing-implementations-to-leverage>
+
+    <data-flow>
+      <flow name="Pattern Analysis Workflow">
+        <step order="1">
+          <action>User completes 6+ weeks of study sessions</action>
+          <triggers>Automated weekly analysis job (Sunday 11 PM) OR manual trigger via UI</triggers>
+        </step>
+        <step order="2">
+          <action>POST /api/analytics/patterns/analyze</action>
+          <validation>Check data sufficiency (6 weeks, 20+ sessions, 50+ reviews)</validation>
+          <on-insufficient-data>Return friendly message with progress bar data</on-insufficient-data>
+        </step>
+        <step order="3">
+          <action>BehavioralPatternEngine.runFullAnalysis(userId)</action>
+          <orchestration>
+            - StudyTimeAnalyzer.analyzeOptimalStudyTimes()
+            - SessionDurationAnalyzer.analyzeSessionDurationPatterns()
+            - ContentPreferenceAnalyzer.identifyLearningStyle()
+            - ForgettingCurveAnalyzer.calculatePersonalizedForgettingCurve()
+          </orchestration>
+        </step>
+        <step order="4">
+          <action>Aggregate results into BehavioralPattern records</action>
+          <persistence>
+            - Save patterns with confidence >= 0.6
+            - Update occurrenceCount if pattern already exists
+            - Deprecate patterns not seen in 3 consecutive analyses
+          </persistence>
+        </step>
+        <step order="5">
+          <action>Generate BehavioralInsight records</action>
+          <prioritization>
+            - Top 5 insights by potential impact
+            - Template-based recommendations with actual data
+            - Link to supporting patterns via supportingPatternIds
+          </prioritization>
+        </step>
+        <step order="6">
+          <action>Update UserLearningProfile</action>
+          <fields-updated>
+            - preferredStudyTimes (from optimal time analysis)
+            - optimalSessionDuration (from duration analysis)
+            - learningStyleProfile (from VARK analysis)
+            - personalizedForgettingCurve (from curve fitting)
+            - lastAnalyzedAt (current timestamp)
+            - dataQualityScore (based on sufficiency metrics)
+          </fields-updated>
+        </step>
+        <step order="7">
+          <action>Notification to user</action>
+          <channels>
+            - Email: "We've discovered 3 new insights about your learning patterns"
+            - In-app: Badge count on analytics nav item
+            - Link: /analytics/learning-patterns
+          </channels>
+        </step>
+      </flow>
+
+      <flow name="Mission Personalization Integration">
+        <step order="1">
+          <action>MissionGenerator queries UserLearningProfile before generating mission</action>
+          <location>Story 2.4 MissionGenerator integration point</location>
+        </step>
+        <step order="2">
+          <action>Apply profile-based personalization</action>
+          <personalizations>
+            - Schedule mission during preferredStudyTimes
+            - Set estimatedMinutes to optimalSessionDuration
+            - Prioritize content types matching learningStyleProfile.kinesthetic > 0.5 → clinical reasoning
+            - Adjust spaced repetition intervals based on personalizedForgettingCurve.k
+          </personalizations>
+        </step>
+        <step order="3">
+          <action>Display recommendations in mission briefing</action>
+          <ui-integration>
+            - "Optimal Time: 7-9 AM (30% better retention)"
+            - "Recommended Duration: 45 minutes (your sweet spot)"
+            - "Content Mix: 40% clinical scenarios (matches your kinesthetic preference)"
+          </ui-integration>
+        </step>
+      </flow>
+    </data-flow>
+
+    <ui-components>
+      <page path="/analytics/learning-patterns">
+        <sections>
+          <section name="Learning Profile Summary">
+            <components>
+              - ProfileSummaryCard (study time, session duration, learning style badges)
+            </components>
+          </section>
+
+          <section name="Optimal Study Times Visualization">
+            <components>
+              - StudyTimeHeatmap (7 days × 24 hours grid)
+                - Color intensity: Performance score (green=high, yellow=medium, red=low)
+                - Highlight optimal windows with border
+                - Tooltip: day, time, avg performance, session count
+            </components>
+            <data-source>GET /api/analytics/study-time-heatmap</data-source>
+          </section>
+
+          <section name="Session Performance Patterns">
+            <components>
+              - SessionPerformanceChart (scatter plot via Recharts)
+                - X-axis: Session duration (minutes)
+                - Y-axis: Performance score (0-100)
+                - Color-coded by time-of-day
+                - Trend line showing optimal duration sweet spot
+                - Markers: current average, recommended duration
+            </components>
+          </section>
+
+          <section name="Learning Style Profile">
+            <components>
+              - LearningStyleProfile (radar chart via Recharts)
+                - 4 axes: Visual, Auditory, Kinesthetic, Reading/Writing
+                - Percentages displayed per dimension
+                - Content type recommendations based on profile
+                - Example: "Your visual learning (45%) suggests focus on knowledge graph"
+            </components>
+          </section>
+
+          <section name="Personal Forgetting Curve">
+            <components>
+              - ForgettingCurveVisualization (line chart via Recharts)
+                - X-axis: Time since review (days)
+                - Y-axis: Retention probability (0-1)
+                - Personal curve (solid line) vs standard Ebbinghaus (dashed line)
+                - Annotation: "Your retention decays 15% faster - plan more frequent reviews"
+                - Display parameters: R₀, k, half-life
+            </components>
+          </section>
+
+          <section name="Actionable Insights">
+            <components>
+              - BehavioralInsightsPanel (card-based layout)
+                - Top 5 insights sorted by confidence
+                - Each card: Icon, title, description, confidence indicator
+                - Actions: "Apply Recommendation", "Dismiss"
+                - Track if user applies (acknowledgedAt + applied boolean)
+            </components>
+            <data-source>GET /api/analytics/insights</data-source>
+          </section>
+        </sections>
+      </page>
+
+      <settings-section path="/settings#behavioral-privacy">
+        <controls>
+          - Toggle: "Enable behavioral pattern analysis" (default ON)
+          - Toggle: "Enable learning style profiling" (default ON)
+          - Button: "Delete all behavioral patterns" (with confirmation dialog)
+          - Button: "Export my behavioral patterns" (JSON download)
+        </controls>
+        <privacy-enforcement>
+          - Check User.behavioralAnalysisEnabled before running analysis
+          - Clear BehavioralPattern + BehavioralInsight + UserLearningProfile on disable
+          - FERPA compliance: User owns their learning data
+        </privacy-enforcement>
+      </settings-section>
+    </ui-components>
+
+    <technical-constraints>
+      <constraint name="Minimum Data Requirements">
+        <requirement>6 weeks of study history</requirement>
+        <requirement>20+ study sessions</requirement>
+        <requirement>50+ card reviews</requirement>
+        <graceful-degradation>
+          - Display progress indicators: "Complete 12/20 sessions for learning style profiling"
+          - Partial analysis with lower confidence scores if 3-6 weeks data
+          - Return insufficient_data flag in API responses
+        </graceful-degradation>
+      </constraint>
+
+      <constraint name="Analysis Frequency">
+        <automated>Weekly (Sunday 11 PM nightly job)</automated>
+        <on-demand>User-triggered via UI (rate-limited: max 1/day)</on-demand>
+        <incremental>If forceReanalysis=false, only analyze new data since lastAnalyzedAt</incremental>
+      </constraint>
+
+      <constraint name="Confidence Thresholds">
+        <pattern-save-threshold>0.6 (60% confidence minimum to save BehavioralPattern)</pattern-save-threshold>
+        <insight-display-threshold>0.7 (70% confidence minimum to display BehavioralInsight)</insight-display-threshold>
+        <high-confidence>0.8+ with 30+ data points</high-confidence>
+      </constraint>
+
+      <constraint name="Performance">
+        <background-processing>Pattern analysis runs as background job (not synchronous)</background-processing>
+        <timeout>Max 5 minutes for full analysis (cancel if exceeds)</timeout>
+        <storage-limit>100 patterns per user (auto-delete oldest low-confidence patterns)</storage-limit>
+      </constraint>
+
+      <constraint name="Privacy">
+        <data-ownership>All behavioral data tied to userId, never shared externally</data-ownership>
+        <opt-out>User.behavioralAnalysisEnabled boolean (default true)</opt-out>
+        <deletion>Immediate pattern deletion on opt-out via settings</deletion>
+        <export>JSON export of all patterns + insights + profile (FERPA compliance)</export>
+      </constraint>
+    </technical-constraints>
+  </technical-context>
+
+  <implementation-guide>
+    <task-breakdown>
+      <task id="1" title="Design and Implement Behavioral Analysis Data Models">
+        <subtasks>
+          <subtask id="1.1">Create BehavioralPattern model with PatternType ENUM</subtask>
+          <subtask id="1.2">Create BehavioralInsight model with InsightType ENUM</subtask>
+          <subtask id="1.3">Extend BehavioralEvent model with session-level metrics</subtask>
+          <subtask id="1.4">Create UserLearningProfile model</subtask>
+          <subtask id="1.5">Run Prisma migration for behavioral analysis models</subtask>
+        </subtasks>
+        <acceptance-criteria>
+          - Models match schema specification in story file
+          - ENUMs defined for PatternType, InsightType, EngagementLevel, CompletionQuality
+          - Indexes created for performance (userId, patternType, confidence, createdAt)
+          - Migration runs successfully without errors
+        </acceptance-criteria>
+      </task>
+
+      <task id="2" title="Implement Study Time Pattern Analyzer">
+        <location>apps/web/src/subsystems/behavioral-analytics/study-time-analyzer.ts</location>
+        <class-name>StudyTimeAnalyzer</class-name>
+        <methods>
+          <method name="analyzeOptimalStudyTimes">
+            <signature>analyzeOptimalStudyTimes(userId: string, minWeeks = 6): Promise&lt;StudyTimePattern[]&gt;</signature>
+            <algorithm>
+              1. Query StudySession WHERE userId AND startedAt >= (now - minWeeks)
+              2. Group sessions by hour-of-day (0-23 buckets)
+              3. For each bucket with >=5 sessions:
+                 - Calculate avgPerformanceScore from objectiveCompletions + reviews
+                 - Calculate avgRetention using PerformanceCalculator.calculateRetentionScore()
+                 - Calculate completionRate (completed objectives / total)
+                 - Calculate avgEngagement from sessionPerformanceScore
+                 - timeOfDayScore = (performance * 0.4 + retention * 0.3 + completion * 0.2 + engagement * 0.1) * 100
+              4. Return top 3 hours with highest timeOfDayScore
+              5. Calculate confidence = min(1.0, totalSessions / 50)
+            </algorithm>
+            <data-sources>
+              - StudySession (startedAt for time-of-day, objectiveCompletions for performance)
+              - Review (via session.reviews for retention calculation)
+              - BehavioralEvent (if sessionPerformanceScore tracked)
+            </data-sources>
+          </method>
+
+          <method name="detectPerformancePeaks">
+            <signature>detectPerformancePeaks(userId: string): Promise&lt;PerformancePeakPattern[]&gt;</signature>
+            <algorithm>
+              1. Group sessions by day-of-week AND hour-of-day
+              2. Detect multi-hour windows of consistent high performance (>80 score)
+              3. Account for weekday vs weekend variations
+              4. Return "golden hours" (e.g., "7-9 AM Monday-Friday", score: 85)
+            </algorithm>
+          </method>
+
+          <method name="identifyAttentionCycles">
+            <signature>identifyAttentionCycles(userId: string): Promise&lt;AttentionCyclePattern[]&gt;</signature>
+            <algorithm>
+              1. For sessions >60 minutes, analyze within-session performance degradation
+              2. Measure time-to-fatigue (when performance drops 20%+)
+              3. Calculate optimal break intervals
+              4. Detect flow state indicators (long uninterrupted high-performance periods)
+            </algorithm>
+          </method>
+        </methods>
+        <dependencies>
+          - PerformanceCalculator.calculateRetentionScore (existing)
+          - Prisma client for StudySession, Review queries
+        </dependencies>
+      </task>
+
+      <task id="3" title="Implement Session Duration Analyzer">
+        <location>apps/web/src/subsystems/behavioral-analytics/session-duration-analyzer.ts</location>
+        <class-name>SessionDurationAnalyzer</class-name>
+        <methods>
+          <method name="analyzeSessionDurationPatterns">
+            <signature>analyzeSessionDurationPatterns(userId: string): Promise&lt;DurationPattern&gt;</signature>
+            <algorithm>
+              1. Query StudySession WHERE userId AND completedAt IS NOT NULL
+              2. Group sessions by duration buckets: [&lt;30, 30-40, 40-50, 50-60, 60-90, 90+]
+              3. For each bucket with >=3 sessions:
+                 - avgPerformance from session analytics
+                 - completionRate (completed sessions / total)
+                 - fatigueIndicator = detectPerformanceDropoff(sessions)
+                 - bucketScore = (avgPerformance * 0.5 + completionRate * 0.3 + (1 - fatigue) * 0.2) * 100
+              4. Return bucket with highest score + recommended midpoint duration
+            </algorithm>
+          </method>
+
+          <method name="calculateOptimalDuration">
+            <signature>calculateOptimalDuration(userId: string): Promise&lt;OptimalDurationRecommendation&gt;</signature>
+            <returns>
+              {
+                current: number (avg session duration in minutes),
+                recommended: number (optimal from analysis),
+                confidence: number (0-1),
+                reason: string (explanation)
+              }
+            </returns>
+          </method>
+
+          <method name="detectSessionFatiguePoint">
+            <signature>detectSessionFatiguePoint(userId: string): Promise&lt;FatigueAnalysis&gt;</signature>
+            <algorithm>
+              1. Analyze performance within long sessions (>60 min)
+              2. Detect inflection point where performance degrades
+              3. Calculate diminishing returns threshold
+              4. Recommend session length + break frequency
+            </algorithm>
+          </method>
+        </methods>
+        <integration>
+          Account for mission complexity: correlate session duration preferences with objective difficulty.
+          Use LearningObjective.complexity to personalize duration by mission type.
+        </integration>
+      </task>
+
+      <task id="4" title="Implement Content Preference Analyzer">
+        <location>apps/web/src/subsystems/behavioral-analytics/content-preference-analyzer.ts</location>
+        <class-name>ContentPreferenceAnalyzer</class-name>
+        <methods>
+          <method name="analyzeContentPreferences">
+            <signature>analyzeContentPreferences(userId: string): Promise&lt;ContentPreferenceProfile&gt;</signature>
+            <returns>
+              {
+                lectures: number (0-1),
+                flashcards: number (0-1),
+                validation: number (0-1),
+                clinicalReasoning: number (0-1)
+              } // Sum to 1.0
+            </returns>
+            <algorithm>
+              1. Track engagement metrics by content type from BehavioralEvent
+              2. Measure study time distribution, completion rates, retention outcomes
+              3. Identify most/least effective content types
+              4. Normalize to sum = 1.0
+            </algorithm>
+          </method>
+
+          <method name="identifyLearningStyle">
+            <signature>identifyLearningStyle(userId: string): Promise&lt;LearningStyleProfile&gt;</signature>
+            <returns>VARK profile: {visual, auditory, kinesthetic, reading} each 0-1, sum=1.0</returns>
+            <algorithm>
+              // Visual indicators
+              knowledgeGraphViews = count(events WHERE eventType = "GRAPH_VIEWED")
+              diagramCardEngagement = avgEngagement(cards WHERE hasDiagram)
+              visual = (knowledgeGraphViews * 0.5 + diagramCardEngagement * 0.5)
+
+              // Auditory indicators (proxy: verbal explanation performance)
+              explainToPatientScores = avgScore(validations WHERE promptType = "EXPLAIN_TO_PATIENT")
+              auditory = explainToPatientScores
+
+              // Kinesthetic indicators
+              clinicalReasoningEngagement = avgEngagement(sessions WHERE contentType = "clinical_reasoning")
+              kinesthetic = clinicalReasoningEngagement
+
+              // Reading/Writing indicators
+              textContentDuration = sum(sessions WHERE contentType = "lecture").duration
+              noteTakingActivity = count(events WHERE eventType = "NOTE_TAKEN")
+              reading = (textContentDuration * 0.6 + noteTakingActivity * 0.4)
+
+              // Normalize
+              total = visual + auditory + kinesthetic + reading
+              return {visual: visual/total, auditory: auditory/total, kinesthetic: kinesthetic/total, reading: reading/total}
+            </algorithm>
+          </method>
+
+          <method name="detectContentTypeEffectiveness">
+            <signature>detectContentTypeEffectiveness(userId: string): Promise&lt;ContentTypeScores&gt;</signature>
+            <purpose>Identify which content types yield best retention/mastery for this user</purpose>
+          </method>
+        </methods>
+        <data-sources>
+          - BehavioralEvent (eventType, eventData for content type tracking)
+          - ValidationResponse (promptType, score for auditory proxy)
+          - StudySession (objectiveCompletions for note-taking, sessionNotes)
+        </data-sources>
+      </task>
+
+      <task id="5" title="Implement Forgetting Curve Calculator">
+        <location>apps/web/src/subsystems/behavioral-analytics/forgetting-curve-analyzer.ts</location>
+        <class-name>ForgettingCurveAnalyzer</class-name>
+        <methods>
+          <method name="calculatePersonalizedForgettingCurve">
+            <signature>calculatePersonalizedForgettingCurve(userId: string): Promise&lt;ForgettingCurveModel&gt;</signature>
+            <returns>
+              {
+                R0: number (initial retention 0-1),
+                k: number (decay rate),
+                halfLife: number (days until 50% retention),
+                confidence: number (0-1),
+                deviation: string ("15% faster than average")
+              }
+            </returns>
+            <algorithm>
+              1. Query Review WHERE userId AND reviewCount >= 2 (need multiple reviews per card)
+              2. Minimum requirements: 50 reviews across 30+ days
+              3. For each review:
+                 For each interval [1, 3, 7, 14, 30, 90] days:
+                   nextReview = getNextReviewAfterInterval(review, interval)
+                   IF nextReview exists:
+                     daysSinceReview = (nextReview.reviewedAt - review.reviewedAt) / 86400000
+                     retentionScore = PerformanceCalculator.calculateRetentionScore([nextReview])
+                     dataPoints.push({days: daysSinceReview, retention: retentionScore})
+              4. Fit exponential decay: R(t) = R₀ × e^(-kt) using non-linear least squares
+              5. Calculate halfLife = ln(2) / k
+              6. Compare to standard Ebbinghaus curve (R₀=1.0, k=0.14)
+              7. Return {R0, k, halfLife, confidence: min(1.0, reviews.length / 50)}
+            </algorithm>
+            <mathematical-notes>
+              - Non-linear least squares: Minimize Σ(observed - R₀ × e^(-kt))²
+              - Standard Ebbinghaus: k ≈ 0.14 (halfLife ≈ 5 days)
+              - User faster decay: k > 0.14 (shorter halfLife)
+              - User slower decay: k &lt; 0.14 (longer halfLife)
+            </mathematical-notes>
+          </method>
+
+          <method name="analyzeRetentionByTimeInterval">
+            <signature>analyzeRetentionByTimeInterval(userId: string): Promise&lt;RetentionCurveData[]&gt;</signature>
+            <purpose>Calculate actual retention rates at standard intervals for curve fitting</purpose>
+          </method>
+
+          <method name="predictRetentionDecay">
+            <signature>predictRetentionDecay(userId: string, objectiveId: string): Promise&lt;RetentionPrediction&gt;</signature>
+            <purpose>Use personalized curve to predict retention probability at future date for FSRS integration</purpose>
+          </method>
+        </methods>
+        <dependencies>
+          - PerformanceCalculator.calculateRetentionScore (for retention calculation)
+          - Review model (reviewedAt timestamps, FSRS stability values)
+          - Math library for exponential regression (consider using regression-js or custom implementation)
+        </dependencies>
+      </task>
+
+      <task id="6" title="Build Pattern Analysis Engine">
+        <location>apps/web/src/subsystems/behavioral-analytics/behavioral-pattern-engine.ts</location>
+        <class-name>BehavioralPatternEngine</class-name>
+        <methods>
+          <method name="runFullAnalysis">
+            <signature>runFullAnalysis(userId: string): Promise&lt;AnalysisResults&gt;</signature>
+            <orchestration>
+              1. Check data sufficiency (6 weeks, 20+ sessions, 50+ reviews)
+              2. IF insufficient: return {insufficientData: true, requirements: {...}}
+              3. Run all analyzers in parallel:
+                 - studyTimePatterns = await StudyTimeAnalyzer.analyzeOptimalStudyTimes(userId)
+                 - durationPatterns = await SessionDurationAnalyzer.analyzeSessionDurationPatterns(userId)
+                 - contentPrefs = await ContentPreferenceAnalyzer.analyzeContentPreferences(userId)
+                 - learningStyle = await ContentPreferenceAnalyzer.identifyLearningStyle(userId)
+                 - forgettingCurve = await ForgettingCurveAnalyzer.calculatePersonalizedForgettingCurve(userId)
+              4. Aggregate results into BehavioralPattern records
+              5. Save patterns with confidence >= 0.6
+              6. Generate insights via generateInsights()
+              7. Update UserLearningProfile
+              8. Return {patterns[], insights[], profile}
+            </orchestration>
+          </method>
+
+          <method name="detectNewPatterns">
+            <signature>detectNewPatterns(userId: string): Promise&lt;BehavioralPattern[]&gt;</signature>
+            <purpose>Incremental pattern detection since lastAnalyzedAt</purpose>
+          </method>
+
+          <method name="updateExistingPatterns">
+            <signature>updateExistingPatterns(userId: string): Promise&lt;UpdateResults&gt;</signature>
+            <algorithm>
+              1. Compare new analysis results with existing BehavioralPattern records
+              2. IF pattern reoccurs: increment occurrenceCount, update lastSeenAt
+              3. Increase confidence score (max 0.95) with repeated occurrences
+              4. Deprecate patterns not seen in 3 consecutive analyses
+            </algorithm>
+          </method>
+
+          <method name="generateInsights">
+            <signature>generateInsights(userId: string): Promise&lt;BehavioralInsight[]&gt;</signature>
+            <algorithm>
+              1. Query BehavioralPattern WHERE confidence >= 0.7
+              2. Transform patterns into actionable insights using templates:
+                 - OPTIMAL_STUDY_TIME pattern → "You perform 25% better during 7-9 AM. Schedule high-priority missions then."
+                 - SESSION_DURATION pattern → "Your optimal session length is 45 minutes. Consider breaking longer sessions."
+                 - FORGETTING_CURVE pattern → "Your retention decays 15% faster. Plan reviews every 3 days instead of 5."
+              3. Prioritize by impact (high-confidence patterns affecting performance)
+              4. Limit to top 5 insights
+              5. Create BehavioralInsight records with supportingPatternIds
+              6. Return insights[]
+            </algorithm>
+            <templates>
+              <template pattern="OPTIMAL_STUDY_TIME">
+                "You perform {percentBetter}% better during {timeWindow}. Schedule high-priority missions during this time."
+              </template>
+              <template pattern="SESSION_DURATION_PREFERENCE">
+                "Your optimal session length is {optimalMinutes} minutes (based on {sampleSize} sessions). Adjust mission duration preferences."
+              </template>
+              <template pattern="CONTENT_TYPE_PREFERENCE">
+                "You learn best with {topContentType} ({effectiveness}% effectiveness). Prioritize this content type."
+              </template>
+              <template pattern="FORGETTING_CURVE">
+                "Your retention decays {deviationPercent}% {fasterSlower} than average. Adjust review frequency to every {recommendedDays} days."
+              </template>
+            </templates>
+          </method>
+        </methods>
+        <confidence-logic>
+          - Base confidence from sample size: min(1.0, sampleSize / 50)
+          - Increase with repeated occurrences: confidence += 0.05 per occurrence (max 0.95)
+          - Decrease if pattern becomes inconsistent: confidence -= 0.1 if not seen in analysis
+          - Delete if confidence drops below 0.4 or 3 consecutive non-occurrences
+        </confidence-logic>
+      </task>
+
+      <task id="7" title="Build Behavioral Insights Dashboard">
+        <location>apps/web/src/app/analytics/learning-patterns/page.tsx</location>
+        <components>
+          <component name="LearningPatternsPage">
+            <sections>
+              - Header: Learning Profile Summary
+              - StudyTimeHeatmap
+              - SessionPerformanceChart
+              - LearningStyleProfile
+              - ForgettingCurveVisualization
+              - BehavioralInsightsPanel
+            </sections>
+            <data-fetching>
+              - GET /api/analytics/learning-profile (server component initial load)
+              - GET /api/analytics/study-time-heatmap (client component lazy load)
+              - GET /api/analytics/insights (client component)
+            </data-fetching>
+          </component>
+
+          <component name="StudyTimeHeatmap">
+            <library>Recharts (HeatMap or custom grid)</library>
+            <data-structure>
+              heatmapData: [{day: 0-6, hour: 0-23, avgPerformance: 0-100, sessionCount: number}]
+            </data-structure>
+            <styling>
+              - Glassmorphism: bg-white/80 backdrop-blur-md
+              - OKLCH color gradient: oklch(0.9 0.05 145) (light green) to oklch(0.5 0.15 145) (dark green)
+              - Border optimal windows: 2px solid oklch(0.5 0.2 145)
+            </styling>
+            <interactions>
+              - Hover tooltip: "Monday 7 AM: Avg Performance 85, 12 sessions"
+              - Click cell: Filter sessions in detail view
+            </interactions>
+          </component>
+
+          <component name="SessionPerformanceChart">
+            <library>Recharts ScatterChart</library>
+            <axes>
+              - X: Session duration (minutes)
+              - Y: Performance score (0-100)
+            </axes>
+            <data-points>
+              [{duration: number, performance: number, timeOfDay: "morning" | "afternoon" | "evening"}]
+            </data-points>
+            <styling>
+              - Color by time-of-day: morning (oklch(0.7 0.15 60)), afternoon (oklch(0.7 0.15 180)), evening (oklch(0.7 0.15 280))
+              - Trend line: optimal duration sweet spot (polynomial regression)
+              - Markers: current average (diamond), recommended (star)
+            </styling>
+          </component>
+
+          <component name="LearningStyleProfile">
+            <library>Recharts RadarChart</library>
+            <axes>Visual, Auditory, Kinesthetic, Reading/Writing (0-100%)</axes>
+            <data-structure>
+              [{axis: "Visual", value: 45}, {axis: "Auditory", value: 20}, ...]
+            </data-structure>
+            <recommendations>
+              - IF visual > 0.4: "Your visual learning (45%) suggests focus on knowledge graph and diagram-based cards"
+              - IF kinesthetic > 0.4: "Your kinesthetic preference (50%) indicates clinical reasoning scenarios are most effective"
+            </recommendations>
+          </component>
+
+          <component name="ForgettingCurveVisualization">
+            <library>Recharts LineChart</library>
+            <data-series>
+              - Personal curve: [{days: 0, retention: R0}, {days: 1, retention: R0*e^(-k*1)}, ...]
+              - Standard Ebbinghaus: [{days: 0, retention: 1.0}, {days: 1, retention: 1.0*e^(-0.14*1)}, ...]
+            </data-series>
+            <styling>
+              - Personal curve: solid line, oklch(0.5 0.2 230)
+              - Standard curve: dashed line, oklch(0.7 0.05 230)
+            </styling>
+            <annotations>
+              - Annotation at halfLife point: "Your retention drops to 50% after {halfLife} days"
+              - Delta annotation: "Your retention decays {deviationPercent}% faster - plan reviews every {recommendedDays} days"
+            </annotations>
+          </component>
+
+          <component name="BehavioralInsightsPanel">
+            <layout>Card grid (3 columns desktop, 1 column mobile)</layout>
+            <card-structure>
+              - Icon (based on insightType)
+              - Title (from insight.title)
+              - Description (from insight.description)
+              - Confidence indicator (progress bar 0-100%)
+              - Actionable recommendation (highlighted text)
+              - Actions: "Apply Recommendation" button, "Dismiss" button
+            </card-structure>
+            <interactions>
+              - Apply: PATCH /api/analytics/insights/:id/acknowledge {applied: true}
+                        → Trigger mission preference update
+              - Dismiss: PATCH /api/analytics/insights/:id/acknowledge {applied: false}
+            </interactions>
+            <empty-state>
+              "No insights available yet. Complete {weeksNeeded} more weeks of study to enable pattern analysis."
+            </empty-state>
+          </component>
+        </components>
+      </task>
+
+      <task id="8" title="Build Pattern Analysis APIs">
+        <implementation>
+          Implement all endpoints specified in api-endpoints section.
+          Use existing MissionAnalyticsEngine patterns for statistical calculations.
+          Leverage PerformanceCalculator for retention score integration.
+        </implementation>
+        <error-handling>
+          - Insufficient data: Return 200 OK with insufficientData flag + requirements
+          - Analysis in progress: Return 202 Accepted with retry-after header
+          - User opted out: Return 403 Forbidden with privacy message
+        </error-handling>
+        <rate-limiting>
+          - POST /api/analytics/patterns/analyze: Max 1 request per day per user
+          - Other endpoints: Standard rate limit (100 req/min per user)
+        </rate-limiting>
+      </task>
+
+      <task id="9" title="Integrate Pattern Analysis with Mission Generation">
+        <location>Story 2.4 MissionGenerator (existing)</location>
+        <modifications>
+          <modification method="generateMission">
+            1. Query UserLearningProfile for userId
+            2. IF profile exists:
+               - Use preferredStudyTimes to recommend mission scheduling
+               - Set estimatedMinutes = profile.optimalSessionDuration
+               - Prioritize objective types matching profile.learningStyleProfile
+               - Use profile.personalizedForgettingCurve.k for FSRS scheduling adjustments
+            3. ELSE: Use default settings
+          </modification>
+
+          <modification method="scheduleOptimalTime">
+            1. Check current time against preferredStudyTimes
+            2. IF outside optimal window: Display insight
+               "Consider studying at {optimalTime} instead of {currentTime} for {performanceGain}% better retention"
+            3. Add "Optimal Time" field to Mission model (already exists: Mission.objectives JSON can include recommended time)
+          </modification>
+
+          <modification method="personalizeDuration">
+            1. Adjust estimatedMinutes based on optimalSessionDuration
+            2. Account for objective complexity: ADVANCED objectives may need +10-15 minutes
+            3. Add buffer time for breaks based on attention cycle patterns
+          </modification>
+
+          <modification method="personalizeContentMix">
+            1. IF learningStyleProfile.kinesthetic > 0.5: Prioritize clinical reasoning objectives
+            2. IF learningStyleProfile.visual > 0.5: Prioritize knowledge graph exploration + diagram cards
+            3. Balance with curriculum requirements (can't skip required content)
+          </modification>
+        </modifications>
+      </task>
+
+      <task id="10" title="Implement Automated Pattern Analysis Scheduler">
+        <background-job>
+          <schedule>Weekly: Every Sunday 11 PM</schedule>
+          <implementation>
+            - Next.js API route: /api/cron/weekly-pattern-analysis
+            - Vercel Cron Job or node-cron for local development
+          </implementation>
+          <logic>
+            FOR EACH user WHERE behavioralAnalysisEnabled = true:
+              IF user.lastAnalyzedAt IS NULL OR (now - user.lastAnalyzedAt) > 7 days:
+                studySessionCount = COUNT StudySession WHERE userId AND completedAt > (now - 6 weeks)
+                reviewCount = COUNT Review WHERE userId AND reviewedAt > (now - 6 weeks)
+                IF studySessionCount >= 20 AND reviewCount >= 50:
+                  TRIGGER POST /api/analytics/patterns/analyze {userId, forceReanalysis: false}
+                  SEND notification email/in-app
+          </logic>
+        </background-job>
+
+        <incremental-analysis>
+          <condition>forceReanalysis = false</condition>
+          <optimization>
+            1. Only analyze StudySession WHERE startedAt > user.lastAnalyzedAt
+            2. Update existing BehavioralPattern records (increment occurrenceCount)
+            3. Generate new insights only if significant pattern changes detected
+            4. Reduce computation time vs full reanalysis
+          </optimization>
+        </incremental-analysis>
+
+        <notification>
+          <email>
+            Subject: "We've discovered {count} new insights about your learning patterns"
+            Body: Summarize top 3 insights, link to /analytics/learning-patterns
+          </email>
+          <in-app>
+            Badge count on analytics nav item
+            Toast notification on next login
+          </in-app>
+        </notification>
+
+        <data-sufficiency-checks>
+          <insufficient-message>
+            "Complete {weeksNeeded} more weeks of study sessions to unlock personalized learning patterns"
+            "You've completed {currentSessions}/{requiredSessions} sessions needed for learning style profiling"
+          </insufficient-message>
+          <progress-bar>
+            Display on /analytics/learning-patterns page:
+            - Weeks completed: {current} / 6
+            - Sessions completed: {current} / 20
+            - Reviews completed: {current} / 50
+          </progress-bar>
+        </data-sufficiency-checks>
+      </task>
+
+      <task id="11" title="Add Privacy Controls for Behavioral Analysis">
+        <user-model-extension>
+          <fields>
+            - behavioralAnalysisEnabled: Boolean (default true)
+            - learningStyleProfilingEnabled: Boolean (default true)
+            - shareAnonymizedPatterns: Boolean (default false, future feature)
+          </fields>
+        </user-model-extension>
+
+        <settings-page-section>
+          <location>/settings#behavioral-privacy</location>
+          <controls>
+            <toggle name="behavioralAnalysisEnabled" default="true">
+              Enable behavioral pattern analysis
+              Explanation: "Pattern analysis helps optimize your study experience by identifying what works best for you"
+            </toggle>
+
+            <toggle name="learningStyleProfilingEnabled" default="true">
+              Enable learning style profiling
+              Explanation: "VARK profiling adapts content recommendations to your learning preferences"
+            </toggle>
+
+            <button name="deletePatterns" style="destructive">
+              Delete all behavioral patterns
+              Confirmation: "Are you sure? This will permanently delete your learning patterns and insights. This action cannot be undone."
+              Action: DELETE /api/analytics/patterns/all → Clear BehavioralPattern + BehavioralInsight + UserLearningProfile
+            </button>
+
+            <button name="exportPatterns" style="secondary">
+              Export my behavioral patterns
+              Action: GET /api/analytics/patterns/export → Download JSON file
+              Format: {patterns: [], insights: [], profile: {}, exportedAt: ISO8601}
+            </button>
+          </controls>
+        </settings-page-section>
+
+        <privacy-enforcement>
+          <api-middleware>
+            IF !user.behavioralAnalysisEnabled:
+              SKIP pattern analysis in POST /api/analytics/patterns/analyze
+              RETURN {disabled: true, message: "Behavioral analysis is disabled in your privacy settings"}
+          </api-middleware>
+
+          <background-job-check>
+            IF !user.behavioralAnalysisEnabled:
+              SKIP user in weekly pattern analysis scheduler
+          </background-job-check>
+
+          <data-deletion>
+            ON user.behavioralAnalysisEnabled = false:
+              DELETE BehavioralPattern WHERE userId
+              DELETE BehavioralInsight WHERE userId
+              DELETE UserLearningProfile WHERE userId
+          </data-deletion>
+        </privacy-enforcement>
+
+        <ferpa-compliance>
+          - User owns all behavioral data (exportable on demand)
+          - No external sharing without explicit consent
+          - Complete deletion on request
+          - Transparent data collection practices
+        </ferpa-compliance>
+      </task>
+
+      <task id="12" title="Testing and Validation">
+        <manual-testing>
+          <test-scenario name="Full Pattern Analysis with Real Data">
+            <setup>
+              1. Create study sessions across 6+ weeks
+              2. Vary times of day: morning (7-9 AM), afternoon (2-4 PM), evening (7-9 PM), night (10 PM-12 AM)
+              3. Vary durations: 30 min, 45 min, 60 min, 90 min
+              4. Complete different content types: flashcards, validation prompts, clinical reasoning
+              5. Trigger pattern analysis after 6 weeks: POST /api/analytics/patterns/analyze
+            </setup>
+            <validation>
+              - Optimal study time matches manual observation (e.g., best performance at 7-9 AM)
+              - Session duration recommendation aligns with user preference
+              - Learning style profile reflects actual content engagement
+              - Forgetting curve calculation uses actual retention data (verify R0, k, halfLife)
+            </validation>
+          </test-scenario>
+
+          <test-scenario name="Insight Generation Quality">
+            <validation>
+              - Insights are actionable and specific (not generic)
+              - Confidence scores align with data quality (high confidence requires 30+ samples)
+              - Recommendation relevance (e.g., kinesthetic learner gets clinical scenario suggestions)
+              - Insight prioritization (highest impact first, limit 5)
+            </validation>
+          </test-scenario>
+
+          <test-scenario name="Privacy Controls">
+            <steps>
+              1. Toggle behavioral analysis OFF in settings
+              2. Verify POST /api/analytics/patterns/analyze returns {disabled: true}
+              3. Verify patterns stop updating
+              4. Click "Delete all patterns"
+              5. Verify BehavioralPattern, BehavioralInsight, UserLearningProfile deleted
+              6. Click "Export patterns"
+              7. Verify JSON download with correct structure
+            </steps>
+          </test-scenario>
+
+          <test-scenario name="Integration with Mission Generation">
+            <validation>
+              - MissionGenerator queries UserLearningProfile
+              - Mission estimatedMinutes matches optimalSessionDuration
+              - Mission recommended time matches preferredStudyTimes
+              - Content mix prioritizes learningStyleProfile (e.g., 40% clinical scenarios for kinesthetic)
+            </validation>
+          </test-scenario>
+
+          <test-scenario name="Insufficient Data Handling">
+            <setup>
+              1. New user with &lt;6 weeks data
+              2. Trigger pattern analysis
+            </setup>
+            <validation>
+              - API returns {insufficientData: true, requirements: {weeksNeeded: X, sessionsNeeded: Y}}
+              - UI displays progress bars: "6/20 sessions completed"
+              - Graceful degradation: "Complete 3 more weeks to enable personalized patterns"
+            </validation>
+          </test-scenario>
+
+          <test-scenario name="Pattern Evolution Over Time">
+            <steps>
+              1. Run initial analysis with 6 weeks data
+              2. Verify patterns saved with initial confidence
+              3. Continue studying for 2 more weeks
+              4. Run incremental analysis (forceReanalysis=false)
+              5. Verify patterns update: occurrenceCount incremented, confidence increased
+              6. Change study behavior (e.g., switch from morning to evening)
+              7. Run analysis after 3 weeks
+              8. Verify old patterns deprecate, new patterns emerge
+            </steps>
+          </test-scenario>
+
+          <test-scenario name="Automated Weekly Analysis">
+            <setup>
+              Simulate Sunday 11 PM cron job trigger
+            </setup>
+            <validation>
+              - Eligible users (6+ weeks, 20+ sessions) analyzed
+              - Ineligible users skipped with friendly message
+              - Notifications sent (email + in-app badge)
+              - Rate limiting enforced (max 1 analysis/day per user)
+            </validation>
+          </test-scenario>
+        </manual-testing>
+
+        <edge-cases>
+          <case name="User with inconsistent patterns">
+            <behavior>Study times vary widely week-to-week</behavior>
+            <expected>Low confidence scores (&lt;0.6), patterns not saved</expected>
+          </case>
+
+          <case name="User opts out mid-analysis">
+            <behavior>Toggle behavioralAnalysisEnabled OFF during analysis</behavior>
+            <expected>Analysis cancelled, partial results discarded</expected>
+          </case>
+
+          <case name="User has no reviews (FSRS disabled)">
+            <behavior>No card reviews, only lectures studied</behavior>
+            <expected>Forgetting curve cannot be calculated, other patterns still analyzed</expected>
+          </case>
+
+          <case name="User deletes all study sessions">
+            <behavior>Bulk delete historical sessions</behavior>
+            <expected>Patterns become invalid, confidence drops, eventually auto-deleted</expected>
+          </case>
+        </edge-cases>
+      </task>
+    </task-breakdown>
+
+    <development-notes>
+      <note priority="high">
+        Leverage existing MissionAnalyticsEngine statistical methods:
+        - calculatePearsonCorrelation for pattern validation
+        - calculateTTest for significance testing
+        - getStartDateForPeriod for time bucketing
+        This avoids reimplementing statistical calculations.
+      </note>
+
+      <note priority="high">
+        Reuse PerformanceCalculator.calculateRetentionScore for all retention calculations.
+        Don't duplicate FSRS stability normalization logic.
+      </note>
+
+      <note priority="medium">
+        For exponential curve fitting (forgetting curve), consider:
+        - Simple implementation: Linearize with logarithms (log(R) = log(R0) - kt) → linear regression
+        - Advanced: Use regression-js library or ml-regression for non-linear least squares
+        - Validate against standard Ebbinghaus curve (R0=1.0, k=0.14, halfLife≈5 days)
+      </note>
+
+      <note priority="medium">
+        UI components should use shadcn/ui for consistency:
+        - Card component for insight panels
+        - Progress component for confidence indicators
+        - Alert component for insufficient data messages
+        - Dialog component for "Delete patterns" confirmation
+      </note>
+
+      <note priority="low">
+        Future optimization: Cache UserLearningProfile in-memory (Redis or in-process) for 1 hour.
+        Reduces DB queries during mission generation (currently called for every mission).
+      </note>
+
+      <note priority="critical">
+        PRIVACY: All behavioral data collection must respect user.behavioralAnalysisEnabled.
+        Check this flag in:
+        - Pattern analysis API endpoints
+        - Background analysis scheduler
+        - Mission generation personalization
+        Never collect behavioral data if opted out.
+      </note>
+    </development-notes>
+
+    <testing-strategy>
+      <approach>Manual testing during MVP phase (no automated tests initially)</approach>
+      <rationale>
+        Single user, local development. Focus on feature functionality over test coverage.
+        Add Vitest + Playwright when deploying to production with multiple users.
+      </rationale>
+      
+      <critical-paths>
+        1. Full pattern analysis workflow (6 weeks data → insights → profile update)
+        2. Mission generation personalization (profile integration)
+        3. Privacy controls (opt-out → data deletion)
+        4. Insufficient data handling (graceful degradation)
+      </critical-paths>
+
+      <success-criteria>
+        - Pattern detection accuracy validated against manual observation
+        - Insights are actionable and relevant to user behavior
+        - Privacy controls completely delete data when toggled
+        - Mission recommendations reflect learned patterns
+        - UI displays meaningful progress for &lt;6 week users
+      </success-criteria>
+    </testing-strategy>
+  </implementation-guide>
+
+  <references>
+    <document type="story-file">
+      <path>/Users/kyin/Projects/Americano-epic5/docs/stories/story-5.1.md</path>
+      <lines>646 lines (complete story specification)</lines>
+    </document>
+
+    <document type="prd">
+      <path>/Users/kyin/Projects/Americano-epic5/docs/PRD-Americano-2025-10-14.md</path>
+      <relevant-sections>
+        - FR6: Behavioral Learning Pattern Analysis (lines 103-108)
+        - Epic 5: Behavioral Learning Twin (lines 450-468)
+        - Success Criteria: 80% accuracy in predicting struggles (lines 464-467)
+      </relevant-sections>
+    </document>
+
+    <document type="epic-breakdown">
+      <path>/Users/kyin/Projects/Americano-epic5/docs/epics-Americano-2025-10-14.md</path>
+      <relevant-sections>
+        - Story 5.1 Details (lines 698-718)
+        - Epic 5 Goals and Success Criteria (lines 674-695)
+      </relevant-sections>
+    </document>
+
+    <document type="solution-architecture">
+      <path>/Users/kyin/Projects/Americano-epic5/docs/solution-architecture.md</path>
+      <relevant-sections>
+        - Subsystem 5: Behavioral Analytics (lines 604-648)
+        - Database Schema: BehavioralEvent, LearningPattern, PerformancePrediction (lines 1073-1134)
+        - API Architecture: /api/analytics/* endpoints (lines 1399-1433)
+      </relevant-sections>
+    </document>
+
+    <document type="database-schema">
+      <path>/Users/kyin/Projects/Americano-epic5/apps/web/prisma/schema.prisma</path>
+      <lines>785 lines (current schema)</lines>
+      <new-models>BehavioralPattern, BehavioralInsight, UserLearningProfile (to be added)</new-models>
+      <extended-models>BehavioralEvent (add session-level metrics)</extended-models>
+    </document>
+
+    <document type="existing-implementation">
+      <path>/Users/kyin/Projects/Americano-epic5/apps/web/src/lib/mission-analytics-engine.ts</path>
+      <lines>398 lines (Story 2.6 complete)</lines>
+      <reusable-components>Statistical correlation, t-test, time bucketing, confidence scoring</reusable-components>
+    </document>
+
+    <document type="existing-implementation">
+      <path>/Users/kyin/Projects/Americano-epic5/apps/web/src/lib/performance-calculator.ts</path>
+      <lines>758 lines (Story 2.2 complete)</lines>
+      <reusable-components>Retention calculation, weakness scoring, mastery thresholds, session analytics</reusable-components>
+    </document>
+
+    <external-reference type="learning-science">
+      <source>VARK Learning Styles Framework</source>
+      <authors>Fleming &amp; Mills, 1992</authors>
+      <url>https://vark-learn.com/</url>
+    </external-reference>
+
+    <external-reference type="learning-science">
+      <source>Ebbinghaus Forgetting Curve</source>
+      <authors>Hermann Ebbinghaus, 1885</authors>
+      <description>Exponential decay model: R(t) = e^(-t/S), where S is retention strength</description>
+    </external-reference>
+  </references>
+
+  <completion-criteria>
+    <checklist>
+      <item>All 4 new database models implemented and migrated</item>
+      <item>BehavioralEvent model extended with session-level metrics</item>
+      <item>StudyTimeAnalyzer complete with optimal time detection algorithm</item>
+      <item>SessionDurationAnalyzer complete with fatigue detection</item>
+      <item>ContentPreferenceAnalyzer complete with VARK profiling</item>
+      <item>ForgettingCurveAnalyzer complete with exponential curve fitting</item>
+      <item>BehavioralPatternEngine orchestrating all analyzers</item>
+      <item>6 API endpoints implemented with error handling</item>
+      <item>/analytics/learning-patterns page with 5 visualization components</item>
+      <item>Privacy controls in settings with opt-out + data deletion</item>
+      <item>Mission generation integration consuming UserLearningProfile</item>
+      <item>Automated weekly analysis scheduler (cron job)</item>
+      <item>Manual testing scenarios validated with real data</item>
+      <item>Insufficient data handling with progress indicators</item>
+      <item>Pattern evolution tracking (occurrenceCount, confidence updates)</item>
+    </checklist>
+
+    <acceptance-validation>
+      <validation-step>
+        Create 6+ weeks of varied study sessions (different times, durations, content types)
+      </validation-step>
+      <validation-step>
+        Trigger pattern analysis: POST /api/analytics/patterns/analyze
+      </validation-step>
+      <validation-step>
+        Verify optimal study time matches observed best performance window
+      </validation-step>
+      <validation-step>
+        Verify session duration recommendation aligns with user preference
+      </validation-step>
+      <validation-step>
+        Verify learning style profile reflects actual content engagement (VARK scores sum to 1.0)
+      </validation-step>
+      <validation-step>
+        Verify forgetting curve uses actual retention data (R0, k, halfLife calculated)
+      </validation-step>
+      <validation-step>
+        Verify insights are actionable with confidence scores
+      </validation-step>
+      <validation-step>
+        Navigate to /analytics/learning-patterns and validate all 5 visualizations render
+      </validation-step>
+      <validation-step>
+        Apply insight recommendation and verify mission preferences update
+      </validation-step>
+      <validation-step>
+        Toggle behavioral analysis OFF, verify patterns deleted
+      </validation-step>
+      <validation-step>
+        Export patterns JSON, verify data completeness
+      </validation-step>
+      <validation-step>
+        Test with &lt;6 weeks data, verify insufficient data messaging
+      </validation-step>
+    </acceptance-validation>
+  </completion-criteria>
+</story-context>

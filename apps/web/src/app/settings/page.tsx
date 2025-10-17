@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { MissionPreferences } from '@/components/settings/mission-preferences';
 import { MissionAdaptation } from '@/components/settings/mission-adaptation';
 import { PerformancePrivacySettings } from '@/components/settings/performance-privacy-settings';
+import { BehavioralPrivacySettings } from '@/components/settings/behavioral-privacy-settings';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -120,6 +121,9 @@ export default function SettingsPage() {
 
         {/* Performance Privacy Settings */}
         <PerformancePrivacySettings />
+
+        {/* Behavioral Privacy Settings - Story 5.1 Task 11 */}
+        <BehavioralPrivacySettings />
 
         {/* Future Settings Sections */}
         <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
