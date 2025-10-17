@@ -342,7 +342,7 @@ export class EmbeddingBatchJob {
       where: {
         lectureId,
         embedding: null,
-      },
+      } as any, // Type assertion: embedding is Unsupported vector type in Prisma schema
       select: {
         id: true,
         content: true,

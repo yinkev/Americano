@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@/generated/prisma'
 
 // Mock Prisma
 jest.mock('@/lib/db', () => ({

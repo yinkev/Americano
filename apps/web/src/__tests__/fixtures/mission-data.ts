@@ -1,4 +1,4 @@
-import type { Mission, MissionReview, MissionFeedback } from '@prisma/client'
+import type { Mission, MissionReview, MissionFeedback } from '@/generated/prisma'
 
 /**
  * Test fixtures for mission analytics testing

@@ -20,6 +20,7 @@
 
 import { EmbeddingBatchJob } from '../src/subsystems/content-processing/embedding-batch-job'
 import { prisma } from '../src/lib/db'
+import { Prisma } from '../src/generated/prisma'
 
 /**
  * CLI options
@@ -133,7 +134,7 @@ async function getStatistics(
     where: {
       ...whereClause,
       embedding: null,
-    },
+    } as any, // Type assertion: embedding is Unsupported vector type in Prisma schema
   })
 
   // Get detailed breakdown by lecture
@@ -147,7 +148,7 @@ async function getStatistics(
     FROM lectures l
     INNER JOIN content_chunks cc ON cc."lectureId" = l.id
     WHERE cc.embedding IS NULL
-    ${lectureId ? prisma.$queryRawUnsafe`AND l.id = ${lectureId}` : prisma.$queryRawUnsafe``}
+    ${lectureId ? Prisma.sql`AND l.id = ${lectureId}` : Prisma.empty}
     GROUP BY l.id, l.title
     ORDER BY "chunksWithoutEmbeddings" DESC
   `

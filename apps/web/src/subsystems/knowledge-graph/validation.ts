@@ -127,7 +127,7 @@ export function parseQueryParams<T extends z.ZodTypeAny>(
     const result = schema.safeParse(params)
 
     if (!result.success) {
-      const errorMessage = result.error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+      const errorMessage = result.error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
       return {
         success: false,
         error: errorMessage,
@@ -167,7 +167,7 @@ export async function parseRequestBody<T extends z.ZodTypeAny>(
     const result = schema.safeParse(body)
 
     if (!result.success) {
-      const errorMessage = result.error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+      const errorMessage = result.error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
       return {
         success: false,
         error: errorMessage,

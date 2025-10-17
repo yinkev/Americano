@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom';
 
+// Declare vi global for Vitest compatibility
+declare global {
+  var vi: typeof jest;
+}
+
 // Create Vitest compatibility layer for tests migrated from Vitest
 globalThis.vi = jest;
 
@@ -104,8 +109,8 @@ jest.mock('@/lib/db', () => ({
   },
 }));
 
-// Mock Prisma enums
-jest.mock('@prisma/client', () => ({
+// Mock Prisma enums (using generated path)
+jest.mock('@/generated/prisma', () => ({
   PrismaClient: jest.fn(),
   MissionStatus: {
     COMPLETED: 'COMPLETED',

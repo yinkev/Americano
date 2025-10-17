@@ -9,7 +9,7 @@
 
 import { prisma } from '@/lib/db';
 import { MissionAdaptationEngine } from '@/lib/mission-adaptation-engine';
-import { MissionStatus } from '@prisma/client';
+import { MissionStatus } from '@/generated/prisma';
 
 // Mock Prisma client
 jest.mock('@/lib/db');
