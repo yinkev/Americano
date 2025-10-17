@@ -21,7 +21,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
 import { firstAidMapper } from '@/subsystems/knowledge-graph/first-aid-mapper'
-import { rateLimiter } from '@/lib/rate-limiter'
+import { searchRateLimiter } from '@/lib/rate-limiter'
 
 const prisma = new PrismaClient()
 
@@ -77,16 +77,14 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Rate limiting (100 requests per minute per IP)
+    // Rate limiting (60 requests per minute per IP, using search limiter)
     const ip = request.headers.get('x-forwarded-for') || 'unknown'
-    const rateLimitKey = `first-aid-ref:${ip}`
 
-    try {
-      await rateLimiter.check(rateLimitKey, 100, 60 * 1000) // 100 per minute
-    } catch (rateLimitError) {
+    const result = await searchRateLimiter.checkLimit(ip)
+    if (!result.allowed) {
       return NextResponse.json(
-        { error: 'Rate limit exceeded. Please try again later.' },
-        { status: 429 }
+        { error: 'Rate limit exceeded. Please try again later.', retryAfter: result.retryAfter },
+        { status: 429, headers: { 'Retry-After': result.retryAfter.toString() } }
       )
     }
 

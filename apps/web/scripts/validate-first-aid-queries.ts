@@ -88,7 +88,7 @@ async function validateQuery1A() {
   console.log('Testing Query 1A: Cross-reference by concept (vector search)...')
 
   const concept = await prisma.concept.findFirst({
-    where: { embedding: { not: null } },
+    where: { category: { not: null } }, // Use category instead of embedding since embedding is Unsupported
   })
 
   if (!concept || !concept.id) {
@@ -294,7 +294,7 @@ async function validateQuery2B() {
   console.log('Testing Query 2B: Section-based lookup (semantic)...')
 
   const chunk = await prisma.contentChunk.findFirst({
-    where: { embedding: { not: null } },
+    where: { content: { not: null } }, // Use content instead of embedding since embedding is Unsupported
   })
 
   if (!chunk || !chunk.lectureId) {
