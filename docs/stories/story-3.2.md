@@ -1,6 +1,6 @@
 # Story 3.2: Knowledge Graph Construction and Visualization
 
-Status: Draft
+Status: Approved
 
 ## Story
 
@@ -637,7 +637,7 @@ apps/web/src/
 
 ### Context Reference
 
-<!-- Path(s) to story context XML will be added here by context workflow -->
+- docs/stories/story-context-3.2.xml
 
 ### Agent Model Used
 
