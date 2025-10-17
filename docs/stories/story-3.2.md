@@ -1,6 +1,7 @@
 # Story 3.2: Knowledge Graph Construction and Visualization
 
-Status: Approved
+Status: Complete
+Completed: 2025-10-16
 
 ## Story
 
