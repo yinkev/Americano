@@ -29,3 +29,7 @@ sqlalchemy[asyncio]==2.0.36
 # Code quality
 ruff==0.8.4
 mypy==1.13.0
+
+# Type generation (Pydantic V2 → TypeScript)
+# Uses custom script with json-schema-to-typescript
+# No Python dependencies needed (uses npx from web/node_modules)
