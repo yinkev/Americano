@@ -1,0 +1,45 @@
+{
+  "generation_date": "2025-10-20T10:40:00.122232",
+  "n_samples": 200,
+  "n_features": 15,
+  "feature_names": [
+    "retention_score",
+    "retention_decline_rate",
+    "review_lapse_rate",
+    "session_performance_score",
+    "validation_score",
+    "prerequisite_gap_count",
+    "prerequisite_mastery_gap",
+    "content_complexity",
+    "complexity_mismatch",
+    "historical_struggle_score",
+    "content_type_mismatch",
+    "cognitive_load_indicator",
+    "days_until_exam",
+    "days_since_last_study",
+    "workload_level"
+  ],
+  "class_distribution": {
+    "not_struggled": 140,
+    "struggled": 60
+  },
+  "generation_parameters": {
+    "struggle_ratio": 0.3,
+    "ambiguous_ratio": 0.3,
+    "random_seed": 42
+  },
+  "heuristic_rules": {
+    "struggled": {
+      "retention_score": "< 0.4",
+      "review_lapse_rate": "> 0.5",
+      "prerequisite_gap_count": "> 0.6",
+      "session_performance_score": "< 0.4"
+    },
+    "not_struggled": {
+      "retention_score": "> 0.7",
+      "review_lapse_rate": "< 0.2",
+      "prerequisite_gaps": "low",
+      "session_performance_score": "> 0.6"
+    }
+  }
+}

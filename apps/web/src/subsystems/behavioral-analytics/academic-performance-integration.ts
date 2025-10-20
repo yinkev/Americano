@@ -93,7 +93,7 @@ export class AcademicPerformanceIntegration {
    */
   static async calculateBehavioralScore(
     userId: string,
-    dateRange?: { start: Date; end: Date }
+    dateRange?: { start: Date; end: Date },
   ): Promise<number> {
     const range = dateRange || {
       start: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
@@ -128,41 +128,34 @@ export class AcademicPerformanceIntegration {
    */
   static async correlatePerformance(
     userId: string,
-    minWeeks: number = MIN_WEEKS_FOR_CORRELATION
+    minWeeks: number = MIN_WEEKS_FOR_CORRELATION,
   ): Promise<CorrelationResult> {
     // Step 1: Gather time-series data
     const timeSeriesData = await this.gatherTimeSeriesData(userId, minWeeks)
 
     if (timeSeriesData.length < MIN_DATA_POINTS) {
       throw new Error(
-        `Insufficient data for correlation. Need ${MIN_DATA_POINTS} data points, have ${timeSeriesData.length}.`
+        `Insufficient data for correlation. Need ${MIN_DATA_POINTS} data points, have ${timeSeriesData.length}.`,
       )
     }
 
     // Step 2: Calculate Pearson r
     const coefficient = this.calculatePearsonCorrelation(
       timeSeriesData.map((d) => d.behavioralScore),
-      timeSeriesData.map((d) => d.academicScore)
+      timeSeriesData.map((d) => d.academicScore),
     )
 
     // Step 3: Calculate p-value
     const pValue = this.calculatePValue(coefficient, timeSeriesData.length)
 
     // Step 4: Calculate 95% confidence interval
-    const confidenceInterval = this.calculateConfidenceInterval(
-      coefficient,
-      timeSeriesData.length
-    )
+    const confidenceInterval = this.calculateConfidenceInterval(coefficient, timeSeriesData.length)
 
     // Step 5: Generate interpretation
     const interpretation = this.interpretCorrelation(coefficient, pValue)
 
     // Step 6: Generate insights
-    const insights = this.generateCorrelationInsights(
-      coefficient,
-      pValue,
-      timeSeriesData
-    )
+    const insights = this.generateCorrelationInsights(coefficient, pValue, timeSeriesData)
 
     return {
       coefficient,
@@ -186,7 +179,7 @@ export class AcademicPerformanceIntegration {
    */
   private static async calculateBehavioralMetrics(
     userId: string,
-    dateRange: { start: Date; end: Date }
+    dateRange: { start: Date; end: Date },
   ): Promise<BehavioralMetrics> {
     const [sessions, patterns, insights, reviews] = await Promise.all([
       prisma.studySession.findMany({
@@ -219,25 +212,21 @@ export class AcademicPerformanceIntegration {
 
     // 1. Consistency (0-100): Study frequency and regularity
     const totalDays = Math.ceil(
-      (dateRange.end.getTime() - dateRange.start.getTime()) / (24 * 60 * 60 * 1000)
+      (dateRange.end.getTime() - dateRange.start.getTime()) / (24 * 60 * 60 * 1000),
     )
-    const studyDays = new Set(
-      sessions.map((s) => s.startedAt.toISOString().split('T')[0])
-    ).size
+    const studyDays = new Set(sessions.map((s) => s.startedAt.toISOString().split('T')[0])).size
     const consistency = Math.min(100, (studyDays / totalDays) * 100 * 1.5) // Boost for high frequency
 
     // 2. Quality (0-100): Pattern confidence and engagement
     const avgPatternConfidence =
       patterns.length > 0
-        ? (patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length) *
-          100
+        ? (patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length) * 100
         : 50
     const quality = avgPatternConfidence
 
     // 3. Completion (0-100): Mission/session completion rate
     const completedSessions = sessions.filter((s) => s.completedAt).length
-    const completion =
-      sessions.length > 0 ? (completedSessions / sessions.length) * 100 : 0
+    const completion = sessions.length > 0 ? (completedSessions / sessions.length) * 100 : 0
 
     // 4. Insight Application (0-100): Applied insights / total insights
     const totalInsights = await prisma.behavioralInsight.count({
@@ -246,15 +235,11 @@ export class AcademicPerformanceIntegration {
         createdAt: { gte: dateRange.start, lte: dateRange.end },
       },
     })
-    const insightApplication =
-      totalInsights > 0 ? (insights.length / totalInsights) * 100 : 0
+    const insightApplication = totalInsights > 0 ? (insights.length / totalInsights) * 100 : 0
 
     // 5. Retention (0-100): Average review accuracy
-    const correctReviews = reviews.filter(
-      (r) => r.rating === 'GOOD' || r.rating === 'EASY'
-    ).length
-    const retention =
-      reviews.length > 0 ? (correctReviews / reviews.length) * 100 : 0
+    const correctReviews = reviews.filter((r) => r.rating === 'GOOD' || r.rating === 'EASY').length
+    const retention = reviews.length > 0 ? (correctReviews / reviews.length) * 100 : 0
 
     return {
       consistency,
@@ -270,19 +255,15 @@ export class AcademicPerformanceIntegration {
    */
   private static async gatherTimeSeriesData(
     userId: string,
-    minWeeks: number
+    minWeeks: number,
   ): Promise<TimeSeriesDataPoint[]> {
     const startDate = new Date(Date.now() - minWeeks * 7 * 24 * 60 * 60 * 1000)
     const dataPoints: TimeSeriesDataPoint[] = []
 
     // Generate weekly data points
     for (let week = 0; week < minWeeks; week++) {
-      const weekStart = new Date(
-        startDate.getTime() + week * 7 * 24 * 60 * 60 * 1000
-      )
-      const weekEnd = new Date(
-        weekStart.getTime() + 7 * 24 * 60 * 60 * 1000
-      )
+      const weekStart = new Date(startDate.getTime() + week * 7 * 24 * 60 * 60 * 1000)
+      const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
 
       // Calculate behavioral score for this week
       const behavioralScore = await this.calculateBehavioralScore(userId, {
@@ -313,7 +294,7 @@ export class AcademicPerformanceIntegration {
    */
   private static async getAcademicScore(
     userId: string,
-    dateRange: { start: Date; end: Date }
+    dateRange: { start: Date; end: Date },
   ): Promise<number | null> {
     // Try exams first
     const exams = await prisma.exam.findMany({
@@ -336,8 +317,7 @@ export class AcademicPerformanceIntegration {
       if (missions.length === 0) return null
 
       const avgSuccessScore =
-        missions.reduce((sum, m) => sum + (m.successScore || 0), 0) /
-        missions.length
+        missions.reduce((sum, m) => sum + (m.successScore || 0), 0) / missions.length
       return avgSuccessScore * 100 // Convert to 0-100 scale
     }
 
@@ -354,8 +334,7 @@ export class AcademicPerformanceIntegration {
     if (missions.length === 0) return null
 
     const avgSuccessScore =
-      missions.reduce((sum, m) => sum + (m.successScore || 0), 0) /
-      missions.length
+      missions.reduce((sum, m) => sum + (m.successScore || 0), 0) / missions.length
     return avgSuccessScore * 100
   }
 
@@ -431,10 +410,7 @@ export class AcademicPerformanceIntegration {
     const t = 1 / (1 + 0.2316419 * Math.abs(x))
     const d = 0.3989423 * Math.exp((-x * x) / 2)
     const prob =
-      d *
-      t *
-      (0.3193815 +
-        t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))))
+      d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))))
     return x > 0 ? 1 - prob : prob
   }
 
@@ -445,10 +421,7 @@ export class AcademicPerformanceIntegration {
    *
    * DELEGATED TO DATA-SCIENTIST: Validate confidence interval calculation
    */
-  private static calculateConfidenceInterval(
-    r: number,
-    n: number
-  ): [number, number] {
+  private static calculateConfidenceInterval(r: number, n: number): [number, number] {
     if (n < 4) return [r, r] // Not enough data
 
     // Fisher Z-transformation
@@ -494,23 +467,21 @@ export class AcademicPerformanceIntegration {
   private static generateCorrelationInsights(
     r: number,
     pValue: number,
-    timeSeriesData: TimeSeriesDataPoint[]
+    timeSeriesData: TimeSeriesDataPoint[],
   ): string[] {
     const insights: string[] = []
 
     // Causation warning (ALWAYS include)
     insights.push(
-      '⚠️ Correlation does not imply causation. These metrics show association, not proof of direct cause-effect.'
+      '⚠️ Correlation does not imply causation. These metrics show association, not proof of direct cause-effect.',
     )
 
     // Statistical significance
     if (pValue < 0.05) {
-      insights.push(
-        `✓ Statistically significant relationship (p=${pValue.toFixed(3)} < 0.05)`
-      )
+      insights.push(`✓ Statistically significant relationship (p=${pValue.toFixed(3)} < 0.05)`)
     } else {
       insights.push(
-        `✗ Not statistically significant (p=${pValue.toFixed(3)} ≥ 0.05). More data needed.`
+        `✗ Not statistically significant (p=${pValue.toFixed(3)} ≥ 0.05). More data needed.`,
       )
     }
 
@@ -518,16 +489,14 @@ export class AcademicPerformanceIntegration {
     const absR = Math.abs(r)
     if (absR >= 0.7 && pValue < 0.05) {
       insights.push(
-        `Strong ${r > 0 ? 'positive' : 'negative'} association suggests behavioral improvements ${r > 0 ? 'may support' : 'may hinder'} academic performance.`
+        `Strong ${r > 0 ? 'positive' : 'negative'} association suggests behavioral improvements ${r > 0 ? 'may support' : 'may hinder'} academic performance.`,
       )
     } else if (absR >= 0.4 && pValue < 0.05) {
       insights.push(
-        `Moderate association suggests behavioral patterns ${r > 0 ? 'may contribute to' : 'may impact'} academic outcomes.`
+        `Moderate association suggests behavioral patterns ${r > 0 ? 'may contribute to' : 'may impact'} academic outcomes.`,
       )
     } else {
-      insights.push(
-        'Weak or negligible association. Other factors may be more influential.'
-      )
+      insights.push('Weak or negligible association. Other factors may be more influential.')
     }
 
     // Trend analysis
@@ -535,19 +504,15 @@ export class AcademicPerformanceIntegration {
     if (recent.length >= 4) {
       const recentBehavior = recent.map((d) => d.behavioralScore)
       const recentAcademic = recent.map((d) => d.academicScore)
-      const avgBehavior =
-        recentBehavior.reduce((a, b) => a + b, 0) / recentBehavior.length
-      const avgAcademic =
-        recentAcademic.reduce((a, b) => a + b, 0) / recentAcademic.length
+      const avgBehavior = recentBehavior.reduce((a, b) => a + b, 0) / recentBehavior.length
+      const avgAcademic = recentAcademic.reduce((a, b) => a + b, 0) / recentAcademic.length
 
       if (avgBehavior > 70 && avgAcademic > 70) {
         insights.push(
-          '📈 Recent trend: Both behavioral and academic scores are strong. Maintain current habits.'
+          '📈 Recent trend: Both behavioral and academic scores are strong. Maintain current habits.',
         )
       } else if (avgBehavior < 50 && avgAcademic < 50) {
-        insights.push(
-          '📉 Recent trend: Both scores declining. Consider intervention strategies.'
-        )
+        insights.push('📉 Recent trend: Both scores declining. Consider intervention strategies.')
       }
     }
 

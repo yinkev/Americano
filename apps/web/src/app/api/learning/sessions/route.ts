@@ -1,59 +1,59 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { withErrorHandler } from '@/lib/api-error';
-import { z } from 'zod';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { successResponse, errorResponse } from '@/lib/api-response'
+import { withErrorHandler } from '@/lib/api-error'
+import { z } from 'zod'
 
 // Validation schemas
 const startSessionSchema = z.object({
   missionId: z.string().optional(),
-});
+})
 
 const listSessionsSchema = z.object({
   startDate: z.string().nullable().optional(),
   endDate: z.string().nullable().optional(),
   limit: z.coerce.number().min(1).max(100).default(50),
   offset: z.coerce.number().min(0).default(0),
-});
+})
 
 // POST /api/learning/sessions - Start a new study session (Story 2.5 Task 2.1)
 export const POST = withErrorHandler(async (request: NextRequest) => {
-  const body = await request.json();
-  const validatedData = startSessionSchema.parse(body);
+  const body = await request.json()
+  const validatedData = startSessionSchema.parse(body)
 
   // Get user from header (MVP: no auth, user selected in sidebar)
-  const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev';
+  const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev'
   const user = await prisma.user.findUnique({
     where: { email: userEmail },
-  });
+  })
 
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('User not found')
   }
 
   // If missionId provided, load mission objectives (Story 2.5)
-  let missionObjectives: any = null;
-  let currentObjective: any = null;
-  let missionProgress: any = null;
+  let missionObjectives: any = null
+  let currentObjective: any = null
+  let missionProgress: any = null
 
   if (validatedData.missionId) {
     const mission = await prisma.mission.findUnique({
       where: { id: validatedData.missionId },
-    });
+    })
 
     if (!mission) {
-      throw new Error('Mission not found');
+      throw new Error('Mission not found')
     }
 
     // mission.objectives is JSON array from Story 2.4
-    missionObjectives = mission.objectives as any[];
+    missionObjectives = mission.objectives as any[]
 
     if (Array.isArray(missionObjectives) && missionObjectives.length > 0) {
-      currentObjective = missionObjectives[0]; // First objective
+      currentObjective = missionObjectives[0] // First objective
       missionProgress = {
         completed: 0,
         total: missionObjectives.length,
-      };
+      }
     }
   }
 
@@ -70,51 +70,53 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     include: {
       mission: true,
     },
-  });
+  })
 
-  return Response.json(successResponse({
-    session,
-    currentObjective,
-    missionProgress,
-    message: 'Study session started successfully',
-  }));
-});
+  return Response.json(
+    successResponse({
+      session,
+      currentObjective,
+      missionProgress,
+      message: 'Study session started successfully',
+    }),
+  )
+})
 
 // GET /api/learning/sessions - List study sessions with filtering
 export const GET = withErrorHandler(async (request: NextRequest) => {
-  const searchParams = request.nextUrl.searchParams;
+  const searchParams = request.nextUrl.searchParams
 
   const queryParams = {
     startDate: searchParams.get('startDate'),
     endDate: searchParams.get('endDate'),
     limit: searchParams.get('limit'),
     offset: searchParams.get('offset'),
-  };
+  }
 
-  const validatedParams = listSessionsSchema.parse(queryParams);
+  const validatedParams = listSessionsSchema.parse(queryParams)
 
   // Get user from header (MVP: no auth, user selected in sidebar)
-  const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev';
+  const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev'
   const user = await prisma.user.findUnique({
     where: { email: userEmail },
-  });
+  })
 
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('User not found')
   }
 
   // Build where clause
   const where: any = {
     userId: user.id,
-  };
+  }
 
   if (validatedParams.startDate || validatedParams.endDate) {
-    where.startedAt = {};
+    where.startedAt = {}
     if (validatedParams.startDate) {
-      where.startedAt.gte = new Date(validatedParams.startDate);
+      where.startedAt.gte = new Date(validatedParams.startDate)
     }
     if (validatedParams.endDate) {
-      where.startedAt.lte = new Date(validatedParams.endDate);
+      where.startedAt.lte = new Date(validatedParams.endDate)
     }
   }
 
@@ -156,32 +158,34 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       take: validatedParams.limit,
       skip: validatedParams.offset,
     }),
-  ]);
+  ])
 
   // Calculate total study time
   const totalStudyTime = sessions.reduce((acc, session) => {
-    return acc + (session.durationMs || 0);
-  }, 0);
+    return acc + (session.durationMs || 0)
+  }, 0)
 
   // Group sessions by date
   const sessionsByDate = sessions.reduce((acc: any, session) => {
-    const date = session.startedAt.toISOString().split('T')[0];
+    const date = session.startedAt.toISOString().split('T')[0]
     if (!acc[date]) {
-      acc[date] = [];
+      acc[date] = []
     }
-    acc[date].push(session);
-    return acc;
-  }, {});
+    acc[date].push(session)
+    return acc
+  }, {})
 
-  return Response.json(successResponse({
-    sessions,
-    total,
-    totalStudyTime,
-    sessionsByDate,
-    pagination: {
-      limit: validatedParams.limit,
-      offset: validatedParams.offset,
-      hasMore: validatedParams.offset + validatedParams.limit < total,
-    },
-  }));
-});
+  return Response.json(
+    successResponse({
+      sessions,
+      total,
+      totalStudyTime,
+      sessionsByDate,
+      pagination: {
+        limit: validatedParams.limit,
+        offset: validatedParams.offset,
+        hasMore: validatedParams.offset + validatedParams.limit < total,
+      },
+    }),
+  )
+})

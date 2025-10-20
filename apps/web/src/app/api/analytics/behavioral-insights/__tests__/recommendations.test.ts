@@ -49,11 +49,11 @@ describe('GET /api/analytics/behavioral-insights/recommendations', () => {
     }))
 
     ;(RecommendationsEngine.generateRecommendations as jest.Mock).mockResolvedValue(
-      mockRecommendations
+      mockRecommendations,
     )
 
     const request = new NextRequest(
-      `http://localhost/api/analytics/behavioral-insights/recommendations?userId=${mockUserId}`
+      `http://localhost/api/analytics/behavioral-insights/recommendations?userId=${mockUserId}`,
     )
 
     const response = await GET(request)
@@ -91,11 +91,11 @@ describe('GET /api/analytics/behavioral-insights/recommendations', () => {
     ]
 
     ;(RecommendationsEngine.generateRecommendations as jest.Mock).mockResolvedValue(
-      mockRecommendations
+      mockRecommendations,
     )
 
     const request = new NextRequest(
-      `http://localhost/api/analytics/behavioral-insights/recommendations?userId=${mockUserId}&includeApplied=false`
+      `http://localhost/api/analytics/behavioral-insights/recommendations?userId=${mockUserId}&includeApplied=false`,
     )
 
     const response = await GET(request)
@@ -119,11 +119,11 @@ describe('GET /api/analytics/behavioral-insights/recommendations', () => {
     }))
 
     ;(RecommendationsEngine.generateRecommendations as jest.Mock).mockResolvedValue(
-      mockRecommendations
+      mockRecommendations,
     )
 
     const request = new NextRequest(
-      `http://localhost/api/analytics/behavioral-insights/recommendations?userId=${mockUserId}&limit=3`
+      `http://localhost/api/analytics/behavioral-insights/recommendations?userId=${mockUserId}&limit=3`,
     )
 
     const response = await GET(request)
@@ -135,7 +135,7 @@ describe('GET /api/analytics/behavioral-insights/recommendations', () => {
 
   it('should return 400 for invalid limit parameter', async () => {
     const request = new NextRequest(
-      `http://localhost/api/analytics/behavioral-insights/recommendations?userId=${mockUserId}&limit=100`
+      `http://localhost/api/analytics/behavioral-insights/recommendations?userId=${mockUserId}&limit=100`,
     )
 
     const response = await GET(request)
@@ -145,7 +145,7 @@ describe('GET /api/analytics/behavioral-insights/recommendations', () => {
 
   it('should return 400 for missing userId parameter', async () => {
     const request = new NextRequest(
-      'http://localhost/api/analytics/behavioral-insights/recommendations'
+      'http://localhost/api/analytics/behavioral-insights/recommendations',
     )
 
     const response = await GET(request)

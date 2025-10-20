@@ -5,9 +5,9 @@
  * Displays prediction accuracy metrics over time with Recharts
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   LineChart,
   Line,
@@ -17,90 +17,67 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-} from 'recharts';
-import { format } from 'date-fns';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+} from 'recharts'
+import { format } from 'date-fns'
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 interface AccuracyData {
-  week: string;
-  precision: number;
-  recall: number;
-  f1Score: number;
-  platformAverage: number;
+  week: string
+  precision: number
+  recall: number
+  f1Score: number
+  platformAverage: number
 }
 
 export function PredictionAccuracyChart() {
-  const [data, setData] = useState<AccuracyData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<AccuracyData[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchAccuracyData();
-  }, []);
+    fetchAccuracyData()
+  }, [])
 
   async function fetchAccuracyData() {
     try {
-      setLoading(true);
+      setLoading(true)
 
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/analytics/model-performance', {
-      //   headers: { 'X-User-Email': 'kevy@americano.dev' },
-      // });
-      // const result = await response.json();
+      // Fetch from real API endpoint (proxies to ML service)
+      const response = await fetch('/api/analytics/model-performance?userId=user-kevy')
 
-      // Mock data for MVP - showing improvement over time
-      const mockData: AccuracyData[] = [
-        {
-          week: 'Week 1',
-          precision: 62,
-          recall: 58,
-          f1Score: 60,
-          platformAverage: 72,
-        },
-        {
-          week: 'Week 2',
-          precision: 68,
-          recall: 64,
-          f1Score: 66,
-          platformAverage: 72,
-        },
-        {
-          week: 'Week 3',
-          precision: 72,
-          recall: 69,
-          f1Score: 70.5,
-          platformAverage: 73,
-        },
-        {
-          week: 'Week 4',
-          precision: 75,
-          recall: 73,
-          f1Score: 74,
-          platformAverage: 73,
-        },
-        {
-          week: 'Week 5',
-          precision: 78,
-          recall: 76,
-          f1Score: 77,
-          platformAverage: 74,
-        },
-        {
-          week: 'Week 6',
-          precision: 80,
-          recall: 78,
-          f1Score: 79,
-          platformAverage: 74,
-        },
-      ];
+      if (!response.ok) {
+        throw new Error(`Failed to fetch model performance: ${response.statusText}`)
+      }
 
-      setData(mockData);
+      const result = await response.json()
+
+      // Transform API response to chart format
+      if (result.success && result.metrics) {
+        const metrics = result.metrics
+
+        // Create weekly data points from historical metrics if available
+        // For MVP, we use the current metrics as the latest week
+        const chartData: AccuracyData[] = [
+          {
+            week: 'Current',
+            precision: (metrics.precision || 0) * 100,
+            recall: (metrics.recall || 0) * 100,
+            f1Score: (metrics.f1_score || 0) * 100,
+            platformAverage: 74, // Platform baseline (would come from API in production)
+          },
+        ]
+
+        setData(chartData)
+      } else {
+        // No data available yet
+        setData([])
+      }
     } catch (error) {
-      console.error('Error fetching accuracy data:', error);
-      setData([]);
+      console.error('Error fetching accuracy data:', error)
+      setData([])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -108,12 +85,10 @@ export function PredictionAccuracyChart() {
     return (
       <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
         <CardContent className="p-6 h-96 flex items-center justify-center">
-          <p className="text-sm text-muted-foreground">
-            Loading accuracy trends...
-          </p>
+          <p className="text-sm text-muted-foreground">Loading accuracy trends...</p>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (data.length === 0) {
@@ -128,48 +103,43 @@ export function PredictionAccuracyChart() {
           </p>
         </CardContent>
       </Card>
-    );
+    )
   }
 
-  const latestData = data[data.length - 1];
-  const previousData = data.length > 1 ? data[data.length - 2] : null;
+  const latestData = data[data.length - 1]
+  const previousData = data.length > 1 ? data[data.length - 2] : null
 
   // Calculate trends
   const getTrend = (current: number, previous: number | null) => {
-    if (!previous) return 'stable';
-    const change = current - previous;
-    if (Math.abs(change) < 2) return 'stable';
-    return change > 0 ? 'improving' : 'declining';
-  };
+    if (!previous) return 'stable'
+    const change = current - previous
+    if (Math.abs(change) < 2) return 'stable'
+    return change > 0 ? 'improving' : 'declining'
+  }
 
-  const f1Trend = getTrend(
-    latestData.f1Score,
-    previousData?.f1Score || null
-  );
+  const f1Trend = getTrend(latestData.f1Score, previousData?.f1Score || null)
 
   const getTrendIcon = (trend: string) => {
-    if (trend === 'improving') return TrendingUp;
-    if (trend === 'declining') return TrendingDown;
-    return Minus;
-  };
+    if (trend === 'improving') return TrendingUp
+    if (trend === 'declining') return TrendingDown
+    return Minus
+  }
 
   const getTrendColor = (trend: string) => {
-    if (trend === 'improving') return 'oklch(0.7 0.12 145)';
-    if (trend === 'declining') return 'oklch(0.6 0.15 25)';
-    return 'oklch(0.556 0 0)';
-  };
+    if (trend === 'improving') return 'oklch(0.7 0.12 145)'
+    if (trend === 'declining') return 'oklch(0.6 0.15 25)'
+    return 'oklch(0.556 0 0)'
+  }
 
-  const TrendIcon = getTrendIcon(f1Trend);
-  const trendColor = getTrendColor(f1Trend);
+  const TrendIcon = getTrendIcon(f1Trend)
+  const trendColor = getTrendColor(f1Trend)
 
   return (
     <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
-            <CardTitle className="font-heading text-lg mb-2">
-              Model Performance Over Time
-            </CardTitle>
+            <CardTitle className="font-heading text-lg mb-2">Model Performance Over Time</CardTitle>
             <p className="text-sm text-muted-foreground">
               Your prediction model accuracy vs platform average
             </p>
@@ -198,44 +168,25 @@ export function PredictionAccuracyChart() {
         <div className="grid grid-cols-3 gap-4 p-4 rounded-xl bg-muted/50">
           <div>
             <p className="text-xs text-muted-foreground mb-1">Precision</p>
-            <p className="text-2xl font-bold text-foreground">
-              {latestData.precision.toFixed(0)}%
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Accuracy when predicting struggle
-            </p>
+            <p className="text-2xl font-bold text-foreground">{latestData.precision.toFixed(0)}%</p>
+            <p className="text-xs text-muted-foreground mt-1">Accuracy when predicting struggle</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-1">Recall</p>
-            <p className="text-2xl font-bold text-foreground">
-              {latestData.recall.toFixed(0)}%
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Catches struggles early
-            </p>
+            <p className="text-2xl font-bold text-foreground">{latestData.recall.toFixed(0)}%</p>
+            <p className="text-xs text-muted-foreground mt-1">Catches struggles early</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-1">F1 Score</p>
-            <p className="text-2xl font-bold text-foreground">
-              {latestData.f1Score.toFixed(0)}%
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Overall accuracy
-            </p>
+            <p className="text-2xl font-bold text-foreground">{latestData.f1Score.toFixed(0)}%</p>
+            <p className="text-xs text-muted-foreground mt-1">Overall accuracy</p>
           </div>
         </div>
 
         {/* Chart */}
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart
-            data={data}
-            margin={{ top: 5, right: 10, bottom: 5, left: 0 }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="oklch(0.9 0 0)"
-              vertical={false}
-            />
+          <LineChart data={data} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" vertical={false} />
             <XAxis
               dataKey="week"
               stroke="oklch(0.556 0 0)"
@@ -341,9 +292,7 @@ export function PredictionAccuracyChart() {
         {/* Comparison with Platform */}
         <div className="flex items-center justify-between p-4 rounded-xl bg-muted/50">
           <div>
-            <p className="text-sm font-medium text-foreground mb-1">
-              Your Model vs Platform
-            </p>
+            <p className="text-sm font-medium text-foreground mb-1">Your Model vs Platform</p>
             <p className="text-xs text-muted-foreground">
               {latestData.f1Score >= latestData.platformAverage
                 ? 'Your model is performing above average!'
@@ -360,5 +309,5 @@ export function PredictionAccuracyChart() {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

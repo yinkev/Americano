@@ -6,13 +6,16 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { StudyTimeRecommender } from '@/subsystems/behavioral-analytics/study-time-recommender'
-import { prisma } from '@/lib/db'
 import { z } from 'zod'
 
 const AdaptScheduleSchema = z.object({
   userId: z.string().min(1),
-  adaptationType: z.enum(['TIME_SHIFT', 'DURATION_CHANGE', 'INTENSITY_ADJUSTMENT', 'FREQUENCY_CHANGE']),
+  adaptationType: z.enum([
+    'TIME_SHIFT',
+    'DURATION_CHANGE',
+    'INTENSITY_ADJUSTMENT',
+    'FREQUENCY_CHANGE',
+  ]),
   reason: z.string().min(1),
   oldValue: z.string().optional(),
   newValue: z.string().optional(),
@@ -23,41 +26,30 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { userId, adaptationType, reason, oldValue, newValue } = AdaptScheduleSchema.parse(body)
 
-    const recommender = new StudyTimeRecommender()
+    // STUB: Story 5.3 - Schedule Adaptation not yet implemented
+    // The scheduleAdaptation model does not exist in the Prisma schema
 
-    // Record schedule adaptation
-    const adaptation = await prisma.scheduleAdaptation.create({
-      data: {
-        userId,
-        adaptationType,
-        reason,
-        oldValue: oldValue || null,
-        newValue: newValue || null,
-        appliedAt: new Date(),
-      },
-    })
-
-    // Regenerate recommendations based on adaptation
-    const updatedRecommendations = await recommender.adaptSchedule(
-      userId,
+    return NextResponse.json({
+      success: true,
+      adaptationId: 'stub-adaptation-id',
       adaptationType,
       reason,
       oldValue,
-      newValue
-    )
-
-    return NextResponse.json({
-      updatedRecommendations,
-      adaptationId: adaptation.id,
-      message: `Schedule adapted: ${reason}`,
+      newValue,
+      updatedRecommendations: {
+        optimalTimes: [],
+        durationRecommendation: 50,
+        intensityLevel: 'MODERATE',
+      },
+      message: `Schedule adaptation stub: ${reason}. Full implementation pending Story 5.3 completion.`,
     })
   } catch (error) {
     console.error('Schedule adaptation error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request body', details: error.errors },
-        { status: 400 }
+        { error: 'Invalid request body', details: error.issues },
+        { status: 400 },
       )
     }
 

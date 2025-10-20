@@ -11,6 +11,7 @@ import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
 import { RecommendationsEngine } from '@/subsystems/behavioral-analytics/recommendations-engine'
+import { withCache, CACHE_TTL } from '@/lib/cache'
 
 // Zod validation schema for query parameters
 const RecommendationsQuerySchema = z.object({
@@ -18,8 +19,8 @@ const RecommendationsQuerySchema = z.object({
   includeApplied: z
     .string()
     .optional()
-    .transform((val) => val === 'true')
-    .default('false'),
+    .default('false')
+    .transform((val) => val === 'true'),
   limit: z
     .string()
     .optional()
@@ -48,25 +49,27 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     limit: searchParams.get('limit') || undefined,
   })
 
-  // Generate fresh recommendations using RecommendationsEngine
-  const recommendations = await RecommendationsEngine.generateRecommendations(
-    params.userId
-  )
+  // Generate recommendations with caching (5 min TTL)
+  const cacheKey = `user:${params.userId}:recommendations:${params.includeApplied}:${params.limit}`
 
-  // Filter out applied recommendations if requested
-  let filteredRecommendations = recommendations
-  if (!params.includeApplied) {
-    filteredRecommendations = recommendations.filter((rec) => !rec.appliedAt)
-  }
+  const result = await withCache(cacheKey, CACHE_TTL.MEDIUM, async () => {
+    const recommendations = await RecommendationsEngine.generateRecommendations(params.userId)
 
-  // Apply limit
-  const limitedRecommendations = filteredRecommendations.slice(0, params.limit)
+    // Filter out applied recommendations if requested
+    let filteredRecommendations = recommendations
+    if (!params.includeApplied) {
+      filteredRecommendations = recommendations.filter((rec) => !rec.appliedAt)
+    }
 
-  return Response.json(
-    successResponse({
+    // Apply limit
+    const limitedRecommendations = filteredRecommendations.slice(0, params.limit)
+
+    return {
       recommendations: limitedRecommendations,
       count: limitedRecommendations.length,
       total: filteredRecommendations.length,
-    })
-  )
+    }
+  })
+
+  return Response.json(successResponse(result))
 })

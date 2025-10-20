@@ -13,10 +13,7 @@ import { getCurrentUserId } from '@/lib/auth'
 /**
  * PATCH /api/exams/[id] - Update exam
  */
-async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const userId = await getCurrentUserId()
   const { id } = await params
   const body = await request.json()
@@ -79,10 +76,7 @@ async function PATCH(
 /**
  * DELETE /api/exams/[id] - Delete exam
  */
-async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const userId = await getCurrentUserId()
   const { id } = await params
 

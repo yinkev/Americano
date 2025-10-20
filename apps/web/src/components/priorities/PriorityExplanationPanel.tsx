@@ -35,7 +35,7 @@ export function PriorityExplanationPanel({
         'shadow-[0_8px_32px_rgba(31,38,135,0.1)]',
         'rounded-2xl p-6',
         'transition-all duration-200 ease-in-out',
-        className
+        className,
       )}
     >
       {/* Header - Always Visible */}
@@ -46,15 +46,11 @@ export function PriorityExplanationPanel({
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-3">
             <Info className="w-5 h-5 text-gray-400" />
-            <h3 className="text-lg font-semibold text-gray-900">
-              Why this priority?
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900">Why this priority?</h3>
             <PriorityBadge score={explanation.priorityScore} showScore />
           </div>
 
-          <p className="text-sm text-gray-600 leading-relaxed">
-            {explanation.reasoning}
-          </p>
+          <p className="text-sm text-gray-600 leading-relaxed">{explanation.reasoning}</p>
         </div>
 
         <div className="flex-shrink-0">
@@ -85,31 +81,23 @@ export function PriorityExplanationPanel({
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-gray-500">
-                          #{index + 1}
-                        </span>
-                        <span className="text-sm font-semibold text-gray-900">
-                          {factor.name}
-                        </span>
+                        <span className="text-xs font-medium text-gray-500">#{index + 1}</span>
+                        <span className="text-sm font-semibold text-gray-900">{factor.name}</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-sm text-gray-600">
                           {(factor.contribution * 100).toFixed(0)}%
                         </span>
                         <span className="text-xs text-gray-400">
-                          ({(factor.weight * 100).toFixed(0)}% weight × {(factor.value * 100).toFixed(0)}%)
+                          ({(factor.weight * 100).toFixed(0)}% weight ×{' '}
+                          {(factor.value * 100).toFixed(0)}%)
                         </span>
                       </div>
                     </div>
 
-                    <Progress
-                      value={factor.contribution * 100}
-                      className="h-2"
-                    />
+                    <Progress value={factor.contribution * 100} className="h-2" />
 
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      {factor.explanation}
-                    </p>
+                    <p className="text-xs text-gray-600 leading-relaxed">{factor.explanation}</p>
                   </div>
                 ))}
             </div>
@@ -131,9 +119,7 @@ export function PriorityExplanationPanel({
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold mt-0.5">
                       {index + 1}
                     </div>
-                    <p className="text-sm text-gray-700 leading-relaxed flex-1">
-                      {rec}
-                    </p>
+                    <p className="text-sm text-gray-700 leading-relaxed flex-1">{rec}</p>
                   </div>
                 ))}
               </div>
@@ -155,23 +141,19 @@ export function PriorityExplanationCompact({
   explanation: PriorityExplanation
   className?: string
 }) {
-  const topFactors = explanation.factors
-    .sort((a, b) => b.contribution - a.contribution)
-    .slice(0, 3)
+  const topFactors = explanation.factors.sort((a, b) => b.contribution - a.contribution).slice(0, 3)
 
   return (
     <div
       className={cn(
         'space-y-2 p-4 rounded-xl',
         'bg-white/60 backdrop-blur-sm border border-gray-100',
-        className
+        className,
       )}
     >
       <div className="flex items-center gap-2">
         <PriorityBadge score={explanation.priorityScore} />
-        <span className="text-xs text-gray-500">
-          Top factors:
-        </span>
+        <span className="text-xs text-gray-500">Top factors:</span>
       </div>
 
       <div className="space-y-1">

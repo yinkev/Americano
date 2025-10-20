@@ -44,7 +44,10 @@ export interface CalendarProvider {
    * @param redirectUri The same redirect URI used in authorization
    * @returns Access token and refresh token
    */
-  exchangeCodeForTokens(code: string, redirectUri: string): Promise<{
+  exchangeCodeForTokens(
+    code: string,
+    redirectUri: string,
+  ): Promise<{
     accessToken: string
     refreshToken: string
     expiresIn: number
@@ -67,11 +70,7 @@ export interface CalendarProvider {
    * @param endDate End of date range
    * @returns Array of calendar events
    */
-  getEvents(
-    accessToken: string,
-    startDate: Date,
-    endDate: Date
-  ): Promise<CalendarEvent[]>
+  getEvents(accessToken: string, startDate: Date, endDate: Date): Promise<CalendarEvent[]>
 
   /**
    * Check availability (free/busy) for time slots
@@ -83,7 +82,7 @@ export interface CalendarProvider {
   getAvailability(
     accessToken: string,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<CalendarAvailability[]>
 
   /**
@@ -92,10 +91,7 @@ export interface CalendarProvider {
    * @param event Event details
    * @returns Created event with ID
    */
-  createEvent(
-    accessToken: string,
-    event: Omit<CalendarEvent, 'id'>
-  ): Promise<CalendarEvent>
+  createEvent(accessToken: string, event: Omit<CalendarEvent, 'id'>): Promise<CalendarEvent>
 
   /**
    * Revoke OAuth tokens

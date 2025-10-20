@@ -12,10 +12,7 @@ import { getCurrentUserId } from '@/lib/auth'
 /**
  * GET /api/priorities/objectives/:id/explain - Explain priority
  */
-async function GET(
-  request: NextRequest,
-  props: { params: Promise<{ id: string }> }
-) {
+async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const userId = await getCurrentUserId()
   const params = await props.params
   const { id: objectiveId } = params

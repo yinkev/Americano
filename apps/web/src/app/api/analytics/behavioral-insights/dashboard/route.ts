@@ -53,7 +53,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       userId,
       status: 'PENDING',
     },
-    orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
+    orderBy: [{ priorityScore: 'desc' }, { createdAt: 'desc' }],
     take: 5,
   })
 
@@ -71,14 +71,17 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const totalSessions = await prisma.studySession.count({
     where: {
       userId,
-      createdAt: {
+      startedAt: {
         gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
       },
     },
   })
 
   const consistencyScore = Math.min(100, (totalSessions / 30) * 100) // Sessions per day as %
-  const focusScore = patterns.length > 0 ? Math.round(patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length * 100) : 0
+  const focusScore =
+    patterns.length > 0
+      ? Math.round((patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length) * 100)
+      : 0
   const retentionScore = 75 // Placeholder - would calculate from review accuracy
   const efficiencyScore = 80 // Placeholder - would calculate from mission completion rate
 
@@ -118,6 +121,6 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
         recentInsightsCount,
         lastUpdated: new Date().toISOString(),
       },
-    })
+    }),
   )
 })

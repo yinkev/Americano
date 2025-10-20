@@ -105,10 +105,14 @@ export class SessionDurationOptimizer {
 
     if (recentLoad > 20) {
       baseDuration = Math.round(baseDuration * 0.85)
-      reasoning.push(`High study load (${Math.round(recentLoad)} hrs this week): -15% duration for recovery`)
+      reasoning.push(
+        `High study load (${Math.round(recentLoad)} hrs this week): -15% duration for recovery`,
+      )
     } else if (recentLoad < 5) {
       baseDuration = Math.round(baseDuration * 1.1)
-      reasoning.push(`Low study load (${Math.round(recentLoad)} hrs this week): +10% duration (capacity available)`)
+      reasoning.push(
+        `Low study load (${Math.round(recentLoad)} hrs this week): +10% duration (capacity available)`,
+      )
     }
 
     // 5. Calculate break schedule
@@ -245,8 +249,7 @@ export class SessionDurationOptimizer {
 
     const recentReviews = session.reviews.filter((r) => r.reviewedAt.getTime() >= tenMinutesAgo)
     const earlyReviews = session.reviews.filter(
-      (r) =>
-        r.reviewedAt.getTime() >= sessionStart && r.reviewedAt.getTime() <= firstTenMinutes,
+      (r) => r.reviewedAt.getTime() >= sessionStart && r.reviewedAt.getTime() <= firstTenMinutes,
     )
 
     if (recentReviews.length < 3 || earlyReviews.length < 3) {

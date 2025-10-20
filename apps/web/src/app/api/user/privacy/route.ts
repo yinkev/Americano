@@ -2,10 +2,10 @@
 // GET: Fetch user privacy settings
 // PATCH: Update user privacy settings (Story 5.1 Task 11)
 
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse } from '@/lib/api-response';
-import { ApiError, withErrorHandler } from '@/lib/api-error';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { successResponse } from '@/lib/api-response'
+import { ApiError, withErrorHandler } from '@/lib/api-error'
 
 /**
  * GET /api/user/privacy
@@ -23,12 +23,10 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       learningStyleProfilingEnabled: true,
       shareAnonymizedPatterns: true,
     },
-  });
+  })
 
   if (!user) {
-    throw ApiError.notFound(
-      'User not found. Run: npx prisma db seed to create default user'
-    );
+    throw ApiError.notFound('User not found. Run: npx prisma db seed to create default user')
   }
 
   return Response.json(
@@ -36,9 +34,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       behavioralAnalysisEnabled: user.behavioralAnalysisEnabled,
       learningStyleProfilingEnabled: user.learningStyleProfilingEnabled,
       shareAnonymizedPatterns: user.shareAnonymizedPatterns,
-    })
-  );
-});
+    }),
+  )
+})
 
 /**
  * PATCH /api/user/privacy
@@ -49,38 +47,33 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
  */
 export const PATCH = withErrorHandler(async (request: NextRequest) => {
   // Parse request body
-  const body = await request.json();
-  const { behavioralAnalysisEnabled, learningStyleProfilingEnabled } = body;
+  const body = await request.json()
+  const { behavioralAnalysisEnabled, learningStyleProfilingEnabled } = body
 
   // Validate types
-  if (
-    behavioralAnalysisEnabled !== undefined &&
-    typeof behavioralAnalysisEnabled !== 'boolean'
-  ) {
-    throw ApiError.badRequest('behavioralAnalysisEnabled must be a boolean');
+  if (behavioralAnalysisEnabled !== undefined && typeof behavioralAnalysisEnabled !== 'boolean') {
+    throw ApiError.badRequest('behavioralAnalysisEnabled must be a boolean')
   }
 
   if (
     learningStyleProfilingEnabled !== undefined &&
     typeof learningStyleProfilingEnabled !== 'boolean'
   ) {
-    throw ApiError.badRequest('learningStyleProfilingEnabled must be a boolean');
+    throw ApiError.badRequest('learningStyleProfilingEnabled must be a boolean')
   }
 
   // At least one field must be provided
   if (behavioralAnalysisEnabled === undefined && learningStyleProfilingEnabled === undefined) {
-    throw ApiError.badRequest('At least one privacy setting must be provided');
+    throw ApiError.badRequest('At least one privacy setting must be provided')
   }
 
   // For MVP: Use hardcoded Kevy user (auth deferred)
   const existingUser = await prisma.user.findFirst({
     where: { email: 'kevy@americano.dev' },
-  });
+  })
 
   if (!existingUser) {
-    throw ApiError.notFound(
-      'User not found. Run: npx prisma db seed to create default user'
-    );
+    throw ApiError.notFound('User not found. Run: npx prisma db seed to create default user')
   }
 
   // Update privacy settings
@@ -96,7 +89,7 @@ export const PATCH = withErrorHandler(async (request: NextRequest) => {
       learningStyleProfilingEnabled: true,
       shareAnonymizedPatterns: true,
     },
-  });
+  })
 
   // If behavioral analysis is disabled, delete all behavioral data
   if (behavioralAnalysisEnabled === false) {
@@ -113,7 +106,7 @@ export const PATCH = withErrorHandler(async (request: NextRequest) => {
       prisma.userLearningProfile.deleteMany({
         where: { userId: existingUser.id },
       }),
-    ]);
+    ])
   }
 
   return Response.json(
@@ -121,6 +114,6 @@ export const PATCH = withErrorHandler(async (request: NextRequest) => {
       behavioralAnalysisEnabled: updatedUser.behavioralAnalysisEnabled,
       learningStyleProfilingEnabled: updatedUser.learningStyleProfilingEnabled,
       shareAnonymizedPatterns: updatedUser.shareAnonymizedPatterns,
-    })
-  );
-});
+    }),
+  )
+})

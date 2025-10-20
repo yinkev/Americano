@@ -5,78 +5,78 @@
  * Displays top weak learning objectives on dashboard
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { format } from 'date-fns';
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { format } from 'date-fns'
 
 interface WeakArea {
-  id: string;
-  objective: string;
-  complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
-  weaknessScore: number;
-  masteryLevel: 'NOT_STARTED' | 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'MASTERED';
-  lastStudiedAt: string | null;
+  id: string
+  objective: string
+  complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
+  weaknessScore: number
+  masteryLevel: 'NOT_STARTED' | 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'MASTERED'
+  lastStudiedAt: string | null
   lecture: {
-    id: string;
-    title: string;
+    id: string
+    title: string
     course: {
-      id: string;
-      name: string;
-    };
-  };
+      id: string
+      name: string
+    }
+  }
 }
 
 interface Props {
-  userId?: string;
-  courseFilter?: string;
-  limit?: number;
+  userId?: string
+  courseFilter?: string
+  limit?: number
 }
 
 export function WeakAreasPanel({ userId, courseFilter, limit = 5 }: Props) {
-  const [weakAreas, setWeakAreas] = useState<WeakArea[]>([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const [weakAreas, setWeakAreas] = useState<WeakArea[]>([])
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
-    fetchWeakAreas();
-  }, [courseFilter, limit]);
+    fetchWeakAreas()
+  }, [courseFilter, limit])
 
   async function fetchWeakAreas() {
     try {
-      setLoading(true);
-      const params = new URLSearchParams();
-      params.set('limit', limit.toString());
-      if (courseFilter) params.set('courseId', courseFilter);
+      setLoading(true)
+      const params = new URLSearchParams()
+      params.set('limit', limit.toString())
+      if (courseFilter) params.set('courseId', courseFilter)
 
-      const response = await fetch(`/api/performance/weak-areas?${params}`);
+      const response = await fetch(`/api/performance/weak-areas?${params}`)
 
-      if (!response.ok) throw new Error('Failed to fetch weak areas');
+      if (!response.ok) throw new Error('Failed to fetch weak areas')
 
-      const result = await response.json();
-      setWeakAreas(result.data.weakAreas);
+      const result = await response.json()
+      setWeakAreas(result.data.weakAreas)
     } catch (error) {
-      console.error('Error fetching weak areas:', error);
+      console.error('Error fetching weak areas:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   function getMasteryColor(level: string): string {
     switch (level) {
       case 'MASTERED':
-        return 'oklch(0.7 0.15 160)'; // Green
+        return 'oklch(0.7 0.15 160)' // Green
       case 'ADVANCED':
-        return 'oklch(0.55 0.22 264)'; // Blue
+        return 'oklch(0.55 0.22 264)' // Blue
       case 'INTERMEDIATE':
-        return 'oklch(0.75 0.15 85)'; // Yellow
+        return 'oklch(0.75 0.15 85)' // Yellow
       case 'BEGINNER':
-        return 'oklch(0.70 0.20 30)'; // Orange
+        return 'oklch(0.70 0.20 30)' // Orange
       case 'NOT_STARTED':
       default:
-        return 'oklch(0.6 0 0)'; // Gray
+        return 'oklch(0.6 0 0)' // Gray
     }
   }
 
@@ -89,45 +89,39 @@ export function WeakAreasPanel({ userId, courseFilter, limit = 5 }: Props) {
         body: JSON.stringify({
           prioritizeWeakAreas: true,
         }),
-      });
+      })
 
       if (response.ok) {
-        router.push('/study');
+        router.push('/study')
       }
     } catch (error) {
-      console.error('Error generating weak areas mission:', error);
+      console.error('Error generating weak areas mission:', error)
     }
   }
 
   if (loading) {
     return (
       <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
-        <h2 className="text-xl font-heading font-bold text-gray-900 mb-4">
-          Weak Areas
-        </h2>
+        <h2 className="text-xl font-heading font-bold text-gray-900 mb-4">Weak Areas</h2>
         <div className="text-sm text-gray-500">Loading weak areas...</div>
       </div>
-    );
+    )
   }
 
   if (weakAreas.length === 0) {
     return (
       <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
-        <h2 className="text-xl font-heading font-bold text-gray-900 mb-4">
-          Weak Areas
-        </h2>
+        <h2 className="text-xl font-heading font-bold text-gray-900 mb-4">Weak Areas</h2>
         <div className="text-sm text-gray-600">
           🎉 No weak areas identified. Keep up the great work!
         </div>
       </div>
-    );
+    )
   }
 
   return (
     <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
-      <h2 className="text-xl font-heading font-bold text-gray-900 mb-4">
-        Weak Areas
-      </h2>
+      <h2 className="text-xl font-heading font-bold text-gray-900 mb-4">Weak Areas</h2>
 
       <div className="space-y-4">
         {weakAreas.map((area) => (
@@ -138,9 +132,7 @@ export function WeakAreasPanel({ userId, courseFilter, limit = 5 }: Props) {
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-gray-900 line-clamp-2 mb-1">
-                  {area.objective}
-                </div>
+                <div className="font-medium text-gray-900 line-clamp-2 mb-1">{area.objective}</div>
                 <div className="text-sm text-gray-500 mb-2">
                   {area.lecture.course.name} • {area.lecture.title}
                 </div>
@@ -193,5 +185,5 @@ export function WeakAreasPanel({ userId, courseFilter, limit = 5 }: Props) {
         </Link>
       </div>
     </div>
-  );
+  )
 }

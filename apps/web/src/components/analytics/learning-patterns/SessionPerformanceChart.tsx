@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 import {
   ScatterChart,
   Scatter,
@@ -11,52 +11,52 @@ import {
   ResponsiveContainer,
   ReferenceLine,
   Legend,
-} from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+} from 'recharts'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 interface SessionDataPoint {
-  duration: number;
-  performance: number;
-  timeOfDay: 'morning' | 'afternoon' | 'evening';
+  duration: number
+  performance: number
+  timeOfDay: 'morning' | 'afternoon' | 'evening'
 }
 
 interface SessionPerformanceData {
-  sessions: SessionDataPoint[];
-  currentAverage: { duration: number; performance: number };
-  recommended: { duration: number; performance: number };
+  sessions: SessionDataPoint[]
+  currentAverage: { duration: number; performance: number }
+  recommended: { duration: number; performance: number }
 }
 
 const TIME_OF_DAY_COLORS = {
   morning: 'oklch(0.7 0.15 60)', // Yellow-orange for morning
   afternoon: 'oklch(0.7 0.15 180)', // Cyan for afternoon
   evening: 'oklch(0.7 0.15 280)', // Purple for evening
-};
+}
 
 export function SessionPerformanceChart() {
-  const [data, setData] = useState<SessionPerformanceData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<SessionPerformanceData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('/api/analytics/session-performance');
-        if (!res.ok) throw new Error('Failed to fetch session performance data');
-        const sessionData = await res.json();
-        setData(sessionData);
+        const res = await fetch('/api/analytics/session-performance')
+        if (!res.ok) throw new Error('Failed to fetch session performance data')
+        const sessionData = await res.json()
+        setData(sessionData)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   if (loading) {
-    return <Skeleton className="h-80 w-full" />;
+    return <Skeleton className="h-80 w-full" />
   }
 
   if (error || !data) {
@@ -64,17 +64,17 @@ export function SessionPerformanceChart() {
       <Alert className="bg-white/80 backdrop-blur-md">
         <AlertDescription>{error || 'No session performance data available'}</AlertDescription>
       </Alert>
-    );
+    )
   }
 
   // Group sessions by time of day for separate scatter series
-  const morningData = data.sessions.filter((s) => s.timeOfDay === 'morning');
-  const afternoonData = data.sessions.filter((s) => s.timeOfDay === 'afternoon');
-  const eveningData = data.sessions.filter((s) => s.timeOfDay === 'evening');
+  const morningData = data.sessions.filter((s) => s.timeOfDay === 'morning')
+  const afternoonData = data.sessions.filter((s) => s.timeOfDay === 'afternoon')
+  const eveningData = data.sessions.filter((s) => s.timeOfDay === 'evening')
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
+      const data = payload[0].payload
       return (
         <div
           className="px-3 py-2 rounded-md shadow-lg"
@@ -93,15 +93,20 @@ export function SessionPerformanceChart() {
             Performance: {Math.round(data.performance)}
           </p>
         </div>
-      );
+      )
     }
-    return null;
-  };
+    return null
+  }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" role="region" aria-label="Session Performance Analysis">
       <ResponsiveContainer width="100%" height={320}>
-        <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <ScatterChart
+          margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          role="img"
+          aria-label={`Scatter chart showing performance vs duration for ${data.sessions.length} study sessions across different times of day. Current average is ${data.currentAverage.duration} minutes with ${Math.round(data.currentAverage.performance)} performance. Recommended duration is ${data.recommended.duration} minutes.`}
+          tabIndex={0}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0.02 230)" />
           <XAxis
             type="number"
@@ -185,18 +190,30 @@ export function SessionPerformanceChart() {
       </ResponsiveContainer>
 
       {/* Insights */}
-      <div className="text-sm space-y-1">
+      <div
+        className="text-sm space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-300"
+        role="status"
+        aria-live="polite"
+      >
         <p style={{ color: 'oklch(0.5 0.05 230)' }}>
           <span className="font-medium" style={{ color: 'oklch(0.3 0.08 230)' }}>
             Current Average:
           </span>{' '}
-          {data.currentAverage.duration} min sessions with {Math.round(data.currentAverage.performance)} avg performance
+          {data.currentAverage.duration} min sessions with{' '}
+          {Math.round(data.currentAverage.performance)} avg performance
         </p>
         <p style={{ color: 'oklch(0.4 0.15 145)' }}>
-          <span className="font-medium">Recommended:</span>{' '}
-          {data.recommended.duration} min sessions for optimal {Math.round(data.recommended.performance)} performance
+          <span className="font-medium">Recommended:</span> {data.recommended.duration} min sessions
+          for optimal {Math.round(data.recommended.performance)} performance
         </p>
       </div>
+
+      {/* Screen reader summary */}
+      <div className="sr-only" role="status" aria-atomic="true">
+        Session performance chart loaded with {data.sessions.length} sessions.
+        Your current average is {data.currentAverage.duration} minute sessions with {Math.round(data.currentAverage.performance)} percent performance.
+        Recommended session length is {data.recommended.duration} minutes for optimal {Math.round(data.recommended.performance)} percent performance.
+      </div>
     </div>
-  );
+  )
 }

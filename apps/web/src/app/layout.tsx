@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
   formatDetection: {
     telephone: false,
-  }
+  },
 }
 
 export const viewport: Viewport = {
@@ -29,11 +29,7 @@ export const viewport: Viewport = {
   themeColor: '#0066cc',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased">
@@ -51,9 +47,7 @@ export default function RootLayout({
                 <div className="h-5 w-px bg-border/30" />
                 <h1 className="text-lg font-heading font-bold text-primary">Americano</h1>
               </header>
-              <main className="flex-1">
-                {children}
-              </main>
+              <main className="flex-1">{children}</main>
             </SidebarInset>
           </SidebarProvider>
           <ChatFAB />

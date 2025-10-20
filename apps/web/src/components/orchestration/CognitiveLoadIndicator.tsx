@@ -6,57 +6,52 @@
  * with color zones, trend sparkline, and recommendations
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Brain, TrendingUp, TrendingDown, Minus, AlertTriangle, Info } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { useState, useEffect } from 'react'
+import { Brain, TrendingUp, TrendingDown, Minus, AlertTriangle, Info } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface CognitiveLoadData {
-  load: number; // 0-100
-  level: 'LOW' | 'MEDIUM' | 'HIGH';
-  trend: number[]; // Last 7 days
-  recommendation: string;
+  load: number // 0-100
+  level: 'LOW' | 'MEDIUM' | 'HIGH'
+  trend: number[] // Last 7 days
+  recommendation: string
 }
 
 interface Props {
-  userId: string;
+  userId: string
 }
 
 export function CognitiveLoadIndicator({ userId }: Props) {
-  const [data, setData] = useState<CognitiveLoadData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<CognitiveLoadData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchCognitiveLoad() {
       try {
         const res = await fetch(
-          `/api/orchestration/cognitive-load?userId=${userId}&includeTrend=true`
-        );
+          `/api/orchestration/cognitive-load?userId=${userId}&includeTrend=true`,
+        )
 
-        if (!res.ok) throw new Error('Failed to fetch cognitive load');
+        if (!res.ok) throw new Error('Failed to fetch cognitive load')
 
-        const loadData = await res.json();
-        setData(loadData);
+        const loadData = await res.json()
+        setData(loadData)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetchCognitiveLoad();
-  }, [userId]);
+    fetchCognitiveLoad()
+  }, [userId])
 
   if (loading) {
     return (
@@ -68,7 +63,7 @@ export function CognitiveLoadIndicator({ userId }: Props) {
           <Skeleton className="h-48 w-full" />
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (error || !data) {
@@ -84,26 +79,26 @@ export function CognitiveLoadIndicator({ userId }: Props) {
           </Alert>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   const getLoadColor = (load: number) => {
-    if (load < 30) return 'oklch(0.7 0.12 145)'; // Green - Low
-    if (load < 70) return 'oklch(0.8 0.15 85)'; // Yellow - Medium
-    return 'oklch(0.6 0.15 25)'; // Red - High
-  };
+    if (load < 30) return 'oklch(0.7 0.12 145)' // Green - Low
+    if (load < 70) return 'oklch(0.8 0.15 85)' // Yellow - Medium
+    return 'oklch(0.6 0.15 25)' // Red - High
+  }
 
   const getLoadZoneLabel = (load: number) => {
-    if (load < 30) return 'Optimal';
-    if (load < 70) return 'Moderate';
-    return 'High';
-  };
+    if (load < 30) return 'Optimal'
+    if (load < 70) return 'Moderate'
+    return 'High'
+  }
 
-  const loadColor = getLoadColor(data.load);
-  const zoneLabel = getLoadZoneLabel(data.load);
+  const loadColor = getLoadColor(data.load)
+  const zoneLabel = getLoadZoneLabel(data.load)
 
   // Calculate trend direction
-  const trendDirection = getTrendDirection(data.trend);
+  const trendDirection = getTrendDirection(data.trend)
 
   return (
     <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
@@ -140,11 +135,7 @@ export function CognitiveLoadIndicator({ userId }: Props) {
       <CardContent className="space-y-6">
         {/* Gauge Visualization */}
         <div className="relative flex flex-col items-center">
-          <svg
-            viewBox="0 0 200 120"
-            className="w-full max-w-sm"
-            style={{ maxHeight: '160px' }}
-          >
+          <svg viewBox="0 0 200 120" className="w-full max-w-sm" style={{ maxHeight: '160px' }}>
             {/* Background Arc */}
             <path
               d="M 20 100 A 80 80 0 0 1 180 100"
@@ -208,31 +199,13 @@ export function CognitiveLoadIndicator({ userId }: Props) {
             </g>
 
             {/* Zone Labels */}
-            <text
-              x="30"
-              y="115"
-              fontSize="10"
-              fill="oklch(0.6 0.05 230)"
-              textAnchor="start"
-            >
+            <text x="30" y="115" fontSize="10" fill="oklch(0.6 0.05 230)" textAnchor="start">
               0
             </text>
-            <text
-              x="100"
-              y="20"
-              fontSize="10"
-              fill="oklch(0.6 0.05 230)"
-              textAnchor="middle"
-            >
+            <text x="100" y="20" fontSize="10" fill="oklch(0.6 0.05 230)" textAnchor="middle">
               50
             </text>
-            <text
-              x="170"
-              y="115"
-              fontSize="10"
-              fill="oklch(0.6 0.05 230)"
-              textAnchor="end"
-            >
+            <text x="170" y="115" fontSize="10" fill="oklch(0.6 0.05 230)" textAnchor="end">
               100
             </text>
           </svg>
@@ -347,35 +320,35 @@ export function CognitiveLoadIndicator({ userId }: Props) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 /**
  * Helper: Calculate SVG path for progress arc
  */
 function getProgressArc(load: number): string {
-  const percentage = Math.min(load, 100) / 100;
-  const angle = -90 + percentage * 180;
-  const radians = (angle * Math.PI) / 180;
+  const percentage = Math.min(load, 100) / 100
+  const angle = -90 + percentage * 180
+  const radians = (angle * Math.PI) / 180
 
-  const x = 100 + 80 * Math.cos(radians);
-  const y = 100 + 80 * Math.sin(radians);
+  const x = 100 + 80 * Math.cos(radians)
+  const y = 100 + 80 * Math.sin(radians)
 
-  const largeArc = percentage > 0.5 ? 1 : 0;
+  const largeArc = percentage > 0.5 ? 1 : 0
 
-  return `M 20 100 A 80 80 0 ${largeArc} 1 ${x} ${y}`;
+  return `M 20 100 A 80 80 0 ${largeArc} 1 ${x} ${y}`
 }
 
 /**
  * Helper: Determine trend direction from array
  */
 function getTrendDirection(trend: number[]): 'up' | 'down' | 'stable' {
-  if (trend.length < 2) return 'stable';
+  if (trend.length < 2) return 'stable'
 
-  const first = trend[0];
-  const last = trend[trend.length - 1];
-  const diff = last - first;
+  const first = trend[0]
+  const last = trend[trend.length - 1]
+  const diff = last - first
 
-  if (Math.abs(diff) < 5) return 'stable';
-  return diff > 0 ? 'up' : 'down';
+  if (Math.abs(diff) < 5) return 'stable'
+  return diff > 0 ? 'up' : 'down'
 }

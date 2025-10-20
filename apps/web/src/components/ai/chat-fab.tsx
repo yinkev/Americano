@@ -13,7 +13,7 @@ export function ChatFAB() {
     const handleKeyboard = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === '/') {
         e.preventDefault()
-        setIsOpen(prev => !prev)
+        setIsOpen((prev) => !prev)
       }
       // Escape to close
       if (e.key === 'Escape' && isOpen) {
@@ -65,9 +65,7 @@ export function ChatFAB() {
               <h3 className="text-sm font-heading font-semibold text-[oklch(0.145_0_0)]">
                 AI Assistant
               </h3>
-              <p className="text-xs text-[oklch(0.556_0_0)]">
-                Ask me anything
-              </p>
+              <p className="text-xs text-[oklch(0.556_0_0)]">Ask me anything</p>
             </div>
           </div>
 

@@ -11,30 +11,33 @@ datasource db {
 }
 
 model User {
-  id                         String           @id @default(cuid())
-  email                      String?          @unique
-  name                       String?
-  createdAt                  DateTime         @default(now())
-  updatedAt                  DateTime         @updatedAt
-  autoGenerateMissions       Boolean          @default(true)
-  defaultMissionMinutes      Int              @default(50)
-  missionDifficulty          String           @default("AUTO")
-  preferredStudyTime         String?
-  includeInAnalytics         Boolean          @default(true)
-  performanceTrackingEnabled Boolean          @default(true)
-  lastMissionAdaptation      DateTime?
-  achievements               Achievement[]
-  coursePriorities           CoursePriority[]
-  courses                    Course[]
-  exams                      Exam[]
-  lectures                   Lecture[]
-  missionReviews             MissionReview[]
-  missionStreak              MissionStreak?
-  missions                   Mission[]
-  reviews                    Review[]
-  streak                     Streak?
-  studyGoals                 StudyGoal[]
-  studySessions              StudySession[]
+  id                            String           @id @default(cuid())
+  email                         String?          @unique
+  name                          String?
+  createdAt                     DateTime         @default(now())
+  updatedAt                     DateTime         @updatedAt
+  autoGenerateMissions          Boolean          @default(true)
+  defaultMissionMinutes         Int              @default(50)
+  missionDifficulty             String           @default("AUTO")
+  preferredStudyTime            String?
+  includeInAnalytics            Boolean          @default(true)
+  performanceTrackingEnabled    Boolean          @default(true)
+  lastMissionAdaptation         DateTime?
+  behavioralAnalysisEnabled     Boolean          @default(true)
+  learningStyleProfilingEnabled Boolean          @default(true)
+  shareAnonymizedPatterns       Boolean          @default(false)
+  achievements                  Achievement[]
+  coursePriorities              CoursePriority[]
+  courses                       Course[]
+  exams                         Exam[]
+  lectures                      Lecture[]
+  missionReviews                MissionReview[]
+  missionStreak                 MissionStreak?
+  missions                      Mission[]
+  reviews                       Review[]
+  streak                        Streak?
+  studyGoals                    StudyGoal[]
+  studySessions                 StudySession[]
 
   @@map("users")
 }
@@ -128,6 +131,7 @@ model LearningObjective {
   dependents         ObjectivePrerequisite[] @relation("Prerequisite")
   performanceMetrics PerformanceMetric[]
   priorityFeedback   PriorityFeedback[]
+  strugglePredictions StrugglePrediction[]
 
   @@index([lectureId])
   @@index([isHighYield])
@@ -165,6 +169,11 @@ model Mission {
   objectives               Json
   difficultyRating         Int?
   successScore             Float?
+  recommendedStartTime     DateTime?
+  actualStartTime          DateTime?
+  sessionPerformanceScore  Float?
+  recommendedDuration      Int?
+  actualDuration           Int?
   feedback                 MissionFeedback[]
   user                     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   studySessions            StudySession[]
@@ -332,16 +341,98 @@ model ComprehensionMetric {
 }
 
 model BehavioralEvent {
-  id        String    @id @default(cuid())
-  userId    String
-  eventType EventType
-  eventData Json
-  timestamp DateTime  @default(now())
+  id                      String             @id @default(cuid())
+  userId                  String
+  eventType               EventType
+  eventData               Json
+  timestamp               DateTime           @default(now())
+  completionQuality       CompletionQuality?
+  contentType             String?
+  dayOfWeek               Int?
+  difficultyLevel         String?
+  engagementLevel         EngagementLevel?
+  sessionPerformanceScore Int?
+  timeOfDay               Int?
 
   @@index([userId])
   @@index([eventType])
   @@index([timestamp])
+  @@index([userId, eventType, timestamp]) // Composite for user event queries
+  @@index([userId, dayOfWeek])            // For day-of-week pattern analysis
+  @@index([userId, timeOfDay])            // For time-of-day pattern analysis
   @@map("behavioral_events")
+}
+
+// ============================================
+// Story 5.1: Learning Pattern Recognition
+// ============================================
+
+model BehavioralPattern {
+  id             String                @id @default(cuid())
+  userId         String
+  patternType    BehavioralPatternType
+  patternName    String
+  confidence     Float
+  evidence       Json
+  detectedAt     DateTime              @default(now())
+  lastSeenAt     DateTime              @default(now())
+  occurrenceCount Int                  @default(1)
+  insightPatterns InsightPattern[]
+
+  @@index([userId])
+  @@index([patternType])
+  @@index([confidence])
+  @@index([userId, patternType, confidence]) // Composite for filtered pattern queries
+  @@index([userId, lastSeenAt])              // For recent pattern tracking
+  @@map("behavioral_patterns")
+}
+
+model BehavioralInsight {
+  id                      String            @id @default(cuid())
+  userId                  String
+  insightType             InsightType
+  title                   String
+  description             String
+  actionableRecommendation String
+  confidence              Float
+  createdAt               DateTime          @default(now())
+  acknowledgedAt          DateTime?
+  applied                 Boolean           @default(false)
+  insightPatterns         InsightPattern[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([acknowledgedAt])
+  @@map("behavioral_insights")
+}
+
+model InsightPattern {
+  id        String            @id @default(cuid())
+  insightId String
+  patternId String
+  insight   BehavioralInsight @relation(fields: [insightId], references: [id], onDelete: Cascade)
+  pattern   BehavioralPattern @relation(fields: [patternId], references: [id], onDelete: Cascade)
+
+  @@unique([insightId, patternId])
+  @@index([insightId])
+  @@index([patternId])
+  @@map("insight_patterns")
+}
+
+model UserLearningProfile {
+  id                          String   @id @default(cuid())
+  userId                      String   @unique
+  preferredStudyTimes         Json
+  averageSessionDuration      Int
+  optimalSessionDuration      Int
+  contentPreferences          Json
+  learningStyleProfile        Json
+  personalizedForgettingCurve Json
+  lastAnalyzedAt              DateTime @default(now())
+  dataQualityScore            Float    @default(0.0)
+
+  @@index([userId])
+  @@map("user_learning_profiles")
 }
 
 model LearningPattern {
@@ -886,6 +977,34 @@ enum ReviewPeriod {
   MONTH
 }
 
+enum BehavioralPatternType {
+  OPTIMAL_STUDY_TIME
+  SESSION_DURATION_PREFERENCE
+  CONTENT_TYPE_PREFERENCE
+  PERFORMANCE_PEAK
+  ATTENTION_CYCLE
+  FORGETTING_CURVE
+}
+
+enum InsightType {
+  STUDY_TIME_OPTIMIZATION
+  SESSION_LENGTH_ADJUSTMENT
+  CONTENT_PREFERENCE
+  RETENTION_STRATEGY
+}
+
+enum EngagementLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum CompletionQuality {
+  RUSHED
+  NORMAL
+  THOROUGH
+}
+
 enum ChangeType {
   DETECTED
   RESOLVED
@@ -1028,6 +1147,8 @@ model PersonalizationConfig {
   @@index([context])
   @@index([strategyVariant])
   @@index([isActive])
+  @@index([userId, context, isActive])    // Composite for active config selection
+  @@index([userId, avgReward])            // For Multi-Armed Bandit selection
   @@map("personalization_configs")
 }
 
@@ -1108,6 +1229,7 @@ model PersonalizationExperiment {
 
   // Relations
   preferences           PersonalizationPreferences @relation(fields: [preferencesId], references: [id], onDelete: Cascade)
+  assignments           ExperimentAssignment[]
 
   @@index([userId])
   @@index([status])
@@ -1238,4 +1360,424 @@ model ArticleRead {
   @@index([articleId])
   @@index([readAt])
   @@map("article_reads")
+}
+
+// ============================================
+// Story 5.4: Burnout Prevention & Cognitive Load
+// ============================================
+
+model CognitiveLoadMetric {
+  id                  String            @id @default(cuid())
+  userId              String
+  sessionId           String?
+  loadScore           Float             // 0-100 cognitive load score
+  stressIndicators    Json              // Array of StressIndicator objects
+  confidenceLevel     Float             // 0.0-1.0 data quality confidence
+  timestamp           DateTime          @default(now())
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([timestamp])
+  @@index([loadScore])
+  @@map("cognitive_load_metrics")
+}
+
+model BurnoutRiskAssessment {
+  id                  String            @id @default(cuid())
+  userId              String
+  riskScore           Float             // 0-100 burnout risk score
+  riskLevel           BurnoutRiskLevel
+  contributingFactors Json              // Array of ContributingFactor objects
+  warningSignals      Json?             // Array of WarningSignal objects
+  recommendations     String[]          // Actionable recommendations
+  confidence          Float             @default(0.7) // 0.0-1.0
+  assessmentDate      DateTime          @default(now())
+  interventionApplied Boolean           @default(false)
+  interventionId      String?           // Reference to applied intervention
+
+  @@index([userId])
+  @@index([riskLevel])
+  @@index([assessmentDate])
+  @@map("burnout_risk_assessments")
+}
+
+enum BurnoutRiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// ============================================
+// Story 5.2: Behavioral Goals & Recommendations
+// ============================================
+
+model Recommendation {
+  id                      String                @id @default(cuid())
+  userId                  String
+  recommendationType      RecommendationType
+  title                   String
+  description             String
+  actionableText          String
+  confidence              Float                 // 0.0-1.0
+  estimatedImpact         Float                 // 0.0-1.0
+  easeOfImplementation    Float                 // 0.0-1.0
+  userReadiness           Float                 // 0.0-1.0
+  priorityScore           Float                 // Composite score for ranking
+  status                  RecommendationStatus  @default(PENDING)
+  sourcePatternIds        String[]              // IDs of supporting BehavioralPatterns
+  sourceInsightIds        String[]              // IDs of supporting BehavioralInsights
+  appliedRecommendations  AppliedRecommendation[]
+  createdAt               DateTime              @default(now())
+  appliedAt               DateTime?
+  dismissedAt             DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@index([recommendationType])
+  @@index([priorityScore])
+  @@index([userId, status, priorityScore]) // Composite for active recommendations ranking
+  @@index([userId, createdAt])             // For chronological recommendation feed
+  @@map("recommendations")
+}
+
+model AppliedRecommendation {
+  id                  String          @id @default(cuid())
+  recommendationId    String
+  userId              String
+  applicationType     ApplicationType  // AUTO, MANUAL, REMINDER, GOAL
+  baselineMetrics     Json            // {avgConfidence, behavioralScore, sessionCount}
+  currentMetrics      Json?           // Captured after evaluation period
+  effectiveness       Float?          // 0.0-1.0 improvement score
+  appliedAt           DateTime        @default(now())
+  evaluatedAt         DateTime?
+  recommendation      Recommendation  @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([recommendationId])
+  @@index([applicationType])
+  @@map("applied_recommendations")
+}
+
+model BehavioralGoal {
+  id                String              @id @default(cuid())
+  userId            String
+  goalType          BehavioralGoalType
+  title             String
+  description       String
+  targetMetric      String              // Metric name to track
+  currentValue      Float
+  targetValue       Float
+  deadline          DateTime
+  status            GoalStatus          @default(ACTIVE)
+  progressHistory   Json                // Array of {date, value, note}
+  completedAt       DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([deadline])
+  @@map("behavioral_goals")
+}
+
+model InterventionRecommendation {
+  id                    String              @id @default(cuid())
+  userId                String
+  predictionId          String?             // Link to StrugglePrediction
+  interventionType      InterventionType    // Use enum instead of string
+  description           String
+  reasoning             String
+  priority              Int                 // 1-10 priority score
+  status                InterventionStatus  @default(PENDING) // Use enum
+  relatedObjectiveId    String?             // Optional reference to LearningObjective
+  appliedToMissionId    String?             // Mission where intervention was applied
+  appliedAt             DateTime?
+  createdAt             DateTime            @default(now())
+  acknowledgedAt        DateTime?
+
+  // Relations
+  prediction            StrugglePrediction? @relation(fields: [predictionId], references: [id])
+
+  @@index([userId])
+  @@index([predictionId])
+  @@index([status])
+  @@index([priority])
+  @@map("intervention_recommendations")
+}
+
+model InsightNotification {
+  id                  String              @id @default(cuid())
+  userId              String
+  notificationType    NotificationType
+  title               String
+  message             String
+  priority            NotificationPriority @default(NORMAL)
+  relatedEntityId      String?             // ID of related entity (goal, pattern, insight)
+  relatedEntityType    String?             // Type: goal, pattern, insight
+  readAt              DateTime?
+  createdAt           DateTime            @default(now())
+
+  @@index([userId])
+  @@index([notificationType])
+  @@index([readAt])
+  @@map("insight_notifications")
+}
+
+enum RecommendationType {
+  STUDY_TIME_OPTIMIZATION
+  SESSION_DURATION_ADJUSTMENT
+  CONTENT_TYPE_BALANCE
+  RETENTION_STRATEGY
+  CONSISTENCY_BUILDING
+  EXPERIMENTAL_SUGGESTION
+}
+
+enum ApplicationType {
+  AUTO
+  MANUAL
+  REMINDER
+  GOAL
+}
+
+enum BehavioralGoalType {
+  STUDY_TIME_CONSISTENCY
+  SESSION_DURATION
+  CONTENT_DIVERSIFICATION
+  RETENTION_IMPROVEMENT
+  CUSTOM
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  ABANDONED
+  PAUSED
+}
+
+enum NotificationType {
+  NEW_PATTERN
+  NEW_INSIGHT
+  GOAL_CREATED
+  GOAL_PROGRESS_25
+  GOAL_PROGRESS_50
+  GOAL_PROGRESS_75
+  GOAL_ACHIEVED
+  RECOMMENDATION_AVAILABLE
+  INTERVENTION_SUGGESTED
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+}
+
+// ============================================
+// Story 5.3: Struggle Prediction & Interventions
+// ============================================
+
+enum InterventionType {
+  PREREQUISITE_REVIEW
+  DIFFICULTY_PROGRESSION
+  SPACING_ADJUSTMENT
+  CONTENT_VARIATION
+  BREAK_RECOMMENDATION
+  FOCUS_SESSION
+  CONTENT_FORMAT_ADAPT
+  COGNITIVE_LOAD_REDUCE
+  SPACED_REPETITION_BOOST
+  BREAK_SCHEDULE_ADJUST
+}
+
+enum AdaptationType {
+  TIMING
+  DURATION
+  DIFFICULTY
+  CONTENT_SELECTION
+  SESSION_STRUCTURE
+  BREAK_SCHEDULING
+  TIME_SHIFT
+  DURATION_CHANGE
+  INTENSITY_ADJUSTMENT
+  FREQUENCY_CHANGE
+}
+
+enum PredictionStatus {
+  PENDING
+  CONFIRMED
+  FALSE_POSITIVE  // Predicted struggle but didn't occur
+  MISSED          // Didn't predict but struggle occurred
+  DISMISSED
+  RESOLVED
+}
+
+enum FeedbackType {
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
+  IMPROVED
+  DECLINED
+}
+
+enum IndicatorType {
+  BEHAVIORAL
+  PERFORMANCE
+  ENGAGEMENT
+  COGNITIVE
+  LOW_RETENTION
+  PREREQUISITE_GAP
+  COMPLEXITY_MISMATCH
+  COGNITIVE_OVERLOAD
+  HISTORICAL_STRUGGLE_PATTERN
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum InterventionStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  SKIPPED
+  FAILED
+}
+
+model StruggleIndicator {
+  id                  String        @id @default(cuid())
+  userId              String
+  learningObjectiveId String
+  predictionId        String?       // Link to prediction that generated this indicator
+  indicatorType       IndicatorType
+  severity            Severity
+  context             Json?         // Additional context data
+  detectedAt          DateTime      @default(now())
+
+  // Relations
+  prediction          StrugglePrediction? @relation(fields: [predictionId], references: [id])
+
+  @@index([userId])
+  @@index([learningObjectiveId])
+  @@index([predictionId])
+  @@index([indicatorType])
+  @@index([severity])
+  @@map("struggle_indicators")
+}
+
+model StrugglePrediction {
+  id                             String           @id @default(cuid())
+  userId                         String
+  learningObjectiveId            String
+  topicId                        String?          // Course/topic identifier
+  predictedStruggleProbability   Float            // 0.0-1.0 (renamed from predictionScore)
+  predictionConfidence           Float            // 0.0-1.0 (renamed from confidence)
+  predictionStatus               PredictionStatus @default(PENDING)
+  featureVector                  Json?            // ML feature data for analysis
+  strugglingFactors              Json             // Array of factors (legacy)
+  predictionDate                 DateTime         @default(now()) // When prediction targets
+  predictedAt                    DateTime         @default(now()) // When prediction was made
+  acknowledgedAt                 DateTime?
+  actualOutcome                  Boolean?         // Did struggle actually occur?
+  actualOutcomeRecordedAt        DateTime?
+  interventionApplied            Boolean          @default(false)
+  interventionId                 String?
+
+  // Relations
+  learningObjective              LearningObjective? @relation(fields: [learningObjectiveId], references: [id])
+  indicators                     StruggleIndicator[]
+  interventions                  InterventionRecommendation[]
+
+  @@index([userId])
+  @@index([learningObjectiveId])
+  @@index([predictedStruggleProbability])
+  @@index([predictionStatus])
+  @@index([predictionDate])
+  @@index([topicId])
+  @@index([userId, predictionStatus, predictedStruggleProbability]) // Composite for high-risk queries
+  @@index([userId, topicId, predictionDate])                        // For topic-based struggle tracking
+  @@map("struggle_predictions")
+}
+
+model ExperimentAssignment {
+  id                  String                     @id @default(cuid())
+  experimentId        String
+  userId              String
+  variantId           String
+  assignedAt          DateTime                   @default(now())
+  metrics             Json?                      // A/B test outcome metrics
+
+  // Relations
+  experiment          PersonalizationExperiment  @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+
+  @@unique([experimentId, userId])
+  @@index([experimentId])
+  @@index([userId])
+  @@map("experiment_assignments")
+}
+
+model StudyScheduleRecommendation {
+  id                  String    @id @default(cuid())
+  userId              String
+  recommendedSchedule Json      // Schedule object
+  reasoning           String
+  createdAt           DateTime  @default(now())
+  appliedAt           DateTime? // When recommendation was applied
+
+  @@index([userId])
+  @@index([appliedAt])
+  @@map("study_schedule_recommendations")
+}
+
+model ScheduleAdaptation {
+  id                  String  @id @default(cuid())
+  userId              String
+  adaptationType      AdaptationType
+  adaptationDetails   Json
+  appliedAt           DateTime @default(now())
+
+  @@index([userId])
+  @@map("schedule_adaptations")
+}
+
+model CalendarIntegration {
+  id                  String  @id @default(cuid())
+  userId              String  @unique
+  calendarProvider    String
+  accessToken         String
+  refreshToken        String?
+  expiresAt           DateTime?
+  lastSyncAt          DateTime?
+  syncEnabled         Boolean @default(true)
+  createdAt           DateTime @default(now())
+
+  @@index([userId])
+  @@map("calendar_integrations")
+}
+
+model SessionOrchestrationPlan {
+  id                  String  @id @default(cuid())
+  userId              String
+  missionId           String?
+  planData            Json    // Orchestration details
+  createdAt           DateTime @default(now())
+  appliedAt           DateTime?
+
+  @@index([userId])
+  @@index([missionId])
+  @@map("session_orchestration_plans")
+}
+
+model StressResponsePattern {
+  id                  String  @id @default(cuid())
+  userId              String
+  patternData         Json    // Stress pattern details
+  confidence          Float
+  detectedAt          DateTime @default(now())
+
+  @@index([userId])
+  @@map("stress_response_patterns")
 }

@@ -71,7 +71,7 @@ describe('Component Accessibility Testing', () => {
       <div>
         <label htmlFor="test-input">Test Label</label>
         <input id="test-input" type="text" placeholder="Enter text" />
-      </div>
+      </div>,
     )
 
     const input = screen.getByLabelText('Test Label')

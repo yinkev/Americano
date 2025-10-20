@@ -1,26 +1,26 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Star } from 'lucide-react';
+} from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { Star } from 'lucide-react'
 
 interface ObjectiveCompletionDialogProps {
-  open: boolean;
-  objectiveName: string;
+  open: boolean
+  objectiveName: string
   onComplete: (data: {
-    selfAssessment: number;
-    confidenceRating: number;
-    notes?: string;
-  }) => Promise<void>;
-  onCancel: () => void;
+    selfAssessment: number
+    confidenceRating: number
+    notes?: string
+  }) => Promise<void>
+  onCancel: () => void
 }
 
 export function ObjectiveCompletionDialog({
@@ -29,27 +29,35 @@ export function ObjectiveCompletionDialog({
   onComplete,
   onCancel,
 }: ObjectiveCompletionDialogProps) {
-  const [selfAssessment, setSelfAssessment] = useState(3);
-  const [confidenceRating, setConfidenceRating] = useState(3);
-  const [notes, setNotes] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [selfAssessment, setSelfAssessment] = useState(3)
+  const [confidenceRating, setConfidenceRating] = useState(3)
+  const [notes, setNotes] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = async () => {
-    setSubmitting(true);
+    setSubmitting(true)
     try {
       await onComplete({
         selfAssessment,
         confidenceRating,
         notes: notes.trim() || undefined,
-      });
+      })
     } catch (error) {
-      console.error('Failed to complete objective:', error);
+      console.error('Failed to complete objective:', error)
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
-  const StarRating = ({ value, onChange, label }: { value: number; onChange: (v: number) => void; label: string }) => (
+  const StarRating = ({
+    value,
+    onChange,
+    label,
+  }: {
+    value: number
+    onChange: (v: number) => void
+    label: string
+  }) => (
     <div className="space-y-2">
       <label className="text-sm font-medium" style={{ color: 'oklch(0.4 0.15 250)' }}>
         {label}
@@ -71,7 +79,7 @@ export function ObjectiveCompletionDialog({
         ))}
       </div>
     </div>
-  );
+  )
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onCancel()}>
@@ -108,7 +116,12 @@ export function ObjectiveCompletionDialog({
         </div>
 
         <div className="flex gap-3 justify-end">
-          <Button variant="outline" onClick={onCancel} disabled={submitting} className="min-h-[44px]">
+          <Button
+            variant="outline"
+            onClick={onCancel}
+            disabled={submitting}
+            className="min-h-[44px]"
+          >
             Cancel
           </Button>
           <Button
@@ -125,5 +138,5 @@ export function ObjectiveCompletionDialog({
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

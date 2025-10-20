@@ -1,10 +1,10 @@
-import type { Config } from 'jest';
-import nextJest from 'next/jest.js';
+import type { Config } from 'jest'
+import nextJest from 'next/jest.js'
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
   dir: './',
-});
+})
 
 // Add any custom config to be passed to Jest
 const config: Config = {
@@ -14,10 +14,7 @@ const config: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  testMatch: [
-    '**/__tests__/**/*.test.[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
-  ],
+  testMatch: ['**/__tests__/**/*.test.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
   collectCoverageFrom: [
     'src/lib/**/*.{ts,tsx}',
     'src/components/**/*.{ts,tsx}',
@@ -61,12 +58,12 @@ const config: Config = {
   testEnvironmentOptions: {
     customExportConditions: ['node', 'node-addons'],
   },
-};
+}
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
 // We need to modify the config after Next.js processes it to handle MSW's ESM modules
 export default async () => {
-  const nextJestConfig = await createJestConfig(config)();
+  const nextJestConfig = await createJestConfig(config)()
 
   // Override transformIgnorePatterns to allow MSW and its ESM dependencies to be transformed
   return {
@@ -75,5 +72,5 @@ export default async () => {
       // Allow transformation of MSW and its ESM dependencies
       '/node_modules/(?!(?:msw|@mswjs|@bundled-es-modules|until-async|strict-event-emitter)/)',
     ],
-  };
-};
+  }
+}

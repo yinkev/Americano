@@ -5,39 +5,39 @@
  * Privacy controls for performance tracking data
  */
 
-'use client';
+'use client'
 
-import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import * as React from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 
 export function PerformancePrivacySettings() {
-  const [trackingEnabled, setTrackingEnabled] = React.useState(true);
-  const [includeInAnalytics, setIncludeInAnalytics] = React.useState(true);
-  const [showResetConfirmation, setShowResetConfirmation] = React.useState(false);
-  const [resetting, setResetting] = React.useState(false);
-  const [exporting, setExporting] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
+  const [trackingEnabled, setTrackingEnabled] = React.useState(true)
+  const [includeInAnalytics, setIncludeInAnalytics] = React.useState(true)
+  const [showResetConfirmation, setShowResetConfirmation] = React.useState(false)
+  const [resetting, setResetting] = React.useState(false)
+  const [exporting, setExporting] = React.useState(false)
+  const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
-    fetchPreferences();
-  }, []);
+    fetchPreferences()
+  }, [])
 
   async function fetchPreferences() {
     try {
-      const response = await fetch('/api/user/profile');
+      const response = await fetch('/api/user/profile')
       if (response.ok) {
-        const result = await response.json();
-        const user = result.data.user;
-        setTrackingEnabled(user.performanceTrackingEnabled);
-        setIncludeInAnalytics(user.includeInAnalytics);
+        const result = await response.json()
+        const user = result.data.user
+        setTrackingEnabled(user.performanceTrackingEnabled)
+        setIncludeInAnalytics(user.includeInAnalytics)
       }
     } catch (error) {
-      console.error('Error fetching preferences:', error);
+      console.error('Error fetching preferences:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -47,54 +47,54 @@ export function PerformancePrivacySettings() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [field]: value }),
-      });
+      })
 
-      if (!response.ok) throw new Error('Failed to update preference');
+      if (!response.ok) throw new Error('Failed to update preference')
     } catch (error) {
-      console.error('Error updating preference:', error);
-      alert('Failed to update preference. Please try again.');
+      console.error('Error updating preference:', error)
+      alert('Failed to update preference. Please try again.')
     }
   }
 
   async function handleExport() {
     try {
-      setExporting(true);
-      const response = await fetch('/api/performance/export');
+      setExporting(true)
+      const response = await fetch('/api/performance/export')
 
-      if (!response.ok) throw new Error('Failed to export data');
+      if (!response.ok) throw new Error('Failed to export data')
 
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `performance-data-${Date.now()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `performance-data-${Date.now()}.json`
+      a.click()
+      URL.revokeObjectURL(url)
     } catch (error) {
-      console.error('Error exporting data:', error);
-      alert('Failed to export data. Please try again.');
+      console.error('Error exporting data:', error)
+      alert('Failed to export data. Please try again.')
     } finally {
-      setExporting(false);
+      setExporting(false)
     }
   }
 
   async function handleReset() {
     try {
-      setResetting(true);
+      setResetting(true)
       const response = await fetch('/api/performance/reset', {
         method: 'DELETE',
-      });
+      })
 
-      if (!response.ok) throw new Error('Failed to reset data');
+      if (!response.ok) throw new Error('Failed to reset data')
 
-      const result = await response.json();
-      alert(result.data.message);
-      setShowResetConfirmation(false);
+      const result = await response.json()
+      alert(result.data.message)
+      setShowResetConfirmation(false)
     } catch (error) {
-      console.error('Error resetting data:', error);
-      alert('Failed to reset data. Please try again.');
+      console.error('Error resetting data:', error)
+      alert('Failed to reset data. Please try again.')
     } finally {
-      setResetting(false);
+      setResetting(false)
     }
   }
 
@@ -106,7 +106,7 @@ export function PerformancePrivacySettings() {
           <CardDescription className="text-gray-600">Loading...</CardDescription>
         </CardHeader>
       </Card>
-    );
+    )
   }
 
   return (
@@ -133,8 +133,8 @@ export function PerformancePrivacySettings() {
               id="tracking-enabled"
               checked={trackingEnabled}
               onCheckedChange={(checked) => {
-                setTrackingEnabled(checked);
-                updatePreference('performanceTrackingEnabled', checked);
+                setTrackingEnabled(checked)
+                updatePreference('performanceTrackingEnabled', checked)
               }}
             />
           </div>
@@ -152,8 +152,8 @@ export function PerformancePrivacySettings() {
               id="analytics-enabled"
               checked={includeInAnalytics}
               onCheckedChange={(checked) => {
-                setIncludeInAnalytics(checked);
-                updatePreference('includeInAnalytics', checked);
+                setIncludeInAnalytics(checked)
+                updatePreference('includeInAnalytics', checked)
               }}
             />
           </div>
@@ -182,7 +182,8 @@ export function PerformancePrivacySettings() {
         <div className="border-t border-gray-200 pt-6">
           <h4 className="text-base font-medium text-gray-900 mb-2">Reset All Performance Data</h4>
           <p className="text-sm text-gray-600 mb-4">
-            Permanently delete all performance metrics, weakness scores, and mastery levels. This will reset all learning objectives to "NOT_STARTED" status.
+            Permanently delete all performance metrics, weakness scores, and mastery levels. This
+            will reset all learning objectives to "NOT_STARTED" status.
           </p>
 
           {!showResetConfirmation ? (
@@ -196,12 +197,8 @@ export function PerformancePrivacySettings() {
           ) : (
             <div className="space-y-4">
               <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl">
-                <p className="text-sm text-rose-800 font-semibold mb-2">
-                  ⚠️ Are you sure?
-                </p>
-                <p className="text-sm text-rose-700">
-                  This will permanently delete:
-                </p>
+                <p className="text-sm text-rose-800 font-semibold mb-2">⚠️ Are you sure?</p>
+                <p className="text-sm text-rose-700">This will permanently delete:</p>
                 <ul className="text-sm text-rose-700 list-disc list-inside mt-2 space-y-1">
                   <li>All performance metric records (time-series data)</li>
                   <li>All weakness scores and mastery levels</li>
@@ -209,7 +206,8 @@ export function PerformancePrivacySettings() {
                   <li>Study time and review history aggregates</li>
                 </ul>
                 <p className="text-sm text-rose-800 font-semibold mt-3">
-                  This action cannot be undone. Individual review records and flashcards will not be affected.
+                  This action cannot be undone. Individual review records and flashcards will not be
+                  affected.
                 </p>
               </div>
 
@@ -236,5 +234,5 @@ export function PerformancePrivacySettings() {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

@@ -17,15 +17,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Clock,
-  Timer,
-  FileText,
-  TrendingUp,
-  Activity,
-  Brain,
-  AlertCircle,
-} from 'lucide-react'
+import { Clock, Timer, FileText, TrendingUp, Activity, Brain, AlertCircle } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
 // Pattern type definitions
@@ -152,9 +144,7 @@ export function LearningPatternsGrid({
           <p className="text-muted-foreground text-center max-w-md">
             Complete 6 weeks of study sessions to unlock your personalized learning patterns
           </p>
-          <div className="mt-4 text-sm text-muted-foreground">
-            Progress: 2/6 weeks completed
-          </div>
+          <div className="mt-4 text-sm text-muted-foreground">Progress: 2/6 weeks completed</div>
         </CardContent>
       </Card>
     )

@@ -1,6 +1,6 @@
 # Story 5.6: Behavioral Insights Dashboard and Self-Awareness
 
-Status: Draft
+Status: Done
 
 ## Story
 

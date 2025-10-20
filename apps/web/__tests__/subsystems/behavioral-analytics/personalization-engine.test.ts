@@ -1,3 +1,4 @@
+// @ts-nocheck - Suppress TypeScript errors for non-existent Prisma models in mock
 /**
  * PersonalizationEngine - Unit Tests (Story 5.5 Phase 1)
  *
@@ -8,12 +9,12 @@
  * - Integration with Stories 5.1-5.4
  */
 
-import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from '@/generated/prisma'
 import {
   PersonalizationEngine,
   type AggregatedInsights,
   type PersonalizationConfig,
-} from '@/subsystems/behavioral-analytics/personalization-engine';
+} from '@/subsystems/behavioral-analytics/personalization-engine'
 
 // Mock Prisma Client
 const mockPrisma = {
@@ -42,21 +43,21 @@ const mockPrisma = {
   behavioralPattern: {
     findFirst: jest.fn(),
   },
-} as unknown as PrismaClient;
+} as unknown as PrismaClient
 
 describe('PersonalizationEngine', () => {
-  let engine: PersonalizationEngine;
-  const testUserId = 'test-user-123';
+  let engine: PersonalizationEngine
+  const testUserId = 'test-user-123'
 
   beforeEach(() => {
-    engine = new PersonalizationEngine(mockPrisma);
-    jest.clearAllMocks();
-  });
+    engine = new PersonalizationEngine(mockPrisma)
+    jest.clearAllMocks()
+  })
 
   describe('aggregateInsights', () => {
     it('should aggregate all insights when all data available', async () => {
       // Mock Story 5.1 data
-      (mockPrisma.userLearningProfile.findUnique as jest.Mock).mockResolvedValue({
+      ;(mockPrisma.userLearningProfile.findUnique as jest.Mock).mockResolvedValue({
         userId: testUserId,
         preferredStudyTimes: [
           { dayOfWeek: 1, startHour: 7, endHour: 9 },
@@ -68,19 +69,16 @@ describe('PersonalizationEngine', () => {
         learningStyleProfile: { visual: 0.4, auditory: 0.2, reading: 0.25, kinesthetic: 0.15 },
         personalizedForgettingCurve: { R0: 0.9, k: 0.15, halfLife: 4.6, confidence: 0.8 },
         dataQualityScore: 0.85,
-      });
+      })
 
       // Mock Story 5.2 data
-      (mockPrisma.strugglePrediction.findMany as jest.Mock).mockResolvedValue([
+      ;(mockPrisma.strugglePrediction.findMany as jest.Mock).mockResolvedValue([
         {
           id: 'pred-1',
           topicId: 'topic-123',
           predictedStruggleProbability: 0.82,
           predictionConfidence: 0.75,
-          indicators: [
-            { indicatorType: 'LOW_RETENTION' },
-            { indicatorType: 'PREREQUISITE_GAP' },
-          ],
+          indicators: [{ indicatorType: 'LOW_RETENTION' }, { indicatorType: 'PREREQUISITE_GAP' }],
           interventions: [
             {
               id: 'int-1',
@@ -90,68 +88,68 @@ describe('PersonalizationEngine', () => {
             },
           ],
         },
-      ]);
+      ])
 
       // Mock Story 5.3 data
-      (mockPrisma.studyScheduleRecommendation.findFirst as jest.Mock).mockResolvedValue({
+      ;(mockPrisma.studyScheduleRecommendation.findFirst as jest.Mock).mockResolvedValue({
         recommendedStartTime: new Date('2025-10-17T07:00:00Z'),
         recommendedDuration: 50,
         confidence: 0.82,
-      });
+      })
 
-      (mockPrisma.mission.findMany as jest.Mock).mockResolvedValue([
+      ;(mockPrisma.mission.findMany as jest.Mock).mockResolvedValue([
         { recommendedStartTime: new Date(), completedAt: new Date() },
         { recommendedStartTime: new Date(), completedAt: new Date() },
         { recommendedStartTime: null, completedAt: new Date() },
-      ]);
+      ])
 
       // Mock Story 5.4 data
-      (mockPrisma.cognitiveLoadMetric.findFirst as jest.Mock).mockResolvedValue({
+      ;(mockPrisma.cognitiveLoadMetric.findFirst as jest.Mock).mockResolvedValue({
         loadScore: 55,
-      });
+      })
 
-      (mockPrisma.cognitiveLoadMetric.findMany as jest.Mock).mockResolvedValue([
+      ;(mockPrisma.cognitiveLoadMetric.findMany as jest.Mock).mockResolvedValue([
         { loadScore: 50 },
         { loadScore: 55 },
         { loadScore: 60 },
-      ]);
+      ])
 
-      (mockPrisma.burnoutRiskAssessment.findFirst as jest.Mock).mockResolvedValue({
+      ;(mockPrisma.burnoutRiskAssessment.findFirst as jest.Mock).mockResolvedValue({
         riskLevel: 'LOW',
-      });
+      })
 
-      (mockPrisma.stressResponsePattern.findMany as jest.Mock).mockResolvedValue([
+      ;(mockPrisma.stressResponsePattern.findMany as jest.Mock).mockResolvedValue([
         { patternType: 'DIFFICULTY_INDUCED' },
-      ]);
+      ])
 
-      const insights = await engine.aggregateInsights(testUserId);
+      const insights = await engine.aggregateInsights(testUserId)
 
-      expect(insights.dataQuality.overallScore).toBe(1.0); // All 4 sources available
-      expect(insights.patterns).not.toBeNull();
-      expect(insights.predictions).not.toBeNull();
-      expect(insights.orchestration).not.toBeNull();
-      expect(insights.cognitiveLoad).not.toBeNull();
-    });
+      expect(insights.dataQuality.overallScore).toBe(1.0) // All 4 sources available
+      expect(insights.patterns).not.toBeNull()
+      expect(insights.predictions).not.toBeNull()
+      expect(insights.orchestration).not.toBeNull()
+      expect(insights.cognitiveLoad).not.toBeNull()
+    })
 
     it('should handle missing Story 5.1 data with defensive fallbacks', async () => {
-      (mockPrisma.userLearningProfile.findUnique as jest.Mock).mockResolvedValue(null);
-      (mockPrisma.strugglePrediction.findMany as jest.Mock).mockResolvedValue([]);
-      (mockPrisma.studyScheduleRecommendation.findFirst as jest.Mock).mockResolvedValue(null);
-      (mockPrisma.mission.findMany as jest.Mock).mockResolvedValue([]);
-      (mockPrisma.cognitiveLoadMetric.findFirst as jest.Mock).mockResolvedValue(null);
-      (mockPrisma.cognitiveLoadMetric.findMany as jest.Mock).mockResolvedValue([]);
-      (mockPrisma.burnoutRiskAssessment.findFirst as jest.Mock).mockResolvedValue(null);
-      (mockPrisma.stressResponsePattern.findMany as jest.Mock).mockResolvedValue([]);
+      ;(mockPrisma.userLearningProfile.findUnique as jest.Mock).mockResolvedValue(null)
+      ;(mockPrisma.strugglePrediction.findMany as jest.Mock).mockResolvedValue([])
+      ;(mockPrisma.studyScheduleRecommendation.findFirst as jest.Mock).mockResolvedValue(null)
+      ;(mockPrisma.mission.findMany as jest.Mock).mockResolvedValue([])
+      ;(mockPrisma.cognitiveLoadMetric.findFirst as jest.Mock).mockResolvedValue(null)
+      ;(mockPrisma.cognitiveLoadMetric.findMany as jest.Mock).mockResolvedValue([])
+      ;(mockPrisma.burnoutRiskAssessment.findFirst as jest.Mock).mockResolvedValue(null)
+      ;(mockPrisma.stressResponsePattern.findMany as jest.Mock).mockResolvedValue([])
 
-      const insights = await engine.aggregateInsights(testUserId);
+      const insights = await engine.aggregateInsights(testUserId)
 
-      expect(insights.patterns).toBeNull();
-      expect(insights.dataQuality.patternsAvailable).toBe(false);
-      expect(insights.dataQuality.overallScore).toBe(0); // No data available
-    });
+      expect(insights.patterns).toBeNull()
+      expect(insights.dataQuality.patternsAvailable).toBe(false)
+      expect(insights.dataQuality.overallScore).toBe(0) // No data available
+    })
 
     it('should respect minimum data quality threshold for patterns', async () => {
-      (mockPrisma.userLearningProfile.findUnique as jest.Mock).mockResolvedValue({
+      ;(mockPrisma.userLearningProfile.findUnique as jest.Mock).mockResolvedValue({
         userId: testUserId,
         dataQualityScore: 0.5, // Below 0.6 threshold
         preferredStudyTimes: [],
@@ -160,37 +158,37 @@ describe('PersonalizationEngine', () => {
         contentPreferences: {},
         learningStyleProfile: {},
         personalizedForgettingCurve: {},
-      });
+      })
 
-      const insights = await engine.aggregateInsights(testUserId);
+      const insights = await engine.aggregateInsights(testUserId)
 
-      expect(insights.patterns).toBeNull();
-      expect(insights.dataQuality.patternsAvailable).toBe(false);
-    });
+      expect(insights.patterns).toBeNull()
+      expect(insights.dataQuality.patternsAvailable).toBe(false)
+    })
 
     it('should filter predictions by minimum confidence threshold', async () => {
-      (mockPrisma.userLearningProfile.findUnique as jest.Mock).mockResolvedValue(null);
-      (mockPrisma.strugglePrediction.findMany as jest.Mock).mockResolvedValue([
+      ;(mockPrisma.userLearningProfile.findUnique as jest.Mock).mockResolvedValue(null)
+      ;(mockPrisma.strugglePrediction.findMany as jest.Mock).mockResolvedValue([
         {
           id: 'pred-1',
           predictionConfidence: 0.65, // Below 0.7 threshold
           indicators: [],
           interventions: [],
         },
-      ]);
+      ])
 
-      const insights = await engine.aggregateInsights(testUserId);
+      const insights = await engine.aggregateInsights(testUserId)
 
-      expect(insights.predictions).toBeNull();
-    });
+      expect(insights.predictions).toBeNull()
+    })
 
     it('should calculate cognitive load level correctly', async () => {
-      (mockPrisma.userLearningProfile.findUnique as jest.Mock).mockResolvedValue(null);
-      (mockPrisma.strugglePrediction.findMany as jest.Mock).mockResolvedValue([]);
-      (mockPrisma.studyScheduleRecommendation.findFirst as jest.Mock).mockResolvedValue(null);
-      (mockPrisma.mission.findMany as jest.Mock).mockResolvedValue([]);
-      (mockPrisma.burnoutRiskAssessment.findFirst as jest.Mock).mockResolvedValue(null);
-      (mockPrisma.stressResponsePattern.findMany as jest.Mock).mockResolvedValue([]);
+      ;(mockPrisma.userLearningProfile.findUnique as jest.Mock).mockResolvedValue(null)
+      ;(mockPrisma.strugglePrediction.findMany as jest.Mock).mockResolvedValue([])
+      ;(mockPrisma.studyScheduleRecommendation.findFirst as jest.Mock).mockResolvedValue(null)
+      ;(mockPrisma.mission.findMany as jest.Mock).mockResolvedValue([])
+      ;(mockPrisma.burnoutRiskAssessment.findFirst as jest.Mock).mockResolvedValue(null)
+      ;(mockPrisma.stressResponsePattern.findMany as jest.Mock).mockResolvedValue([])
 
       // Test different load levels
       const testCases = [
@@ -198,21 +196,21 @@ describe('PersonalizationEngine', () => {
         { score: 50, expectedLevel: 'MODERATE' },
         { score: 70, expectedLevel: 'HIGH' },
         { score: 85, expectedLevel: 'CRITICAL' },
-      ];
+      ]
 
       for (const testCase of testCases) {
-        (mockPrisma.cognitiveLoadMetric.findFirst as jest.Mock).mockResolvedValue({
+        ;(mockPrisma.cognitiveLoadMetric.findFirst as jest.Mock).mockResolvedValue({
           loadScore: testCase.score,
-        });
-        (mockPrisma.cognitiveLoadMetric.findMany as jest.Mock).mockResolvedValue([
+        })
+        ;(mockPrisma.cognitiveLoadMetric.findMany as jest.Mock).mockResolvedValue([
           { loadScore: testCase.score },
-        ]);
+        ])
 
-        const insights = await engine.aggregateInsights(testUserId);
-        expect(insights.cognitiveLoad?.loadLevel).toBe(testCase.expectedLevel);
+        const insights = await engine.aggregateInsights(testUserId)
+        expect(insights.cognitiveLoad?.loadLevel).toBe(testCase.expectedLevel)
       }
-    });
-  });
+    })
+  })
 
   describe('applyPersonalization - Mission Context', () => {
     it('should apply orchestration recommendations with high confidence', async () => {
@@ -236,20 +234,20 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'mission');
+      const config = await engine.applyPersonalization(testUserId, 'mission')
 
       expect(config.missionPersonalization.recommendedStartTime).toEqual(
-        new Date('2025-10-17T07:00:00Z')
-      );
-      expect(config.missionPersonalization.recommendedDuration).toBe(50);
+        new Date('2025-10-17T07:00:00Z'),
+      )
+      expect(config.missionPersonalization.recommendedDuration).toBe(50)
       expect(config.reasoning).toContain(
-        'Recommended start time based on orchestration (confidence: 85%)'
-      );
-    });
+        'Recommended start time based on orchestration (confidence: 85%)',
+      )
+    })
 
     it('should reduce intensity for high burnout risk', async () => {
       const mockInsights: AggregatedInsights = {
@@ -270,16 +268,16 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: true,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'mission');
+      const config = await engine.applyPersonalization(testUserId, 'mission')
 
-      expect(config.missionPersonalization.intensityLevel).toBe('LOW');
-      expect(config.missionPersonalization.recommendedDuration).toBeLessThanOrEqual(30);
-      expect(config.reasoning).toContain('Reduced intensity due to HIGH burnout risk');
-    });
+      expect(config.missionPersonalization.intensityLevel).toBe('LOW')
+      expect(config.missionPersonalization.recommendedDuration).toBeLessThanOrEqual(30)
+      expect(config.reasoning).toContain('Reduced intensity due to HIGH burnout risk')
+    })
 
     it('should include high-priority interventions', async () => {
       const mockInsights: AggregatedInsights = {
@@ -324,17 +322,17 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'mission');
+      const config = await engine.applyPersonalization(testUserId, 'mission')
 
-      expect(config.missionPersonalization.includeInterventions).toBe(true);
-      expect(config.missionPersonalization.interventionIds).toHaveLength(2); // Top 2 with priority >= 7
-      expect(config.missionPersonalization.interventionIds).toContain('int-1');
-      expect(config.missionPersonalization.interventionIds).toContain('int-2');
-    });
+      expect(config.missionPersonalization.includeInterventions).toBe(true)
+      expect(config.missionPersonalization.interventionIds).toHaveLength(2) // Top 2 with priority >= 7
+      expect(config.missionPersonalization.interventionIds).toContain('int-1')
+      expect(config.missionPersonalization.interventionIds).toContain('int-2')
+    })
 
     it('should use optimal session duration from patterns', async () => {
       const mockInsights: AggregatedInsights = {
@@ -359,16 +357,16 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'mission');
+      const config = await engine.applyPersonalization(testUserId, 'mission')
 
-      expect(config.missionPersonalization.recommendedDuration).toBe(60);
-      expect(config.reasoning).toContain('Session duration set to optimal 60 minutes');
-    });
-  });
+      expect(config.missionPersonalization.recommendedDuration).toBe(60)
+      expect(config.reasoning).toContain('Session duration set to optimal 60 minutes')
+    })
+  })
 
   describe('applyPersonalization - Content Context', () => {
     it('should adapt to dominant learning style', async () => {
@@ -395,15 +393,15 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'content');
+      const config = await engine.applyPersonalization(testUserId, 'content')
 
-      expect(config.contentPersonalization.learningStyleAdaptation.visual).toBe(0.55);
-      expect(config.reasoning).toContain('Content adapted for visual learning preference');
-    });
+      expect(config.contentPersonalization.learningStyleAdaptation.visual).toBe(0.55)
+      expect(config.reasoning).toContain('Content adapted for visual learning preference')
+    })
 
     it('should prioritize topics with predicted struggles', async () => {
       const mockInsights: AggregatedInsights = {
@@ -443,16 +441,16 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'content');
+      const config = await engine.applyPersonalization(testUserId, 'content')
 
-      expect(config.contentPersonalization.priorityTopics).toHaveLength(2); // Only >= 0.7 probability
-      expect(config.contentPersonalization.priorityTopics).toContain('physiology-101');
-      expect(config.contentPersonalization.priorityTopics).toContain('anatomy-201');
-    });
+      expect(config.contentPersonalization.priorityTopics).toHaveLength(2) // Only >= 0.7 probability
+      expect(config.contentPersonalization.priorityTopics).toContain('physiology-101')
+      expect(config.contentPersonalization.priorityTopics).toContain('anatomy-201')
+    })
 
     it('should adjust review frequency based on forgetting curve', async () => {
       const mockInsights: AggregatedInsights = {
@@ -478,16 +476,18 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'content');
+      const config = await engine.applyPersonalization(testUserId, 'content')
 
-      expect(config.contentPersonalization.reviewFrequency).toBeGreaterThan(30); // High frequency for steep curve
-      expect(config.reasoning).toContain('Review frequency adjusted based on personal forgetting curve');
-    });
-  });
+      expect(config.contentPersonalization.reviewFrequency).toBeGreaterThan(30) // High frequency for steep curve
+      expect(config.reasoning).toContain(
+        'Review frequency adjusted based on personal forgetting curve',
+      )
+    })
+  })
 
   describe('applyPersonalization - Assessment Context', () => {
     it('should increase validation frequency for steep forgetting curve', async () => {
@@ -514,15 +514,15 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'assessment');
+      const config = await engine.applyPersonalization(testUserId, 'assessment')
 
-      expect(config.assessmentPersonalization.validationFrequency).toBe('HIGH');
-      expect(config.reasoning).toContain('High validation frequency due to steep forgetting curve');
-    });
+      expect(config.assessmentPersonalization.validationFrequency).toBe('HIGH')
+      expect(config.reasoning).toContain('High validation frequency due to steep forgetting curve')
+    })
 
     it('should use gradual progression for high cognitive load', async () => {
       const mockInsights: AggregatedInsights = {
@@ -543,15 +543,17 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: true,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'assessment');
+      const config = await engine.applyPersonalization(testUserId, 'assessment')
 
-      expect(config.assessmentPersonalization.difficultyProgression).toBe('GRADUAL');
-      expect(config.reasoning).toContain('Gradual difficulty progression due to high cognitive load');
-    });
+      expect(config.assessmentPersonalization.difficultyProgression).toBe('GRADUAL')
+      expect(config.reasoning).toContain(
+        'Gradual difficulty progression due to high cognitive load',
+      )
+    })
 
     it('should enable comprehensive feedback for multiple struggles', async () => {
       const mockInsights: AggregatedInsights = {
@@ -591,18 +593,18 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'assessment');
+      const config = await engine.applyPersonalization(testUserId, 'assessment')
 
-      expect(config.assessmentPersonalization.feedbackDetail).toBe('COMPREHENSIVE');
+      expect(config.assessmentPersonalization.feedbackDetail).toBe('COMPREHENSIVE')
       expect(config.reasoning).toContain(
-        'Comprehensive feedback enabled due to multiple predicted struggles'
-      );
-    });
-  });
+        'Comprehensive feedback enabled due to multiple predicted struggles',
+      )
+    })
+  })
 
   describe('applyPersonalization - Session Context', () => {
     it('should increase break frequency for high cognitive load', async () => {
@@ -624,16 +626,16 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: true,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'session');
+      const config = await engine.applyPersonalization(testUserId, 'session')
 
-      expect(config.sessionPersonalization.breakSchedule.length).toBeGreaterThan(1);
-      expect(config.sessionPersonalization.breakSchedule[0].afterMinutes).toBeLessThanOrEqual(20);
-      expect(config.reasoning).toContain('Increased break frequency due to high cognitive load');
-    });
+      expect(config.sessionPersonalization.breakSchedule.length).toBeGreaterThan(1)
+      expect(config.sessionPersonalization.breakSchedule[0].afterMinutes).toBeLessThanOrEqual(20)
+      expect(config.reasoning).toContain('Increased break frequency due to high cognitive load')
+    })
 
     it('should enable content mixing for dominant learning style', async () => {
       const mockInsights: AggregatedInsights = {
@@ -659,15 +661,17 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'session');
+      const config = await engine.applyPersonalization(testUserId, 'session')
 
-      expect(config.sessionPersonalization.contentMixing).toBe(true);
-      expect(config.reasoning).toContain('Content mixing enabled to balance dominant learning style');
-    });
+      expect(config.sessionPersonalization.contentMixing).toBe(true)
+      expect(config.reasoning).toContain(
+        'Content mixing enabled to balance dominant learning style',
+      )
+    })
 
     it('should enable attention cycle adaptation when pattern detected', async () => {
       const mockInsights: AggregatedInsights = {
@@ -688,24 +692,24 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      (mockPrisma.behavioralPattern.findFirst as jest.Mock).mockResolvedValue({
+      ;(mockPrisma.behavioralPattern.findFirst as jest.Mock).mockResolvedValue({
         id: 'pattern-1',
         patternType: 'ATTENTION_CYCLE',
         confidence: 0.8,
-      });
+      })
 
-      const config = await engine.applyPersonalization(testUserId, 'session');
+      const config = await engine.applyPersonalization(testUserId, 'session')
 
-      expect(config.sessionPersonalization.attentionCycleAdaptation).toBe(true);
+      expect(config.sessionPersonalization.attentionCycleAdaptation).toBe(true)
       expect(config.reasoning).toContain(
-        'Attention cycle adaptation enabled based on detected patterns'
-      );
-    });
-  });
+        'Attention cycle adaptation enabled based on detected patterns',
+      )
+    })
+  })
 
   describe('calculateConfidence', () => {
     it('should calculate confidence based on data availability', async () => {
@@ -730,7 +734,7 @@ describe('PersonalizationEngine', () => {
           expectedMin: 1.0,
           expectedMax: 1.0,
         },
-      ];
+      ]
 
       for (const testCase of testCases) {
         const mockInsights: AggregatedInsights = {
@@ -745,17 +749,17 @@ describe('PersonalizationEngine', () => {
             cognitiveLoadAvailable: testCase.available[3],
             overallScore: testCase.available.filter(Boolean).length / 4,
           },
-        };
+        }
 
-        jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+        jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-        const config = await engine.applyPersonalization(testUserId, 'mission');
+        const config = await engine.applyPersonalization(testUserId, 'mission')
 
-        expect(config.confidence).toBeGreaterThanOrEqual(testCase.expectedMin);
-        expect(config.confidence).toBeLessThanOrEqual(testCase.expectedMax);
+        expect(config.confidence).toBeGreaterThanOrEqual(testCase.expectedMin)
+        expect(config.confidence).toBeLessThanOrEqual(testCase.expectedMax)
       }
-    });
-  });
+    })
+  })
 
   describe('data quality warnings', () => {
     it('should add warnings for missing data sources', async () => {
@@ -771,26 +775,26 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'mission');
+      const config = await engine.applyPersonalization(testUserId, 'mission')
 
       expect(config.dataQualityWarnings).toContain(
-        'Learning patterns unavailable - using default preferences. More data needed for personalization.'
-      );
+        'Learning patterns unavailable - using default preferences. More data needed for personalization.',
+      )
       expect(config.dataQualityWarnings).toContain(
-        'Struggle predictions unavailable - interventions may be generic.'
-      );
+        'Struggle predictions unavailable - interventions may be generic.',
+      )
       expect(config.dataQualityWarnings).toContain(
-        'Session orchestration data unavailable - using default timing recommendations.'
-      );
+        'Session orchestration data unavailable - using default timing recommendations.',
+      )
       expect(config.dataQualityWarnings).toContain(
-        'Cognitive load data unavailable - intensity adjustments may not be optimal.'
-      );
-      expect(config.dataQualityWarnings.some((w) => w.includes('0% available'))).toBe(true);
-    });
+        'Cognitive load data unavailable - intensity adjustments may not be optimal.',
+      )
+      expect(config.dataQualityWarnings.some((w) => w.includes('0% available'))).toBe(true)
+    })
 
     it('should add overall data quality warning when score < 0.5', async () => {
       const mockInsights: AggregatedInsights = {
@@ -808,17 +812,17 @@ describe('PersonalizationEngine', () => {
           cognitiveLoadAvailable: false,
           overallScore: 0.25,
         },
-      };
+      }
 
-      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights);
+      jest.spyOn(engine, 'aggregateInsights').mockResolvedValue(mockInsights)
 
-      const config = await engine.applyPersonalization(testUserId, 'mission');
+      const config = await engine.applyPersonalization(testUserId, 'mission')
 
       expect(
         config.dataQualityWarnings.some((w) =>
-          w.includes('Continue studying to improve recommendations')
-        )
-      ).toBe(true);
-    });
-  });
-});
+          w.includes('Continue studying to improve recommendations'),
+        ),
+      ).toBe(true)
+    })
+  })
+})

@@ -1,9 +1,9 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
+import * as React from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Switch } from '@/components/ui/switch'
+import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,43 +13,43 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
+} from '@/components/ui/alert-dialog'
+import { toast } from 'sonner'
 
 export function BehavioralPrivacySettings() {
-  const [behavioralAnalysisEnabled, setBehavioralAnalysisEnabled] = React.useState(true);
-  const [learningStyleProfilingEnabled, setLearningStyleProfilingEnabled] = React.useState(true);
-  const [loading, setLoading] = React.useState(false);
-  const [deleting, setDeleting] = React.useState(false);
-  const [exporting, setExporting] = React.useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [behavioralAnalysisEnabled, setBehavioralAnalysisEnabled] = React.useState(true)
+  const [learningStyleProfilingEnabled, setLearningStyleProfilingEnabled] = React.useState(true)
+  const [loading, setLoading] = React.useState(false)
+  const [deleting, setDeleting] = React.useState(false)
+  const [exporting, setExporting] = React.useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
 
   // Load current settings on mount
   React.useEffect(() => {
     async function loadSettings() {
       try {
-        const response = await fetch('/api/user/privacy');
+        const response = await fetch('/api/user/privacy')
         if (!response.ok) {
-          throw new Error('Failed to load privacy settings');
+          throw new Error('Failed to load privacy settings')
         }
-        const data = await response.json();
-        setBehavioralAnalysisEnabled(data.behavioralAnalysisEnabled ?? true);
-        setLearningStyleProfilingEnabled(data.learningStyleProfilingEnabled ?? true);
+        const data = await response.json()
+        setBehavioralAnalysisEnabled(data.behavioralAnalysisEnabled ?? true)
+        setLearningStyleProfilingEnabled(data.learningStyleProfilingEnabled ?? true)
       } catch (error) {
-        console.error('Error loading privacy settings:', error);
-        toast.error('Failed to load privacy settings');
+        console.error('Error loading privacy settings:', error)
+        toast.error('Failed to load privacy settings')
       }
     }
 
-    loadSettings();
-  }, []);
+    loadSettings()
+  }, [])
 
   // Update privacy setting
   async function updatePrivacySetting(
     field: 'behavioralAnalysisEnabled' | 'learningStyleProfilingEnabled',
-    value: boolean
+    value: boolean,
   ) {
-    setLoading(true);
+    setLoading(true)
 
     try {
       const response = await fetch('/api/user/privacy', {
@@ -58,91 +58,91 @@ export function BehavioralPrivacySettings() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ [field]: value }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to update privacy settings');
+        throw new Error('Failed to update privacy settings')
       }
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (field === 'behavioralAnalysisEnabled') {
-        setBehavioralAnalysisEnabled(data.behavioralAnalysisEnabled);
+        setBehavioralAnalysisEnabled(data.behavioralAnalysisEnabled)
       } else {
-        setLearningStyleProfilingEnabled(data.learningStyleProfilingEnabled);
+        setLearningStyleProfilingEnabled(data.learningStyleProfilingEnabled)
       }
 
-      toast.success('Privacy settings updated');
+      toast.success('Privacy settings updated')
     } catch (error) {
-      console.error('Error updating privacy settings:', error);
-      toast.error('Failed to update privacy settings');
+      console.error('Error updating privacy settings:', error)
+      toast.error('Failed to update privacy settings')
 
       // Revert toggle on error
       if (field === 'behavioralAnalysisEnabled') {
-        setBehavioralAnalysisEnabled(!value);
+        setBehavioralAnalysisEnabled(!value)
       } else {
-        setLearningStyleProfilingEnabled(!value);
+        setLearningStyleProfilingEnabled(!value)
       }
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   // Delete all behavioral patterns
   async function handleDeleteAllPatterns() {
-    setDeleting(true);
+    setDeleting(true)
 
     try {
       const response = await fetch('/api/analytics/patterns/all', {
         method: 'DELETE',
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to delete behavioral patterns');
+        throw new Error('Failed to delete behavioral patterns')
       }
 
-      toast.success('All behavioral patterns deleted successfully');
-      setShowDeleteDialog(false);
+      toast.success('All behavioral patterns deleted successfully')
+      setShowDeleteDialog(false)
     } catch (error) {
-      console.error('Error deleting patterns:', error);
-      toast.error('Failed to delete behavioral patterns');
+      console.error('Error deleting patterns:', error)
+      toast.error('Failed to delete behavioral patterns')
     } finally {
-      setDeleting(false);
+      setDeleting(false)
     }
   }
 
   // Export behavioral patterns
   async function handleExportPatterns() {
-    setExporting(true);
+    setExporting(true)
 
     try {
-      const response = await fetch('/api/analytics/export');
+      const response = await fetch('/api/analytics/export')
 
       if (!response.ok) {
-        throw new Error('Failed to export behavioral patterns');
+        throw new Error('Failed to export behavioral patterns')
       }
 
-      const data = await response.json();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
+      const data = await response.json()
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
 
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `behavioral-patterns-${data.userId}-${timestamp}.json`;
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+      const filename = `behavioral-patterns-${data.userId}-${timestamp}.json`
 
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
 
-      toast.success('Behavioral patterns exported successfully');
+      toast.success('Behavioral patterns exported successfully')
     } catch (error) {
-      console.error('Error exporting patterns:', error);
-      toast.error('Failed to export behavioral patterns');
+      console.error('Error exporting patterns:', error)
+      toast.error('Failed to export behavioral patterns')
     } finally {
-      setExporting(false);
+      setExporting(false)
     }
   }
 
@@ -150,9 +150,12 @@ export function BehavioralPrivacySettings() {
     <>
       <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-gray-800">Behavioral Pattern Analysis</CardTitle>
+          <CardTitle className="text-xl font-semibold text-gray-800">
+            Behavioral Pattern Analysis
+          </CardTitle>
           <CardDescription className="text-gray-600">
-            Pattern analysis helps optimize your study experience by identifying what works best for you.
+            Pattern analysis helps optimize your study experience by identifying what works best for
+            you.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -169,7 +172,9 @@ export function BehavioralPrivacySettings() {
             <Switch
               id="behavioral-analysis"
               checked={behavioralAnalysisEnabled}
-              onCheckedChange={(checked) => updatePrivacySetting('behavioralAnalysisEnabled', checked)}
+              onCheckedChange={(checked) =>
+                updatePrivacySetting('behavioralAnalysisEnabled', checked)
+              }
               disabled={loading}
               className="min-h-[44px] min-w-[44px] flex items-center justify-center"
             />
@@ -188,7 +193,9 @@ export function BehavioralPrivacySettings() {
             <Switch
               id="learning-style"
               checked={learningStyleProfilingEnabled}
-              onCheckedChange={(checked) => updatePrivacySetting('learningStyleProfilingEnabled', checked)}
+              onCheckedChange={(checked) =>
+                updatePrivacySetting('learningStyleProfilingEnabled', checked)
+              }
               disabled={loading}
               className="min-h-[44px] min-w-[44px] flex items-center justify-center"
             />
@@ -227,7 +234,8 @@ export function BehavioralPrivacySettings() {
               Delete All Behavioral Data?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600">
-              This will permanently delete all detected patterns, insights, and your learning profile. This action cannot be undone.
+              This will permanently delete all detected patterns, insights, and your learning
+              profile. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -248,5 +256,5 @@ export function BehavioralPrivacySettings() {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  );
+  )
 }

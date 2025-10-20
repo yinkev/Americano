@@ -32,29 +32,29 @@ import { subDays, differenceInDays } from 'date-fns'
  */
 export interface FeatureVector {
   // Performance features (0-1 normalized)
-  retentionScore: number           // Average retention for topic area
-  retentionDeclineRate: number     // Rate of retention degradation
-  reviewLapseRate: number          // Frequency of AGAIN ratings
-  sessionPerformanceScore: number  // Recent session performance
-  validationScore: number          // Validation prompt scores
+  retentionScore: number // Average retention for topic area
+  retentionDeclineRate: number // Rate of retention degradation
+  reviewLapseRate: number // Frequency of AGAIN ratings
+  sessionPerformanceScore: number // Recent session performance
+  validationScore: number // Validation prompt scores
 
   // Prerequisite features
-  prerequisiteGapCount: number     // Number of unmastered prerequisites (normalized)
-  prerequisiteMasteryGap: number   // Avg mastery gap for prerequisites
+  prerequisiteGapCount: number // Number of unmastered prerequisites (normalized)
+  prerequisiteMasteryGap: number // Avg mastery gap for prerequisites
 
   // Complexity features
-  contentComplexity: number        // Objective difficulty level
-  complexityMismatch: number       // Difficulty vs. user ability gap
+  contentComplexity: number // Objective difficulty level
+  complexityMismatch: number // Difficulty vs. user ability gap
 
   // Behavioral features
-  historicalStruggleScore: number  // Past struggles in similar topics
-  contentTypeMismatch: number      // Content format vs. learning style
-  cognitiveLoadIndicator: number   // Current cognitive load level
+  historicalStruggleScore: number // Past struggles in similar topics
+  contentTypeMismatch: number // Content format vs. learning style
+  cognitiveLoadIndicator: number // Current cognitive load level
 
   // Contextual features
-  daysUntilExam: number            // Urgency factor (normalized)
-  daysSinceLastStudy: number       // Recency (normalized)
-  workloadLevel: number            // Current workload (normalized)
+  daysUntilExam: number // Urgency factor (normalized)
+  daysSinceLastStudy: number // Recency (normalized)
+  workloadLevel: number // Current workload (normalized)
 
   // Metadata
   metadata: {
@@ -110,59 +110,59 @@ export class StruggleFeatureExtractor {
    */
   static async extractFeaturesForObjective(
     userId: string,
-    objectiveId: string
+    objectiveId: string,
   ): Promise<FeatureVector> {
     const objective = await prisma.learningObjective.findUnique({
       where: { id: objectiveId },
       include: {
         lecture: {
           include: {
-            course: true
-          }
+            course: true,
+          },
         },
         prerequisites: {
           include: {
-            prerequisite: true
-          }
+            prerequisite: true,
+          },
         },
         performanceMetrics: {
           where: {
             userId,
             date: {
-              gte: subDays(new Date(), 30) // Last 30 days
-            }
+              gte: subDays(new Date(), 30), // Last 30 days
+            },
           },
-          orderBy: { date: 'desc' }
+          orderBy: { date: 'desc' },
         },
         cards: {
           where: {
             reviews: {
               some: {
-                userId
-              }
-            }
+                userId,
+              },
+            },
           },
           include: {
             reviews: {
               where: {
                 userId,
                 reviewedAt: {
-                  gte: subDays(new Date(), 30)
-                }
+                  gte: subDays(new Date(), 30),
+                },
               },
-              orderBy: { reviewedAt: 'desc' }
-            }
-          }
-        }
-      }
-    });
+              orderBy: { reviewedAt: 'desc' },
+            },
+          },
+        },
+      },
+    })
 
     if (!objective) {
-      throw new Error(`Learning objective ${objectiveId} not found`);
+      throw new Error(`Learning objective ${objectiveId} not found`)
     }
 
     // Extract topic area from lecture course
-    const topicArea = objective.lecture.course.name;
+    const topicArea = objective.lecture.course.name
 
     // 1. Performance-based features
     const performanceFeatures = await this.extractPerformanceFeatures(
@@ -170,35 +170,27 @@ export class StruggleFeatureExtractor {
       objectiveId,
       topicArea,
       objective.performanceMetrics,
-      objective.cards
-    );
+      objective.cards,
+    )
 
     // 2. Prerequisite features
     const prerequisiteFeatures = await this.extractPrerequisiteFeatures(
       userId,
-      objective.prerequisites.map(p => p.prerequisite)
-    );
+      objective.prerequisites.map((p) => p.prerequisite),
+    )
 
     // 3. Complexity features
-    const complexityFeatures = await this.extractComplexityFeatures(
-      userId,
-      objective,
-      topicArea
-    );
+    const complexityFeatures = await this.extractComplexityFeatures(userId, objective, topicArea)
 
     // 4. Behavioral features
-    const behavioralFeatures = await this.extractBehavioralFeatures(
-      userId,
-      topicArea,
-      objective
-    );
+    const behavioralFeatures = await this.extractBehavioralFeatures(userId, topicArea, objective)
 
     // 5. Contextual features
     const contextualFeatures = await this.extractContextualFeatures(
       userId,
       topicArea,
-      objective.lecture.course.id
-    );
+      objective.lecture.course.id,
+    )
 
     // Combine all features
     const features = {
@@ -206,16 +198,32 @@ export class StruggleFeatureExtractor {
       ...prerequisiteFeatures,
       ...complexityFeatures,
       ...behavioralFeatures,
-      ...contextualFeatures
+      ...contextualFeatures,
     }
 
     // Calculate data quality (how many features have non-default values)
-    const featureValues = Object.values(features).filter(v => typeof v === 'number')
-    const nonDefaultCount = featureValues.filter(v => Math.abs(v - DEFAULT_NEUTRAL_VALUE) > 0.01).length
+    const featureValues = Object.values(features).filter((v) => typeof v === 'number')
+    const nonDefaultCount = featureValues.filter(
+      (v) => Math.abs(v - DEFAULT_NEUTRAL_VALUE) > 0.01,
+    ).length
     const dataQuality = featureValues.length > 0 ? nonDefaultCount / featureValues.length : 0
 
     return {
-      ...features,
+      retentionScore: features.retentionScore ?? DEFAULT_NEUTRAL_VALUE,
+      retentionDeclineRate: features.retentionDeclineRate ?? DEFAULT_NEUTRAL_VALUE,
+      reviewLapseRate: features.reviewLapseRate ?? DEFAULT_NEUTRAL_VALUE,
+      sessionPerformanceScore: features.sessionPerformanceScore ?? DEFAULT_NEUTRAL_VALUE,
+      validationScore: features.validationScore ?? DEFAULT_NEUTRAL_VALUE,
+      prerequisiteGapCount: features.prerequisiteGapCount ?? DEFAULT_NEUTRAL_VALUE,
+      prerequisiteMasteryGap: features.prerequisiteMasteryGap ?? DEFAULT_NEUTRAL_VALUE,
+      contentComplexity: features.contentComplexity ?? DEFAULT_NEUTRAL_VALUE,
+      complexityMismatch: features.complexityMismatch ?? DEFAULT_NEUTRAL_VALUE,
+      historicalStruggleScore: features.historicalStruggleScore ?? DEFAULT_NEUTRAL_VALUE,
+      contentTypeMismatch: features.contentTypeMismatch ?? DEFAULT_NEUTRAL_VALUE,
+      cognitiveLoadIndicator: features.cognitiveLoadIndicator ?? DEFAULT_NEUTRAL_VALUE,
+      daysUntilExam: features.daysUntilExam ?? 1.0,
+      daysSinceLastStudy: features.daysSinceLastStudy ?? DEFAULT_NEUTRAL_VALUE,
+      workloadLevel: features.workloadLevel ?? DEFAULT_NEUTRAL_VALUE,
       metadata: {
         extractedAt: new Date(),
         dataQuality,
@@ -230,41 +238,38 @@ export class StruggleFeatureExtractor {
    * @param topicId - Topic ID (lectureId or courseId)
    * @returns Aggregated feature vector for the topic
    */
-  static async extractFeaturesForTopic(
-    userId: string,
-    topicId: string
-  ): Promise<FeatureVector> {
+  static async extractFeaturesForTopic(userId: string, topicId: string): Promise<FeatureVector> {
     // For MVP, topicId is courseId
     // Find most relevant objective in this topic for feature extraction
     const objectives = await prisma.learningObjective.findMany({
       where: {
         lecture: {
           courseId: topicId,
-          userId
-        }
+          userId,
+        },
       },
       include: {
         performanceMetrics: {
           where: {
             userId,
             date: {
-              gte: subDays(new Date(), 30)
-            }
-          }
-        }
+              gte: subDays(new Date(), 30),
+            },
+          },
+        },
       },
       orderBy: {
-        weaknessScore: 'desc' // Start with weakest objective
+        weaknessScore: 'desc', // Start with weakest objective
       },
-      take: 1
-    });
+      take: 1,
+    })
 
     if (objectives.length === 0) {
       // No objectives in this topic, return default features
-      return this.getDefaultFeatures();
+      return this.getDefaultFeatures()
     }
 
-    return this.extractFeaturesForObjective(userId, objectives[0].id);
+    return this.extractFeaturesForObjective(userId, objectives[0].id)
   }
 
   /**
@@ -275,37 +280,35 @@ export class StruggleFeatureExtractor {
     objectiveId: string,
     topicArea: string,
     performanceMetrics: any[],
-    cards: any[]
+    cards: any[],
   ): Promise<Partial<FeatureVector>> {
     // Retention score: Average retention from performance metrics
-    let retentionScore = 0.5; // Default
+    let retentionScore = 0.5 // Default
     if (performanceMetrics.length > 0) {
-      const avgRetention = performanceMetrics.reduce(
-        (sum, m) => sum + m.retentionScore,
-        0
-      ) / performanceMetrics.length;
-      retentionScore = avgRetention; // Already 0-1
+      const avgRetention =
+        performanceMetrics.reduce((sum, m) => sum + m.retentionScore, 0) / performanceMetrics.length
+      retentionScore = avgRetention // Already 0-1
     }
 
     // Retention decline rate: Trend over time
-    let retentionDeclineRate = 0.5; // Default (neutral)
+    let retentionDeclineRate = 0.5 // Default (neutral)
     if (performanceMetrics.length >= 3) {
-      const recent = performanceMetrics.slice(0, 3);
-      const older = performanceMetrics.slice(-3);
+      const recent = performanceMetrics.slice(0, 3)
+      const older = performanceMetrics.slice(-3)
 
-      const recentAvg = recent.reduce((sum, m) => sum + m.retentionScore, 0) / recent.length;
-      const olderAvg = older.reduce((sum, m) => sum + m.retentionScore, 0) / older.length;
+      const recentAvg = recent.reduce((sum, m) => sum + m.retentionScore, 0) / recent.length
+      const olderAvg = older.reduce((sum, m) => sum + m.retentionScore, 0) / older.length
 
-      const decline = olderAvg - recentAvg; // Positive = declining
-      retentionDeclineRate = Math.max(0, Math.min(1, 0.5 + decline)); // Normalize around 0.5
+      const decline = olderAvg - recentAvg // Positive = declining
+      retentionDeclineRate = Math.max(0, Math.min(1, 0.5 + decline)) // Normalize around 0.5
     }
 
     // Review lapse rate: Frequency of AGAIN ratings
-    let reviewLapseRate = 0.5; // Default
-    const allReviews = cards.flatMap(c => c.reviews);
+    let reviewLapseRate = 0.5 // Default
+    const allReviews = cards.flatMap((c) => c.reviews)
     if (allReviews.length > 0) {
-      const lapseCount = allReviews.filter(r => r.rating === ReviewRating.AGAIN).length;
-      reviewLapseRate = lapseCount / allReviews.length; // Already 0-1
+      const lapseCount = allReviews.filter((r) => r.rating === ReviewRating.AGAIN).length
+      reviewLapseRate = lapseCount / allReviews.length // Already 0-1
     }
 
     // Session performance score: Recent session average
@@ -314,33 +317,33 @@ export class StruggleFeatureExtractor {
         userId,
         completedAt: {
           not: null,
-          gte: subDays(new Date(), 7)
-        }
+          gte: subDays(new Date(), 7),
+        },
       },
       orderBy: { completedAt: 'desc' },
-      take: 5
-    });
+      take: 5,
+    })
 
-    let sessionPerformanceScore = 0.5; // Default
+    let sessionPerformanceScore = 0.5 // Default
     if (recentSessions.length > 0) {
       // Calculate performance from review accuracy
       const sessionScores = await Promise.all(
         recentSessions.map(async (session) => {
           const reviews = await prisma.review.findMany({
-            where: { sessionId: session.id }
-          });
+            where: { sessionId: session.id },
+          })
 
-          if (reviews.length === 0) return 0.5;
+          if (reviews.length === 0) return 0.5
 
-          const goodReviews = reviews.filter(r =>
-            r.rating === ReviewRating.GOOD || r.rating === ReviewRating.EASY
-          ).length;
+          const goodReviews = reviews.filter(
+            (r) => r.rating === ReviewRating.GOOD || r.rating === ReviewRating.EASY,
+          ).length
 
-          return goodReviews / reviews.length;
-        })
-      );
+          return goodReviews / reviews.length
+        }),
+      )
 
-      sessionPerformanceScore = sessionScores.reduce((sum, s) => sum + s, 0) / sessionScores.length;
+      sessionPerformanceScore = sessionScores.reduce((sum, s) => sum + s, 0) / sessionScores.length
     }
 
     // Validation score: Average validation prompt scores
@@ -349,21 +352,19 @@ export class StruggleFeatureExtractor {
         session: {
           userId,
           completedAt: {
-            gte: subDays(new Date(), 14)
-          }
-        }
+            gte: subDays(new Date(), 14),
+          },
+        },
       },
       orderBy: { respondedAt: 'desc' },
-      take: 10
-    });
+      take: 10,
+    })
 
-    let validationScore = 0.5; // Default
+    let validationScore = 0.5 // Default
     if (validationResponses.length > 0) {
-      const avgScore = validationResponses.reduce(
-        (sum, r) => sum + r.score,
-        0
-      ) / validationResponses.length;
-      validationScore = avgScore; // Already 0-1
+      const avgScore =
+        validationResponses.reduce((sum, r) => sum + r.score, 0) / validationResponses.length
+      validationScore = avgScore // Already 0-1
     }
 
     return {
@@ -371,8 +372,8 @@ export class StruggleFeatureExtractor {
       retentionDeclineRate,
       reviewLapseRate,
       sessionPerformanceScore,
-      validationScore
-    };
+      validationScore,
+    }
   }
 
   /**
@@ -380,44 +381,50 @@ export class StruggleFeatureExtractor {
    */
   private static async extractPrerequisiteFeatures(
     userId: string,
-    prerequisites: any[]
+    prerequisites: any[],
   ): Promise<Partial<FeatureVector>> {
     if (prerequisites.length === 0) {
       return {
         prerequisiteGapCount: 0, // No prerequisites = no gaps
-        prerequisiteMasteryGap: 0
-      };
+        prerequisiteMasteryGap: 0,
+      }
     }
 
     // Check mastery level of each prerequisite
-    const masteryLevels = prerequisites.map(p => p.masteryLevel);
+    const masteryLevels = prerequisites.map((p) => p.masteryLevel)
 
     // Count prerequisites with low mastery (<INTERMEDIATE)
-    const lowMasteryPrereqs = masteryLevels.filter(m =>
-      m === MasteryLevel.NOT_STARTED || m === MasteryLevel.BEGINNER
-    ).length;
+    const lowMasteryPrereqs = masteryLevels.filter(
+      (m) => m === MasteryLevel.NOT_STARTED || m === MasteryLevel.BEGINNER,
+    ).length
 
-    const prerequisiteGapCount = lowMasteryPrereqs / prerequisites.length; // Normalize to 0-1
+    const prerequisiteGapCount = lowMasteryPrereqs / prerequisites.length // Normalize to 0-1
 
     // Calculate average mastery gap
-    const masteryScores = masteryLevels.map(level => {
+    const masteryScores = masteryLevels.map((level) => {
       switch (level) {
-        case MasteryLevel.NOT_STARTED: return 0.0;
-        case MasteryLevel.BEGINNER: return 0.25;
-        case MasteryLevel.INTERMEDIATE: return 0.5;
-        case MasteryLevel.ADVANCED: return 0.75;
-        case MasteryLevel.MASTERED: return 1.0;
-        default: return 0.5;
+        case MasteryLevel.NOT_STARTED:
+          return 0.0
+        case MasteryLevel.BEGINNER:
+          return 0.25
+        case MasteryLevel.INTERMEDIATE:
+          return 0.5
+        case MasteryLevel.ADVANCED:
+          return 0.75
+        case MasteryLevel.MASTERED:
+          return 1.0
+        default:
+          return 0.5
       }
-    });
+    })
 
-    const avgMastery = masteryScores.reduce((sum, s) => sum + s, 0) / masteryScores.length;
-    const prerequisiteMasteryGap = 1 - avgMastery; // Higher gap = worse
+    const avgMastery = masteryScores.reduce((sum: number, s: number) => sum + s, 0) / masteryScores.length
+    const prerequisiteMasteryGap = 1 - avgMastery // Higher gap = worse
 
     return {
       prerequisiteGapCount,
-      prerequisiteMasteryGap
-    };
+      prerequisiteMasteryGap,
+    }
   }
 
   /**
@@ -426,20 +433,20 @@ export class StruggleFeatureExtractor {
   private static async extractComplexityFeatures(
     userId: string,
     objective: any,
-    topicArea: string
+    topicArea: string,
   ): Promise<Partial<FeatureVector>> {
     // Content complexity: Map enum to 0-1
-    let contentComplexity = 0.5; // Default INTERMEDIATE
+    let contentComplexity = 0.5 // Default INTERMEDIATE
     switch (objective.complexity) {
       case ObjectiveComplexity.BASIC:
-        contentComplexity = 0.3;
-        break;
+        contentComplexity = 0.3
+        break
       case ObjectiveComplexity.INTERMEDIATE:
-        contentComplexity = 0.6;
-        break;
+        contentComplexity = 0.6
+        break
       case ObjectiveComplexity.ADVANCED:
-        contentComplexity = 0.9;
-        break;
+        contentComplexity = 0.9
+        break
     }
 
     // User ability level: Average mastery in this topic area
@@ -447,39 +454,45 @@ export class StruggleFeatureExtractor {
       where: {
         lecture: {
           course: {
-            name: topicArea
+            name: topicArea,
           },
-          userId
-        }
+          userId,
+        },
       },
       select: {
-        masteryLevel: true
-      }
-    });
+        masteryLevel: true,
+      },
+    })
 
-    let userAbilityLevel = 0.5; // Default
+    let userAbilityLevel = 0.5 // Default
     if (topicObjectives.length > 0) {
-      const masteryScores = topicObjectives.map(o => {
+      const masteryScores = topicObjectives.map((o) => {
         switch (o.masteryLevel) {
-          case MasteryLevel.NOT_STARTED: return 0.0;
-          case MasteryLevel.BEGINNER: return 0.25;
-          case MasteryLevel.INTERMEDIATE: return 0.5;
-          case MasteryLevel.ADVANCED: return 0.75;
-          case MasteryLevel.MASTERED: return 1.0;
-          default: return 0.5;
+          case MasteryLevel.NOT_STARTED:
+            return 0.0
+          case MasteryLevel.BEGINNER:
+            return 0.25
+          case MasteryLevel.INTERMEDIATE:
+            return 0.5
+          case MasteryLevel.ADVANCED:
+            return 0.75
+          case MasteryLevel.MASTERED:
+            return 1.0
+          default:
+            return 0.5
         }
-      });
+      })
 
-      userAbilityLevel = masteryScores.reduce((sum, s) => sum + s, 0) / masteryScores.length;
+      userAbilityLevel = masteryScores.reduce((sum: number, s: number) => sum + s, 0) / masteryScores.length
     }
 
     // Complexity mismatch: Content difficulty exceeds user ability
-    const complexityMismatch = Math.max(0, contentComplexity - userAbilityLevel);
+    const complexityMismatch = Math.max(0, contentComplexity - userAbilityLevel)
 
     return {
       contentComplexity,
-      complexityMismatch
-    };
+      complexityMismatch,
+    }
   }
 
   /**
@@ -488,7 +501,7 @@ export class StruggleFeatureExtractor {
   private static async extractBehavioralFeatures(
     userId: string,
     topicArea: string,
-    objective: any
+    objective: any,
   ): Promise<Partial<FeatureVector>> {
     // Historical struggle patterns (from Story 5.1)
     const strugglePatterns = await prisma.behavioralPattern.findMany({
@@ -496,43 +509,41 @@ export class StruggleFeatureExtractor {
         userId,
         patternType: BehavioralPatternType.FORGETTING_CURVE, // High forgetting rate = struggle
         confidence: {
-          gte: 0.6
-        }
+          gte: 0.6,
+        },
       },
       orderBy: { lastSeenAt: 'desc' },
-      take: 5
-    });
+      take: 5,
+    })
 
-    let historicalStruggleScore = 0; // Default
+    let historicalStruggleScore = 0 // Default
     if (strugglePatterns.length > 0) {
       // Check if evidence includes this topic area
-      const relevantPatterns = strugglePatterns.filter(p => {
-        const evidence = p.evidence as any;
-        return evidence.topicArea === topicArea || evidence.courseId === objective.lecture.courseId;
-      });
+      const relevantPatterns = strugglePatterns.filter((p) => {
+        const evidence = p.evidence as any
+        return evidence.topicArea === topicArea || evidence.courseId === objective.lecture.courseId
+      })
 
       if (relevantPatterns.length > 0) {
-        historicalStruggleScore = relevantPatterns.reduce(
-          (sum, p) => sum + p.confidence,
-          0
-        ) / relevantPatterns.length;
+        historicalStruggleScore =
+          relevantPatterns.reduce((sum, p) => sum + p.confidence, 0) / relevantPatterns.length
       }
     }
 
     // Content type preference mismatch
     const learningProfile = await prisma.userLearningProfile.findUnique({
-      where: { userId }
-    });
+      where: { userId },
+    })
 
-    let contentTypeMismatch = 0; // Default (no mismatch)
+    let contentTypeMismatch = 0 // Default (no mismatch)
     if (learningProfile) {
-      const styleProfile = learningProfile.learningStyleProfile as any;
-      const contentPrefs = learningProfile.contentPreferences as any;
+      const styleProfile = learningProfile.learningStyleProfile as any
+      const contentPrefs = learningProfile.contentPreferences as any
 
       // For MVP, assume lecture-based objectives match "reading" style
       // Visual learners may struggle with text-heavy content
       if (styleProfile.visual > 0.5 && contentPrefs.lectures > 0.4) {
-        contentTypeMismatch = 0.6; // Moderate mismatch
+        contentTypeMismatch = 0.6 // Moderate mismatch
       }
     }
 
@@ -541,32 +552,31 @@ export class StruggleFeatureExtractor {
       where: {
         userId,
         timestamp: {
-          gte: subDays(new Date(), 1)
+          gte: subDays(new Date(), 1),
         },
         sessionPerformanceScore: {
-          not: null
-        }
+          not: null,
+        },
       },
       orderBy: { timestamp: 'desc' },
-      take: 10
-    });
+      take: 10,
+    })
 
-    let cognitiveLoadIndicator = 0.5; // Default
+    let cognitiveLoadIndicator = 0.5 // Default
     if (recentEvents.length > 0) {
-      const avgPerformance = recentEvents.reduce(
-        (sum, e) => sum + (e.sessionPerformanceScore || 50),
-        0
-      ) / recentEvents.length;
+      const avgPerformance =
+        recentEvents.reduce((sum, e) => sum + (e.sessionPerformanceScore || 50), 0) /
+        recentEvents.length
 
       // High cognitive load = low performance
-      cognitiveLoadIndicator = 1 - (avgPerformance / 100); // Invert and normalize
+      cognitiveLoadIndicator = 1 - avgPerformance / 100 // Invert and normalize
     }
 
     return {
       historicalStruggleScore,
       contentTypeMismatch,
-      cognitiveLoadIndicator
-    };
+      cognitiveLoadIndicator,
+    }
   }
 
   /**
@@ -575,7 +585,7 @@ export class StruggleFeatureExtractor {
   private static async extractContextualFeatures(
     userId: string,
     topicArea: string,
-    courseId: string
+    courseId: string,
   ): Promise<Partial<FeatureVector>> {
     // Days until exam (urgency factor)
     const upcomingExams = await prisma.exam.findMany({
@@ -583,17 +593,17 @@ export class StruggleFeatureExtractor {
         userId,
         courseId,
         date: {
-          gte: new Date()
-        }
+          gte: new Date(),
+        },
       },
       orderBy: { date: 'asc' },
-      take: 1
-    });
+      take: 1,
+    })
 
-    let daysUntilExam = 1.0; // Default (no urgency)
+    let daysUntilExam = 1.0 // Default (no urgency)
     if (upcomingExams.length > 0) {
-      const daysLeft = differenceInDays(upcomingExams[0].date, new Date());
-      daysUntilExam = Math.max(0, Math.min(1, daysLeft / 90)); // Normalize to 0-1 (90 days max)
+      const daysLeft = differenceInDays(upcomingExams[0].date, new Date())
+      daysUntilExam = Math.max(0, Math.min(1, daysLeft / 90)) // Normalize to 0-1 (90 days max)
     }
 
     // Days since last studied this topic
@@ -601,37 +611,37 @@ export class StruggleFeatureExtractor {
       where: {
         userId,
         completedAt: {
-          not: null
-        }
+          not: null,
+        },
       },
-      orderBy: { completedAt: 'desc' }
-    });
+      orderBy: { completedAt: 'desc' },
+    })
 
-    let daysSinceLastStudy = 0.5; // Default (neutral)
+    let daysSinceLastStudy = 0.5 // Default (neutral)
     if (lastSession && lastSession.completedAt) {
-      const daysSince = differenceInDays(new Date(), lastSession.completedAt);
-      daysSinceLastStudy = Math.min(1, daysSince / 30); // Normalize to 0-1 (30 days max)
+      const daysSince = differenceInDays(new Date(), lastSession.completedAt)
+      daysSinceLastStudy = Math.min(1, daysSince / 30) // Normalize to 0-1 (30 days max)
     }
 
     // Workload level (pending objectives)
     const pendingObjectives = await prisma.learningObjective.count({
       where: {
         lecture: {
-          userId
+          userId,
         },
         masteryLevel: {
-          not: MasteryLevel.MASTERED
-        }
-      }
-    });
+          not: MasteryLevel.MASTERED,
+        },
+      },
+    })
 
-    const workloadLevel = Math.min(1, pendingObjectives / 50); // Normalize (50 objectives = max workload)
+    const workloadLevel = Math.min(1, pendingObjectives / 50) // Normalize (50 objectives = max workload)
 
     return {
       daysUntilExam,
       daysSinceLastStudy,
-      workloadLevel
-    };
+      workloadLevel,
+    }
   }
 
   /**
@@ -708,15 +718,12 @@ export class StruggleFeatureExtractor {
    * Get cached user learning profile (1 hour TTL)
    */
   private static async getCachedUserLearningProfile(
-    userId: string
+    userId: string,
   ): Promise<UserLearningProfile | null> {
     const cacheKey = `profile:${userId}`
     const cached = this.cache.get(cacheKey)
 
-    if (
-      cached &&
-      Date.now() - cached.timestamp.getTime() < CACHE_TTL.USER_LEARNING_PROFILE
-    ) {
+    if (cached && Date.now() - cached.timestamp.getTime() < CACHE_TTL.USER_LEARNING_PROFILE) {
       return cached.data
     }
 
@@ -731,16 +738,11 @@ export class StruggleFeatureExtractor {
   /**
    * Get cached behavioral patterns (12 hours TTL)
    */
-  private static async getCachedBehavioralPatterns(
-    userId: string
-  ): Promise<BehavioralPattern[]> {
+  private static async getCachedBehavioralPatterns(userId: string): Promise<BehavioralPattern[]> {
     const cacheKey = `patterns:${userId}`
     const cached = this.cache.get(cacheKey)
 
-    if (
-      cached &&
-      Date.now() - cached.timestamp.getTime() < CACHE_TTL.BEHAVIORAL_PATTERNS
-    ) {
+    if (cached && Date.now() - cached.timestamp.getTime() < CACHE_TTL.BEHAVIORAL_PATTERNS) {
       return cached.data
     }
 
@@ -757,15 +759,12 @@ export class StruggleFeatureExtractor {
    */
   private static async getCachedPerformanceMetrics(
     userId: string,
-    objectiveId: string
+    objectiveId: string,
   ): Promise<PerformanceMetric[]> {
     const cacheKey = `metrics:${userId}:${objectiveId}`
     const cached = this.cache.get(cacheKey)
 
-    if (
-      cached &&
-      Date.now() - cached.timestamp.getTime() < CACHE_TTL.PERFORMANCE_METRICS
-    ) {
+    if (cached && Date.now() - cached.timestamp.getTime() < CACHE_TTL.PERFORMANCE_METRICS) {
       return cached.data
     }
 

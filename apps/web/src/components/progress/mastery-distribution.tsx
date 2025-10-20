@@ -5,54 +5,52 @@
  * Visual breakdown of mastery levels across all objectives
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { useState, useEffect } from 'react'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 
 interface MasterySummary {
-  notStarted: number;
-  beginner: number;
-  intermediate: number;
-  advanced: number;
-  mastered: number;
-  totalObjectives: number;
-  percentages: Record<string, number>;
+  notStarted: number
+  beginner: number
+  intermediate: number
+  advanced: number
+  mastered: number
+  totalObjectives: number
+  percentages: Record<string, number>
 }
 
 export function MasteryDistribution() {
-  const [summary, setSummary] = useState<MasterySummary | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [summary, setSummary] = useState<MasterySummary | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchSummary();
-  }, []);
+    fetchSummary()
+  }, [])
 
   async function fetchSummary() {
     try {
-      setLoading(true);
-      const response = await fetch('/api/performance/mastery-summary');
+      setLoading(true)
+      const response = await fetch('/api/performance/mastery-summary')
 
-      if (!response.ok) throw new Error('Failed to fetch mastery summary');
+      if (!response.ok) throw new Error('Failed to fetch mastery summary')
 
-      const result = await response.json();
-      setSummary(result.data);
+      const result = await response.json()
+      setSummary(result.data)
     } catch (error) {
-      console.error('Error fetching mastery summary:', error);
+      console.error('Error fetching mastery summary:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   if (loading || !summary) {
     return (
       <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
-        <h3 className="text-lg font-heading font-bold text-gray-900 mb-4">
-          Mastery Distribution
-        </h3>
+        <h3 className="text-lg font-heading font-bold text-gray-900 mb-4">Mastery Distribution</h3>
         <div className="text-sm text-gray-500">Loading...</div>
       </div>
-    );
+    )
   }
 
   const chartData = [
@@ -86,31 +84,21 @@ export function MasteryDistribution() {
       percentage: summary.percentages.MASTERED,
       color: 'oklch(0.7 0.15 160)', // Green
     },
-  ];
+  ]
 
   return (
     <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
-      <h3 className="text-lg font-heading font-bold text-gray-900 mb-4">
-        Mastery Distribution
-      </h3>
+      <h3 className="text-lg font-heading font-bold text-gray-900 mb-4">Mastery Distribution</h3>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-5 gap-2 mb-6">
         {chartData.map((item) => (
-          <div
-            key={item.name}
-            className="text-center p-3 bg-white/60 backdrop-blur-sm rounded-xl"
-          >
-            <div
-              className="text-2xl font-bold mb-1"
-              style={{ color: item.color }}
-            >
+          <div key={item.name} className="text-center p-3 bg-white/60 backdrop-blur-sm rounded-xl">
+            <div className="text-2xl font-bold mb-1" style={{ color: item.color }}>
               {item.value}
             </div>
             <div className="text-xs text-gray-600 mb-1">{item.name}</div>
-            <div className="text-xs font-medium text-gray-500">
-              {item.percentage.toFixed(1)}%
-            </div>
+            <div className="text-xs font-medium text-gray-500">{item.percentage.toFixed(1)}%</div>
           </div>
         ))}
       </div>
@@ -150,5 +138,5 @@ export function MasteryDistribution() {
         Total Objectives: <span className="font-bold">{summary.totalObjectives}</span>
       </div>
     </div>
-  );
+  )
 }

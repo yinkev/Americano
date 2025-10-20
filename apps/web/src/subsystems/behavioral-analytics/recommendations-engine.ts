@@ -142,9 +142,7 @@ export class RecommendationsEngine {
    * @param userId - User ID to generate recommendations for
    * @returns Array of prioritized recommendations
    */
-  static async generateRecommendations(
-    userId: string
-  ): Promise<Recommendation[]> {
+  static async generateRecommendations(userId: string): Promise<Recommendation[]> {
     // Step 1: Fetch source data in parallel
     const [patterns, insights, interventions, existingRecs] = await Promise.all([
       prisma.behavioralPattern.findMany({
@@ -183,8 +181,7 @@ export class RecommendationsEngine {
 
     // Skip if already have recent recommendations
     const hasRecentRecs = existingRecs.some(
-      (rec) =>
-        rec.createdAt > new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24h
+      (rec) => rec.createdAt > new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24h
     )
     if (hasRecentRecs && existingRecs.length >= MAX_RECOMMENDATIONS) {
       return existingRecs.slice(0, MAX_RECOMMENDATIONS)
@@ -192,10 +189,7 @@ export class RecommendationsEngine {
 
     // Step 2: Transform sources into recommendations
     const recommendations: Array<
-      Omit<
-        Recommendation,
-        'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'
-      >
+      Omit<Recommendation, 'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'>
     > = []
 
     // From patterns
@@ -219,22 +213,39 @@ export class RecommendationsEngine {
     // Step 3: Prioritize recommendations
     const prioritized = this.prioritizeRecommendations(recommendations)
 
-    // Step 4: Save top recommendations
+    // Step 4: Save top recommendations (OPTIMIZED: Batch create)
+    const topRecommendations = prioritized.slice(0, MAX_RECOMMENDATIONS)
+
+    // Filter out duplicates
+    const newRecommendations = topRecommendations.filter(
+      (rec) =>
+        !existingRecs.some(
+          (existing) =>
+            existing.recommendationType === rec.recommendationType && existing.title === rec.title,
+        ),
+    )
+
+    // Batch create all new recommendations in single transaction
     const saved: Recommendation[] = []
-    for (const rec of prioritized.slice(0, MAX_RECOMMENDATIONS)) {
-      // Check if similar recommendation already exists
-      const exists = existingRecs.some(
-        (existing) =>
-          existing.recommendationType === rec.recommendationType &&
-          existing.title === rec.title
+    if (newRecommendations.length > 0) {
+      await prisma.$transaction(
+        newRecommendations.map((rec) =>
+          prisma.recommendation.create({
+            data: rec,
+          }),
+        ),
       )
 
-      if (!exists) {
-        const created = await prisma.recommendation.create({
-          data: rec,
-        })
-        saved.push(created)
-      }
+      // Fetch created recommendations (they have generated IDs now)
+      const createdRecs = await prisma.recommendation.findMany({
+        where: {
+          userId,
+          title: { in: newRecommendations.map((r) => r.title) },
+          createdAt: { gte: new Date(Date.now() - 5000) }, // Created in last 5 seconds
+        },
+        take: MAX_RECOMMENDATIONS,
+      })
+      saved.push(...createdRecs)
     }
 
     return saved.length > 0 ? saved : existingRecs.slice(0, MAX_RECOMMENDATIONS)
@@ -251,18 +262,8 @@ export class RecommendationsEngine {
    * @returns Sorted array by priority score (descending)
    */
   static prioritizeRecommendations(
-    recommendations: Array<
-      Omit<
-        Recommendation,
-        'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'
-      >
-    >
-  ): Array<
-    Omit<
-      Recommendation,
-      'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'
-    >
-  > {
+    recommendations: Array<Omit<Recommendation, 'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'>>,
+  ): Array<Omit<Recommendation, 'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'>> {
     // Calculate priority scores
     const scored = recommendations.map((rec) => ({
       ...rec,
@@ -307,7 +308,7 @@ export class RecommendationsEngine {
   static async trackRecommendationEffectiveness(
     userId: string,
     recommendationId: string,
-    applicationType: 'AUTO' | 'MANUAL' | 'REMINDER' | 'GOAL'
+    applicationType: 'AUTO' | 'MANUAL' | 'REMINDER' | 'GOAL',
   ) {
     const recommendation = await prisma.recommendation.findUnique({
       where: { id: recommendationId },
@@ -346,7 +347,7 @@ export class RecommendationsEngine {
    * @returns Effectiveness score (0.0-1.0)
    */
   static async evaluateRecommendationEffectiveness(
-    appliedRecommendationId: string
+    appliedRecommendationId: string,
   ): Promise<number> {
     const applied = await prisma.appliedRecommendation.findUnique({
       where: { id: appliedRecommendationId },
@@ -362,7 +363,7 @@ export class RecommendationsEngine {
 
     if (elapsed < twoWeeksMs) {
       throw new Error(
-        `Evaluation requires 2 weeks. Only ${Math.floor(elapsed / (24 * 60 * 60 * 1000))} days have passed.`
+        `Evaluation requires 2 weeks. Only ${Math.floor(elapsed / (24 * 60 * 60 * 1000))} days have passed.`,
       )
     }
 
@@ -376,14 +377,12 @@ export class RecommendationsEngine {
     const improvements = []
     if (baseline.behavioralScore && current.behavioralScore) {
       const improvement =
-        (current.behavioralScore - baseline.behavioralScore) /
-        baseline.behavioralScore
+        (current.behavioralScore - baseline.behavioralScore) / baseline.behavioralScore
       improvements.push(improvement)
     }
 
     if (baseline.avgConfidence && current.avgConfidence) {
-      const improvement =
-        (current.avgConfidence - baseline.avgConfidence) / baseline.avgConfidence
+      const improvement = (current.avgConfidence - baseline.avgConfidence) / baseline.avgConfidence
       improvements.push(improvement)
     }
 
@@ -415,11 +414,8 @@ export class RecommendationsEngine {
    */
   private static createRecommendationFromPattern(
     userId: string,
-    pattern: BehavioralPattern
-  ): Omit<
-    Recommendation,
-    'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'
-  > | null {
+    pattern: BehavioralPattern,
+  ): Omit<Recommendation, 'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'> | null {
     const template = RECOMMENDATION_TEMPLATES[pattern.patternType]
     if (!template) return null
 
@@ -429,6 +425,7 @@ export class RecommendationsEngine {
     return {
       userId,
       recommendationType: template.type,
+      status: 'PENDING',
       title: this.fillTemplate(template.titleTemplate, placeholders),
       description: this.fillTemplate(template.descriptionTemplate, placeholders),
       actionableText: this.fillTemplate(template.actionableTemplate, placeholders),
@@ -447,11 +444,8 @@ export class RecommendationsEngine {
    */
   private static createRecommendationFromInsight(
     userId: string,
-    insight: BehavioralInsight
-  ): Omit<
-    Recommendation,
-    'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'
-  > | null {
+    insight: BehavioralInsight,
+  ): Omit<Recommendation, 'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'> | null {
     // Map insight type to recommendation type
     const typeMap: Record<string, RecommendationType> = {
       STUDY_TIME_OPTIMIZATION: 'STUDY_TIME_OPTIMIZATION',
@@ -466,6 +460,7 @@ export class RecommendationsEngine {
     return {
       userId,
       recommendationType,
+      status: 'PENDING',
       title: insight.title,
       description: insight.description,
       actionableText: insight.actionableRecommendation,
@@ -484,11 +479,8 @@ export class RecommendationsEngine {
    */
   private static createRecommendationFromIntervention(
     userId: string,
-    intervention: InterventionRecommendation
-  ): Omit<
-    Recommendation,
-    'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'
-  > | null {
+    intervention: InterventionRecommendation,
+  ): Omit<Recommendation, 'id' | 'createdAt' | 'appliedAt' | 'dismissedAt'> | null {
     // Map intervention type to recommendation type
     const typeMap: Record<string, RecommendationType> = {
       PREREQUISITE_REVIEW: 'RETENTION_STRATEGY',
@@ -507,6 +499,7 @@ export class RecommendationsEngine {
     return {
       userId,
       recommendationType,
+      status: 'PENDING',
       title: `Intervention: ${intervention.interventionType.replace(/_/g, ' ').toLowerCase()}`,
       description: intervention.description,
       actionableText: intervention.reasoning,
@@ -525,7 +518,7 @@ export class RecommendationsEngine {
    */
   private static extractPlaceholders(
     pattern: BehavioralPattern,
-    evidence: any
+    evidence: any,
   ): Record<string, string> {
     const placeholders: Record<string, string> = {}
 
@@ -533,7 +526,7 @@ export class RecommendationsEngine {
       case 'OPTIMAL_STUDY_TIME':
         placeholders.hourRange = `${evidence.hourOfDay}:00-${evidence.hourOfDay + 1}:00`
         placeholders.performanceIncrease = Math.round(
-          ((evidence.timeOfDayScore - 70) / 70) * 100
+          ((evidence.timeOfDayScore - 70) / 70) * 100,
         ).toString()
         placeholders.sessionCount = evidence.sessionCount?.toString() || '0'
         break
@@ -545,12 +538,8 @@ export class RecommendationsEngine {
 
       case 'CONTENT_TYPE_PREFERENCE':
         placeholders.contentType = evidence.topContentType || 'flashcards'
-        placeholders.targetPercentage = Math.round(
-          (evidence.effectiveness || 0.5) * 100
-        ).toString()
-        placeholders.effectiveness = Math.round(
-          (evidence.effectiveness || 0.5) * 100
-        ).toString()
+        placeholders.targetPercentage = Math.round((evidence.effectiveness || 0.5) * 100).toString()
+        placeholders.effectiveness = Math.round((evidence.effectiveness || 0.5) * 100).toString()
         break
 
       case 'FORGETTING_CURVE':
@@ -568,10 +557,7 @@ export class RecommendationsEngine {
   /**
    * Fill template with placeholders
    */
-  private static fillTemplate(
-    template: string,
-    placeholders: Record<string, string>
-  ): string {
+  private static fillTemplate(template: string, placeholders: Record<string, string>): string {
     let filled = template
     for (const [key, value] of Object.entries(placeholders)) {
       filled = filled.replace(new RegExp(`{{${key}}}`, 'g'), value)
@@ -613,9 +599,7 @@ export class RecommendationsEngine {
     ])
 
     const avgConfidence =
-      patterns.length > 0
-        ? patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length
-        : 0
+      patterns.length > 0 ? patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length : 0
 
     const behavioralScore = profile?.dataQualityScore || 0
 

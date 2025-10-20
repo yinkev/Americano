@@ -23,7 +23,9 @@ export class GoogleCalendarProvider implements CalendarProvider {
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET
 
     if (!clientId || !clientSecret) {
-      throw new Error('Google OAuth credentials not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET')
+      throw new Error(
+        'Google OAuth credentials not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET',
+      )
     }
 
     this.oauth2Client = new OAuth2Client({
@@ -37,13 +39,12 @@ export class GoogleCalendarProvider implements CalendarProvider {
    * Story 5.3 Task 6.2: OAuth 2.0 flow implementation
    */
   getAuthorizationUrl(redirectUri: string, state: string): string {
-    this.oauth2Client.redirectUri = redirectUri
-
     const authorizeUrl = this.oauth2Client.generateAuthUrl({
       access_type: 'offline', // Request refresh token
       scope: GOOGLE_CALENDAR_SCOPES,
       state, // CSRF protection
       prompt: 'consent', // Force consent screen to get refresh token
+      redirect_uri: redirectUri,
     })
 
     return authorizeUrl
@@ -53,14 +54,18 @@ export class GoogleCalendarProvider implements CalendarProvider {
    * Exchange authorization code for tokens
    * Story 5.3 Task 6.2: Token acquisition
    */
-  async exchangeCodeForTokens(code: string, redirectUri: string): Promise<{
+  async exchangeCodeForTokens(
+    code: string,
+    redirectUri: string,
+  ): Promise<{
     accessToken: string
     refreshToken: string
     expiresIn: number
   }> {
-    this.oauth2Client.redirectUri = redirectUri
-
-    const { tokens } = await this.oauth2Client.getToken(code)
+    const { tokens } = await this.oauth2Client.getToken({
+      code,
+      redirect_uri: redirectUri,
+    })
 
     if (!tokens.access_token) {
       throw new Error('Failed to obtain access token from Google')
@@ -97,7 +102,9 @@ export class GoogleCalendarProvider implements CalendarProvider {
 
     return {
       accessToken: credentials.access_token,
-      expiresIn: credentials.expiry_date ? Math.floor((credentials.expiry_date - Date.now()) / 1000) : 3600,
+      expiresIn: credentials.expiry_date
+        ? Math.floor((credentials.expiry_date - Date.now()) / 1000)
+        : 3600,
     }
   }
 
@@ -105,11 +112,7 @@ export class GoogleCalendarProvider implements CalendarProvider {
    * Fetch calendar events within date range
    * Story 5.3 Task 6.2: Calendar API integration
    */
-  async getEvents(
-    accessToken: string,
-    startDate: Date,
-    endDate: Date
-  ): Promise<CalendarEvent[]> {
+  async getEvents(accessToken: string, startDate: Date, endDate: Date): Promise<CalendarEvent[]> {
     this.oauth2Client.setCredentials({
       access_token: accessToken,
     })
@@ -138,7 +141,7 @@ export class GoogleCalendarProvider implements CalendarProvider {
   async getAvailability(
     accessToken: string,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<CalendarAvailability[]> {
     this.oauth2Client.setCredentials({
       access_token: accessToken,
@@ -176,10 +179,7 @@ export class GoogleCalendarProvider implements CalendarProvider {
    * Create a calendar event
    * Story 5.3 Task 6.2: Event creation for scheduled study sessions
    */
-  async createEvent(
-    accessToken: string,
-    event: Omit<CalendarEvent, 'id'>
-  ): Promise<CalendarEvent> {
+  async createEvent(accessToken: string, event: Omit<CalendarEvent, 'id'>): Promise<CalendarEvent> {
     this.oauth2Client.setCredentials({
       access_token: accessToken,
     })

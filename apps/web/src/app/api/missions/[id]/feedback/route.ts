@@ -27,10 +27,7 @@ const FeedbackSchema = z.object({
  * Submit mission feedback
  */
 export const POST = withErrorHandler(
-  async (
-    request: NextRequest,
-    context: { params: Promise<{ id: string }> }
-  ) => {
+  async (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
     const { id: missionId } = await context.params
     const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev'
 
@@ -40,7 +37,9 @@ export const POST = withErrorHandler(
     })
 
     if (!user) {
-      return Response.json(errorResponse('USER_NOT_FOUND', `User ${userEmail} not found`), { status: 404 })
+      return Response.json(errorResponse('USER_NOT_FOUND', `User ${userEmail} not found`), {
+        status: 404,
+      })
     }
 
     // Verify mission exists and belongs to user
@@ -52,11 +51,15 @@ export const POST = withErrorHandler(
     })
 
     if (!mission) {
-      return Response.json(errorResponse('MISSION_NOT_FOUND', `Mission ${missionId} not found`), { status: 404 })
+      return Response.json(errorResponse('MISSION_NOT_FOUND', `Mission ${missionId} not found`), {
+        status: 404,
+      })
     }
 
     if (mission.userId !== user.id) {
-      return Response.json(errorResponse('UNAUTHORIZED', 'Mission does not belong to user'), { status: 403 })
+      return Response.json(errorResponse('UNAUTHORIZED', 'Mission does not belong to user'), {
+        status: 403,
+      })
     }
 
     // Parse and validate request body
@@ -82,25 +85,23 @@ export const POST = withErrorHandler(
 
     const aggregated = {
       avgHelpfulness:
-        allFeedback.reduce((sum, f) => sum + f.helpfulnessRating, 0) /
-        allFeedback.length,
-      avgRelevance:
-        allFeedback.reduce((sum, f) => sum + f.relevanceScore, 0) /
-        allFeedback.length,
+        allFeedback.reduce((sum, f) => sum + f.helpfulnessRating, 0) / allFeedback.length,
+      avgRelevance: allFeedback.reduce((sum, f) => sum + f.relevanceScore, 0) / allFeedback.length,
       paceDistribution: {
         too_slow: allFeedback.filter((f) => f.paceRating === 'TOO_SLOW').length,
-        just_right: allFeedback.filter((f) => f.paceRating === 'JUST_RIGHT')
-          .length,
+        just_right: allFeedback.filter((f) => f.paceRating === 'JUST_RIGHT').length,
         too_fast: allFeedback.filter((f) => f.paceRating === 'TOO_FAST').length,
       },
     }
 
-    return Response.json(successResponse({
-      success: true,
-      message: 'Feedback submitted successfully',
-      aggregatedFeedback: aggregated,
-    }))
-  }
+    return Response.json(
+      successResponse({
+        success: true,
+        message: 'Feedback submitted successfully',
+        aggregatedFeedback: aggregated,
+      }),
+    )
+  },
 )
 
 /**
@@ -109,10 +110,7 @@ export const POST = withErrorHandler(
  * Retrieve aggregated feedback for a mission
  */
 export const GET = withErrorHandler(
-  async (
-    request: NextRequest,
-    context: { params: Promise<{ id: string }> }
-  ) => {
+  async (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
     const { id: missionId } = await context.params
 
     // Get all feedback for this mission
@@ -121,19 +119,18 @@ export const GET = withErrorHandler(
     })
 
     if (feedback.length === 0) {
-      return Response.json(successResponse({
-        feedback: [],
-        aggregated: null,
-      }))
+      return Response.json(
+        successResponse({
+          feedback: [],
+          aggregated: null,
+        }),
+      )
     }
 
     // Calculate aggregated stats
     const aggregated = {
-      avgHelpfulness:
-        feedback.reduce((sum, f) => sum + f.helpfulnessRating, 0) /
-        feedback.length,
-      avgRelevance:
-        feedback.reduce((sum, f) => sum + f.relevanceScore, 0) / feedback.length,
+      avgHelpfulness: feedback.reduce((sum, f) => sum + f.helpfulnessRating, 0) / feedback.length,
+      avgRelevance: feedback.reduce((sum, f) => sum + f.relevanceScore, 0) / feedback.length,
       paceDistribution: {
         too_slow: feedback.filter((f) => f.paceRating === 'TOO_SLOW').length,
         just_right: feedback.filter((f) => f.paceRating === 'JUST_RIGHT').length,
@@ -142,9 +139,11 @@ export const GET = withErrorHandler(
       totalResponses: feedback.length,
     }
 
-    return Response.json(successResponse({
-      feedback,
-      aggregated,
-    }))
-  }
+    return Response.json(
+      successResponse({
+        feedback,
+        aggregated,
+      }),
+    )
+  },
 )

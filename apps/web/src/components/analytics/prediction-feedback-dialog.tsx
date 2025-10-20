@@ -6,47 +6,48 @@
  * Triggers: 24 hours after topic studied OR next session start
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { AlertCircle, CheckCircle2, HelpCircle } from 'lucide-react';
-import { format } from 'date-fns';
+import { useState } from 'react'
+import { AlertCircle, CheckCircle2, HelpCircle } from 'lucide-react'
+import { format } from 'date-fns'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { FeedbackType } from '@/generated/prisma';
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { toast } from 'sonner'
+
+type FeedbackType = 'HELPFUL' | 'INACCURATE' | 'FEEDBACK_RECORDED'
 
 interface Prediction {
-  id: string;
-  topicName: string;
-  predictedFor: string;
-  predictedStruggleProbability: number;
+  id: string
+  topicName: string
+  predictedFor: string
+  predictedStruggleProbability: number
 }
 
 interface Props {
-  prediction: Prediction;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onFeedbackSubmitted?: () => void;
+  prediction: Prediction
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onFeedbackSubmitted?: () => void
 }
 
 type FeedbackOption = {
-  value: 'struggled' | 'easy' | 'helpful';
-  label: string;
-  description: string;
-  icon: React.ReactNode;
-  actualStruggle: boolean;
-  feedbackType: FeedbackType;
-};
+  value: 'struggled' | 'easy' | 'helpful'
+  label: string
+  description: string
+  icon: React.ReactNode
+  actualStruggle: boolean
+  feedbackType: FeedbackType
+}
 
 const FEEDBACK_OPTIONS: FeedbackOption[] = [
   {
@@ -55,7 +56,7 @@ const FEEDBACK_OPTIONS: FeedbackOption[] = [
     description: 'The topic was difficult as predicted',
     icon: <AlertCircle className="size-5 text-[oklch(0.6_0.15_25)]" />,
     actualStruggle: true,
-    feedbackType: FeedbackType.HELPFUL,
+    feedbackType: 'HELPFUL',
   },
   {
     value: 'easy',
@@ -63,7 +64,7 @@ const FEEDBACK_OPTIONS: FeedbackOption[] = [
     description: 'The prediction overestimated the difficulty',
     icon: <CheckCircle2 className="size-5 text-[oklch(0.7_0.12_145)]" />,
     actualStruggle: false,
-    feedbackType: FeedbackType.INACCURATE,
+    feedbackType: 'INACCURATE',
   },
   {
     value: 'helpful',
@@ -71,9 +72,9 @@ const FEEDBACK_OPTIONS: FeedbackOption[] = [
     description: 'The warning helped me prepare better',
     icon: <HelpCircle className="size-5 text-[oklch(0.65_0.15_250)]" />,
     actualStruggle: true,
-    feedbackType: FeedbackType.HELPFUL,
+    feedbackType: 'HELPFUL',
   },
-];
+]
 
 export function PredictionFeedbackDialog({
   prediction,
@@ -81,20 +82,20 @@ export function PredictionFeedbackDialog({
   onOpenChange,
   onFeedbackSubmitted,
 }: Props) {
-  const [selectedOption, setSelectedOption] = useState<string>('');
-  const [comments, setComments] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<string>('')
+  const [comments, setComments] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async () => {
     if (!selectedOption) {
-      toast.error('Please select an option');
-      return;
+      toast.error('Please select an option')
+      return
     }
 
-    const option = FEEDBACK_OPTIONS.find((opt) => opt.value === selectedOption);
-    if (!option) return;
+    const option = FEEDBACK_OPTIONS.find((opt) => opt.value === selectedOption)
+    if (!option) return
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
       const response = await fetch(`/api/analytics/predictions/${prediction.id}/feedback`, {
@@ -107,13 +108,13 @@ export function PredictionFeedbackDialog({
           feedbackType: option.feedbackType,
           comments: comments.trim() || undefined,
         }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to submit feedback');
+        throw new Error('Failed to submit feedback')
       }
 
-      const data = await response.json();
+      const data = await response.json()
 
       // Show success toast with model accuracy update
       if (data.data?.modelAccuracyUpdate) {
@@ -121,34 +122,34 @@ export function PredictionFeedbackDialog({
           `Feedback recorded! Model accuracy: ${Math.round(data.data.modelAccuracyUpdate * 100)}%`,
           {
             duration: 5000,
-          }
-        );
+          },
+        )
       } else {
-        toast.success('Feedback recorded successfully!');
+        toast.success('Feedback recorded successfully!')
       }
 
       // Reset form and close dialog
-      setSelectedOption('');
-      setComments('');
-      onOpenChange(false);
+      setSelectedOption('')
+      setComments('')
+      onOpenChange(false)
 
       // Notify parent component
       if (onFeedbackSubmitted) {
-        onFeedbackSubmitted();
+        onFeedbackSubmitted()
       }
     } catch (error) {
-      console.error('Error submitting feedback:', error);
-      toast.error('Failed to submit feedback. Please try again.');
+      console.error('Error submitting feedback:', error)
+      toast.error('Failed to submit feedback. Please try again.')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleSkip = () => {
-    onOpenChange(false);
-    setSelectedOption('');
-    setComments('');
-  };
+    onOpenChange(false)
+    setSelectedOption('')
+    setComments('')
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -251,5 +252,5 @@ export function PredictionFeedbackDialog({
         </p>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

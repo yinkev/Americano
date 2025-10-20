@@ -3,37 +3,38 @@
  * Story 5.3 Task 2
  */
 
-import { describe, it, expect, beforeEach, vi } from '@jest/globals'
+import { describe, it, expect, beforeEach } from '@jest/globals'
 import { StudyTimeRecommender } from '@/subsystems/behavioral-analytics/study-time-recommender'
 import { StudyTimeAnalyzer } from '@/subsystems/behavioral-analytics/study-time-analyzer'
 import { prisma } from '@/lib/db'
 
 // Mock dependencies
-vi.mock('@/lib/db', () => ({
+jest.mock('@/lib/db', () => ({
   prisma: {
     userLearningProfile: {
-      findUnique: vi.fn(),
+      findUnique: jest.fn(),
     },
-    calendarIntegration: {
-      findUnique: vi.fn(),
-    },
+    // TODO: calendarIntegration model needs to be added to schema
+    // calendarIntegration: {
+    //   findUnique: jest.fn(),
+    // },
     studySession: {
-      findMany: vi.fn(),
+      findMany: jest.fn(),
     },
   },
 }))
 
-vi.mock('@/subsystems/behavioral-analytics/study-time-analyzer')
+jest.mock('@/subsystems/behavioral-analytics/study-time-analyzer')
 
 describe('StudyTimeRecommender', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   describe('generateRecommendations', () => {
     it('should generate top 3-5 time slot recommendations', async () => {
       // Mock study time patterns
-      vi.mocked(StudyTimeAnalyzer.analyzeOptimalStudyTimes).mockResolvedValue([
+      jest.mocked(StudyTimeAnalyzer.analyzeOptimalStudyTimes).mockResolvedValue([
         {
           hourOfDay: 7,
           sessionCount: 15,
@@ -57,7 +58,7 @@ describe('StudyTimeRecommender', () => {
       ])
 
       // Mock user profile
-      vi.mocked(prisma.userLearningProfile.findUnique).mockResolvedValue({
+      jest.mocked(prisma.userLearningProfile.findUnique).mockResolvedValue({
         id: 'profile-1',
         userId: 'user-1',
         preferredStudyTimes: [{ dayOfWeek: 1, startHour: 7, endHour: 9 }],
@@ -70,11 +71,12 @@ describe('StudyTimeRecommender', () => {
         dataQualityScore: 0.8,
       })
 
+      // TODO: calendarIntegration model needs to be added to schema
       // Mock calendar integration
-      vi.mocked(prisma.calendarIntegration.findUnique).mockResolvedValue(null)
+      // jest.mocked(prisma.calendarIntegration.findUnique).mockResolvedValue(null)
 
       // Mock recent sessions
-      vi.mocked(prisma.studySession.findMany).mockResolvedValue([])
+      jest.mocked(prisma.studySession.findMany).mockResolvedValue([])
 
       const recommendations = await StudyTimeRecommender.generateRecommendations('user-1')
 
@@ -86,7 +88,7 @@ describe('StudyTimeRecommender', () => {
     })
 
     it('should return default recommendations when no historical data', async () => {
-      vi.mocked(StudyTimeAnalyzer.analyzeOptimalStudyTimes).mockResolvedValue([])
+      jest.mocked(StudyTimeAnalyzer.analyzeOptimalStudyTimes).mockResolvedValue([])
 
       const recommendations = await StudyTimeRecommender.generateRecommendations('user-1')
 
@@ -98,9 +100,9 @@ describe('StudyTimeRecommender', () => {
 
   describe('adaptSchedule', () => {
     it('should record schedule adaptation and regenerate recommendations', async () => {
-      vi.mocked(StudyTimeAnalyzer.analyzeOptimalStudyTimes).mockResolvedValue([])
+      jest.mocked(StudyTimeAnalyzer.analyzeOptimalStudyTimes).mockResolvedValue([])
 
-      const createSpy = vi.fn().mockResolvedValue({})
+      const createSpy = jest.fn().mockResolvedValue({})
       ;(prisma as any).scheduleAdaptation = { create: createSpy }
 
       await StudyTimeRecommender.adaptSchedule(

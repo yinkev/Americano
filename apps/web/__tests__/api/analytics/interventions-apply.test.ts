@@ -7,7 +7,7 @@
 
 import { POST } from '@/app/api/analytics/interventions/[id]/apply/route'
 import { NextRequest } from 'next/server'
-import { server, createErrorHandler, create503Handler } from '../../../setup'
+import { server, createErrorHandler, create503Handler } from '../../setup'
 
 describe('POST /api/analytics/interventions/[id]/apply', () => {
   describe('Success Cases', () => {
@@ -19,7 +19,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
           body: JSON.stringify({
             applyToMissionId: 'mission-123',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'int-1' }) })
@@ -38,7 +38,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
         {
           method: 'POST',
           body: JSON.stringify({}),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'int-2' }) })
@@ -58,7 +58,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
           body: JSON.stringify({
             applyToMissionId: 'mission-456',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'int-3' }) })
@@ -73,7 +73,12 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
   describe('Error Cases', () => {
     it('should handle 404 intervention not found', async () => {
       server.use(
-        createErrorHandler('post', '/interventions/invalid-id/apply', 404, 'Intervention not found')
+        createErrorHandler(
+          'post',
+          '/interventions/invalid-id/apply',
+          404,
+          'Intervention not found',
+        ),
       )
 
       const request = new NextRequest(
@@ -81,7 +86,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
         {
           method: 'POST',
           body: JSON.stringify({}),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'invalid-id' }) })
@@ -93,7 +98,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
 
     it('should handle 400 invalid mission ID', async () => {
       server.use(
-        createErrorHandler('post', '/interventions/int-1/apply', 400, 'Invalid mission ID')
+        createErrorHandler('post', '/interventions/int-1/apply', 400, 'Invalid mission ID'),
       )
 
       const request = new NextRequest(
@@ -103,7 +108,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
           body: JSON.stringify({
             applyToMissionId: 'invalid',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'int-1' }) })
@@ -115,7 +120,12 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
 
     it('should handle 409 intervention already applied', async () => {
       server.use(
-        createErrorHandler('post', '/interventions/int-1/apply', 409, 'Intervention already applied')
+        createErrorHandler(
+          'post',
+          '/interventions/int-1/apply',
+          409,
+          'Intervention already applied',
+        ),
       )
 
       const request = new NextRequest(
@@ -125,7 +135,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
           body: JSON.stringify({
             applyToMissionId: 'mission-123',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'int-1' }) })
@@ -137,7 +147,12 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
 
     it('should handle 500 internal server error', async () => {
       server.use(
-        createErrorHandler('post', '/interventions/int-1/apply', 500, 'Failed to apply intervention')
+        createErrorHandler(
+          'post',
+          '/interventions/int-1/apply',
+          500,
+          'Failed to apply intervention',
+        ),
       )
 
       const request = new NextRequest(
@@ -145,7 +160,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
         {
           method: 'POST',
           body: JSON.stringify({}),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'int-1' }) })
@@ -163,7 +178,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
         {
           method: 'POST',
           body: JSON.stringify({}),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'int-1' }) })
@@ -182,7 +197,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
         {
           method: 'POST',
           body: JSON.stringify({}),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'int-1' }) })
@@ -202,7 +217,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
         {
           method: 'POST',
           body: JSON.stringify({}),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'int-123-abc' }) })
@@ -217,7 +232,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
           body: JSON.stringify({
             applyToMissionId: 'mission-abc-123-xyz',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'int-1' }) })
@@ -233,8 +248,8 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
               applyToMissionId: `mission-${i}`,
             }),
           }),
-          { params: Promise.resolve({ id: `int-${i}` }) }
-        )
+          { params: Promise.resolve({ id: `int-${i}` }) },
+        ),
       )
 
       const responses = await Promise.all(requests)
@@ -250,7 +265,7 @@ describe('POST /api/analytics/interventions/[id]/apply', () => {
         {
           method: 'POST',
           body: JSON.stringify({}),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'int-1' }) })

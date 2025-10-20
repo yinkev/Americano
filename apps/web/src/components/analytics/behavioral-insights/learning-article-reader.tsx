@@ -26,7 +26,12 @@ import {
 } from '@/components/ui/select'
 import { AlertCircle, BookOpen, ChevronDown, ChevronUp, Clock } from 'lucide-react'
 
-type ArticleCategory = 'MEMORY' | 'ATTENTION' | 'MOTIVATION' | 'METACOGNITION' | 'LEARNING_STRATEGIES'
+type ArticleCategory =
+  | 'MEMORY'
+  | 'ATTENTION'
+  | 'MOTIVATION'
+  | 'METACOGNITION'
+  | 'LEARNING_STRATEGIES'
 
 interface LearningArticle {
   id: string
@@ -101,7 +106,10 @@ const renderMarkdown = (markdown: string): string => {
   html = '<p class="mb-4">' + html + '</p>'
 
   // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>')
+  html = html.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    '<a href="$2" class="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>',
+  )
 
   return html
 }
@@ -122,7 +130,7 @@ export function LearningArticleReader({
         setIsLoading(true)
         setError(null)
         const response = await fetch(
-          `/api/analytics/behavioral-insights/learning-science/${selectedArticleId}?userId=${userId}`
+          `/api/analytics/behavioral-insights/learning-science/${selectedArticleId}?userId=${userId}`,
         )
 
         if (!response.ok) {

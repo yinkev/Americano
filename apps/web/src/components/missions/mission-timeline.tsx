@@ -17,12 +17,7 @@ import {
 } from 'date-fns'
 import { ChevronLeft, ChevronRight, Calendar, CheckCircle2, XCircle, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import Link from 'next/link'
 
 interface MissionTimelineProps {
@@ -94,11 +89,8 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
       const avgCompletionRate =
         dayMissions.reduce(
           (sum, m) =>
-            sum +
-            (m.objectives.length > 0
-              ? m.completedObjectivesCount / m.objectives.length
-              : 0),
-          0
+            sum + (m.objectives.length > 0 ? m.completedObjectivesCount / m.objectives.length : 0),
+          0,
         ) / dayMissions.length
 
       // Color intensity based on completion rate
@@ -241,20 +233,20 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
                   {format(day, 'EEEE, MMMM d')}
                 </p>
                 {dayStatus.missions.map((mission, idx) => {
-                  const completionRate = mission.objectives.length > 0
-                    ? (mission.completedObjectivesCount / mission.objectives.length) * 100
-                    : 0
+                  const completionRate =
+                    mission.objectives.length > 0
+                      ? (mission.completedObjectivesCount / mission.objectives.length) * 100
+                      : 0
 
                   return (
                     <div key={mission.id} className="text-xs space-y-1">
                       {dayStatus.missions.length > 1 && (
-                        <p className="font-medium text-[oklch(0.556_0_0)]">
-                          Mission {idx + 1}:
-                        </p>
+                        <p className="font-medium text-[oklch(0.556_0_0)]">Mission {idx + 1}:</p>
                       )}
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-[oklch(0.145_0_0)]">
-                          {mission.completedObjectivesCount} / {mission.objectives.length} objectives
+                          {mission.completedObjectivesCount} / {mission.objectives.length}{' '}
+                          objectives
                         </span>
                         <span
                           className={`font-medium ${
@@ -304,11 +296,12 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
       total,
       completed,
       completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
-      avgSuccessScore: total > 0
-        ? monthMissions
-            .filter((m) => m.successScore !== undefined)
-            .reduce((sum, m) => sum + (m.successScore ?? 0), 0) / total
-        : 0,
+      avgSuccessScore:
+        total > 0
+          ? monthMissions
+              .filter((m) => m.successScore !== undefined)
+              .reduce((sum, m) => sum + (m.successScore ?? 0), 0) / total
+          : 0,
     }
   }, [missions, currentMonth])
 
@@ -365,19 +358,14 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
         {/* Day Headers */}
         <div className="grid grid-cols-7 gap-2 mb-2">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-            <div
-              key={day}
-              className="text-center text-xs font-medium text-[oklch(0.556_0_0)] py-2"
-            >
+            <div key={day} className="text-center text-xs font-medium text-[oklch(0.556_0_0)] py-2">
               {day}
             </div>
           ))}
         </div>
 
         {/* Calendar Days */}
-        <div className="grid grid-cols-7 gap-2">
-          {calendarDays.map((day) => renderDay(day))}
-        </div>
+        <div className="grid grid-cols-7 gap-2">{calendarDays.map((day) => renderDay(day))}</div>
       </div>
 
       {/* Legend */}

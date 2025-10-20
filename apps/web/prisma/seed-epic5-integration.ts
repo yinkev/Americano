@@ -2,12 +2,12 @@
 // Comprehensive seed data for Stories 5.3, 5.4, 5.6 integration validation
 // Generates 12+ weeks of realistic behavioral data for testing
 
-import { PrismaClient } from '../src/generated/prisma';
+import { PrismaClient } from '../src/generated/prisma'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Starting Epic 5 Integration Seed (Stories 5.3, 5.4, 5.6)...\n');
+  console.log('🌱 Starting Epic 5 Integration Seed (Stories 5.3, 5.4, 5.6)...\n')
 
   // Get or create test user
   const testUser = await prisma.user.upsert({
@@ -17,8 +17,8 @@ async function main() {
       email: 'integration-test@americano.dev',
       name: 'Integration Test User',
     },
-  });
-  console.log(`✓ Test user created: ${testUser.name} (${testUser.id})`);
+  })
+  console.log(`✓ Test user created: ${testUser.name} (${testUser.id})`)
 
   // Create test course
   const testCourse = await prisma.course.create({
@@ -28,8 +28,8 @@ async function main() {
       code: 'BIOC-501',
       term: 'Fall 2025',
     },
-  });
-  console.log(`✓ Test course created: ${testCourse.name}`);
+  })
+  console.log(`✓ Test course created: ${testCourse.name}`)
 
   // Create learning objectives
   const objectives = await Promise.all([
@@ -53,47 +53,47 @@ async function main() {
         masteryLevel: 'BEGINNER',
       },
     }),
-  ]);
-  console.log(`✓ Created ${objectives.length} learning objectives`);
+  ])
+  console.log(`✓ Created ${objectives.length} learning objectives`)
 
   // Generate 12 weeks of behavioral data (84 days)
-  const startDate = new Date('2025-01-01T00:00:00Z');
-  const weeksToGenerate = 12;
-  const behavioralEvents = [];
-  const cognitiveLoadMetrics = [];
-  const missions = [];
+  const startDate = new Date('2025-01-01T00:00:00Z')
+  const weeksToGenerate = 12
+  const behavioralEvents = []
+  const cognitiveLoadMetrics = []
+  const missions = []
 
-  console.log(`\n📊 Generating ${weeksToGenerate} weeks of behavioral data...`);
+  console.log(`\n📊 Generating ${weeksToGenerate} weeks of behavioral data...`)
 
   for (let week = 0; week < weeksToGenerate; week++) {
     // 5 study sessions per week (Mon, Tue, Thu, Fri, Sat)
-    const studyDays = [1, 2, 4, 5, 6]; // Day of week
+    const studyDays = [1, 2, 4, 5, 6] // Day of week
 
     for (const dayOffset of studyDays) {
-      const sessionDate = new Date(startDate);
-      sessionDate.setDate(startDate.getDate() + week * 7 + dayOffset);
+      const sessionDate = new Date(startDate)
+      sessionDate.setDate(startDate.getDate() + week * 7 + dayOffset)
 
       // Vary study time (7 AM, 9 AM, or 2 PM)
-      const studyHours = [7, 9, 14][Math.floor(Math.random() * 3)];
-      sessionDate.setHours(studyHours, 0, 0, 0);
+      const studyHours = [7, 9, 14][Math.floor(Math.random() * 3)]
+      sessionDate.setHours(studyHours, 0, 0, 0)
 
       // Session duration varies (30-90 minutes)
-      const durationMinutes = 30 + Math.floor(Math.random() * 60);
-      const durationMs = durationMinutes * 60 * 1000;
+      const durationMinutes = 30 + Math.floor(Math.random() * 60)
+      const durationMs = durationMinutes * 60 * 1000
 
       // Performance varies (50-95)
-      const performanceScore = 50 + Math.floor(Math.random() * 45);
+      const performanceScore = 50 + Math.floor(Math.random() * 45)
 
       // Engagement level based on performance
       const engagementLevel =
-        performanceScore > 80 ? 'HIGH' : performanceScore > 60 ? 'MEDIUM' : 'LOW';
+        performanceScore > 80 ? 'HIGH' : performanceScore > 60 ? 'MEDIUM' : 'LOW'
 
       // Cognitive load varies (20-85)
-      let cognitiveLoad = 20 + Math.floor(Math.random() * 65);
+      let cognitiveLoad = 20 + Math.floor(Math.random() * 65)
 
       // Simulate burnout risk: weeks 8-10 have higher load
       if (week >= 7 && week <= 9) {
-        cognitiveLoad = Math.min(90, cognitiveLoad + 20); // Increased load during "exam prep"
+        cognitiveLoad = Math.min(90, cognitiveLoad + 20) // Increased load during "exam prep"
       }
 
       // Create mission
@@ -122,9 +122,9 @@ async function main() {
           successScore: performanceScore / 100,
           difficultyRating: Math.floor(Math.random() * 5) + 1,
         },
-      });
+      })
 
-      missions.push(mission);
+      missions.push(mission)
 
       // Create study session
       const studySession = await prisma.studySession.create({
@@ -137,7 +137,7 @@ async function main() {
           reviewsCompleted: mission.reviewCardCount,
           newCardsStudied: mission.newContentCount,
         },
-      });
+      })
 
       // Create behavioral event
       const behavioralEvent = await prisma.behavioralEvent.create({
@@ -167,9 +167,9 @@ async function main() {
           ),
           overloadDetected: cognitiveLoad > 80,
         },
-      });
+      })
 
-      behavioralEvents.push(behavioralEvent);
+      behavioralEvents.push(behavioralEvent)
 
       // Create cognitive load metric
       const cognitiveLoadMetric = await prisma.cognitiveLoadMetric.create({
@@ -188,15 +188,15 @@ async function main() {
           ),
           confidenceLevel: 0.75 + Math.random() * 0.2,
         },
-      });
+      })
 
-      cognitiveLoadMetrics.push(cognitiveLoadMetric);
+      cognitiveLoadMetrics.push(cognitiveLoadMetric)
     }
   }
 
-  console.log(`✓ Created ${missions.length} missions`);
-  console.log(`✓ Created ${behavioralEvents.length} behavioral events`);
-  console.log(`✓ Created ${cognitiveLoadMetrics.length} cognitive load metrics`);
+  console.log(`✓ Created ${missions.length} missions`)
+  console.log(`✓ Created ${behavioralEvents.length} behavioral events`)
+  console.log(`✓ Created ${cognitiveLoadMetrics.length} cognitive load metrics`)
 
   // Story 5.1: Create behavioral patterns
   const patterns = await Promise.all([
@@ -239,8 +239,8 @@ async function main() {
         }),
       },
     }),
-  ]);
-  console.log(`✓ Created ${patterns.length} behavioral patterns`);
+  ])
+  console.log(`✓ Created ${patterns.length} behavioral patterns`)
 
   // Story 5.1: Create behavioral insights
   const insights = await Promise.all([
@@ -268,8 +268,8 @@ async function main() {
         confidence: 0.79,
       },
     }),
-  ]);
-  console.log(`✓ Created ${insights.length} behavioral insights`);
+  ])
+  console.log(`✓ Created ${insights.length} behavioral insights`)
 
   // Story 5.1: Create user learning profile
   const learningProfile = await prisma.userLearningProfile.create({
@@ -308,8 +308,8 @@ async function main() {
         copingStrategies: ['break_scheduling', 'difficulty_reduction'],
       }),
     },
-  });
-  console.log(`✓ Created user learning profile`);
+  })
+  console.log(`✓ Created user learning profile`)
 
   // Story 5.4: Create stress response patterns
   const stressPatterns = await Promise.all([
@@ -345,8 +345,8 @@ async function main() {
         confidence: 0.82,
       },
     }),
-  ]);
-  console.log(`✓ Created ${stressPatterns.length} stress response patterns`);
+  ])
+  console.log(`✓ Created ${stressPatterns.length} stress response patterns`)
 
   // Story 5.4: Create burnout risk assessment
   const burnoutAssessment = await prisma.burnoutRiskAssessment.create({
@@ -365,8 +365,8 @@ async function main() {
         'Focus on review content (lower cognitive load)',
       ]),
     },
-  });
-  console.log(`✓ Created burnout risk assessment (MEDIUM risk)`);
+  })
+  console.log(`✓ Created burnout risk assessment (MEDIUM risk)`)
 
   // Story 5.2: Create struggle predictions and indicators
   const strugglePrediction = await prisma.strugglePrediction.create({
@@ -384,7 +384,7 @@ async function main() {
         historicalStruggle: 0.7,
       }),
     },
-  });
+  })
 
   await prisma.struggleIndicator.create({
     data: {
@@ -398,9 +398,9 @@ async function main() {
         gapScore: 0.6,
       }),
     },
-  });
+  })
 
-  console.log(`✓ Created struggle prediction with indicators`);
+  console.log(`✓ Created struggle prediction with indicators`)
 
   // Story 5.2: Create intervention recommendation
   const intervention = await prisma.interventionRecommendation.create({
@@ -415,8 +415,8 @@ async function main() {
       appliedAt: new Date(),
       effectiveness: 0.75,
     },
-  });
-  console.log(`✓ Created intervention recommendation`);
+  })
+  console.log(`✓ Created intervention recommendation`)
 
   // Story 5.6: Create behavioral goals
   const goals = await Promise.all([
@@ -456,8 +456,8 @@ async function main() {
         ]),
       },
     }),
-  ]);
-  console.log(`✓ Created ${goals.length} behavioral goals`);
+  ])
+  console.log(`✓ Created ${goals.length} behavioral goals`)
 
   // Story 5.6: Create recommendations
   const recommendations = await Promise.all([
@@ -503,7 +503,7 @@ async function main() {
         title: 'Review every 4.6 days for optimal retention',
         description:
           'Your forgetting curve half-life is 4.6 days. Review intervals should align with this.',
-        actionableText: 'Trust Americano\'s FSRS algorithm—it\'s calibrated to your curve.',
+        actionableText: "Trust Americano's FSRS algorithm—it's calibrated to your curve.",
         confidence: 0.82,
         estimatedImpact: 0.15,
         easeOfImplementation: 1.0,
@@ -513,8 +513,8 @@ async function main() {
         sourceInsightIds: [],
       },
     }),
-  ]);
-  console.log(`✓ Created ${recommendations.length} recommendations`);
+  ])
+  console.log(`✓ Created ${recommendations.length} recommendations`)
 
   // Story 5.6: Create applied recommendation tracking
   const appliedRec = await prisma.appliedRecommendation.create({
@@ -535,8 +535,8 @@ async function main() {
       userNotes: 'Morning study blocks are working great!',
       evaluatedAt: new Date(),
     },
-  });
-  console.log(`✓ Created applied recommendation tracking`);
+  })
+  console.log(`✓ Created applied recommendation tracking`)
 
   // Story 5.6: Create insight notifications
   const notifications = await Promise.all([
@@ -557,14 +557,14 @@ async function main() {
         userId: testUser.id,
         notificationType: 'GOAL_PROGRESS_25',
         title: 'Goal 25% complete: Study time consistency',
-        message: 'Great progress! You\'re consistently studying 3.2 days per week at peak hours.',
+        message: "Great progress! You're consistently studying 3.2 days per week at peak hours.",
         priority: 'NORMAL',
         relatedEntityId: goals[0].id,
         relatedEntityType: 'goal',
       },
     }),
-  ]);
-  console.log(`✓ Created ${notifications.length} insight notifications`);
+  ])
+  console.log(`✓ Created ${notifications.length} insight notifications`)
 
   // Story 5.3: Create study schedule recommendations
   const scheduleRecs = await Promise.all([
@@ -582,35 +582,35 @@ async function main() {
         calendarIntegration: false,
       },
     }),
-  ]);
-  console.log(`✓ Created ${scheduleRecs.length} study schedule recommendations`);
+  ])
+  console.log(`✓ Created ${scheduleRecs.length} study schedule recommendations`)
 
   // Summary
-  console.log('\n✅ Epic 5 Integration Seed Complete!\n');
-  console.log('📊 Data Summary:');
-  console.log(`   - User: ${testUser.email}`);
-  console.log(`   - Behavioral Events: ${behavioralEvents.length} (${weeksToGenerate} weeks)`);
-  console.log(`   - Cognitive Load Metrics: ${cognitiveLoadMetrics.length}`);
-  console.log(`   - Behavioral Patterns: ${patterns.length}`);
-  console.log(`   - Behavioral Insights: ${insights.length}`);
-  console.log(`   - Stress Response Patterns: ${stressPatterns.length}`);
-  console.log(`   - Burnout Assessment: 1 (MEDIUM risk)`);
-  console.log(`   - Struggle Predictions: 1 (CONFIRMED)`);
-  console.log(`   - Intervention Recommendations: 1 (APPLIED)`);
-  console.log(`   - Behavioral Goals: ${goals.length}`);
-  console.log(`   - Recommendations: ${recommendations.length}`);
-  console.log(`   - Applied Recommendations: 1`);
-  console.log(`   - Insight Notifications: ${notifications.length}`);
-  console.log(`   - Schedule Recommendations: ${scheduleRecs.length}`);
-  console.log('\n🚀 Ready for integration testing!\n');
+  console.log('\n✅ Epic 5 Integration Seed Complete!\n')
+  console.log('📊 Data Summary:')
+  console.log(`   - User: ${testUser.email}`)
+  console.log(`   - Behavioral Events: ${behavioralEvents.length} (${weeksToGenerate} weeks)`)
+  console.log(`   - Cognitive Load Metrics: ${cognitiveLoadMetrics.length}`)
+  console.log(`   - Behavioral Patterns: ${patterns.length}`)
+  console.log(`   - Behavioral Insights: ${insights.length}`)
+  console.log(`   - Stress Response Patterns: ${stressPatterns.length}`)
+  console.log(`   - Burnout Assessment: 1 (MEDIUM risk)`)
+  console.log(`   - Struggle Predictions: 1 (CONFIRMED)`)
+  console.log(`   - Intervention Recommendations: 1 (APPLIED)`)
+  console.log(`   - Behavioral Goals: ${goals.length}`)
+  console.log(`   - Recommendations: ${recommendations.length}`)
+  console.log(`   - Applied Recommendations: 1`)
+  console.log(`   - Insight Notifications: ${notifications.length}`)
+  console.log(`   - Schedule Recommendations: ${scheduleRecs.length}`)
+  console.log('\n🚀 Ready for integration testing!\n')
 }
 
 main()
   .then(async () => {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   })
   .catch(async (e) => {
-    console.error('❌ Seed failed:', e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+    console.error('❌ Seed failed:', e)
+    await prisma.$disconnect()
+    process.exit(1)
+  })

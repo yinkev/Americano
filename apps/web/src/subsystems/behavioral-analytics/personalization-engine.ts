@@ -11,7 +11,7 @@
  * based on data availability.
  */
 
-import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from '@/generated/prisma'
 
 // ============================================
 // Type Definitions
@@ -20,112 +20,117 @@ import { PrismaClient } from '@/generated/prisma';
 export interface AggregatedInsights {
   // Story 5.1: Learning Pattern Recognition
   patterns: {
-    optimalStudyTimes: Array<{ dayOfWeek: number; startHour: number; endHour: number; confidence: number }>;
-    sessionDurationPreference: { optimal: number; average: number; confidence: number };
-    learningStyleProfile: { visual: number; auditory: number; reading: number; kinesthetic: number };
-    forgettingCurve: { R0: number; k: number; halfLife: number; confidence: number };
-    contentPreferences: Record<string, number>;
-  } | null;
+    optimalStudyTimes: Array<{
+      dayOfWeek: number
+      startHour: number
+      endHour: number
+      confidence: number
+    }>
+    sessionDurationPreference: { optimal: number; average: number; confidence: number }
+    learningStyleProfile: { visual: number; auditory: number; reading: number; kinesthetic: number }
+    forgettingCurve: { R0: number; k: number; halfLife: number; confidence: number }
+    contentPreferences: Record<string, number>
+  } | null
 
   // Story 5.2: Struggle Predictions
   predictions: {
     activePredictions: Array<{
-      id: string;
-      topicId: string | null;
-      probability: number;
-      confidence: number;
-      indicators: string[];
-    }>;
+      id: string
+      topicId: string | null
+      probability: number
+      confidence: number
+      indicators: string[]
+    }>
     interventions: Array<{
-      id: string;
-      type: string;
-      description: string;
-      priority: number;
-    }>;
-  } | null;
+      id: string
+      type: string
+      description: string
+      priority: number
+    }>
+  } | null
 
   // Story 5.3: Session Orchestration
   orchestration: {
     lastRecommendation: {
-      startTime: Date;
-      duration: number;
-      confidence: number;
-    } | null;
-    adherenceRate: number;
-    performanceImprovement: number;
-  } | null;
+      startTime: Date
+      duration: number
+      confidence: number
+    } | null
+    adherenceRate: number
+    performanceImprovement: number
+  } | null
 
   // Story 5.4: Cognitive Load
   cognitiveLoad: {
-    currentLoad: number;
-    loadLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
-    burnoutRisk: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-    avgLoad7Days: number;
-    stressPatterns: string[];
-  } | null;
+    currentLoad: number
+    loadLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL'
+    burnoutRisk: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+    avgLoad7Days: number
+    stressPatterns: string[]
+  } | null
 
   // Data quality metrics
   dataQuality: {
-    patternsAvailable: boolean;
-    predictionsAvailable: boolean;
-    orchestrationAvailable: boolean;
-    cognitiveLoadAvailable: boolean;
-    overallScore: number; // 0.0-1.0
-  };
+    patternsAvailable: boolean
+    predictionsAvailable: boolean
+    orchestrationAvailable: boolean
+    cognitiveLoadAvailable: boolean
+    overallScore: number // 0.0-1.0
+  }
 }
 
 export interface PersonalizationConfig {
   // Mission personalization
   missionPersonalization: {
-    recommendedStartTime: Date | null;
-    recommendedDuration: number; // minutes
-    intensityLevel: 'LOW' | 'MEDIUM' | 'HIGH';
-    contentSequence: Array<{ type: string; weight: number }>;
-    includeInterventions: boolean;
-    interventionIds: string[];
-  };
+    recommendedStartTime: Date | null
+    recommendedDuration: number // minutes
+    intensityLevel: 'LOW' | 'MEDIUM' | 'HIGH'
+    contentSequence: Array<{ type: string; weight: number }>
+    includeInterventions: boolean
+    interventionIds: string[]
+  }
 
   // Content personalization
   contentPersonalization: {
-    priorityTopics: string[];
-    learningStyleAdaptation: Record<string, number>;
-    difficultyLevel: 'EASY' | 'MODERATE' | 'CHALLENGING';
-    reviewFrequency: number; // cards per day
-  };
+    priorityTopics: string[]
+    learningStyleAdaptation: Record<string, number>
+    difficultyLevel: 'EASY' | 'MODERATE' | 'CHALLENGING'
+    reviewFrequency: number // cards per day
+  }
 
   // Assessment personalization
   assessmentPersonalization: {
-    validationFrequency: 'LOW' | 'MEDIUM' | 'HIGH';
-    difficultyProgression: 'GRADUAL' | 'MODERATE' | 'AGGRESSIVE';
-    feedbackDetail: 'MINIMAL' | 'STANDARD' | 'COMPREHENSIVE';
-  };
+    validationFrequency: 'LOW' | 'MEDIUM' | 'HIGH'
+    difficultyProgression: 'GRADUAL' | 'MODERATE' | 'AGGRESSIVE'
+    feedbackDetail: 'MINIMAL' | 'STANDARD' | 'COMPREHENSIVE'
+  }
 
   // Session personalization
   sessionPersonalization: {
-    breakSchedule: Array<{ afterMinutes: number; durationMinutes: number }>;
-    contentMixing: boolean;
-    attentionCycleAdaptation: boolean;
-  };
+    breakSchedule: Array<{ afterMinutes: number; durationMinutes: number }>
+    contentMixing: boolean
+    attentionCycleAdaptation: boolean
+  }
 
   // Confidence and reasoning
-  confidence: number; // 0.0-1.0, based on data availability
-  reasoning: string[];
-  dataQualityWarnings: string[];
+  confidence: number // 0.0-1.0, based on data availability
+  reasoning: string[]
+  dataQualityWarnings: string[]
 }
 
-export type PersonalizationContext = 'mission' | 'content' | 'assessment' | 'session';
+export type PersonalizationContext = 'mission' | 'content' | 'assessment' | 'session'
 
 // ============================================
 // PersonalizationEngine Class
 // ============================================
 
 export class PersonalizationEngine {
-  private prisma: PrismaClient;
-  private readonly MIN_CONFIDENCE_THRESHOLD = 0.7;
-  private readonly MIN_DATA_QUALITY_SCORE = 0.6;
+  private prisma: PrismaClient
+  private readonly MIN_CONFIDENCE_THRESHOLD = 0.7
+  private readonly MIN_DATA_QUALITY_SCORE = 0.6
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this.prisma = prisma
   }
 
   /**
@@ -134,37 +139,37 @@ export class PersonalizationEngine {
    */
   async applyPersonalization(
     userId: string,
-    context: PersonalizationContext
+    context: PersonalizationContext,
   ): Promise<PersonalizationConfig> {
     // Step 1: Aggregate all insights
-    const insights = await this.aggregateInsights(userId);
+    const insights = await this.aggregateInsights(userId)
 
     // Step 2: Build base configuration with defensive defaults
-    const config: PersonalizationConfig = this.buildBaseConfig(insights, context);
+    const config: PersonalizationConfig = this.buildBaseConfig(insights, context)
 
     // Step 3: Apply context-specific personalization
     switch (context) {
       case 'mission':
-        await this.applyMissionPersonalization(config, insights, userId);
-        break;
+        await this.applyMissionPersonalization(config, insights, userId)
+        break
       case 'content':
-        await this.applyContentPersonalization(config, insights, userId);
-        break;
+        await this.applyContentPersonalization(config, insights, userId)
+        break
       case 'assessment':
-        await this.applyAssessmentPersonalization(config, insights, userId);
-        break;
+        await this.applyAssessmentPersonalization(config, insights, userId)
+        break
       case 'session':
-        await this.applySessionPersonalization(config, insights, userId);
-        break;
+        await this.applySessionPersonalization(config, insights, userId)
+        break
     }
 
     // Step 4: Calculate overall confidence
-    config.confidence = this.calculateConfidence(insights);
+    config.confidence = this.calculateConfidence(insights)
 
     // Step 5: Add reasoning and warnings
-    this.addReasoningAndWarnings(config, insights);
+    this.addReasoningAndWarnings(config, insights)
 
-    return config;
+    return config
   }
 
   /**
@@ -184,13 +189,13 @@ export class PersonalizationEngine {
         cognitiveLoadAvailable: false,
         overallScore: 0,
       },
-    };
+    }
 
     // Story 5.1: Learning Pattern Recognition
     try {
       const profile = await this.prisma.userLearningProfile.findUnique({
         where: { userId },
-      });
+      })
 
       if (profile && profile.dataQualityScore >= this.MIN_DATA_QUALITY_SCORE) {
         insights.patterns = {
@@ -213,11 +218,11 @@ export class PersonalizationEngine {
             confidence: 0.5,
           },
           contentPreferences: (profile.contentPreferences as any) || {},
-        };
-        insights.dataQuality.patternsAvailable = true;
+        }
+        insights.dataQuality.patternsAvailable = true
       }
     } catch (error) {
-      console.warn('Story 5.1 patterns unavailable:', error);
+      console.warn('Story 5.1 patterns unavailable:', error)
     }
 
     // Story 5.2: Struggle Predictions
@@ -236,7 +241,7 @@ export class PersonalizationEngine {
           },
         },
         take: 5,
-      });
+      })
 
       if (predictions.length > 0) {
         insights.predictions = {
@@ -253,13 +258,13 @@ export class PersonalizationEngine {
               type: i.interventionType,
               description: i.description,
               priority: i.priority,
-            }))
+            })),
           ),
-        };
-        insights.dataQuality.predictionsAvailable = true;
+        }
+        insights.dataQuality.predictionsAvailable = true
       }
     } catch (error) {
-      console.warn('Story 5.2 predictions unavailable:', error);
+      console.warn('Story 5.2 predictions unavailable:', error)
     }
 
     // Story 5.3: Session Orchestration
@@ -267,7 +272,7 @@ export class PersonalizationEngine {
       const lastRecommendation = await this.prisma.studyScheduleRecommendation.findFirst({
         where: { userId },
         orderBy: { createdAt: 'desc' },
-      });
+      })
 
       // Calculate adherence rate from recent missions
       const recentMissions = await this.prisma.mission.findMany({
@@ -280,29 +285,34 @@ export class PersonalizationEngine {
           recommendedStartTime: true,
           completedAt: true,
         },
-      });
+      })
 
       const orchestratedMissions = recentMissions.filter(
-        (m) => m.recommendedStartTime !== null
-      ).length;
-      const adherenceRate = recentMissions.length > 0
-        ? orchestratedMissions / recentMissions.length
-        : 0;
+        (m) => m.recommendedStartTime !== null,
+      ).length
+      const adherenceRate =
+        recentMissions.length > 0 ? orchestratedMissions / recentMissions.length : 0
 
       insights.orchestration = {
         lastRecommendation: lastRecommendation
           ? {
-              startTime: lastRecommendation.recommendedStartTime,
-              duration: lastRecommendation.recommendedDuration,
-              confidence: lastRecommendation.confidence,
+              startTime: (() => {
+                const schedule = lastRecommendation.recommendedSchedule as { startTime?: string } | null
+                return schedule?.startTime ? new Date(schedule.startTime) : new Date()
+              })(),
+              duration: (() => {
+                const schedule = lastRecommendation.recommendedSchedule as { duration?: number } | null
+                return schedule?.duration ?? 50
+              })(),
+              confidence: 0.7, // Default confidence since it's not in schema
             }
           : null,
         adherenceRate,
         performanceImprovement: 0, // TODO: Calculate from mission analytics
-      };
-      insights.dataQuality.orchestrationAvailable = lastRecommendation !== null;
+      }
+      insights.dataQuality.orchestrationAvailable = lastRecommendation !== null
     } catch (error) {
-      console.warn('Story 5.3 orchestration unavailable:', error);
+      console.warn('Story 5.3 orchestration unavailable:', error)
     }
 
     // Story 5.4: Cognitive Load Monitoring
@@ -310,7 +320,7 @@ export class PersonalizationEngine {
       const latestLoad = await this.prisma.cognitiveLoadMetric.findFirst({
         where: { userId },
         orderBy: { timestamp: 'desc' },
-      });
+      })
 
       const last7DaysLoad = await this.prisma.cognitiveLoadMetric.findMany({
         where: {
@@ -318,25 +328,26 @@ export class PersonalizationEngine {
           timestamp: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
         },
         select: { loadScore: true },
-      });
+      })
 
-      const avgLoad7Days = last7DaysLoad.length > 0
-        ? last7DaysLoad.reduce((sum, m) => sum + m.loadScore, 0) / last7DaysLoad.length
-        : 50; // Default moderate load
+      const avgLoad7Days =
+        last7DaysLoad.length > 0
+          ? last7DaysLoad.reduce((sum, m) => sum + m.loadScore, 0) / last7DaysLoad.length
+          : 50 // Default moderate load
 
       const burnoutAssessment = await this.prisma.burnoutRiskAssessment.findFirst({
         where: { userId },
         orderBy: { assessmentDate: 'desc' },
-      });
+      })
 
       const stressPatterns = await this.prisma.stressResponsePattern.findMany({
         where: {
           userId,
           confidence: { gte: 0.6 },
         },
-        select: { patternType: true },
+        select: { patternData: true },
         take: 5,
-      });
+      })
 
       if (latestLoad) {
         insights.cognitiveLoad = {
@@ -344,12 +355,15 @@ export class PersonalizationEngine {
           loadLevel: this.getLoadLevel(latestLoad.loadScore),
           burnoutRisk: burnoutAssessment?.riskLevel || 'LOW',
           avgLoad7Days,
-          stressPatterns: stressPatterns.map((p) => p.patternType),
-        };
-        insights.dataQuality.cognitiveLoadAvailable = true;
+          stressPatterns: stressPatterns.map((p) => {
+            const data = p.patternData as { type?: string } | null
+            return data?.type ?? 'UNKNOWN'
+          }),
+        }
+        insights.dataQuality.cognitiveLoadAvailable = true
       }
     } catch (error) {
-      console.warn('Story 5.4 cognitive load unavailable:', error);
+      console.warn('Story 5.4 cognitive load unavailable:', error)
     }
 
     // Calculate overall data quality score
@@ -358,11 +372,11 @@ export class PersonalizationEngine {
       insights.dataQuality.predictionsAvailable,
       insights.dataQuality.orchestrationAvailable,
       insights.dataQuality.cognitiveLoadAvailable,
-    ].filter(Boolean).length;
+    ].filter(Boolean).length
 
-    insights.dataQuality.overallScore = availableCount / 4;
+    insights.dataQuality.overallScore = availableCount / 4
 
-    return insights;
+    return insights
   }
 
   /**
@@ -370,7 +384,7 @@ export class PersonalizationEngine {
    */
   private buildBaseConfig(
     insights: AggregatedInsights,
-    context: PersonalizationContext
+    context: PersonalizationContext,
   ): PersonalizationConfig {
     return {
       missionPersonalization: {
@@ -410,7 +424,7 @@ export class PersonalizationEngine {
       confidence: 0.5, // Neutral default
       reasoning: [],
       dataQualityWarnings: [],
-    };
+    }
   }
 
   /**
@@ -419,37 +433,37 @@ export class PersonalizationEngine {
   private async applyMissionPersonalization(
     config: PersonalizationConfig,
     insights: AggregatedInsights,
-    userId: string
+    userId: string,
   ): Promise<void> {
     // Apply Story 5.3 orchestration insights
     if (insights.orchestration?.lastRecommendation) {
-      const rec = insights.orchestration.lastRecommendation;
+      const rec = insights.orchestration.lastRecommendation
       if (rec.confidence >= this.MIN_CONFIDENCE_THRESHOLD) {
-        config.missionPersonalization.recommendedStartTime = rec.startTime;
-        config.missionPersonalization.recommendedDuration = rec.duration;
+        config.missionPersonalization.recommendedStartTime = rec.startTime
+        config.missionPersonalization.recommendedDuration = rec.duration
         config.reasoning.push(
-          `Recommended start time based on orchestration (confidence: ${(rec.confidence * 100).toFixed(0)}%)`
-        );
+          `Recommended start time based on orchestration (confidence: ${(rec.confidence * 100).toFixed(0)}%)`,
+        )
       }
     }
 
     // Apply Story 5.4 cognitive load adjustments
     if (insights.cognitiveLoad) {
-      const { loadLevel, burnoutRisk } = insights.cognitiveLoad;
+      const { loadLevel, burnoutRisk } = insights.cognitiveLoad
 
       if (burnoutRisk === 'HIGH' || burnoutRisk === 'CRITICAL') {
-        config.missionPersonalization.intensityLevel = 'LOW';
+        config.missionPersonalization.intensityLevel = 'LOW'
         config.missionPersonalization.recommendedDuration = Math.min(
           config.missionPersonalization.recommendedDuration,
-          30
-        );
-        config.reasoning.push(`Reduced intensity due to ${burnoutRisk} burnout risk`);
+          30,
+        )
+        config.reasoning.push(`Reduced intensity due to ${burnoutRisk} burnout risk`)
       } else if (loadLevel === 'HIGH' || loadLevel === 'CRITICAL') {
-        config.missionPersonalization.intensityLevel = 'LOW';
+        config.missionPersonalization.intensityLevel = 'LOW'
         config.missionPersonalization.recommendedDuration = Math.floor(
-          config.missionPersonalization.recommendedDuration * 0.7
-        );
-        config.reasoning.push(`Reduced duration 30% due to ${loadLevel} cognitive load`);
+          config.missionPersonalization.recommendedDuration * 0.7,
+        )
+        config.reasoning.push(`Reduced duration 30% due to ${loadLevel} cognitive load`)
       }
     }
 
@@ -457,25 +471,25 @@ export class PersonalizationEngine {
     if (insights.predictions?.interventions && insights.predictions.interventions.length > 0) {
       const topInterventions = insights.predictions.interventions
         .filter((i) => i.priority >= 7)
-        .slice(0, 3);
+        .slice(0, 3)
 
       if (topInterventions.length > 0) {
-        config.missionPersonalization.includeInterventions = true;
-        config.missionPersonalization.interventionIds = topInterventions.map((i) => i.id);
+        config.missionPersonalization.includeInterventions = true
+        config.missionPersonalization.interventionIds = topInterventions.map((i) => i.id)
         config.reasoning.push(
-          `Included ${topInterventions.length} high-priority interventions for predicted struggles`
-        );
+          `Included ${topInterventions.length} high-priority interventions for predicted struggles`,
+        )
       }
     }
 
     // Apply Story 5.1 session duration preference
     if (insights.patterns?.sessionDurationPreference) {
-      const { optimal, confidence } = insights.patterns.sessionDurationPreference;
+      const { optimal, confidence } = insights.patterns.sessionDurationPreference
       if (confidence >= this.MIN_CONFIDENCE_THRESHOLD) {
-        config.missionPersonalization.recommendedDuration = optimal;
+        config.missionPersonalization.recommendedDuration = optimal
         config.reasoning.push(
-          `Session duration set to optimal ${optimal} minutes (confidence: ${(confidence * 100).toFixed(0)}%)`
-        );
+          `Session duration set to optimal ${optimal} minutes (confidence: ${(confidence * 100).toFixed(0)}%)`,
+        )
       }
     }
   }
@@ -486,37 +500,36 @@ export class PersonalizationEngine {
   private async applyContentPersonalization(
     config: PersonalizationConfig,
     insights: AggregatedInsights,
-    userId: string
+    userId: string,
   ): Promise<void> {
     // Apply Story 5.1 learning style profile
     if (insights.patterns?.learningStyleProfile) {
-      config.contentPersonalization.learningStyleAdaptation =
-        insights.patterns.learningStyleProfile;
-      const dominant = this.getDominantLearningStyle(insights.patterns.learningStyleProfile);
-      config.reasoning.push(`Content adapted for ${dominant} learning preference`);
+      config.contentPersonalization.learningStyleAdaptation = insights.patterns.learningStyleProfile
+      const dominant = this.getDominantLearningStyle(insights.patterns.learningStyleProfile)
+      config.reasoning.push(`Content adapted for ${dominant} learning preference`)
     }
 
     // Apply Story 5.2 struggle predictions to priority topics
     if (insights.predictions?.activePredictions) {
       const topicIds = insights.predictions.activePredictions
         .filter((p) => p.probability >= 0.7 && p.topicId)
-        .map((p) => p.topicId as string);
+        .map((p) => p.topicId as string)
 
       if (topicIds.length > 0) {
-        config.contentPersonalization.priorityTopics = topicIds;
-        config.reasoning.push(`Prioritizing ${topicIds.length} topics with predicted struggles`);
+        config.contentPersonalization.priorityTopics = topicIds
+        config.reasoning.push(`Prioritizing ${topicIds.length} topics with predicted struggles`)
       }
     }
 
     // Apply Story 5.1 forgetting curve to review frequency
     if (insights.patterns?.forgettingCurve && insights.patterns.forgettingCurve.confidence >= 0.7) {
-      const { halfLife } = insights.patterns.forgettingCurve;
+      const { halfLife } = insights.patterns.forgettingCurve
       // Higher half-life = better retention = fewer reviews needed
-      const reviewFrequency = Math.max(10, Math.min(50, Math.floor(100 / halfLife)));
-      config.contentPersonalization.reviewFrequency = reviewFrequency;
+      const reviewFrequency = Math.max(10, Math.min(50, Math.floor(100 / halfLife)))
+      config.contentPersonalization.reviewFrequency = reviewFrequency
       config.reasoning.push(
-        `Review frequency adjusted based on personal forgetting curve (half-life: ${halfLife.toFixed(1)} days)`
-      );
+        `Review frequency adjusted based on personal forgetting curve (half-life: ${halfLife.toFixed(1)} days)`,
+      )
     }
   }
 
@@ -526,37 +539,40 @@ export class PersonalizationEngine {
   private async applyAssessmentPersonalization(
     config: PersonalizationConfig,
     insights: AggregatedInsights,
-    userId: string
+    userId: string,
   ): Promise<void> {
     // Apply Story 5.1 forgetting curve to validation frequency
     if (insights.patterns?.forgettingCurve && insights.patterns.forgettingCurve.confidence >= 0.7) {
-      const { halfLife } = insights.patterns.forgettingCurve;
+      const { halfLife } = insights.patterns.forgettingCurve
       // Steeper forgetting curve = more frequent validation
       if (halfLife < 3) {
-        config.assessmentPersonalization.validationFrequency = 'HIGH';
-        config.reasoning.push('High validation frequency due to steep forgetting curve');
+        config.assessmentPersonalization.validationFrequency = 'HIGH'
+        config.reasoning.push('High validation frequency due to steep forgetting curve')
       } else if (halfLife > 7) {
-        config.assessmentPersonalization.validationFrequency = 'LOW';
-        config.reasoning.push('Low validation frequency due to strong retention');
+        config.assessmentPersonalization.validationFrequency = 'LOW'
+        config.reasoning.push('Low validation frequency due to strong retention')
       }
     }
 
     // Apply Story 5.4 cognitive load to difficulty progression
     if (insights.cognitiveLoad) {
-      const { loadLevel } = insights.cognitiveLoad;
+      const { loadLevel } = insights.cognitiveLoad
       if (loadLevel === 'HIGH' || loadLevel === 'CRITICAL') {
-        config.assessmentPersonalization.difficultyProgression = 'GRADUAL';
-        config.reasoning.push('Gradual difficulty progression due to high cognitive load');
+        config.assessmentPersonalization.difficultyProgression = 'GRADUAL'
+        config.reasoning.push('Gradual difficulty progression due to high cognitive load')
       } else if (loadLevel === 'LOW') {
-        config.assessmentPersonalization.difficultyProgression = 'AGGRESSIVE';
-        config.reasoning.push('Aggressive difficulty progression - cognitive capacity available');
+        config.assessmentPersonalization.difficultyProgression = 'AGGRESSIVE'
+        config.reasoning.push('Aggressive difficulty progression - cognitive capacity available')
       }
     }
 
     // Apply Story 5.2 struggle patterns to feedback detail
-    if (insights.predictions?.activePredictions && insights.predictions.activePredictions.length >= 3) {
-      config.assessmentPersonalization.feedbackDetail = 'COMPREHENSIVE';
-      config.reasoning.push('Comprehensive feedback enabled due to multiple predicted struggles');
+    if (
+      insights.predictions?.activePredictions &&
+      insights.predictions.activePredictions.length >= 3
+    ) {
+      config.assessmentPersonalization.feedbackDetail = 'COMPREHENSIVE'
+      config.reasoning.push('Comprehensive feedback enabled due to multiple predicted struggles')
     }
   }
 
@@ -566,41 +582,41 @@ export class PersonalizationEngine {
   private async applySessionPersonalization(
     config: PersonalizationConfig,
     insights: AggregatedInsights,
-    userId: string
+    userId: string,
   ): Promise<void> {
     // Apply Story 5.4 cognitive load to break schedule
     if (insights.cognitiveLoad) {
-      const { loadLevel, avgLoad7Days } = insights.cognitiveLoad;
+      const { loadLevel, avgLoad7Days } = insights.cognitiveLoad
 
       if (loadLevel === 'HIGH' || loadLevel === 'CRITICAL') {
         config.sessionPersonalization.breakSchedule = [
           { afterMinutes: 20, durationMinutes: 5 },
           { afterMinutes: 40, durationMinutes: 10 },
-        ];
-        config.reasoning.push('Increased break frequency due to high cognitive load');
+        ]
+        config.reasoning.push('Increased break frequency due to high cognitive load')
       } else if (avgLoad7Days > 70) {
         config.sessionPersonalization.breakSchedule = [
           { afterMinutes: 25, durationMinutes: 5 },
           { afterMinutes: 50, durationMinutes: 10 },
-        ];
-        config.reasoning.push('Adjusted breaks based on 7-day load average');
+        ]
+        config.reasoning.push('Adjusted breaks based on 7-day load average')
       }
     }
 
     // Apply Story 5.1 learning style to content mixing
     if (insights.patterns?.learningStyleProfile) {
-      const profile = insights.patterns.learningStyleProfile;
+      const profile = insights.patterns.learningStyleProfile
       const maxPreference = Math.max(
         profile.visual,
         profile.auditory,
         profile.reading,
-        profile.kinesthetic
-      );
+        profile.kinesthetic,
+      )
 
       // If one style dominates (>60%), enable content mixing for variety
       if (maxPreference > 0.6) {
-        config.sessionPersonalization.contentMixing = true;
-        config.reasoning.push('Content mixing enabled to balance dominant learning style');
+        config.sessionPersonalization.contentMixing = true
+        config.reasoning.push('Content mixing enabled to balance dominant learning style')
       }
     }
 
@@ -612,11 +628,11 @@ export class PersonalizationEngine {
           patternType: 'ATTENTION_CYCLE',
           confidence: { gte: 0.7 },
         },
-      });
+      })
 
       if (hasAttentionPattern) {
-        config.sessionPersonalization.attentionCycleAdaptation = true;
-        config.reasoning.push('Attention cycle adaptation enabled based on detected patterns');
+        config.sessionPersonalization.attentionCycleAdaptation = true
+        config.reasoning.push('Attention cycle adaptation enabled based on detected patterns')
       }
     }
   }
@@ -625,8 +641,8 @@ export class PersonalizationEngine {
    * Calculate overall confidence based on data availability
    */
   private calculateConfidence(insights: AggregatedInsights): number {
-    const { dataQuality } = insights;
-    let confidence = 0.5; // Base confidence
+    const { dataQuality } = insights
+    let confidence = 0.5 // Base confidence
 
     // Weight each story's contribution
     const weights = {
@@ -634,25 +650,25 @@ export class PersonalizationEngine {
       predictions: 0.25,
       orchestration: 0.25,
       cognitiveLoad: 0.2,
-    };
+    }
 
     if (dataQuality.patternsAvailable && insights.patterns) {
-      confidence += weights.patterns;
+      confidence += weights.patterns
     }
 
     if (dataQuality.predictionsAvailable && insights.predictions) {
-      confidence += weights.predictions;
+      confidence += weights.predictions
     }
 
     if (dataQuality.orchestrationAvailable && insights.orchestration) {
-      confidence += weights.orchestration;
+      confidence += weights.orchestration
     }
 
     if (dataQuality.cognitiveLoadAvailable && insights.cognitiveLoad) {
-      confidence += weights.cognitiveLoad;
+      confidence += weights.cognitiveLoad
     }
 
-    return Math.min(1.0, confidence);
+    return Math.min(1.0, confidence)
   }
 
   /**
@@ -660,82 +676,82 @@ export class PersonalizationEngine {
    */
   private addReasoningAndWarnings(
     config: PersonalizationConfig,
-    insights: AggregatedInsights
+    insights: AggregatedInsights,
   ): void {
-    const { dataQuality } = insights;
+    const { dataQuality } = insights
 
     // Add warnings for missing data
     if (!dataQuality.patternsAvailable) {
       config.dataQualityWarnings.push(
-        'Learning patterns unavailable - using default preferences. More data needed for personalization.'
-      );
+        'Learning patterns unavailable - using default preferences. More data needed for personalization.',
+      )
     }
 
     if (!dataQuality.predictionsAvailable) {
       config.dataQualityWarnings.push(
-        'Struggle predictions unavailable - interventions may be generic.'
-      );
+        'Struggle predictions unavailable - interventions may be generic.',
+      )
     }
 
     if (!dataQuality.orchestrationAvailable) {
       config.dataQualityWarnings.push(
-        'Session orchestration data unavailable - using default timing recommendations.'
-      );
+        'Session orchestration data unavailable - using default timing recommendations.',
+      )
     }
 
     if (!dataQuality.cognitiveLoadAvailable) {
       config.dataQualityWarnings.push(
-        'Cognitive load data unavailable - intensity adjustments may not be optimal.'
-      );
+        'Cognitive load data unavailable - intensity adjustments may not be optimal.',
+      )
     }
 
     // Add overall data quality note
     if (dataQuality.overallScore < 0.5) {
       config.dataQualityWarnings.push(
-        `Limited personalization data (${(dataQuality.overallScore * 100).toFixed(0)}% available). Continue studying to improve recommendations.`
-      );
+        `Limited personalization data (${(dataQuality.overallScore * 100).toFixed(0)}% available). Continue studying to improve recommendations.`,
+      )
     }
 
     // Add confidence explanation
     config.reasoning.unshift(
-      `Personalization confidence: ${(config.confidence * 100).toFixed(0)}% (${Math.floor(dataQuality.overallScore * 4)}/4 data sources available)`
-    );
+      `Personalization confidence: ${(config.confidence * 100).toFixed(0)}% (${Math.floor(dataQuality.overallScore * 4)}/4 data sources available)`,
+    )
   }
 
   /**
    * Helper: Get load level from score
    */
   private getLoadLevel(score: number): 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL' {
-    if (score < 40) return 'LOW';
-    if (score < 60) return 'MODERATE';
-    if (score < 80) return 'HIGH';
-    return 'CRITICAL';
+    if (score < 40) return 'LOW'
+    if (score < 60) return 'MODERATE'
+    if (score < 80) return 'HIGH'
+    return 'CRITICAL'
   }
 
   /**
    * Helper: Get dominant learning style
    */
   private getDominantLearningStyle(profile: {
-    visual: number;
-    auditory: number;
-    reading: number;
-    kinesthetic: number;
+    visual: number
+    auditory: number
+    reading: number
+    kinesthetic: number
   }): string {
-    const styles = Object.entries(profile);
-    styles.sort((a, b) => b[1] - a[1]);
-    return styles[0][0];
+    const styles = Object.entries(profile)
+    styles.sort((a, b) => b[1] - a[1])
+    return styles[0][0]
   }
 
   /**
    * Calculate personalization effectiveness score (for Story 5.5 tracking)
    */
   async calculatePersonalizationScore(userId: string): Promise<{
-    score: number;
+    score: number
     breakdown: {
-      retentionImprovement: number;
-      performanceImprovement: number;
-      completionRateChange: number;
-    };
+      retentionImprovement: number
+      performanceImprovement: number
+      completionRateChange: number
+    }
   }> {
     // TODO: Implement effectiveness tracking
     // This will compare metrics before/after personalization
@@ -747,7 +763,7 @@ export class PersonalizationEngine {
         performanceImprovement: 0,
         completionRateChange: 0,
       },
-    };
+    }
   }
 
   /**
@@ -756,14 +772,14 @@ export class PersonalizationEngine {
   async updatePersonalizationSettings(
     userId: string,
     preferences: {
-      personalizationLevel?: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
-      enabledFeatures?: string[];
-      disabledFeatures?: string[];
-      autoAdaptEnabled?: boolean;
-    }
+      personalizationLevel?: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH'
+      enabledFeatures?: string[]
+      disabledFeatures?: string[]
+      autoAdaptEnabled?: boolean
+    },
   ): Promise<void> {
     // TODO: Implement user preferences storage
     // This will be part of PersonalizationPreferences model
-    console.log('Personalization settings update:', { userId, preferences });
+    console.log('Personalization settings update:', { userId, preferences })
   }
 }

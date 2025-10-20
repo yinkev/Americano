@@ -13,9 +13,7 @@ import { GoalManager } from '@/subsystems/behavioral-analytics/goal-manager'
 
 // Zod validation schema for request body
 const UpdateProgressSchema = z.object({
-  currentValue: z.number({
-    required_error: 'currentValue is required',
-  }),
+  currentValue: z.number({ message: 'currentValue is required' }),
   note: z.string().optional(),
 })
 
@@ -36,10 +34,7 @@ const UpdateProgressSchema = z.object({
  * - completed: boolean (true if goal was completed with this update)
  */
 export const PATCH = withErrorHandler(
-  async (
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-  ) => {
+  async (request: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params
 
     // Parse and validate request body
@@ -51,35 +46,29 @@ export const PATCH = withErrorHandler(
       const result = await GoalManager.updateGoalProgress(
         id,
         validatedBody.currentValue,
-        validatedBody.note
+        validatedBody.note,
       )
 
       return Response.json(
         successResponse({
           goal: result.goal,
           completed: result.completed,
-        })
+        }),
       )
     } catch (error) {
       if (error instanceof Error) {
         // Handle specific errors from GoalManager
         if (error.message.includes('not found')) {
-          return Response.json(
-            errorResponse('Goal not found', 'NOT_FOUND'),
-            { status: 404 }
-          )
+          return Response.json(errorResponse('Goal not found', 'NOT_FOUND'), { status: 404 })
         }
 
         if (error.message.includes('Cannot update progress')) {
-          return Response.json(
-            errorResponse(error.message, 'INVALID_STATUS'),
-            { status: 400 }
-          )
+          return Response.json(errorResponse(error.message, 'INVALID_STATUS'), { status: 400 })
         }
       }
 
       // Re-throw for general error handler
       throw error
     }
-  }
+  },
 )

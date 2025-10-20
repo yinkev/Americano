@@ -23,7 +23,7 @@ interface HoverCardTriggerProps {
   asChild?: boolean
 }
 
-export const HoverCard = React.forwardRef<HTMLDivElement, HoverCardProps>(
+const HoverCardRoot = React.forwardRef<HTMLDivElement, HoverCardProps>(
   ({ children, className, ...props }: HoverCardProps, ref) => {
     const [isOpen, setIsOpen] = useState(false)
 
@@ -44,7 +44,7 @@ export const HoverCard = React.forwardRef<HTMLDivElement, HoverCardProps>(
     </div>
   )
 })
-HoverCard.displayName = 'HoverCard'
+HoverCardRoot.displayName = 'HoverCard'
 
 export const HoverCardTrigger = React.forwardRef<HTMLButtonElement, HoverCardTriggerProps & { children?: React.ReactNode }>(
   ({ asChild, children, ...props }, ref) => {
@@ -57,8 +57,6 @@ export const HoverCardTrigger = React.forwardRef<HTMLButtonElement, HoverCardTri
   }
 )
 HoverCardTrigger.displayName = 'HoverCardTrigger'
-
-HoverCard.Trigger = HoverCardTrigger
 
 export const HoverCardContent = React.forwardRef<
   HTMLDivElement,
@@ -85,6 +83,9 @@ export const HoverCardContent = React.forwardRef<
 })
 HoverCardContent.displayName = 'HoverCardContent'
 
-HoverCard.Content = HoverCardContent
+export const HoverCard = Object.assign(HoverCardRoot, {
+  Trigger: HoverCardTrigger,
+  Content: HoverCardContent,
+})
 
 export default HoverCard

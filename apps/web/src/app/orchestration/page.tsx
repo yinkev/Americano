@@ -9,68 +9,68 @@
  * - Calendar integration status
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Brain, Calendar, Clock, Sparkles } from 'lucide-react';
-import { OptimalTimeSlotsPanel } from '@/components/orchestration/OptimalTimeSlotsPanel';
-import { SessionPlanPreview } from '@/components/orchestration/SessionPlanPreview';
-import { CognitiveLoadIndicator } from '@/components/orchestration/CognitiveLoadIndicator';
-import { CalendarStatusWidget } from '@/components/orchestration/CalendarStatusWidget';
+import { useState } from 'react'
+import { Brain, Calendar, Clock, Sparkles } from 'lucide-react'
+import { OptimalTimeSlotsPanel } from '@/components/orchestration/OptimalTimeSlotsPanel'
+import { SessionPlanPreview } from '@/components/orchestration/SessionPlanPreview'
+import { CognitiveLoadIndicator } from '@/components/orchestration/CognitiveLoadIndicator'
+import { CalendarStatusWidget } from '@/components/orchestration/CalendarStatusWidget'
 
 // Temporary mock user ID - replace with actual auth
-const MOCK_USER_ID = 'test-user-123';
+const MOCK_USER_ID = 'test-user-123'
 
 interface TimeSlot {
-  startTime: string;
-  endTime: string;
-  duration: number;
-  score: number;
-  confidence: number;
-  reasoning: string[];
-  calendarConflict: boolean;
-  conflictingEvents?: Array<{ summary: string; start: string; end: string }>;
+  startTime: string
+  endTime: string
+  duration: number
+  score: number
+  confidence: number
+  reasoning: string[]
+  calendarConflict: boolean
+  conflictingEvents?: Array<{ summary: string; start: string; end: string }>
 }
 
 interface SessionPlan {
-  id: string;
-  startTime: string;
-  endTime: string;
-  duration: number;
-  intensity: 'LOW' | 'MEDIUM' | 'HIGH';
+  id: string
+  startTime: string
+  endTime: string
+  duration: number
+  intensity: 'LOW' | 'MEDIUM' | 'HIGH'
   contentSequence: {
     sequence: Array<{
-      type: 'flashcard' | 'new_flashcard' | 'validation' | 'clinical' | 'lecture' | 'break';
-      id: string | null;
-      duration: number;
-      phase: 'warmup' | 'peak' | 'winddown';
-      difficulty?: number;
-    }>;
-    totalDuration: number;
+      type: 'flashcard' | 'new_flashcard' | 'validation' | 'clinical' | 'lecture' | 'break'
+      id: string | null
+      duration: number
+      phase: 'warmup' | 'peak' | 'winddown'
+      difficulty?: number
+    }>
+    totalDuration: number
     phases: {
-      warmUp: number;
-      peak: number;
-      windDown: number;
-    };
-  };
+      warmUp: number
+      peak: number
+      windDown: number
+    }
+  }
   breaks: {
-    breakIntervals: number[];
-    breakDurations: number[];
-    totalBreakTime: number;
-    reasoning: string;
-  };
-  confidence: number;
+    breakIntervals: number[]
+    breakDurations: number[]
+    totalBreakTime: number
+    reasoning: string
+  }
+  confidence: number
 }
 
 export default function OrchestrationPage() {
-  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
-  const [sessionPlan, setSessionPlan] = useState<SessionPlan | null>(null);
-  const [loadingPlan, setLoadingPlan] = useState(false);
-  const [calendarConnected, setCalendarConnected] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
+  const [sessionPlan, setSessionPlan] = useState<SessionPlan | null>(null)
+  const [loadingPlan, setLoadingPlan] = useState(false)
+  const [calendarConnected, setCalendarConnected] = useState(false)
 
   async function handleSelectSlot(slot: TimeSlot) {
-    setSelectedSlot(slot);
-    setLoadingPlan(true);
+    setSelectedSlot(slot)
+    setLoadingPlan(true)
 
     try {
       const res = await fetch('/api/orchestration/session-plan', {
@@ -82,22 +82,22 @@ export default function OrchestrationPage() {
           startTime: slot.startTime,
           duration: slot.duration,
         }),
-      });
+      })
 
-      if (!res.ok) throw new Error('Failed to create session plan');
+      if (!res.ok) throw new Error('Failed to create session plan')
 
-      const data = await res.json();
-      setSessionPlan(data.plan);
+      const data = await res.json()
+      setSessionPlan(data.plan)
     } catch (err) {
-      console.error('Failed to create session plan:', err);
+      console.error('Failed to create session plan:', err)
     } finally {
-      setLoadingPlan(false);
+      setLoadingPlan(false)
     }
   }
 
   function handleCustomizePlan() {
     // TODO: Open customization modal
-    console.log('Customize plan clicked');
+    console.log('Customize plan clicked')
   }
 
   return (
@@ -112,10 +112,7 @@ export default function OrchestrationPage() {
       >
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center gap-3">
-            <div
-              className="p-3 rounded-xl"
-              style={{ backgroundColor: 'oklch(0.7 0.12 145)/0.1' }}
-            >
+            <div className="p-3 rounded-xl" style={{ backgroundColor: 'oklch(0.7 0.12 145)/0.1' }}>
               <Sparkles className="size-6" style={{ color: 'oklch(0.5 0.2 145)' }} />
             </div>
             <div>
@@ -143,7 +140,10 @@ export default function OrchestrationPage() {
             }}
           >
             <div className="flex items-start gap-3">
-              <Calendar className="size-5 shrink-0 mt-0.5" style={{ color: 'oklch(0.6 0.15 85)' }} />
+              <Calendar
+                className="size-5 shrink-0 mt-0.5"
+                style={{ color: 'oklch(0.6 0.15 85)' }}
+              />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-foreground mb-1">
                   Connect your calendar for better recommendations
@@ -162,10 +162,7 @@ export default function OrchestrationPage() {
           {/* Left Column - Time Slots */}
           <div className="lg:col-span-2 space-y-6">
             {/* Optimal Time Slots */}
-            <OptimalTimeSlotsPanel
-              userId={MOCK_USER_ID}
-              onSelectSlot={handleSelectSlot}
-            />
+            <OptimalTimeSlotsPanel userId={MOCK_USER_ID} onSelectSlot={handleSelectSlot} />
 
             {/* Session Plan Preview */}
             <SessionPlanPreview
@@ -178,10 +175,7 @@ export default function OrchestrationPage() {
           {/* Right Column - Widgets */}
           <div className="space-y-6">
             {/* Calendar Status */}
-            <CalendarStatusWidget
-              userId={MOCK_USER_ID}
-              onStatusChange={setCalendarConnected}
-            />
+            <CalendarStatusWidget userId={MOCK_USER_ID} onStatusChange={setCalendarConnected} />
 
             {/* Cognitive Load */}
             <CognitiveLoadIndicator userId={MOCK_USER_ID} />
@@ -245,7 +239,7 @@ export default function OrchestrationPage() {
         )}
       </main>
     </div>
-  );
+  )
 }
 
 /**
@@ -285,10 +279,7 @@ function QuickStatsCard() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-muted-foreground">Performance Boost</span>
-            <span
-              className="text-sm font-semibold"
-              style={{ color: 'oklch(0.5 0.2 145)' }}
-            >
+            <span className="text-sm font-semibold" style={{ color: 'oklch(0.5 0.2 145)' }}>
               +23%
             </span>
           </div>
@@ -327,5 +318,5 @@ function QuickStatsCard() {
         View Full Analytics →
       </button>
     </div>
-  );
+  )
 }

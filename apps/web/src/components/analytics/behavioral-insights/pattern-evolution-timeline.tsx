@@ -16,12 +16,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { format } from 'date-fns'
 import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
@@ -137,13 +132,11 @@ export function PatternEvolutionTimeline({
 
   // Get all unique pattern types across all weeks
   const allPatternTypes = Array.from(
-    new Set(
-      evolutionData.flatMap((week) => week.patterns.map((p) => p.patternType))
-    )
+    new Set(evolutionData.flatMap((week) => week.patterns.map((p) => p.patternType))),
   ) as PatternType[]
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md">
+    <Card className="bg-white/80 backdrop-blur-md animate-in fade-in duration-500" role="region" aria-label="Pattern Evolution Timeline">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -152,34 +145,41 @@ export function PatternEvolutionTimeline({
               Track how your learning patterns change over {evolutionData.length} weeks
             </CardDescription>
           </div>
-          <div className="flex items-center gap-2">
+          <nav className="flex items-center gap-2" aria-label="Timeline navigation">
             <Button
               variant="outline"
               size="icon"
               onClick={() => setViewStart(Math.max(0, viewStart - 1))}
               disabled={!canScrollLeft}
+              aria-label="View previous week"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
             </Button>
+            <span className="sr-only">
+              Showing weeks {viewStart + 1} to {Math.min(viewStart + weeksToShow, evolutionData.length)} of {evolutionData.length}
+            </span>
             <Button
               variant="outline"
               size="icon"
               onClick={() => setViewStart(viewStart + 1)}
               disabled={!canScrollRight}
+              aria-label="View next week"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4" aria-hidden="true" />
             </Button>
-          </div>
+          </nav>
         </div>
       </CardHeader>
       <CardContent>
         {/* Legend */}
-        <div className="flex flex-wrap gap-3 mb-6 pb-4 border-b">
+        <div className="flex flex-wrap gap-3 mb-6 pb-4 border-b" role="list" aria-label="Pattern type legend">
           {allPatternTypes.map((type) => (
-            <div key={type} className="flex items-center gap-2">
+            <div key={type} className="flex items-center gap-2" role="listitem">
               <div
                 className="w-4 h-4 rounded"
                 style={{ backgroundColor: PATTERN_COLORS[type] }}
+                role="img"
+                aria-label={`${PATTERN_LABELS[type]} pattern indicator`}
               />
               <span className="text-sm text-muted-foreground">{PATTERN_LABELS[type]}</span>
             </div>
@@ -187,7 +187,7 @@ export function PatternEvolutionTimeline({
         </div>
 
         {/* Timeline */}
-        <div className="relative overflow-x-auto pb-4">
+        <div className="relative overflow-x-auto pb-4" role="img" aria-label="Timeline visualization showing pattern evolution across weeks">
           <div className="min-w-max">
             {/* Pattern Type Lanes */}
             <div className="space-y-8">
@@ -203,9 +203,7 @@ export function PatternEvolutionTimeline({
                     {/* Week Markers */}
                     <div className="absolute inset-0 flex items-center">
                       {visibleData.map((week, weekIndex) => {
-                        const pattern = week.patterns.find(
-                          (p) => p.patternType === patternType
-                        )
+                        const pattern = week.patterns.find((p) => p.patternType === patternType)
 
                         const xPosition = (weekIndex / (weeksToShow - 1)) * 100
 
@@ -229,9 +227,7 @@ export function PatternEvolutionTimeline({
                                   </TooltipTrigger>
                                   <TooltipContent>
                                     <div className="space-y-1">
-                                      <p className="font-semibold">
-                                        Week {week.weekNumber}
-                                      </p>
+                                      <p className="font-semibold">Week {week.weekNumber}</p>
                                       <p className="text-xs">
                                         {format(new Date(week.weekStart), 'MMM d')} -{' '}
                                         {format(new Date(week.weekEnd), 'MMM d')}
@@ -284,7 +280,7 @@ export function PatternEvolutionTimeline({
               <div className="text-2xl font-bold text-green-600">
                 {evolutionData.reduce(
                   (sum, w) => sum + w.patterns.filter((p) => p.status === 'new').length,
-                  0
+                  0,
                 )}
               </div>
               <div className="text-sm text-muted-foreground">New Patterns</div>
@@ -292,7 +288,7 @@ export function PatternEvolutionTimeline({
             <div>
               <div className="text-2xl font-bold text-blue-600">
                 {evolutionData[evolutionData.length - 1]?.patterns.filter(
-                  (p) => p.status === 'existing' || p.status === 'new'
+                  (p) => p.status === 'existing' || p.status === 'new',
                 ).length || 0}
               </div>
               <div className="text-sm text-muted-foreground">Active Now</div>
@@ -301,7 +297,7 @@ export function PatternEvolutionTimeline({
               <div className="text-2xl font-bold text-gray-500">
                 {evolutionData.reduce(
                   (sum, w) => sum + w.patterns.filter((p) => p.status === 'disappeared').length,
-                  0
+                  0,
                 )}
               </div>
               <div className="text-sm text-muted-foreground">Disappeared</div>

@@ -39,10 +39,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   })
 
   if (!user) {
-    return Response.json(
-      errorResponse('USER_NOT_FOUND', `User ${params.userId} not found`),
-      { status: 404 }
-    )
+    return Response.json(errorResponse('USER_NOT_FOUND', `User ${params.userId} not found`), {
+      status: 404,
+    })
   }
 
   // Check if user has enabled behavioral analysis (privacy control)
@@ -50,16 +49,14 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     return Response.json(
       errorResponse(
         'ANALYSIS_DISABLED',
-        'Behavioral analysis is disabled in your privacy settings. Enable it in Settings to use this feature.'
+        'Behavioral analysis is disabled in your privacy settings. Enable it in Settings to use this feature.',
       ),
-      { status: 403 }
+      { status: 403 },
     )
   }
 
   // Run full analysis using static method
-  const analysisResults = await BehavioralPatternEngine.runFullAnalysis(
-    params.userId
-  )
+  const analysisResults = await BehavioralPatternEngine.runFullAnalysis(params.userId)
 
   // If insufficient data, return friendly message with requirements
   if (analysisResults.insufficientData && analysisResults.requirements) {
@@ -68,7 +65,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         insufficientData: true,
         dataRequirements: analysisResults.requirements,
         message: `Complete ${analysisResults.requirements.weeksNeeded} more weeks of study sessions to enable pattern analysis`,
-      })
+      }),
     )
   }
 
@@ -78,6 +75,6 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       patterns: analysisResults.patterns,
       insights: analysisResults.insights,
       profile: analysisResults.profile,
-    })
+    }),
   )
 })

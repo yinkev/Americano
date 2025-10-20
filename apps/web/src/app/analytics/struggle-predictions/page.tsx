@@ -1,16 +1,22 @@
 /**
  * Struggle Predictions Dashboard
  * Story 5.2 Task 10.1
+ * Wave 2: Enhanced with content-aware skeleton loading states
  *
  * Displays upcoming challenges, interventions, accuracy trends, and success metrics
+ * Updated with Timeline and Model Performance components
+ * Progressive loading with Suspense boundaries for optimal UX
  */
 
-import { Suspense } from 'react';
-import { AlertTriangle, TrendingUp, Target, MessageSquare } from 'lucide-react';
-import { StrugglePredictionCard } from '@/components/analytics/struggle-prediction-card';
-import { InterventionRecommendationPanel } from '@/components/analytics/intervention-recommendation-panel';
-import { PredictionAccuracyChart } from '@/components/analytics/prediction-accuracy-chart';
-import { StruggleReductionMetrics } from '@/components/analytics/struggle-reduction-metrics';
+import { Suspense } from 'react'
+import { AlertTriangle, TrendingUp, Target, MessageSquare, Calendar } from 'lucide-react'
+import { AnalyticsCardSkeleton, ChartSkeleton, TimelineSkeleton } from '@/components/skeletons'
+import { StrugglePredictionCard } from '@/components/analytics/struggle-prediction-card'
+import { InterventionRecommendationPanel } from '@/components/analytics/intervention-recommendation-panel'
+import { PredictionAccuracyChart } from '@/components/analytics/prediction-accuracy-chart'
+import { StruggleReductionMetrics } from '@/components/analytics/struggle-reduction-metrics'
+import { StruggleRiskTimeline } from '@/components/analytics/struggle-risk-timeline'
+import { ModelPerformanceMetrics } from '@/components/analytics/model-performance-metrics'
 
 export default function StrugglePredictionsPage() {
   return (
@@ -40,16 +46,12 @@ export default function StrugglePredictionsPage() {
               <h2 className="text-xl font-heading font-semibold text-foreground">
                 Active Predictions
               </h2>
-              <span className="ml-auto text-sm text-muted-foreground">
-                Next 7 days
-              </span>
+              <span className="ml-auto text-sm text-muted-foreground">Next 7 days</span>
             </div>
             <Suspense
               fallback={
                 <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-48 flex items-center justify-center">
-                  <p className="text-sm text-muted-foreground">
-                    Loading predictions...
-                  </p>
+                  <p className="text-sm text-muted-foreground">Loading predictions...</p>
                 </div>
               }
             >
@@ -68,9 +70,7 @@ export default function StrugglePredictionsPage() {
             <Suspense
               fallback={
                 <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-96 flex items-center justify-center">
-                  <p className="text-sm text-muted-foreground">
-                    Loading accuracy data...
-                  </p>
+                  <p className="text-sm text-muted-foreground">Loading accuracy data...</p>
                 </div>
               }
             >
@@ -78,7 +78,26 @@ export default function StrugglePredictionsPage() {
             </Suspense>
           </section>
 
-          {/* Section 4: Success Metrics */}
+          {/* Section 4: Struggle Risk Timeline */}
+          <section>
+            <div className="flex items-center gap-2 mb-4">
+              <Calendar className="size-5 text-[oklch(0.646_0.222_41.116)]" />
+              <h2 className="text-xl font-heading font-semibold text-foreground">
+                Upcoming Challenges Timeline
+              </h2>
+            </div>
+            <Suspense
+              fallback={
+                <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-64 flex items-center justify-center">
+                  <p className="text-sm text-muted-foreground">Loading timeline...</p>
+                </div>
+              }
+            >
+              <StruggleRiskTimeline daysAhead={7} />
+            </Suspense>
+          </section>
+
+          {/* Section 5: Struggle Reduction Metrics */}
           <section>
             <div className="flex items-center gap-2 mb-4">
               <Target className="size-5 text-[oklch(0.7_0.12_145)]" />
@@ -89,15 +108,34 @@ export default function StrugglePredictionsPage() {
             <Suspense
               fallback={
                 <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-64 flex items-center justify-center">
-                  <p className="text-sm text-muted-foreground">
-                    Loading metrics...
-                  </p>
+                  <p className="text-sm text-muted-foreground">Loading metrics...</p>
                 </div>
               }
             >
               <StruggleReductionMetrics />
             </Suspense>
           </section>
+
+          {/* Section 6: Model Performance Metrics (Admin Only - Development Mode) */}
+          {process.env.NODE_ENV === 'development' && (
+            <section>
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="size-5 text-[oklch(0.7_0.15_230)]" />
+                <h2 className="text-xl font-heading font-semibold text-foreground">
+                  Model Performance Analytics
+                </h2>
+              </div>
+              <Suspense
+                fallback={
+                  <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-96 flex items-center justify-center">
+                    <p className="text-sm text-muted-foreground">Loading model metrics...</p>
+                  </div>
+                }
+              >
+                <ModelPerformanceMetrics isAdmin={true} />
+              </Suspense>
+            </section>
+          )}
         </div>
 
         {/* Sidebar - Right 1 column */}
@@ -113,9 +151,7 @@ export default function StrugglePredictionsPage() {
             <Suspense
               fallback={
                 <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-96 flex items-center justify-center">
-                  <p className="text-sm text-muted-foreground">
-                    Loading interventions...
-                  </p>
+                  <p className="text-sm text-muted-foreground">Loading interventions...</p>
                 </div>
               }
             >
@@ -130,8 +166,7 @@ export default function StrugglePredictionsPage() {
                 Help Improve Predictions
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Your feedback helps us make better predictions for you and other
-                students.
+                Your feedback helps us make better predictions for you and other students.
               </p>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -148,7 +183,7 @@ export default function StrugglePredictionsPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -204,7 +239,7 @@ async function ActivePredictions() {
         retentionRate: 0.68,
       },
     },
-  ];
+  ]
 
   if (mockPredictions.length === 0) {
     return (
@@ -213,7 +248,7 @@ async function ActivePredictions() {
           No active predictions. Keep studying to build your learning profile!
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -222,5 +257,5 @@ async function ActivePredictions() {
         <StrugglePredictionCard key={prediction.id} prediction={prediction} />
       ))}
     </div>
-  );
+  )
 }

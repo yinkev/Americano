@@ -3,10 +3,12 @@
  * Story 5.3 Task 6: GET /api/calendar/status
  *
  * Check calendar integration status for user
+ *
+ * NOTE: This is a stub implementation for Story 5.3
+ * Database model `calendarIntegration` not yet created
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,26 +19,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'userId is required' }, { status: 400 })
     }
 
-    const integration = await prisma.calendarIntegration.findUnique({
-      where: { userId },
-      select: {
-        calendarProvider: true,
-        syncEnabled: true,
-        lastSyncAt: true,
-      },
-    })
-
-    if (!integration) {
-      return NextResponse.json({
-        connected: false,
-      })
-    }
+    // STUB: Calendar integration not yet implemented
+    console.log('[STUB] Calendar status check for user:', userId)
 
     return NextResponse.json({
-      connected: true,
-      provider: integration.calendarProvider,
-      syncEnabled: integration.syncEnabled,
-      lastSyncAt: integration.lastSyncAt,
+      connected: false,
+      message: 'Calendar integration feature coming in Story 5.3',
     })
   } catch (error) {
     console.error('Calendar status check error:', error)

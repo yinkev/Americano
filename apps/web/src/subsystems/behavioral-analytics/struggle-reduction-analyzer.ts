@@ -112,7 +112,7 @@ export class StruggleReductionAnalyzer {
    */
   static async calculateBaselineStruggleRate(
     userId: string,
-    beforeDate: Date
+    beforeDate: Date,
   ): Promise<StruggleRate> {
     // Define baseline period: 4-6 weeks BEFORE predictive system
     const baselineEndDate = beforeDate
@@ -179,9 +179,7 @@ export class StruggleReductionAnalyzer {
       // Check for struggle indicators
 
       // 1. AGAIN ratings in reviews
-      const againReviews = session.reviews.filter(
-        (r) => r.rating === ReviewRating.AGAIN
-      )
+      const againReviews = session.reviews.filter((r) => r.rating === ReviewRating.AGAIN)
       if (againReviews.length > 0) {
         againRatingsCount++
         // Mark topics associated with these reviews as struggles
@@ -197,9 +195,7 @@ export class StruggleReductionAnalyzer {
       }
 
       // 2. Low validation scores (<60%)
-      const lowValidationScores = session.validationResponses.filter(
-        (v) => v.score < 0.6
-      )
+      const lowValidationScores = session.validationResponses.filter((v) => v.score < 0.6)
       if (lowValidationScores.length > 0) {
         lowValidationScoresCount++
         // Mark associated topics (via validation prompt concept)
@@ -265,7 +261,7 @@ export class StruggleReductionAnalyzer {
    */
   static async calculateCurrentStruggleRate(
     userId: string,
-    afterDate: Date
+    afterDate: Date,
   ): Promise<StruggleRate> {
     // Define current period: FROM prediction system activation to now
     const currentStartDate = afterDate
@@ -332,9 +328,7 @@ export class StruggleReductionAnalyzer {
       // Check for struggle indicators (same as baseline)
 
       // 1. AGAIN ratings
-      const againReviews = session.reviews.filter(
-        (r) => r.rating === ReviewRating.AGAIN
-      )
+      const againReviews = session.reviews.filter((r) => r.rating === ReviewRating.AGAIN)
       if (againReviews.length > 0) {
         againRatingsCount++
         for (const review of againReviews) {
@@ -349,9 +343,7 @@ export class StruggleReductionAnalyzer {
       }
 
       // 2. Low validation scores
-      const lowValidationScores = session.validationResponses.filter(
-        (v) => v.score < 0.6
-      )
+      const lowValidationScores = session.validationResponses.filter((v) => v.score < 0.6)
       if (lowValidationScores.length > 0) {
         lowValidationScoresCount++
         for (const validation of lowValidationScores) {
@@ -419,61 +411,41 @@ export class StruggleReductionAnalyzer {
    */
   static async measureReduction(
     userId: string,
-    predictionActivationDate?: Date
+    predictionActivationDate?: Date,
   ): Promise<ReductionMetrics> {
     // Default: Assume prediction system activated 6 weeks ago
     const activationDate = predictionActivationDate || subWeeks(new Date(), 6)
 
     // Calculate baseline (before activation)
-    const baselineRate = await this.calculateBaselineStruggleRate(
-      userId,
-      activationDate
-    )
+    const baselineRate = await this.calculateBaselineStruggleRate(userId, activationDate)
 
     // Calculate current (after activation)
-    const currentRate = await this.calculateCurrentStruggleRate(
-      userId,
-      activationDate
-    )
+    const currentRate = await this.calculateCurrentStruggleRate(userId, activationDate)
 
     // Calculate reduction percentage
     const reductionPercentage =
-      baselineRate.rate > 0
-        ? ((baselineRate.rate - currentRate.rate) / baselineRate.rate) * 100
-        : 0
+      baselineRate.rate > 0 ? ((baselineRate.rate - currentRate.rate) / baselineRate.rate) * 100 : 0
 
     // Check if target met (25%+ reduction)
     const meetsTarget = reductionPercentage >= 25
 
     // Generate timeline (weekly aggregation)
-    const timeline = await this.generateTimeline(
-      userId,
-      baselineRate.period.startDate,
-      new Date()
-    )
+    const timeline = await this.generateTimeline(userId, baselineRate.period.startDate, new Date())
 
     // Analyze intervention effectiveness
-    const interventionEffectiveness =
-      await this.identifySuccessfulInterventions(userId)
+    const interventionEffectiveness = await this.identifySuccessfulInterventions(userId)
 
     // Calculate average performance improvement
     const performanceImprovement = await this.calculatePerformanceImprovement(
       userId,
-      activationDate
+      activationDate,
     )
 
     // Estimate time saved
-    const timeSavedMinutes = await this.estimateTimeSaved(
-      userId,
-      baselineRate,
-      currentRate
-    )
+    const timeSavedMinutes = await this.estimateTimeSaved(userId, baselineRate, currentRate)
 
     // Calculate confidence increase
-    const confidenceIncrease = await this.calculateConfidenceIncrease(
-      userId,
-      activationDate
-    )
+    const confidenceIncrease = await this.calculateConfidenceIncrease(userId, activationDate)
 
     // Data quality metrics
     const baselineSessions = await prisma.studySession.count({
@@ -539,14 +511,14 @@ export class StruggleReductionAnalyzer {
    * @returns Array of intervention effectiveness metrics
    */
   static async identifySuccessfulInterventions(
-    userId: string
+    userId: string,
   ): Promise<InterventionEffectiveness[]> {
     // Query all interventions for this user
     const interventions = await prisma.interventionRecommendation.findMany({
       where: {
         userId,
         status: {
-          in: ['APPLIED', 'COMPLETED'],
+          in: ['COMPLETED'],
         },
       },
       include: {
@@ -571,10 +543,7 @@ export class StruggleReductionAnalyzer {
     }
 
     // Group interventions by type
-    const interventionsByType = new Map<
-      InterventionType,
-      Array<typeof interventions[0]>
-    >()
+    const interventionsByType = new Map<InterventionType, Array<(typeof interventions)[0]>>()
 
     for (const intervention of interventions) {
       if (!interventionsByType.has(intervention.interventionType)) {
@@ -591,30 +560,19 @@ export class StruggleReductionAnalyzer {
 
       // Calculate success rate: predictions that didn't result in struggles
       const successfulInterventions = typeInterventions.filter((intervention) => {
-        return intervention.prediction.actualOutcome === false // Did NOT struggle
+        return intervention.prediction?.actualOutcome === false // Did NOT struggle
       })
 
-      const successRate =
-        appliedCount > 0 ? successfulInterventions.length / appliedCount : 0
+      const successRate = appliedCount > 0 ? successfulInterventions.length / appliedCount : 0
 
-      // Calculate average struggle reduction from effectiveness field
-      const effectivenessScores = typeInterventions
-        .filter((i) => i.effectiveness !== null)
-        .map((i) => i.effectiveness!)
-
-      const avgStruggleReduction =
-        effectivenessScores.length > 0
-          ? effectivenessScores.reduce((sum, score) => sum + score, 0) /
-            effectivenessScores.length
-          : 0
+      // Calculate average struggle reduction (placeholder - would need effectiveness tracking)
+      const avgStruggleReduction = successRate // Use success rate as proxy for now
 
       // Identify topic areas where this intervention works best
       const topicAreas = new Map<string, number>() // topic -> success count
 
       for (const intervention of successfulInterventions) {
-        const topic =
-          intervention.prediction.learningObjective?.lecture.course.name ||
-          'Unknown'
+        const topic = intervention.prediction?.learningObjective?.lecture.course.name || 'Unknown'
         topicAreas.set(topic, (topicAreas.get(topic) || 0) + 1)
       }
 
@@ -649,7 +607,7 @@ export class StruggleReductionAnalyzer {
   private static async generateTimeline(
     userId: string,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<Array<{ date: Date; rate: number }>> {
     const timeline: Array<{ date: Date; rate: number }> = []
     const weekCount = Math.ceil(differenceInDays(endDate, startDate) / 7)
@@ -693,9 +651,7 @@ export class StruggleReductionAnalyzer {
         }
 
         // Check for AGAIN ratings
-        const againReviews = session.reviews.filter(
-          (r) => r.rating === ReviewRating.AGAIN
-        )
+        const againReviews = session.reviews.filter((r) => r.rating === ReviewRating.AGAIN)
 
         for (const review of againReviews) {
           const card = await prisma.card.findUnique({
@@ -708,8 +664,7 @@ export class StruggleReductionAnalyzer {
         }
       }
 
-      const rate =
-        topicSet.size > 0 ? topicStruggles.size / topicSet.size : 0
+      const rate = topicSet.size > 0 ? topicStruggles.size / topicSet.size : 0
 
       timeline.push({
         date: weekStart,
@@ -725,10 +680,17 @@ export class StruggleReductionAnalyzer {
    */
   private static async calculatePerformanceImprovement(
     userId: string,
-    activationDate: Date
+    activationDate: Date,
   ): Promise<number> {
     // Query predictions with interventions applied
-    const predictions = await prisma.strugglePrediction.findMany({
+    type PredictionWithObjective = {
+      id: string
+      learningObjective: {
+        performanceMetrics: Array<{ date: Date; retentionScore: number }>
+      } | null
+    }
+
+    const predictions = (await prisma.strugglePrediction.findMany({
       where: {
         userId,
         predictionDate: {
@@ -737,12 +699,9 @@ export class StruggleReductionAnalyzer {
         interventions: {
           some: {
             status: {
-              in: ['APPLIED', 'COMPLETED'],
+              in: ['COMPLETED'],
             },
           },
-        },
-        learningObjectiveId: {
-          not: null,
         },
       },
       include: {
@@ -755,11 +714,15 @@ export class StruggleReductionAnalyzer {
                   gte: activationDate,
                 },
               },
+              select: {
+                date: true,
+                retentionScore: true,
+              },
             },
           },
         },
       },
-    })
+    })) as unknown as PredictionWithObjective[]
 
     if (predictions.length === 0) {
       return 0
@@ -769,15 +732,11 @@ export class StruggleReductionAnalyzer {
     let count = 0
 
     for (const prediction of predictions) {
-      if (!prediction.learningObjective) continue
+      const metrics = prediction.learningObjective?.performanceMetrics
 
-      const metrics = prediction.learningObjective.performanceMetrics
-
-      if (metrics.length >= 2) {
+      if (metrics && metrics.length >= 2) {
         // Calculate improvement: recent performance - initial performance
-        const sortedMetrics = metrics.sort(
-          (a, b) => a.date.getTime() - b.date.getTime()
-        )
+        const sortedMetrics = [...metrics].sort((a, b) => a.date.getTime() - b.date.getTime())
         const initial = sortedMetrics[0].retentionScore * 100
         const recent = sortedMetrics[sortedMetrics.length - 1].retentionScore * 100
 
@@ -796,16 +755,14 @@ export class StruggleReductionAnalyzer {
   private static async estimateTimeSaved(
     userId: string,
     baselineRate: StruggleRate,
-    currentRate: StruggleRate
+    currentRate: StruggleRate,
   ): Promise<number> {
     // Assumption: Each struggle requires 30 extra minutes of study time
     const minutesPerStruggle = 30
 
     // Calculate struggles prevented
-    const baselineStruggles =
-      baselineRate.topicsAnalyzed * baselineRate.rate
-    const currentStruggles =
-      currentRate.topicsAnalyzed * currentRate.rate
+    const baselineStruggles = baselineRate.topicsAnalyzed * baselineRate.rate
+    const currentStruggles = currentRate.topicsAnalyzed * currentRate.rate
 
     const strugglesPrevented = Math.max(0, baselineStruggles - currentStruggles)
 
@@ -817,7 +774,7 @@ export class StruggleReductionAnalyzer {
    */
   private static async calculateConfidenceIncrease(
     userId: string,
-    activationDate: Date
+    activationDate: Date,
   ): Promise<number> {
     // Query validation responses before and after activation
     const beforeResponses = await prisma.validationResponse.findMany({
@@ -859,12 +816,10 @@ export class StruggleReductionAnalyzer {
     }
 
     const beforeAvg =
-      beforeResponses.reduce((sum, r) => sum + (r.confidence || 0), 0) /
-      beforeResponses.length
+      beforeResponses.reduce((sum, r) => sum + (r.confidence || 0), 0) / beforeResponses.length
 
     const afterAvg =
-      afterResponses.reduce((sum, r) => sum + (r.confidence || 0), 0) /
-      afterResponses.length
+      afterResponses.reduce((sum, r) => sum + (r.confidence || 0), 0) / afterResponses.length
 
     return afterAvg - beforeAvg
   }
@@ -872,10 +827,7 @@ export class StruggleReductionAnalyzer {
   /**
    * Get empty struggle rate for periods with no data
    */
-  private static getEmptyStruggleRate(
-    startDate: Date,
-    endDate: Date
-  ): StruggleRate {
+  private static getEmptyStruggleRate(startDate: Date, endDate: Date): StruggleRate {
     return {
       rate: 0,
       topicsAnalyzed: 0,

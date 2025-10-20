@@ -10,6 +10,7 @@
  */
 
 import { prisma } from '@/lib/db'
+import { Prisma } from '@prisma/client'
 import type {
   BehavioralPattern,
   BehavioralInsight,
@@ -116,31 +117,23 @@ export class BehavioralPatternEngine {
     }
 
     // Step 3: Run all analyzers in parallel
-    const [
+    const [studyTimePatterns, durationPattern, contentPrefs, learningStyle, forgettingCurve] =
+      await Promise.all([
+        StudyTimeAnalyzer.analyzeOptimalStudyTimes(userId),
+        new SessionDurationAnalyzer().analyzeSessionDurationPatterns(userId),
+        new ContentPreferenceAnalyzer().analyzeContentPreferences(userId),
+        new ContentPreferenceAnalyzer().identifyLearningStyle(userId),
+        ForgettingCurveAnalyzer.calculatePersonalizedForgettingCurve(userId),
+      ])
+
+    // Step 4: Aggregate results into BehavioralPattern records
+    const patterns = await this.aggregatePatternsFromAnalysis(userId, {
       studyTimePatterns,
       durationPattern,
       contentPrefs,
       learningStyle,
       forgettingCurve,
-    ] = await Promise.all([
-      StudyTimeAnalyzer.analyzeOptimalStudyTimes(userId),
-      new SessionDurationAnalyzer().analyzeSessionDurationPatterns(userId),
-      new ContentPreferenceAnalyzer().analyzeContentPreferences(userId),
-      new ContentPreferenceAnalyzer().identifyLearningStyle(userId),
-      ForgettingCurveAnalyzer.calculatePersonalizedForgettingCurve(userId),
-    ])
-
-    // Step 4: Aggregate results into BehavioralPattern records
-    const patterns = await this.aggregatePatternsFromAnalysis(
-      userId,
-      {
-        studyTimePatterns,
-        durationPattern,
-        contentPrefs,
-        learningStyle,
-        forgettingCurve,
-      }
-    )
+    })
 
     // Step 5: Save patterns with confidence >= 0.6
     const savedPatterns = await this.savePatternsWithEvolution(userId, patterns)
@@ -171,9 +164,7 @@ export class BehavioralPatternEngine {
    * @param userId - User ID to analyze
    * @returns Array of newly detected behavioral patterns
    */
-  static async detectNewPatterns(
-    userId: string
-  ): Promise<BehavioralPattern[]> {
+  static async detectNewPatterns(userId: string): Promise<BehavioralPattern[]> {
     const profile = await prisma.userLearningProfile.findUnique({
       where: { userId },
     })
@@ -205,12 +196,10 @@ export class BehavioralPatternEngine {
     })
 
     const existingSet = new Set(
-      existingPatternTypes.map((p) => `${p.patternType}-${p.patternName}`)
+      existingPatternTypes.map((p) => `${p.patternType}-${p.patternName}`),
     )
 
-    return results.patterns.filter(
-      (p) => !existingSet.has(`${p.patternType}-${p.patternName}`)
-    )
+    return results.patterns.filter((p) => !existingSet.has(`${p.patternType}-${p.patternName}`))
   }
 
   /**
@@ -251,19 +240,14 @@ export class BehavioralPatternEngine {
 
     for (const newPattern of results.patterns) {
       const existing = existingPatterns.find(
-        (p) =>
-          p.patternType === newPattern.patternType &&
-          p.patternName === newPattern.patternName
+        (p) => p.patternType === newPattern.patternType && p.patternName === newPattern.patternName,
       )
 
       if (existing) {
         // Pattern reoccurs - update it
         seenPatternIds.add(existing.id)
 
-        const newConfidence = Math.min(
-          MAX_CONFIDENCE,
-          existing.confidence + CONFIDENCE_INCREMENT
-        )
+        const newConfidence = Math.min(MAX_CONFIDENCE, existing.confidence + CONFIDENCE_INCREMENT)
 
         await prisma.behavioralPattern.update({
           where: { id: existing.id },
@@ -295,10 +279,7 @@ export class BehavioralPatternEngine {
           deleted++
         } else {
           // Decrease confidence
-          const newConfidence = Math.max(
-            0,
-            existing.confidence - CONFIDENCE_DECREMENT
-          )
+          const newConfidence = Math.max(0, existing.confidence - CONFIDENCE_DECREMENT)
 
           if (newConfidence < MIN_CONFIDENCE) {
             await prisma.behavioralPattern.delete({
@@ -344,9 +325,7 @@ export class BehavioralPatternEngine {
    * @param userId - User ID to generate insights for
    * @returns Array of behavioral insights (top 5 by impact)
    */
-  static async generateInsights(
-    userId: string
-  ): Promise<BehavioralInsight[]> {
+  static async generateInsights(userId: string): Promise<BehavioralInsight[]> {
     // Step 1: Query high-confidence patterns
     const patterns = await prisma.behavioralPattern.findMany({
       where: {
@@ -462,16 +441,11 @@ export class BehavioralPatternEngine {
     ])
 
     const weeksOfData = oldestSession
-      ? Math.floor(
-          (Date.now() - oldestSession.startedAt.getTime()) /
-            (1000 * 60 * 60 * 24 * 7)
-        )
+      ? Math.floor((Date.now() - oldestSession.startedAt.getTime()) / (1000 * 60 * 60 * 24 * 7))
       : 0
 
     const sufficient =
-      weeksOfData >= MIN_WEEKS &&
-      sessionCount >= MIN_SESSIONS &&
-      reviewCount >= MIN_REVIEWS
+      weeksOfData >= MIN_WEEKS && sessionCount >= MIN_SESSIONS && reviewCount >= MIN_REVIEWS
 
     return {
       sufficient,
@@ -490,11 +464,15 @@ export class BehavioralPatternEngine {
     userId: string,
     analysis: {
       studyTimePatterns: Awaited<ReturnType<typeof StudyTimeAnalyzer.analyzeOptimalStudyTimes>>
-      durationPattern: Awaited<ReturnType<SessionDurationAnalyzer['analyzeSessionDurationPatterns']>>
+      durationPattern: Awaited<
+        ReturnType<SessionDurationAnalyzer['analyzeSessionDurationPatterns']>
+      >
       contentPrefs: Awaited<ReturnType<ContentPreferenceAnalyzer['analyzeContentPreferences']>>
       learningStyle: Awaited<ReturnType<ContentPreferenceAnalyzer['identifyLearningStyle']>>
-      forgettingCurve: Awaited<ReturnType<typeof ForgettingCurveAnalyzer.calculatePersonalizedForgettingCurve>>
-    }
+      forgettingCurve: Awaited<
+        ReturnType<typeof ForgettingCurveAnalyzer.calculatePersonalizedForgettingCurve>
+      >
+    },
   ): Promise<Array<Omit<BehavioralPattern, 'id' | 'detectedAt' | 'lastSeenAt'>>> {
     const patterns: Array<Omit<BehavioralPattern, 'id' | 'detectedAt' | 'lastSeenAt'>> = []
 
@@ -534,8 +512,7 @@ export class BehavioralPatternEngine {
     }
 
     // Content type preferences
-    const topContentType = Object.entries(analysis.contentPrefs)
-      .sort(([, a], [, b]) => b - a)[0]
+    const topContentType = Object.entries(analysis.contentPrefs).sort(([, a], [, b]) => b - a)[0]
     if (topContentType && topContentType[1] > 0.3) {
       patterns.push({
         userId,
@@ -576,7 +553,7 @@ export class BehavioralPatternEngine {
    */
   private static async savePatternsWithEvolution(
     userId: string,
-    patterns: Array<Omit<BehavioralPattern, 'id' | 'detectedAt' | 'lastSeenAt'>>
+    patterns: Array<Omit<BehavioralPattern, 'id' | 'detectedAt' | 'lastSeenAt'>>,
   ): Promise<BehavioralPattern[]> {
     const savedPatterns: BehavioralPattern[] = []
 
@@ -601,10 +578,7 @@ export class BehavioralPatternEngine {
           data: {
             occurrenceCount: existing.occurrenceCount + 1,
             lastSeenAt: new Date(),
-            confidence: Math.min(
-              MAX_CONFIDENCE,
-              existing.confidence + CONFIDENCE_INCREMENT
-            ),
+            confidence: Math.min(MAX_CONFIDENCE, existing.confidence + CONFIDENCE_INCREMENT),
             evidence: pattern.evidence as any,
           },
         })
@@ -637,11 +611,15 @@ export class BehavioralPatternEngine {
     userId: string,
     analysis: {
       studyTimePatterns: Awaited<ReturnType<typeof StudyTimeAnalyzer.analyzeOptimalStudyTimes>>
-      durationPattern: Awaited<ReturnType<SessionDurationAnalyzer['analyzeSessionDurationPatterns']>>
+      durationPattern: Awaited<
+        ReturnType<SessionDurationAnalyzer['analyzeSessionDurationPatterns']>
+      >
       contentPrefs: Awaited<ReturnType<ContentPreferenceAnalyzer['analyzeContentPreferences']>>
       learningStyle: Awaited<ReturnType<ContentPreferenceAnalyzer['identifyLearningStyle']>>
-      forgettingCurve: Awaited<ReturnType<typeof ForgettingCurveAnalyzer.calculatePersonalizedForgettingCurve>>
-    }
+      forgettingCurve: Awaited<
+        ReturnType<typeof ForgettingCurveAnalyzer.calculatePersonalizedForgettingCurve>
+      >
+    },
   ): Promise<UserLearningProfile> {
     // Convert study time patterns to preferred study times
     const preferredStudyTimes = analysis.studyTimePatterns.map((p) => ({
@@ -656,7 +634,7 @@ export class BehavioralPatternEngine {
       (analysis.durationPattern.confidence +
         analysis.forgettingCurve.confidence +
         (analysis.studyTimePatterns[0]?.confidence || 0)) /
-        3
+        3,
     )
 
     const profileData = {
@@ -665,36 +643,36 @@ export class BehavioralPatternEngine {
       averageSessionDuration: Math.round(
         analysis.durationPattern.totalSessionsAnalyzed > 0
           ? analysis.durationPattern.allBuckets.reduce(
-              (sum, b) => sum + (b.minMinutes + b.maxMinutes) / 2 * b.sessionCount,
-              0
+              (sum, b) => sum + ((b.minMinutes + b.maxMinutes) / 2) * b.sessionCount,
+              0,
             ) / analysis.durationPattern.totalSessionsAnalyzed
-          : 45
+          : 45,
       ),
       optimalSessionDuration: analysis.durationPattern.recommendedDuration,
-      contentPreferences: analysis.contentPrefs,
-      learningStyleProfile: analysis.learningStyle,
-      personalizedForgettingCurve: {
-        R0: analysis.forgettingCurve.R0,
-        k: analysis.forgettingCurve.k,
-        halfLife: analysis.forgettingCurve.halfLife,
-      },
+      contentPreferences: JSON.parse(JSON.stringify(analysis.contentPrefs)) as any,
+      learningStyleProfile: JSON.parse(JSON.stringify(analysis.learningStyle)) as any,
+      personalizedForgettingCurve: JSON.parse(
+        JSON.stringify({
+          R0: analysis.forgettingCurve.R0,
+          k: analysis.forgettingCurve.k,
+          halfLife: analysis.forgettingCurve.halfLife,
+        }),
+      ) as any,
       lastAnalyzedAt: new Date(),
       dataQualityScore,
     }
 
     return await prisma.userLearningProfile.upsert({
       where: { userId },
-      update: profileData,
-      create: profileData,
+      update: profileData as Parameters<typeof prisma.userLearningProfile.update>[0]['data'],
+      create: profileData as Parameters<typeof prisma.userLearningProfile.create>[0]['data'],
     })
   }
 
   /**
    * Get or create user learning profile
    */
-  private static async getOrCreateProfile(
-    userId: string
-  ): Promise<UserLearningProfile> {
+  private static async getOrCreateProfile(userId: string): Promise<UserLearningProfile> {
     const existing = await prisma.userLearningProfile.findUnique({
       where: { userId },
     })
@@ -709,23 +687,29 @@ export class BehavioralPatternEngine {
         preferredStudyTimes: [],
         averageSessionDuration: 45,
         optimalSessionDuration: 45,
-        contentPreferences: {
-          lectures: 0.25,
-          flashcards: 0.25,
-          validation: 0.25,
-          clinicalReasoning: 0.25,
-        },
-        learningStyleProfile: {
-          visual: 0.25,
-          auditory: 0.25,
-          kinesthetic: 0.25,
-          reading: 0.25,
-        },
-        personalizedForgettingCurve: {
-          R0: 1.0,
-          k: 0.14,
-          halfLife: 5,
-        },
+        contentPreferences: JSON.parse(
+          JSON.stringify({
+            lectures: 0.25,
+            flashcards: 0.25,
+            validation: 0.25,
+            clinicalReasoning: 0.25,
+          }),
+        ) as any,
+        learningStyleProfile: JSON.parse(
+          JSON.stringify({
+            visual: 0.25,
+            auditory: 0.25,
+            kinesthetic: 0.25,
+            reading: 0.25,
+          }),
+        ) as any,
+        personalizedForgettingCurve: JSON.parse(
+          JSON.stringify({
+            R0: 1.0,
+            k: 0.14,
+            halfLife: 5,
+          }),
+        ) as any,
         lastAnalyzedAt: new Date(),
         dataQualityScore: 0,
       },
@@ -751,7 +735,7 @@ export class BehavioralPatternEngine {
         return {
           insightType: 'STUDY_TIME_OPTIMIZATION' as InsightType,
           title: 'Study during your peak hours',
-          description: `You perform ${Math.round((evidence.timeOfDayScore - 70) / 70 * 100)}% better during ${evidence.hourOfDay}:00-${evidence.hourOfDay + 1}:00 based on ${evidence.sessionCount} sessions.`,
+          description: `You perform ${Math.round(((evidence.timeOfDayScore - 70) / 70) * 100)}% better during ${evidence.hourOfDay}:00-${evidence.hourOfDay + 1}:00 based on ${evidence.sessionCount} sessions.`,
           actionableRecommendation: `Schedule high-priority missions during ${evidence.hourOfDay}:00-${evidence.hourOfDay + 1}:00 for optimal retention and performance.`,
           confidence: pattern.confidence,
           supportingPatternIds: [pattern.id],
@@ -783,7 +767,7 @@ export class BehavioralPatternEngine {
       case 'FORGETTING_CURVE':
         const standardHalfLife = Math.log(2) / 0.14
         const deviationPercent = Math.abs(
-          ((evidence.halfLife - standardHalfLife) / standardHalfLife) * 100
+          ((evidence.halfLife - standardHalfLife) / standardHalfLife) * 100,
         )
         const fasterSlower = evidence.k > 0.14 ? 'faster' : 'slower'
         const recommendedDays = Math.round(evidence.halfLife * 0.7) // Review before 50% decay

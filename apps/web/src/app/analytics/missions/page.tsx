@@ -5,80 +5,77 @@
  * Comprehensive mission performance analytics and insights
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Target, TrendingUp, Award, Calendar, ArrowLeft } from 'lucide-react';
-import { MissionCompletionChart } from '@/components/analytics/mission-completion-chart';
-import { PerformanceCorrelationPanel } from '@/components/analytics/performance-correlation-panel';
-import { MissionEffectivenessTable } from '@/components/analytics/mission-effectiveness-table';
-import { RecommendationsPanel } from '@/components/analytics/recommendations-panel';
-import { InsightsPanel } from '@/components/analytics/insights-panel';
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { Target, TrendingUp, Award, Calendar, ArrowLeft } from 'lucide-react'
+import { MissionCompletionChart } from '@/components/analytics/mission-completion-chart'
+import { PerformanceCorrelationPanel } from '@/components/analytics/performance-correlation-panel'
+import { MissionEffectivenessTable } from '@/components/analytics/mission-effectiveness-table'
+import { RecommendationsPanel } from '@/components/analytics/recommendations-panel'
+import { InsightsPanel } from '@/components/analytics/insights-panel'
 
 interface MissionStats {
-  completionRate: number;
+  completionRate: number
   streak: {
-    current: number;
-    longest: number;
-  };
-  successScore: number;
+    current: number
+    longest: number
+  }
+  successScore: number
   missions: {
-    completed: number;
-    skipped: number;
-    total: number;
-  };
+    completed: number
+    skipped: number
+    total: number
+  }
 }
 
 export default function MissionAnalyticsPage() {
-  const [stats, setStats] = useState<MissionStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState<'7d' | '30d' | '90d'>('30d');
+  const [stats, setStats] = useState<MissionStats | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [period, setPeriod] = useState<'7d' | '30d' | '90d'>('30d')
 
   useEffect(() => {
-    fetchStats();
-  }, [period]);
+    fetchStats()
+  }, [period])
 
   async function fetchStats() {
     try {
-      setLoading(true);
-      const response = await fetch(
-        `/api/analytics/missions/summary?period=${period}`,
-        {
-          headers: {
-            'X-User-Email': 'kevy@americano.dev',
-          },
-        }
-      );
+      setLoading(true)
+      const response = await fetch(`/api/analytics/missions/summary?period=${period}`, {
+        headers: {
+          'X-User-Email': 'kevy@americano.dev',
+        },
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to fetch stats');
+        throw new Error('Failed to fetch stats')
       }
 
-      const result = await response.json();
-      setStats(result.data);
+      const result = await response.json()
+      setStats(result.data)
     } catch (error) {
-      console.error('Error fetching mission stats:', error);
-      setStats(null);
+      console.error('Error fetching mission stats:', error)
+      setStats(null)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   const getSuccessRating = (score: number): string => {
-    if (score >= 0.8) return 'EXCELLENT';
-    if (score >= 0.6) return 'GOOD';
-    if (score >= 0.4) return 'FAIR';
-    if (score >= 0.2) return 'NEEDS IMPROVEMENT';
-    return 'POOR';
-  };
+    if (score >= 0.8) return 'EXCELLENT'
+    if (score >= 0.6) return 'GOOD'
+    if (score >= 0.4) return 'FAIR'
+    if (score >= 0.2) return 'NEEDS IMPROVEMENT'
+    return 'POOR'
+  }
 
   const getSuccessColor = (score: number): string => {
-    if (score >= 0.8) return 'oklch(0.75 0.15 160)';
-    if (score >= 0.6) return 'oklch(0.7 0.15 230)';
-    if (score >= 0.4) return 'oklch(0.7 0.15 50)';
-    return 'oklch(0.65 0.15 10)';
-  };
+    if (score >= 0.8) return 'oklch(0.75 0.15 160)'
+    if (score >= 0.6) return 'oklch(0.7 0.15 230)'
+    if (score >= 0.4) return 'oklch(0.7 0.15 50)'
+    return 'oklch(0.65 0.15 10)'
+  }
 
   return (
     <div className="container mx-auto py-8 max-w-7xl px-4">
@@ -143,9 +140,7 @@ export default function MissionAnalyticsPage() {
             <div className="text-3xl font-bold text-[oklch(0.145_0_0)] mb-1">
               {(stats.completionRate * 100).toFixed(0)}%
             </div>
-            <div className="text-sm text-[oklch(0.556_0_0)]">
-              Completion Rate
-            </div>
+            <div className="text-sm text-[oklch(0.556_0_0)]">Completion Rate</div>
             <div className="mt-2 text-xs text-[oklch(0.556_0_0)]">
               {stats.missions.completed} of {stats.missions.total} missions
             </div>
@@ -161,9 +156,7 @@ export default function MissionAnalyticsPage() {
             <div className="text-3xl font-bold text-[oklch(0.145_0_0)] mb-1">
               {stats.streak.current}
             </div>
-            <div className="text-sm text-[oklch(0.556_0_0)]">
-              Current Streak
-            </div>
+            <div className="text-sm text-[oklch(0.556_0_0)]">Current Streak</div>
             <div className="mt-2 text-xs text-[oklch(0.556_0_0)]">
               Longest: {stats.streak.longest} days
             </div>
@@ -182,9 +175,7 @@ export default function MissionAnalyticsPage() {
             >
               {(stats.successScore * 100).toFixed(0)}
             </div>
-            <div className="text-sm text-[oklch(0.556_0_0)]">
-              Success Score
-            </div>
+            <div className="text-sm text-[oklch(0.556_0_0)]">Success Score</div>
             <div className="mt-2 text-xs text-[oklch(0.556_0_0)]">
               {getSuccessRating(stats.successScore)}
             </div>
@@ -200,9 +191,7 @@ export default function MissionAnalyticsPage() {
             <div className="text-3xl font-bold text-[oklch(0.145_0_0)] mb-1">
               {stats.missions.completed}
             </div>
-            <div className="text-sm text-[oklch(0.556_0_0)]">
-              Missions Completed
-            </div>
+            <div className="text-sm text-[oklch(0.556_0_0)]">Missions Completed</div>
             <div className="mt-2 text-xs text-[oklch(0.556_0_0)]">
               {stats.missions.skipped} skipped
             </div>
@@ -210,9 +199,7 @@ export default function MissionAnalyticsPage() {
         </div>
       ) : (
         <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 mb-8">
-          <p className="text-sm text-[oklch(0.556_0_0)] text-center">
-            No mission data available
-          </p>
+          <p className="text-sm text-[oklch(0.556_0_0)] text-center">No mission data available</p>
         </div>
       )}
 
@@ -256,9 +243,7 @@ export default function MissionAnalyticsPage() {
           <p className="text-sm text-[oklch(0.556_0_0)] mb-4">
             View all past missions and track your progress over time
           </p>
-          <span className="text-sm text-[oklch(0.7_0.15_230)] font-medium">
-            View History →
-          </span>
+          <span className="text-sm text-[oklch(0.7_0.15_230)] font-medium">View History →</span>
         </Link>
 
         <Link
@@ -271,11 +256,9 @@ export default function MissionAnalyticsPage() {
           <p className="text-sm text-[oklch(0.556_0_0)] mb-4">
             Customize mission preferences and adaptation settings
           </p>
-          <span className="text-sm text-[oklch(0.7_0.15_230)] font-medium">
-            Go to Settings →
-          </span>
+          <span className="text-sm text-[oklch(0.7_0.15_230)] font-medium">Go to Settings →</span>
         </Link>
       </div>
     </div>
-  );
+  )
 }

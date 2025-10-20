@@ -3,39 +3,39 @@
  * Story 5.3 Task 5
  */
 
-import { describe, it, expect, beforeEach, vi } from '@jest/globals'
+import { describe, it, expect, beforeEach } from '@jest/globals'
 import { StudyIntensityModulator } from '@/subsystems/behavioral-analytics/study-intensity-modulator'
 
 // Mock fetch for Story 5.4 API integration
-global.fetch = vi.fn()
+global.fetch = jest.fn()
 
 // Mock dependencies
-vi.mock('@/lib/db', () => ({
+jest.mock('@/lib/db', () => ({
   prisma: {
     userLearningProfile: {
-      findUnique: vi.fn(),
+      findUnique: jest.fn(),
     },
     studySession: {
-      findMany: vi.fn(),
-      count: vi.fn(),
+      findMany: jest.fn(),
+      count: jest.fn(),
     },
     behavioralEvent: {
-      findMany: vi.fn(),
+      findMany: jest.fn(),
     },
     validationResponse: {
-      findMany: vi.fn(),
+      findMany: jest.fn(),
     },
   },
 }))
 
 describe('StudyIntensityModulator', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   describe('assessCognitiveLoad', () => {
     it('should use Story 5.4 API when available', async () => {
-      vi.mocked(global.fetch).mockResolvedValue({
+      jest.mocked(global.fetch).mockResolvedValue({
         ok: true,
         json: async () => ({ loadScore: 65, loadLevel: 'MODERATE', timestamp: new Date() }),
       } as Response)
@@ -49,15 +49,15 @@ describe('StudyIntensityModulator', () => {
     })
 
     it('should fallback to local calculation when API unavailable', async () => {
-      vi.mocked(global.fetch).mockRejectedValue(new Error('API unavailable'))
+      jest.mocked(global.fetch).mockRejectedValue(new Error('API unavailable'))
 
       const { prisma } = await import('@/lib/db')
 
       // Mock local data for calculation
-      vi.mocked(prisma.studySession.findMany).mockResolvedValue([])
-      vi.mocked(prisma.behavioralEvent.findMany).mockResolvedValue([])
-      vi.mocked(prisma.validationResponse.findMany).mockResolvedValue([])
-      vi.mocked(prisma.userLearningProfile.findUnique).mockResolvedValue({
+      jest.mocked(prisma.studySession.findMany).mockResolvedValue([])
+      jest.mocked(prisma.behavioralEvent.findMany).mockResolvedValue([])
+      jest.mocked(prisma.validationResponse.findMany).mockResolvedValue([])
+      jest.mocked(prisma.userLearningProfile.findUnique).mockResolvedValue({
         id: 'profile-1',
         userId: 'user-1',
         preferredStudyTimes: [],
@@ -96,7 +96,7 @@ describe('StudyIntensityModulator', () => {
 
   describe('recommendRecoveryPeriod', () => {
     it('should require 2 days off for critical load (>80)', async () => {
-      vi.mocked(global.fetch).mockResolvedValue({
+      jest.mocked(global.fetch).mockResolvedValue({
         ok: true,
         json: async () => ({ loadScore: 85, loadLevel: 'CRITICAL', timestamp: new Date() }),
       } as Response)
@@ -109,7 +109,7 @@ describe('StudyIntensityModulator', () => {
     })
 
     it('should recommend light review for high load (70-80)', async () => {
-      vi.mocked(global.fetch).mockResolvedValue({
+      jest.mocked(global.fetch).mockResolvedValue({
         ok: true,
         json: async () => ({ loadScore: 75, loadLevel: 'HIGH', timestamp: new Date() }),
       } as Response)

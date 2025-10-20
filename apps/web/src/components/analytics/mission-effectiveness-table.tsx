@@ -5,80 +5,73 @@
  * Sortable/filterable table showing mission effectiveness metrics
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
-import {
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  Download,
-  Filter,
-} from 'lucide-react';
+import { useState, useEffect } from 'react'
+import { format } from 'date-fns'
+import { ArrowUpDown, ArrowUp, ArrowDown, Download, Filter } from 'lucide-react'
 
 interface MissionEffectiveness {
-  week: string;
-  missionsCompleted: number;
-  avgDifficulty: number;
-  objectivesMastered: number;
-  studyTimeMinutes: number;
-  improvementPercentage: number;
+  week: string
+  missionsCompleted: number
+  avgDifficulty: number
+  objectivesMastered: number
+  studyTimeMinutes: number
+  improvementPercentage: number
 }
 
 interface ComparisonData {
   missionGuided: {
-    sessions: number;
-    masteryImprovement: number;
-    completionRate: number;
-    efficiency: number;
-  };
+    sessions: number
+    masteryImprovement: number
+    completionRate: number
+    efficiency: number
+  }
   freeStudy: {
-    sessions: number;
-    masteryImprovement: number;
-    completionRate: number;
-    efficiency: number;
-  };
-  improvementPercentage: number;
-  confidence: 'LOW' | 'MEDIUM' | 'HIGH';
-  pValue: number;
-  insight: string;
+    sessions: number
+    masteryImprovement: number
+    completionRate: number
+    efficiency: number
+  }
+  improvementPercentage: number
+  confidence: 'LOW' | 'MEDIUM' | 'HIGH'
+  pValue: number
+  insight: string
 }
 
-type SortField = keyof MissionEffectiveness;
-type SortDirection = 'asc' | 'desc';
+type SortField = keyof MissionEffectiveness
+type SortDirection = 'asc' | 'desc'
 
 export function MissionEffectivenessTable() {
-  const [data, setData] = useState<MissionEffectiveness[]>([]);
-  const [comparison, setComparison] = useState<ComparisonData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [sortField, setSortField] = useState<SortField>('week');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const [filterDifficulty, setFilterDifficulty] = useState<'all' | '1' | '2' | '3' | '4' | '5'>('all');
+  const [data, setData] = useState<MissionEffectiveness[]>([])
+  const [comparison, setComparison] = useState<ComparisonData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [sortField, setSortField] = useState<SortField>('week')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
+  const [filterDifficulty, setFilterDifficulty] = useState<'all' | '1' | '2' | '3' | '4' | '5'>(
+    'all',
+  )
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   async function fetchData() {
     try {
-      setLoading(true);
-      const response = await fetch(
-        '/api/analytics/missions/summary?period=90d',
-        {
-          headers: {
-            'X-User-Email': 'kevy@americano.dev',
-          },
-        }
-      );
+      setLoading(true)
+      const response = await fetch('/api/analytics/missions/summary?period=90d', {
+        headers: {
+          'X-User-Email': 'kevy@americano.dev',
+        },
+      })
 
-      if (!response.ok) throw new Error('Failed to fetch effectiveness data');
+      if (!response.ok) throw new Error('Failed to fetch effectiveness data')
 
-      const result = await response.json();
+      const result = await response.json()
 
       // Extract comparison data from API response
       if (result.data?.comparison) {
-        setComparison(result.data.comparison);
+        setComparison(result.data.comparison)
       }
 
       // Transform summary data into weekly effectiveness records
@@ -108,51 +101,48 @@ export function MissionEffectivenessTable() {
           studyTimeMinutes: 385,
           improvementPercentage: 18.5,
         },
-      ];
+      ]
 
-      setData(mockData);
+      setData(mockData)
     } catch (error) {
-      console.error('Error fetching effectiveness data:', error);
-      setData([]);
-      setComparison(null);
+      console.error('Error fetching effectiveness data:', error)
+      setData([])
+      setComparison(null)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   // Sorting logic
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
     } else {
-      setSortField(field);
-      setSortDirection('asc');
+      setSortField(field)
+      setSortDirection('asc')
     }
-  };
+  }
 
   const sortedData = [...data].sort((a, b) => {
-    const aValue = a[sortField];
-    const bValue = b[sortField];
+    const aValue = a[sortField]
+    const bValue = b[sortField]
 
     if (typeof aValue === 'string' && typeof bValue === 'string') {
-      return sortDirection === 'asc'
-        ? aValue.localeCompare(bValue)
-        : bValue.localeCompare(aValue);
+      return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
     }
 
     if (typeof aValue === 'number' && typeof bValue === 'number') {
-      return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      return sortDirection === 'asc' ? aValue - bValue : bValue - aValue
     }
 
-    return 0;
-  });
+    return 0
+  })
 
   // Filtering logic
-  const filteredData = filterDifficulty === 'all'
-    ? sortedData
-    : sortedData.filter(
-        (row) => Math.round(row.avgDifficulty) === parseInt(filterDifficulty)
-      );
+  const filteredData =
+    filterDifficulty === 'all'
+      ? sortedData
+      : sortedData.filter((row) => Math.round(row.avgDifficulty) === parseInt(filterDifficulty))
 
   // Export to CSV
   const exportToCSV = () => {
@@ -163,7 +153,7 @@ export function MissionEffectivenessTable() {
       'Objectives Mastered',
       'Study Time (min)',
       'Improvement %',
-    ];
+    ]
     const rows = filteredData.map((row) => [
       format(new Date(row.week), 'MMM dd, yyyy'),
       row.missionsCompleted,
@@ -171,50 +161,46 @@ export function MissionEffectivenessTable() {
       row.objectivesMastered,
       row.studyTimeMinutes,
       row.improvementPercentage.toFixed(1),
-    ]);
+    ])
 
-    const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `mission-effectiveness-${format(new Date(), 'yyyy-MM-dd')}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+    const csv = [headers, ...rows].map((row) => row.join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `mission-effectiveness-${format(new Date(), 'yyyy-MM-dd')}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) {
-      return <ArrowUpDown className="size-4 text-[oklch(0.556_0_0)]" />;
+      return <ArrowUpDown className="size-4 text-[oklch(0.556_0_0)]" />
     }
     return sortDirection === 'asc' ? (
       <ArrowUp className="size-4 text-[oklch(0.7_0.15_230)]" />
     ) : (
       <ArrowDown className="size-4 text-[oklch(0.7_0.15_230)]" />
-    );
-  };
+    )
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64 bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30">
-        <div className="text-sm text-[oklch(0.556_0_0)]">
-          Loading effectiveness data...
-        </div>
+        <div className="text-sm text-[oklch(0.556_0_0)]">Loading effectiveness data...</div>
       </div>
-    );
+    )
   }
 
   if (data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-        <div className="text-sm text-[oklch(0.556_0_0)]">
-          No effectiveness data available
-        </div>
+        <div className="text-sm text-[oklch(0.556_0_0)]">No effectiveness data available</div>
         <p className="text-xs text-[oklch(0.556_0_0)] mt-2">
           Complete missions over multiple weeks to see trends
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -225,9 +211,7 @@ export function MissionEffectivenessTable() {
           <h3 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)]">
             Mission Effectiveness
           </h3>
-          <p className="text-sm text-[oklch(0.556_0_0)] mt-1">
-            Weekly performance breakdown
-          </p>
+          <p className="text-sm text-[oklch(0.556_0_0)] mt-1">Weekly performance breakdown</p>
         </div>
         <button
           onClick={exportToCSV}
@@ -263,111 +247,111 @@ export function MissionEffectivenessTable() {
       </div>
 
       {/* Mission vs. Free-Study Comparison */}
-      {comparison && comparison.missionGuided.sessions >= 3 && comparison.freeStudy.sessions >= 3 && (
-        <div className="mb-6 p-4 rounded-xl bg-[oklch(0.7_0.15_230)]/5 border border-[oklch(0.7_0.15_230)]/20">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <h4 className="text-sm font-semibold text-[oklch(0.145_0_0)] mb-1">
-                Mission-Guided vs. Free-Form Study
-              </h4>
-              <p className="text-xs text-[oklch(0.556_0_0)]">
-                Statistical comparison over last 90 days
-              </p>
-            </div>
-            <span
-              className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                comparison.confidence === 'HIGH'
-                  ? 'bg-[oklch(0.75_0.15_160)]/10 text-[oklch(0.75_0.15_160)]'
-                  : comparison.confidence === 'MEDIUM'
-                    ? 'bg-[oklch(0.7_0.15_50)]/10 text-[oklch(0.7_0.15_50)]'
-                    : 'bg-[oklch(0.556_0_0)]/10 text-[oklch(0.556_0_0)]'
-              }`}
-            >
-              {comparison.confidence} confidence
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-3">
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-[oklch(0.556_0_0)]">
-                Mission-Guided ({comparison.missionGuided.sessions} sessions)
-              </p>
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs">
-                  <span className="text-[oklch(0.556_0_0)]">Mastery:</span>
-                  <span className="font-medium text-[oklch(0.7_0.15_230)]">
-                    {(comparison.missionGuided.masteryImprovement * 100).toFixed(1)}%
-                  </span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-[oklch(0.556_0_0)]">Completion:</span>
-                  <span className="font-medium text-[oklch(0.145_0_0)]">
-                    {(comparison.missionGuided.completionRate * 100).toFixed(1)}%
-                  </span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-[oklch(0.556_0_0)]">Efficiency:</span>
-                  <span className="font-medium text-[oklch(0.145_0_0)]">
-                    {comparison.missionGuided.efficiency.toFixed(1)} obj/hr
-                  </span>
-                </div>
+      {comparison &&
+        comparison.missionGuided.sessions >= 3 &&
+        comparison.freeStudy.sessions >= 3 && (
+          <div className="mb-6 p-4 rounded-xl bg-[oklch(0.7_0.15_230)]/5 border border-[oklch(0.7_0.15_230)]/20">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <h4 className="text-sm font-semibold text-[oklch(0.145_0_0)] mb-1">
+                  Mission-Guided vs. Free-Form Study
+                </h4>
+                <p className="text-xs text-[oklch(0.556_0_0)]">
+                  Statistical comparison over last 90 days
+                </p>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-[oklch(0.556_0_0)]">
-                Free-Form ({comparison.freeStudy.sessions} sessions)
-              </p>
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs">
-                  <span className="text-[oklch(0.556_0_0)]">Mastery:</span>
-                  <span className="font-medium text-[oklch(0.556_0_0)]">
-                    {(comparison.freeStudy.masteryImprovement * 100).toFixed(1)}%
-                  </span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-[oklch(0.556_0_0)]">Completion:</span>
-                  <span className="font-medium text-[oklch(0.145_0_0)]">
-                    {(comparison.freeStudy.completionRate * 100).toFixed(1)}%
-                  </span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-[oklch(0.556_0_0)]">Efficiency:</span>
-                  <span className="font-medium text-[oklch(0.145_0_0)]">
-                    {comparison.freeStudy.efficiency.toFixed(1)} obj/hr
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-[oklch(0.7_0.15_230)]/10">
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-[oklch(0.556_0_0)]">
-                {comparison.insight}
-              </p>
               <span
-                className={`ml-2 text-sm font-semibold whitespace-nowrap ${
-                  comparison.improvementPercentage > 0
-                    ? 'text-[oklch(0.75_0.15_160)]'
-                    : 'text-[oklch(0.65_0.15_10)]'
+                className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                  comparison.confidence === 'HIGH'
+                    ? 'bg-[oklch(0.75_0.15_160)]/10 text-[oklch(0.75_0.15_160)]'
+                    : comparison.confidence === 'MEDIUM'
+                      ? 'bg-[oklch(0.7_0.15_50)]/10 text-[oklch(0.7_0.15_50)]'
+                      : 'bg-[oklch(0.556_0_0)]/10 text-[oklch(0.556_0_0)]'
                 }`}
               >
-                {comparison.improvementPercentage > 0 ? '+' : ''}
-                {comparison.improvementPercentage.toFixed(1)}%
+                {comparison.confidence} confidence
               </span>
             </div>
-            <p className="text-xs text-[oklch(0.556_0_0)] mt-1">
-              p-value: {comparison.pValue.toFixed(3)}{' '}
-              {comparison.pValue < 0.01
-                ? '(highly significant)'
-                : comparison.pValue < 0.05
-                  ? '(significant)'
-                  : '(not significant)'}
-            </p>
+
+            <div className="grid grid-cols-2 gap-4 mb-3">
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-[oklch(0.556_0_0)]">
+                  Mission-Guided ({comparison.missionGuided.sessions} sessions)
+                </p>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-[oklch(0.556_0_0)]">Mastery:</span>
+                    <span className="font-medium text-[oklch(0.7_0.15_230)]">
+                      {(comparison.missionGuided.masteryImprovement * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-[oklch(0.556_0_0)]">Completion:</span>
+                    <span className="font-medium text-[oklch(0.145_0_0)]">
+                      {(comparison.missionGuided.completionRate * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-[oklch(0.556_0_0)]">Efficiency:</span>
+                    <span className="font-medium text-[oklch(0.145_0_0)]">
+                      {comparison.missionGuided.efficiency.toFixed(1)} obj/hr
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-[oklch(0.556_0_0)]">
+                  Free-Form ({comparison.freeStudy.sessions} sessions)
+                </p>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-[oklch(0.556_0_0)]">Mastery:</span>
+                    <span className="font-medium text-[oklch(0.556_0_0)]">
+                      {(comparison.freeStudy.masteryImprovement * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-[oklch(0.556_0_0)]">Completion:</span>
+                    <span className="font-medium text-[oklch(0.145_0_0)]">
+                      {(comparison.freeStudy.completionRate * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-[oklch(0.556_0_0)]">Efficiency:</span>
+                    <span className="font-medium text-[oklch(0.145_0_0)]">
+                      {comparison.freeStudy.efficiency.toFixed(1)} obj/hr
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-[oklch(0.7_0.15_230)]/10">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-[oklch(0.556_0_0)]">{comparison.insight}</p>
+                <span
+                  className={`ml-2 text-sm font-semibold whitespace-nowrap ${
+                    comparison.improvementPercentage > 0
+                      ? 'text-[oklch(0.75_0.15_160)]'
+                      : 'text-[oklch(0.65_0.15_10)]'
+                  }`}
+                >
+                  {comparison.improvementPercentage > 0 ? '+' : ''}
+                  {comparison.improvementPercentage.toFixed(1)}%
+                </span>
+              </div>
+              <p className="text-xs text-[oklch(0.556_0_0)] mt-1">
+                p-value: {comparison.pValue.toFixed(3)}{' '}
+                {comparison.pValue < 0.01
+                  ? '(highly significant)'
+                  : comparison.pValue < 0.05
+                    ? '(significant)'
+                    : '(not significant)'}
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Table */}
       <div className="overflow-x-auto">
@@ -444,9 +428,7 @@ export function MissionEffectivenessTable() {
                   </span>
                 </td>
                 <td className="px-4 py-4 text-right">
-                  <span className="text-sm text-[oklch(0.145_0_0)]">
-                    {row.missionsCompleted}
-                  </span>
+                  <span className="text-sm text-[oklch(0.145_0_0)]">{row.missionsCompleted}</span>
                 </td>
                 <td className="px-4 py-4 text-right">
                   <span
@@ -468,8 +450,7 @@ export function MissionEffectivenessTable() {
                 </td>
                 <td className="px-4 py-4 text-right">
                   <span className="text-sm text-[oklch(0.145_0_0)]">
-                    {Math.floor(row.studyTimeMinutes / 60)}h{' '}
-                    {row.studyTimeMinutes % 60}m
+                    {Math.floor(row.studyTimeMinutes / 60)}h {row.studyTimeMinutes % 60}m
                   </span>
                 </td>
                 <td className="px-4 py-4 text-right">
@@ -504,39 +485,29 @@ export function MissionEffectivenessTable() {
           <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Avg Difficulty</p>
           <p className="text-lg font-semibold text-[oklch(0.145_0_0)]">
             {(
-              filteredData.reduce((sum, row) => sum + row.avgDifficulty, 0) /
-              filteredData.length
+              filteredData.reduce((sum, row) => sum + row.avgDifficulty, 0) / filteredData.length
             ).toFixed(1)}
             /5
           </p>
         </div>
         <div>
-          <p className="text-xs text-[oklch(0.556_0_0)] mb-1">
-            Total Mastered
-          </p>
+          <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Total Mastered</p>
           <p className="text-lg font-semibold text-[oklch(0.145_0_0)]">
-            {filteredData.reduce(
-              (sum, row) => sum + row.objectivesMastered,
-              0
-            )}
+            {filteredData.reduce((sum, row) => sum + row.objectivesMastered, 0)}
           </p>
         </div>
         <div>
-          <p className="text-xs text-[oklch(0.556_0_0)] mb-1">
-            Avg Improvement
-          </p>
+          <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Avg Improvement</p>
           <p className="text-lg font-semibold text-[oklch(0.75_0.15_160)]">
             +
             {(
-              filteredData.reduce(
-                (sum, row) => sum + row.improvementPercentage,
-                0
-              ) / filteredData.length
+              filteredData.reduce((sum, row) => sum + row.improvementPercentage, 0) /
+              filteredData.length
             ).toFixed(1)}
             %
           </p>
         </div>
       </div>
     </div>
-  );
+  )
 }

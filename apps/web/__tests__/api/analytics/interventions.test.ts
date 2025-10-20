@@ -45,7 +45,7 @@ describe('GET /api/analytics/interventions', () => {
 
     it('should pass userId query parameter', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/interventions?userId=custom@example.com'
+        'http://localhost:3000/api/analytics/interventions?userId=custom@example.com',
       )
 
       const response = await GET(request)
@@ -56,9 +56,7 @@ describe('GET /api/analytics/interventions', () => {
     })
 
     it('should handle empty intervention list', async () => {
-      server.use(
-        createErrorHandler('get', '/interventions', 200, '')
-      )
+      server.use(createErrorHandler('get', '/interventions', 200, ''))
 
       const request = new NextRequest('http://localhost:3000/api/analytics/interventions')
 
@@ -70,9 +68,7 @@ describe('GET /api/analytics/interventions', () => {
 
   describe('Error Cases', () => {
     it('should handle 404 not found', async () => {
-      server.use(
-        createErrorHandler('get', '/interventions', 404, 'No interventions found')
-      )
+      server.use(createErrorHandler('get', '/interventions', 404, 'No interventions found'))
 
       const request = new NextRequest('http://localhost:3000/api/analytics/interventions')
 
@@ -84,9 +80,7 @@ describe('GET /api/analytics/interventions', () => {
     })
 
     it('should handle 500 internal server error', async () => {
-      server.use(
-        createErrorHandler('get', '/interventions', 500, 'Failed to fetch interventions')
-      )
+      server.use(createErrorHandler('get', '/interventions', 500, 'Failed to fetch interventions'))
 
       const request = new NextRequest('http://localhost:3000/api/analytics/interventions')
 
@@ -128,7 +122,7 @@ describe('GET /api/analytics/interventions', () => {
   describe('Edge Cases', () => {
     it('should handle special characters in userId', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/interventions?userId=test%2Buser%40example.com'
+        'http://localhost:3000/api/analytics/interventions?userId=test%2Buser%40example.com',
       )
 
       const response = await GET(request)
@@ -138,7 +132,7 @@ describe('GET /api/analytics/interventions', () => {
 
     it('should handle concurrent requests', async () => {
       const requests = Array.from({ length: 3 }, () =>
-        GET(new NextRequest('http://localhost:3000/api/analytics/interventions'))
+        GET(new NextRequest('http://localhost:3000/api/analytics/interventions')),
       )
 
       const responses = await Promise.all(requests)

@@ -2,9 +2,9 @@
 // Seed database with Dumpling demo user (placeholder data for development)
 // Delete Dumpling via Settings → Delete Demo User when ready for real data
 
-import { PrismaClient } from '../src/generated/prisma';
+import { PrismaClient } from '../src/generated/prisma'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function main() {
   // Create Kevy (real user - you)
@@ -15,9 +15,9 @@ async function main() {
       email: 'kevy@americano.dev',
       name: 'Kevy',
     },
-  });
+  })
 
-  console.log('✓ Kevy user created:', kevy);
+  console.log('✓ Kevy user created:', kevy)
 
   // Create Dumpling demo user (all placeholder content belongs to this user)
   const demoUser = await prisma.user.upsert({
@@ -27,9 +27,9 @@ async function main() {
       email: 'dumpling@americano.demo',
       name: 'Dumpling',
     },
-  });
+  })
 
-  console.log('✓ Dumpling demo user created:', demoUser);
+  console.log('✓ Dumpling demo user created:', demoUser)
 
   // Create sample courses for Dumpling (realistic PNWU-COM OMS 1 curriculum)
   const anatomyCourse = await prisma.course.upsert({
@@ -42,7 +42,7 @@ async function main() {
       code: 'OMS1-ANAT',
       term: 'OMS 1 (Year-long)',
     },
-  });
+  })
 
   const scifomCourse = await prisma.course.upsert({
     where: { id: 'demo-scifom' },
@@ -54,7 +54,7 @@ async function main() {
       code: 'OMS1-SCIFOM',
       term: 'OMS 1 (Weeks 1-12)',
     },
-  });
+  })
 
   const pharmacologyCourse = await prisma.course.upsert({
     where: { id: 'demo-pharmacology' },
@@ -66,7 +66,7 @@ async function main() {
       code: 'OMS1-PHARM',
       term: 'OMS 1 (Weeks 3-12)',
     },
-  });
+  })
 
   const oppCourse = await prisma.course.upsert({
     where: { id: 'demo-opp' },
@@ -78,7 +78,7 @@ async function main() {
       code: 'OMS1-OPP',
       term: 'OMS 1 (Year-long)',
     },
-  });
+  })
 
   const clinicalSkillsCourse = await prisma.course.upsert({
     where: { id: 'demo-clinical-skills' },
@@ -90,7 +90,7 @@ async function main() {
       code: 'OMS1-CLIN',
       term: 'OMS 1 (Year-long)',
     },
-  });
+  })
 
   const communityDoctoringCourse = await prisma.course.upsert({
     where: { id: 'demo-community-doctoring' },
@@ -102,7 +102,7 @@ async function main() {
       code: 'OMS1-COMM',
       term: 'OMS 1 (Year-long)',
     },
-  });
+  })
 
   console.log('✓ Demo courses created (PNWU-COM OMS 1 curriculum):', {
     anatomy: anatomyCourse.name,
@@ -111,7 +111,7 @@ async function main() {
     opp: oppCourse.name,
     clinicalSkills: clinicalSkillsCourse.name,
     communityDoctoring: communityDoctoringCourse.name,
-  });
+  })
 
   // Story 5.6: Seed Learning Science Articles
   const articles = [
@@ -184,7 +184,13 @@ Your personalized review schedule should align with your decay constant (k = {{K
         'Karpicke, J. D., & Roediger, H. L. (2008). The critical importance of retrieval for learning. Science, 319(5865), 966-968.',
       ],
       estimatedReadTime: 8,
-      personalizedDataFields: ['PERSONALIZED_FORGETTING_CURVE', 'R0_VALUE', 'K_VALUE', 'HALF_LIFE_DAYS', 'RETENTION_COMPARISON'],
+      personalizedDataFields: [
+        'PERSONALIZED_FORGETTING_CURVE',
+        'R0_VALUE',
+        'K_VALUE',
+        'HALF_LIFE_DAYS',
+        'RETENTION_COMPARISON',
+      ],
     },
     {
       slug: 'active-recall-benefits',
@@ -267,7 +273,12 @@ Mix different topics during practice to force discrimination between concepts (h
         'Bjork, E. L., & Bjork, R. A. (2011). Making things hard on yourself, but in a good way. Psychology and the Real World, 2, 59-68.',
       ],
       estimatedReadTime: 7,
-      personalizedDataFields: ['ACTIVE_RECALL_STATS', 'RETRIEVAL_SUCCESS_RATE', 'MASTERED_CARDS_COUNT', 'AVG_RECALL_TIME'],
+      personalizedDataFields: [
+        'ACTIVE_RECALL_STATS',
+        'RETRIEVAL_SUCCESS_RATE',
+        'MASTERED_CARDS_COUNT',
+        'AVG_RECALL_TIME',
+      ],
     },
     {
       slug: 'vark-learning-styles',
@@ -370,7 +381,14 @@ Research overwhelmingly shows that **combining modalities** produces the best le
         'Paivio, A. (1990). Mental Representations: A Dual Coding Approach. Oxford University Press.',
       ],
       estimatedReadTime: 9,
-      personalizedDataFields: ['VARK_PROFILE_CHART', 'VISUAL_PERCENTAGE', 'AUDITORY_PERCENTAGE', 'READING_PERCENTAGE', 'KINESTHETIC_PERCENTAGE', 'DOMINANT_STYLE'],
+      personalizedDataFields: [
+        'VARK_PROFILE_CHART',
+        'VISUAL_PERCENTAGE',
+        'AUDITORY_PERCENTAGE',
+        'READING_PERCENTAGE',
+        'KINESTHETIC_PERCENTAGE',
+        'DOMINANT_STYLE',
+      ],
     },
     {
       slug: 'cognitive-load-theory',
@@ -473,7 +491,13 @@ Watch for these warning signs in your study sessions:
         'Mayer, R. E., & Moreno, R. (2003). Nine ways to reduce cognitive load in multimedia learning. Educational Psychologist, 38(1), 43-52.',
       ],
       estimatedReadTime: 10,
-      personalizedDataFields: ['COGNITIVE_LOAD_ANALYSIS', 'AVG_SESSION_DURATION', 'ATTENTION_DROP_TIME', 'OPTIMAL_SESSION_LENGTH', 'OVERLOAD_COUNT'],
+      personalizedDataFields: [
+        'COGNITIVE_LOAD_ANALYSIS',
+        'AVG_SESSION_DURATION',
+        'ATTENTION_DROP_TIME',
+        'OPTIMAL_SESSION_LENGTH',
+        'OVERLOAD_COUNT',
+      ],
     },
     {
       slug: 'circadian-rhythms-optimal-timing',
@@ -594,32 +618,41 @@ Students who sleep 7-9 hours show **30% better retention** than those sleeping <
         'Adan, A., et al. (2012). Circadian typology: A comprehensive review. Chronobiology International, 29(9), 1153-1175.',
       ],
       estimatedReadTime: 11,
-      personalizedDataFields: ['CIRCADIAN_HEATMAP', 'PEAK_HOURS', 'PEAK_PERFORMANCE_SCORE', 'OFFPEAK_PERFORMANCE_SCORE', 'PERFORMANCE_DELTA', 'CHRONOTYPE', 'TROUGH_HOURS', 'SLEEP_CORRELATION'],
+      personalizedDataFields: [
+        'CIRCADIAN_HEATMAP',
+        'PEAK_HOURS',
+        'PEAK_PERFORMANCE_SCORE',
+        'OFFPEAK_PERFORMANCE_SCORE',
+        'PERFORMANCE_DELTA',
+        'CHRONOTYPE',
+        'TROUGH_HOURS',
+        'SLEEP_CORRELATION',
+      ],
     },
-  ];
+  ]
 
   for (const article of articles) {
     const created = await prisma.learningArticle.upsert({
       where: { slug: article.slug },
       update: article,
       create: article,
-    });
-    console.log(`✓ Learning article created: ${created.title}`);
+    })
+    console.log(`✓ Learning article created: ${created.title}`)
   }
 
-  console.log('\n✅ Database seeded successfully!');
-  console.log('   - Kevy: Your real user (clean, no demo data)');
-  console.log('   - Dumpling: Demo user with sample courses');
-  console.log('   - 5 Learning Science Articles seeded');
-  console.log('   🥟 Delete Dumpling via Settings → Delete Demo User when ready');
+  console.log('\n✅ Database seeded successfully!')
+  console.log('   - Kevy: Your real user (clean, no demo data)')
+  console.log('   - Dumpling: Demo user with sample courses')
+  console.log('   - 5 Learning Science Articles seeded')
+  console.log('   🥟 Delete Dumpling via Settings → Delete Demo User when ready')
 }
 
 main()
   .then(async () => {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   })
   .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+    console.error(e)
+    await prisma.$disconnect()
+    process.exit(1)
+  })

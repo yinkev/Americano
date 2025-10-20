@@ -6,23 +6,23 @@
  * Displays success message with updated accuracy percentage
  */
 
-'use client';
+'use client'
 
-import { useEffect, useRef } from 'react';
-import { TrendingUp, CheckCircle2, Sparkles } from 'lucide-react';
-import { toast } from 'sonner';
+import { useEffect, useRef } from 'react'
+import { TrendingUp, CheckCircle2, Sparkles } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface ModelImprovement {
-  previousAccuracy: number;
-  currentAccuracy: number;
-  improvementPercent: number;
-  feedbackCount: number;
-  timestamp: Date;
+  previousAccuracy: number
+  currentAccuracy: number
+  improvementPercent: number
+  feedbackCount: number
+  timestamp: Date
 }
 
 interface Props {
-  improvement: ModelImprovement | null;
-  onShown?: () => void;
+  improvement: ModelImprovement | null
+  onShown?: () => void
 }
 
 /**
@@ -30,21 +30,21 @@ interface Props {
  * Uses sonner toast library for consistent toast styling
  */
 export function ModelImprovementNotification({ improvement, onShown }: Props) {
-  const shownRef = useRef(false);
+  const shownRef = useRef(false)
 
   useEffect(() => {
     // Only show once per improvement
-    if (!improvement || shownRef.current) return;
+    if (!improvement || shownRef.current) return
 
-    const { currentAccuracy, improvementPercent, previousAccuracy } = improvement;
+    const { currentAccuracy, improvementPercent, previousAccuracy } = improvement
 
     // Only show if there's a meaningful improvement (>1%)
-    if (improvementPercent < 0.01) return;
+    if (improvementPercent < 0.01) return
 
     // Calculate percentage values
-    const currentPercent = Math.round(currentAccuracy * 100);
-    const previousPercent = Math.round(previousAccuracy * 100);
-    const improvementPoints = currentPercent - previousPercent;
+    const currentPercent = Math.round(currentAccuracy * 100)
+    const previousPercent = Math.round(previousAccuracy * 100)
+    const improvementPoints = currentPercent - previousPercent
 
     // Show success toast
     toast.success(
@@ -72,18 +72,18 @@ export function ModelImprovementNotification({ improvement, onShown }: Props) {
         duration: 5000,
         icon: <CheckCircle2 className="size-5 text-[oklch(0.7_0.12_145)]" />,
         className: 'bg-white/95 backdrop-blur-md border-[oklch(0.7_0.12_145)]/20',
-      }
-    );
+      },
+    )
 
-    shownRef.current = true;
+    shownRef.current = true
 
     if (onShown) {
-      onShown();
+      onShown()
     }
-  }, [improvement, onShown]);
+  }, [improvement, onShown])
 
   // This component doesn't render anything directly - it uses sonner toasts
-  return null;
+  return null
 }
 
 /**
@@ -91,14 +91,14 @@ export function ModelImprovementNotification({ improvement, onShown }: Props) {
  * Use this when you don't need the component lifecycle
  */
 export function showModelImprovementToast(improvement: ModelImprovement) {
-  const { currentAccuracy, improvementPercent, previousAccuracy } = improvement;
+  const { currentAccuracy, improvementPercent, previousAccuracy } = improvement
 
   // Only show if there's a meaningful improvement (>1%)
-  if (improvementPercent < 0.01) return;
+  if (improvementPercent < 0.01) return
 
-  const currentPercent = Math.round(currentAccuracy * 100);
-  const previousPercent = Math.round(previousAccuracy * 100);
-  const improvementPoints = currentPercent - previousPercent;
+  const currentPercent = Math.round(currentAccuracy * 100)
+  const previousPercent = Math.round(previousAccuracy * 100)
+  const improvementPoints = currentPercent - previousPercent
 
   toast.success(
     <div className="flex items-start gap-3">
@@ -109,7 +109,9 @@ export function showModelImprovementToast(improvement: ModelImprovement) {
         <p className="font-semibold text-foreground">Prediction accuracy improved!</p>
         <p className="text-sm text-muted-foreground mt-1">
           Thanks to your feedback, our predictions are now{' '}
-          <span className="font-semibold text-[oklch(0.7_0.12_145)]">{currentPercent}% accurate</span>
+          <span className="font-semibold text-[oklch(0.7_0.12_145)]">
+            {currentPercent}% accurate
+          </span>
           {improvementPoints > 0 && (
             <span className="text-muted-foreground">
               {' '}
@@ -134,19 +136,19 @@ export function showModelImprovementToast(improvement: ModelImprovement) {
       duration: 6000,
       icon: <Sparkles className="size-5 text-[oklch(0.7_0.12_145)]" />,
       className: 'bg-white/95 backdrop-blur-md border-[oklch(0.7_0.12_145)]/20',
-    }
-  );
+    },
+  )
 }
 
 /**
  * Simplified version for quick success messages
  */
 export function showAccuracyUpdateToast(accuracy: number) {
-  const accuracyPercent = Math.round(accuracy * 100);
+  const accuracyPercent = Math.round(accuracy * 100)
 
   toast.success(`Prediction accuracy: ${accuracyPercent}%`, {
     description: 'Thanks for your feedback!',
     duration: 4000,
     icon: <CheckCircle2 className="size-5 text-[oklch(0.7_0.12_145)]" />,
-  });
+  })
 }

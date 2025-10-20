@@ -1,36 +1,36 @@
 // GET /api/personalization/config
 // Returns active PersonalizationConfig for user
 
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse } from '@/lib/api-response';
-import { ApiError, withErrorHandler } from '@/lib/api-error';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { successResponse } from '@/lib/api-response'
+import { ApiError, withErrorHandler } from '@/lib/api-error'
 
 interface PersonalizationConfigData {
   missionPersonalization: {
-    enabled: boolean;
-    strategy: string;
-    parameters: Record<string, any>;
-    confidence: number;
-  };
+    enabled: boolean
+    strategy: string
+    parameters: Record<string, any>
+    confidence: number
+  }
   contentPersonalization: {
-    enabled: boolean;
-    strategy: string;
-    parameters: Record<string, any>;
-    confidence: number;
-  };
+    enabled: boolean
+    strategy: string
+    parameters: Record<string, any>
+    confidence: number
+  }
   assessmentPersonalization: {
-    enabled: boolean;
-    strategy: string;
-    parameters: Record<string, any>;
-    confidence: number;
-  };
+    enabled: boolean
+    strategy: string
+    parameters: Record<string, any>
+    confidence: number
+  }
   sessionPersonalization: {
-    enabled: boolean;
-    strategy: string;
-    parameters: Record<string, any>;
-    confidence: number;
-  };
+    enabled: boolean
+    strategy: string
+    parameters: Record<string, any>
+    confidence: number
+  }
 }
 
 /**
@@ -44,18 +44,16 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const user = await prisma.user.findFirst({
     where: { email: 'kevy@americano.dev' },
     select: { id: true },
-  });
+  })
 
   if (!user) {
-    throw ApiError.notFound(
-      'User not found. Run: npx prisma db seed to create default user'
-    );
+    throw ApiError.notFound('User not found. Run: npx prisma db seed to create default user')
   }
 
   // Get user learning profile for confidence scoring
   const learningProfile = await prisma.userLearningProfile.findUnique({
     where: { userId: user.id },
-  });
+  })
 
   // Default configuration (graceful degradation if no profile exists)
   const defaultConfig: PersonalizationConfigData = {
@@ -83,16 +81,17 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       parameters: {},
       confidence: 0.0,
     },
-  };
+  }
 
   if (!learningProfile || learningProfile.dataQualityScore < 0.6) {
     // Insufficient data - return default config
     return Response.json(
       successResponse({
         config: defaultConfig,
-        message: 'Insufficient data for personalization. Complete 6+ weeks of study for personalized recommendations.',
-      })
-    );
+        message:
+          'Insufficient data for personalization. Complete 6+ weeks of study for personalized recommendations.',
+      }),
+    )
   }
 
   // Build personalization config from learning profile
@@ -128,17 +127,17 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       strategy: 'attention-cycle-based',
       parameters: {
         sessionDuration: learningProfile.optimalSessionDuration,
-        avgCognitiveLoad: learningProfile.avgCognitiveLoad,
+        learningStyleProfile: learningProfile.learningStyleProfile,
       },
       confidence: learningProfile.dataQualityScore,
     },
-  };
+  }
 
   return Response.json(
     successResponse({
       config,
       dataQualityScore: learningProfile.dataQualityScore,
       lastAnalyzedAt: learningProfile.lastAnalyzedAt,
-    })
-  );
-});
+    }),
+  )
+})

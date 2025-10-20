@@ -179,7 +179,8 @@ export class StudyTimeAnalyzer {
       const expectedReviewsPerHour = 30 // Baseline expectation
       const sessionHours = (session.durationMs || 0) / (1000 * 60 * 60)
       const expectedReviews = sessionHours * expectedReviewsPerHour
-      const engagementScore = expectedReviews > 0 ? Math.min(100, (session.reviewsCompleted / expectedReviews) * 100) : 0
+      const engagementScore =
+        expectedReviews > 0 ? Math.min(100, (session.reviewsCompleted / expectedReviews) * 100) : 0
       bucket.engagementScores.push(engagementScore)
     }
 
@@ -226,9 +227,7 @@ export class StudyTimeAnalyzer {
     }
 
     // Sort by timeOfDayScore DESC and return top 3
-    return patterns
-      .sort((a, b) => b.timeOfDayScore - a.timeOfDayScore)
-      .slice(0, 3)
+    return patterns.sort((a, b) => b.timeOfDayScore - a.timeOfDayScore).slice(0, 3)
   }
 
   /**
@@ -333,7 +332,15 @@ export class StudyTimeAnalyzer {
             // End of high-performance window
             if (windowStart !== null && hour - windowStart >= 2) {
               // Multi-hour window (at least 2 hours)
-              peaks.push(this.createPeakPattern(dayOfWeek, windowStart, hour - 1, windowScores, windowSessionCount))
+              peaks.push(
+                this.createPeakPattern(
+                  dayOfWeek,
+                  windowStart,
+                  hour - 1,
+                  windowScores,
+                  windowSessionCount,
+                ),
+              )
             }
             windowStart = null
             windowScores = []
@@ -342,7 +349,15 @@ export class StudyTimeAnalyzer {
         } else {
           // No data or insufficient data for this hour
           if (windowStart !== null && hour - windowStart >= 2) {
-            peaks.push(this.createPeakPattern(dayOfWeek, windowStart, hour - 1, windowScores, windowSessionCount))
+            peaks.push(
+              this.createPeakPattern(
+                dayOfWeek,
+                windowStart,
+                hour - 1,
+                windowScores,
+                windowSessionCount,
+              ),
+            )
           }
           windowStart = null
           windowScores = []
@@ -352,7 +367,9 @@ export class StudyTimeAnalyzer {
 
       // Check for window extending to end of day
       if (windowStart !== null && 23 - windowStart >= 1) {
-        peaks.push(this.createPeakPattern(dayOfWeek, windowStart, 23, windowScores, windowSessionCount))
+        peaks.push(
+          this.createPeakPattern(dayOfWeek, windowStart, 23, windowScores, windowSessionCount),
+        )
       }
     }
 
@@ -437,7 +454,8 @@ export class StudyTimeAnalyzer {
       // Analyze within-session performance degradation
       // Group reviews into time buckets (10-minute intervals)
       const bucketSize = 10 * 60 * 1000 // 10 minutes in ms
-      const buckets: Map<number, { reviews: typeof session.reviews; avgAccuracy: number }> = new Map()
+      const buckets: Map<number, { reviews: typeof session.reviews; avgAccuracy: number }> =
+        new Map()
 
       for (const review of session.reviews) {
         const timeSinceStart = review.reviewedAt.getTime() - session.startedAt.getTime()
@@ -455,7 +473,9 @@ export class StudyTimeAnalyzer {
       let fatigueDetected = false
       let fatigueTimeMinutes = sessionDurationMinutes
 
-      for (const [bucketIndex, bucket] of Array.from(buckets.entries()).sort((a, b) => a[0] - b[0])) {
+      for (const [bucketIndex, bucket] of Array.from(buckets.entries()).sort(
+        (a, b) => a[0] - b[0],
+      )) {
         const correctReviews = bucket.reviews.filter(
           (r) => r.rating === 'GOOD' || r.rating === 'EASY',
         ).length
@@ -528,8 +548,7 @@ export class StudyTimeAnalyzer {
     const avgScore = scores.reduce((sum, s) => sum + s, 0) / scores.length
 
     // Calculate consistency (1.0 - normalized standard deviation)
-    const variance =
-      scores.reduce((sum, s) => sum + Math.pow(s - avgScore, 2), 0) / scores.length
+    const variance = scores.reduce((sum, s) => sum + Math.pow(s - avgScore, 2), 0) / scores.length
     const stdDev = Math.sqrt(variance)
     const consistency = Math.max(0, 1.0 - stdDev / 100)
 

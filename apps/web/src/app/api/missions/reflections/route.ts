@@ -88,10 +88,12 @@ async function handlePOST(request: NextRequest) {
     },
   })
 
-  return Response.json(successResponse({
-    reflectionId: event.id,
-    message: 'Reflection saved successfully',
-  }))
+  return Response.json(
+    successResponse({
+      reflectionId: event.id,
+      message: 'Reflection saved successfully',
+    }),
+  )
 }
 
 export const GET = withErrorHandler(handleGET)

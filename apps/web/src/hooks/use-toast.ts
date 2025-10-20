@@ -3,14 +3,14 @@
  * Simple toast notification hook for user feedback
  */
 
-'use client';
+'use client'
 
-import { toast as sonnerToast } from 'sonner';
+import { toast as sonnerToast } from 'sonner'
 
 interface ToastProps {
-  title: string;
-  description?: string;
-  variant?: 'default' | 'destructive';
+  title: string
+  description?: string
+  variant?: 'default' | 'destructive'
 }
 
 export function useToast() {
@@ -18,13 +18,13 @@ export function useToast() {
     if (variant === 'destructive') {
       sonnerToast.error(title, {
         description,
-      });
+      })
     } else {
       sonnerToast.success(title, {
         description,
-      });
+      })
     }
-  };
+  }
 
-  return { toast };
+  return { toast }
 }

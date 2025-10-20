@@ -16,16 +16,15 @@ export default function NotFound() {
 
           {/* 404 Content */}
           <div className="text-center space-y-4">
-            <h1 className="text-6xl font-heading font-bold text-[oklch(0.145_0_0)]">
-              404
-            </h1>
+            <h1 className="text-6xl font-heading font-bold text-[oklch(0.145_0_0)]">404</h1>
 
             <h2 className="text-2xl font-heading font-semibold text-[oklch(0.145_0_0)]">
               Page Not Found
             </h2>
 
             <p className="text-base text-[oklch(0.556_0_0)] leading-relaxed">
-              The page you're looking for doesn't exist or has been moved. Let's get you back on track.
+              The page you're looking for doesn't exist or has been moved. Let's get you back on
+              track.
             </p>
 
             {/* Back to Dashboard Button with min 44px touch target */}
@@ -45,9 +44,7 @@ export default function NotFound() {
 
             {/* Helpful Links */}
             <div className="mt-8 pt-6 border-t border-[oklch(0.922_0_0)]">
-              <p className="text-sm text-[oklch(0.556_0_0)] mb-3">
-                You might be looking for:
-              </p>
+              <p className="text-sm text-[oklch(0.556_0_0)] mb-3">You might be looking for:</p>
               <div className="flex flex-col gap-2">
                 <Link
                   href="/library"

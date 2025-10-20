@@ -5,17 +5,17 @@
  * Self-assessment dialog for confidence tracking
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { X } from 'lucide-react';
+import { useState } from 'react'
+import { X } from 'lucide-react'
 
 interface Props {
-  objectiveId: string;
-  objectiveText: string;
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit?: (confidenceLevel: number, notes?: string) => void;
+  objectiveId: string
+  objectiveText: string
+  isOpen: boolean
+  onClose: () => void
+  onSubmit?: (confidenceLevel: number, notes?: string) => void
 }
 
 export function ConfidenceRatingDialog({
@@ -25,17 +25,17 @@ export function ConfidenceRatingDialog({
   onClose,
   onSubmit,
 }: Props) {
-  const [selectedConfidence, setSelectedConfidence] = useState<number | null>(null);
-  const [notes, setNotes] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [selectedConfidence, setSelectedConfidence] = useState<number | null>(null)
+  const [notes, setNotes] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   async function handleSubmit() {
-    if (selectedConfidence === null) return;
+    if (selectedConfidence === null) return
 
     try {
-      setSubmitting(true);
+      setSubmitting(true)
 
       const response = await fetch('/api/performance/self-assessment', {
         method: 'POST',
@@ -45,23 +45,23 @@ export function ConfidenceRatingDialog({
           confidenceLevel: selectedConfidence,
           notes: notes.trim() || undefined,
         }),
-      });
+      })
 
-      if (!response.ok) throw new Error('Failed to submit assessment');
+      if (!response.ok) throw new Error('Failed to submit assessment')
 
       if (onSubmit) {
-        onSubmit(selectedConfidence, notes.trim() || undefined);
+        onSubmit(selectedConfidence, notes.trim() || undefined)
       }
 
       // Reset and close
-      setSelectedConfidence(null);
-      setNotes('');
-      onClose();
+      setSelectedConfidence(null)
+      setNotes('')
+      onClose()
     } catch (error) {
-      console.error('Error submitting confidence rating:', error);
-      alert('Failed to submit confidence rating. Please try again.');
+      console.error('Error submitting confidence rating:', error)
+      alert('Failed to submit confidence rating. Please try again.')
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
   }
 
@@ -71,15 +71,12 @@ export function ConfidenceRatingDialog({
     { value: 3, label: 'Moderately Confident', emoji: '😐', description: 'Getting there' },
     { value: 4, label: 'Confident', emoji: '😊', description: 'Feel good about this' },
     { value: 5, label: 'Very Confident', emoji: '😄', description: 'Mastered this!' },
-  ];
+  ]
 
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={onClose} />
 
       {/* Dialog */}
       <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
@@ -126,9 +123,7 @@ export function ConfidenceRatingDialog({
                     <div className="font-medium">{level.label}</div>
                     <div
                       className={`text-xs ${
-                        selectedConfidence === level.value
-                          ? 'text-white/80'
-                          : 'text-gray-500'
+                        selectedConfidence === level.value ? 'text-white/80' : 'text-gray-500'
                       }`}
                     >
                       {level.description}
@@ -136,9 +131,7 @@ export function ConfidenceRatingDialog({
                   </div>
                   <div
                     className={`text-lg font-bold ${
-                      selectedConfidence === level.value
-                        ? 'text-white'
-                        : 'text-gray-400'
+                      selectedConfidence === level.value ? 'text-white' : 'text-gray-400'
                     }`}
                   >
                     {level.value}/5
@@ -150,9 +143,7 @@ export function ConfidenceRatingDialog({
 
           {/* Optional Notes */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Notes (Optional)
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -181,5 +172,5 @@ export function ConfidenceRatingDialog({
         </div>
       </div>
     </>
-  );
+  )
 }

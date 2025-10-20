@@ -1,15 +1,15 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import { useEffect, useState } from 'react'
+import { Loader2 } from 'lucide-react'
+import { Progress } from '@/components/ui/progress'
 
 interface ProcessingProgressProps {
-  lectureId: string;
-  initialProgress: number;
-  totalPages?: number;
-  processedPages: number;
-  processingStartedAt?: string;
+  lectureId: string
+  initialProgress: number
+  totalPages?: number
+  processedPages: number
+  processingStartedAt?: string
 }
 
 export function ProcessingProgress({
@@ -19,39 +19,35 @@ export function ProcessingProgress({
   processedPages,
   processingStartedAt,
 }: ProcessingProgressProps) {
-  const [progress, setProgress] = useState(initialProgress);
-  const [eta, setEta] = useState<string | null>(null);
+  const [progress, setProgress] = useState(initialProgress)
+  const [eta, setEta] = useState<string | null>(null)
 
   useEffect(() => {
     // Poll for progress updates every 2 seconds
     const interval = setInterval(async () => {
       try {
-        const response = await fetch(`/api/content/lectures/${lectureId}`);
-        const data = await response.json();
+        const response = await fetch(`/api/content/lectures/${lectureId}`)
+        const data = await response.json()
 
         if (data.success && data.lecture) {
-          const newProgress = data.lecture.processingProgress;
-          setProgress(newProgress);
+          const newProgress = data.lecture.processingProgress
+          setProgress(newProgress)
 
           // Calculate ETA
-          if (
-            data.lecture.processingStartedAt &&
-            newProgress > 0 &&
-            newProgress < 100
-          ) {
-            const startTime = new Date(data.lecture.processingStartedAt).getTime();
-            const currentTime = Date.now();
-            const elapsedMs = currentTime - startTime;
-            const progressRate = newProgress / elapsedMs; // progress per ms
-            const remainingProgress = 100 - newProgress;
-            const estimatedRemainingMs = remainingProgress / progressRate;
+          if (data.lecture.processingStartedAt && newProgress > 0 && newProgress < 100) {
+            const startTime = new Date(data.lecture.processingStartedAt).getTime()
+            const currentTime = Date.now()
+            const elapsedMs = currentTime - startTime
+            const progressRate = newProgress / elapsedMs // progress per ms
+            const remainingProgress = 100 - newProgress
+            const estimatedRemainingMs = remainingProgress / progressRate
 
             if (estimatedRemainingMs < 60000) {
               // Less than a minute
-              setEta(`${Math.ceil(estimatedRemainingMs / 1000)}s`);
+              setEta(`${Math.ceil(estimatedRemainingMs / 1000)}s`)
             } else {
               // Minutes
-              setEta(`${Math.ceil(estimatedRemainingMs / 60000)}m`);
+              setEta(`${Math.ceil(estimatedRemainingMs / 60000)}m`)
             }
           }
 
@@ -60,25 +56,25 @@ export function ProcessingProgress({
             data.lecture.processingStatus === 'COMPLETED' ||
             data.lecture.processingStatus === 'FAILED'
           ) {
-            clearInterval(interval);
+            clearInterval(interval)
           }
         }
       } catch (error) {
-        console.error('Failed to fetch progress:', error);
+        console.error('Failed to fetch progress:', error)
       }
-    }, 2000);
+    }, 2000)
 
-    return () => clearInterval(interval);
-  }, [lectureId]);
+    return () => clearInterval(interval)
+  }, [lectureId])
 
   const getProgressLabel = () => {
-    if (progress === 0) return 'Starting...';
-    if (progress < 60) return 'Extracting text from PDF';
-    if (progress < 70) return 'Creating content chunks';
-    if (progress < 80) return 'Extracting learning objectives';
-    if (progress < 100) return 'Generating embeddings';
-    return 'Complete';
-  };
+    if (progress === 0) return 'Starting...'
+    if (progress < 60) return 'Extracting text from PDF'
+    if (progress < 70) return 'Creating content chunks'
+    if (progress < 80) return 'Extracting learning objectives'
+    if (progress < 100) return 'Generating embeddings'
+    return 'Complete'
+  }
 
   return (
     <div className="space-y-2 min-w-[200px]">
@@ -89,11 +85,7 @@ export function ProcessingProgress({
             <span className="text-muted-foreground">{getProgressLabel()}</span>
             <div className="flex items-center gap-2">
               <span className="font-medium">{progress}%</span>
-              {eta && (
-                <span className="text-xs text-muted-foreground">
-                  ~{eta} left
-                </span>
-              )}
+              {eta && <span className="text-xs text-muted-foreground">~{eta} left</span>}
             </div>
           </div>
           <Progress value={progress} className="h-2 mt-1" />
@@ -105,5 +97,5 @@ export function ProcessingProgress({
         </div>
       </div>
     </div>
-  );
+  )
 }

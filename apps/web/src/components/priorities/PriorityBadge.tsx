@@ -70,15 +70,13 @@ export function PriorityBadge({ score, showScore = false, className }: PriorityB
         config.color,
         'transition-all duration-200 ease-in-out',
         'hover:scale-105',
-        className
+        className,
       )}
       title={`Priority Score: ${(score * 100).toFixed(0)}%`}
     >
       {config.label}
       {showScore && (
-        <span className="ml-1.5 text-xs opacity-75">
-          ({(score * 100).toFixed(0)}%)
-        </span>
+        <span className="ml-1.5 text-xs opacity-75">({(score * 100).toFixed(0)}%)</span>
       )}
     </Badge>
   )
@@ -99,12 +97,7 @@ export function PriorityDot({ score, className }: { score: number; className?: s
 
   return (
     <div
-      className={cn(
-        'w-2 h-2 rounded-full',
-        dotColors[config.level],
-        'shadow-sm',
-        className
-      )}
+      className={cn('w-2 h-2 rounded-full', dotColors[config.level], 'shadow-sm', className)}
       title={`${config.label} - ${(score * 100).toFixed(0)}%`}
     />
   )

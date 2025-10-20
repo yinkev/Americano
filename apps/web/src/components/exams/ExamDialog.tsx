@@ -39,21 +39,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { TagInput } from '@/components/ui/tag-input'
 import { createExamSchema, type CreateExamInput } from '@/lib/validation/exam'
 
 // Dynamically import Calendar to avoid SSR issues with DOMMatrix
-const Calendar = dynamic(
-  () => import('@/components/ui/calendar').then((mod) => mod.Calendar),
-  { ssr: false }
-)
+const Calendar = dynamic(() => import('@/components/ui/calendar').then((mod) => mod.Calendar), {
+  ssr: false,
+})
 
 interface Course {
   id: string
@@ -157,7 +152,7 @@ export function ExamDialog({
           'sm:max-w-[525px]',
           'bg-white/95 backdrop-blur-xl border-white/30',
           'shadow-[0_8px_32px_rgba(31,38,135,0.15)]',
-          'rounded-2xl'
+          'rounded-2xl',
         )}
       >
         <DialogHeader>
@@ -172,19 +167,14 @@ export function ExamDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-6 mt-4"
-          >
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 mt-4">
             {/* Exam Name */}
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    Exam Name
-                  </FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">Exam Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -192,7 +182,7 @@ export function ExamDialog({
                       className={cn(
                         'bg-white/60 backdrop-blur-sm',
                         'border-gray-200 focus:border-blue-400',
-                        'rounded-lg transition-all duration-200'
+                        'rounded-lg transition-all duration-200',
                       )}
                     />
                   </FormControl>
@@ -210,9 +200,7 @@ export function ExamDialog({
               name="courseId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    Course
-                  </FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">Course</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -223,7 +211,7 @@ export function ExamDialog({
                         className={cn(
                           'bg-white/60 backdrop-blur-sm',
                           'border-gray-200 focus:border-blue-400',
-                          'rounded-lg transition-all duration-200'
+                          'rounded-lg transition-all duration-200',
                         )}
                       >
                         <SelectValue placeholder="Select a course" />
@@ -232,7 +220,7 @@ export function ExamDialog({
                     <SelectContent
                       className={cn(
                         'bg-white/95 backdrop-blur-xl border-white/30',
-                        'rounded-xl shadow-lg'
+                        'rounded-xl shadow-lg',
                       )}
                     >
                       {courses.map((course) => (
@@ -260,9 +248,7 @@ export function ExamDialog({
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    Exam Date
-                  </FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">Exam Date</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -273,15 +259,11 @@ export function ExamDialog({
                             'bg-white/60 backdrop-blur-sm',
                             'border-gray-200 hover:border-blue-400',
                             'rounded-lg transition-all duration-200',
-                            !field.value && 'text-muted-foreground'
+                            !field.value && 'text-muted-foreground',
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-                          {field.value ? (
-                            format(field.value, 'PPP')
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
+                          {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -289,7 +271,7 @@ export function ExamDialog({
                       className={cn(
                         'w-auto p-0',
                         'bg-white/95 backdrop-blur-xl border-white/30',
-                        'rounded-xl shadow-lg'
+                        'rounded-xl shadow-lg',
                       )}
                       align="start"
                     >
@@ -326,15 +308,11 @@ export function ExamDialog({
                       onChange={field.onChange}
                       placeholder="Type topic and press Enter..."
                       maxTags={20}
-                      className={cn(
-                        'bg-white/60 backdrop-blur-sm',
-                        'transition-all duration-200'
-                      )}
+                      className={cn('bg-white/60 backdrop-blur-sm', 'transition-all duration-200')}
                     />
                   </FormControl>
                   <FormDescription className="text-xs text-gray-500">
-                    Add topics that will be covered in this exam (press Enter to
-                    add)
+                    Add topics that will be covered in this exam (press Enter to add)
                   </FormDescription>
                   <FormMessage className="text-xs" />
                 </FormItem>
@@ -350,7 +328,7 @@ export function ExamDialog({
                 className={cn(
                   'rounded-lg',
                   'border-gray-200 hover:bg-gray-50/80',
-                  'transition-all duration-200'
+                  'transition-all duration-200',
                 )}
               >
                 Cancel
@@ -363,12 +341,10 @@ export function ExamDialog({
                   'bg-blue-500 hover:bg-blue-600',
                   'text-white font-medium',
                   'shadow-sm hover:shadow-md',
-                  'transition-all duration-200'
+                  'transition-all duration-200',
                 )}
               >
-                {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {exam ? 'Update Exam' : 'Create Exam'}
               </Button>
             </DialogFooter>

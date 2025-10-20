@@ -93,8 +93,7 @@ const GOAL_TEMPLATES: Record<BehavioralGoalType, GoalTemplate> = {
   CONTENT_DIVERSIFICATION: {
     type: 'CONTENT_DIVERSIFICATION',
     title: 'Balance content types (VARK)',
-    description:
-      'Diversify learning modalities to strengthen understanding and retention.',
+    description: 'Diversify learning modalities to strengthen understanding and retention.',
     targetMetric: 'varkBalanceScore',
     recommendedTargetValue: 0.7, // 0.0-1.0 balance score
     recommendedDeadlineDays: 45,
@@ -103,8 +102,7 @@ const GOAL_TEMPLATES: Record<BehavioralGoalType, GoalTemplate> = {
   RETENTION_IMPROVEMENT: {
     type: 'RETENTION_IMPROVEMENT',
     title: 'Improve retention curve metrics',
-    description:
-      'Increase your retention half-life through optimized review schedules.',
+    description: 'Increase your retention half-life through optimized review schedules.',
     targetMetric: 'retentionHalfLifeDays',
     recommendedTargetValue: 7, // Days
     recommendedDeadlineDays: 60,
@@ -153,10 +151,7 @@ export class GoalManager {
    * @param input - Goal creation parameters
    * @returns Created BehavioralGoal
    */
-  static async createGoal(
-    userId: string,
-    input: GoalCreationInput
-  ): Promise<BehavioralGoal> {
+  static async createGoal(userId: string, input: GoalCreationInput): Promise<BehavioralGoal> {
     const template = GOAL_TEMPLATES[input.goalType]
 
     // Validation
@@ -164,12 +159,10 @@ export class GoalManager {
       throw new Error(`Invalid goal type: ${input.goalType}`)
     }
 
-    const deadlineDays = Math.floor(
-      (input.deadline.getTime() - Date.now()) / (24 * 60 * 60 * 1000)
-    )
+    const deadlineDays = Math.floor((input.deadline.getTime() - Date.now()) / (24 * 60 * 60 * 1000))
     if (deadlineDays > MAX_DEADLINE_DAYS) {
       throw new Error(
-        `Deadline cannot exceed ${MAX_DEADLINE_DAYS} days. Provided: ${deadlineDays} days.`
+        `Deadline cannot exceed ${MAX_DEADLINE_DAYS} days. Provided: ${deadlineDays} days.`,
       )
     }
 
@@ -178,14 +171,11 @@ export class GoalManager {
     }
 
     // Calculate current value for this metric
-    const currentValue = await this.calculateCurrentMetricValue(
-      userId,
-      input.targetMetric
-    )
+    const currentValue = await this.calculateCurrentMetricValue(userId, input.targetMetric)
 
     if (input.targetValue <= currentValue) {
       throw new Error(
-        `Target value (${input.targetValue}) must be greater than current value (${currentValue}).`
+        `Target value (${input.targetValue}) must be greater than current value (${currentValue}).`,
       )
     }
 
@@ -210,7 +200,7 @@ export class GoalManager {
         targetValue: input.targetValue,
         deadline: input.deadline,
         status: 'ACTIVE',
-        progressHistory,
+        progressHistory: progressHistory as any,
       },
     })
 
@@ -231,7 +221,7 @@ export class GoalManager {
   static async updateGoalProgress(
     goalId: string,
     currentValue: number,
-    note?: string
+    note?: string,
   ): Promise<{ goal: BehavioralGoal; completed: boolean }> {
     const goal = await prisma.behavioralGoal.findUnique({
       where: { id: goalId },
@@ -246,7 +236,7 @@ export class GoalManager {
     }
 
     // Update progress history
-    const progressHistory = goal.progressHistory as ProgressCheckpoint[]
+    const progressHistory = (goal.progressHistory as unknown as ProgressCheckpoint[]) || []
     const checkpoint: ProgressCheckpoint = {
       date: new Date().toISOString(),
       value: currentValue,
@@ -285,7 +275,7 @@ export class GoalManager {
       where: { id: goalId },
       data: {
         currentValue,
-        progressHistory,
+        progressHistory: progressHistory as any,
         ...(completed && {
           status: 'COMPLETED',
           completedAt: new Date(),
@@ -303,10 +293,7 @@ export class GoalManager {
    * @param currentValue - Optional current value (if not provided, uses DB value)
    * @returns True if goal completed
    */
-  static async checkGoalCompletion(
-    goalId: string,
-    currentValue?: number
-  ): Promise<boolean> {
+  static async checkGoalCompletion(goalId: string, currentValue?: number): Promise<boolean> {
     const goal = await prisma.behavioralGoal.findUnique({
       where: { id: goalId },
     })
@@ -372,9 +359,7 @@ export class GoalManager {
     const suggestions: GoalSuggestion[] = []
 
     // Suggestion 1: Study time consistency
-    const optimalTimePattern = patterns.find(
-      (p) => p.patternType === 'OPTIMAL_STUDY_TIME'
-    )
+    const optimalTimePattern = patterns.find((p) => p.patternType === 'OPTIMAL_STUDY_TIME')
     if (optimalTimePattern) {
       const template = GOAL_TEMPLATES.STUDY_TIME_CONSISTENCY
       const currentValue = this.calculatePeakHourSessions(activeSessions, profile)
@@ -382,9 +367,7 @@ export class GoalManager {
         template,
         currentValue,
         targetValue: template.recommendedTargetValue,
-        deadline: new Date(
-          Date.now() + template.recommendedDeadlineDays * 24 * 60 * 60 * 1000
-        ),
+        deadline: new Date(Date.now() + template.recommendedDeadlineDays * 24 * 60 * 60 * 1000),
         rationale: `You perform best at specific times. Build consistency by studying during these hours ${template.recommendedTargetValue} days per week.`,
         confidence: optimalTimePattern.confidence,
       }
@@ -392,22 +375,17 @@ export class GoalManager {
     }
 
     // Suggestion 2: Session duration optimization
-    const durationPattern = patterns.find(
-      (p) => p.patternType === 'SESSION_DURATION_PREFERENCE'
-    )
+    const durationPattern = patterns.find((p) => p.patternType === 'SESSION_DURATION_PREFERENCE')
     if (durationPattern && profile?.optimalSessionDuration) {
       const template = GOAL_TEMPLATES.SESSION_DURATION
-      const currentValue =
-        profile.averageSessionDuration || template.recommendedTargetValue
+      const currentValue = profile.averageSessionDuration || template.recommendedTargetValue
       const targetValue = profile.optimalSessionDuration
       if (targetValue > currentValue) {
         const suggestion: GoalSuggestion = {
           template,
           currentValue,
           targetValue,
-          deadline: new Date(
-            Date.now() + template.recommendedDeadlineDays * 24 * 60 * 60 * 1000
-          ),
+          deadline: new Date(Date.now() + template.recommendedDeadlineDays * 24 * 60 * 60 * 1000),
           rationale: `Your optimal session length is ${targetValue} minutes. Gradually increase from ${currentValue} to reduce fatigue.`,
           confidence: durationPattern.confidence,
         }
@@ -419,9 +397,7 @@ export class GoalManager {
     if (profile?.learningStyleProfile) {
       const learningStyle = profile.learningStyleProfile as Record<string, number>
       const maxStyle = Math.max(...Object.values(learningStyle))
-      const balance =
-        1 -
-        (maxStyle - Object.values(learningStyle).reduce((a, b) => a + b, 0) / 4)
+      const balance = 1 - (maxStyle - Object.values(learningStyle).reduce((a, b) => a + b, 0) / 4)
 
       if (balance < 0.7) {
         const template = GOAL_TEMPLATES.CONTENT_DIVERSIFICATION
@@ -429,9 +405,7 @@ export class GoalManager {
           template,
           currentValue: balance,
           targetValue: template.recommendedTargetValue,
-          deadline: new Date(
-            Date.now() + template.recommendedDeadlineDays * 24 * 60 * 60 * 1000
-          ),
+          deadline: new Date(Date.now() + template.recommendedDeadlineDays * 24 * 60 * 60 * 1000),
           rationale: `Your learning style is skewed (${Math.round(maxStyle * 100)}% ${Object.entries(learningStyle).find(([, v]) => v === maxStyle)?.[0]}). Diversify to strengthen retention.`,
           confidence: 0.75,
         }
@@ -460,17 +434,10 @@ export class GoalManager {
 
     for (const goal of goals) {
       try {
-        const currentValue = await this.calculateCurrentMetricValue(
-          goal.userId,
-          goal.targetMetric
-        )
+        const currentValue = await this.calculateCurrentMetricValue(goal.userId, goal.targetMetric)
 
         if (currentValue !== goal.currentValue) {
-          await this.updateGoalProgress(
-            goal.id,
-            currentValue,
-            'Automated daily update'
-          )
+          await this.updateGoalProgress(goal.id, currentValue, 'Automated daily update')
         }
       } catch (error) {
         console.error(`Error tracking goal ${goal.id}:`, error)
@@ -485,7 +452,7 @@ export class GoalManager {
    */
   private static async calculateCurrentMetricValue(
     userId: string,
-    targetMetric: string
+    targetMetric: string,
   ): Promise<number> {
     const profile = await prisma.userLearningProfile.findUnique({
       where: { userId },
@@ -511,10 +478,7 @@ export class GoalManager {
         if (!profile?.learningStyleProfile) return 0
         const styles = profile.learningStyleProfile as Record<string, number>
         const maxStyle = Math.max(...Object.values(styles))
-        return (
-          1 -
-          (maxStyle - Object.values(styles).reduce((a, b) => a + b, 0) / 4)
-        )
+        return 1 - (maxStyle - Object.values(styles).reduce((a, b) => a + b, 0) / 4)
       }
 
       case 'retentionHalfLifeDays': {
@@ -530,15 +494,10 @@ export class GoalManager {
   /**
    * Calculate sessions during peak hours
    */
-  private static calculatePeakHourSessions(
-    sessions: any[],
-    profile: any
-  ): number {
+  private static calculatePeakHourSessions(sessions: any[], profile: any): number {
     if (!profile?.preferredStudyTimes) return 0
 
-    const peakHours = (profile.preferredStudyTimes as any[]).map(
-      (t) => t.startHour
-    )
+    const peakHours = (profile.preferredStudyTimes as any[]).map((t) => t.startHour)
     return sessions.filter((s) => {
       const hour = new Date(s.startedAt).getHours()
       return peakHours.includes(hour)
@@ -556,7 +515,7 @@ export class GoalManager {
       | 'GOAL_PROGRESS_25'
       | 'GOAL_PROGRESS_50'
       | 'GOAL_PROGRESS_75'
-      | 'GOAL_ACHIEVED'
+      | 'GOAL_ACHIEVED',
   ) {
     const goal = await prisma.behavioralGoal.findUnique({
       where: { id: goalId },
@@ -610,10 +569,7 @@ export class GoalManager {
   /**
    * Award achievement badge for goal completion
    */
-  private static async awardGoalBadge(
-    userId: string,
-    goalType: BehavioralGoalType
-  ) {
+  private static async awardGoalBadge(userId: string, goalType: BehavioralGoalType) {
     const completedGoals = await prisma.behavioralGoal.count({
       where: { userId, status: 'COMPLETED', goalType },
     })

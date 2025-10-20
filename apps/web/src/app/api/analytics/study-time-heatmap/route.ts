@@ -129,7 +129,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     const existingWindow = optimalWindows.find(
       (w) =>
         w.day === candidate.day &&
-        (w.endHour === candidate.hour - 1 || w.startHour === candidate.hour + 1)
+        (w.endHour === candidate.hour - 1 || w.startHour === candidate.hour + 1),
     )
 
     if (existingWindow) {
@@ -155,6 +155,6 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     successResponse({
       heatmapData,
       optimalWindows: optimalWindows.slice(0, 3), // Return top 3 windows
-    })
+    }),
   )
 })

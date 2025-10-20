@@ -6,9 +6,9 @@
  * connect/disconnect/sync actions
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   Calendar,
   CheckCircle,
@@ -18,12 +18,12 @@ import {
   Clock,
   AlertCircle,
   Loader2,
-} from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+} from 'lucide-react'
+import { formatDistanceToNow } from 'date-fns'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,42 +34,42 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { useToast } from '@/hooks/use-toast';
+} from '@/components/ui/alert-dialog'
+import { useToast } from '@/hooks/use-toast'
 
 interface CalendarStatus {
-  connected: boolean;
-  provider?: 'GOOGLE' | 'OUTLOOK';
-  lastSyncAt?: string;
+  connected: boolean
+  provider?: 'GOOGLE' | 'OUTLOOK'
+  lastSyncAt?: string
 }
 
 interface Props {
-  userId: string;
-  onStatusChange?: (connected: boolean) => void;
+  userId: string
+  onStatusChange?: (connected: boolean) => void
 }
 
 export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
-  const [status, setStatus] = useState<CalendarStatus | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState(false);
-  const [disconnecting, setDisconnecting] = useState(false);
-  const { toast } = useToast();
+  const [status, setStatus] = useState<CalendarStatus | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [syncing, setSyncing] = useState(false)
+  const [disconnecting, setDisconnecting] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
-    fetchStatus();
-  }, [userId]);
+    fetchStatus()
+  }, [userId])
 
   async function fetchStatus() {
     try {
-      const res = await fetch(`/api/calendar/status?userId=${userId}`);
-      if (!res.ok) throw new Error('Failed to fetch calendar status');
-      const data = await res.json();
-      setStatus(data);
-      onStatusChange?.(data.connected);
+      const res = await fetch(`/api/calendar/status?userId=${userId}`)
+      if (!res.ok) throw new Error('Failed to fetch calendar status')
+      const data = await res.json()
+      setStatus(data)
+      onStatusChange?.(data.connected)
     } catch (err) {
-      console.error('Failed to fetch calendar status:', err);
+      console.error('Failed to fetch calendar status:', err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -79,76 +79,76 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider: 'GOOGLE', userId }),
-      });
+      })
 
-      if (!res.ok) throw new Error('Failed to initiate OAuth');
+      if (!res.ok) throw new Error('Failed to initiate OAuth')
 
-      const data = await res.json();
-      window.location.href = data.authorizationUrl;
+      const data = await res.json()
+      window.location.href = data.authorizationUrl
     } catch (err) {
       toast({
         title: 'Connection Failed',
         description: err instanceof Error ? err.message : 'Failed to connect calendar',
         variant: 'destructive',
-      });
+      })
     }
   }
 
   async function handleSync() {
-    setSyncing(true);
+    setSyncing(true)
     try {
       const res = await fetch('/api/calendar/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, daysAhead: 7 }),
-      });
+      })
 
-      if (!res.ok) throw new Error('Sync failed');
+      if (!res.ok) throw new Error('Sync failed')
 
-      const data = await res.json();
+      const data = await res.json()
       toast({
         title: 'Sync Complete',
         description: `Synced ${data.syncedEvents} events from your calendar`,
-      });
+      })
 
-      await fetchStatus();
+      await fetchStatus()
     } catch (err) {
       toast({
         title: 'Sync Failed',
         description: err instanceof Error ? err.message : 'Failed to sync calendar',
         variant: 'destructive',
-      });
+      })
     } finally {
-      setSyncing(false);
+      setSyncing(false)
     }
   }
 
   async function handleDisconnect() {
-    setDisconnecting(true);
+    setDisconnecting(true)
     try {
       const res = await fetch('/api/calendar/disconnect', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId }),
-      });
+      })
 
-      if (!res.ok) throw new Error('Disconnect failed');
+      if (!res.ok) throw new Error('Disconnect failed')
 
       toast({
         title: 'Calendar Disconnected',
         description: 'Your calendar has been successfully disconnected',
-      });
+      })
 
-      setStatus({ connected: false });
-      onStatusChange?.(false);
+      setStatus({ connected: false })
+      onStatusChange?.(false)
     } catch (err) {
       toast({
         title: 'Disconnect Failed',
         description: err instanceof Error ? err.message : 'Failed to disconnect calendar',
         variant: 'destructive',
-      });
+      })
     } finally {
-      setDisconnecting(false);
+      setDisconnecting(false)
     }
   }
 
@@ -162,7 +162,7 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
           <Skeleton className="h-20 w-full" />
         </CardContent>
       </Card>
-    );
+    )
   }
 
   // Not Connected State
@@ -208,37 +208,35 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <AlertCircle className="size-3 shrink-0" />
-            <span>
-              We only read availability for scheduling. You can disconnect anytime.
-            </span>
+            <span>We only read availability for scheduling. You can disconnect anytime.</span>
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   // Connected State
   const getProviderIcon = () => {
     switch (status.provider) {
       case 'GOOGLE':
-        return '📅'; // Google Calendar emoji
+        return '📅' // Google Calendar emoji
       case 'OUTLOOK':
-        return '📆'; // Outlook Calendar emoji
+        return '📆' // Outlook Calendar emoji
       default:
-        return '📅';
+        return '📅'
     }
-  };
+  }
 
   const getProviderLabel = () => {
     switch (status.provider) {
       case 'GOOGLE':
-        return 'Google Calendar';
+        return 'Google Calendar'
       case 'OUTLOOK':
-        return 'Outlook Calendar';
+        return 'Outlook Calendar'
       default:
-        return 'Calendar';
+        return 'Calendar'
     }
-  };
+  }
 
   return (
     <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
@@ -314,24 +312,17 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={disconnecting}
-                className="min-h-10"
-              >
+              <Button variant="outline" size="sm" disabled={disconnecting} className="min-h-10">
                 <LogOut className="size-4 mr-2" />
                 Disconnect
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent className="bg-white/95 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.15)]">
               <AlertDialogHeader>
-                <AlertDialogTitle className="font-heading">
-                  Disconnect Calendar?
-                </AlertDialogTitle>
+                <AlertDialogTitle className="font-heading">Disconnect Calendar?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will remove calendar integration and stop syncing your availability.
-                  Study time recommendations will be based solely on your historical patterns.
+                  This will remove calendar integration and stop syncing your availability. Study
+                  time recommendations will be based solely on your historical patterns.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -367,5 +358,5 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
         </button>
       </CardContent>
     </Card>
-  );
+  )
 }

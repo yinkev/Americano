@@ -16,55 +16,55 @@
  * - BREAK_SCHEDULE_ADJUST
  */
 
-import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from '@/generated/prisma'
 import {
   InterventionRecommendation,
   InterventionType,
-  StrugglePrediction
-} from '@/generated/prisma';
+  StrugglePrediction,
+} from '@/generated/prisma'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 /**
  * Intervention with specific actions
  */
 export interface Intervention {
-  type: InterventionType;
-  description: string;
-  reasoning: string;
-  priority: number; // 1-10
-  actions: InterventionAction[];
+  type: InterventionType
+  description: string
+  reasoning: string
+  priority: number // 1-10
+  actions: InterventionAction[]
 }
 
 /**
  * Specific action to apply
  */
 export interface InterventionAction {
-  action: string;
-  params?: Record<string, any>;
-  timing?: string;
+  action: string
+  params?: Record<string, any>
+  timing?: string
 }
 
 /**
  * Tailored intervention adapted to user's learning patterns
  */
 export interface TailoredIntervention extends Intervention {
-  learningStyleAdaptations: string[];
+  learningStyleAdaptations: string[]
   optimalTiming: {
-    dayOfWeek?: number;
-    hour?: number;
-  };
+    dayOfWeek?: number
+    hour?: number
+  }
 }
 
 /**
  * Result of applying intervention
  */
 export interface ApplicationResult {
-  success: boolean;
-  interventionId: string;
-  missionId?: string;
-  message: string;
-  appliedActions: string[];
+  success: boolean
+  interventionId: string
+  missionId?: string
+  message: string
+  appliedActions: string[]
 }
 
 export class InterventionEngine {
@@ -72,12 +72,12 @@ export class InterventionEngine {
    * Generate intervention recommendations for a prediction
    */
   async generateInterventions(
-    prediction: StrugglePrediction & { learningObjective: any; indicators: any[] }
+    prediction: StrugglePrediction & { learningObjective: any; indicators: any[] },
   ): Promise<Intervention[]> {
-    const interventions: Intervention[] = [];
+    const interventions: Intervention[] = []
 
     // Get feature vector from prediction
-    const features = prediction.featureVector as any;
+    const features = prediction.featureVector as any
 
     // 1. Prerequisite Review (if prerequisite gaps detected)
     if (features.prerequisiteGapCount > 0.5) {
@@ -90,14 +90,14 @@ export class InterventionEngine {
           {
             action: 'SCHEDULE_PREREQUISITE_REVIEW',
             params: { objectiveId: prediction.learningObjectiveId },
-            timing: '1-2 days before main topic'
+            timing: '1-2 days before main topic',
           },
           {
             action: 'INSERT_PREREQUISITE_FLASHCARDS',
-            params: { intensity: 'high' }
-          }
-        ]
-      });
+            params: { intensity: 'high' },
+          },
+        ],
+      })
     }
 
     // 2. Difficulty Progression (if complexity mismatch)
@@ -111,14 +111,14 @@ export class InterventionEngine {
           {
             action: 'INSERT_INTRODUCTORY_CONTENT',
             params: { difficulty: 'BASIC' },
-            timing: 'Before main topic'
+            timing: 'Before main topic',
           },
           {
             action: 'REDUCE_INITIAL_COMPLEXITY',
-            params: { targetComplexity: 'INTERMEDIATE' }
-          }
-        ]
-      });
+            params: { targetComplexity: 'INTERMEDIATE' },
+          },
+        ],
+      })
     }
 
     // 3. Content Format Adaptation (if learning style mismatch)
@@ -126,19 +126,20 @@ export class InterventionEngine {
       interventions.push({
         type: InterventionType.CONTENT_FORMAT_ADAPT,
         description: 'Use alternative content formats matching your learning style',
-        reasoning: 'This content format doesn\'t match your preferred learning style. Alternative formats will help.',
+        reasoning:
+          "This content format doesn't match your preferred learning style. Alternative formats will help.",
         priority: 7,
         actions: [
           {
             action: 'ADD_VISUAL_DIAGRAMS',
-            timing: 'Concurrent with main content'
+            timing: 'Concurrent with main content',
           },
           {
             action: 'ADD_CLINICAL_SCENARIOS',
-            params: { count: 2 }
-          }
-        ]
-      });
+            params: { count: 2 },
+          },
+        ],
+      })
     }
 
     // 4. Cognitive Load Reduction (if cognitive overload detected)
@@ -151,18 +152,18 @@ export class InterventionEngine {
         actions: [
           {
             action: 'REDUCE_MISSION_DURATION',
-            params: { percentage: 50 }
+            params: { percentage: 50 },
           },
           {
             action: 'ADD_BREAK_REMINDERS',
-            params: { frequency: 'Every 20 minutes' }
+            params: { frequency: 'Every 20 minutes' },
           },
           {
             action: 'LIMIT_NEW_CARDS',
-            params: { maxNew: 5 }
-          }
-        ]
-      });
+            params: { maxNew: 5 },
+          },
+        ],
+      })
     }
 
     // 5. Spaced Repetition Boost (if historical struggles)
@@ -170,22 +171,23 @@ export class InterventionEngine {
       interventions.push({
         type: InterventionType.SPACED_REPETITION_BOOST,
         description: 'Increase review frequency for this topic area',
-        reasoning: 'Historical struggle pattern detected. More frequent reviews will strengthen retention.',
+        reasoning:
+          'Historical struggle pattern detected. More frequent reviews will strengthen retention.',
         priority: 6,
         actions: [
           {
             action: 'ADJUST_REVIEW_SCHEDULE',
             params: {
               intervals: [1, 3, 7], // Days
-              duration: '2 weeks'
-            }
+              duration: '2 weeks',
+            },
           },
           {
             action: 'INCREASE_REVIEW_PRIORITY',
-            params: { multiplier: 1.5 }
-          }
-        ]
-      });
+            params: { multiplier: 1.5 },
+          },
+        ],
+      })
     }
 
     // 6. Break Schedule Adjustment (if session fatigue patterns)
@@ -198,17 +200,17 @@ export class InterventionEngine {
         actions: [
           {
             action: 'INSERT_BREAK_INTERVALS',
-            params: { every: 25, duration: 5 } // Pomodoro-style
+            params: { every: 25, duration: 5 }, // Pomodoro-style
           },
           {
             action: 'SUGGEST_PHYSICAL_ACTIVITY',
-            params: { type: 'Light stretching' }
-          }
-        ]
-      });
+            params: { type: 'Light stretching' },
+          },
+        ],
+      })
     }
 
-    return interventions.sort((a, b) => b.priority - a.priority);
+    return interventions.sort((a, b) => b.priority - a.priority)
   }
 
   /**
@@ -216,85 +218,83 @@ export class InterventionEngine {
    */
   async tailorToLearningPattern(
     intervention: Intervention,
-    userId: string
+    userId: string,
   ): Promise<TailoredIntervention> {
     // Get user learning profile
     const profile = await prisma.userLearningProfile.findUnique({
-      where: { userId }
-    });
+      where: { userId },
+    })
 
-    const adaptations: string[] = [];
-    let optimalTiming = {};
+    const adaptations: string[] = []
+    let optimalTiming = {}
 
     if (profile) {
-      const styleProfile = profile.learningStyleProfile as any;
-      const contentPrefs = profile.contentPreferences as any;
-      const studyTimes = profile.preferredStudyTimes as any[];
+      const styleProfile = profile.learningStyleProfile as any
+      const contentPrefs = profile.contentPreferences as any
+      const studyTimes = profile.preferredStudyTimes as any[]
 
       // Adapt based on learning style (VARK)
       if (intervention.type === InterventionType.CONTENT_FORMAT_ADAPT) {
         if (styleProfile.visual > 0.5) {
-          adaptations.push('Prioritize visual diagrams and concept maps');
+          adaptations.push('Prioritize visual diagrams and concept maps')
           intervention.actions.push({
             action: 'ADD_CONCEPT_MAP',
-            params: { topicId: 'current' }
-          });
+            params: { topicId: 'current' },
+          })
         }
 
         if (styleProfile.kinesthetic > 0.5) {
-          adaptations.push('Include hands-on clinical reasoning scenarios');
+          adaptations.push('Include hands-on clinical reasoning scenarios')
           intervention.actions.push({
             action: 'ADD_CLINICAL_CASES',
-            params: { interactive: true, count: 3 }
-          });
+            params: { interactive: true, count: 3 },
+          })
         }
 
         if (styleProfile.reading > 0.5) {
-          adaptations.push('Provide detailed written summaries');
+          adaptations.push('Provide detailed written summaries')
           intervention.actions.push({
             action: 'ADD_TEXT_SUMMARY',
-            params: { depth: 'comprehensive' }
-          });
+            params: { depth: 'comprehensive' },
+          })
         }
       }
 
       // Adapt session duration
       if (intervention.type === InterventionType.COGNITIVE_LOAD_REDUCE) {
-        const optimalDuration = profile.optimalSessionDuration;
+        const optimalDuration = profile.optimalSessionDuration
 
-        adaptations.push(`Adjust to your optimal session length: ${optimalDuration} minutes`);
+        adaptations.push(`Adjust to your optimal session length: ${optimalDuration} minutes`)
 
-        intervention.actions = intervention.actions.map(action => {
+        intervention.actions = intervention.actions.map((action) => {
           if (action.action === 'REDUCE_MISSION_DURATION') {
             return {
               ...action,
-              params: { targetMinutes: optimalDuration }
-            };
+              params: { targetMinutes: optimalDuration },
+            }
           }
-          return action;
-        });
+          return action
+        })
       }
 
       // Optimal timing based on study time preferences
       if (studyTimes && studyTimes.length > 0) {
-        const firstPreference = studyTimes[0];
+        const firstPreference = studyTimes[0]
 
         optimalTiming = {
           dayOfWeek: firstPreference.dayOfWeek,
-          hour: firstPreference.startHour
-        };
+          hour: firstPreference.startHour,
+        }
 
-        adaptations.push(
-          `Schedule during your peak time: ${this.formatStudyTime(firstPreference)}`
-        );
+        adaptations.push(`Schedule during your peak time: ${this.formatStudyTime(firstPreference)}`)
       }
     }
 
     return {
       ...intervention,
       learningStyleAdaptations: adaptations,
-      optimalTiming
-    };
+      optimalTiming,
+    }
   }
 
   /**
@@ -308,41 +308,42 @@ export class InterventionEngine {
           include: {
             learningObjective: {
               include: {
-                lecture: true
-              }
-            }
-          }
-        }
-      }
-    });
+                lecture: true,
+              },
+            },
+          },
+        },
+      },
+    })
 
     if (!intervention) {
       return {
         success: false,
         interventionId,
-        message: 'Intervention not found'
-      };
+        message: 'Intervention not found',
+        appliedActions: [],
+      }
     }
 
-    const appliedActions: string[] = [];
+    const appliedActions: string[] = []
 
     // Find or create mission for this objective
-    const userId = intervention.userId;
-    const objectiveId = intervention.prediction.learningObjectiveId;
+    const userId = intervention.userId
+    const objectiveId = intervention.prediction?.learningObjectiveId
 
     // Check if there's a pending mission
     let mission = await prisma.mission.findFirst({
       where: {
         userId,
         status: {
-          in: ['PENDING', 'IN_PROGRESS']
+          in: ['PENDING', 'IN_PROGRESS'],
         },
         date: {
-          gte: new Date()
-        }
+          gte: new Date(),
+        },
       },
-      orderBy: { date: 'asc' }
-    });
+      orderBy: { date: 'asc' },
+    })
 
     if (!mission) {
       // Create new mission for intervention
@@ -356,72 +357,72 @@ export class InterventionEngine {
             {
               objectiveId,
               estimatedMinutes: 30,
-              completed: false
-            }
-          ])
-        }
-      });
+              completed: false,
+            },
+          ]),
+        },
+      })
 
-      appliedActions.push('Created new mission for intervention');
+      appliedActions.push('Created new mission for intervention')
     }
 
     // Apply intervention-specific modifications
-    const objectives = mission.objectives as any[];
+    const objectives = mission.objectives as any[]
 
     switch (intervention.interventionType) {
       case InterventionType.PREREQUISITE_REVIEW:
         // Insert prerequisite objectives before main objective
         const prerequisites = await prisma.objectivePrerequisite.findMany({
           where: { objectiveId: objectiveId || '' },
-          include: { prerequisite: true }
-        });
+          include: { prerequisite: true },
+        })
 
         for (const prereq of prerequisites) {
           objectives.unshift({
             objectiveId: prereq.prerequisiteId,
             estimatedMinutes: 15,
             completed: false,
-            interventionNote: 'Prerequisite review for better understanding'
-          });
+            interventionNote: 'Prerequisite review for better understanding',
+          })
         }
 
-        appliedActions.push(`Inserted ${prerequisites.length} prerequisite reviews`);
-        break;
+        appliedActions.push(`Inserted ${prerequisites.length} prerequisite reviews`)
+        break
 
       case InterventionType.DIFFICULTY_PROGRESSION:
         // Adjust objective complexity in mission
-        const objIndex = objectives.findIndex((o: any) => o.objectiveId === objectiveId);
+        const objIndex = objectives.findIndex((o: any) => o.objectiveId === objectiveId)
 
         if (objIndex >= 0) {
-          objectives[objIndex].startWithBasics = true;
-          objectives[objIndex].estimatedMinutes *= 1.25; // Add 25% more time
+          objectives[objIndex].startWithBasics = true
+          objectives[objIndex].estimatedMinutes *= 1.25 // Add 25% more time
         }
 
-        appliedActions.push('Enabled difficulty progression mode');
-        break;
+        appliedActions.push('Enabled difficulty progression mode')
+        break
 
       case InterventionType.COGNITIVE_LOAD_REDUCE:
         // Reduce mission duration by 50%
-        mission.estimatedMinutes = Math.floor(mission.estimatedMinutes * 0.5);
+        mission.estimatedMinutes = Math.floor(mission.estimatedMinutes * 0.5)
 
         objectives.forEach((obj: any) => {
-          obj.estimatedMinutes = Math.floor(obj.estimatedMinutes * 0.5);
-        });
+          obj.estimatedMinutes = Math.floor(obj.estimatedMinutes * 0.5)
+        })
 
-        appliedActions.push('Reduced mission workload by 50%');
-        break;
+        appliedActions.push('Reduced mission workload by 50%')
+        break
 
       case InterventionType.SPACED_REPETITION_BOOST:
         // Mark objective for increased review frequency (handled by FSRS separately)
-        const objIdx = objectives.findIndex((o: any) => o.objectiveId === objectiveId);
+        const objIdx = objectives.findIndex((o: any) => o.objectiveId === objectiveId)
 
         if (objIdx >= 0) {
-          objectives[objIdx].reviewBoost = true;
-          objectives[objIdx].reviewIntervals = [1, 3, 7]; // Custom intervals
+          objectives[objIdx].reviewBoost = true
+          objectives[objIdx].reviewIntervals = [1, 3, 7] // Custom intervals
         }
 
-        appliedActions.push('Enabled spaced repetition boost');
-        break;
+        appliedActions.push('Enabled spaced repetition boost')
+        break
 
       case InterventionType.BREAK_SCHEDULE_ADJUST:
         // Add break reminders to mission
@@ -430,13 +431,13 @@ export class InterventionEngine {
             objectives.splice(index, 0, {
               type: 'break',
               duration: 5,
-              note: 'Take a 5-minute break'
-            });
+              note: 'Take a 5-minute break',
+            })
           }
-        });
+        })
 
-        appliedActions.push('Added break intervals every 25 minutes');
-        break;
+        appliedActions.push('Added break intervals every 25 minutes')
+        break
     }
 
     // Update mission with modified objectives
@@ -444,39 +445,39 @@ export class InterventionEngine {
       where: { id: mission.id },
       data: {
         objectives: JSON.stringify(objectives),
-        estimatedMinutes: mission.estimatedMinutes
-      }
-    });
+        estimatedMinutes: mission.estimatedMinutes,
+      },
+    })
 
     // Mark intervention as applied
     await prisma.interventionRecommendation.update({
       where: { id: interventionId },
       data: {
-        status: 'APPLIED',
+        status: 'COMPLETED',
         appliedAt: new Date(),
-        appliedToMissionId: mission.id
-      }
-    });
+        appliedToMissionId: mission.id,
+      },
+    })
 
     return {
       success: true,
       interventionId,
       missionId: mission.id,
       message: `Intervention applied successfully to mission ${mission.id}`,
-      appliedActions
-    };
+      appliedActions,
+    }
   }
 
   /**
    * Helper: Format study time for display
    */
   private formatStudyTime(studyTime: any): string {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const day = days[studyTime.dayOfWeek];
-    const hour = studyTime.startHour;
-    const period = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour > 12 ? hour - 12 : hour;
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    const day = days[studyTime.dayOfWeek]
+    const hour = studyTime.startHour
+    const period = hour >= 12 ? 'PM' : 'AM'
+    const displayHour = hour > 12 ? hour - 12 : hour
 
-    return `${day} ${displayHour}:00 ${period}`;
+    return `${day} ${displayHour}:00 ${period}`
   }
 }

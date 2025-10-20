@@ -15,10 +15,7 @@ const regenerateSchema = z.object({
   targetMinutes: z.number().int().min(15).max(120).optional(),
 })
 
-async function handler(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
+async function handler(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params
 
   // Parse request body
@@ -27,12 +24,8 @@ async function handler(
 
   if (!validation.success) {
     return Response.json(
-      errorResponse(
-        'VALIDATION_ERROR',
-        'Invalid request body',
-        validation.error.flatten()
-      ),
-      { status: 400 }
+      errorResponse('VALIDATION_ERROR', 'Invalid request body', validation.error.flatten()),
+      { status: 400 },
     )
   }
 
@@ -44,10 +37,7 @@ async function handler(
   })
 
   if (!existingMission) {
-    return Response.json(
-      errorResponse('MISSION_NOT_FOUND', 'Mission not found'),
-      { status: 404 }
-    )
+    return Response.json(errorResponse('MISSION_NOT_FOUND', 'Mission not found'), { status: 404 })
   }
 
   // Check regeneration limit (max 3 per day per mission date)
@@ -66,7 +56,7 @@ async function handler(
     existingMission.date,
     {
       targetMinutes,
-    }
+    },
   )
 
   // Create new mission record
@@ -88,7 +78,7 @@ async function handler(
       mission,
       objectives: generatedMission.objectives,
       message: 'Mission regenerated successfully',
-    })
+    }),
   )
 }
 

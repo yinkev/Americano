@@ -25,7 +25,6 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  TooltipProps,
 } from 'recharts'
 
 interface CorrelationData {
@@ -67,7 +66,8 @@ const transformData = (correlations: CorrelationData[]) => {
 }
 
 // Custom tooltip component
-const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+const CustomTooltip = (props: any) => {
+  const { active, payload } = props
   if (active && payload && payload.length > 0) {
     const data = payload[0].payload
     return (
@@ -95,9 +95,7 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
           </p>
           <Badge
             className={
-              data.isSignificant
-                ? 'bg-green-600 text-white mt-2'
-                : 'bg-gray-500 text-white mt-2'
+              data.isSignificant ? 'bg-green-600 text-white mt-2' : 'bg-gray-500 text-white mt-2'
             }
           >
             {data.isSignificant ? 'Statistically Significant' : 'Not Significant'}
@@ -123,7 +121,7 @@ export function PerformanceCorrelationChart({
         setIsLoading(true)
         setError(null)
         const response = await fetch(
-          `/api/analytics/behavioral-insights/correlation?userId=${userId}`
+          `/api/analytics/behavioral-insights/correlation?userId=${userId}`,
         )
 
         if (!response.ok) {
@@ -198,9 +196,7 @@ export function PerformanceCorrelationChart({
     <Card className="bg-white/80 backdrop-blur-md">
       <CardHeader>
         <CardTitle>Performance Correlation Analysis</CardTitle>
-        <CardDescription>
-          How your behavioral patterns impact academic performance
-        </CardDescription>
+        <CardDescription>How your behavioral patterns impact academic performance</CardDescription>
       </CardHeader>
       <CardContent>
         {/* Chart */}
@@ -300,7 +296,7 @@ export function PerformanceCorrelationChart({
                   ? Math.round(
                       (significantData.reduce((sum, d) => sum + Math.abs(d.y), 0) /
                         significantData.length) *
-                        10
+                        10,
                     ) / 10
                   : 0}
                 %

@@ -71,9 +71,7 @@ export function QuickActions() {
               <p className="text-sm font-medium text-[oklch(0.145_0_0)] leading-tight">
                 {action.label}
               </p>
-              <p className="text-xs text-[oklch(0.556_0_0)] mt-0.5">
-                {action.description}
-              </p>
+              <p className="text-xs text-[oklch(0.556_0_0)] mt-0.5">{action.description}</p>
             </div>
           </a>
         ))}

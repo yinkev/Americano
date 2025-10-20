@@ -1,119 +1,116 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ObjectiveEditDialog } from './objective-edit-dialog';
-import type { ObjectiveComplexity } from '@/lib/ai/chatmock-client';
+import { useState, useEffect } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { ObjectiveEditDialog } from './objective-edit-dialog'
+import type { ObjectiveComplexity } from '@/lib/ai/chatmock-client'
 
 interface Objective {
-  id: string;
-  objective: string;
-  complexity: ObjectiveComplexity;
-  pageStart: number | null;
-  pageEnd: number | null;
-  isHighYield: boolean;
-  boardExamTags: string[];
+  id: string
+  objective: string
+  complexity: ObjectiveComplexity
+  pageStart: number | null
+  pageEnd: number | null
+  isHighYield: boolean
+  boardExamTags: string[]
 }
 
 interface ObjectiveListProps {
-  lectureId: string;
+  lectureId: string
 }
 
 const COMPLEXITY_COLORS = {
   BASIC: 'bg-green-100 text-green-800',
   INTERMEDIATE: 'bg-blue-100 text-blue-800',
   ADVANCED: 'bg-purple-100 text-purple-800',
-};
+}
 
 export function ObjectiveList({ lectureId }: ObjectiveListProps) {
-  const [objectives, setObjectives] = useState<Objective[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [editingObjective, setEditingObjective] = useState<Objective | null>(null);
-  const [isExtracting, setIsExtracting] = useState(false);
+  const [objectives, setObjectives] = useState<Objective[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [editingObjective, setEditingObjective] = useState<Objective | null>(null)
+  const [isExtracting, setIsExtracting] = useState(false)
 
   const fetchObjectives = async () => {
     try {
-      const response = await fetch(`/api/objectives?lectureId=${lectureId}`);
-      const data = await response.json();
+      const response = await fetch(`/api/objectives?lectureId=${lectureId}`)
+      const data = await response.json()
 
       if (!data.success) {
-        throw new Error(data.error?.message || 'Failed to fetch objectives');
+        throw new Error(data.error?.message || 'Failed to fetch objectives')
       }
 
-      setObjectives(data.data.objectives);
+      setObjectives(data.data.objectives)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleExtractObjectives = async () => {
-    setIsExtracting(true);
-    setError(null);
+    setIsExtracting(true)
+    setError(null)
 
     try {
       const response = await fetch('/api/ai/extract/objectives', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lectureId }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (!data.success) {
-        throw new Error(data.error?.message || 'Extraction failed');
+        throw new Error(data.error?.message || 'Extraction failed')
       }
 
-      await fetchObjectives();
+      await fetchObjectives()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Extraction failed');
+      setError(err instanceof Error ? err.message : 'Extraction failed')
     } finally {
-      setIsExtracting(false);
+      setIsExtracting(false)
     }
-  };
+  }
 
-  const handleSave = async (
-    id: string,
-    updates: Partial<Objective>
-  ) => {
+  const handleSave = async (id: string, updates: Partial<Objective>) => {
     const response = await fetch(`/api/objectives/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates),
-    });
+    })
 
-    const data = await response.json();
+    const data = await response.json()
 
     if (!data.success) {
-      throw new Error(data.error?.message || 'Failed to save');
+      throw new Error(data.error?.message || 'Failed to save')
     }
 
-    await fetchObjectives();
-  };
+    await fetchObjectives()
+  }
 
   const handleDelete = async (id: string) => {
     const response = await fetch(`/api/objectives/${id}`, {
       method: 'DELETE',
-    });
+    })
 
-    const data = await response.json();
+    const data = await response.json()
 
     if (!data.success) {
-      throw new Error(data.error?.message || 'Failed to delete');
+      throw new Error(data.error?.message || 'Failed to delete')
     }
 
-    await fetchObjectives();
-  };
+    await fetchObjectives()
+  }
 
   useEffect(() => {
-    fetchObjectives();
-  }, [lectureId]);
+    fetchObjectives()
+  }, [lectureId])
 
   if (loading) {
-    return <div className="text-center py-8">Loading objectives...</div>;
+    return <div className="text-center py-8">Loading objectives...</div>
   }
 
   if (error) {
@@ -122,14 +119,14 @@ export function ObjectiveList({ lectureId }: ObjectiveListProps) {
         <p className="text-red-600 mb-4">Error: {error}</p>
         <Button onClick={() => fetchObjectives()}>Retry</Button>
       </div>
-    );
+    )
   }
 
   const groupedByComplexity = {
     BASIC: objectives.filter((obj) => obj.complexity === 'BASIC'),
     INTERMEDIATE: objectives.filter((obj) => obj.complexity === 'INTERMEDIATE'),
     ADVANCED: objectives.filter((obj) => obj.complexity === 'ADVANCED'),
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -154,8 +151,8 @@ export function ObjectiveList({ lectureId }: ObjectiveListProps) {
       ) : (
         <div className="space-y-6">
           {(['BASIC', 'INTERMEDIATE', 'ADVANCED'] as const).map((complexity) => {
-            const objs = groupedByComplexity[complexity];
-            if (objs.length === 0) return null;
+            const objs = groupedByComplexity[complexity]
+            if (objs.length === 0) return null
 
             return (
               <section key={complexity}>
@@ -174,16 +171,13 @@ export function ObjectiveList({ lectureId }: ObjectiveListProps) {
                           <p className="text-gray-900">{obj.objective}</p>
                           <div className="flex flex-wrap gap-2 mt-2">
                             {obj.isHighYield && (
-                              <Badge className="bg-yellow-100 text-yellow-800">
-                                ⭐ High-Yield
-                              </Badge>
+                              <Badge className="bg-yellow-100 text-yellow-800">⭐ High-Yield</Badge>
                             )}
                             {obj.pageStart && obj.pageEnd && (
                               <Badge variant="outline">
                                 {obj.pageStart === obj.pageEnd
                                   ? `Page ${obj.pageStart}`
-                                  : `Pages ${obj.pageStart}-${obj.pageEnd}`
-                                }
+                                  : `Pages ${obj.pageStart}-${obj.pageEnd}`}
                               </Badge>
                             )}
                             {obj.boardExamTags.map((comp) => (
@@ -193,11 +187,7 @@ export function ObjectiveList({ lectureId }: ObjectiveListProps) {
                             ))}
                           </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setEditingObjective(obj)}
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => setEditingObjective(obj)}>
                           Edit
                         </Button>
                       </div>
@@ -205,7 +195,7 @@ export function ObjectiveList({ lectureId }: ObjectiveListProps) {
                   ))}
                 </div>
               </section>
-            );
+            )
           })}
         </div>
       )}
@@ -220,5 +210,5 @@ export function ObjectiveList({ lectureId }: ObjectiveListProps) {
         />
       )}
     </div>
-  );
+  )
 }

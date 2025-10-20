@@ -1,29 +1,33 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Eye, ThumbsDown, Minus, ThumbsUp, Sparkles } from 'lucide-react';
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Eye, ThumbsDown, Minus, ThumbsUp, Sparkles } from 'lucide-react'
 
 export interface FlashCard {
-  id: string;
-  front: string;
-  back: string;
-  cardType: 'BASIC' | 'CLOZE' | 'CLINICAL_REASONING';
+  id: string
+  front: string
+  back: string
+  cardType: 'BASIC' | 'CLOZE' | 'CLINICAL_REASONING'
 }
 
 interface FlashcardReviewProps {
-  cards: FlashCard[];
-  onReview: (cardId: string, rating: 'AGAIN' | 'HARD' | 'GOOD' | 'EASY', timeSpentMs: number) => Promise<void>;
-  onComplete: () => void;
+  cards: FlashCard[]
+  onReview: (
+    cardId: string,
+    rating: 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
+    timeSpentMs: number,
+  ) => Promise<void>
+  onComplete: () => void
 }
 
 export function FlashcardReview({ cards, onReview, onComplete }: FlashcardReviewProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [showBack, setShowBack] = useState(false);
-  const [reviewing, setReviewing] = useState(false);
-  const [startTime] = useState(Date.now());
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [showBack, setShowBack] = useState(false)
+  const [reviewing, setReviewing] = useState(false)
+  const [startTime] = useState(Date.now())
 
   if (cards.length === 0) {
     return (
@@ -39,31 +43,31 @@ export function FlashcardReview({ cards, onReview, onComplete }: FlashcardReview
           Continue
         </Button>
       </Card>
-    );
+    )
   }
 
-  const currentCard = cards[currentIndex];
+  const currentCard = cards[currentIndex]
 
   const handleRating = async (rating: 'AGAIN' | 'HARD' | 'GOOD' | 'EASY') => {
-    setReviewing(true);
-    const timeSpentMs = Date.now() - startTime;
+    setReviewing(true)
+    const timeSpentMs = Date.now() - startTime
 
     try {
-      await onReview(currentCard.id, rating, timeSpentMs);
+      await onReview(currentCard.id, rating, timeSpentMs)
 
       // Move to next card or complete
       if (currentIndex < cards.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-        setShowBack(false);
+        setCurrentIndex(currentIndex + 1)
+        setShowBack(false)
       } else {
-        onComplete();
+        onComplete()
       }
     } catch (error) {
-      console.error('Failed to submit review:', error);
+      console.error('Failed to submit review:', error)
     } finally {
-      setReviewing(false);
+      setReviewing(false)
     }
-  };
+  }
 
   return (
     <div className="space-y-4">
@@ -183,5 +187,5 @@ export function FlashcardReview({ cards, onReview, onComplete }: FlashcardReview
         )}
       </div>
     </div>
-  );
+  )
 }

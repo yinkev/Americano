@@ -5,9 +5,9 @@
  * Displays mission insights on the dashboard with expandable details
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   TrendingUp,
   TrendingDown,
@@ -18,107 +18,104 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
-} from 'lucide-react';
+} from 'lucide-react'
 
 interface Insight {
-  id: string;
+  id: string
   type:
     | 'PERFORMANCE_TREND'
     | 'COMPLETION_PATTERN'
     | 'TIME_OPTIMIZATION'
     | 'OBJECTIVE_PREFERENCE'
-    | 'ANOMALY';
-  headline: string;
-  detail: string;
-  action?: string;
-  actionUrl?: string;
-  priority: 'HIGH' | 'MEDIUM' | 'LOW';
-  sentiment: 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE';
+    | 'ANOMALY'
+  headline: string
+  detail: string
+  action?: string
+  actionUrl?: string
+  priority: 'HIGH' | 'MEDIUM' | 'LOW'
+  sentiment: 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE'
 }
 
 export function InsightsPanel() {
-  const [insights, setInsights] = useState<Insight[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [insights, setInsights] = useState<Insight[]>([])
+  const [loading, setLoading] = useState(true)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date())
 
   useEffect(() => {
-    fetchInsights();
-  }, []);
+    fetchInsights()
+  }, [])
 
   async function fetchInsights() {
     try {
-      setLoading(true);
-      const response = await fetch(
-        '/api/analytics/missions/summary?period=7d',
-        {
-          headers: {
-            'X-User-Email': 'kevy@americano.dev',
-          },
-        }
-      );
+      setLoading(true)
+      const response = await fetch('/api/analytics/missions/summary?period=7d', {
+        headers: {
+          'X-User-Email': 'kevy@americano.dev',
+        },
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to fetch insights');
+        throw new Error('Failed to fetch insights')
       }
 
-      const result = await response.json();
-      setInsights(result.data.insights || []);
-      setLastRefresh(new Date());
+      const result = await response.json()
+      setInsights(result.data.insights || [])
+      setLastRefresh(new Date())
     } catch (error) {
-      console.error('Error fetching insights:', error);
-      setInsights([]);
+      console.error('Error fetching insights:', error)
+      setInsights([])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   const getIcon = (type: Insight['type']) => {
     switch (type) {
       case 'PERFORMANCE_TREND':
-        return TrendingUp;
+        return TrendingUp
       case 'COMPLETION_PATTERN':
-        return Target;
+        return Target
       case 'TIME_OPTIMIZATION':
-        return Clock;
+        return Clock
       case 'OBJECTIVE_PREFERENCE':
-        return Award;
+        return Award
       case 'ANOMALY':
-        return AlertCircle;
+        return AlertCircle
       default:
-        return Sparkles;
+        return Sparkles
     }
-  };
+  }
 
   const getSentimentColor = (sentiment: Insight['sentiment']): string => {
     switch (sentiment) {
       case 'POSITIVE':
-        return 'oklch(0.75 0.15 160)';
+        return 'oklch(0.75 0.15 160)'
       case 'NEGATIVE':
-        return 'oklch(0.65 0.15 10)';
+        return 'oklch(0.65 0.15 10)'
       case 'NEUTRAL':
-        return 'oklch(0.7 0.15 230)';
+        return 'oklch(0.7 0.15 230)'
       default:
-        return 'oklch(0.556 0 0)';
+        return 'oklch(0.556 0 0)'
     }
-  };
+  }
 
   const getSentimentBg = (sentiment: Insight['sentiment']): string => {
     switch (sentiment) {
       case 'POSITIVE':
-        return 'oklch(0.75 0.15 160)/10';
+        return 'oklch(0.75 0.15 160)/10'
       case 'NEGATIVE':
-        return 'oklch(0.65 0.15 10)/10';
+        return 'oklch(0.65 0.15 10)/10'
       case 'NEUTRAL':
-        return 'oklch(0.7 0.15 230)/10';
+        return 'oklch(0.7 0.15 230)/10'
       default:
-        return 'oklch(0.922 0 0)';
+        return 'oklch(0.922 0 0)'
     }
-  };
+  }
 
   const toggleExpand = (id: string) => {
-    setExpandedId(expandedId === id ? null : id);
-  };
+    setExpandedId(expandedId === id ? null : id)
+  }
 
   if (loading) {
     return (
@@ -129,7 +126,7 @@ export function InsightsPanel() {
           <div className="h-4 bg-[oklch(0.922_0_0)] rounded w-2/3" />
         </div>
       </div>
-    );
+    )
   }
 
   if (insights.length === 0) {
@@ -149,15 +146,13 @@ export function InsightsPanel() {
           </div>
         </div>
         <div className="text-center py-8">
-          <p className="text-sm text-[oklch(0.556_0_0)]">
-            No insights available yet
-          </p>
+          <p className="text-sm text-[oklch(0.556_0_0)]">No insights available yet</p>
           <p className="text-xs text-[oklch(0.556_0_0)] mt-2">
             Complete more missions to unlock personalized insights!
           </p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -188,10 +183,10 @@ export function InsightsPanel() {
       {/* Insights List */}
       <div className="space-y-3">
         {insights.map((insight) => {
-          const Icon = getIcon(insight.type);
-          const sentimentColor = getSentimentColor(insight.sentiment);
-          const sentimentBg = getSentimentBg(insight.sentiment);
-          const isExpanded = expandedId === insight.id;
+          const Icon = getIcon(insight.type)
+          const sentimentColor = getSentimentColor(insight.sentiment)
+          const sentimentBg = getSentimentBg(insight.sentiment)
+          const isExpanded = expandedId === insight.id
 
           return (
             <div
@@ -199,8 +194,7 @@ export function InsightsPanel() {
               className="rounded-xl border border-white/50 transition-all overflow-hidden"
               style={{
                 backgroundColor: sentimentBg,
-                borderColor:
-                  isExpanded ? sentimentColor : 'oklch(0.922 0 0)',
+                borderColor: isExpanded ? sentimentColor : 'oklch(0.922 0 0)',
               }}
             >
               {/* Main Content */}
@@ -212,10 +206,7 @@ export function InsightsPanel() {
                       backgroundColor: `${sentimentColor}/0.15`,
                     }}
                   >
-                    <Icon
-                      className="size-5"
-                      style={{ color: sentimentColor }}
-                    />
+                    <Icon className="size-5" style={{ color: sentimentColor }} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-semibold text-[oklch(0.145_0_0)] mb-1">
@@ -250,17 +241,17 @@ export function InsightsPanel() {
                 </div>
               </div>
             </div>
-          );
+          )
         })}
       </div>
 
       {/* Footer */}
       <div className="mt-6 pt-6 border-t border-[oklch(0.922_0_0)]">
         <p className="text-xs text-[oklch(0.556_0_0)] leading-relaxed">
-          Insights are generated daily based on your recent mission activity.
-          Click any insight to see more details and recommended actions.
+          Insights are generated daily based on your recent mission activity. Click any insight to
+          see more details and recommended actions.
         </p>
       </div>
     </div>
-  );
+  )
 }

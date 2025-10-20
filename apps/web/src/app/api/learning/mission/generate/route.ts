@@ -25,29 +25,21 @@ async function handler(request: NextRequest) {
 
   if (!validation.success) {
     return Response.json(
-      errorResponse(
-        'VALIDATION_ERROR',
-        'Invalid request body',
-        validation.error.flatten()
-      ),
-      { status: 400 }
+      errorResponse('VALIDATION_ERROR', 'Invalid request body', validation.error.flatten()),
+      { status: 400 },
     )
   }
 
   const { date, targetMinutes, regenerate, prioritizeWeakAreas } = validation.data
 
   // Get user from header (MVP: hardcoded to kevy@americano.dev)
-  const userEmail =
-    request.headers.get('X-User-Email') || 'kevy@americano.dev'
+  const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev'
   const user = await prisma.user.findUnique({
     where: { email: userEmail },
   })
 
   if (!user) {
-    return Response.json(
-      errorResponse('USER_NOT_FOUND', 'User not found'),
-      { status: 404 }
-    )
+    return Response.json(errorResponse('USER_NOT_FOUND', 'User not found'), { status: 404 })
   }
 
   // Parse target date (default to today)
@@ -74,7 +66,7 @@ async function handler(request: NextRequest) {
         mission: existingMission,
         objectives,
         message: 'Mission already exists for this date',
-      })
+      }),
     )
   }
 
@@ -95,11 +87,7 @@ async function handler(request: NextRequest) {
       includeWeakAreas: true,
     })
   }
-  const generatedMission = await generator.generateDailyMission(
-    user.id,
-    targetDate,
-    constraints
-  )
+  const generatedMission = await generator.generateDailyMission(user.id, targetDate, constraints)
 
   // Create mission record
   const mission = await prisma.mission.create({
@@ -120,7 +108,7 @@ async function handler(request: NextRequest) {
       mission,
       objectives: generatedMission.objectives,
       estimatedMinutes: generatedMission.estimatedMinutes,
-    })
+    }),
   )
 }
 

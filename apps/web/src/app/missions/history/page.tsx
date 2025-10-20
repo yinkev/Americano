@@ -119,9 +119,7 @@ export default function MissionHistoryPage() {
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       result = result.filter((m) =>
-        m.objectives.some((obj) =>
-          obj.objective.objective.toLowerCase().includes(query)
-        )
+        m.objectives.some((obj) => obj.objective.objective.toLowerCase().includes(query)),
       )
     }
 
@@ -134,8 +132,10 @@ export default function MissionHistoryPage() {
           comparison = new Date(a.date).getTime() - new Date(b.date).getTime()
           break
         case 'completionRate': {
-          const aRate = a.objectives.length > 0 ? a.completedObjectivesCount / a.objectives.length : 0
-          const bRate = b.objectives.length > 0 ? b.completedObjectivesCount / b.objectives.length : 0
+          const aRate =
+            a.objectives.length > 0 ? a.completedObjectivesCount / a.objectives.length : 0
+          const bRate =
+            b.objectives.length > 0 ? b.completedObjectivesCount / b.objectives.length : 0
           comparison = aRate - bRate
           break
         }
@@ -155,9 +155,7 @@ export default function MissionHistoryPage() {
 
   function toggleMissionSelection(missionId: string) {
     setSelectedMissions((prev) =>
-      prev.includes(missionId)
-        ? prev.filter((id) => id !== missionId)
-        : [...prev, missionId]
+      prev.includes(missionId) ? prev.filter((id) => id !== missionId) : [...prev, missionId],
     )
   }
 
@@ -207,11 +205,10 @@ export default function MissionHistoryPage() {
     <div className="container max-w-7xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-heading font-bold text-[oklch(0.145_0_0)]">
-          Mission History
-        </h1>
+        <h1 className="text-3xl font-heading font-bold text-[oklch(0.145_0_0)]">Mission History</h1>
         <p className="text-[oklch(0.556_0_0)]">
-          Browse and analyze your past missions. Compare missions to track your improvement over time.
+          Browse and analyze your past missions. Compare missions to track your improvement over
+          time.
         </p>
       </div>
 
@@ -343,150 +340,143 @@ export default function MissionHistoryPage() {
 
         {/* List View */}
         <TabsContent value="list" className="space-y-4">
-        {filteredMissions.length === 0 ? (
-          <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-12 text-center">
-            <Calendar className="size-12 mx-auto mb-4 text-[oklch(0.556_0_0)]" />
-            <p className="text-lg font-medium text-[oklch(0.145_0_0)] mb-2">
-              No missions found
-            </p>
-            <p className="text-sm text-[oklch(0.556_0_0)]">
-              {hasFilters
-                ? 'Try adjusting your filters to see more results.'
-                : 'Start completing missions to see your history here.'}
-            </p>
-          </div>
-        ) : (
-          filteredMissions.map((mission) => {
-            const completionRate = mission.objectives.length > 0
-              ? (mission.completedObjectivesCount / mission.objectives.length) * 100
-              : 0
-            const successRating = getSuccessRating(mission.successScore)
-            const isSelected = selectedMissions.includes(mission.id)
+          {filteredMissions.length === 0 ? (
+            <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-12 text-center">
+              <Calendar className="size-12 mx-auto mb-4 text-[oklch(0.556_0_0)]" />
+              <p className="text-lg font-medium text-[oklch(0.145_0_0)] mb-2">No missions found</p>
+              <p className="text-sm text-[oklch(0.556_0_0)]">
+                {hasFilters
+                  ? 'Try adjusting your filters to see more results.'
+                  : 'Start completing missions to see your history here.'}
+              </p>
+            </div>
+          ) : (
+            filteredMissions.map((mission) => {
+              const completionRate =
+                mission.objectives.length > 0
+                  ? (mission.completedObjectivesCount / mission.objectives.length) * 100
+                  : 0
+              const successRating = getSuccessRating(mission.successScore)
+              const isSelected = selectedMissions.includes(mission.id)
 
-            return (
-              <div
-                key={mission.id}
-                id={`mission-${mission.id}`}
-                className={`rounded-2xl bg-white/80 backdrop-blur-md border transition-all duration-200 ${
-                  isSelected
-                    ? 'border-[oklch(0.7_0.15_230)] shadow-[0_8px_32px_rgba(31,38,135,0.2)]'
-                    : 'border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)]'
-                } p-6`}
-              >
-                <div className="flex items-start gap-4">
-                  {/* Selection Checkbox */}
-                  <div className="pt-1">
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={() => toggleMissionSelection(mission.id)}
-                      className="data-[state=checked]:bg-[oklch(0.7_0.15_230)] data-[state=checked]:border-[oklch(0.7_0.15_230)]"
-                    />
-                  </div>
-
-                  {/* Mission Content */}
-                  <div className="flex-1 min-w-0 space-y-4">
-                    {/* Header */}
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)]">
-                            {format(parseISO(mission.date), 'EEEE, MMMM d, yyyy')}
-                          </h3>
-                          <Badge
-                            variant="outline"
-                            className={getStatusColor(mission.status)}
-                          >
-                            {mission.status}
-                          </Badge>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-[oklch(0.556_0_0)]">
-                          <span>
-                            {mission.completedObjectivesCount} / {mission.objectives.length} objectives
-                          </span>
-                          {mission.actualMinutes && (
-                            <span>
-                              {mission.actualMinutes} min (est. {mission.estimatedMinutes} min)
-                            </span>
-                          )}
-                          {mission.successScore !== undefined && (
-                            <span className={successRating.color}>
-                              Success: {successRating.label} ({Math.round(mission.successScore * 100)}%)
-                            </span>
-                          )}
-                          {mission.difficultyRating && (
-                            <span>
-                              Difficulty: {'⭐'.repeat(mission.difficultyRating)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* View Details Link */}
-                      <Link
-                        href={`/missions/${mission.id}`}
-                        className="flex-shrink-0 text-sm font-medium text-[oklch(0.7_0.15_230)] hover:text-[oklch(0.65_0.15_230)] transition-colors"
-                      >
-                        View Details →
-                      </Link>
+              return (
+                <div
+                  key={mission.id}
+                  id={`mission-${mission.id}`}
+                  className={`rounded-2xl bg-white/80 backdrop-blur-md border transition-all duration-200 ${
+                    isSelected
+                      ? 'border-[oklch(0.7_0.15_230)] shadow-[0_8px_32px_rgba(31,38,135,0.2)]'
+                      : 'border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)]'
+                  } p-6`}
+                >
+                  <div className="flex items-start gap-4">
+                    {/* Selection Checkbox */}
+                    <div className="pt-1">
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={() => toggleMissionSelection(mission.id)}
+                        className="data-[state=checked]:bg-[oklch(0.7_0.15_230)] data-[state=checked]:border-[oklch(0.7_0.15_230)]"
+                      />
                     </div>
 
-                    {/* Progress Bar */}
-                    {mission.status !== 'PENDING' && (
-                      <div>
-                        <div className="h-2 w-full rounded-full bg-[oklch(0.97_0_0)]">
-                          <div
-                            className={`h-full rounded-full transition-all duration-300 ${
-                              mission.status === 'COMPLETED'
-                                ? 'bg-[oklch(0.75_0.15_160)]'
-                                : mission.status === 'SKIPPED'
-                                  ? 'bg-[oklch(0.556_0_0)]'
-                                  : 'bg-[oklch(0.7_0.15_50)]'
-                            }`}
-                            style={{ width: `${completionRate}%` }}
-                          />
+                    {/* Mission Content */}
+                    <div className="flex-1 min-w-0 space-y-4">
+                      {/* Header */}
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)]">
+                              {format(parseISO(mission.date), 'EEEE, MMMM d, yyyy')}
+                            </h3>
+                            <Badge variant="outline" className={getStatusColor(mission.status)}>
+                              {mission.status}
+                            </Badge>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-4 text-sm text-[oklch(0.556_0_0)]">
+                            <span>
+                              {mission.completedObjectivesCount} / {mission.objectives.length}{' '}
+                              objectives
+                            </span>
+                            {mission.actualMinutes && (
+                              <span>
+                                {mission.actualMinutes} min (est. {mission.estimatedMinutes} min)
+                              </span>
+                            )}
+                            {mission.successScore !== undefined && (
+                              <span className={successRating.color}>
+                                Success: {successRating.label} (
+                                {Math.round(mission.successScore * 100)}%)
+                              </span>
+                            )}
+                            {mission.difficultyRating && (
+                              <span>Difficulty: {'⭐'.repeat(mission.difficultyRating)}</span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
 
-                    {/* Objectives Preview */}
-                    <div className="space-y-2">
-                      {mission.objectives.slice(0, 3).map((obj, idx) => (
-                        <div
-                          key={obj.objectiveId}
-                          className="flex items-start gap-2 text-sm"
+                        {/* View Details Link */}
+                        <Link
+                          href={`/missions/${mission.id}`}
+                          className="flex-shrink-0 text-sm font-medium text-[oklch(0.7_0.15_230)] hover:text-[oklch(0.65_0.15_230)] transition-colors"
                         >
-                          <span
-                            className={`flex-shrink-0 mt-0.5 ${
-                              obj.completed
-                                ? 'text-[oklch(0.75_0.15_160)]'
-                                : 'text-[oklch(0.556_0_0)]'
-                            }`}
-                          >
-                            {obj.completed ? '✅' : `${idx + 1}.`}
-                          </span>
-                          <p
-                            className={`flex-1 min-w-0 leading-relaxed ${
-                              obj.completed
-                                ? 'text-[oklch(0.556_0_0)] line-through'
-                                : 'text-[oklch(0.145_0_0)]'
-                            }`}
-                          >
-                            {obj.objective.objective}
-                          </p>
+                          View Details →
+                        </Link>
+                      </div>
+
+                      {/* Progress Bar */}
+                      {mission.status !== 'PENDING' && (
+                        <div>
+                          <div className="h-2 w-full rounded-full bg-[oklch(0.97_0_0)]">
+                            <div
+                              className={`h-full rounded-full transition-all duration-300 ${
+                                mission.status === 'COMPLETED'
+                                  ? 'bg-[oklch(0.75_0.15_160)]'
+                                  : mission.status === 'SKIPPED'
+                                    ? 'bg-[oklch(0.556_0_0)]'
+                                    : 'bg-[oklch(0.7_0.15_50)]'
+                              }`}
+                              style={{ width: `${completionRate}%` }}
+                            />
+                          </div>
                         </div>
-                      ))}
-                      {mission.objectives.length > 3 && (
-                        <p className="text-xs text-[oklch(0.556_0_0)] pl-6">
-                          +{mission.objectives.length - 3} more objectives
-                        </p>
                       )}
+
+                      {/* Objectives Preview */}
+                      <div className="space-y-2">
+                        {mission.objectives.slice(0, 3).map((obj, idx) => (
+                          <div key={obj.objectiveId} className="flex items-start gap-2 text-sm">
+                            <span
+                              className={`flex-shrink-0 mt-0.5 ${
+                                obj.completed
+                                  ? 'text-[oklch(0.75_0.15_160)]'
+                                  : 'text-[oklch(0.556_0_0)]'
+                              }`}
+                            >
+                              {obj.completed ? '✅' : `${idx + 1}.`}
+                            </span>
+                            <p
+                              className={`flex-1 min-w-0 leading-relaxed ${
+                                obj.completed
+                                  ? 'text-[oklch(0.556_0_0)] line-through'
+                                  : 'text-[oklch(0.145_0_0)]'
+                              }`}
+                            >
+                              {obj.objective.objective}
+                            </p>
+                          </div>
+                        ))}
+                        {mission.objectives.length > 3 && (
+                          <p className="text-xs text-[oklch(0.556_0_0)] pl-6">
+                            +{mission.objectives.length - 3} more objectives
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )
-          })
-        )}
+              )
+            })
+          )}
         </TabsContent>
 
         {/* Calendar View */}

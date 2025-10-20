@@ -1,11 +1,11 @@
 // POST /api/personalization/apply
 // Triggers personalization engine for specific context
 
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse } from '@/lib/api-response';
-import { ApiError, withErrorHandler } from '@/lib/api-error';
-import { PersonalizationContext } from '@prisma/client';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { successResponse } from '@/lib/api-response'
+import { ApiError, withErrorHandler } from '@/lib/api-error'
+import type { PersonalizationContext } from '@/generated/prisma'
 
 /**
  * POST /api/personalization/apply
@@ -24,36 +24,32 @@ import { PersonalizationContext } from '@prisma/client';
  */
 export const POST = withErrorHandler(async (request: NextRequest) => {
   // Parse request body
-  const body = await request.json();
-  const { context, params = {} } = body;
+  const body = await request.json()
+  const { context, params = {} } = body
 
   // Validate context
-  const validContexts = ['MISSION', 'CONTENT', 'ASSESSMENT', 'SESSION'];
+  const validContexts = ['MISSION', 'CONTENT', 'ASSESSMENT', 'SESSION']
   if (!context || !validContexts.includes(context)) {
-    throw ApiError.badRequest(
-      `Invalid context. Must be one of: ${validContexts.join(', ')}`
-    );
+    throw ApiError.badRequest(`Invalid context. Must be one of: ${validContexts.join(', ')}`)
   }
 
   // For MVP: Use hardcoded Kevy user (auth deferred)
   const user = await prisma.user.findFirst({
     where: { email: 'kevy@americano.dev' },
     select: { id: true },
-  });
+  })
 
   if (!user) {
-    throw ApiError.notFound(
-      'User not found. Run: npx prisma db seed to create default user'
-    );
+    throw ApiError.notFound('User not found. Run: npx prisma db seed to create default user')
   }
 
   // Get user preferences
   const preferences = await prisma.personalizationPreferences.findUnique({
     where: { userId: user.id },
-  });
+  })
 
   // Check if personalization is enabled for this context
-  const isEnabled = preferences && getContextEnabled(preferences, context);
+  const isEnabled = preferences && getContextEnabled(preferences, context)
 
   if (!isEnabled) {
     return Response.json(
@@ -62,14 +58,14 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         context,
         config: getDefaultConfig(context),
         message: `Personalization disabled for ${context} context`,
-      })
-    );
+      }),
+    )
   }
 
   // Get user learning profile
   const learningProfile = await prisma.userLearningProfile.findUnique({
     where: { userId: user.id },
-  });
+  })
 
   if (!learningProfile || learningProfile.dataQualityScore < 0.6) {
     return Response.json(
@@ -79,12 +75,12 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         config: getDefaultConfig(context),
         message: 'Insufficient data for personalization. Continue studying to build your profile.',
         dataQualityScore: learningProfile?.dataQualityScore || 0,
-      })
-    );
+      }),
+    )
   }
 
   // Apply confidence threshold based on personalization level
-  const confidenceThreshold = getConfidenceThreshold(preferences?.personalizationLevel || 'MEDIUM');
+  const confidenceThreshold = getConfidenceThreshold(preferences?.personalizationLevel || 'MEDIUM')
 
   if (learningProfile.dataQualityScore < confidenceThreshold) {
     return Response.json(
@@ -94,12 +90,12 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         config: getDefaultConfig(context),
         message: `Data quality (${learningProfile.dataQualityScore.toFixed(2)}) below threshold (${confidenceThreshold}) for ${preferences?.personalizationLevel} level`,
         dataQualityScore: learningProfile.dataQualityScore,
-      })
-    );
+      }),
+    )
   }
 
   // Build context-specific personalization config
-  const config = buildPersonalizationConfig(context, learningProfile, params);
+  const config = buildPersonalizationConfig(context, learningProfile, params)
 
   // Create or update PersonalizationConfig record
   const existingConfig = await prisma.personalizationConfig.findFirst({
@@ -109,7 +105,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       context: context as PersonalizationContext,
       isActive: true,
     },
-  });
+  })
 
   if (existingConfig) {
     // Update existing config
@@ -120,7 +116,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         confidenceScore: learningProfile.dataQualityScore,
         updatedAt: new Date(),
       },
-    });
+    })
   } else {
     // Create new config
     await prisma.personalizationConfig.create({
@@ -133,7 +129,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         confidenceScore: learningProfile.dataQualityScore,
         isActive: true,
       },
-    });
+    })
   }
 
   return Response.json(
@@ -143,38 +139,38 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       config,
       confidence: learningProfile.dataQualityScore,
       message: `Personalization applied for ${context} context`,
-    })
-  );
-});
+    }),
+  )
+})
 
 // Helper functions
 function getContextEnabled(preferences: any, context: string): boolean {
   switch (context) {
     case 'MISSION':
-      return preferences.missionPersonalizationEnabled;
+      return preferences.missionPersonalizationEnabled
     case 'CONTENT':
-      return preferences.contentPersonalizationEnabled;
+      return preferences.contentPersonalizationEnabled
     case 'ASSESSMENT':
-      return preferences.assessmentPersonalizationEnabled;
+      return preferences.assessmentPersonalizationEnabled
     case 'SESSION':
-      return preferences.sessionPersonalizationEnabled;
+      return preferences.sessionPersonalizationEnabled
     default:
-      return false;
+      return false
   }
 }
 
 function getConfidenceThreshold(level: string): number {
   switch (level) {
     case 'NONE':
-      return 1.0; // Impossible to meet
+      return 1.0 // Impossible to meet
     case 'LOW':
-      return 0.85; // Conservative
+      return 0.85 // Conservative
     case 'MEDIUM':
-      return 0.7; // Balanced
+      return 0.7 // Balanced
     case 'HIGH':
-      return 0.6; // Aggressive
+      return 0.6 // Aggressive
     default:
-      return 0.7;
+      return 0.7
   }
 }
 
@@ -184,7 +180,7 @@ function getDefaultConfig(context: string): any {
     strategy: 'default',
     parameters: {},
     confidence: 0.0,
-  };
+  }
 }
 
 function buildPersonalizationConfig(context: string, profile: any, params: any): any {
@@ -199,7 +195,7 @@ function buildPersonalizationConfig(context: string, profile: any, params: any):
           contentPreferences: profile.contentPreferences,
         },
         confidence: profile.dataQualityScore,
-      };
+      }
 
     case 'CONTENT':
       return {
@@ -211,7 +207,7 @@ function buildPersonalizationConfig(context: string, profile: any, params: any):
           topicId: params.topicId,
         },
         confidence: profile.dataQualityScore,
-      };
+      }
 
     case 'ASSESSMENT':
       return {
@@ -222,7 +218,7 @@ function buildPersonalizationConfig(context: string, profile: any, params: any):
           currentDifficulty: params.currentDifficulty,
         },
         confidence: profile.dataQualityScore,
-      };
+      }
 
     case 'SESSION':
       return {
@@ -230,28 +226,27 @@ function buildPersonalizationConfig(context: string, profile: any, params: any):
         strategy: 'attention-cycle-based',
         parameters: {
           sessionDuration: params.sessionDuration || profile.optimalSessionDuration,
-          avgCognitiveLoad: profile.avgCognitiveLoad,
           learningStyle: profile.learningStyleProfile,
         },
         confidence: profile.dataQualityScore,
-      };
+      }
 
     default:
-      return getDefaultConfig(context);
+      return getDefaultConfig(context)
   }
 }
 
 function getConfigFields(context: string, config: any): any {
   switch (context) {
     case 'MISSION':
-      return { missionPersonalization: config };
+      return { missionPersonalization: config }
     case 'CONTENT':
-      return { contentPersonalization: config };
+      return { contentPersonalization: config }
     case 'ASSESSMENT':
-      return { assessmentPersonalization: config };
+      return { assessmentPersonalization: config }
     case 'SESSION':
-      return { sessionPersonalization: config };
+      return { sessionPersonalization: config }
     default:
-      return {};
+      return {}
   }
 }

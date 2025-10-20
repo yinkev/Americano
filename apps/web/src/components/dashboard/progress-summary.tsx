@@ -73,9 +73,7 @@ export function ProgressSummary() {
                 >
                   {stat.value}
                 </p>
-                <p className="text-xs text-[oklch(0.556_0_0)] mt-1 leading-tight">
-                  {stat.label}
-                </p>
+                <p className="text-xs text-[oklch(0.556_0_0)] mt-1 leading-tight">{stat.label}</p>
               </div>
             </div>
           </div>

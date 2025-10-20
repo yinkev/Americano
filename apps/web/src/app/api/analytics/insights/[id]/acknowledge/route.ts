@@ -38,10 +38,9 @@ export const PATCH = withErrorHandler(
     })
 
     if (!existingInsight) {
-      return Response.json(
-        errorResponse('INSIGHT_NOT_FOUND', `Insight ${id} not found`),
-        { status: 404 }
-      )
+      return Response.json(errorResponse('INSIGHT_NOT_FOUND', `Insight ${id} not found`), {
+        status: 404,
+      })
     }
 
     // Update insight with acknowledgment
@@ -56,7 +55,7 @@ export const PATCH = withErrorHandler(
     return Response.json(
       successResponse({
         insight: updatedInsight,
-      })
+      }),
     )
-  }
+  },
 )

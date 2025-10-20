@@ -1,97 +1,97 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
-import { CourseDialog } from '@/components/library/course-dialog';
-import { DeleteConfirmation } from '@/components/library/delete-confirmation';
+import { useState, useEffect } from 'react'
+import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { toast } from 'sonner'
+import { CourseDialog } from '@/components/library/course-dialog'
+import { DeleteConfirmation } from '@/components/library/delete-confirmation'
 
 interface Course {
-  id: string;
-  name: string;
-  code: string | null;
-  term: string | null;
-  color: string | null;
-  lectureCount: number;
-  createdAt: string;
+  id: string
+  name: string
+  code: string | null
+  term: string | null
+  color: string | null
+  lectureCount: number
+  createdAt: string
 }
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState(true)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
 
   useEffect(() => {
-    fetchCourses();
-  }, []);
+    fetchCourses()
+  }, [])
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch('/api/content/courses');
-      const result = await response.json();
+      const response = await fetch('/api/content/courses')
+      const result = await response.json()
 
       if (result.success) {
-        setCourses(result.data.courses);
+        setCourses(result.data.courses)
       } else {
-        toast.error('Failed to load courses');
+        toast.error('Failed to load courses')
       }
     } catch (error) {
-      toast.error('Failed to load courses');
+      toast.error('Failed to load courses')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleAddCourse = () => {
-    setSelectedCourse(null);
-    setDialogOpen(true);
-  };
+    setSelectedCourse(null)
+    setDialogOpen(true)
+  }
 
   const handleEditCourse = (course: Course) => {
-    setSelectedCourse(course);
-    setDialogOpen(true);
-  };
+    setSelectedCourse(course)
+    setDialogOpen(true)
+  }
 
   const handleDeleteClick = (course: Course) => {
-    setSelectedCourse(course);
-    setDeleteOpen(true);
-  };
+    setSelectedCourse(course)
+    setDeleteOpen(true)
+  }
 
   const handleDeleteConfirm = async () => {
-    if (!selectedCourse) return;
+    if (!selectedCourse) return
 
     try {
       const response = await fetch(`/api/content/courses/${selectedCourse.id}`, {
         method: 'DELETE',
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (data.success) {
-        toast.success('Course deleted successfully');
-        fetchCourses();
-        setDeleteOpen(false);
+        toast.success('Course deleted successfully')
+        fetchCourses()
+        setDeleteOpen(false)
       } else {
         if (data.error?.code === 'COURSE_HAS_LECTURES') {
-          toast.error(data.error.message);
+          toast.error(data.error.message)
         } else {
-          toast.error('Failed to delete course');
+          toast.error('Failed to delete course')
         }
       }
     } catch (error) {
-      toast.error('Failed to delete course');
+      toast.error('Failed to delete course')
     }
-  };
+  }
 
   const handleDialogSuccess = () => {
-    fetchCourses();
-    setDialogOpen(false);
-  };
+    fetchCourses()
+    setDialogOpen(false)
+  }
 
   if (loading) {
     return (
@@ -100,7 +100,7 @@ export default function CoursesPage() {
           <p className="text-muted-foreground">Loading courses...</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -112,7 +112,10 @@ export default function CoursesPage() {
             Manage your course collection and organize lectures
           </p>
         </div>
-        <Button onClick={handleAddCourse} className="rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
+        <Button
+          onClick={handleAddCourse}
+          className="rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Add Course
         </Button>
@@ -122,7 +125,10 @@ export default function CoursesPage() {
         <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
           <CardContent className="flex flex-col items-center justify-center h-64">
             <p className="text-muted-foreground mb-4">No courses yet</p>
-            <Button onClick={handleAddCourse} className="rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
+            <Button
+              onClick={handleAddCourse}
+              className="rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Create your first course
             </Button>
@@ -146,9 +152,7 @@ export default function CoursesPage() {
                   <div className="flex-1">
                     <CardTitle className="text-lg font-heading">{course.name}</CardTitle>
                     {course.code && (
-                      <CardDescription className="mt-1">
-                        {course.code}
-                      </CardDescription>
+                      <CardDescription className="mt-1">{course.code}</CardDescription>
                     )}
                   </div>
                   <div className="flex gap-2">
@@ -175,7 +179,9 @@ export default function CoursesPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col gap-2">
                     {course.term && (
-                      <Badge variant="secondary" className="rounded-lg">{course.term}</Badge>
+                      <Badge variant="secondary" className="rounded-lg">
+                        {course.term}
+                      </Badge>
                     )}
                     <p className="text-sm text-muted-foreground">
                       {course.lectureCount} {course.lectureCount === 1 ? 'lecture' : 'lectures'}
@@ -207,5 +213,5 @@ export default function CoursesPage() {
         }
       />
     </div>
-  );
+  )
 }

@@ -71,9 +71,7 @@ describe('POST /api/analytics/predictions/generate', () => {
 
   describe('Error Cases', () => {
     it('should handle 400 bad request from FastAPI', async () => {
-      server.use(
-        createErrorHandler('post', '/predictions/generate', 400, 'Invalid request body')
-      )
+      server.use(createErrorHandler('post', '/predictions/generate', 400, 'Invalid request body'))
 
       const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
@@ -89,7 +87,12 @@ describe('POST /api/analytics/predictions/generate', () => {
 
     it('should handle 422 validation error', async () => {
       server.use(
-        createErrorHandler('post', '/predictions/generate', 422, 'Validation error: userId required')
+        createErrorHandler(
+          'post',
+          '/predictions/generate',
+          422,
+          'Validation error: userId required',
+        ),
       )
 
       const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
@@ -106,7 +109,12 @@ describe('POST /api/analytics/predictions/generate', () => {
 
     it('should handle 500 internal server error', async () => {
       server.use(
-        createErrorHandler('post', '/predictions/generate', 500, 'Internal prediction engine error')
+        createErrorHandler(
+          'post',
+          '/predictions/generate',
+          500,
+          'Internal prediction engine error',
+        ),
       )
 
       const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
@@ -187,7 +195,7 @@ describe('POST /api/analytics/predictions/generate', () => {
               userId: 'test@example.com',
               daysAhead,
             }),
-          }
+          },
         )
 
         const response = await POST(request)

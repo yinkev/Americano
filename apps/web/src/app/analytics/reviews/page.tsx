@@ -297,9 +297,7 @@ export default function MissionReviewsPage() {
           <h3 className="text-sm font-semibold mb-4">Overall Statistics</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <div className="text-2xl font-bold text-[oklch(0.5_0.15_250)]">
-                {reviews.length}
-              </div>
+              <div className="text-2xl font-bold text-[oklch(0.5_0.15_250)]">{reviews.length}</div>
               <div className="text-xs text-muted-foreground">Total Reviews</div>
             </div>
             <div>
@@ -318,8 +316,8 @@ export default function MissionReviewsPage() {
               <div className="text-2xl font-bold text-[oklch(0.5_0.15_250)]">
                 {reviews.length > 0
                   ? (
-                      reviews.reduce((sum, r) => sum + r.summary.avgSuccessScore, 0) /
-                      reviews.length *
+                      (reviews.reduce((sum, r) => sum + r.summary.avgSuccessScore, 0) /
+                        reviews.length) *
                       100
                     ).toFixed(0)
                   : 0}

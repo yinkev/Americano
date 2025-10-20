@@ -37,14 +37,11 @@ export function MissionCard() {
 
     try {
       setRegenerating(true)
-      const response = await fetch(
-        `/api/learning/mission/${mission.id}/regenerate`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({}),
-        }
-      )
+      const response = await fetch(`/api/learning/mission/${mission.id}/regenerate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
       const data = await response.json()
 
       if (data.success) {
@@ -124,9 +121,7 @@ export function MissionCard() {
           aria-label="Regenerate mission"
           type="button"
         >
-          <RefreshCw
-            className={`size-4 ${regenerating ? 'animate-spin' : ''}`}
-          />
+          <RefreshCw className={`size-4 ${regenerating ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
@@ -134,9 +129,7 @@ export function MissionCard() {
       <div className="space-y-4">
         <div>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-[oklch(0.556_0_0)]">
-              Progress
-            </p>
+            <p className="text-sm font-medium text-[oklch(0.556_0_0)]">Progress</p>
             <span className="text-sm font-bold text-[oklch(0.7_0.15_230)]">
               {progress.completed} / {progress.total} objectives
             </span>
@@ -169,15 +162,10 @@ export function MissionCard() {
         {/* Objective List */}
         <div className="space-y-2">
           {objectives.slice(0, 3).map((obj, idx) => (
-            <div
-              key={obj.objectiveId}
-              className="flex items-start gap-2 text-sm"
-            >
+            <div key={obj.objectiveId} className="flex items-start gap-2 text-sm">
               <span
                 className={`flex-shrink-0 mt-0.5 ${
-                  obj.completed
-                    ? 'text-[oklch(0.75_0.15_160)]'
-                    : 'text-[oklch(0.556_0_0)]'
+                  obj.completed ? 'text-[oklch(0.75_0.15_160)]' : 'text-[oklch(0.556_0_0)]'
                 }`}
               >
                 {obj.completed ? '✅' : `${idx + 1}.`}
@@ -222,9 +210,7 @@ export function MissionCard() {
         {/* Next Task Preview / Actions */}
         {nextObjective ? (
           <div className="pt-4 border-t border-[oklch(0.922_0_0)]">
-            <p className="text-xs font-medium text-[oklch(0.556_0_0)] mb-2">
-              NEXT UP
-            </p>
+            <p className="text-xs font-medium text-[oklch(0.556_0_0)] mb-2">NEXT UP</p>
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-[oklch(0.145_0_0)] leading-relaxed">
@@ -251,9 +237,7 @@ export function MissionCard() {
           </div>
         ) : (
           <div className="pt-4 border-t border-[oklch(0.922_0_0)] text-center">
-            <p className="text-sm font-medium text-[oklch(0.75_0.15_160)]">
-              🎉 Mission complete!
-            </p>
+            <p className="text-sm font-medium text-[oklch(0.75_0.15_160)]">🎉 Mission complete!</p>
           </div>
         )}
       </div>

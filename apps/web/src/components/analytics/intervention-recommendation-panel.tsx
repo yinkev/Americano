@@ -5,9 +5,9 @@
  * Displays recommended interventions with effectiveness badges and auto-apply toggle
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   BookOpen,
   BarChart3,
@@ -17,10 +17,10 @@ import {
   Coffee,
   CheckCircle2,
   Loader2,
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+} from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 type InterventionType =
   | 'PREREQUISITE_REVIEW'
@@ -28,16 +28,16 @@ type InterventionType =
   | 'CONTENT_FORMAT_ADAPT'
   | 'COGNITIVE_LOAD_REDUCE'
   | 'SPACED_REPETITION_BOOST'
-  | 'BREAK_SCHEDULE_ADJUST';
+  | 'BREAK_SCHEDULE_ADJUST'
 
 interface Intervention {
-  id: string;
-  type: InterventionType;
-  title: string;
-  description: string;
-  effectiveness: number;
-  estimatedImpact: string;
-  applied: boolean;
+  id: string
+  type: InterventionType
+  title: string
+  description: string
+  effectiveness: number
+  estimatedImpact: string
+  applied: boolean
 }
 
 const INTERVENTION_ICONS: Record<InterventionType, React.ElementType> = {
@@ -47,11 +47,11 @@ const INTERVENTION_ICONS: Record<InterventionType, React.ElementType> = {
   COGNITIVE_LOAD_REDUCE: Brain,
   SPACED_REPETITION_BOOST: Calendar,
   BREAK_SCHEDULE_ADJUST: Coffee,
-};
+}
 
 export function InterventionRecommendationPanel() {
-  const [autoApply, setAutoApply] = useState(false);
-  const [applyingId, setApplyingId] = useState<string | null>(null);
+  const [autoApply, setAutoApply] = useState(false)
+  const [applyingId, setApplyingId] = useState<string | null>(null)
 
   // TODO: Replace with actual API call
   // const response = await fetch('/api/analytics/interventions', {
@@ -65,8 +65,7 @@ export function InterventionRecommendationPanel() {
       id: '1',
       type: 'PREREQUISITE_REVIEW',
       title: 'Review Action Potential Basics',
-      description:
-        'Add foundational electrophysiology concepts before cardiac topics',
+      description: 'Add foundational electrophysiology concepts before cardiac topics',
       effectiveness: 0.85,
       estimatedImpact: 'Helped 85% of users with similar patterns',
       applied: false,
@@ -98,10 +97,10 @@ export function InterventionRecommendationPanel() {
       estimatedImpact: 'Helpful for visual learners',
       applied: false,
     },
-  ]);
+  ])
 
   const handleApply = async (interventionId: string) => {
-    setApplyingId(interventionId);
+    setApplyingId(interventionId)
 
     // TODO: API call to apply intervention
     // await fetch(`/api/analytics/interventions/${interventionId}/apply`, {
@@ -110,21 +109,19 @@ export function InterventionRecommendationPanel() {
     // });
 
     // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
     setInterventions((prev) =>
-      prev.map((i) => (i.id === interventionId ? { ...i, applied: true } : i))
-    );
-    setApplyingId(null);
-  };
+      prev.map((i) => (i.id === interventionId ? { ...i, applied: true } : i)),
+    )
+    setApplyingId(null)
+  }
 
   return (
     <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
-          <CardTitle className="font-heading text-lg">
-            Recommended Actions
-          </CardTitle>
+          <CardTitle className="font-heading text-lg">Recommended Actions</CardTitle>
           <Badge variant="secondary" className="shrink-0">
             {interventions.filter((i) => !i.applied).length} Available
           </Badge>
@@ -135,9 +132,7 @@ export function InterventionRecommendationPanel() {
           <button
             onClick={() => setAutoApply(!autoApply)}
             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-              autoApply
-                ? 'bg-[oklch(0.7_0.15_230)]'
-                : 'bg-[oklch(0.922_0_0)]'
+              autoApply ? 'bg-[oklch(0.7_0.15_230)]' : 'bg-[oklch(0.922_0_0)]'
             }`}
             role="switch"
             aria-checked={autoApply}
@@ -150,9 +145,7 @@ export function InterventionRecommendationPanel() {
             />
           </button>
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">
-              Auto-apply interventions
-            </p>
+            <p className="text-sm font-medium text-foreground">Auto-apply interventions</p>
             <p className="text-xs text-muted-foreground">
               Automatically add recommended actions to your missions
             </p>
@@ -181,7 +174,7 @@ export function InterventionRecommendationPanel() {
         )}
       </CardContent>
     </Card>
-  );
+  )
 }
 
 /**
@@ -192,12 +185,12 @@ function InterventionCard({
   onApply,
   isApplying,
 }: {
-  intervention: Intervention;
-  onApply: (id: string) => void;
-  isApplying: boolean;
+  intervention: Intervention
+  onApply: (id: string) => void
+  isApplying: boolean
 }) {
-  const Icon = INTERVENTION_ICONS[intervention.type];
-  const effectiveness = intervention.effectiveness * 100;
+  const Icon = INTERVENTION_ICONS[intervention.type]
+  const effectiveness = intervention.effectiveness * 100
 
   return (
     <div
@@ -211,28 +204,20 @@ function InterventionCard({
         {/* Icon */}
         <div
           className={`p-2 rounded-lg shrink-0 ${
-            intervention.applied
-              ? 'bg-[oklch(0.7_0.12_145)]/20'
-              : 'bg-[oklch(0.7_0.15_230)]/10'
+            intervention.applied ? 'bg-[oklch(0.7_0.12_145)]/20' : 'bg-[oklch(0.7_0.15_230)]/10'
           }`}
         >
           <Icon
             className={`size-5 ${
-              intervention.applied
-                ? 'text-[oklch(0.7_0.12_145)]'
-                : 'text-[oklch(0.7_0.15_230)]'
+              intervention.applied ? 'text-[oklch(0.7_0.12_145)]' : 'text-[oklch(0.7_0.15_230)]'
             }`}
           />
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-sm text-foreground mb-1">
-            {intervention.title}
-          </h4>
-          <p className="text-xs text-muted-foreground mb-2">
-            {intervention.description}
-          </p>
+          <h4 className="font-semibold text-sm text-foreground mb-1">{intervention.title}</h4>
+          <p className="text-xs text-muted-foreground mb-2">{intervention.description}</p>
 
           {/* Effectiveness Badge */}
           <div className="flex items-center gap-2 mb-3">
@@ -248,9 +233,7 @@ function InterventionCard({
               {effectiveness.toFixed(0)}% Effective
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground italic">
-            {intervention.estimatedImpact}
-          </p>
+          <p className="text-xs text-muted-foreground italic">{intervention.estimatedImpact}</p>
 
           {/* Action Button */}
           <div className="mt-3">
@@ -284,5 +267,5 @@ function InterventionCard({
         </div>
       </div>
     </div>
-  );
+  )
 }

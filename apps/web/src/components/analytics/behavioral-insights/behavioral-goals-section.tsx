@@ -144,7 +144,7 @@ export function BehavioralGoalsSection({
   const [goalType, setGoalType] = useState<GoalType>('INCREASE_RETENTION')
   const [targetValue, setTargetValue] = useState<string>('80')
   const [deadline, setDeadline] = useState<string>(
-    format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd')
+    format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'),
   )
 
   useEffect(() => {
@@ -262,9 +262,7 @@ export function BehavioralGoalsSection({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="targetValue">
-                    Target Value ({GOAL_CONFIG[goalType].unit})
-                  </Label>
+                  <Label htmlFor="targetValue">Target Value ({GOAL_CONFIG[goalType].unit})</Label>
                   <Input
                     id="targetValue"
                     type="number"
@@ -374,9 +372,7 @@ export function BehavioralGoalsSection({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="targetValue">
-                    Target Value ({GOAL_CONFIG[goalType].unit})
-                  </Label>
+                  <Label htmlFor="targetValue">Target Value ({GOAL_CONFIG[goalType].unit})</Label>
                   <Input
                     id="targetValue"
                     type="number"
@@ -426,7 +422,10 @@ export function BehavioralGoalsSection({
                     <p className="text-sm text-muted-foreground">{config.description}</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold" style={{ color: statusConfig.progressColor }}>
+                    <div
+                      className="text-2xl font-bold"
+                      style={{ color: statusConfig.progressColor }}
+                    >
                       {progress}%
                     </div>
                   </div>

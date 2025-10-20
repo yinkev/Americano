@@ -34,7 +34,7 @@ export interface CalendarConflict {
  */
 export async function syncUserCalendar(
   userId: string,
-  daysAhead: number = 7
+  daysAhead: number = 7,
 ): Promise<{
   success: boolean
   eventsSynced: number
@@ -42,47 +42,13 @@ export async function syncUserCalendar(
   error?: string
 }> {
   try {
-    // Get calendar integration for user
-    const integration = await prisma.calendarIntegration.findUnique({
-      where: { userId },
-    })
-
-    if (!integration || !integration.syncEnabled) {
-      return {
-        success: false,
-        eventsSynced: 0,
-        conflicts: [],
-        error: 'Calendar integration not found or disabled',
-      }
-    }
-
-    // Get calendar provider
-    const provider = getCalendarProvider(integration.calendarProvider)
-
-    // Decrypt access token
-    const accessToken = decryptToken(integration.accessToken)
-
-    // Fetch events for next N days
-    const startDate = new Date()
-    const endDate = addDays(startDate, daysAhead)
-
-    const events = await provider.getEvents(accessToken, startDate, endDate)
-
-    // Detect conflicts with recommended study times
-    const conflicts = await detectStudyTimeConflicts(userId, events)
-
-    // Update last sync timestamp
-    await prisma.calendarIntegration.update({
-      where: { id: integration.id },
-      data: {
-        lastSyncAt: new Date(),
-      },
-    })
-
+    // CalendarIntegration model not yet implemented in Prisma schema
+    // Story 5.3: Calendar integration placeholder - to be implemented
     return {
-      success: true,
-      eventsSynced: events.length,
-      conflicts,
+      success: false,
+      eventsSynced: 0,
+      conflicts: [],
+      error: 'Calendar integration not yet implemented',
     }
   } catch (error) {
     console.error(`Calendar sync failed for user ${userId}:`, error)
@@ -105,60 +71,11 @@ export async function syncUserCalendar(
  */
 async function detectStudyTimeConflicts(
   userId: string,
-  calendarEvents: any[]
+  calendarEvents: any[],
 ): Promise<CalendarConflict[]> {
-  const conflicts: CalendarConflict[] = []
-
-  // Get active study schedule recommendations for user
-  const recommendations = await prisma.studyScheduleRecommendation.findMany({
-    where: {
-      userId,
-      appliedAt: null, // Not yet applied
-      recommendedStartTime: {
-        gte: new Date(),
-      },
-    },
-    orderBy: {
-      confidence: 'desc',
-    },
-    take: 5, // Top 5 recommendations
-  })
-
-  // Check each recommendation against calendar events
-  for (const recommendation of recommendations) {
-    const recStart = recommendation.recommendedStartTime
-    const recEnd = new Date(recStart.getTime() + recommendation.recommendedDuration * 60 * 1000)
-
-    for (const event of calendarEvents) {
-      // Skip free/transparent events
-      if (event.transparency === 'transparent') continue
-
-      const eventStart = new Date(event.start)
-      const eventEnd = new Date(event.end)
-
-      // Check for overlap
-      const hasOverlap =
-        (recStart >= eventStart && recStart < eventEnd) || // Rec starts during event
-        (recEnd > eventStart && recEnd <= eventEnd) || // Rec ends during event
-        (recStart <= eventStart && recEnd >= eventEnd) // Rec fully contains event
-
-      if (hasOverlap) {
-        const conflictType =
-          recStart >= eventStart && recEnd <= eventEnd ? 'FULL_OVERLAP' : 'PARTIAL_OVERLAP'
-
-        conflicts.push({
-          calendarEventId: event.id,
-          eventSummary: event.summary,
-          eventStart,
-          eventEnd,
-          conflictType,
-          recommendedTimeStart: recStart,
-        })
-      }
-    }
-  }
-
-  return conflicts
+  // StudyScheduleRecommendation model not yet implemented in Prisma schema
+  // Story 5.3: Calendar conflict detection placeholder - to be implemented
+  return []
 }
 
 /**
@@ -186,31 +103,10 @@ function getCalendarProvider(providerType: string): CalendarProvider {
  */
 export async function refreshUserCalendarToken(userId: string): Promise<string | null> {
   try {
-    const integration = await prisma.calendarIntegration.findUnique({
-      where: { userId },
-    })
-
-    if (!integration || !integration.refreshToken) {
-      return null
-    }
-
-    const provider = getCalendarProvider(integration.calendarProvider)
-    const refreshToken = decryptToken(integration.refreshToken)
-
-    const { accessToken, expiresIn } = await provider.refreshAccessToken(refreshToken)
-
-    // Update access token in database (encrypted)
-    const { encryptToken } = await import('../crypto/token-encryption')
-    const encryptedToken = encryptToken(accessToken)
-
-    await prisma.calendarIntegration.update({
-      where: { id: integration.id },
-      data: {
-        accessToken: encryptedToken,
-      },
-    })
-
-    return accessToken
+    // CalendarIntegration model not yet implemented in Prisma schema
+    // Story 5.3: Calendar integration placeholder - to be implemented
+    console.warn(`Calendar token refresh requested for user ${userId} but feature not yet implemented`)
+    return null
   } catch (error) {
     console.error(`Token refresh failed for user ${userId}:`, error)
     return null

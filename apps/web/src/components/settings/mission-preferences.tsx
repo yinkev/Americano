@@ -4,7 +4,13 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -16,7 +22,7 @@ export function MissionPreferences() {
     defaultMissionMinutes: 50,
     missionDifficulty: 'AUTO',
     preferredStudyTime: '',
-    autoGenerateMissions: true
+    autoGenerateMissions: true,
   })
 
   useEffect(() => {
@@ -32,7 +38,7 @@ export function MissionPreferences() {
           defaultMissionMinutes: data.data.user.defaultMissionMinutes || 50,
           missionDifficulty: data.data.user.missionDifficulty || 'AUTO',
           preferredStudyTime: data.data.user.preferredStudyTime || '',
-          autoGenerateMissions: data.data.user.autoGenerateMissions ?? true
+          autoGenerateMissions: data.data.user.autoGenerateMissions ?? true,
         })
       }
     } catch (error) {
@@ -46,7 +52,7 @@ export function MissionPreferences() {
       const response = await fetch('/api/user/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(preferences)
+        body: JSON.stringify(preferences),
       })
 
       if (response.ok) {
@@ -99,9 +105,7 @@ export function MissionPreferences() {
           <Label htmlFor="mission-difficulty">Mission Difficulty</Label>
           <Select
             value={preferences.missionDifficulty}
-            onValueChange={(value) =>
-              setPreferences({ ...preferences, missionDifficulty: value })
-            }
+            onValueChange={(value) => setPreferences({ ...preferences, missionDifficulty: value })}
           >
             <SelectTrigger id="mission-difficulty">
               <SelectValue />
@@ -109,8 +113,12 @@ export function MissionPreferences() {
             <SelectContent>
               <SelectItem value="AUTO">Auto (adapts to your performance)</SelectItem>
               <SelectItem value="EASY">Easy (2 objectives, mostly basic, 30-40 min)</SelectItem>
-              <SelectItem value="MODERATE">Moderate (3 objectives, mixed complexity, 45-60 min)</SelectItem>
-              <SelectItem value="CHALLENGING">Challenging (4 objectives, includes advanced, 60-75 min)</SelectItem>
+              <SelectItem value="MODERATE">
+                Moderate (3 objectives, mixed complexity, 45-60 min)
+              </SelectItem>
+              <SelectItem value="CHALLENGING">
+                Challenging (4 objectives, includes advanced, 60-75 min)
+              </SelectItem>
             </SelectContent>
           </Select>
           <p className="text-xs text-gray-500">
@@ -125,9 +133,7 @@ export function MissionPreferences() {
             id="preferred-time"
             type="time"
             value={preferences.preferredStudyTime}
-            onChange={(e) =>
-              setPreferences({ ...preferences, preferredStudyTime: e.target.value })
-            }
+            onChange={(e) => setPreferences({ ...preferences, preferredStudyTime: e.target.value })}
             placeholder="HH:MM"
           />
           <p className="text-xs text-gray-500">
@@ -139,9 +145,7 @@ export function MissionPreferences() {
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <Label htmlFor="auto-generate">Auto-Generate Daily Missions</Label>
-            <p className="text-xs text-gray-500">
-              Automatically create missions each day
-            </p>
+            <p className="text-xs text-gray-500">Automatically create missions each day</p>
           </div>
           <Switch
             id="auto-generate"
@@ -154,11 +158,7 @@ export function MissionPreferences() {
 
         {/* Save Button */}
         <div className="pt-4 border-t border-gray-100">
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            className="bg-primary hover:bg-primary/90"
-          >
+          <Button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/90">
             {saving ? 'Saving...' : 'Save Preferences'}
           </Button>
         </div>

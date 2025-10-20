@@ -15,9 +15,9 @@ import { RecommendationsEngine } from '@/subsystems/behavioral-analytics/recomme
 // Zod validation schema for request body
 const ApplyRecommendationSchema = z.object({
   applicationType: z.enum(['AUTO', 'MANUAL', 'REMINDER', 'GOAL'], {
-    required_error: 'applicationType is required',
+    message: 'applicationType is required',
   }),
-  settings: z.record(z.any()).optional(),
+  settings: z.record(z.string(), z.any()).optional(),
 })
 
 /**
@@ -36,10 +36,7 @@ const ApplyRecommendationSchema = z.object({
  * - trackingId: string (AppliedRecommendation ID)
  */
 export const POST = withErrorHandler(
-  async (
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-  ) => {
+  async (request: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params
 
     // Parse and validate request body
@@ -52,26 +49,21 @@ export const POST = withErrorHandler(
     })
 
     if (!recommendation) {
-      return Response.json(
-        errorResponse('Recommendation not found', 'NOT_FOUND'),
-        { status: 404 }
-      )
+      return Response.json(errorResponse('Recommendation not found', 'NOT_FOUND'), { status: 404 })
     }
 
     if (recommendation.appliedAt) {
-      return Response.json(
-        errorResponse('Recommendation already applied', 'ALREADY_APPLIED'),
-        { status: 400 }
-      )
+      return Response.json(errorResponse('Recommendation already applied', 'ALREADY_APPLIED'), {
+        status: 400,
+      })
     }
 
     // Track recommendation effectiveness (captures baseline metrics)
-    const appliedRecommendation =
-      await RecommendationsEngine.trackRecommendationEffectiveness(
-        recommendation.userId,
-        id,
-        validatedBody.applicationType
-      )
+    const appliedRecommendation = await RecommendationsEngine.trackRecommendationEffectiveness(
+      recommendation.userId,
+      id,
+      validatedBody.applicationType,
+    )
 
     let updatedSettings: Record<string, any> = {}
 
@@ -80,7 +72,7 @@ export const POST = withErrorHandler(
       updatedSettings = await applyRecommendationSettings(
         recommendation.userId,
         recommendation,
-        validatedBody.settings
+        validatedBody.settings,
       )
     }
 
@@ -92,12 +84,11 @@ export const POST = withErrorHandler(
           applicationType: appliedRecommendation.applicationType,
           appliedAt: appliedRecommendation.appliedAt,
         },
-        updatedSettings:
-          Object.keys(updatedSettings).length > 0 ? updatedSettings : undefined,
+        updatedSettings: Object.keys(updatedSettings).length > 0 ? updatedSettings : undefined,
         trackingId: appliedRecommendation.id,
-      })
+      }),
     )
-  }
+  },
 )
 
 /**
@@ -106,7 +97,7 @@ export const POST = withErrorHandler(
 async function applyRecommendationSettings(
   userId: string,
   recommendation: any,
-  customSettings?: Record<string, any>
+  customSettings?: Record<string, any>,
 ): Promise<Record<string, any>> {
   const profile = await prisma.userLearningProfile.findUnique({
     where: { userId },
@@ -143,9 +134,7 @@ async function applyRecommendationSettings(
 
     case 'CONTENT_TYPE_BALANCE':
       // Extract content type from title (e.g., "Increase flashcards content to 40%")
-      const contentMatch = recommendation.title.match(
-        /Increase (\w+) content to (\d+)%/
-      )
+      const contentMatch = recommendation.title.match(/Increase (\w+) content to (\d+)%/)
       if (contentMatch) {
         const contentType = contentMatch[1]
         const targetPercentage = parseInt(contentMatch[2], 10) / 100

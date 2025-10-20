@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import {
   RadarChart,
@@ -8,17 +8,17 @@ import {
   Radar,
   ResponsiveContainer,
   Tooltip,
-} from 'recharts';
+} from 'recharts'
 
 interface LearningStyleProfileProps {
   profile: {
     learningStyleProfile: {
-      visual: number;
-      auditory: number;
-      kinesthetic: number;
-      reading: number;
-    };
-  };
+      visual: number
+      auditory: number
+      kinesthetic: number
+      reading: number
+    }
+  }
 }
 
 export function LearningStyleProfile({ profile }: LearningStyleProfileProps) {
@@ -43,11 +43,11 @@ export function LearningStyleProfile({ profile }: LearningStyleProfileProps) {
       value: Math.round(profile.learningStyleProfile.reading * 100),
       fullMark: 100,
     },
-  ];
+  ]
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
+      const data = payload[0].payload
       return (
         <div
           className="px-3 py-2 rounded-md shadow-lg"
@@ -63,60 +63,57 @@ export function LearningStyleProfile({ profile }: LearningStyleProfileProps) {
             {data.value}% preference
           </p>
         </div>
-      );
+      )
     }
-    return null;
-  };
+    return null
+  }
 
   // Generate recommendations based on profile
   const getRecommendations = () => {
-    const recommendations: string[] = [];
-    const { visual, auditory, kinesthetic, reading } = profile.learningStyleProfile;
+    const recommendations: string[] = []
+    const { visual, auditory, kinesthetic, reading } = profile.learningStyleProfile
 
     if (visual > 0.4) {
       recommendations.push(
-        `Your visual learning preference (${Math.round(visual * 100)}%) suggests focusing on knowledge graphs and diagram-based study materials.`
-      );
+        `Your visual learning preference (${Math.round(visual * 100)}%) suggests focusing on knowledge graphs and diagram-based study materials.`,
+      )
     }
 
     if (kinesthetic > 0.4) {
       recommendations.push(
-        `Your kinesthetic preference (${Math.round(kinesthetic * 100)}%) indicates clinical reasoning scenarios and hands-on practice are most effective for you.`
-      );
+        `Your kinesthetic preference (${Math.round(kinesthetic * 100)}%) indicates clinical reasoning scenarios and hands-on practice are most effective for you.`,
+      )
     }
 
     if (auditory > 0.3) {
       recommendations.push(
-        `With ${Math.round(auditory * 100)}% auditory preference, verbal explanation exercises and discussion-based learning would benefit you.`
-      );
+        `With ${Math.round(auditory * 100)}% auditory preference, verbal explanation exercises and discussion-based learning would benefit you.`,
+      )
     }
 
     if (reading > 0.4) {
       recommendations.push(
-        `Your reading/writing strength (${Math.round(reading * 100)}%) means traditional text-based lectures and note-taking will be particularly effective.`
-      );
+        `Your reading/writing strength (${Math.round(reading * 100)}%) means traditional text-based lectures and note-taking will be particularly effective.`,
+      )
     }
 
     if (recommendations.length === 0) {
       recommendations.push(
-        'Your learning style is well-balanced. Continue using a variety of content types for optimal learning.'
-      );
+        'Your learning style is well-balanced. Continue using a variety of content types for optimal learning.',
+      )
     }
 
-    return recommendations;
-  };
+    return recommendations
+  }
 
-  const recommendations = getRecommendations();
+  const recommendations = getRecommendations()
 
   return (
     <div className="space-y-4">
       <ResponsiveContainer width="100%" height={300}>
         <RadarChart data={chartData}>
           <PolarGrid stroke="oklch(0.85 0.02 230)" />
-          <PolarAngleAxis
-            dataKey="axis"
-            tick={{ fill: 'oklch(0.5 0.05 230)', fontSize: 12 }}
-          />
+          <PolarAngleAxis dataKey="axis" tick={{ fill: 'oklch(0.5 0.05 230)', fontSize: 12 }} />
           <PolarRadiusAxis
             angle={90}
             domain={[0, 100]}
@@ -142,10 +139,7 @@ export function LearningStyleProfile({ profile }: LearningStyleProfileProps) {
             style={{ backgroundColor: 'oklch(0.97 0.01 230)' }}
           >
             <span style={{ color: 'oklch(0.5 0.05 230)' }}>{item.axis}</span>
-            <span
-              className="font-semibold"
-              style={{ color: 'oklch(0.4 0.15 280)' }}
-            >
+            <span className="font-semibold" style={{ color: 'oklch(0.4 0.15 280)' }}>
               {item.value}%
             </span>
           </div>
@@ -153,14 +147,8 @@ export function LearningStyleProfile({ profile }: LearningStyleProfileProps) {
       </div>
 
       {/* Content Recommendations */}
-      <div
-        className="p-4 rounded-md"
-        style={{ backgroundColor: 'oklch(0.97 0.01 280)' }}
-      >
-        <h4
-          className="text-sm font-semibold mb-2"
-          style={{ color: 'oklch(0.4 0.15 280)' }}
-        >
+      <div className="p-4 rounded-md" style={{ backgroundColor: 'oklch(0.97 0.01 280)' }}>
+        <h4 className="text-sm font-semibold mb-2" style={{ color: 'oklch(0.4 0.15 280)' }}>
           Personalized Recommendations
         </h4>
         <ul className="space-y-2 text-sm" style={{ color: 'oklch(0.5 0.05 230)' }}>
@@ -173,5 +161,5 @@ export function LearningStyleProfile({ profile }: LearningStyleProfileProps) {
         </ul>
       </div>
     </div>
-  );
+  )
 }

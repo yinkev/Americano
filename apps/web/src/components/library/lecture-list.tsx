@@ -1,8 +1,16 @@
-"use client"
+'use client'
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { FileText, Clock, CheckCircle2, AlertCircle, XCircle, Trash2, RefreshCw } from 'lucide-react';
+import { useState } from 'react'
+import Link from 'next/link'
+import {
+  FileText,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+  Trash2,
+  RefreshCw,
+} from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -10,10 +18,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,41 +31,41 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { ProcessingProgress } from './processing-progress';
-import { toast } from 'sonner';
+} from '@/components/ui/alert-dialog'
+import { ProcessingProgress } from './processing-progress'
+import { toast } from 'sonner'
 
 interface Course {
-  id: string;
-  name: string;
-  code: string | null;
-  color: string | null;
+  id: string
+  name: string
+  code: string | null
+  color: string | null
 }
 
 interface Lecture {
-  id: string;
-  title: string;
-  fileName: string;
-  uploadedAt: string;
-  processedAt: string | null;
-  processingStatus: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
-  weekNumber: number | null;
-  topicTags: string[];
-  course: Course;
-  chunkCount: number;
-  objectiveCount: number;
-  cardCount: number;
-  processingProgress?: number;
-  totalPages?: number;
-  processedPages?: number;
-  processingStartedAt?: string;
+  id: string
+  title: string
+  fileName: string
+  uploadedAt: string
+  processedAt: string | null
+  processingStatus: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
+  weekNumber: number | null
+  topicTags: string[]
+  course: Course
+  chunkCount: number
+  objectiveCount: number
+  cardCount: number
+  processingProgress?: number
+  totalPages?: number
+  processedPages?: number
+  processingStartedAt?: string
 }
 
 interface LectureListProps {
-  lectures: Lecture[];
-  selectedLectures: Set<string>;
-  onToggleSelection: (lectureId: string) => void;
-  onRefresh: () => void;
+  lectures: Lecture[]
+  selectedLectures: Set<string>
+  onToggleSelection: (lectureId: string) => void
+  onRefresh: () => void
 }
 
 const statusConfig = {
@@ -85,7 +93,7 @@ const statusConfig = {
     variant: 'destructive' as const,
     color: 'oklch(0.6 0.2 20)',
   },
-};
+}
 
 export function LectureList({
   lectures,
@@ -93,55 +101,55 @@ export function LectureList({
   onToggleSelection,
   onRefresh,
 }: LectureListProps) {
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [lectureToDelete, setLectureToDelete] = useState<Lecture | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [reprocessingLectures, setReprocessingLectures] = useState<Set<string>>(new Set());
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [lectureToDelete, setLectureToDelete] = useState<Lecture | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [reprocessingLectures, setReprocessingLectures] = useState<Set<string>>(new Set())
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const date = new Date(dateString)
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
-    }).format(date);
-  };
+    }).format(date)
+  }
 
   const handleDeleteClick = (lecture: Lecture) => {
-    setLectureToDelete(lecture);
-    setDeleteDialogOpen(true);
-  };
+    setLectureToDelete(lecture)
+    setDeleteDialogOpen(true)
+  }
 
   const handleDeleteConfirm = async () => {
-    if (!lectureToDelete) return;
+    if (!lectureToDelete) return
 
-    setIsDeleting(true);
+    setIsDeleting(true)
     try {
       const response = await fetch(`/api/content/lectures/${lectureToDelete.id}`, {
         method: 'DELETE',
-      });
+      })
 
-      const result = await response.json();
+      const result = await response.json()
 
       if (result.success) {
-        toast.success('File deleted successfully');
-        onRefresh();
-        setDeleteDialogOpen(false);
-        setLectureToDelete(null);
+        toast.success('File deleted successfully')
+        onRefresh()
+        setDeleteDialogOpen(false)
+        setLectureToDelete(null)
       } else {
-        toast.error(result.error?.message || 'Failed to delete file');
+        toast.error(result.error?.message || 'Failed to delete file')
       }
     } catch (error) {
-      console.error('Delete error:', error);
-      toast.error('Failed to delete file');
+      console.error('Delete error:', error)
+      toast.error('Failed to delete file')
     } finally {
-      setIsDeleting(false);
+      setIsDeleting(false)
     }
-  };
+  }
 
   const canDelete = (status: string) => {
-    return status === 'PENDING' || status === 'FAILED';
-  };
+    return status === 'PENDING' || status === 'FAILED'
+  }
 
   const needsReprocess = (lecture: Lecture) => {
     // Show reprocess button if:
@@ -150,39 +158,39 @@ export function LectureList({
     return (
       lecture.processingStatus === 'FAILED' ||
       (lecture.processingStatus === 'COMPLETED' && lecture.objectiveCount === 0)
-    );
-  };
+    )
+  }
 
   const handleReprocess = async (lectureId: string) => {
-    setReprocessingLectures(prev => new Set(prev).add(lectureId));
+    setReprocessingLectures((prev) => new Set(prev).add(lectureId))
 
     try {
       const response = await fetch(`/api/content/lectures/${lectureId}/reprocess`, {
         method: 'POST',
-      });
+      })
 
-      const result = await response.json();
+      const result = await response.json()
 
       if (result.success) {
-        toast.success('Reprocessing started. This may take a few minutes.');
+        toast.success('Reprocessing started. This may take a few minutes.')
         // Refresh after a short delay to show the PROCESSING status
         setTimeout(() => {
-          onRefresh();
-        }, 1000);
+          onRefresh()
+        }, 1000)
       } else {
-        toast.error(result.error?.message || 'Failed to start reprocessing');
+        toast.error(result.error?.message || 'Failed to start reprocessing')
       }
     } catch (error) {
-      console.error('Reprocess error:', error);
-      toast.error('Failed to start reprocessing');
+      console.error('Reprocess error:', error)
+      toast.error('Failed to start reprocessing')
     } finally {
-      setReprocessingLectures(prev => {
-        const next = new Set(prev);
-        next.delete(lectureId);
-        return next;
-      });
+      setReprocessingLectures((prev) => {
+        const next = new Set(prev)
+        next.delete(lectureId)
+        return next
+      })
     }
-  };
+  }
 
   return (
     <div className="border rounded-md">
@@ -202,7 +210,7 @@ export function LectureList({
         </TableHeader>
         <TableBody>
           {lectures.map((lecture) => {
-            const StatusIcon = statusConfig[lecture.processingStatus].icon;
+            const StatusIcon = statusConfig[lecture.processingStatus].icon
 
             return (
               <TableRow key={lecture.id} className="hover:bg-muted/30">
@@ -229,9 +237,7 @@ export function LectureList({
                         style={{ backgroundColor: lecture.course.color }}
                       />
                     )}
-                    <span className="text-sm">
-                      {lecture.course.code || lecture.course.name}
-                    </span>
+                    <span className="text-sm">{lecture.course.code || lecture.course.name}</span>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -274,7 +280,9 @@ export function LectureList({
                         className="h-4 w-4"
                         style={{ color: statusConfig[lecture.processingStatus].color }}
                       />
-                      <span className="text-sm">{statusConfig[lecture.processingStatus].label}</span>
+                      <span className="text-sm">
+                        {statusConfig[lecture.processingStatus].label}
+                      </span>
                     </div>
                   )}
                 </TableCell>
@@ -299,7 +307,9 @@ export function LectureList({
                         className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                         title="Reprocess this lecture"
                       >
-                        <RefreshCw className={`h-4 w-4 ${reprocessingLectures.has(lecture.id) ? 'animate-spin' : ''}`} />
+                        <RefreshCw
+                          className={`h-4 w-4 ${reprocessingLectures.has(lecture.id) ? 'animate-spin' : ''}`}
+                        />
                       </Button>
                     )}
                     {canDelete(lecture.processingStatus) && (
@@ -316,7 +326,7 @@ export function LectureList({
                   </div>
                 </TableCell>
               </TableRow>
-            );
+            )
           })}
         </TableBody>
       </Table>
@@ -355,5 +365,5 @@ export function LectureList({
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  );
+  )
 }

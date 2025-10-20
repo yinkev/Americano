@@ -1,17 +1,17 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Clock, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react'
+import { Clock, AlertCircle } from 'lucide-react'
 
 // Timer configuration constants
-const ALERT_THRESHOLD_80 = 80;
-const ALERT_THRESHOLD_100 = 100;
-const TIMER_UPDATE_INTERVAL_MS = 100;
+const ALERT_THRESHOLD_80 = 80
+const ALERT_THRESHOLD_100 = 100
+const TIMER_UPDATE_INTERVAL_MS = 100
 
 interface ObjectiveTimerProps {
-  startedAt: Date | null;
-  estimatedMinutes: number;
-  onAlertThreshold?: (percent: number) => void;
+  startedAt: Date | null
+  estimatedMinutes: number
+  onAlertThreshold?: (percent: number) => void
 }
 
 /**
@@ -31,40 +31,40 @@ export function ObjectiveTimer({
   estimatedMinutes,
   onAlertThreshold,
 }: ObjectiveTimerProps) {
-  const [elapsed, setElapsed] = useState(0);
-  const [alertFired80, setAlertFired80] = useState(false);
-  const [alertFired100, setAlertFired100] = useState(false);
+  const [elapsed, setElapsed] = useState(0)
+  const [alertFired80, setAlertFired80] = useState(false)
+  const [alertFired100, setAlertFired100] = useState(false)
 
   useEffect(() => {
     if (!startedAt) {
-      setElapsed(0);
-      setAlertFired80(false);
-      setAlertFired100(false);
-      return;
+      setElapsed(0)
+      setAlertFired80(false)
+      setAlertFired100(false)
+      return
     }
 
     // Use Date.now() for accuracy (no setInterval drift)
     const interval = setInterval(() => {
-      const now = Date.now();
-      const startTime = new Date(startedAt).getTime();
-      const elapsedMs = now - startTime;
-      setElapsed(elapsedMs);
+      const now = Date.now()
+      const startTime = new Date(startedAt).getTime()
+      const elapsedMs = now - startTime
+      setElapsed(elapsedMs)
 
       // Check thresholds
-      const estimatedMs = estimatedMinutes * 60 * 1000;
-      const percent = (elapsedMs / estimatedMs) * 100;
+      const estimatedMs = estimatedMinutes * 60 * 1000
+      const percent = (elapsedMs / estimatedMs) * 100
 
       if (percent >= ALERT_THRESHOLD_100 && !alertFired100) {
-        onAlertThreshold?.(ALERT_THRESHOLD_100);
-        setAlertFired100(true);
+        onAlertThreshold?.(ALERT_THRESHOLD_100)
+        setAlertFired100(true)
       } else if (percent >= ALERT_THRESHOLD_80 && !alertFired80) {
-        onAlertThreshold?.(ALERT_THRESHOLD_80);
-        setAlertFired80(true);
+        onAlertThreshold?.(ALERT_THRESHOLD_80)
+        setAlertFired80(true)
       }
-    }, TIMER_UPDATE_INTERVAL_MS); // Update every 100ms for smooth display
+    }, TIMER_UPDATE_INTERVAL_MS) // Update every 100ms for smooth display
 
-    return () => clearInterval(interval);
-  }, [startedAt, estimatedMinutes, alertFired80, alertFired100, onAlertThreshold]);
+    return () => clearInterval(interval)
+  }, [startedAt, estimatedMinutes, alertFired80, alertFired100, onAlertThreshold])
 
   if (!startedAt) {
     return (
@@ -72,32 +72,32 @@ export function ObjectiveTimer({
         <Clock className="w-4 h-4" />
         <span>Timer not started</span>
       </div>
-    );
+    )
   }
 
   // Format elapsed time as MM:SS
-  const totalSeconds = Math.floor(elapsed / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  const totalSeconds = Math.floor(elapsed / 1000)
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 
   // Calculate progress percentage
-  const estimatedMs = estimatedMinutes * 60 * 1000;
-  const percent = Math.min((elapsed / estimatedMs) * 100, 100);
+  const estimatedMs = estimatedMinutes * 60 * 1000
+  const percent = Math.min((elapsed / estimatedMs) * 100, 100)
 
   // Determine color based on threshold
-  let timerColor = 'oklch(0.55 0.2 250)'; // Blue - normal
-  let iconColor = 'oklch(0.55 0.2 250)';
-  let showWarning = false;
+  let timerColor = 'oklch(0.55 0.2 250)' // Blue - normal
+  let iconColor = 'oklch(0.55 0.2 250)'
+  let showWarning = false
 
   if (percent >= ALERT_THRESHOLD_100) {
-    timerColor = 'oklch(0.5 0.2 0)'; // Red
-    iconColor = 'oklch(0.5 0.2 0)';
-    showWarning = true;
+    timerColor = 'oklch(0.5 0.2 0)' // Red
+    iconColor = 'oklch(0.5 0.2 0)'
+    showWarning = true
   } else if (percent >= ALERT_THRESHOLD_80) {
-    timerColor = 'oklch(0.65 0.15 80)'; // Yellow/Orange
-    iconColor = 'oklch(0.65 0.15 80)';
-    showWarning = true;
+    timerColor = 'oklch(0.65 0.15 80)' // Yellow/Orange
+    iconColor = 'oklch(0.65 0.15 80)'
+    showWarning = true
   }
 
   return (
@@ -125,5 +125,5 @@ export function ObjectiveTimer({
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -5,9 +5,9 @@
  * Displays struggle reduction statistics with before/after comparison
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   BarChart,
   Bar,
@@ -17,64 +17,70 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-} from 'recharts';
-import { TrendingDown, CheckCircle2, Target, Calendar } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+} from 'recharts'
+import { TrendingDown, CheckCircle2, Target, Calendar } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 interface ReductionData {
-  baselineRate: number;
-  currentRate: number;
-  reductionPercentage: number;
+  baselineRate: number
+  currentRate: number
+  reductionPercentage: number
   timeline: {
-    week: string;
-    struggleRate: number;
-  }[];
-  interventionCount: number;
-  weeksTracked: number;
+    week: string
+    struggleRate: number
+  }[]
+  interventionCount: number
+  weeksTracked: number
 }
 
 export function StruggleReductionMetrics() {
-  const [data, setData] = useState<ReductionData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<ReductionData | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchReductionData();
-  }, []);
+    fetchReductionData()
+  }, [])
 
   async function fetchReductionData() {
     try {
-      setLoading(true);
+      setLoading(true)
 
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/analytics/struggle-reduction?period=all', {
-      //   headers: { 'X-User-Email': 'kevy@americano.dev' },
-      // });
-      // const result = await response.json();
+      // Fetch from real API endpoint (proxies to ML service)
+      const response = await fetch('/api/analytics/struggle-reduction?period=all&userId=user-kevy')
 
-      // Mock data for MVP - showing significant improvement
-      const mockData: ReductionData = {
-        baselineRate: 0.42, // 42% struggle rate initially
-        currentRate: 0.28, // 28% current struggle rate
-        reductionPercentage: 33.3, // 33.3% reduction
-        timeline: [
-          { week: 'Week 1', struggleRate: 42 },
-          { week: 'Week 2', struggleRate: 40 },
-          { week: 'Week 3', struggleRate: 38 },
-          { week: 'Week 4', struggleRate: 35 },
-          { week: 'Week 5', struggleRate: 32 },
-          { week: 'Week 6', struggleRate: 28 },
-        ],
-        interventionCount: 12,
-        weeksTracked: 6,
-      };
+      if (!response.ok) {
+        throw new Error(`Failed to fetch struggle reduction data: ${response.statusText}`)
+      }
 
-      setData(mockData);
+      const result = await response.json()
+
+      // Transform API response to component format
+      if (result.success && result.data) {
+        const apiData = result.data
+
+        const transformedData: ReductionData = {
+          baselineRate: apiData.baseline_rate || 0,
+          currentRate: apiData.current_rate || 0,
+          reductionPercentage: apiData.reduction_percentage || 0,
+          timeline: (apiData.weekly_timeline || []).map((week: any) => ({
+            week: week.week,
+            struggleRate: week.struggle_rate * 100, // Convert to percentage
+          })),
+          interventionCount: apiData.intervention_count || 0,
+          weeksTracked: apiData.weeks_tracked || 0,
+        }
+
+        setData(transformedData)
+      } else {
+        // No data available yet
+        setData(null)
+      }
     } catch (error) {
-      console.error('Error fetching reduction data:', error);
-      setData(null);
+      console.error('Error fetching reduction data:', error)
+      setData(null)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -82,12 +88,10 @@ export function StruggleReductionMetrics() {
     return (
       <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
         <CardContent className="p-6 h-64 flex items-center justify-center">
-          <p className="text-sm text-muted-foreground">
-            Loading metrics...
-          </p>
+          <p className="text-sm text-muted-foreground">Loading metrics...</p>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (!data || data.weeksTracked < 2) {
@@ -103,7 +107,7 @@ export function StruggleReductionMetrics() {
           </p>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   // Prepare comparison data
@@ -118,22 +122,20 @@ export function StruggleReductionMetrics() {
       rate: data.currentRate * 100,
       color: 'oklch(0.7 0.12 145)',
     },
-  ];
+  ]
 
   const reductionColor =
     data.reductionPercentage >= 25
       ? 'oklch(0.7 0.12 145)' // Green - Great
       : data.reductionPercentage >= 10
         ? 'oklch(0.8 0.15 85)' // Yellow - Good
-        : 'oklch(0.556 0 0)'; // Gray - Modest
+        : 'oklch(0.556 0 0)' // Gray - Modest
 
   return (
     <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
-          <CardTitle className="font-heading text-lg">
-            Your Progress
-          </CardTitle>
+          <CardTitle className="font-heading text-lg">Your Progress</CardTitle>
           <Badge
             variant="outline"
             className="shrink-0 px-3 py-1.5"
@@ -157,30 +159,20 @@ export function StruggleReductionMetrics() {
               {data.reductionPercentage.toFixed(0)}%
             </p>
           </div>
-          <p className="text-lg font-semibold text-foreground mb-1">
-            Struggles Reduced
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Thanks to proactive interventions
-          </p>
+          <p className="text-lg font-semibold text-foreground mb-1">Struggles Reduced</p>
+          <p className="text-sm text-muted-foreground">Thanks to proactive interventions</p>
         </div>
 
         {/* Before/After Comparison Bar Chart */}
         <div>
-          <h4 className="text-sm font-semibold text-foreground mb-3">
-            Before vs After Comparison
-          </h4>
+          <h4 className="text-sm font-semibold text-foreground mb-3">Before vs After Comparison</h4>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart
               data={comparisonData}
               layout="vertical"
               margin={{ top: 5, right: 30, bottom: 5, left: 80 }}
             >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="oklch(0.9 0 0)"
-                horizontal={false}
-              />
+              <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" horizontal={false} />
               <XAxis
                 type="number"
                 domain={[0, 50]}
@@ -227,16 +219,14 @@ export function StruggleReductionMetrics() {
 
         {/* Timeline Progress */}
         <div>
-          <h4 className="text-sm font-semibold text-foreground mb-3">
-            Reduction Timeline
-          </h4>
+          <h4 className="text-sm font-semibold text-foreground mb-3">Reduction Timeline</h4>
           <div className="space-y-2">
             {data.timeline.map((point, index) => {
-              const isFirst = index === 0;
-              const isLast = index === data.timeline.length - 1;
+              const isFirst = index === 0
+              const isLast = index === data.timeline.length - 1
               const change = isFirst
                 ? 0
-                : point.struggleRate - data.timeline[index - 1].struggleRate;
+                : point.struggleRate - data.timeline[index - 1].struggleRate
 
               return (
                 <div
@@ -249,9 +239,7 @@ export function StruggleReductionMetrics() {
                         isLast ? 'bg-[oklch(0.7_0.12_145)]' : 'bg-muted'
                       }`}
                     />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {point.week}
-                    </span>
+                    <span className="text-xs font-medium text-muted-foreground">{point.week}</span>
                   </div>
                   <div className="flex-1">
                     <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
@@ -270,9 +258,7 @@ export function StruggleReductionMetrics() {
                     {!isFirst && (
                       <span
                         className={`ml-2 text-xs ${
-                          change < 0
-                            ? 'text-[oklch(0.7_0.12_145)]'
-                            : 'text-muted-foreground'
+                          change < 0 ? 'text-[oklch(0.7_0.12_145)]' : 'text-muted-foreground'
                         }`}
                       >
                         {change < 0 ? '↓' : change > 0 ? '↑' : '→'}
@@ -280,7 +266,7 @@ export function StruggleReductionMetrics() {
                     )}
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
         </div>
@@ -292,12 +278,8 @@ export function StruggleReductionMetrics() {
               <Target className="size-5 text-[oklch(0.7_0.15_230)]" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-1">
-                Interventions Applied
-              </p>
-              <p className="text-2xl font-bold text-foreground">
-                {data.interventionCount}
-              </p>
+              <p className="text-xs text-muted-foreground mb-1">Interventions Applied</p>
+              <p className="text-2xl font-bold text-foreground">{data.interventionCount}</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -305,9 +287,7 @@ export function StruggleReductionMetrics() {
               <CheckCircle2 className="size-5 text-[oklch(0.7_0.12_145)]" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-1">
-                Success Rate
-              </p>
+              <p className="text-xs text-muted-foreground mb-1">Success Rate</p>
               <p className="text-2xl font-bold text-foreground">
                 {((1 - data.currentRate) * 100).toFixed(0)}%
               </p>
@@ -317,15 +297,13 @@ export function StruggleReductionMetrics() {
 
         {/* CTA */}
         <div className="p-4 rounded-xl bg-[oklch(0.7_0.15_230)]/5 border border-[oklch(0.7_0.15_230)]/20">
-          <p className="text-sm font-medium text-foreground mb-1">
-            Keep Providing Feedback
-          </p>
+          <p className="text-sm font-medium text-foreground mb-1">Keep Providing Feedback</p>
           <p className="text-xs text-muted-foreground">
-            Your feedback helps improve predictions and reduces struggles even further.
-            Let us know when predictions are accurate or inaccurate!
+            Your feedback helps improve predictions and reduces struggles even further. Let us know
+            when predictions are accurate or inaccurate!
           </p>
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

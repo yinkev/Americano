@@ -11,70 +11,64 @@
  * Maps to Acceptance Criteria #3
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { Settings, RotateCcw, Clock, Sparkles, TrendingUp } from 'lucide-react';
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { Slider } from '@/components/ui/slider'
+import { Switch } from '@/components/ui/switch'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
+import { format } from 'date-fns'
+import { Settings, RotateCcw, Clock, Sparkles, TrendingUp } from 'lucide-react'
 
 interface UserProfile {
-  id: string;
-  defaultMissionMinutes: number;
-  missionDifficulty: string;
-  lastMissionAdaptation: string | null;
+  id: string
+  defaultMissionMinutes: number
+  missionDifficulty: string
+  lastMissionAdaptation: string | null
 }
 
 interface AdaptationEvent {
-  timestamp: string;
-  change: string;
-  reason: string;
+  timestamp: string
+  change: string
+  reason: string
 }
 
 export function MissionAdaptation() {
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [autoAdapt, setAutoAdapt] = useState(true);
-  const [manualDuration, setManualDuration] = useState(50);
-  const [manualDifficulty, setManualDifficulty] = useState(2); // 0=EASY, 1=MODERATE, 2=CHALLENGING
-  const [adaptationHistory, setAdaptationHistory] = useState<AdaptationEvent[]>([]);
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [autoAdapt, setAutoAdapt] = useState(true)
+  const [manualDuration, setManualDuration] = useState(50)
+  const [manualDifficulty, setManualDifficulty] = useState(2) // 0=EASY, 1=MODERATE, 2=CHALLENGING
+  const [adaptationHistory, setAdaptationHistory] = useState<AdaptationEvent[]>([])
 
   useEffect(() => {
-    fetchProfile();
-    fetchAdaptationHistory();
-  }, []);
+    fetchProfile()
+    fetchAdaptationHistory()
+  }, [])
 
   async function fetchProfile() {
     try {
-      setLoading(true);
+      setLoading(true)
       const response = await fetch('/api/user/profile', {
         headers: {
           'X-User-Email': 'kevy@americano.dev',
         },
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to fetch profile');
+        throw new Error('Failed to fetch profile')
       }
 
-      const data = await response.json();
-      const user = data.data.user;
+      const data = await response.json()
+      const user = data.data.user
 
-      setProfile(user);
-      setManualDuration(user.defaultMissionMinutes || 50);
-      setAutoAdapt(user.missionDifficulty === 'AUTO');
+      setProfile(user)
+      setManualDuration(user.defaultMissionMinutes || 50)
+      setAutoAdapt(user.missionDifficulty === 'AUTO')
 
       // Map difficulty string to index
       const difficultyMap: Record<string, number> = {
@@ -82,13 +76,13 @@ export function MissionAdaptation() {
         MODERATE: 1,
         CHALLENGING: 2,
         AUTO: 1, // Default to moderate if AUTO
-      };
-      setManualDifficulty(difficultyMap[user.missionDifficulty] || 1);
+      }
+      setManualDifficulty(difficultyMap[user.missionDifficulty] || 1)
     } catch (error) {
-      console.error('Error fetching profile:', error);
-      toast.error('Failed to load settings');
+      console.error('Error fetching profile:', error)
+      toast.error('Failed to load settings')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -103,20 +97,20 @@ export function MissionAdaptation() {
             change: 'Mission difficulty adjusted',
             reason: 'Based on recent completion patterns',
           },
-        ]);
+        ])
       }
     } catch (error) {
-      console.error('Error fetching adaptation history:', error);
+      console.error('Error fetching adaptation history:', error)
     }
   }
 
   async function handleSave() {
-    if (!profile) return;
+    if (!profile) return
 
-    setSaving(true);
+    setSaving(true)
     try {
-      const difficultyValues = ['EASY', 'MODERATE', 'CHALLENGING'];
-      const missionDifficulty = autoAdapt ? 'AUTO' : difficultyValues[manualDifficulty];
+      const difficultyValues = ['EASY', 'MODERATE', 'CHALLENGING']
+      const missionDifficulty = autoAdapt ? 'AUTO' : difficultyValues[manualDifficulty]
 
       const response = await fetch('/api/user/profile', {
         method: 'PATCH',
@@ -128,21 +122,21 @@ export function MissionAdaptation() {
           defaultMissionMinutes: manualDuration,
           missionDifficulty,
         }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to save settings');
+        throw new Error('Failed to save settings')
       }
 
-      const data = await response.json();
-      setProfile(data.data.user);
+      const data = await response.json()
+      setProfile(data.data.user)
 
-      toast.success('Mission adaptation settings saved!');
+      toast.success('Mission adaptation settings saved!')
     } catch (error) {
-      console.error('Error saving settings:', error);
-      toast.error('Failed to save settings');
+      console.error('Error saving settings:', error)
+      toast.error('Failed to save settings')
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
   }
 
@@ -153,40 +147,38 @@ export function MissionAdaptation() {
         headers: {
           'X-User-Email': 'kevy@americano.dev',
         },
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to fetch recommendations');
+        throw new Error('Failed to fetch recommendations')
       }
 
-      const data = await response.json();
-      const recommendations = data.data.recommendations || [];
+      const data = await response.json()
+      const recommendations = data.data.recommendations || []
 
       // Find duration recommendation
-      const durationRec = recommendations.find(
-        (r: any) => r.type === 'DURATION'
-      );
+      const durationRec = recommendations.find((r: any) => r.type === 'DURATION')
       if (durationRec && durationRec.value?.duration) {
-        setManualDuration(durationRec.value.duration);
+        setManualDuration(durationRec.value.duration)
       } else {
         // Default recommended settings
-        setManualDuration(50);
+        setManualDuration(50)
       }
 
-      setAutoAdapt(true);
-      setManualDifficulty(1); // MODERATE
+      setAutoAdapt(true)
+      setManualDifficulty(1) // MODERATE
 
       toast.success('Reset to recommended settings!', {
         description: 'Based on your recent performance data',
-      });
+      })
     } catch (error) {
-      console.error('Error resetting settings:', error);
+      console.error('Error resetting settings:', error)
       // Fallback to sensible defaults
-      setManualDuration(50);
-      setAutoAdapt(true);
-      setManualDifficulty(1);
+      setManualDuration(50)
+      setAutoAdapt(true)
+      setManualDifficulty(1)
 
-      toast.success('Reset to default settings');
+      toast.success('Reset to default settings')
     }
   }
 
@@ -194,9 +186,7 @@ export function MissionAdaptation() {
     return (
       <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-gray-800">
-            Mission Adaptation
-          </CardTitle>
+          <CardTitle className="text-xl font-semibold text-gray-800">Mission Adaptation</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse space-y-4">
@@ -206,15 +196,11 @@ export function MissionAdaptation() {
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
-  const difficultyLabels = ['Easy', 'Moderate', 'Challenging'];
-  const difficultyColors = [
-    'oklch(0.75 0.15 160)',
-    'oklch(0.7 0.15 50)',
-    'oklch(0.65 0.15 10)',
-  ];
+  const difficultyLabels = ['Easy', 'Moderate', 'Challenging']
+  const difficultyColors = ['oklch(0.75 0.15 160)', 'oklch(0.7 0.15 50)', 'oklch(0.65 0.15 10)']
 
   return (
     <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
@@ -381,5 +367,5 @@ export function MissionAdaptation() {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

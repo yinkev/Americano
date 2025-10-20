@@ -5,10 +5,10 @@
  * Toast notifications for major mission insights
  */
 
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import {
   TrendingUp,
   TrendingDown,
@@ -19,7 +19,7 @@ import {
   Sparkles,
   Trophy,
   Flame,
-} from 'lucide-react';
+} from 'lucide-react'
 
 export type InsightType =
   | 'PERFORMANCE_TREND'
@@ -28,22 +28,22 @@ export type InsightType =
   | 'OBJECTIVE_PREFERENCE'
   | 'STREAK_MILESTONE'
   | 'COMPLETION_DROP'
-  | 'ANOMALY';
+  | 'ANOMALY'
 
-export type InsightSentiment = 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE';
+export type InsightSentiment = 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE'
 
 interface Insight {
-  id: string;
-  type: InsightType;
-  headline: string;
-  detail: string;
-  sentiment: InsightSentiment;
-  actionUrl?: string;
+  id: string
+  type: InsightType
+  headline: string
+  detail: string
+  sentiment: InsightSentiment
+  actionUrl?: string
 }
 
 interface InsightNotificationProps {
-  insight: Insight;
-  onDismiss?: () => void;
+  insight: Insight
+  onDismiss?: () => void
 }
 
 const INSIGHT_ICONS: Record<InsightType, React.ElementType> = {
@@ -54,20 +54,17 @@ const INSIGHT_ICONS: Record<InsightType, React.ElementType> = {
   STREAK_MILESTONE: Flame,
   COMPLETION_DROP: TrendingDown,
   ANOMALY: AlertCircle,
-};
+}
 
 const SENTIMENT_COLORS: Record<InsightSentiment, string> = {
   POSITIVE: 'oklch(0.75 0.15 160)',
   NEUTRAL: 'oklch(0.7 0.15 230)',
   NEGATIVE: 'oklch(0.65 0.15 10)',
-};
+}
 
-export function showInsightNotification(
-  insight: Insight,
-  onDismiss?: () => void
-) {
-  const Icon = INSIGHT_ICONS[insight.type] || Sparkles;
-  const sentimentColor = SENTIMENT_COLORS[insight.sentiment];
+export function showInsightNotification(insight: Insight, onDismiss?: () => void) {
+  const Icon = INSIGHT_ICONS[insight.type] || Sparkles
+  const sentimentColor = SENTIMENT_COLORS[insight.sentiment]
 
   toast.custom(
     (_t) => (
@@ -93,10 +90,7 @@ export function showInsightNotification(
                   animationDelay: `${Math.random() * 0.5}s`,
                 }}
               >
-                <Sparkles
-                  className="size-3"
-                  style={{ color: sentimentColor, opacity: 0.4 }}
-                />
+                <Sparkles className="size-3" style={{ color: sentimentColor, opacity: 0.4 }} />
               </div>
             ))}
           </div>
@@ -110,9 +104,7 @@ export function showInsightNotification(
             style={{
               backgroundColor: `${sentimentColor} / 0.15`,
               animation:
-                insight.sentiment === 'POSITIVE'
-                  ? 'pulse 2s ease-in-out infinite'
-                  : 'none',
+                insight.sentiment === 'POSITIVE' ? 'pulse 2s ease-in-out infinite' : 'none',
             }}
           >
             <Icon className="h-6 w-6" style={{ color: sentimentColor }} />
@@ -120,15 +112,11 @@ export function showInsightNotification(
 
           {/* Insight details */}
           <div className="flex-1 space-y-1">
-            <p className="text-sm font-semibold text-foreground">
-              Mission Insight
-            </p>
+            <p className="text-sm font-semibold text-foreground">Mission Insight</p>
             <p className="text-base font-bold" style={{ color: sentimentColor }}>
               {insight.headline}
             </p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              {insight.detail}
-            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">{insight.detail}</p>
             {insight.actionUrl && (
               <a
                 href={insight.actionUrl}
@@ -152,10 +140,7 @@ export function showInsightNotification(
             />
           )}
           {insight.sentiment === 'NEGATIVE' && (
-            <AlertCircle
-              className="h-8 w-8 flex-shrink-0"
-              style={{ color: sentimentColor }}
-            />
+            <AlertCircle className="h-8 w-8 flex-shrink-0" style={{ color: sentimentColor }} />
           )}
         </div>
 
@@ -211,49 +196,46 @@ export function showInsightNotification(
       duration: 6000,
       onDismiss,
       onAutoClose: onDismiss,
-    }
-  );
+    },
+  )
 }
 
 // Hook for managing insight notifications
 export function useInsightNotifications() {
-  const [queue, setQueue] = useState<Insight[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [queue, setQueue] = useState<Insight[]>([])
+  const [isProcessing, setIsProcessing] = useState(false)
 
   useEffect(() => {
     if (queue.length > 0 && !isProcessing) {
-      setIsProcessing(true);
-      const [current, ...rest] = queue;
+      setIsProcessing(true)
+      const [current, ...rest] = queue
 
       showInsightNotification(current, () => {
-        setQueue(rest);
-        setIsProcessing(false);
-      });
+        setQueue(rest)
+        setIsProcessing(false)
+      })
     }
-  }, [queue, isProcessing]);
+  }, [queue, isProcessing])
 
   const showInsight = (insight: Insight) => {
-    setQueue((prev) => [...prev, insight]);
-  };
+    setQueue((prev) => [...prev, insight])
+  }
 
   const clearQueue = () => {
-    setQueue([]);
-    setIsProcessing(false);
-  };
+    setQueue([])
+    setIsProcessing(false)
+  }
 
-  return { showInsight, clearQueue, queueLength: queue.length };
+  return { showInsight, clearQueue, queueLength: queue.length }
 }
 
 // Component version (for direct usage)
-export function InsightNotification({
-  insight,
-  onDismiss,
-}: InsightNotificationProps) {
+export function InsightNotification({ insight, onDismiss }: InsightNotificationProps) {
   useEffect(() => {
-    showInsightNotification(insight, onDismiss);
-  }, [insight, onDismiss]);
+    showInsightNotification(insight, onDismiss)
+  }, [insight, onDismiss])
 
-  return null;
+  return null
 }
 
 // Predefined insight templates for common scenarios
@@ -302,4 +284,4 @@ export const INSIGHT_TEMPLATES = {
     sentiment: 'POSITIVE',
     actionUrl: '/analytics/missions',
   }),
-};
+}

@@ -12,28 +12,35 @@
  * Design: Glassmorphism, OKLCH colors, supportive messaging
  */
 
-'use client';
+'use client'
 
-import { AlertCircle, AlertTriangle, CheckCircle, ShieldAlert, Calendar, TrendingDown } from 'lucide-react';
-import { format, differenceInDays } from 'date-fns';
+import {
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle,
+  ShieldAlert,
+  Calendar,
+  TrendingDown,
+} from 'lucide-react'
+import { format, differenceInDays } from 'date-fns'
 
-export type BurnoutRiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+export type BurnoutRiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
 
 export interface BurnoutContributingFactor {
-  factor: string;
-  percentage: number;
-  description: string;
+  factor: string
+  percentage: number
+  description: string
 }
 
 interface BurnoutRiskPanelProps {
-  riskLevel: BurnoutRiskLevel;
-  riskScore: number; // 0-100
-  contributingFactors: BurnoutContributingFactor[];
-  recommendations: string[];
-  daysSinceLastRest: number;
-  recoveryProgress?: number; // 0-100, optional if user is in recovery
-  lastAssessmentDate: Date;
-  className?: string;
+  riskLevel: BurnoutRiskLevel
+  riskScore: number // 0-100
+  contributingFactors: BurnoutContributingFactor[]
+  recommendations: string[]
+  daysSinceLastRest: number
+  recoveryProgress?: number // 0-100, optional if user is in recovery
+  lastAssessmentDate: Date
+  className?: string
 }
 
 // Risk level configurations
@@ -62,7 +69,7 @@ const RISK_CONFIGS = {
     label: 'Critical Risk',
     message: 'Take immediate action! Your learning effectiveness is compromised.',
   },
-} as const;
+} as const
 
 export function BurnoutRiskPanel({
   riskLevel,
@@ -74,19 +81,19 @@ export function BurnoutRiskPanel({
   lastAssessmentDate,
   className = '',
 }: BurnoutRiskPanelProps) {
-  const config = RISK_CONFIGS[riskLevel];
-  const RiskIcon = config.icon;
+  const config = RISK_CONFIGS[riskLevel]
+  const RiskIcon = config.icon
 
   // Sort factors by percentage (highest first)
-  const sortedFactors = [...contributingFactors].sort((a, b) => b.percentage - a.percentage);
+  const sortedFactors = [...contributingFactors].sort((a, b) => b.percentage - a.percentage)
 
   return (
-    <div className={`bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl p-6 ${className}`}>
+    <div
+      className={`bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl p-6 ${className}`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h3 className="font-heading font-semibold text-foreground text-lg">
-          Burnout Risk
-        </h3>
+        <h3 className="font-heading font-semibold text-foreground text-lg">Burnout Risk</h3>
         <div className="text-xs text-muted-foreground">
           Updated {format(lastAssessmentDate, 'MMM d, h:mm a')}
         </div>
@@ -116,9 +123,7 @@ export function BurnoutRiskPanel({
               {Math.round(riskScore)}/100
             </span>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {config.message}
-          </p>
+          <p className="text-sm text-muted-foreground">{config.message}</p>
         </div>
       </div>
 
@@ -130,19 +135,19 @@ export function BurnoutRiskPanel({
           }`}
         >
           <div className="flex items-center gap-2 mb-2">
-            <Calendar className={`size-4 ${daysSinceLastRest > 7 ? 'text-red-600' : 'text-muted-foreground'}`} />
-            <span className="text-xs font-medium text-muted-foreground">
-              Days Since Rest
-            </span>
+            <Calendar
+              className={`size-4 ${daysSinceLastRest > 7 ? 'text-red-600' : 'text-muted-foreground'}`}
+            />
+            <span className="text-xs font-medium text-muted-foreground">Days Since Rest</span>
           </div>
-          <div className={`text-2xl font-bold font-heading ${
-            daysSinceLastRest > 7 ? 'text-red-600' : 'text-foreground'
-          }`}>
+          <div
+            className={`text-2xl font-bold font-heading ${
+              daysSinceLastRest > 7 ? 'text-red-600' : 'text-foreground'
+            }`}
+          >
             {daysSinceLastRest}
           </div>
-          {daysSinceLastRest > 7 && (
-            <p className="text-xs text-red-600 mt-1">Rest day overdue</p>
-          )}
+          {daysSinceLastRest > 7 && <p className="text-xs text-red-600 mt-1">Rest day overdue</p>}
         </div>
 
         {/* Recovery progress (if in recovery) */}
@@ -150,9 +155,7 @@ export function BurnoutRiskPanel({
           <div className="p-4 rounded-lg bg-green-50 border border-green-200">
             <div className="flex items-center gap-2 mb-2">
               <TrendingDown className="size-4 text-green-600" />
-              <span className="text-xs font-medium text-muted-foreground">
-                Recovery Progress
-              </span>
+              <span className="text-xs font-medium text-muted-foreground">Recovery Progress</span>
             </div>
             <div className="text-2xl font-bold font-heading text-green-600">
               {Math.round(recoveryProgress)}%
@@ -164,16 +167,12 @@ export function BurnoutRiskPanel({
 
       {/* Contributing factors */}
       <div className="mb-6">
-        <h4 className="text-sm font-semibold text-foreground mb-3">
-          Contributing Factors
-        </h4>
+        <h4 className="text-sm font-semibold text-foreground mb-3">Contributing Factors</h4>
         <div className="space-y-3">
           {sortedFactors.map((factor, index) => (
             <div key={index} className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-foreground">
-                  {factor.factor}
-                </span>
+                <span className="text-xs font-medium text-foreground">{factor.factor}</span>
                 <span className="text-xs font-semibold text-muted-foreground">
                   {Math.round(factor.percentage)}%
                 </span>
@@ -190,9 +189,7 @@ export function BurnoutRiskPanel({
                 />
               </div>
 
-              <p className="text-xs text-muted-foreground">
-                {factor.description}
-              </p>
+              <p className="text-xs text-muted-foreground">{factor.description}</p>
             </div>
           ))}
         </div>
@@ -200,9 +197,7 @@ export function BurnoutRiskPanel({
 
       {/* Recommendations */}
       <div>
-        <h4 className="text-sm font-semibold text-foreground mb-3">
-          Recommendations
-        </h4>
+        <h4 className="text-sm font-semibold text-foreground mb-3">Recommendations</h4>
         <div className="space-y-2">
           {recommendations.map((recommendation, index) => (
             <div
@@ -218,9 +213,7 @@ export function BurnoutRiskPanel({
               >
                 {index + 1}
               </div>
-              <p className="text-sm text-foreground flex-1">
-                {recommendation}
-              </p>
+              <p className="text-sm text-foreground flex-1">{recommendation}</p>
             </div>
           ))}
         </div>
@@ -245,5 +238,5 @@ export function BurnoutRiskPanel({
         {recommendations.length > 0 && `${recommendations.length} recommendations available.`}
       </div>
     </div>
-  );
+  )
 }

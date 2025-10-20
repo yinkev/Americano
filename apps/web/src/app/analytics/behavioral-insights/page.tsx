@@ -8,11 +8,12 @@
  * - Tab 4 "Learn": Recommendations panel and learning article reader
  *
  * Story 5.6: Behavioral Insights Dashboard - Main Integration Page
+ * UPDATED: Integrated with real API data from dashboard endpoint
  */
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Brain, TrendingUp, Target, BookOpen } from 'lucide-react'
 import {
@@ -24,183 +25,145 @@ import {
   LearningArticleReader,
 } from '@/components/analytics/behavioral-insights'
 
-// Mock user ID - replace with actual auth
-const MOCK_USER_ID = 'user-1'
+// Hardcoded user ID for MVP - replace with actual auth
+const DEFAULT_USER_ID = 'user-kevy'
+
+/**
+ * Dashboard data interface matching API response
+ */
+interface DashboardData {
+  patterns: Array<{
+    id: string
+    patternType: string
+    confidence: number
+    evidence: Record<string, any>
+    lastSeenAt: string
+    detectedAt: string
+  }>
+  recommendations: any[]
+  goals: any[]
+  metrics: {
+    consistency: number
+    focus: number
+    retention: number
+    efficiency: number
+  }
+  correlationData: any
+  meta: {
+    patternsCount: number
+    recommendationsCount: number
+    activeGoalsCount: number
+    recentInsightsCount: number
+    lastUpdated: string
+  }
+}
+
+interface EvolutionData {
+  evolution: Array<{
+    weekNumber: number
+    weekStart: string
+    weekEnd: string
+    patterns: Array<{
+      id: string
+      patternType: string
+      confidence: number
+      metadata: any
+      status: 'new' | 'existing' | 'disappeared'
+    }>
+  }>
+  meta: {
+    totalWeeks: number
+    startDate: string
+    endDate: string
+    totalPatterns: number
+    patternTypeFilter: string
+  }
+}
 
 export default function BehavioralInsightsDashboard() {
   const [activeTab, setActiveTab] = useState('patterns')
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
+  const [evolutionData, setEvolutionData] = useState<EvolutionData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Mock data for existing components (replace with real API calls)
-  const mockPatterns = [
-    {
-      id: '1',
-      patternType: 'OPTIMAL_STUDY_TIME' as const,
-      confidence: 0.85,
-      metadata: { optimalTimes: ['8:00-10:00 AM', '2:00-4:00 PM'] },
-      lastSeenAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      firstSeenAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-      id: '2',
-      patternType: 'SESSION_DURATION_PREFERENCE' as const,
-      confidence: 0.72,
-      metadata: { optimalDuration: 45 },
-      lastSeenAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      firstSeenAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-      id: '3',
-      patternType: 'ATTENTION_CYCLE' as const,
-      confidence: 0.68,
-      metadata: { cycleLength: 25 },
-      lastSeenAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-      firstSeenAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-      id: '4',
-      patternType: 'FORGETTING_CURVE' as const,
-      confidence: 0.91,
-      metadata: { halfLife: 7 },
-      lastSeenAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      firstSeenAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-  ]
+  // Fetch dashboard data on mount
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        setIsLoading(true)
+        setError(null)
 
-  const mockEvolutionData = [
-    {
-      weekNumber: 1,
-      weekStart: new Date(Date.now() - 56 * 24 * 60 * 60 * 1000).toISOString(),
-      weekEnd: new Date(Date.now() - 49 * 24 * 60 * 60 * 1000).toISOString(),
-      patterns: [
-        {
-          id: '1',
-          patternType: 'OPTIMAL_STUDY_TIME' as const,
-          confidence: 0.5,
-          metadata: {},
-          status: 'new' as const,
-        },
-      ],
-    },
-    {
-      weekNumber: 2,
-      weekStart: new Date(Date.now() - 49 * 24 * 60 * 60 * 1000).toISOString(),
-      weekEnd: new Date(Date.now() - 42 * 24 * 60 * 60 * 1000).toISOString(),
-      patterns: [
-        {
-          id: '1',
-          patternType: 'OPTIMAL_STUDY_TIME' as const,
-          confidence: 0.65,
-          metadata: {},
-          status: 'existing' as const,
-        },
-        {
-          id: '2',
-          patternType: 'SESSION_DURATION_PREFERENCE' as const,
-          confidence: 0.6,
-          metadata: {},
-          status: 'new' as const,
-        },
-      ],
-    },
-    {
-      weekNumber: 3,
-      weekStart: new Date(Date.now() - 42 * 24 * 60 * 60 * 1000).toISOString(),
-      weekEnd: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
-      patterns: [
-        {
-          id: '1',
-          patternType: 'OPTIMAL_STUDY_TIME' as const,
-          confidence: 0.75,
-          metadata: {},
-          status: 'existing' as const,
-        },
-        {
-          id: '2',
-          patternType: 'SESSION_DURATION_PREFERENCE' as const,
-          confidence: 0.7,
-          metadata: {},
-          status: 'existing' as const,
-        },
-        {
-          id: '4',
-          patternType: 'FORGETTING_CURVE' as const,
-          confidence: 0.8,
-          metadata: {},
-          status: 'new' as const,
-        },
-      ],
-    },
-    {
-      weekNumber: 4,
-      weekStart: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
-      weekEnd: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(),
-      patterns: [
-        {
-          id: '1',
-          patternType: 'OPTIMAL_STUDY_TIME' as const,
-          confidence: 0.82,
-          metadata: {},
-          status: 'existing' as const,
-        },
-        {
-          id: '2',
-          patternType: 'SESSION_DURATION_PREFERENCE' as const,
-          confidence: 0.68,
-          metadata: {},
-          status: 'existing' as const,
-        },
-        {
-          id: '3',
-          patternType: 'ATTENTION_CYCLE' as const,
-          confidence: 0.65,
-          metadata: {},
-          status: 'new' as const,
-        },
-        {
-          id: '4',
-          patternType: 'FORGETTING_CURVE' as const,
-          confidence: 0.88,
-          metadata: {},
-          status: 'existing' as const,
-        },
-      ],
-    },
-    {
-      weekNumber: 5,
-      weekStart: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(),
-      weekEnd: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
-      patterns: [
-        {
-          id: '1',
-          patternType: 'OPTIMAL_STUDY_TIME' as const,
-          confidence: 0.85,
-          metadata: {},
-          status: 'existing' as const,
-        },
-        {
-          id: '2',
-          patternType: 'SESSION_DURATION_PREFERENCE' as const,
-          confidence: 0.72,
-          metadata: {},
-          status: 'existing' as const,
-        },
-        {
-          id: '3',
-          patternType: 'ATTENTION_CYCLE' as const,
-          confidence: 0.68,
-          metadata: {},
-          status: 'existing' as const,
-        },
-        {
-          id: '4',
-          patternType: 'FORGETTING_CURVE' as const,
-          confidence: 0.91,
-          metadata: {},
-          status: 'existing' as const,
-        },
-      ],
-    },
-  ]
+        // Fetch comprehensive dashboard data
+        const dashboardResponse = await fetch(
+          `/api/analytics/behavioral-insights/dashboard?userId=${DEFAULT_USER_ID}`,
+        )
+
+        if (!dashboardResponse.ok) {
+          throw new Error(`Dashboard API error: ${dashboardResponse.statusText}`)
+        }
+
+        const dashboardJson = await dashboardResponse.json()
+        setDashboardData(dashboardJson.data)
+
+        // Fetch pattern evolution data (12 weeks by default)
+        const evolutionResponse = await fetch(
+          `/api/analytics/behavioral-insights/patterns/evolution?userId=${DEFAULT_USER_ID}&weeks=12`,
+        )
+
+        if (!evolutionResponse.ok) {
+          throw new Error(`Evolution API error: ${evolutionResponse.statusText}`)
+        }
+
+        const evolutionJson = await evolutionResponse.json()
+        setEvolutionData(evolutionJson.data)
+      } catch (err) {
+        console.error('Error fetching behavioral insights:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load dashboard data')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchDashboardData()
+  }, [])
+
+  // Transform patterns for LearningPatternsGrid (maps database fields to component props)
+  const transformedPatterns = dashboardData?.patterns.map((p) => ({
+    id: p.id,
+    patternType: p.patternType as any,
+    confidence: p.confidence,
+    metadata: p.evidence, // evidence field contains pattern metadata
+    lastSeenAt: p.lastSeenAt,
+    firstSeenAt: p.detectedAt,
+  })) || []
+
+  // Transform evolution data for PatternEvolutionTimeline (cast patternType for type safety)
+  const transformedEvolution = (evolutionData?.evolution || []).map((week) => ({
+    ...week,
+    patterns: week.patterns.map((p) => ({
+      ...p,
+      patternType: p.patternType as any, // Cast to match component's PatternType union
+    })),
+  }))
+
+  // Show error state if API fails
+  if (error) {
+    return (
+      <div className="container mx-auto py-8 px-4 max-w-7xl">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <h2 className="text-xl font-semibold text-red-800 mb-2">Error Loading Dashboard</h2>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
@@ -210,6 +173,14 @@ export default function BehavioralInsightsDashboard() {
         <p className="text-muted-foreground">
           Understand your learning patterns and optimize your study habits
         </p>
+        {dashboardData && (
+          <div className="mt-3 text-sm text-muted-foreground">
+            {dashboardData.meta.patternsCount} patterns detected •{' '}
+            {dashboardData.meta.recommendationsCount} recommendations •{' '}
+            {dashboardData.meta.activeGoalsCount} active goals •{' '}
+            {dashboardData.meta.recentInsightsCount} new insights this week
+          </div>
+        )}
       </div>
 
       {/* Tab Navigation */}
@@ -241,7 +212,7 @@ export default function BehavioralInsightsDashboard() {
               Discover your unique learning patterns detected from your study sessions
             </p>
 
-            <LearningPatternsGrid patterns={mockPatterns} isLoading={false} />
+            <LearningPatternsGrid patterns={transformedPatterns} isLoading={isLoading} />
           </div>
         </TabsContent>
 
@@ -253,7 +224,7 @@ export default function BehavioralInsightsDashboard() {
               Track how your learning patterns have changed and evolved over time
             </p>
 
-            <PatternEvolutionTimeline evolutionData={mockEvolutionData} isLoading={false} />
+            <PatternEvolutionTimeline evolutionData={transformedEvolution} isLoading={isLoading} />
           </div>
         </TabsContent>
 
@@ -267,10 +238,16 @@ export default function BehavioralInsightsDashboard() {
 
             <div className="space-y-6">
               {/* Performance Correlation Chart */}
-              <PerformanceCorrelationChart userId={MOCK_USER_ID} isLoading={false} />
+              <PerformanceCorrelationChart
+                userId={DEFAULT_USER_ID}
+                isLoading={isLoading}
+              />
 
               {/* Behavioral Goals */}
-              <BehavioralGoalsSection userId={MOCK_USER_ID} isLoading={false} />
+              <BehavioralGoalsSection
+                userId={DEFAULT_USER_ID}
+                isLoading={isLoading}
+              />
             </div>
           </div>
         </TabsContent>
@@ -285,10 +262,16 @@ export default function BehavioralInsightsDashboard() {
 
             <div className="space-y-6">
               {/* Recommendations Panel */}
-              <RecommendationsPanel userId={MOCK_USER_ID} isLoading={false} />
+              <RecommendationsPanel
+                userId={DEFAULT_USER_ID}
+                isLoading={isLoading}
+              />
 
               {/* Learning Article Reader */}
-              <LearningArticleReader userId={MOCK_USER_ID} isLoading={false} />
+              <LearningArticleReader
+                userId={DEFAULT_USER_ID}
+                isLoading={isLoading}
+              />
             </div>
           </div>
         </TabsContent>

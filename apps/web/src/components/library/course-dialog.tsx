@@ -1,16 +1,16 @@
-"use client"
+'use client'
 
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog'
 import {
   Form,
   FormControl,
@@ -18,33 +18,36 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 const formSchema = z.object({
-  name: z.string().min(1, 'Course name is required').max(100, 'Course name must be 100 characters or less'),
+  name: z
+    .string()
+    .min(1, 'Course name is required')
+    .max(100, 'Course name must be 100 characters or less'),
   code: z.string().max(20, 'Course code must be 20 characters or less').optional(),
   term: z.string().optional(),
   color: z.string().optional(),
-});
+})
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof formSchema>
 
 interface Course {
-  id: string;
-  name: string;
-  code: string | null;
-  term: string | null;
-  color: string | null;
+  id: string
+  name: string
+  code: string | null
+  term: string | null
+  color: string | null
 }
 
 interface CourseDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  course: Course | null;
-  onSuccess: () => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  course: Course | null
+  onSuccess: () => void
 }
 
 // Preset OKLCH colors for courses
@@ -59,7 +62,7 @@ const COURSE_COLORS = [
   { name: 'Yellow', value: 'oklch(0.8 0.15 90)' },
   { name: 'Cyan', value: 'oklch(0.7 0.15 200)' },
   { name: 'Indigo', value: 'oklch(0.6 0.15 270)' },
-];
+]
 
 export function CourseDialog({ open, onOpenChange, course, onSuccess }: CourseDialogProps) {
   const form = useForm<FormValues>({
@@ -70,7 +73,7 @@ export function CourseDialog({ open, onOpenChange, course, onSuccess }: CourseDi
       term: '',
       color: COURSE_COLORS[0].value,
     },
-  });
+  })
 
   useEffect(() => {
     if (course) {
@@ -79,24 +82,22 @@ export function CourseDialog({ open, onOpenChange, course, onSuccess }: CourseDi
         code: course.code || '',
         term: course.term || '',
         color: course.color || COURSE_COLORS[0].value,
-      });
+      })
     } else {
       form.reset({
         name: '',
         code: '',
         term: '',
         color: COURSE_COLORS[0].value,
-      });
+      })
     }
-  }, [course, form, open]);
+  }, [course, form, open])
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const url = course
-        ? `/api/content/courses/${course.id}`
-        : '/api/content/courses';
+      const url = course ? `/api/content/courses/${course.id}` : '/api/content/courses'
 
-      const method = course ? 'PATCH' : 'POST';
+      const method = course ? 'PATCH' : 'POST'
 
       const response = await fetch(url, {
         method,
@@ -107,20 +108,20 @@ export function CourseDialog({ open, onOpenChange, course, onSuccess }: CourseDi
           term: values.term?.trim() || null,
           color: values.color || null,
         }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (data.success) {
-        toast.success(course ? 'Course updated successfully' : 'Course created successfully');
-        onSuccess();
+        toast.success(course ? 'Course updated successfully' : 'Course created successfully')
+        onSuccess()
       } else {
-        toast.error(data.error?.message || 'Failed to save course');
+        toast.error(data.error?.message || 'Failed to save course')
       }
     } catch (error) {
-      toast.error('Failed to save course');
+      toast.error('Failed to save course')
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -128,9 +129,7 @@ export function CourseDialog({ open, onOpenChange, course, onSuccess }: CourseDi
         <DialogHeader>
           <DialogTitle>{course ? 'Edit Course' : 'Add Course'}</DialogTitle>
           <DialogDescription>
-            {course
-              ? 'Update course information'
-              : 'Create a new course to organize your lectures'}
+            {course ? 'Update course information' : 'Create a new course to organize your lectures'}
           </DialogDescription>
         </DialogHeader>
 
@@ -207,20 +206,14 @@ export function CourseDialog({ open, onOpenChange, course, onSuccess }: CourseDi
             />
 
             <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit">
-                {course ? 'Update' : 'Create'}
-              </Button>
+              <Button type="submit">{course ? 'Update' : 'Create'}</Button>
             </div>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

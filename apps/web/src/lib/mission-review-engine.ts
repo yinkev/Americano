@@ -98,7 +98,7 @@ export class MissionReviewEngine {
    */
   async generateWeeklyReview(
     userId: string,
-    weekStartDate?: Date
+    weekStartDate?: Date,
   ): Promise<{
     id: string
     userId: string
@@ -144,11 +144,7 @@ export class MissionReviewEngine {
     const summary = await this.generateSummary(userId, startDate, endDate)
     const highlights = await this.generateHighlights(userId, startDate, endDate)
     const insights = await this.generateInsights(userId, startDate, endDate)
-    const recommendations = await this.generateRecommendations(
-      userId,
-      summary,
-      insights
-    )
+    const recommendations = await this.generateRecommendations(userId, summary, insights)
 
     // Store review in database
     const review = await prisma.missionReview.create({
@@ -189,7 +185,7 @@ export class MissionReviewEngine {
    */
   async generateMonthlyReview(
     userId: string,
-    monthStartDate?: Date
+    monthStartDate?: Date,
   ): Promise<{
     id: string
     userId: string
@@ -235,11 +231,7 @@ export class MissionReviewEngine {
     const summary = await this.generateSummary(userId, startDate, endDate)
     const highlights = await this.generateHighlights(userId, startDate, endDate)
     const insights = await this.generateInsights(userId, startDate, endDate)
-    const recommendations = await this.generateRecommendations(
-      userId,
-      summary,
-      insights
-    )
+    const recommendations = await this.generateRecommendations(userId, summary, insights)
 
     // Store review in database
     const review = await prisma.missionReview.create({
@@ -278,7 +270,7 @@ export class MissionReviewEngine {
    */
   async getUserReviews(
     userId: string,
-    period?: ReviewPeriod
+    period?: ReviewPeriod,
   ): Promise<
     Array<{
       id: string
@@ -325,7 +317,7 @@ export class MissionReviewEngine {
   private async generateSummary(
     userId: string,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<ReviewSummary> {
     const missions = await prisma.mission.findMany({
       where: {
@@ -337,12 +329,8 @@ export class MissionReviewEngine {
       },
     })
 
-    const missionsCompleted = missions.filter(
-      (m) => m.status === MissionStatus.COMPLETED
-    ).length
-    const missionsSkipped = missions.filter(
-      (m) => m.status === MissionStatus.SKIPPED
-    ).length
+    const missionsCompleted = missions.filter((m) => m.status === MissionStatus.COMPLETED).length
+    const missionsSkipped = missions.filter((m) => m.status === MissionStatus.SKIPPED).length
 
     const totalTime = missions
       .filter((m) => m.actualMinutes)
@@ -353,20 +341,17 @@ export class MissionReviewEngine {
       .map((m) => m.successScore!)
     const avgSuccessScore =
       successScores.length > 0
-        ? successScores.reduce((sum, score) => sum + score, 0) /
-          successScores.length
+        ? successScores.reduce((sum, score) => sum + score, 0) / successScores.length
         : 0
 
-    const completionRate =
-      missions.length > 0 ? missionsCompleted / missions.length : 0
+    const completionRate = missions.length > 0 ? missionsCompleted / missions.length : 0
 
     const difficultyRatings = missions
       .filter((m) => m.difficultyRating !== null)
       .map((m) => m.difficultyRating!)
     const avgDifficultyRating =
       difficultyRatings.length > 0
-        ? difficultyRatings.reduce((sum, rating) => sum + rating, 0) /
-          difficultyRatings.length
+        ? difficultyRatings.reduce((sum, rating) => sum + rating, 0) / difficultyRatings.length
         : 0
 
     return {
@@ -385,7 +370,7 @@ export class MissionReviewEngine {
   private async generateHighlights(
     userId: string,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<ReviewHighlights> {
     const missions = await prisma.mission.findMany({
       where: {
@@ -462,7 +447,7 @@ export class MissionReviewEngine {
       }
       if (bestPerformance && bestPerformance.successScore >= 0.8) {
         personalBests.push(
-          `Outstanding mission performance: ${(bestPerformance.successScore * 100).toFixed(0)}% success score`
+          `Outstanding mission performance: ${(bestPerformance.successScore * 100).toFixed(0)}% success score`,
         )
       }
     }
@@ -481,7 +466,7 @@ export class MissionReviewEngine {
   private async generateInsights(
     userId: string,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<ReviewInsights> {
     const missions = await prisma.mission.findMany({
       where: {
@@ -501,31 +486,27 @@ export class MissionReviewEngine {
     // Detect completion patterns
     const completionRate =
       missions.length > 0
-        ? missions.filter((m) => m.status === MissionStatus.COMPLETED).length /
-          missions.length
+        ? missions.filter((m) => m.status === MissionStatus.COMPLETED).length / missions.length
         : 0
 
     if (completionRate >= 0.85) {
       patterns.push(
-        `Excellent completion consistency: ${(completionRate * 100).toFixed(0)}% of missions completed`
+        `Excellent completion consistency: ${(completionRate * 100).toFixed(0)}% of missions completed`,
       )
     } else if (completionRate < 0.6) {
       concerns.push(
-        `Low completion rate: ${(completionRate * 100).toFixed(0)}%. Consider adjusting mission difficulty.`
+        `Low completion rate: ${(completionRate * 100).toFixed(0)}%. Consider adjusting mission difficulty.`,
       )
     }
 
     // Detect time patterns
     const completedMissions = missions.filter(
-      (m) => m.status === MissionStatus.COMPLETED && m.actualMinutes
+      (m) => m.status === MissionStatus.COMPLETED && m.actualMinutes,
     )
     if (completedMissions.length >= 3) {
       const avgDuration =
-        completedMissions.reduce((sum, m) => sum + m.actualMinutes!, 0) /
-        completedMissions.length
-      patterns.push(
-        `Average study session duration: ${avgDuration.toFixed(0)} minutes`
-      )
+        completedMissions.reduce((sum, m) => sum + m.actualMinutes!, 0) / completedMissions.length
+      patterns.push(`Average study session duration: ${avgDuration.toFixed(0)} minutes`)
     }
 
     // Detect improvement trends
@@ -535,27 +516,23 @@ export class MissionReviewEngine {
     if (successScores.length >= 5) {
       const firstHalf = successScores.slice(0, Math.floor(successScores.length / 2))
       const secondHalf = successScores.slice(Math.floor(successScores.length / 2))
-      const firstAvg =
-        firstHalf.reduce((sum, score) => sum + score, 0) / firstHalf.length
-      const secondAvg =
-        secondHalf.reduce((sum, score) => sum + score, 0) / secondHalf.length
+      const firstAvg = firstHalf.reduce((sum, score) => sum + score, 0) / firstHalf.length
+      const secondAvg = secondHalf.reduce((sum, score) => sum + score, 0) / secondHalf.length
 
       if (secondAvg > firstAvg * 1.1) {
         improvements.push(
-          `Success scores improved ${((secondAvg / firstAvg - 1) * 100).toFixed(0)}% over the period`
+          `Success scores improved ${((secondAvg / firstAvg - 1) * 100).toFixed(0)}% over the period`,
         )
       } else if (secondAvg < firstAvg * 0.9) {
         concerns.push(
-          `Success scores declined ${((1 - secondAvg / firstAvg) * 100).toFixed(0)}%. Review mission difficulty.`
+          `Success scores declined ${((1 - secondAvg / firstAvg) * 100).toFixed(0)}%. Review mission difficulty.`,
         )
       }
     }
 
     // Add correlation insights if available
     try {
-      const correlation = await this.analyticsEngine.detectPerformanceCorrelation(
-        userId
-      )
+      const correlation = await this.analyticsEngine.detectPerformanceCorrelation(userId)
       if (correlation.confidence !== 'LOW') {
         correlations.push(correlation.insight)
       }
@@ -577,7 +554,7 @@ export class MissionReviewEngine {
   private async generateRecommendations(
     userId: string,
     summary: ReviewSummary,
-    insights: ReviewInsights
+    insights: ReviewInsights,
   ): Promise<ReviewRecommendations> {
     const actionItems: ReviewRecommendations['actionItems'] = []
     const adjustments: ReviewRecommendations['adjustments'] = []
@@ -617,7 +594,8 @@ export class MissionReviewEngine {
       actionItems.push({
         priority: 'HIGH',
         action: 'Review mission objectives alignment',
-        reason: 'Low success scores indicate missions may not be well-matched to your learning needs',
+        reason:
+          'Low success scores indicate missions may not be well-matched to your learning needs',
       })
     }
 

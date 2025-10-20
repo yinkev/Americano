@@ -53,113 +53,6 @@ export function useStudyOrchestration(options: StudyOrchestrationOptions = {}) {
   const lastCheckTime = useRef<number>(Date.now())
   const checkInterval = useRef<NodeJS.Timeout | null>(null)
 
-  // Initialize orchestration when session starts
-  useEffect(() => {
-    if (sessionId && enabled && settings.enableRealtimeOrchestration && !orchestration.isActive) {
-      realtimeOrchestrationService
-        .initializeSession(sessionId, undefined, 'content')
-        .then(() => {
-          updateCurrentPhase('content')
-        })
-        .catch((error) => {
-          console.error('Failed to initialize orchestration:', error)
-        })
-    }
-  }, [
-    sessionId,
-    enabled,
-    settings.enableRealtimeOrchestration,
-    orchestration.isActive,
-    updateCurrentPhase,
-  ])
-
-  // Periodic performance checks and adaptation triggers
-  useEffect(() => {
-    if (!enabled || !sessionId || !orchestration.isActive) {
-      if (checkInterval.current) {
-        clearInterval(checkInterval.current)
-        checkInterval.current = null
-      }
-      return
-    }
-
-    const checkIntervalMs =
-      sensitivity === 'high'
-        ? 30000
-        : // 30 seconds for high sensitivity
-          sensitivity === 'low'
-          ? 120000
-          : // 2 minutes for low sensitivity
-            60000 // 1 minute default
-
-    checkInterval.current = setInterval(() => {
-      checkPerformanceAndTriggerAdaptations()
-    }, checkIntervalMs)
-
-    return () => {
-      if (checkInterval.current) {
-        clearInterval(checkInterval.current)
-        checkInterval.current = null
-      }
-    }
-  }, [
-    enabled,
-    sessionId,
-    orchestration.isActive,
-    sensitivity,
-    checkPerformanceAndTriggerAdaptations,
-  ])
-
-  // Check performance and trigger adaptations
-  const checkPerformanceAndTriggerAdaptations = useCallback(() => {
-    if (!sessionId || !orchestration.isActive) return
-
-    const metrics = performanceMonitoring.getCurrentMetrics()
-    const isStruggling = performanceMonitoring.isStruggling()
-    const isExcelling = performanceMonitoring.isExcelling()
-
-    // Update performance metrics in store
-    updateCurrentPhase(orchestration.currentPhase)
-
-    // Check for break recommendations
-    if (shouldRecommendBreak(metrics, isStruggling)) {
-      const breakRecommendation = generateBreakRecommendation(metrics, isStruggling)
-      setBreakRecommendation(breakRecommendation)
-      // The UI component will handle showing the dialog
-    }
-
-    // Check for content adaptations
-    if (shouldRecommendContentAdaptation(metrics, isStruggling, isExcelling)) {
-      const adaptation = generateContentAdaptation(metrics, isStruggling, isExcelling)
-      setContentAdaptation(adaptation)
-      // The UI component will handle showing the dialog
-    }
-
-    // Check for session recommendations
-    if (shouldRecommendSessionExtension(metrics, isExcelling)) {
-      const recommendation = generateSessionRecommendation(metrics, isExcelling)
-      setSessionRecommendation(recommendation)
-      // The UI component will handle showing the dialog
-    }
-
-    lastCheckTime.current = Date.now()
-  }, [
-    sessionId,
-    orchestration.isActive,
-    orchestration.currentPhase,
-    performanceMonitoring,
-    updateCurrentPhase,
-    shouldRecommendBreak,
-    generateBreakRecommendation,
-    setBreakRecommendation,
-    shouldRecommendContentAdaptation,
-    generateContentAdaptation,
-    setContentAdaptation,
-    shouldRecommendSessionExtension,
-    generateSessionRecommendation,
-    setSessionRecommendation,
-  ])
-
   // Determine if break should be recommended
   const shouldRecommendBreak = useCallback(
     (metrics: PerformanceMetrics, isStruggling: boolean): boolean => {
@@ -281,6 +174,113 @@ export function useStudyOrchestration(options: StudyOrchestrationOptions = {}) {
     },
     [performanceMonitoring],
   )
+
+  // Check performance and trigger adaptations
+  const checkPerformanceAndTriggerAdaptations = useCallback(() => {
+    if (!sessionId || !orchestration.isActive) return
+
+    const metrics = performanceMonitoring.getCurrentMetrics()
+    const isStruggling = performanceMonitoring.isStruggling()
+    const isExcelling = performanceMonitoring.isExcelling()
+
+    // Update performance metrics in store
+    updateCurrentPhase(orchestration.currentPhase)
+
+    // Check for break recommendations
+    if (shouldRecommendBreak(metrics, isStruggling)) {
+      const breakRecommendation = generateBreakRecommendation(metrics, isStruggling)
+      setBreakRecommendation(breakRecommendation)
+      // The UI component will handle showing the dialog
+    }
+
+    // Check for content adaptations
+    if (shouldRecommendContentAdaptation(metrics, isStruggling, isExcelling)) {
+      const adaptation = generateContentAdaptation(metrics, isStruggling, isExcelling)
+      setContentAdaptation(adaptation)
+      // The UI component will handle showing the dialog
+    }
+
+    // Check for session recommendations
+    if (shouldRecommendSessionExtension(metrics, isExcelling)) {
+      const recommendation = generateSessionRecommendation(metrics, isExcelling)
+      setSessionRecommendation(recommendation)
+      // The UI component will handle showing the dialog
+    }
+
+    lastCheckTime.current = Date.now()
+  }, [
+    sessionId,
+    orchestration.isActive,
+    orchestration.currentPhase,
+    performanceMonitoring,
+    updateCurrentPhase,
+    shouldRecommendBreak,
+    generateBreakRecommendation,
+    setBreakRecommendation,
+    shouldRecommendContentAdaptation,
+    generateContentAdaptation,
+    setContentAdaptation,
+    shouldRecommendSessionExtension,
+    generateSessionRecommendation,
+    setSessionRecommendation,
+  ])
+
+  // Initialize orchestration when session starts
+  useEffect(() => {
+    if (sessionId && enabled && settings.enableRealtimeOrchestration && !orchestration.isActive) {
+      realtimeOrchestrationService
+        .initializeSession(sessionId, undefined, 'content')
+        .then(() => {
+          updateCurrentPhase('content')
+        })
+        .catch((error) => {
+          console.error('Failed to initialize orchestration:', error)
+        })
+    }
+  }, [
+    sessionId,
+    enabled,
+    settings.enableRealtimeOrchestration,
+    orchestration.isActive,
+    updateCurrentPhase,
+  ])
+
+  // Periodic performance checks and adaptation triggers
+  useEffect(() => {
+    if (!enabled || !sessionId || !orchestration.isActive) {
+      if (checkInterval.current) {
+        clearInterval(checkInterval.current)
+        checkInterval.current = null
+      }
+      return
+    }
+
+    const checkIntervalMs =
+      sensitivity === 'high'
+        ? 30000
+        : // 30 seconds for high sensitivity
+          sensitivity === 'low'
+          ? 120000
+          : // 2 minutes for low sensitivity
+            60000 // 1 minute default
+
+    checkInterval.current = setInterval(() => {
+      checkPerformanceAndTriggerAdaptations()
+    }, checkIntervalMs)
+
+    return () => {
+      if (checkInterval.current) {
+        clearInterval(checkInterval.current)
+        checkInterval.current = null
+      }
+    }
+  }, [
+    enabled,
+    sessionId,
+    orchestration.isActive,
+    sensitivity,
+    checkPerformanceAndTriggerAdaptations,
+  ])
 
   // Convenience methods for recording common events
   const recordAnswer = useCallback(

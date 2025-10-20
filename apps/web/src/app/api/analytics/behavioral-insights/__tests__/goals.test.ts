@@ -43,13 +43,10 @@ describe('POST /api/analytics/behavioral-insights/goals', () => {
       deadline: new Date('2025-12-01').toISOString(),
     }
 
-    const request = new NextRequest(
-      'http://localhost/api/analytics/behavioral-insights/goals',
-      {
-        method: 'POST',
-        body: JSON.stringify(requestBody),
-      }
-    )
+    const request = new NextRequest('http://localhost/api/analytics/behavioral-insights/goals', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+    })
 
     const response = await POST(request)
     const data = await response.json()
@@ -63,7 +60,7 @@ describe('POST /api/analytics/behavioral-insights/goals', () => {
         goalType: 'STUDY_TIME_CONSISTENCY',
         targetMetric: 'peakHourSessionsPerWeek',
         targetValue: 5,
-      })
+      }),
     )
   })
 
@@ -79,13 +76,10 @@ describe('POST /api/analytics/behavioral-insights/goals', () => {
       deadline: pastDate.toISOString(),
     }
 
-    const request = new NextRequest(
-      'http://localhost/api/analytics/behavioral-insights/goals',
-      {
-        method: 'POST',
-        body: JSON.stringify(requestBody),
-      }
-    )
+    const request = new NextRequest('http://localhost/api/analytics/behavioral-insights/goals', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+    })
 
     const response = await POST(request)
 
@@ -104,13 +98,10 @@ describe('POST /api/analytics/behavioral-insights/goals', () => {
       deadline: futureDate.toISOString(),
     }
 
-    const request = new NextRequest(
-      'http://localhost/api/analytics/behavioral-insights/goals',
-      {
-        method: 'POST',
-        body: JSON.stringify(requestBody),
-      }
-    )
+    const request = new NextRequest('http://localhost/api/analytics/behavioral-insights/goals', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+    })
 
     const response = await POST(request)
 
@@ -119,7 +110,7 @@ describe('POST /api/analytics/behavioral-insights/goals', () => {
 
   it('should return 400 when target value <= current value', async () => {
     ;(GoalManager.createGoal as jest.Mock).mockRejectedValue(
-      new Error('Target value (3) must be greater than current value (5).')
+      new Error('Target value (3) must be greater than current value (5).'),
     )
 
     const requestBody = {
@@ -130,13 +121,10 @@ describe('POST /api/analytics/behavioral-insights/goals', () => {
       deadline: new Date('2025-12-01').toISOString(),
     }
 
-    const request = new NextRequest(
-      'http://localhost/api/analytics/behavioral-insights/goals',
-      {
-        method: 'POST',
-        body: JSON.stringify(requestBody),
-      }
-    )
+    const request = new NextRequest('http://localhost/api/analytics/behavioral-insights/goals', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+    })
 
     const response = await POST(request)
 
@@ -170,13 +158,10 @@ describe('POST /api/analytics/behavioral-insights/goals', () => {
       deadline: new Date('2025-12-01').toISOString(),
     }
 
-    const request = new NextRequest(
-      'http://localhost/api/analytics/behavioral-insights/goals',
-      {
-        method: 'POST',
-        body: JSON.stringify(requestBody),
-      }
-    )
+    const request = new NextRequest('http://localhost/api/analytics/behavioral-insights/goals', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+    })
 
     const response = await POST(request)
     const data = await response.json()
@@ -188,7 +173,7 @@ describe('POST /api/analytics/behavioral-insights/goals', () => {
       expect.objectContaining({
         title: 'My Custom Goal',
         description: 'My custom description',
-      })
+      }),
     )
   })
 })

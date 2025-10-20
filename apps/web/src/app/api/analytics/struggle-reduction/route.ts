@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
         error: 'ML service unavailable',
         detail: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 503 }
+      { status: 503 },
     )
   }
 }

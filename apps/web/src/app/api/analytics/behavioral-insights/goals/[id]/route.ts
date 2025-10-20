@@ -26,10 +26,7 @@ interface ProgressCheckpoint {
  * - projectedCompletion?: Date (trend-based ETA if goal is active)
  */
 export const GET = withErrorHandler(
-  async (
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-  ) => {
+  async (request: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params
 
     // Fetch goal
@@ -38,14 +35,11 @@ export const GET = withErrorHandler(
     })
 
     if (!goal) {
-      return Response.json(
-        errorResponse('Goal not found', 'NOT_FOUND'),
-        { status: 404 }
-      )
+      return Response.json(errorResponse('Goal not found', 'NOT_FOUND'), { status: 404 })
     }
 
     // Parse progress history from JSON
-    const progressHistory = (goal.progressHistory as ProgressCheckpoint[]) || []
+    const progressHistory = (goal.progressHistory as unknown as ProgressCheckpoint[]) || []
 
     // Fetch recent study sessions (last 30 days)
     const recentActivity = await prisma.studySession.findMany({
@@ -60,14 +54,7 @@ export const GET = withErrorHandler(
       select: {
         id: true,
         startedAt: true,
-        endedAt: true,
-        contentType: true,
-        missionId: true,
-        mission: {
-          select: {
-            title: true,
-          },
-        },
+        completedAt: true,
       },
     })
 
@@ -77,7 +64,7 @@ export const GET = withErrorHandler(
     if (goal.status === 'ACTIVE' && progressHistory.length >= 2) {
       // Simple linear regression for trend-based projection
       const sortedHistory = [...progressHistory].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
       )
 
       // Calculate daily rate of progress
@@ -85,8 +72,7 @@ export const GET = withErrorHandler(
       const lastCheckpoint = sortedHistory[sortedHistory.length - 1]
 
       const daysDiff =
-        (new Date(lastCheckpoint.date).getTime() -
-          new Date(firstCheckpoint.date).getTime()) /
+        (new Date(lastCheckpoint.date).getTime() - new Date(firstCheckpoint.date).getTime()) /
         (24 * 60 * 60 * 1000)
 
       if (daysDiff > 0) {
@@ -99,9 +85,7 @@ export const GET = withErrorHandler(
 
           // Project completion date
           projectedCompletion = new Date()
-          projectedCompletion.setDate(
-            projectedCompletion.getDate() + daysToCompletion
-          )
+          projectedCompletion.setDate(projectedCompletion.getDate() + daysToCompletion)
 
           // Cap at deadline
           if (projectedCompletion > goal.deadline) {
@@ -117,7 +101,7 @@ export const GET = withErrorHandler(
         progressHistory,
         recentActivity,
         projectedCompletion,
-      })
+      }),
     )
-  }
+  },
 )

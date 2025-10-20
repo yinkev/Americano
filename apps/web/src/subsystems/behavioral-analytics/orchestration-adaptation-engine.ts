@@ -57,7 +57,7 @@ export class OrchestrationAdaptationEngine {
    */
   async detectScheduleChanges(
     userId: string,
-    triggerSource: 'calendar' | 'exam' | 'user'
+    triggerSource: 'calendar' | 'exam' | 'user',
   ): Promise<ScheduleChange[]> {
     const changes: ScheduleChange[] = []
 
@@ -65,13 +65,12 @@ export class OrchestrationAdaptationEngine {
     const currentRecommendations = await prisma.studyScheduleRecommendation.findMany({
       where: {
         userId,
-        appliedAt: null,
-        recommendedStartTime: {
-          gte: new Date(),
+        createdAt: {
+          gte: addDays(new Date(), -30), // Last 30 days of recommendations
         },
       },
       orderBy: {
-        confidence: 'desc',
+        createdAt: 'desc',
       },
     })
 
@@ -95,19 +94,25 @@ export class OrchestrationAdaptationEngine {
         // Calendar sync would have been triggered externally
         // Check for new conflicts not yet adapted
         for (const rec of currentRecommendations) {
+          // Parse recommendedSchedule to get time slots
+          const schedule = rec.recommendedSchedule as { startTime?: string } | null
+          const startTimeStr = schedule?.startTime
+
           const existingAdaptation = recentAdaptations.find(
-            (a) => a.adaptationType === 'TIME_SHIFT' &&
-              a.oldValue?.includes(rec.recommendedStartTime.toISOString())
+            (a) =>
+              a.adaptationType === 'TIME_SHIFT' &&
+              startTimeStr &&
+              JSON.stringify(a.adaptationDetails).includes(startTimeStr),
           )
 
-          if (!existingAdaptation) {
+          if (!existingAdaptation && startTimeStr) {
             // This is a new conflict
             changes.push({
               type: 'TIME_SHIFT',
               reason: 'Calendar conflict detected',
               detectedAt: new Date(),
-              severity: rec.confidence > 0.8 ? 'MAJOR' : 'MODERATE',
-              affectedTimeSlots: [rec.recommendedStartTime],
+              severity: 'MODERATE',
+              affectedTimeSlots: [new Date(startTimeStr)],
             })
           }
         }
@@ -120,7 +125,12 @@ export class OrchestrationAdaptationEngine {
         reason: 'Exam date approaching',
         detectedAt: new Date(),
         severity: 'MAJOR',
-        affectedTimeSlots: currentRecommendations.map((r) => r.recommendedStartTime),
+        affectedTimeSlots: currentRecommendations
+          .map((r) => {
+            const schedule = r.recommendedSchedule as { startTime?: string } | null
+            return schedule?.startTime ? new Date(schedule.startTime) : null
+          })
+          .filter((d): d is Date => d !== null),
       })
     } else if (triggerSource === 'user') {
       // User-initiated change (via UI)
@@ -130,7 +140,13 @@ export class OrchestrationAdaptationEngine {
         reason: 'User preference change',
         detectedAt: new Date(),
         severity: 'MODERATE',
-        affectedTimeSlots: currentRecommendations.slice(0, 3).map((r) => r.recommendedStartTime),
+        affectedTimeSlots: currentRecommendations
+          .slice(0, 3)
+          .map((r) => {
+            const schedule = r.recommendedSchedule as { startTime?: string } | null
+            return schedule?.startTime ? new Date(schedule.startTime) : null
+          })
+          .filter((d): d is Date => d !== null),
       })
     }
 
@@ -157,37 +173,45 @@ export class OrchestrationAdaptationEngine {
     }
 
     // Calculate overall severity (highest among changes)
-    const maxSeverity = changes.reduce((max, change) => {
-      const severityScore = { MINOR: 1, MODERATE: 2, MAJOR: 3 }
-      const changeScore = severityScore[change.severity]
-      const maxScore = severityScore[max]
-      return changeScore > maxScore ? change.severity : max
-    }, 'MINOR' as 'MINOR' | 'MODERATE' | 'MAJOR')
+    const maxSeverity = changes.reduce(
+      (max, change) => {
+        const severityScore = { MINOR: 1, MODERATE: 2, MAJOR: 3 }
+        const changeScore = severityScore[change.severity]
+        const maxScore = severityScore[max]
+        return changeScore > maxScore ? change.severity : max
+      },
+      'MINOR' as 'MINOR' | 'MODERATE' | 'MAJOR',
+    )
 
     // Count affected sessions (upcoming sessions in next 7 days)
     const upcomingSessions = await prisma.sessionOrchestrationPlan.findMany({
       where: {
         userId,
-        plannedStartTime: {
+        createdAt: {
           gte: new Date(),
           lte: addDays(new Date(), 7),
         },
       },
     })
 
-    const affectedSessions = upcomingSessions.filter((session) =>
-      changes.some((change) =>
-        change.affectedTimeSlots.some((slot) =>
-          differenceInHours(session.plannedStartTime, slot) < 2
-        )
+    const affectedSessions = upcomingSessions.filter((session) => {
+      const planData = session.planData as { plannedStartTime?: string } | null
+      const plannedStart = planData?.plannedStartTime ? new Date(planData.plannedStartTime) : null
+
+      if (!plannedStart) return false
+
+      return changes.some((change) =>
+        change.affectedTimeSlots.some(
+          (slot) => differenceInHours(plannedStart, slot) < 2,
+        ),
       )
-    ).length
+    }).length
 
     // Estimate performance impact based on severity
     const performanceImpactMap = {
-      MINOR: -5,    // -5% performance impact
+      MINOR: -5, // -5% performance impact
       MODERATE: -15, // -15% performance impact
-      MAJOR: -30,    // -30% performance impact
+      MAJOR: -30, // -30% performance impact
     }
     const performanceImpact = performanceImpactMap[maxSeverity]
 
@@ -239,15 +263,22 @@ export class OrchestrationAdaptationEngine {
   async generateAdaptationPlan(
     userId: string,
     changes: ScheduleChange[],
-    impact: ImpactAssessment
+    impact: ImpactAssessment,
   ): Promise<AdaptationPlan> {
     // Record adaptation in database
     const adaptation = await prisma.scheduleAdaptation.create({
       data: {
         userId,
         adaptationType: changes[0]?.type || 'TIME_SHIFT',
-        reason: impact.description,
-        appliedAt: new Date(),
+        adaptationDetails: {
+          reason: impact.description,
+          changes: changes.map(c => ({
+            type: c.type,
+            reason: c.reason,
+            severity: c.severity,
+            affectedTimeSlots: c.affectedTimeSlots.map(t => t.toISOString()),
+          })),
+        },
       },
     })
 
@@ -255,10 +286,10 @@ export class OrchestrationAdaptationEngine {
     const alternatives: AdaptationPlan['alternatives'] = []
 
     // Get new recommendations that avoid conflicts
-    const newRecommendations = await this.recommender.generateRecommendations(
+    const newRecommendations = await StudyTimeRecommender.generateRecommendations(
       userId,
       new Date(),
-      undefined
+      undefined,
     )
 
     for (const rec of newRecommendations.slice(0, 5)) {
@@ -289,7 +320,7 @@ export class OrchestrationAdaptationEngine {
    */
   async measureEffectiveness(
     userId: string,
-    dateRange: number = 30
+    dateRange: number = 30,
   ): Promise<{
     adherenceRate: number
     performanceGain: number
@@ -304,7 +335,7 @@ export class OrchestrationAdaptationEngine {
     const sessions = await prisma.mission.findMany({
       where: {
         userId,
-        createdAt: {
+        date: {
           gte: startDate,
         },
         status: 'COMPLETED',
@@ -331,52 +362,51 @@ export class OrchestrationAdaptationEngine {
     }
 
     // Calculate adherence rate (sessions that followed recommendations)
-    const orchestratedSessions = sessions.filter(
-      (s) => s.recommendedStartTime && s.actualStartTime
-    )
+    const orchestratedSessions = sessions.filter((s) => s.recommendedStartTime && s.actualStartTime)
     const adherentSessions = orchestratedSessions.filter((s) => {
-      const timeDiff = Math.abs(
-        s.actualStartTime!.getTime() - s.recommendedStartTime!.getTime()
-      )
+      const timeDiff = Math.abs(s.actualStartTime!.getTime() - s.recommendedStartTime!.getTime())
       return timeDiff <= 30 * 60 * 1000 // Within 30 minutes
     })
 
     const adherenceRate = (adherentSessions.length / orchestratedSessions.length) * 100
 
     // Calculate performance gain
-    const adherentPerf = adherentSessions.reduce(
-      (sum, s) => sum + (s.sessionPerformanceScore || 0),
-      0
-    ) / adherentSessions.length
+    const adherentPerf =
+      adherentSessions.reduce((sum, s) => sum + (s.sessionPerformanceScore || 0), 0) /
+      adherentSessions.length
 
-    const nonAdherentPerf = sessions
-      .filter((s) => !adherentSessions.includes(s))
-      .reduce((sum, s) => sum + (s.sessionPerformanceScore || 0), 0) /
+    const nonAdherentPerf =
+      sessions
+        .filter((s) => !adherentSessions.includes(s))
+        .reduce((sum, s) => sum + (s.sessionPerformanceScore || 0), 0) /
       (sessions.length - adherentSessions.length || 1)
 
     const performanceGain = ((adherentPerf - nonAdherentPerf) / nonAdherentPerf) * 100
 
     // Calculate optimal time accuracy (how often recommended times correlated with high performance)
-    const optimalTimeAccuracy = adherentSessions.filter(
-      (s) => (s.sessionPerformanceScore || 0) >= 75
-    ).length / adherentSessions.length * 100
+    const optimalTimeAccuracy =
+      (adherentSessions.filter((s) => (s.sessionPerformanceScore || 0) >= 75).length /
+        adherentSessions.length) *
+      100
 
     // Calculate duration optimization accuracy
     const durationAccuracySessions = orchestratedSessions.filter(
-      (s) => s.recommendedDuration && s.actualDuration
+      (s) => s.recommendedDuration && s.actualDuration,
     )
-    const durationOptimizationAccuracy = durationAccuracySessions.filter((s) => {
-      const durationDiff = Math.abs((s.actualDuration || 0) - (s.recommendedDuration || 0))
-      return durationDiff <= 10 // Within 10 minutes
-    }).length / durationAccuracySessions.length * 100
+    const durationOptimizationAccuracy =
+      (durationAccuracySessions.filter((s) => {
+        const durationDiff = Math.abs((s.actualDuration || 0) - (s.recommendedDuration || 0))
+        return durationDiff <= 10 // Within 10 minutes
+      }).length /
+        durationAccuracySessions.length) *
+      100
 
     // Overall effectiveness score (weighted average)
-    const overallEffectiveness = (
+    const overallEffectiveness =
       adherenceRate * 0.3 +
       Math.max(0, performanceGain) * 0.4 +
       optimalTimeAccuracy * 0.2 +
       durationOptimizationAccuracy * 0.1
-    )
 
     // Generate insights
     const insights: string[] = []
@@ -386,7 +416,9 @@ export class OrchestrationAdaptationEngine {
     } else if (adherenceRate >= 50) {
       insights.push(`Good adherence at ${Math.round(adherenceRate)}%`)
     } else {
-      insights.push(`Low adherence at ${Math.round(adherenceRate)}%. Try following more recommendations.`)
+      insights.push(
+        `Low adherence at ${Math.round(adherenceRate)}%. Try following more recommendations.`,
+      )
     }
 
     if (performanceGain >= 20) {
@@ -425,30 +457,21 @@ export class OrchestrationAdaptationEngine {
    */
   async applyAdaptationPlan(userId: string, adaptationPlan: AdaptationPlan): Promise<boolean> {
     try {
-      // Mark old recommendations as superseded
-      await prisma.studyScheduleRecommendation.updateMany({
-        where: {
-          userId,
-          appliedAt: null,
-        },
-        data: {
-          appliedAt: new Date(),
-        },
-      })
+      // Mark old recommendations as superseded by creating new adaptations
+      // Note: Since StudyScheduleRecommendation doesn't have appliedAt field,
+      // we track this through ScheduleAdaptation records instead
 
       // Create new recommendations from alternatives
       for (const alt of adaptationPlan.alternatives) {
         await prisma.studyScheduleRecommendation.create({
           data: {
             userId,
-            recommendedStartTime: alt.timeSlot,
-            recommendedDuration: 60, // Default duration
-            confidence: alt.confidence,
-            reasoningFactors: {
+            recommendedSchedule: {
+              startTime: alt.timeSlot.toISOString(),
+              duration: 60, // Default duration in minutes
               performanceScore: alt.performance,
-              reasoning: alt.reasoning,
             },
-            calendarIntegration: true,
+            reasoning: alt.reasoning,
           },
         })
       }

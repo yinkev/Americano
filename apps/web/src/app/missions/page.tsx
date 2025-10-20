@@ -17,18 +17,18 @@ interface MissionListItem {
 export default async function MissionsPage() {
   // Fetch recent missions (default user: kevy@americano.dev)
   const user = await prisma.user.findUnique({
-    where: { email: 'kevy@americano.dev' }
+    where: { email: 'kevy@americano.dev' },
   })
 
   if (!user) {
     return <div>User not found</div>
   }
 
-  const missions = await prisma.mission.findMany({
+  const missions = (await prisma.mission.findMany({
     where: { userId: user.id },
     orderBy: { date: 'desc' },
-    take: 30 // Last 30 missions
-  }) as MissionListItem[]
+    take: 30, // Last 30 missions
+  })) as MissionListItem[]
 
   const statusColors = {
     PENDING: 'bg-gray-100 text-gray-800 border-gray-200',
@@ -39,14 +39,15 @@ export default async function MissionsPage() {
 
   // Calculate statistics
   const totalMissions = missions.length
-  const completedMissions = missions.filter(m => m.status === 'COMPLETED').length
+  const completedMissions = missions.filter((m) => m.status === 'COMPLETED').length
   const completionRate = totalMissions > 0 ? (completedMissions / totalMissions) * 100 : 0
-  const avgObjectives = missions.length > 0
-    ? missions.reduce((sum, m) => {
-        const objs = JSON.parse(m.objectives as string) as Array<unknown>
-        return sum + objs.length
-      }, 0) / missions.length
-    : 0
+  const avgObjectives =
+    missions.length > 0
+      ? missions.reduce((sum, m) => {
+          const objs = JSON.parse(m.objectives as string) as Array<unknown>
+          return sum + objs.length
+        }, 0) / missions.length
+      : 0
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -54,16 +55,14 @@ export default async function MissionsPage() {
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-            <Link href="/" className="hover:text-gray-900">Dashboard</Link>
+            <Link href="/" className="hover:text-gray-900">
+              Dashboard
+            </Link>
             <span>/</span>
             <span className="text-gray-900">Missions</span>
           </div>
-          <h1 className="text-3xl font-heading font-bold text-gray-900 mb-2">
-            Mission History
-          </h1>
-          <p className="text-gray-600">
-            Track your daily study missions and progress over time
-          </p>
+          <h1 className="text-3xl font-heading font-bold text-gray-900 mb-2">Mission History</h1>
+          <p className="text-gray-600">Track your daily study missions and progress over time</p>
         </div>
 
         {/* Statistics */}
@@ -116,12 +115,13 @@ export default async function MissionsPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {missions.map(mission => {
+                {missions.map((mission) => {
                   const objectives = JSON.parse(mission.objectives as string) as Array<{
                     objectiveId: string
                     completed: boolean
                   }>
-                  const completedCount = mission.completedObjectivesCount || objectives.filter(o => o.completed).length
+                  const completedCount =
+                    mission.completedObjectivesCount || objectives.filter((o) => o.completed).length
                   const totalCount = objectives.length
                   const rate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
 
@@ -139,10 +139,13 @@ export default async function MissionsPage() {
                                 weekday: 'short',
                                 year: 'numeric',
                                 month: 'short',
-                                day: 'numeric'
+                                day: 'numeric',
                               })}
                             </h3>
-                            <Badge variant="outline" className={statusColors[mission.status as keyof typeof statusColors]}>
+                            <Badge
+                              variant="outline"
+                              className={statusColors[mission.status as keyof typeof statusColors]}
+                            >
                               {mission.status}
                             </Badge>
                           </div>

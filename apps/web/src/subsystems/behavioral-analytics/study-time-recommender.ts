@@ -124,7 +124,11 @@ export class StudyTimeRecommender {
 
       // Check preference match
       const dayOfWeek = date.getDay()
-      const preferenceScore = this.calculatePreferenceScore(hourOfDay, dayOfWeek, preferredStudyTimes)
+      const preferenceScore = this.calculatePreferenceScore(
+        hourOfDay,
+        dayOfWeek,
+        preferredStudyTimes,
+      )
 
       // Calculate recency score (sessions at this hour in last 7 days)
       const recentSessionsAtHour = recentSessions.filter(
@@ -138,7 +142,9 @@ export class StudyTimeRecommender {
 
       // Build reasoning
       const reasoning: string[] = []
-      reasoning.push(`Historical performance: ${Math.round(timeOfDayScore)}% (${sessionCount} sessions)`)
+      reasoning.push(
+        `Historical performance: ${Math.round(timeOfDayScore)}% (${sessionCount} sessions)`,
+      )
       if (availabilityScore > 0) {
         reasoning.push('Calendar available')
       } else {
@@ -207,10 +213,7 @@ export class StudyTimeRecommender {
   /**
    * Fetch calendar events for a given date (placeholder for calendar API integration)
    */
-  private static async fetchCalendarEvents(
-    userId: string,
-    date: Date,
-  ): Promise<CalendarEvent[]> {
+  private static async fetchCalendarEvents(userId: string, date: Date): Promise<CalendarEvent[]> {
     // TODO: Implement Google Calendar API integration (Story 5.3 Task 6)
     // For now, return empty array (no conflicts)
     return []
@@ -274,9 +277,11 @@ export class StudyTimeRecommender {
       data: {
         userId,
         adaptationType,
-        reason,
-        oldValue,
-        newValue,
+        adaptationDetails: {
+          reason,
+          oldValue,
+          newValue,
+        },
         appliedAt: new Date(),
       },
     })

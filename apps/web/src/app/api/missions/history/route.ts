@@ -61,9 +61,7 @@ async function handleGET(request: NextRequest) {
       })
 
       // Create a map for quick lookup
-      const objectiveMap = new Map(
-        objectiveDetails.map((obj: any) => [obj.id, obj])
-      )
+      const objectiveMap = new Map(objectiveDetails.map((obj: any) => [obj.id, obj]))
 
       // Merge objective details with mission objectives
       const enrichedObjectives = objectives.map((obj) => ({
@@ -82,7 +80,7 @@ async function handleGET(request: NextRequest) {
         successScore: mission.successScore,
         difficultyRating: mission.difficultyRating,
       }
-    })
+    }),
   )
 
   // Get total count for pagination
@@ -92,15 +90,17 @@ async function handleGET(request: NextRequest) {
     },
   })
 
-  return Response.json(successResponse({
-    missions: missionsWithObjectives,
-    pagination: {
-      total: totalCount,
-      limit: params.limit,
-      offset: params.offset,
-      hasMore: params.offset + params.limit < totalCount,
-    },
-  }))
+  return Response.json(
+    successResponse({
+      missions: missionsWithObjectives,
+      pagination: {
+        total: totalCount,
+        limit: params.limit,
+        offset: params.offset,
+        hasMore: params.offset + params.limit < totalCount,
+      },
+    }),
+  )
 }
 
 export const GET = withErrorHandler(handleGET)

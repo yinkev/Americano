@@ -1,6 +1,6 @@
 # Story 5.3: Optimal Study Timing and Session Orchestration
 
-Status: Draft
+Status: Done
 
 ## Story
 

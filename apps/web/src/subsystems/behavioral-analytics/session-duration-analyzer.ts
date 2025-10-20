@@ -106,9 +106,7 @@ export class SessionDurationAnalyzer {
    * @param userId - User ID to analyze
    * @returns Duration pattern analysis with optimal bucket recommendation
    */
-  async analyzeSessionDurationPatterns(
-    userId: string
-  ): Promise<DurationPattern> {
+  async analyzeSessionDurationPatterns(userId: string): Promise<DurationPattern> {
     // Query all completed study sessions
     const sessions = await prisma.studySession.findMany({
       where: {
@@ -151,7 +149,7 @@ export class SessionDurationAnalyzer {
     for (const session of sessions) {
       const durationMinutes = session.durationMs! / (1000 * 60)
       const bucket = DURATION_BUCKETS.find(
-        (b) => durationMinutes >= b.min && durationMinutes < b.max
+        (b) => durationMinutes >= b.min && durationMinutes < b.max,
       )
 
       if (bucket) {
@@ -179,15 +177,12 @@ export class SessionDurationAnalyzer {
       const completionRate = this.calculateCompletionRate(bucketSessions)
 
       // Detect performance dropoff (fatigue indicator)
-      const fatigueIndicator =
-        await this.detectPerformanceDropoff(bucketSessions)
+      const fatigueIndicator = await this.detectPerformanceDropoff(bucketSessions)
 
       // Calculate composite bucket score
       // Formula: (avgPerformance * 0.5 + completionRate * 0.3 + (1 - fatigue) * 0.2) * 100
       const bucketScore =
-        (avgPerformance * 0.5 +
-          completionRate * 100 * 0.3 +
-          (1 - fatigueIndicator) * 100 * 0.2) *
+        (avgPerformance * 0.5 + completionRate * 100 * 0.3 + (1 - fatigueIndicator) * 100 * 0.2) *
         1.0
 
       bucketAnalyses.push({
@@ -257,9 +252,7 @@ export class SessionDurationAnalyzer {
    * @param userId - User ID to analyze
    * @returns Optimal duration recommendation with detailed context
    */
-  async calculateOptimalDuration(
-    userId: string
-  ): Promise<OptimalDurationRecommendation> {
+  async calculateOptimalDuration(userId: string): Promise<OptimalDurationRecommendation> {
     // Get overall duration pattern
     const pattern = await this.analyzeSessionDurationPatterns(userId)
 
@@ -277,18 +270,13 @@ export class SessionDurationAnalyzer {
 
     const currentAvg =
       sessions.length > 0
-        ? sessions.reduce((sum, s) => sum + s.durationMs!, 0) /
-          sessions.length /
-          (1000 * 60)
+        ? sessions.reduce((sum, s) => sum + s.durationMs!, 0) / sessions.length / (1000 * 60)
         : 45 // Default to 45 minutes if no data
 
     // Generate reasoning
     let reason = ''
     if (pattern.confidence >= 0.7) {
-      const performanceDiff = (
-        ((pattern.optimalBucket.avgPerformance - 70) / 70) *
-        100
-      ).toFixed(0)
+      const performanceDiff = (((pattern.optimalBucket.avgPerformance - 70) / 70) * 100).toFixed(0)
       reason = `Based on ${pattern.totalSessionsAnalyzed} sessions, your ${pattern.optimalBucket.durationRange} sessions show ${performanceDiff}% better performance with ${(pattern.optimalBucket.completionRate * 100).toFixed(0)}% completion rate.`
     } else if (pattern.confidence >= 0.4) {
       reason = `Initial analysis of ${pattern.totalSessionsAnalyzed} sessions suggests ${pattern.optimalBucket.durationRange} as optimal. Complete more sessions to increase recommendation confidence.`
@@ -347,9 +335,7 @@ export class SessionDurationAnalyzer {
 
     const averageSessionLength =
       allSessions.length > 0
-        ? allSessions.reduce((sum, s) => sum + s.durationMs!, 0) /
-          allSessions.length /
-          (1000 * 60)
+        ? allSessions.reduce((sum, s) => sum + s.durationMs!, 0) / allSessions.length / (1000 * 60)
         : 45
 
     // Need at least 5 long sessions for meaningful analysis
@@ -374,21 +360,17 @@ export class SessionDurationAnalyzer {
       const sessionStart = session.startedAt.getTime()
       const segments: Array<{ minuteMark: number; performance: number }> = []
 
-      for (
-        let minute = 10;
-        minute <= session.durationMs! / (1000 * 60);
-        minute += 10
-      ) {
+      for (let minute = 10; minute <= session.durationMs! / (1000 * 60); minute += 10) {
         const segmentEnd = sessionStart + minute * 60 * 1000
         const reviewsInSegment = session.reviews.filter(
           (r) =>
             r.reviewedAt.getTime() >= segmentEnd - 10 * 60 * 1000 &&
-            r.reviewedAt.getTime() < segmentEnd
+            r.reviewedAt.getTime() < segmentEnd,
         )
 
         if (reviewsInSegment.length > 0) {
           const correctReviews = reviewsInSegment.filter(
-            (r) => r.rating === 'GOOD' || r.rating === 'EASY'
+            (r) => r.rating === 'GOOD' || r.rating === 'EASY',
           ).length
           const performance = correctReviews / reviewsInSegment.length
           segments.push({ minuteMark: minute, performance })
@@ -399,8 +381,7 @@ export class SessionDurationAnalyzer {
       if (segments.length >= 3) {
         const baselinePerformance = segments[0].performance
         for (let i = 1; i < segments.length; i++) {
-          const degradation =
-            (baselinePerformance - segments[i].performance) / baselinePerformance
+          const degradation = (baselinePerformance - segments[i].performance) / baselinePerformance
           if (degradation >= FATIGUE_DEGRADATION_THRESHOLD) {
             fatiguePoints.push(segments[i].minuteMark)
             break
@@ -412,9 +393,7 @@ export class SessionDurationAnalyzer {
     // Calculate average fatigue point
     const avgFatiguePoint =
       fatiguePoints.length > 0
-        ? Math.round(
-            fatiguePoints.reduce((sum, p) => sum + p, 0) / fatiguePoints.length
-          )
+        ? Math.round(fatiguePoints.reduce((sum, p) => sum + p, 0) / fatiguePoints.length)
         : null
 
     const fatigueDetected = avgFatiguePoint !== null
@@ -460,7 +439,7 @@ export class SessionDurationAnalyzer {
       if (session.reviews.length === 0) continue
 
       const correctReviews = session.reviews.filter(
-        (r: any) => r.rating === 'GOOD' || r.rating === 'EASY'
+        (r: any) => r.rating === 'GOOD' || r.rating === 'EASY',
       ).length
       const performance = (correctReviews / session.reviews.length) * 100
 
@@ -484,8 +463,7 @@ export class SessionDurationAnalyzer {
     let completedObjectives = 0
 
     for (const session of sessions) {
-      const objectiveCompletions = (session.objectiveCompletions ||
-        []) as Array<{
+      const objectiveCompletions = (session.objectiveCompletions || []) as Array<{
         completed?: boolean
         selfAssessment?: number
       }>
@@ -496,7 +474,7 @@ export class SessionDurationAnalyzer {
 
       // Count objectives as completed if they have selfAssessment >= 4 (confident understanding)
       const completed = objectiveCompletions.filter(
-        (o) => o.completed || (o.selfAssessment && o.selfAssessment >= 4)
+        (o) => o.completed || (o.selfAssessment && o.selfAssessment >= 4),
       ).length
       completedObjectives += completed
     }
@@ -525,31 +503,24 @@ export class SessionDurationAnalyzer {
       const midpoint = sessionStart + sessionDuration / 2
 
       // Split reviews into first and second half
-      const firstHalfReviews = session.reviews.filter(
-        (r: any) => r.reviewedAt.getTime() < midpoint
-      )
+      const firstHalfReviews = session.reviews.filter((r: any) => r.reviewedAt.getTime() < midpoint)
       const secondHalfReviews = session.reviews.filter(
-        (r: any) => r.reviewedAt.getTime() >= midpoint
+        (r: any) => r.reviewedAt.getTime() >= midpoint,
       )
 
       if (firstHalfReviews.length < 3 || secondHalfReviews.length < 3) continue
 
       // Calculate performance for each half
       const firstHalfPerformance =
-        firstHalfReviews.filter(
-          (r: any) => r.rating === 'GOOD' || r.rating === 'EASY'
-        ).length / firstHalfReviews.length
+        firstHalfReviews.filter((r: any) => r.rating === 'GOOD' || r.rating === 'EASY').length /
+        firstHalfReviews.length
 
       const secondHalfPerformance =
-        secondHalfReviews.filter(
-          (r: any) => r.rating === 'GOOD' || r.rating === 'EASY'
-        ).length / secondHalfReviews.length
+        secondHalfReviews.filter((r: any) => r.rating === 'GOOD' || r.rating === 'EASY').length /
+        secondHalfReviews.length
 
       // Calculate degradation (0 if improved, positive if declined)
-      const degradation = Math.max(
-        0,
-        firstHalfPerformance - secondHalfPerformance
-      )
+      const degradation = Math.max(0, firstHalfPerformance - secondHalfPerformance)
       totalDegradation += degradation
       validSessions++
     }
@@ -568,9 +539,7 @@ export class SessionDurationAnalyzer {
    * @param userId - User ID to analyze
    * @returns Duration recommendations by complexity level
    */
-  private async calculateDurationByComplexity(
-    userId: string
-  ): Promise<
+  private async calculateDurationByComplexity(userId: string): Promise<
     | {
         [ObjectiveComplexity.BASIC]: number
         [ObjectiveComplexity.INTERMEDIATE]: number

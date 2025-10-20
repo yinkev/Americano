@@ -19,7 +19,8 @@ const articles = [
     slug: 'spaced-repetition-science',
     title: 'The Science of Spaced Repetition: Why Timing Matters',
     category: 'SPACED_REPETITION',
-    summary: 'Learn how the Ebbinghaus forgetting curve explains why spacing your reviews leads to better long-term retention.',
+    summary:
+      'Learn how the Ebbinghaus forgetting curve explains why spacing your reviews leads to better long-term retention.',
     content: `# The Science of Spaced Repetition
 
 ## What is Spaced Repetition?
@@ -98,7 +99,8 @@ Research suggests these intervals for maximum retention:
     slug: 'active-recall-benefits',
     title: 'Active Recall: Why Testing Yourself Works',
     category: 'ACTIVE_RECALL',
-    summary: 'Discover why retrieving information from memory (active recall) is far more effective than passive review.',
+    summary:
+      'Discover why retrieving information from memory (active recall) is far more effective than passive review.',
     content: `# Active Recall: The Power of Retrieval Practice
 
 ## What is Active Recall?
@@ -200,7 +202,8 @@ Research consistently shows that **testing yourself improves long-term retention
     slug: 'vark-learning-styles',
     title: 'VARK Learning Styles: Understanding Your Preferences',
     category: 'LEARNING_STYLES',
-    summary: 'Explore the VARK model of learning preferences and learn how to leverage your strengths while avoiding over-reliance.',
+    summary:
+      'Explore the VARK model of learning preferences and learn how to leverage your strengths while avoiding over-reliance.',
     content: `# VARK Learning Styles: Preferences, Not Limitations
 
 ## What is VARK?
@@ -336,7 +339,8 @@ The most effective approach combines all modalities:
     slug: 'cognitive-load-theory',
     title: 'Cognitive Load Theory: Managing Mental Capacity',
     category: 'COGNITIVE_LOAD',
-    summary: 'Learn how to optimize learning by managing intrinsic, extraneous, and germane cognitive load.',
+    summary:
+      'Learn how to optimize learning by managing intrinsic, extraneous, and germane cognitive load.',
     content: `# Cognitive Load Theory: Working Memory Limits
 
 ## What is Cognitive Load?
@@ -479,7 +483,8 @@ Medical education has **HIGH intrinsic load** by nature. Success requires:
     slug: 'circadian-rhythms-optimal-timing',
     title: 'Circadian Rhythms: Finding Your Optimal Study Time',
     category: 'CIRCADIAN_RHYTHMS',
-    summary: 'Understand how your biological clock affects cognitive performance and discover your peak learning hours.',
+    summary:
+      'Understand how your biological clock affects cognitive performance and discover your peak learning hours.',
     content: `# Circadian Rhythms: The Science of Timing
 
 ## What Are Circadian Rhythms?

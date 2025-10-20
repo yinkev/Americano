@@ -6,9 +6,9 @@
  * break intervals, and content items with customization options
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Clock,
   Coffee,
@@ -20,11 +20,11 @@ import {
   FlaskConical,
   FileText,
   CheckCircle,
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+} from 'lucide-react'
+import { format } from 'date-fns'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -32,54 +32,49 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@/components/ui/dialog'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface ContentItem {
-  type: 'flashcard' | 'new_flashcard' | 'validation' | 'clinical' | 'lecture' | 'break';
-  id: string | null;
-  duration: number;
-  phase: 'warmup' | 'peak' | 'winddown';
-  difficulty?: number;
+  type: 'flashcard' | 'new_flashcard' | 'validation' | 'clinical' | 'lecture' | 'break'
+  id: string | null
+  duration: number
+  phase: 'warmup' | 'peak' | 'winddown'
+  difficulty?: number
 }
 
 interface SessionPlan {
-  id: string;
-  startTime: string;
-  endTime: string;
-  duration: number;
-  intensity: 'LOW' | 'MEDIUM' | 'HIGH';
+  id: string
+  startTime: string
+  endTime: string
+  duration: number
+  intensity: 'LOW' | 'MEDIUM' | 'HIGH'
   contentSequence: {
-    sequence: ContentItem[];
-    totalDuration: number;
+    sequence: ContentItem[]
+    totalDuration: number
     phases: {
-      warmUp: number;
-      peak: number;
-      windDown: number;
-    };
-  };
+      warmUp: number
+      peak: number
+      windDown: number
+    }
+  }
   breaks: {
-    breakIntervals: number[];
-    breakDurations: number[];
-    totalBreakTime: number;
-    reasoning: string;
-  };
-  confidence: number;
+    breakIntervals: number[]
+    breakDurations: number[]
+    totalBreakTime: number
+    reasoning: string
+  }
+  confidence: number
 }
 
 interface Props {
-  plan: SessionPlan | null;
-  loading?: boolean;
-  onCustomize?: () => void;
+  plan: SessionPlan | null
+  loading?: boolean
+  onCustomize?: () => void
 }
 
 export function SessionPlanPreview({ plan, loading, onCustomize }: Props) {
-  const [hoveredItem, setHoveredItem] = useState<number | null>(null);
+  const [hoveredItem, setHoveredItem] = useState<number | null>(null)
 
   if (loading) {
     return (
@@ -90,13 +85,16 @@ export function SessionPlanPreview({ plan, loading, onCustomize }: Props) {
         <CardContent>
           <div className="h-48 flex items-center justify-center">
             <div className="text-center space-y-2">
-              <Clock className="size-8 mx-auto animate-pulse" style={{ color: 'oklch(0.6 0.05 230)' }} />
+              <Clock
+                className="size-8 mx-auto animate-pulse"
+                style={{ color: 'oklch(0.6 0.05 230)' }}
+              />
               <p className="text-sm text-muted-foreground">Loading session plan...</p>
             </div>
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (!plan) {
@@ -107,60 +105,66 @@ export function SessionPlanPreview({ plan, loading, onCustomize }: Props) {
         </CardHeader>
         <CardContent>
           <div className="h-48 flex items-center justify-center">
-            <p className="text-sm text-muted-foreground">Select a time slot to preview session plan</p>
+            <p className="text-sm text-muted-foreground">
+              Select a time slot to preview session plan
+            </p>
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
-  const startTime = new Date(plan.startTime);
-  const endTime = new Date(plan.endTime);
+  const startTime = new Date(plan.startTime)
+  const endTime = new Date(plan.endTime)
 
   // Calculate timeline positions
-  const totalMinutes = plan.duration;
-  const phases = plan.contentSequence.phases;
+  const totalMinutes = plan.duration
+  const phases = plan.contentSequence.phases
 
   const getIntensityColor = (intensity: string) => {
     switch (intensity) {
       case 'LOW':
-        return 'oklch(0.7 0.12 145)'; // Green
+        return 'oklch(0.7 0.12 145)' // Green
       case 'MEDIUM':
-        return 'oklch(0.8 0.15 85)'; // Yellow
+        return 'oklch(0.8 0.15 85)' // Yellow
       case 'HIGH':
-        return 'oklch(0.6 0.15 25)'; // Red
+        return 'oklch(0.6 0.15 25)' // Red
       default:
-        return 'oklch(0.6 0.05 230)';
+        return 'oklch(0.6 0.05 230)'
     }
-  };
+  }
 
   const getIntensityLabel = (intensity: string) => {
     switch (intensity) {
       case 'LOW':
-        return 'Light Session';
+        return 'Light Session'
       case 'MEDIUM':
-        return 'Balanced Challenge';
+        return 'Balanced Challenge'
       case 'HIGH':
-        return 'Reduced Intensity';
+        return 'Reduced Intensity'
       default:
-        return intensity;
+        return intensity
     }
-  };
+  }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card
+      className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] animate-in fade-in slide-in-from-bottom-4 duration-500"
+      role="region"
+      aria-label="Session Plan Preview"
+    >
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1">
             <CardTitle className="font-heading text-xl mb-2">Session Plan Preview</CardTitle>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Clock className="size-4" />
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1" role="text" aria-label={`Session time: ${format(startTime, 'h:mm a')} to ${format(endTime, 'h:mm a')}`}>
+                <Clock className="size-4" aria-hidden="true" />
                 <span>
                   {format(startTime, 'h:mm a')} - {format(endTime, 'h:mm a')}
                 </span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1" role="text" aria-label={`Duration: ${plan.duration} minutes`}>
                 <span className="font-medium">{plan.duration} min</span>
               </div>
               <Badge
@@ -171,6 +175,8 @@ export function SessionPlanPreview({ plan, loading, onCustomize }: Props) {
                   borderColor: getIntensityColor(plan.intensity),
                   color: getIntensityColor(plan.intensity),
                 }}
+                role="status"
+                aria-label={`Session intensity: ${getIntensityLabel(plan.intensity)}`}
               >
                 {getIntensityLabel(plan.intensity)}
               </Badge>
@@ -182,9 +188,10 @@ export function SessionPlanPreview({ plan, loading, onCustomize }: Props) {
               variant="outline"
               size="sm"
               onClick={onCustomize}
-              className="ml-4"
+              className="sm:ml-4 transition-transform hover:scale-105 active:scale-95"
+              aria-label="Customize session plan"
             >
-              <Settings className="size-4 mr-2" />
+              <Settings className="size-4 mr-2" aria-hidden="true" />
               Customize
             </Button>
           )}
@@ -193,25 +200,29 @@ export function SessionPlanPreview({ plan, loading, onCustomize }: Props) {
 
       <CardContent className="space-y-6">
         {/* Timeline Visualization */}
-        <div className="space-y-3">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        <section className="space-y-3" aria-labelledby="timeline-heading">
+          <h3 id="timeline-heading" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             Session Timeline
-          </p>
+          </h3>
 
           {/* Desktop: Horizontal Timeline */}
-          <div className="hidden md:block">
+          <div className="hidden md:block" role="img" aria-label={`Session timeline: ${phases.warmUp} minute warmup, ${phases.peak} minute peak focus, ${phases.windDown} minute wind-down`}>
             <div className="relative h-24 rounded-lg overflow-hidden">
               {/* Warm-up Phase */}
               <div
-                className="absolute top-0 h-full flex items-center justify-center transition-all hover:brightness-95"
+                className="absolute top-0 h-full flex items-center justify-center transition-all hover:brightness-95 animate-in slide-in-from-left duration-500"
                 style={{
                   left: '0%',
                   width: `${(phases.warmUp / totalMinutes) * 100}%`,
                   backgroundColor: 'oklch(0.8 0.1 180)',
                 }}
+                role="presentation"
               >
                 <div className="text-center px-2">
-                  <Sparkles className="size-6 mx-auto mb-1" style={{ color: 'oklch(0.3 0.1 180)' }} />
+                  <Sparkles
+                    className="size-6 mx-auto mb-1"
+                    style={{ color: 'oklch(0.3 0.1 180)' }}
+                  />
                   <p className="text-xs font-semibold" style={{ color: 'oklch(0.3 0.1 180)' }}>
                     Warm-up
                   </p>
@@ -311,24 +322,29 @@ export function SessionPlanPreview({ plan, loading, onCustomize }: Props) {
               color="oklch(0.8 0.08 145)"
             />
           </div>
-        </div>
+        </section>
 
         {/* Break Schedule */}
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        <section className="space-y-2" aria-labelledby="breaks-heading">
+          <h3 id="breaks-heading" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             Scheduled Breaks
-          </p>
-          <div className="flex flex-wrap gap-2">
+          </h3>
+          <div className="flex flex-wrap gap-2" role="list" aria-label={`${plan.breaks.breakIntervals.length} scheduled breaks`}>
             {plan.breaks.breakIntervals.map((interval, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg"
-                style={{ backgroundColor: 'oklch(0.95 0.01 230)' }}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg animate-in fade-in slide-in-from-bottom-2 duration-300"
+                style={{
+                  backgroundColor: 'oklch(0.95 0.01 230)',
+                  animationDelay: `${idx * 100}ms`,
+                }}
+                role="listitem"
+                aria-label={`Break at ${interval} minutes for ${plan.breaks.breakDurations[idx]} minutes`}
               >
-                <Coffee className="size-4" style={{ color: 'oklch(0.6 0.05 230)' }} />
+                <Coffee className="size-4" style={{ color: 'oklch(0.6 0.05 230)' }} aria-hidden="true" />
                 <span className="text-sm">
                   <span className="font-medium">{interval} min</span>
-                  <span className="text-muted-foreground mx-1">•</span>
+                  <span className="text-muted-foreground mx-1" aria-hidden="true">•</span>
                   <span className="text-muted-foreground">
                     {plan.breaks.breakDurations[idx]} min break
                   </span>
@@ -336,8 +352,8 @@ export function SessionPlanPreview({ plan, loading, onCustomize }: Props) {
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground italic">{plan.breaks.reasoning}</p>
-        </div>
+          <p className="text-xs text-muted-foreground italic" role="note">{plan.breaks.reasoning}</p>
+        </section>
 
         {/* Content Preview */}
         <div className="space-y-2">
@@ -353,10 +369,10 @@ export function SessionPlanPreview({ plan, loading, onCustomize }: Props) {
               </DialogTrigger>
               <DialogContent className="bg-white/95 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.15)] max-w-2xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle className="font-heading text-xl">Complete Content Sequence</DialogTitle>
-                  <DialogDescription>
-                    Optimized learning path for this session
-                  </DialogDescription>
+                  <DialogTitle className="font-heading text-xl">
+                    Complete Content Sequence
+                  </DialogTitle>
+                  <DialogDescription>Optimized learning path for this session</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-2 py-4">
                   {plan.contentSequence.sequence.map((item, idx) => (
@@ -395,7 +411,7 @@ export function SessionPlanPreview({ plan, loading, onCustomize }: Props) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 /**
@@ -407,26 +423,30 @@ function PhaseCard({
   duration,
   color,
 }: {
-  icon: React.ReactNode;
-  label: string;
-  duration: number;
-  color: string;
+  icon: React.ReactNode
+  label: string
+  duration: number
+  color: string
 }) {
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: color }}>
-      <div style={{ color: `oklch(0.3 ${color.split(' ')[1]} ${color.split(' ')[2]}` }}>
-        {icon}
-      </div>
+      <div style={{ color: `oklch(0.3 ${color.split(' ')[1]} ${color.split(' ')[2]}` }}>{icon}</div>
       <div className="flex-1">
-        <p className="text-sm font-semibold" style={{ color: `oklch(0.3 ${color.split(' ')[1]} ${color.split(' ')[2]}` }}>
+        <p
+          className="text-sm font-semibold"
+          style={{ color: `oklch(0.3 ${color.split(' ')[1]} ${color.split(' ')[2]}` }}
+        >
           {label}
         </p>
       </div>
-      <p className="text-sm font-medium" style={{ color: `oklch(0.4 ${color.split(' ')[1]} ${color.split(' ')[2]}` }}>
+      <p
+        className="text-sm font-medium"
+        style={{ color: `oklch(0.4 ${color.split(' ')[1]} ${color.split(' ')[2]}` }}
+      >
         {duration} min
       </p>
     </div>
-  );
+  )
 }
 
 /**
@@ -439,48 +459,48 @@ function ContentItemCard({
   onHover,
   onLeave,
 }: {
-  item: ContentItem;
-  index: number;
-  isHovered: boolean;
-  onHover: () => void;
-  onLeave: () => void;
+  item: ContentItem
+  index: number
+  isHovered: boolean
+  onHover: () => void
+  onLeave: () => void
 }) {
   const getItemIcon = (type: string) => {
     switch (type) {
       case 'flashcard':
       case 'new_flashcard':
-        return <BookOpen className="size-4" />;
+        return <BookOpen className="size-4" />
       case 'validation':
-        return <CheckCircle className="size-4" />;
+        return <CheckCircle className="size-4" />
       case 'clinical':
-        return <FlaskConical className="size-4" />;
+        return <FlaskConical className="size-4" />
       case 'lecture':
-        return <FileText className="size-4" />;
+        return <FileText className="size-4" />
       case 'break':
-        return <Coffee className="size-4" />;
+        return <Coffee className="size-4" />
       default:
-        return <BookOpen className="size-4" />;
+        return <BookOpen className="size-4" />
     }
-  };
+  }
 
   const getItemLabel = (type: string) => {
     switch (type) {
       case 'flashcard':
-        return 'Review';
+        return 'Review'
       case 'new_flashcard':
-        return 'New Card';
+        return 'New Card'
       case 'validation':
-        return 'Quiz';
+        return 'Quiz'
       case 'clinical':
-        return 'Clinical';
+        return 'Clinical'
       case 'lecture':
-        return 'Lecture';
+        return 'Lecture'
       case 'break':
-        return 'Break';
+        return 'Break'
       default:
-        return type;
+        return type
     }
-  };
+  }
 
   return (
     <div
@@ -499,7 +519,7 @@ function ContentItemCard({
       </div>
       <p className="text-xs text-muted-foreground">{item.duration} min</p>
     </div>
-  );
+  )
 }
 
 /**
@@ -509,15 +529,15 @@ function ContentItemRow({ item, index }: { item: ContentItem; index: number }) {
   const getPhaseColor = (phase: string) => {
     switch (phase) {
       case 'warmup':
-        return 'oklch(0.8 0.1 180)';
+        return 'oklch(0.8 0.1 180)'
       case 'peak':
-        return 'oklch(0.75 0.12 25)';
+        return 'oklch(0.75 0.12 25)'
       case 'winddown':
-        return 'oklch(0.8 0.08 145)';
+        return 'oklch(0.8 0.08 145)'
       default:
-        return 'oklch(0.6 0.05 230)';
+        return 'oklch(0.6 0.05 230)'
     }
-  };
+  }
 
   return (
     <div
@@ -544,5 +564,5 @@ function ContentItemRow({ item, index }: { item: ContentItem; index: number }) {
         )}
       </div>
     </div>
-  );
+  )
 }

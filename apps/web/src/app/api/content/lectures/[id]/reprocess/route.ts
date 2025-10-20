@@ -1,13 +1,10 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { ProcessingOrchestrator } from '@/subsystems/content-processing/processing-orchestrator';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { ProcessingOrchestrator } from '@/subsystems/content-processing/processing-orchestrator'
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id: lectureId } = await params;
+    const { id: lectureId } = await params
 
     // Check if lecture exists
     const lecture = await prisma.lecture.findUnique({
@@ -19,7 +16,7 @@ export async function POST(
           },
         },
       },
-    });
+    })
 
     if (!lecture) {
       return Response.json(
@@ -30,8 +27,8 @@ export async function POST(
             message: 'Lecture not found',
           },
         },
-        { status: 404 }
-      );
+        { status: 404 },
+      )
     }
 
     // Check if lecture is currently processing
@@ -44,16 +41,16 @@ export async function POST(
             message: 'Lecture is currently being processed',
           },
         },
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
     // Check if lecture has existing chunks
     const existingChunks = await prisma.contentChunk.count({
       where: { lectureId },
-    });
+    })
 
-    const hasChunks = existingChunks > 0;
+    const hasChunks = existingChunks > 0
 
     // Reset lecture status to PROCESSING (skip PENDING since we're starting immediately)
     await prisma.lecture.update({
@@ -65,13 +62,13 @@ export async function POST(
         processingStartedAt: new Date(),
         estimatedCompletionAt: null,
       },
-    });
+    })
 
     // Trigger reprocessing (skip OCR if chunks already exist)
-    const orchestrator = new ProcessingOrchestrator();
+    const orchestrator = new ProcessingOrchestrator()
     orchestrator.reprocessLecture(lectureId, { skipOCR: hasChunks }).catch((error) => {
-      console.error(`Reprocessing failed for lecture ${lectureId}:`, error);
-    });
+      console.error(`Reprocessing failed for lecture ${lectureId}:`, error)
+    })
 
     return Response.json({
       success: true,
@@ -79,9 +76,9 @@ export async function POST(
         message: 'Reprocessing started',
         lectureId,
       },
-    });
+    })
   } catch (error) {
-    console.error('Reprocess error:', error);
+    console.error('Reprocess error:', error)
 
     return Response.json(
       {
@@ -92,7 +89,7 @@ export async function POST(
           details: { error: error instanceof Error ? error.message : 'Unknown error' },
         },
       },
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

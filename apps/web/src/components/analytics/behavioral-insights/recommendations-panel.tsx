@@ -79,15 +79,11 @@ const ConfidenceStars = ({ confidence }: { confidence: number }) => {
         <Star
           key={star}
           className={`h-4 w-4 ${
-            star <= filledStars
-              ? 'fill-yellow-400 text-yellow-400'
-              : 'fill-gray-200 text-gray-200'
+            star <= filledStars ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-200 text-gray-200'
           }`}
         />
       ))}
-      <span className="text-sm text-muted-foreground ml-1">
-        {Math.round(confidence * 100)}%
-      </span>
+      <span className="text-sm text-muted-foreground ml-1">{Math.round(confidence * 100)}%</span>
     </div>
   )
 }
@@ -113,32 +109,41 @@ const RecommendationCard = ({
       : recommendation.description
 
   return (
-    <Card className="bg-white/50 hover:shadow-md transition-shadow">
+    <Card
+      className="bg-white/50 hover:shadow-md transition-all duration-300 hover:scale-[1.02] animate-in fade-in slide-in-from-left-4"
+      role="article"
+      aria-labelledby={`rec-title-${recommendation.id}`}
+      aria-describedby={`rec-desc-${recommendation.id}`}
+    >
       <CardContent className="p-4">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="font-semibold text-lg">{recommendation.title}</h3>
-              <Badge className={categoryConfig.color}>{categoryConfig.label}</Badge>
+              <h3 id={`rec-title-${recommendation.id}`} className="font-semibold text-lg">{recommendation.title}</h3>
+              <Badge className={categoryConfig.color} aria-label={`Category: ${categoryConfig.label}`}>{categoryConfig.label}</Badge>
               {isApplied && (
-                <Badge className="bg-green-600 text-white">
-                  <Check className="h-3 w-3 mr-1" />
+                <Badge className="bg-green-600 text-white" aria-label="Status: Applied">
+                  <Check className="h-3 w-3 mr-1" aria-hidden="true" />
                   Applied
                 </Badge>
               )}
             </div>
-            <ConfidenceStars confidence={recommendation.confidence} />
+            <div role="img" aria-label={`Confidence rating: ${Math.round(recommendation.confidence * 100)} percent out of 100`}>
+              <ConfidenceStars confidence={recommendation.confidence} />
+            </div>
           </div>
         </div>
 
         {/* Description */}
-        <p className="text-sm text-muted-foreground mb-3">
+        <p id={`rec-desc-${recommendation.id}`} className="text-sm text-muted-foreground mb-3">
           {showFullDescription ? recommendation.description : truncatedDescription}
           {recommendation.description.length > 150 && (
             <button
               onClick={() => setShowFullDescription(!showFullDescription)}
-              className="text-blue-600 hover:underline ml-1"
+              className="text-blue-600 hover:underline ml-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+              aria-expanded={showFullDescription}
+              aria-label={showFullDescription ? 'Show less description' : 'Show full description'}
             >
               {showFullDescription ? 'Show less' : 'Read more'}
             </button>
@@ -150,17 +155,20 @@ const RecommendationCard = ({
           <div className="mb-3">
             <button
               onClick={() => setExpanded(!expanded)}
-              className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+              aria-expanded={expanded}
+              aria-controls={`evidence-${recommendation.id}`}
+              aria-label={`${expanded ? 'Hide' : 'Show'} ${recommendation.evidence.length} evidence items`}
             >
-              {expanded ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
-              )}
+              {expanded ? <ChevronUp className="h-4 w-4" aria-hidden="true" /> : <ChevronDown className="h-4 w-4" aria-hidden="true" />}
               Evidence ({recommendation.evidence.length})
             </button>
             {expanded && (
-              <ul className="mt-2 space-y-1 pl-6">
+              <ul
+                id={`evidence-${recommendation.id}`}
+                className="mt-2 space-y-1 pl-6 animate-in slide-in-from-top-2 duration-200"
+                role="list"
+              >
                 {recommendation.evidence.map((item, index) => (
                   <li key={index} className="text-sm text-muted-foreground list-disc">
                     {item}
@@ -177,7 +185,9 @@ const RecommendationCard = ({
             onClick={() => onApply(recommendation.id)}
             disabled={isApplying}
             size="sm"
-            className="w-full"
+            className="w-full transition-transform hover:scale-105 active:scale-95"
+            aria-busy={isApplying}
+            aria-label={`Apply ${recommendation.title} recommendation`}
           >
             {isApplying ? 'Applying...' : 'Apply This'}
           </Button>
@@ -202,7 +212,7 @@ export function RecommendationsPanel({
         setIsLoading(true)
         setError(null)
         const response = await fetch(
-          `/api/analytics/behavioral-insights/recommendations?userId=${userId}`
+          `/api/analytics/behavioral-insights/recommendations?userId=${userId}`,
         )
 
         if (!response.ok) {
@@ -238,7 +248,7 @@ export function RecommendationsPanel({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ userId }),
-        }
+        },
       )
 
       if (!response.ok) {
@@ -249,9 +259,7 @@ export function RecommendationsPanel({
       if (data.success) {
         // Update local state
         setRecommendations(
-          recommendations.map((rec) =>
-            rec.id === id ? { ...rec, appliedAt: new Date() } : rec
-          )
+          recommendations.map((rec) => (rec.id === id ? { ...rec, appliedAt: new Date() } : rec)),
         )
       }
     } catch (err) {

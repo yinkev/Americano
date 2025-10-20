@@ -17,10 +17,7 @@ const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000'
  * Proxies request to FastAPI ML service
  * Body: { actualStruggle: boolean, feedbackType: string, comments?: string }
  */
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: predictionId } = await params
     const body = await req.json()
@@ -47,7 +44,7 @@ export async function POST(
         error: 'ML service unavailable',
         detail: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 503 }
+      { status: 503 },
     )
   }
 }

@@ -23,10 +23,7 @@ export async function POST(request: NextRequest) {
     const result = await syncUserCalendar(userId, daysAhead || 7)
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error || 'Sync failed' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: result.error || 'Sync failed' }, { status: 400 })
     }
 
     return NextResponse.json({
@@ -38,8 +35,8 @@ export async function POST(request: NextRequest) {
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request body', details: error.errors },
-        { status: 400 }
+        { error: 'Invalid request body', details: error.issues },
+        { status: 400 },
       )
     }
 

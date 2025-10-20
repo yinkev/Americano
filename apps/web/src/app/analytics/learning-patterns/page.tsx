@@ -1,78 +1,85 @@
-import { Suspense } from 'react';
-import { Card } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Suspense } from 'react'
+import { Card } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Progress } from '@/components/ui/progress'
+import {
+  AnalyticsCardSkeleton,
+  ChartSkeleton,
+  HeatmapSkeleton,
+} from '@/components/skeletons'
 import {
   StudyTimeHeatmap,
   SessionPerformanceChart,
   LearningStyleProfile,
   ForgettingCurveVisualization,
-  BehavioralInsightsPanel
-} from '@/components/analytics/learning-patterns';
+  BehavioralInsightsPanel,
+} from '@/components/analytics/learning-patterns'
 
 // Type definitions for API responses
 interface UserLearningProfile {
-  id: string;
-  userId: string;
-  preferredStudyTimes: Array<{ dayOfWeek: number; startHour: number; endHour: number }>;
-  averageSessionDuration: number;
-  optimalSessionDuration: number;
+  id: string
+  userId: string
+  preferredStudyTimes: Array<{ dayOfWeek: number; startHour: number; endHour: number }>
+  averageSessionDuration: number
+  optimalSessionDuration: number
   contentPreferences: {
-    lectures: number;
-    flashcards: number;
-    validation: number;
-    clinicalReasoning: number;
-  };
+    lectures: number
+    flashcards: number
+    validation: number
+    clinicalReasoning: number
+  }
   learningStyleProfile: {
-    visual: number;
-    auditory: number;
-    kinesthetic: number;
-    reading: number;
-  };
+    visual: number
+    auditory: number
+    kinesthetic: number
+    reading: number
+  }
   personalizedForgettingCurve: {
-    R0: number;
-    k: number;
-    halfLife: number;
-  };
-  lastAnalyzedAt: string;
-  dataQualityScore: number;
+    R0: number
+    k: number
+    halfLife: number
+  }
+  lastAnalyzedAt: string
+  dataQualityScore: number
 }
 
 interface LearningProfileResponse {
-  profile: UserLearningProfile | null;
-  insufficientData: boolean;
+  profile: UserLearningProfile | null
+  insufficientData: boolean
   dataRequirements?: {
-    weeksNeeded: number;
-    sessionsNeeded: number;
-    reviewsNeeded: number;
-  };
+    weeksNeeded: number
+    sessionsNeeded: number
+    reviewsNeeded: number
+  }
 }
 
 async function getLearningProfile(): Promise<LearningProfileResponse> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/analytics/learning-profile`, {
-    cache: 'no-store',
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/analytics/learning-profile`,
+    {
+      cache: 'no-store',
+    },
+  )
 
   if (!res.ok) {
-    throw new Error('Failed to fetch learning profile');
+    throw new Error('Failed to fetch learning profile')
   }
 
-  return res.json();
+  return res.json()
 }
 
 function ProfileSummaryCard({ profile }: { profile: UserLearningProfile }) {
   const dominantLearningStyle = Object.entries(profile.learningStyleProfile).reduce(
     (max, [key, value]) => (value > max.value ? { key, value } : max),
-    { key: '', value: 0 }
-  );
+    { key: '', value: 0 },
+  )
 
   const learningStyleLabels: Record<string, string> = {
     visual: 'Visual',
     auditory: 'Auditory',
     kinesthetic: 'Kinesthetic',
     reading: 'Reading/Writing',
-  };
+  }
 
   return (
     <Card className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)]">
@@ -102,7 +109,8 @@ function ProfileSummaryCard({ profile }: { profile: UserLearningProfile }) {
               Dominant Learning Style
             </p>
             <p className="text-2xl font-bold" style={{ color: 'oklch(0.3 0.1 280)' }}>
-              {learningStyleLabels[dominantLearningStyle.key]} ({Math.round(dominantLearningStyle.value * 100)}%)
+              {learningStyleLabels[dominantLearningStyle.key]} (
+              {Math.round(dominantLearningStyle.value * 100)}%)
             </p>
           </div>
         </div>
@@ -110,21 +118,22 @@ function ProfileSummaryCard({ profile }: { profile: UserLearningProfile }) {
           <p className="text-sm font-medium mb-2" style={{ color: 'oklch(0.5 0.05 230)' }}>
             Data Quality Score
           </p>
-          <Progress
-            value={profile.dataQualityScore * 100}
-            className="h-2"
-          />
+          <Progress value={profile.dataQualityScore * 100} className="h-2" />
           <p className="text-xs mt-1" style={{ color: 'oklch(0.6 0.03 230)' }}>
-            {Math.round(profile.dataQualityScore * 100)}% confidence based on {' '}
+            {Math.round(profile.dataQualityScore * 100)}% confidence based on{' '}
             {new Date(profile.lastAnalyzedAt).toLocaleDateString()}
           </p>
         </div>
       </div>
     </Card>
-  );
+  )
 }
 
-function InsufficientDataMessage({ requirements }: { requirements: { weeksNeeded: number; sessionsNeeded: number; reviewsNeeded: number } }) {
+function InsufficientDataMessage({
+  requirements,
+}: {
+  requirements: { weeksNeeded: number; sessionsNeeded: number; reviewsNeeded: number }
+}) {
   return (
     <Alert className="bg-white/80 backdrop-blur-md border border-[oklch(0.85_0.05_60)]">
       <AlertDescription>
@@ -143,7 +152,10 @@ function InsufficientDataMessage({ requirements }: { requirements: { weeksNeeded
                   {Math.max(0, requirements.weeksNeeded)} more needed
                 </span>
               </div>
-              <Progress value={Math.max(0, 100 - (requirements.weeksNeeded / 6) * 100)} className="h-2" />
+              <Progress
+                value={Math.max(0, 100 - (requirements.weeksNeeded / 6) * 100)}
+                className="h-2"
+              />
             </div>
             <div>
               <div className="flex justify-between text-sm mb-1">
@@ -152,7 +164,10 @@ function InsufficientDataMessage({ requirements }: { requirements: { weeksNeeded
                   {Math.max(0, requirements.sessionsNeeded)} more needed
                 </span>
               </div>
-              <Progress value={Math.max(0, 100 - (requirements.sessionsNeeded / 20) * 100)} className="h-2" />
+              <Progress
+                value={Math.max(0, 100 - (requirements.sessionsNeeded / 20) * 100)}
+                className="h-2"
+              />
             </div>
             <div>
               <div className="flex justify-between text-sm mb-1">
@@ -161,13 +176,16 @@ function InsufficientDataMessage({ requirements }: { requirements: { weeksNeeded
                   {Math.max(0, requirements.reviewsNeeded)} more needed
                 </span>
               </div>
-              <Progress value={Math.max(0, 100 - (requirements.reviewsNeeded / 50) * 100)} className="h-2" />
+              <Progress
+                value={Math.max(0, 100 - (requirements.reviewsNeeded / 50) * 100)}
+                className="h-2"
+              />
             </div>
           </div>
         </div>
       </AlertDescription>
     </Alert>
-  );
+  )
 }
 
 function LoadingSkeleton() {
@@ -184,11 +202,11 @@ function LoadingSkeleton() {
       </div>
       <Skeleton className="h-64 w-full" />
     </div>
-  );
+  )
 }
 
 export default async function LearningPatternsPage() {
-  const data = await getLearningProfile();
+  const data = await getLearningProfile()
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
@@ -214,7 +232,7 @@ export default async function LearningPatternsPage() {
               <h3 className="text-lg font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                 Optimal Study Times
               </h3>
-              <Suspense fallback={<Skeleton className="h-80 w-full" />}>
+              <Suspense fallback={<HeatmapSkeleton />}>
                 <StudyTimeHeatmap />
               </Suspense>
             </div>
@@ -227,7 +245,7 @@ export default async function LearningPatternsPage() {
                 <h3 className="text-lg font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                   Session Performance Patterns
                 </h3>
-                <Suspense fallback={<Skeleton className="h-80 w-full" />}>
+                <Suspense fallback={<ChartSkeleton variant="line" height={320} />}>
                   <SessionPerformanceChart />
                 </Suspense>
               </div>
@@ -238,7 +256,7 @@ export default async function LearningPatternsPage() {
                 <h3 className="text-lg font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                   Learning Style Profile (VARK)
                 </h3>
-                <Suspense fallback={<Skeleton className="h-80 w-full" />}>
+                <Suspense fallback={<ChartSkeleton variant="radar" height={320} />}>
                   <LearningStyleProfile profile={data.profile} />
                 </Suspense>
               </div>
@@ -251,7 +269,7 @@ export default async function LearningPatternsPage() {
               <h3 className="text-lg font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                 Personal Forgetting Curve
               </h3>
-              <Suspense fallback={<Skeleton className="h-80 w-full" />}>
+              <Suspense fallback={<ChartSkeleton variant="area" height={320} />}>
                 <ForgettingCurveVisualization curve={data.profile.personalizedForgettingCurve} />
               </Suspense>
             </div>
@@ -263,7 +281,7 @@ export default async function LearningPatternsPage() {
               <h3 className="text-lg font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                 Actionable Insights
               </h3>
-              <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+              <Suspense fallback={<AnalyticsCardSkeleton showHeader={false} showStats={false} />}>
                 <BehavioralInsightsPanel />
               </Suspense>
             </div>
@@ -277,5 +295,5 @@ export default async function LearningPatternsPage() {
         </Alert>
       )}
     </div>
-  );
+  )
 }

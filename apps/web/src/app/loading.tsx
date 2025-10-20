@@ -40,9 +40,7 @@ export default function Loading() {
 
         {/* Loading indicator text */}
         <div className="flex justify-center pt-4">
-          <p className="text-sm text-[oklch(0.556_0_0)] font-medium">
-            Loading...
-          </p>
+          <p className="text-sm text-[oklch(0.556_0_0)] font-medium">Loading...</p>
         </div>
       </div>
     </div>

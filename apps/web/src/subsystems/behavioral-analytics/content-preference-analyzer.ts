@@ -9,18 +9,18 @@
  * @location apps/web/src/subsystems/behavioral-analytics/content-preference-analyzer.ts
  */
 
-import { prisma } from '@/lib/db';
-import type { BehavioralEvent, ValidationResponse, StudySession } from '@/generated/prisma';
+import { prisma } from '@/lib/db'
+import type { BehavioralEvent, ValidationResponse, StudySession } from '@/generated/prisma'
 
 /**
  * Content preference distribution across different content types.
  * All values are normalized scores (0-1) that sum to 1.0.
  */
 export interface ContentPreferenceProfile {
-  lectures: number;          // 0-1: Preference for lecture content
-  flashcards: number;        // 0-1: Preference for flashcard reviews
-  validation: number;        // 0-1: Preference for validation exercises
-  clinicalReasoning: number; // 0-1: Preference for clinical reasoning scenarios
+  lectures: number // 0-1: Preference for lecture content
+  flashcards: number // 0-1: Preference for flashcard reviews
+  validation: number // 0-1: Preference for validation exercises
+  clinicalReasoning: number // 0-1: Preference for clinical reasoning scenarios
 }
 
 /**
@@ -29,10 +29,10 @@ export interface ContentPreferenceProfile {
  * All values sum to 1.0 for comparative analysis.
  */
 export interface LearningStyleProfile {
-  visual: number;      // 0-1: Visual learning preference (diagrams, graphs, knowledge graphs)
-  auditory: number;    // 0-1: Auditory learning preference (verbal explanations)
-  kinesthetic: number; // 0-1: Kinesthetic learning preference (hands-on, clinical scenarios)
-  reading: number;     // 0-1: Reading/Writing preference (text content, note-taking)
+  visual: number // 0-1: Visual learning preference (diagrams, graphs, knowledge graphs)
+  auditory: number // 0-1: Auditory learning preference (verbal explanations)
+  kinesthetic: number // 0-1: Kinesthetic learning preference (hands-on, clinical scenarios)
+  reading: number // 0-1: Reading/Writing preference (text content, note-taking)
 }
 
 /**
@@ -40,21 +40,21 @@ export interface LearningStyleProfile {
  * Higher scores indicate better retention and mastery outcomes.
  */
 export interface ContentTypeScores {
-  lectures: ContentTypeEffectiveness;
-  flashcards: ContentTypeEffectiveness;
-  validation: ContentTypeEffectiveness;
-  clinicalReasoning: ContentTypeEffectiveness;
+  lectures: ContentTypeEffectiveness
+  flashcards: ContentTypeEffectiveness
+  validation: ContentTypeEffectiveness
+  clinicalReasoning: ContentTypeEffectiveness
 }
 
 /**
  * Detailed effectiveness metrics for a specific content type.
  */
 export interface ContentTypeEffectiveness {
-  score: number;           // 0-100: Composite effectiveness score
-  retentionRate: number;   // 0-1: Average retention from this content type
-  completionRate: number;  // 0-1: Percentage of sessions completed
-  engagementScore: number; // 0-100: Average engagement level
-  sampleSize: number;      // Number of sessions analyzed
+  score: number // 0-100: Composite effectiveness score
+  retentionRate: number // 0-1: Average retention from this content type
+  completionRate: number // 0-1: Percentage of sessions completed
+  engagementScore: number // 0-100: Average engagement level
+  sampleSize: number // Number of sessions analyzed
 }
 
 /**
@@ -95,7 +95,7 @@ export class ContentPreferenceAnalyzer {
       orderBy: {
         startedAt: 'desc',
       },
-    });
+    })
 
     // Query behavioral events for content type tracking
     const behavioralEvents = await prisma.behavioralEvent.findMany({
@@ -103,7 +103,7 @@ export class ContentPreferenceAnalyzer {
         userId,
         contentType: { not: null },
       },
-    });
+    })
 
     // Initialize content type engagement metrics
     const contentMetrics = {
@@ -111,44 +111,44 @@ export class ContentPreferenceAnalyzer {
       flashcards: { totalTime: 0, sessionCount: 0, completionRate: 0 },
       validation: { totalTime: 0, sessionCount: 0, completionRate: 0 },
       clinicalReasoning: { totalTime: 0, sessionCount: 0, completionRate: 0 },
-    };
+    }
 
     // Track engagement from behavioral events
     for (const event of behavioralEvents) {
-      const contentType = event.contentType as string;
-      const eventData = event.eventData as { durationMs?: number; completed?: boolean };
+      const contentType = event.contentType as string
+      const eventData = event.eventData as { durationMs?: number; completed?: boolean }
 
       if (contentType === 'lecture' && contentMetrics.lectures) {
-        contentMetrics.lectures.sessionCount++;
+        contentMetrics.lectures.sessionCount++
         if (eventData?.durationMs) {
-          contentMetrics.lectures.totalTime += eventData.durationMs;
+          contentMetrics.lectures.totalTime += eventData.durationMs
         }
         if (eventData?.completed) {
-          contentMetrics.lectures.completionRate++;
+          contentMetrics.lectures.completionRate++
         }
       } else if (contentType === 'flashcard' && contentMetrics.flashcards) {
-        contentMetrics.flashcards.sessionCount++;
+        contentMetrics.flashcards.sessionCount++
         if (eventData?.durationMs) {
-          contentMetrics.flashcards.totalTime += eventData.durationMs;
+          contentMetrics.flashcards.totalTime += eventData.durationMs
         }
         if (eventData?.completed) {
-          contentMetrics.flashcards.completionRate++;
+          contentMetrics.flashcards.completionRate++
         }
       } else if (contentType === 'validation' && contentMetrics.validation) {
-        contentMetrics.validation.sessionCount++;
+        contentMetrics.validation.sessionCount++
         if (eventData?.durationMs) {
-          contentMetrics.validation.totalTime += eventData.durationMs;
+          contentMetrics.validation.totalTime += eventData.durationMs
         }
         if (eventData?.completed) {
-          contentMetrics.validation.completionRate++;
+          contentMetrics.validation.completionRate++
         }
       } else if (contentType === 'clinical_reasoning' && contentMetrics.clinicalReasoning) {
-        contentMetrics.clinicalReasoning.sessionCount++;
+        contentMetrics.clinicalReasoning.sessionCount++
         if (eventData?.durationMs) {
-          contentMetrics.clinicalReasoning.totalTime += eventData.durationMs;
+          contentMetrics.clinicalReasoning.totalTime += eventData.durationMs
         }
         if (eventData?.completed) {
-          contentMetrics.clinicalReasoning.completionRate++;
+          contentMetrics.clinicalReasoning.completionRate++
         }
       }
     }
@@ -156,38 +156,39 @@ export class ContentPreferenceAnalyzer {
     // Infer content types from session activities
     for (const session of sessions) {
       if (session.reviews.length > 0) {
-        contentMetrics.flashcards.sessionCount++;
+        contentMetrics.flashcards.sessionCount++
         if (session.durationMs) {
-          contentMetrics.flashcards.totalTime += session.durationMs;
+          contentMetrics.flashcards.totalTime += session.durationMs
         }
         if (session.completedAt) {
-          contentMetrics.flashcards.completionRate++;
+          contentMetrics.flashcards.completionRate++
         }
       }
 
       if (session.validationResponses.length > 0) {
-        contentMetrics.validation.sessionCount++;
+        contentMetrics.validation.sessionCount++
         if (session.durationMs) {
-          contentMetrics.validation.totalTime += session.durationMs;
+          contentMetrics.validation.totalTime += session.durationMs
         }
         if (session.completedAt) {
-          contentMetrics.validation.completionRate++;
+          contentMetrics.validation.completionRate++
         }
       }
     }
 
     // Calculate raw preference scores based on engagement
-    const lectureScore = contentMetrics.lectures.totalTime * 0.6 +
-                         contentMetrics.lectures.sessionCount * 100 * 0.4;
-    const flashcardScore = contentMetrics.flashcards.totalTime * 0.6 +
-                           contentMetrics.flashcards.sessionCount * 100 * 0.4;
-    const validationScore = contentMetrics.validation.totalTime * 0.6 +
-                            contentMetrics.validation.sessionCount * 100 * 0.4;
-    const clinicalReasoningScore = contentMetrics.clinicalReasoning.totalTime * 0.6 +
-                                   contentMetrics.clinicalReasoning.sessionCount * 100 * 0.4;
+    const lectureScore =
+      contentMetrics.lectures.totalTime * 0.6 + contentMetrics.lectures.sessionCount * 100 * 0.4
+    const flashcardScore =
+      contentMetrics.flashcards.totalTime * 0.6 + contentMetrics.flashcards.sessionCount * 100 * 0.4
+    const validationScore =
+      contentMetrics.validation.totalTime * 0.6 + contentMetrics.validation.sessionCount * 100 * 0.4
+    const clinicalReasoningScore =
+      contentMetrics.clinicalReasoning.totalTime * 0.6 +
+      contentMetrics.clinicalReasoning.sessionCount * 100 * 0.4
 
     // Normalize to sum = 1.0
-    const total = lectureScore + flashcardScore + validationScore + clinicalReasoningScore;
+    const total = lectureScore + flashcardScore + validationScore + clinicalReasoningScore
 
     if (total === 0) {
       // No data available, return balanced defaults
@@ -196,7 +197,7 @@ export class ContentPreferenceAnalyzer {
         flashcards: 0.25,
         validation: 0.25,
         clinicalReasoning: 0.25,
-      };
+      }
     }
 
     return {
@@ -204,7 +205,7 @@ export class ContentPreferenceAnalyzer {
       flashcards: flashcardScore / total,
       validation: validationScore / total,
       clinicalReasoning: clinicalReasoningScore / total,
-    };
+    }
   }
 
   /**
@@ -233,7 +234,7 @@ export class ContentPreferenceAnalyzer {
         userId,
         eventType: 'GRAPH_VIEWED',
       },
-    });
+    })
 
     // Get diagram card engagement from event data
     const diagramEvents = await prisma.behavioralEvent.findMany({
@@ -241,22 +242,20 @@ export class ContentPreferenceAnalyzer {
         userId,
         eventType: 'CARD_REVIEWED',
       },
-    });
+    })
 
-    let diagramCardEngagement = 0;
-    let diagramCardCount = 0;
+    let diagramCardEngagement = 0
+    let diagramCardCount = 0
     for (const event of diagramEvents) {
-      const eventData = event.eventData as { hasDiagram?: boolean; engagementScore?: number };
+      const eventData = event.eventData as { hasDiagram?: boolean; engagementScore?: number }
       if (eventData?.hasDiagram) {
-        diagramCardCount++;
-        diagramCardEngagement += eventData.engagementScore || 0.5;
+        diagramCardCount++
+        diagramCardEngagement += eventData.engagementScore || 0.5
       }
     }
-    const avgDiagramEngagement = diagramCardCount > 0
-      ? diagramCardEngagement / diagramCardCount
-      : 0;
+    const avgDiagramEngagement = diagramCardCount > 0 ? diagramCardEngagement / diagramCardCount : 0
 
-    const visual = graphViewEvents * 0.5 + avgDiagramEngagement * 0.5;
+    const visual = graphViewEvents * 0.5 + avgDiagramEngagement * 0.5
 
     // Auditory indicators: "Explain to patient" prompt performance (proxy for verbal explanation)
     const explainToPatientResponses = await prisma.validationResponse.findMany({
@@ -268,15 +267,17 @@ export class ContentPreferenceAnalyzer {
       include: {
         prompt: true,
       },
-    });
+    })
 
     const explainToPatientScores = explainToPatientResponses
-      .filter(response => response.prompt.promptType === 'EXPLAIN_TO_PATIENT')
-      .map(response => response.score);
+      .filter((response) => response.prompt.promptType === 'EXPLAIN_TO_PATIENT')
+      .map((response) => response.score)
 
-    const auditory = explainToPatientScores.length > 0
-      ? explainToPatientScores.reduce((sum, score) => sum + score, 0) / explainToPatientScores.length
-      : 0;
+    const auditory =
+      explainToPatientScores.length > 0
+        ? explainToPatientScores.reduce((sum, score) => sum + score, 0) /
+          explainToPatientScores.length
+        : 0
 
     // Kinesthetic indicators: Clinical reasoning scenario engagement
     const clinicalReasoningSessions = await prisma.behavioralEvent.findMany({
@@ -284,17 +285,18 @@ export class ContentPreferenceAnalyzer {
         userId,
         contentType: 'clinical_reasoning',
       },
-    });
+    })
 
-    let clinicalEngagementSum = 0;
+    let clinicalEngagementSum = 0
     for (const event of clinicalReasoningSessions) {
-      const eventData = event.eventData as { engagementScore?: number };
-      clinicalEngagementSum += eventData?.engagementScore || 0.5;
+      const eventData = event.eventData as { engagementScore?: number }
+      clinicalEngagementSum += eventData?.engagementScore || 0.5
     }
 
-    const kinesthetic = clinicalReasoningSessions.length > 0
-      ? clinicalEngagementSum / clinicalReasoningSessions.length
-      : 0;
+    const kinesthetic =
+      clinicalReasoningSessions.length > 0
+        ? clinicalEngagementSum / clinicalReasoningSessions.length
+        : 0
 
     // Reading/Writing indicators: Text content duration + note-taking activity
     const textContentSessions = await prisma.studySession.findMany({
@@ -306,7 +308,7 @@ export class ContentPreferenceAnalyzer {
         durationMs: true,
         sessionNotes: true,
       },
-    });
+    })
 
     // Calculate text content duration (assume lecture content is text-based)
     const lectureEvents = await prisma.behavioralEvent.findMany({
@@ -314,31 +316,31 @@ export class ContentPreferenceAnalyzer {
         userId,
         contentType: 'lecture',
       },
-    });
+    })
 
-    let textContentDuration = 0;
+    let textContentDuration = 0
     for (const event of lectureEvents) {
-      const eventData = event.eventData as { durationMs?: number };
+      const eventData = event.eventData as { durationMs?: number }
       if (eventData?.durationMs) {
-        textContentDuration += eventData.durationMs;
+        textContentDuration += eventData.durationMs
       }
     }
 
     // Note-taking activity count
     const noteTakingActivity = textContentSessions.filter(
-      session => session.sessionNotes && session.sessionNotes.length > 10
-    ).length;
+      (session) => session.sessionNotes && session.sessionNotes.length > 10,
+    ).length
 
     // Normalize text duration to 0-1 scale (assume max 10 hours = 36000000ms)
-    const normalizedTextDuration = Math.min(textContentDuration / 36000000, 1.0);
+    const normalizedTextDuration = Math.min(textContentDuration / 36000000, 1.0)
 
     // Normalize note-taking (assume max 50 sessions with notes)
-    const normalizedNoteTaking = Math.min(noteTakingActivity / 50, 1.0);
+    const normalizedNoteTaking = Math.min(noteTakingActivity / 50, 1.0)
 
-    const reading = normalizedTextDuration * 0.6 + normalizedNoteTaking * 0.4;
+    const reading = normalizedTextDuration * 0.6 + normalizedNoteTaking * 0.4
 
     // Normalize to sum = 1.0
-    const total = visual + auditory + kinesthetic + reading;
+    const total = visual + auditory + kinesthetic + reading
 
     if (total === 0) {
       // No data available, return balanced defaults
@@ -347,7 +349,7 @@ export class ContentPreferenceAnalyzer {
         auditory: 0.25,
         kinesthetic: 0.25,
         reading: 0.25,
-      };
+      }
     }
 
     return {
@@ -355,7 +357,7 @@ export class ContentPreferenceAnalyzer {
       auditory: auditory / total,
       kinesthetic: kinesthetic / total,
       reading: reading / total,
-    };
+    }
   }
 
   /**
@@ -385,7 +387,7 @@ export class ContentPreferenceAnalyzer {
         reviews: true,
         validationResponses: true,
       },
-    });
+    })
 
     // Query behavioral events for content-specific metrics
     const behavioralEvents = await prisma.behavioralEvent.findMany({
@@ -394,7 +396,7 @@ export class ContentPreferenceAnalyzer {
         contentType: { not: null },
         sessionPerformanceScore: { not: null },
       },
-    });
+    })
 
     // Initialize effectiveness metrics
     const effectiveness = {
@@ -402,22 +404,22 @@ export class ContentPreferenceAnalyzer {
       flashcards: this.initializeEffectiveness(),
       validation: this.initializeEffectiveness(),
       clinicalReasoning: this.initializeEffectiveness(),
-    };
+    }
 
     // Analyze behavioral events by content type
     for (const event of behavioralEvents) {
-      const contentType = event.contentType as string;
-      const performanceScore = event.sessionPerformanceScore || 0;
-      const eventData = event.eventData as { completed?: boolean; retention?: number };
+      const contentType = event.contentType as string
+      const performanceScore = event.sessionPerformanceScore || 0
+      const eventData = event.eventData as { completed?: boolean; retention?: number }
 
       if (contentType === 'lecture') {
-        this.updateEffectiveness(effectiveness.lectures, performanceScore, eventData);
+        this.updateEffectiveness(effectiveness.lectures, performanceScore, eventData)
       } else if (contentType === 'flashcard') {
-        this.updateEffectiveness(effectiveness.flashcards, performanceScore, eventData);
+        this.updateEffectiveness(effectiveness.flashcards, performanceScore, eventData)
       } else if (contentType === 'validation') {
-        this.updateEffectiveness(effectiveness.validation, performanceScore, eventData);
+        this.updateEffectiveness(effectiveness.validation, performanceScore, eventData)
       } else if (contentType === 'clinical_reasoning') {
-        this.updateEffectiveness(effectiveness.clinicalReasoning, performanceScore, eventData);
+        this.updateEffectiveness(effectiveness.clinicalReasoning, performanceScore, eventData)
       }
     }
 
@@ -425,27 +427,28 @@ export class ContentPreferenceAnalyzer {
     for (const session of sessions) {
       if (session.reviews.length > 0) {
         const correctReviews = session.reviews.filter(
-          r => r.rating === 'GOOD' || r.rating === 'EASY'
-        ).length;
-        const totalReviews = session.reviews.length;
-        const retentionRate = totalReviews > 0 ? correctReviews / totalReviews : 0;
+          (r) => r.rating === 'GOOD' || r.rating === 'EASY',
+        ).length
+        const totalReviews = session.reviews.length
+        const retentionRate = totalReviews > 0 ? correctReviews / totalReviews : 0
 
-        effectiveness.flashcards.sampleSize++;
-        effectiveness.flashcards.retentionRate += retentionRate;
+        effectiveness.flashcards.sampleSize++
+        effectiveness.flashcards.retentionRate += retentionRate
         if (session.completedAt) {
-          effectiveness.flashcards.completionRate += 1;
+          effectiveness.flashcards.completionRate += 1
         }
       }
 
       // Analyze validation effectiveness
       if (session.validationResponses.length > 0) {
-        const avgScore = session.validationResponses.reduce((sum, v) => sum + v.score, 0)
-                        / session.validationResponses.length;
+        const avgScore =
+          session.validationResponses.reduce((sum, v) => sum + v.score, 0) /
+          session.validationResponses.length
 
-        effectiveness.validation.sampleSize++;
-        effectiveness.validation.retentionRate += avgScore;
+        effectiveness.validation.sampleSize++
+        effectiveness.validation.retentionRate += avgScore
         if (session.completedAt) {
-          effectiveness.validation.completionRate += 1;
+          effectiveness.validation.completionRate += 1
         }
       }
     }
@@ -456,7 +459,7 @@ export class ContentPreferenceAnalyzer {
       flashcards: this.finalizeEffectiveness(effectiveness.flashcards),
       validation: this.finalizeEffectiveness(effectiveness.validation),
       clinicalReasoning: this.finalizeEffectiveness(effectiveness.clinicalReasoning),
-    };
+    }
   }
 
   /**
@@ -464,11 +467,11 @@ export class ContentPreferenceAnalyzer {
    * @private
    */
   private initializeEffectiveness(): {
-    score: number;
-    retentionRate: number;
-    completionRate: number;
-    engagementScore: number;
-    sampleSize: number;
+    score: number
+    retentionRate: number
+    completionRate: number
+    engagementScore: number
+    sampleSize: number
   } {
     return {
       score: 0,
@@ -476,7 +479,7 @@ export class ContentPreferenceAnalyzer {
       completionRate: 0,
       engagementScore: 0,
       sampleSize: 0,
-    };
+    }
   }
 
   /**
@@ -486,15 +489,15 @@ export class ContentPreferenceAnalyzer {
   private updateEffectiveness(
     metrics: ReturnType<typeof this.initializeEffectiveness>,
     performanceScore: number,
-    eventData: { completed?: boolean; retention?: number }
+    eventData: { completed?: boolean; retention?: number },
   ): void {
-    metrics.sampleSize++;
-    metrics.engagementScore += performanceScore;
+    metrics.sampleSize++
+    metrics.engagementScore += performanceScore
     if (eventData.completed) {
-      metrics.completionRate += 1;
+      metrics.completionRate += 1
     }
     if (eventData.retention !== undefined) {
-      metrics.retentionRate += eventData.retention;
+      metrics.retentionRate += eventData.retention
     }
   }
 
@@ -503,7 +506,7 @@ export class ContentPreferenceAnalyzer {
    * @private
    */
   private finalizeEffectiveness(
-    metrics: ReturnType<typeof this.initializeEffectiveness>
+    metrics: ReturnType<typeof this.initializeEffectiveness>,
   ): ContentTypeEffectiveness {
     if (metrics.sampleSize === 0) {
       return {
@@ -512,15 +515,15 @@ export class ContentPreferenceAnalyzer {
         completionRate: 0,
         engagementScore: 0,
         sampleSize: 0,
-      };
+      }
     }
 
-    const avgRetention = metrics.retentionRate / metrics.sampleSize;
-    const avgCompletion = metrics.completionRate / metrics.sampleSize;
-    const avgEngagement = metrics.engagementScore / metrics.sampleSize;
+    const avgRetention = metrics.retentionRate / metrics.sampleSize
+    const avgCompletion = metrics.completionRate / metrics.sampleSize
+    const avgEngagement = metrics.engagementScore / metrics.sampleSize
 
     // Composite effectiveness score: retention (50%) + completion (30%) + engagement (20%)
-    const score = (avgRetention * 50) + (avgCompletion * 30) + (avgEngagement * 0.2);
+    const score = avgRetention * 50 + avgCompletion * 30 + avgEngagement * 0.2
 
     return {
       score: Math.round(score * 100) / 100,
@@ -528,6 +531,6 @@ export class ContentPreferenceAnalyzer {
       completionRate: Math.round(avgCompletion * 100) / 100,
       engagementScore: Math.round(avgEngagement * 100) / 100,
       sampleSize: metrics.sampleSize,
-    };
+    }
   }
 }

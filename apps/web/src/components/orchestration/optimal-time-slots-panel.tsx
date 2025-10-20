@@ -26,7 +26,7 @@ interface OptimalTimeSlotsPanelProps {
 export function OptimalTimeSlotsPanel({
   onTimeSlotSelect,
   selectedTimeSlotId,
-}: OptimalTimeSlotsPanelProps): JSX.Element {
+}: OptimalTimeSlotsPanelProps) {
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -99,7 +99,7 @@ export function OptimalTimeSlotsPanel({
     }
   }
 
-  function getStatusIcon(status: TimeSlot['status']): JSX.Element {
+  function getStatusIcon(status: TimeSlot['status']) {
     switch (status) {
       case 'available':
         return <CheckCircle className="size-4" aria-hidden="true" />

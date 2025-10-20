@@ -1,0 +1,45 @@
+
+> @americano/web@0.1.0 build /Users/kyin/Projects/Americano-epic5/apps/web
+> next build
+
+ ⚠ `devIndicators.buildActivityPosition` has been renamed to `devIndicators.position`. Please update your next.config.js file accordingly.
+ ⚠ The `devIndicators` option `buildActivityPosition` ("bottom-right") conflicts with `position` ("bottom-left"). Using `buildActivityPosition` ("bottom-right") for backward compatibility.
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/kyin/pnpm-lock.yaml as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /Users/kyin/Projects/Americano-epic5/apps/web/pnpm-lock.yaml
+   * /Users/kyin/Projects/Americano-epic5/package-lock.json
+
+   ▲ Next.js 15.5.5
+   - Environments: .env
+   - Experiments (use with caution):
+     · serverActions
+
+   Creating an optimized production build ...
+   Disabled SWC as replacement for Babel because of custom Babel configuration "babel.config.js" https://nextjs.org/docs/messages/swc-disabled
+   `compiler` options in `next.config.js` will be ignored while using Babel https://nextjs.org/docs/messages/ignored-compiler-options
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker with: /Users/kyin/Projects/Americano-epic5/apps/web/node_modules/next-pwa/register.js
+> [PWA] Service worker: /Users/kyin/Projects/Americano-epic5/apps/web/public/sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+ ✓ Compiled successfully in 9.4s
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/app/api/orchestration/adapt-schedule/route.ts:34:37
+Type error: Property 'scheduleAdaptation' does not exist on type 'PrismaClient<{ log: ("error" | "query" | "warn")[]; errorFormat: "pretty" | "minimal"; datasources: { readonly db: { readonly url: string | undefined; }; }; }, "error" | "query" | "warn", DefaultArgs>'.
+
+[0m [90m 32 |[39m
+ [90m 33 |[39m     [90m// Record schedule adaptation[39m
+[31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m adaptation [33m=[39m [36mawait[39m prisma[33m.[39mscheduleAdaptation[33m.[39mcreate({
+ [90m    |[39m                                     [31m[1m^[22m[39m
+ [90m 35 |[39m       data[33m:[39m {
+ [90m 36 |[39m         userId[33m,[39m
+ [90m 37 |[39m         adaptationType[33m,[39m[0m
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.

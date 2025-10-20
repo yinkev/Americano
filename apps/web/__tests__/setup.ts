@@ -27,7 +27,7 @@ export const handlers = [
     return HttpResponse.json({
       status: 'healthy',
       service: 'ml-service',
-      version: '1.0.0'
+      version: '1.0.0',
     })
   }),
 
@@ -70,7 +70,7 @@ export const handlers = [
 
   // POST /predictions/generate - Generate new predictions
   http.post(`${ML_SERVICE_URL}/predictions/generate`, async ({ request }) => {
-    const body = await request.json() as { userId: string; daysAhead?: number }
+    const body = (await request.json()) as { userId: string; daysAhead?: number }
 
     return HttpResponse.json({
       success: true,
@@ -82,7 +82,7 @@ export const handlers = [
           topicId: 'topic-458',
           predictionDate: new Date().toISOString(),
           predictedStruggleProbability: 0.82,
-          predictionConfidence: 0.90,
+          predictionConfidence: 0.9,
           predictionStatus: 'PENDING',
         },
       ],
@@ -100,7 +100,7 @@ export const handlers = [
   // POST /predictions/:id/feedback - Submit prediction feedback
   http.post(`${ML_SERVICE_URL}/predictions/:id/feedback`, async ({ params, request }) => {
     const { id } = params
-    const body = await request.json() as {
+    const body = (await request.json()) as {
       actualStruggle: boolean
       feedbackType: string
       comments?: string
@@ -152,7 +152,7 @@ export const handlers = [
   // POST /interventions/:id/apply - Apply intervention to mission
   http.post(`${ML_SERVICE_URL}/interventions/:id/apply`, async ({ params, request }) => {
     const { id } = params
-    const body = await request.json() as { applyToMissionId?: string }
+    const body = (await request.json()) as { applyToMissionId?: string }
 
     return HttpResponse.json({
       success: true,
@@ -263,15 +263,12 @@ export const createErrorHandler = (
   method: 'get' | 'post',
   path: string,
   status: number,
-  message: string
+  message: string,
 ) => {
   const fullPath = `${ML_SERVICE_URL}${path}`
 
   return http[method](fullPath, () => {
-    return HttpResponse.json(
-      { detail: message, error: true },
-      { status }
-    )
+    return HttpResponse.json({ detail: message, error: true }, { status })
   })
 }
 
@@ -300,7 +297,7 @@ export const create503Handler = (method: 'get' | 'post', path: string) => {
   return http[method](fullPath, () => {
     return new HttpResponse(null, {
       status: 503,
-      statusText: 'Service Unavailable'
+      statusText: 'Service Unavailable',
     })
   })
 }

@@ -40,7 +40,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       confidence: 'desc',
     },
     include: {
-      patterns: {
+      insightPatterns: {
         include: {
           pattern: {
             select: {
@@ -69,13 +69,13 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     createdAt: insight.createdAt,
     acknowledgedAt: insight.acknowledgedAt,
     applied: insight.applied,
-    supportingPatterns: insight.patterns.map((p) => p.pattern),
+    supportingPatterns: insight.insightPatterns.map((p) => p.pattern),
   }))
 
   return Response.json(
     successResponse({
       insights: insightsWithPatterns,
       count: insightsWithPatterns.length,
-    })
+    }),
   )
 })

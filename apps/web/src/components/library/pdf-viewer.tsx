@@ -1,98 +1,93 @@
-"use client"
+'use client'
 
-import { useState } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
-import { Separator } from '@/components/ui/separator';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCw, Maximize } from 'lucide-react';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
+import { useState } from 'react'
+import { Document, Page, pdfjs } from 'react-pdf'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Slider } from '@/components/ui/slider'
+import { Separator } from '@/components/ui/separator'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCw, Maximize } from 'lucide-react'
+import 'react-pdf/dist/Page/AnnotationLayer.css'
+import 'react-pdf/dist/Page/TextLayer.css'
 
 // Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
 
 interface PDFViewerProps {
-  lectureId: string;
-  fileName: string;
+  lectureId: string
+  fileName: string
 }
 
 export function PDFViewer({ lectureId, fileName }: PDFViewerProps) {
-  const [numPages, setNumPages] = useState<number>(0);
-  const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageInput, setPageInput] = useState<string>('1');
-  const [scale, setScale] = useState<number>(1.0);
-  const [rotation, setRotation] = useState<number>(0);
+  const [numPages, setNumPages] = useState<number>(0)
+  const [pageNumber, setPageNumber] = useState<number>(1)
+  const [pageInput, setPageInput] = useState<string>('1')
+  const [scale, setScale] = useState<number>(1.0)
+  const [rotation, setRotation] = useState<number>(0)
 
-  const pdfUrl = `/api/content/lectures/${lectureId}/pdf`;
+  const pdfUrl = `/api/content/lectures/${lectureId}/pdf`
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-    setNumPages(numPages);
-    setPageNumber(1);
-    setPageInput('1');
+    setNumPages(numPages)
+    setPageNumber(1)
+    setPageInput('1')
   }
 
   const goToPrevPage = () => {
     setPageNumber((prev) => {
-      const newPage = Math.max(1, prev - 1);
-      setPageInput(newPage.toString());
-      return newPage;
-    });
-  };
+      const newPage = Math.max(1, prev - 1)
+      setPageInput(newPage.toString())
+      return newPage
+    })
+  }
 
   const goToNextPage = () => {
     setPageNumber((prev) => {
-      const newPage = Math.min(numPages, prev + 1);
-      setPageInput(newPage.toString());
-      return newPage;
-    });
-  };
+      const newPage = Math.min(numPages, prev + 1)
+      setPageInput(newPage.toString())
+      return newPage
+    })
+  }
 
   const handlePageInputChange = (value: string) => {
-    setPageInput(value);
-    const pageNum = parseInt(value, 10);
+    setPageInput(value)
+    const pageNum = parseInt(value, 10)
     if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= numPages) {
-      setPageNumber(pageNum);
+      setPageNumber(pageNum)
     }
-  };
+  }
 
   const handlePageInputBlur = () => {
-    const pageNum = parseInt(pageInput, 10);
+    const pageNum = parseInt(pageInput, 10)
     if (isNaN(pageNum) || pageNum < 1 || pageNum > numPages) {
-      setPageInput(pageNumber.toString());
+      setPageInput(pageNumber.toString())
     }
-  };
+  }
 
   const handleZoomChange = (value: number[]) => {
-    setScale(value[0]);
-  };
+    setScale(value[0])
+  }
 
   const zoomIn = () => {
-    setScale((prev) => Math.min(2.0, prev + 0.1));
-  };
+    setScale((prev) => Math.min(2.0, prev + 0.1))
+  }
 
   const zoomOut = () => {
-    setScale((prev) => Math.max(0.5, prev - 0.1));
-  };
+    setScale((prev) => Math.max(0.5, prev - 0.1))
+  }
 
   const resetZoom = () => {
-    setScale(1.0);
-  };
+    setScale(1.0)
+  }
 
   const rotate = () => {
-    setRotation((prev) => (prev + 90) % 360);
-  };
+    setRotation((prev) => (prev + 90) % 360)
+  }
 
   const fitToWidth = () => {
-    setScale(1.5);
-  };
+    setScale(1.5)
+  }
 
   return (
     <TooltipProvider>
@@ -148,12 +143,7 @@ export function PDFViewer({ lectureId, fileName }: PDFViewerProps) {
           <div className="flex items-center gap-3 flex-1 max-w-xs">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={zoomOut}
-                  disabled={scale <= 0.5}
-                >
+                <Button variant="outline" size="icon" onClick={zoomOut} disabled={scale <= 0.5}>
                   <ZoomOut className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -169,24 +159,14 @@ export function PDFViewer({ lectureId, fileName }: PDFViewerProps) {
                 step={0.1}
                 className="flex-1"
               />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={resetZoom}
-                className="text-xs h-7 px-2"
-              >
+              <Button variant="ghost" size="sm" onClick={resetZoom} className="text-xs h-7 px-2">
                 {Math.round(scale * 100)}%
               </Button>
             </div>
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={zoomIn}
-                  disabled={scale >= 2.0}
-                >
+                <Button variant="outline" size="icon" onClick={zoomIn} disabled={scale >= 2.0}>
                   <ZoomIn className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -200,11 +180,7 @@ export function PDFViewer({ lectureId, fileName }: PDFViewerProps) {
           <div className="flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={rotate}
-                >
+                <Button variant="outline" size="icon" onClick={rotate}>
                   <RotateCw className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -213,11 +189,7 @@ export function PDFViewer({ lectureId, fileName }: PDFViewerProps) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={fitToWidth}
-                >
+                <Button variant="outline" size="icon" onClick={fitToWidth}>
                   <Maximize className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -256,5 +228,5 @@ export function PDFViewer({ lectureId, fileName }: PDFViewerProps) {
         </div>
       </div>
     </TooltipProvider>
-  );
+  )
 }

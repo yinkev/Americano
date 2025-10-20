@@ -12,7 +12,7 @@
  * Runs as daily batch job (11 PM) or on-demand
  */
 
-import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from '@/generated/prisma'
 import {
   StrugglePrediction,
   StruggleIndicator,
@@ -23,36 +23,36 @@ import {
   InterventionType,
   InterventionStatus,
   MasteryLevel,
-  ReviewRating
-} from '@/generated/prisma';
-import { addDays, subDays } from 'date-fns';
-import { StruggleFeatureExtractor } from './struggle-feature-extractor';
-import { StrugglePredictionModel } from './struggle-prediction-model';
+  ReviewRating,
+} from '@/generated/prisma'
+import { addDays, subDays } from 'date-fns'
+import { StruggleFeatureExtractor } from './struggle-feature-extractor'
+import { StrugglePredictionModel } from './struggle-prediction-model'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 /**
  * Struggle alert for user notification
  */
 export interface StruggleAlert {
-  id: string;
-  type: 'PROACTIVE_WARNING' | 'PREREQUISITE_ALERT' | 'REAL_TIME_ALERT' | 'INTERVENTION_SUGGESTION';
-  title: string;
-  message: string;
-  severity: Severity;
-  predictionId?: string;
-  interventionId?: string;
-  priority: number; // 0-100
-  createdAt: Date;
+  id: string
+  type: 'PROACTIVE_WARNING' | 'PREREQUISITE_ALERT' | 'REAL_TIME_ALERT' | 'INTERVENTION_SUGGESTION'
+  title: string
+  message: string
+  severity: Severity
+  predictionId?: string
+  interventionId?: string
+  priority: number // 0-100
+  createdAt: Date
 }
 
 export class StruggleDetectionEngine {
-  private featureExtractor: StruggleFeatureExtractor;
-  private predictionModel: StrugglePredictionModel;
+  private featureExtractor: StruggleFeatureExtractor
+  private predictionModel: StrugglePredictionModel
 
   constructor() {
-    this.featureExtractor = new StruggleFeatureExtractor();
-    this.predictionModel = new StrugglePredictionModel(false); // Use rule-based for MVP
+    this.featureExtractor = new StruggleFeatureExtractor()
+    this.predictionModel = new StrugglePredictionModel(false) // Use rule-based for MVP
   }
 
   /**
@@ -65,19 +65,19 @@ export class StruggleDetectionEngine {
         userId,
         date: {
           gte: new Date(),
-          lte: addDays(new Date(), 14)
+          lte: addDays(new Date(), 14),
         },
         status: {
-          not: 'COMPLETED'
-        }
-      }
-    });
+          not: 'COMPLETED',
+        },
+      },
+    })
 
     // Extract objectives from missions
-    const objectiveIds: string[] = [];
+    const objectiveIds: string[] = []
     for (const mission of upcomingMissions) {
-      const objectives = mission.objectives as any[];
-      objectiveIds.push(...objectives.map((o: any) => o.objectiveId));
+      const objectives = mission.objectives as any[]
+      objectiveIds.push(...objectives.map((o: any) => o.objectiveId))
     }
 
     // Also include objectives not yet in missions (next to be scheduled)
@@ -85,41 +85,41 @@ export class StruggleDetectionEngine {
       where: {
         lecture: { userId },
         masteryLevel: {
-          not: MasteryLevel.MASTERED
+          not: MasteryLevel.MASTERED,
         },
         id: {
-          notIn: objectiveIds
-        }
+          notIn: objectiveIds,
+        },
       },
       orderBy: [
         { weaknessScore: 'desc' }, // Prioritize weak areas
-        { isHighYield: 'desc' }
+        { isHighYield: 'desc' },
       ],
-      take: 10 // Next 10 unscheduled objectives
-    });
+      take: 10, // Next 10 unscheduled objectives
+    })
 
-    objectiveIds.push(...unscheduledObjectives.map(o => o.id));
+    objectiveIds.push(...unscheduledObjectives.map((o) => o.id))
 
     // Remove duplicates
-    const uniqueObjectiveIds = [...new Set(objectiveIds)];
+    const uniqueObjectiveIds = [...new Set(objectiveIds)]
 
     // Run predictions for each objective
-    const predictions: StrugglePrediction[] = [];
+    const predictions: StrugglePrediction[] = []
 
     for (const objectiveId of uniqueObjectiveIds) {
       try {
-        const prediction = await this.predictForObjective(userId, objectiveId);
+        const prediction = await this.predictForObjective(userId, objectiveId)
 
         // Only save predictions with probability >0.5 (significant risk)
         if (prediction && prediction.predictedStruggleProbability > 0.5) {
-          predictions.push(prediction);
+          predictions.push(prediction)
         }
       } catch (error) {
-        console.error(`Failed to predict for objective ${objectiveId}:`, error);
+        console.error(`Failed to predict for objective ${objectiveId}:`, error)
       }
     }
 
-    return predictions;
+    return predictions
   }
 
   /**
@@ -127,38 +127,35 @@ export class StruggleDetectionEngine {
    */
   async detectUpcomingStruggles(
     userId: string,
-    daysAhead: number = 7
+    daysAhead: number = 7,
   ): Promise<StrugglePrediction[]> {
     return await prisma.strugglePrediction.findMany({
       where: {
         userId,
         predictionDate: {
           gte: new Date(),
-          lte: addDays(new Date(), daysAhead)
+          lte: addDays(new Date(), daysAhead),
         },
         predictionStatus: PredictionStatus.PENDING,
         predictedStruggleProbability: {
-          gte: 0.5
-        }
+          gte: 0.5,
+        },
       },
       include: {
         learningObjective: {
           include: {
             lecture: {
               include: {
-                course: true
-              }
-            }
-          }
+                course: true,
+              },
+            },
+          },
         },
         indicators: true,
-        interventions: true
+        interventions: true,
       },
-      orderBy: [
-        { predictedStruggleProbability: 'desc' },
-        { predictionDate: 'asc' }
-      ]
-    });
+      orderBy: [{ predictedStruggleProbability: 'desc' }, { predictionDate: 'asc' }],
+    })
   }
 
   /**
@@ -169,13 +166,13 @@ export class StruggleDetectionEngine {
     const activeSession = await prisma.studySession.findFirst({
       where: {
         userId,
-        completedAt: null
+        completedAt: null,
       },
-      orderBy: { startedAt: 'desc' }
-    });
+      orderBy: { startedAt: 'desc' },
+    })
 
     if (!activeSession) {
-      return []; // No active session
+      return [] // No active session
     }
 
     // Get recent reviews in this session
@@ -183,37 +180,38 @@ export class StruggleDetectionEngine {
       where: {
         sessionId: activeSession.id,
         reviewedAt: {
-          gte: subDays(new Date(), 0.1) // Last ~2 hours
-        }
+          gte: subDays(new Date(), 0.1), // Last ~2 hours
+        },
       },
       include: {
         card: {
           include: {
             objective: {
               include: {
-                lecture: true
-              }
-            }
-          }
-        }
+                lecture: true,
+              },
+            },
+          },
+        },
       },
-      orderBy: { reviewedAt: 'desc' }
-    });
+      orderBy: { reviewedAt: 'desc' },
+    })
 
     if (recentReviews.length < 5) {
-      return []; // Not enough data yet
+      return [] // Not enough data yet
     }
 
-    const indicators: StruggleIndicator[] = [];
+    const indicators: StruggleIndicator[] = []
 
     // Detect struggle patterns:
 
     // 1. Multiple AGAIN ratings in short period
-    const againCount = recentReviews.filter(r => r.rating === ReviewRating.AGAIN).length;
-    const lapseRate = againCount / recentReviews.length;
+    const againCount = recentReviews.filter((r) => r.rating === ReviewRating.AGAIN).length
+    const lapseRate = againCount / recentReviews.length
 
-    if (lapseRate > 0.3) { // >30% lapse rate
-      const objectiveId = recentReviews[0].card.objective?.id;
+    if (lapseRate > 0.3) {
+      // >30% lapse rate
+      const objectiveId = recentReviews[0].card.objective?.id
 
       if (objectiveId) {
         const indicator = await prisma.struggleIndicator.create({
@@ -226,21 +224,22 @@ export class StruggleDetectionEngine {
               lapseRate,
               recentReviewCount: recentReviews.length,
               againCount,
-              sessionId: activeSession.id
-            }
-          }
-        });
+              sessionId: activeSession.id,
+            },
+          },
+        })
 
-        indicators.push(indicator);
+        indicators.push(indicator)
       }
     }
 
     // 2. Session performance drop >20% from average
-    const sessionPerformance = await this.calculateSessionPerformance(activeSession.id);
-    const avgPerformance = await this.getUserAveragePerformance(userId);
+    const sessionPerformance = await this.calculateSessionPerformance(activeSession.id)
+    const avgPerformance = await this.getUserAveragePerformance(userId)
 
-    if (avgPerformance - sessionPerformance > 0.2) { // >20% drop
-      const currentObjective = await this.getCurrentSessionObjective(activeSession);
+    if (avgPerformance - sessionPerformance > 0.2) {
+      // >20% drop
+      const currentObjective = await this.getCurrentSessionObjective(activeSession)
 
       if (currentObjective) {
         const indicator = await prisma.struggleIndicator.create({
@@ -253,16 +252,16 @@ export class StruggleDetectionEngine {
               sessionPerformance,
               averagePerformance: avgPerformance,
               performanceDrop: avgPerformance - sessionPerformance,
-              sessionId: activeSession.id
-            }
-          }
-        });
+              sessionId: activeSession.id,
+            },
+          },
+        })
 
-        indicators.push(indicator);
+        indicators.push(indicator)
       }
     }
 
-    return indicators;
+    return indicators
   }
 
   /**
@@ -275,11 +274,11 @@ export class StruggleDetectionEngine {
         userId,
         predictionStatus: PredictionStatus.PENDING,
         predictedStruggleProbability: {
-          gte: 0.6 // Moderate to high risk
+          gte: 0.6, // Moderate to high risk
         },
         interventions: {
-          none: {} // No interventions created yet
-        }
+          none: {}, // No interventions created yet
+        },
       },
       include: {
         learningObjective: {
@@ -287,23 +286,23 @@ export class StruggleDetectionEngine {
             lecture: true,
             prerequisites: {
               include: {
-                prerequisite: true
-              }
-            }
-          }
+                prerequisite: true,
+              },
+            },
+          },
         },
-        indicators: true
-      }
-    });
+        indicators: true,
+      },
+    })
 
-    const interventions: InterventionRecommendation[] = [];
+    const interventions: InterventionRecommendation[] = []
 
     for (const prediction of predictions) {
-      const generatedInterventions = await this.generateInterventionsForPrediction(prediction);
-      interventions.push(...generatedInterventions);
+      const generatedInterventions = await this.generateInterventionsForPrediction(prediction)
+      interventions.push(...generatedInterventions)
     }
 
-    return interventions;
+    return interventions
   }
 
   /**
@@ -311,16 +310,18 @@ export class StruggleDetectionEngine {
    */
   private async predictForObjective(
     userId: string,
-    objectiveId: string
+    objectiveId: string,
   ): Promise<StrugglePrediction | null> {
     // Extract features
-    const { features, metadata } = await this.featureExtractor.extractFeaturesForObjective(
+    const featureVector = await StruggleFeatureExtractor.extractFeaturesForObjective(
       userId,
-      objectiveId
-    );
+      objectiveId,
+    )
+    const features = featureVector
+    const metadata = featureVector.metadata
 
     // Run prediction
-    const prediction = this.predictionModel.predict(features, metadata.dataQuality);
+    const prediction = this.predictionModel.predict(features, metadata.dataQuality)
 
     // Create database record
     const objective = await prisma.learningObjective.findUnique({
@@ -328,21 +329,31 @@ export class StruggleDetectionEngine {
       include: {
         lecture: {
           include: {
-            course: true
-          }
-        }
-      }
-    });
+            course: true,
+          },
+        },
+      },
+    })
 
     if (!objective) {
-      return null;
+      return null
     }
 
-    // Create struggle indicators based on top features
-    const createdIndicators: StruggleIndicator[] = [];
+    // Create struggle indicators based on top contributing features
+    const createdIndicators: StruggleIndicator[] = []
 
-    for (const feature of prediction.topFeatures.slice(0, 3)) {
-      const indicatorType = this.mapFeatureToIndicatorType(feature.name);
+    // Extract top features from feature vector (simplified for MVP)
+    const topFeatureNames = ['retentionScore', 'prerequisiteGapCount', 'complexityMismatch']
+    const topFeatures = topFeatureNames
+      .map(name => ({
+        name,
+        value: (features as any)[name] ?? 0.5,
+      }))
+      .filter(f => f.value > 0.5)
+      .slice(0, 3)
+
+    for (const feature of topFeatures) {
+      const indicatorType = this.mapFeatureToIndicatorType(feature.name)
 
       if (indicatorType) {
         const indicator = await prisma.struggleIndicator.create({
@@ -350,16 +361,20 @@ export class StruggleDetectionEngine {
             userId,
             learningObjectiveId: objectiveId,
             indicatorType,
-            severity: feature.value > 0.7 ? Severity.HIGH : feature.value > 0.4 ? Severity.MEDIUM : Severity.LOW,
+            severity:
+              feature.value > 0.7
+                ? Severity.HIGH
+                : feature.value > 0.4
+                  ? Severity.MEDIUM
+                  : Severity.LOW,
             context: {
               featureName: feature.name,
               featureValue: feature.value,
-              contribution: feature.contribution
-            }
-          }
-        });
+            },
+          },
+        })
 
-        createdIndicators.push(indicator);
+        createdIndicators.push(indicator)
       }
     }
 
@@ -372,39 +387,43 @@ export class StruggleDetectionEngine {
         predictedStruggleProbability: prediction.probability,
         predictionConfidence: prediction.confidence,
         featureVector: features as any,
-        predictionStatus: PredictionStatus.PENDING
-      }
-    });
+        strugglingFactors: {
+          indicators: createdIndicators.map(i => i.indicatorType),
+          confidence: prediction.confidence,
+        },
+        predictionStatus: PredictionStatus.PENDING,
+      },
+    })
 
     // Link indicators to prediction
     if (createdIndicators.length > 0) {
       await prisma.struggleIndicator.updateMany({
         where: {
           id: {
-            in: createdIndicators.map(i => i.id)
-          }
+            in: createdIndicators.map((i) => i.id),
+          },
         },
         data: {
-          predictionId: strugglePrediction.id
-        }
-      });
+          predictionId: strugglePrediction.id,
+        },
+      })
     }
 
-    return strugglePrediction;
+    return strugglePrediction
   }
 
   /**
    * Generate intervention recommendations for a prediction
    */
   private async generateInterventionsForPrediction(
-    prediction: StrugglePrediction & { indicators: StruggleIndicator[]; learningObjective: any }
+    prediction: StrugglePrediction & { indicators: StruggleIndicator[]; learningObjective: any },
   ): Promise<InterventionRecommendation[]> {
-    const interventions: InterventionRecommendation[] = [];
+    const interventions: InterventionRecommendation[] = []
 
     // 1. Prerequisite review if PREREQUISITE_GAP detected
     const prerequisiteGaps = prediction.indicators.filter(
-      i => i.indicatorType === IndicatorType.PREREQUISITE_GAP
-    );
+      (i) => i.indicatorType === IndicatorType.PREREQUISITE_GAP,
+    )
 
     if (prerequisiteGaps.length > 0) {
       const intervention = await prisma.interventionRecommendation.create({
@@ -415,17 +434,17 @@ export class StruggleDetectionEngine {
           description: 'Review prerequisite concepts before studying this objective',
           reasoning: `You have ${prerequisiteGaps.length} prerequisite concepts that need review. Mastering these first will improve understanding.`,
           priority: 9,
-          status: InterventionStatus.PENDING
-        }
-      });
+          status: InterventionStatus.PENDING,
+        },
+      })
 
-      interventions.push(intervention);
+      interventions.push(intervention)
     }
 
     // 2. Difficulty progression if COMPLEXITY_MISMATCH
     const complexityMismatches = prediction.indicators.filter(
-      i => i.indicatorType === IndicatorType.COMPLEXITY_MISMATCH
-    );
+      (i) => i.indicatorType === IndicatorType.COMPLEXITY_MISMATCH,
+    )
 
     if (complexityMismatches.length > 0) {
       const intervention = await prisma.interventionRecommendation.create({
@@ -434,19 +453,20 @@ export class StruggleDetectionEngine {
           userId: prediction.userId,
           interventionType: InterventionType.DIFFICULTY_PROGRESSION,
           description: 'Start with foundational content before tackling advanced concepts',
-          reasoning: 'This topic is more complex than your current level. Building up gradually will improve retention.',
+          reasoning:
+            'This topic is more complex than your current level. Building up gradually will improve retention.',
           priority: 8,
-          status: InterventionStatus.PENDING
-        }
-      });
+          status: InterventionStatus.PENDING,
+        },
+      })
 
-      interventions.push(intervention);
+      interventions.push(intervention)
     }
 
     // 3. Cognitive load reduction if COGNITIVE_OVERLOAD
     const cognitiveOverload = prediction.indicators.filter(
-      i => i.indicatorType === IndicatorType.COGNITIVE_OVERLOAD
-    );
+      (i) => i.indicatorType === IndicatorType.COGNITIVE_OVERLOAD,
+    )
 
     if (cognitiveOverload.length > 0) {
       const intervention = await prisma.interventionRecommendation.create({
@@ -455,19 +475,20 @@ export class StruggleDetectionEngine {
           userId: prediction.userId,
           interventionType: InterventionType.COGNITIVE_LOAD_REDUCE,
           description: 'Break topic into smaller chunks with more breaks',
-          reasoning: 'You\'re showing signs of cognitive fatigue. Reducing workload will improve focus.',
+          reasoning:
+            "You're showing signs of cognitive fatigue. Reducing workload will improve focus.",
           priority: 8,
-          status: InterventionStatus.PENDING
-        }
-      });
+          status: InterventionStatus.PENDING,
+        },
+      })
 
-      interventions.push(intervention);
+      interventions.push(intervention)
     }
 
     // 4. Spaced repetition boost if HISTORICAL_STRUGGLE_PATTERN
     const historicalStruggles = prediction.indicators.filter(
-      i => i.indicatorType === IndicatorType.HISTORICAL_STRUGGLE_PATTERN
-    );
+      (i) => i.indicatorType === IndicatorType.HISTORICAL_STRUGGLE_PATTERN,
+    )
 
     if (historicalStruggles.length > 0) {
       const intervention = await prisma.interventionRecommendation.create({
@@ -476,16 +497,17 @@ export class StruggleDetectionEngine {
           userId: prediction.userId,
           interventionType: InterventionType.SPACED_REPETITION_BOOST,
           description: 'Increase review frequency for this topic area',
-          reasoning: 'You\'ve struggled with similar topics before. More frequent reviews will strengthen retention.',
+          reasoning:
+            "You've struggled with similar topics before. More frequent reviews will strengthen retention.",
           priority: 6,
-          status: InterventionStatus.PENDING
-        }
-      });
+          status: InterventionStatus.PENDING,
+        },
+      })
 
-      interventions.push(intervention);
+      interventions.push(intervention)
     }
 
-    return interventions;
+    return interventions
   }
 
   /**
@@ -493,6 +515,11 @@ export class StruggleDetectionEngine {
    */
   private mapFeatureToIndicatorType(featureName: string): IndicatorType | null {
     const mapping: Record<string, IndicatorType> = {
+      'retentionScore': IndicatorType.LOW_RETENTION,
+      'prerequisiteGapCount': IndicatorType.PREREQUISITE_GAP,
+      'complexityMismatch': IndicatorType.COMPLEXITY_MISMATCH,
+      'cognitiveLoadIndicator': IndicatorType.COGNITIVE_OVERLOAD,
+      'historicalStruggleScore': IndicatorType.HISTORICAL_STRUGGLE_PATTERN,
       'Low retention': IndicatorType.LOW_RETENTION,
       'Moderate retention': IndicatorType.LOW_RETENTION,
       'Prerequisite gaps': IndicatorType.PREREQUISITE_GAP,
@@ -500,10 +527,10 @@ export class StruggleDetectionEngine {
       'Complexity mismatch': IndicatorType.COMPLEXITY_MISMATCH,
       'Cognitive overload': IndicatorType.COGNITIVE_OVERLOAD,
       'Historical struggles': IndicatorType.HISTORICAL_STRUGGLE_PATTERN,
-      'Learning style mismatch': IndicatorType.COMPLEXITY_MISMATCH
-    };
+      'Learning style mismatch': IndicatorType.COMPLEXITY_MISMATCH,
+    }
 
-    return mapping[featureName] || null;
+    return mapping[featureName] || null
   }
 
   /**
@@ -511,16 +538,16 @@ export class StruggleDetectionEngine {
    */
   private async calculateSessionPerformance(sessionId: string): Promise<number> {
     const reviews = await prisma.review.findMany({
-      where: { sessionId }
-    });
+      where: { sessionId },
+    })
 
-    if (reviews.length === 0) return 0.5;
+    if (reviews.length === 0) return 0.5
 
-    const goodReviews = reviews.filter(r =>
-      r.rating === ReviewRating.GOOD || r.rating === ReviewRating.EASY
-    ).length;
+    const goodReviews = reviews.filter(
+      (r) => r.rating === ReviewRating.GOOD || r.rating === ReviewRating.EASY,
+    ).length
 
-    return goodReviews / reviews.length;
+    return goodReviews / reviews.length
   }
 
   /**
@@ -532,41 +559,41 @@ export class StruggleDetectionEngine {
         userId,
         completedAt: {
           not: null,
-          gte: subDays(new Date(), 14)
-        }
+          gte: subDays(new Date(), 14),
+        },
       },
-      take: 10
-    });
+      take: 10,
+    })
 
-    if (recentSessions.length === 0) return 0.7; // Optimistic default
+    if (recentSessions.length === 0) return 0.7 // Optimistic default
 
     const performances = await Promise.all(
-      recentSessions.map(s => this.calculateSessionPerformance(s.id))
-    );
+      recentSessions.map((s) => this.calculateSessionPerformance(s.id)),
+    )
 
-    return performances.reduce((sum, p) => sum + p, 0) / performances.length;
+    return performances.reduce((sum, p) => sum + p, 0) / performances.length
   }
 
   /**
    * Helper: Get current objective being studied in session
    */
   private async getCurrentSessionObjective(session: any): Promise<any | null> {
-    const objectives = session.missionObjectives as any[];
+    const objectives = session.missionObjectives as any[]
 
     if (!objectives || objectives.length === 0) {
-      return null;
+      return null
     }
 
-    const currentIndex = session.currentObjectiveIndex || 0;
-    const currentObjectiveId = objectives[currentIndex]?.objectiveId;
+    const currentIndex = session.currentObjectiveIndex || 0
+    const currentObjectiveId = objectives[currentIndex]?.objectiveId
 
     if (!currentObjectiveId) {
-      return null;
+      return null
     }
 
     return await prisma.learningObjective.findUnique({
-      where: { id: currentObjectiveId }
-    });
+      where: { id: currentObjectiveId },
+    })
   }
 
   // ==================== TASK 5: STRUGGLE ALERT SYSTEM ====================
@@ -584,75 +611,76 @@ export class StruggleDetectionEngine {
         userId,
         predictionStatus: PredictionStatus.PENDING,
         predictedStruggleProbability: {
-          gte: 0.7
+          gte: 0.7,
         },
         predictionDate: {
           gte: new Date(),
-          lte: addDays(new Date(), 3)
-        }
+          lte: addDays(new Date(), 3),
+        },
       },
       include: {
         learningObjective: {
           include: {
             lecture: {
               include: {
-                course: true
-              }
-            }
-          }
+                course: true,
+              },
+            },
+          },
         },
-        indicators: true
-      }
-    });
+        indicators: true,
+      },
+    })
 
-    const alerts: StruggleAlert[] = [];
+    const alerts: StruggleAlert[] = []
 
     for (const prediction of predictions) {
       // Calculate severity from indicators
-      const severity = this.calculateAlertSeverity(prediction.indicators);
+      const severity = this.calculateAlertSeverity(prediction.indicators)
 
       // Skip if not MEDIUM+ severity
-      if (severity === Severity.LOW) continue;
+      if (severity === Severity.LOW) continue
 
       // Calculate days until due
-      const daysUntilDue = await this.calculateDaysUntilDue(prediction);
+      const daysUntilDue = await this.calculateDaysUntilDue(prediction)
 
       // Calculate cognitive load from feature vector
-      const featureVector = prediction.featureVector as any;
-      const cognitiveLoad = featureVector?.cognitiveLoadIndicator || 0.5;
+      const featureVector = prediction.featureVector as any
+      const cognitiveLoad = featureVector?.cognitiveLoadIndicator || 0.5
 
       // Priority formula: urgency(0.4) + confidence(0.3) + severity(0.2) + cognitiveLoad(0.1)
-      const urgency = 1 - Math.min(daysUntilDue / 3, 1); // Normalize to 0-1 (3 days max)
-      const severityScore = severity === Severity.HIGH ? 1.0 : severity === Severity.MEDIUM ? 0.7 : 0.3;
-      const priority = (
-        urgency * 0.4 +
-        prediction.predictionConfidence * 0.3 +
-        severityScore * 0.2 +
-        cognitiveLoad * 0.1
-      ) * 100; // Scale to 0-100
+      const urgency = 1 - Math.min(daysUntilDue / 3, 1) // Normalize to 0-1 (3 days max)
+      const severityScore =
+        severity === Severity.HIGH ? 1.0 : severity === Severity.MEDIUM ? 0.7 : 0.3
+      const priority =
+        (urgency * 0.4 +
+          prediction.predictionConfidence * 0.3 +
+          severityScore * 0.2 +
+          cognitiveLoad * 0.1) *
+        100 // Scale to 0-100
 
-      const objective = prediction.learningObjective;
-      const courseName = objective?.lecture?.course?.name || 'Unknown course';
-      const objectiveName = objective?.objective || 'Unknown topic';
+      const objective = prediction.learningObjective
+      const courseName = objective?.lecture?.course?.name || 'Unknown course'
+      const objectiveName = objective?.objective || 'Unknown topic'
 
       // Determine alert type
       const hasPrerequisiteGap = prediction.indicators.some(
-        (i: any) => i.indicatorType === IndicatorType.PREREQUISITE_GAP
-      );
+        (i: any) => i.indicatorType === IndicatorType.PREREQUISITE_GAP,
+      )
 
       const alertType = hasPrerequisiteGap
         ? 'PREREQUISITE_ALERT'
         : daysUntilDue < 1
-        ? 'REAL_TIME_ALERT'
-        : 'PROACTIVE_WARNING';
+          ? 'REAL_TIME_ALERT'
+          : 'PROACTIVE_WARNING'
 
       // Generate alert message
       const message = this.generateAlertMessage(
         prediction,
         severity,
         daysUntilDue,
-        hasPrerequisiteGap
-      );
+        hasPrerequisiteGap,
+      )
 
       alerts.push({
         id: `alert-${prediction.id}`,
@@ -662,12 +690,12 @@ export class StruggleDetectionEngine {
         severity,
         predictionId: prediction.id,
         priority,
-        createdAt: prediction.predictionDate
-      });
+        createdAt: prediction.predictionDate,
+      })
     }
 
     // Sort by priority and limit to top 3
-    return this.prioritizeAlerts(alerts);
+    return this.prioritizeAlerts(alerts)
   }
 
   /**
@@ -675,32 +703,30 @@ export class StruggleDetectionEngine {
    * Sorts by priority score (highest first)
    */
   prioritizeAlerts(alerts: StruggleAlert[]): StruggleAlert[] {
-    return alerts
-      .sort((a, b) => b.priority - a.priority)
-      .slice(0, 3);
+    return alerts.sort((a, b) => b.priority - a.priority).slice(0, 3)
   }
 
   /**
    * Calculate alert severity from indicators
    */
   private calculateAlertSeverity(indicators: any[]): Severity {
-    if (indicators.length === 0) return Severity.LOW;
+    if (indicators.length === 0) return Severity.LOW
 
     // Count indicators by severity
-    const highCount = indicators.filter((i: any) => i.severity === Severity.HIGH).length;
-    const mediumCount = indicators.filter((i: any) => i.severity === Severity.MEDIUM).length;
+    const highCount = indicators.filter((i: any) => i.severity === Severity.HIGH).length
+    const mediumCount = indicators.filter((i: any) => i.severity === Severity.MEDIUM).length
 
     // High severity if 2+ high indicators or 1 high + 2+ medium
     if (highCount >= 2 || (highCount >= 1 && mediumCount >= 2)) {
-      return Severity.HIGH;
+      return Severity.HIGH
     }
 
     // Medium severity if 1 high or 2+ medium
     if (highCount >= 1 || mediumCount >= 2) {
-      return Severity.MEDIUM;
+      return Severity.MEDIUM
     }
 
-    return Severity.LOW;
+    return Severity.LOW
   }
 
   /**
@@ -712,28 +738,28 @@ export class StruggleDetectionEngine {
       where: {
         userId: prediction.userId,
         date: {
-          gte: new Date()
+          gte: new Date(),
         },
         status: {
-          not: 'COMPLETED'
-        }
+          not: 'COMPLETED',
+        },
       },
       orderBy: { date: 'asc' },
-      take: 5
-    });
+      take: 5,
+    })
 
     // Find mission containing this objective
     for (const mission of missions) {
-      const objectives = mission.objectives as any[];
+      const objectives = mission.objectives as any[]
       const hasObjective = objectives.some(
-        (o: any) => o.objectiveId === prediction.learningObjectiveId
-      );
+        (o: any) => o.objectiveId === prediction.learningObjectiveId,
+      )
 
       if (hasObjective) {
         const daysDiff = Math.ceil(
-          (mission.date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-        );
-        return Math.max(0, daysDiff);
+          (mission.date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
+        )
+        return Math.max(0, daysDiff)
       }
     }
 
@@ -744,22 +770,22 @@ export class StruggleDetectionEngine {
           userId: prediction.userId,
           courseId: prediction.learningObjective.lecture.course.id,
           date: {
-            gte: new Date()
-          }
+            gte: new Date(),
+          },
         },
-        orderBy: { date: 'asc' }
-      });
+        orderBy: { date: 'asc' },
+      })
 
       if (exam) {
         const daysDiff = Math.ceil(
-          (exam.date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-        );
-        return Math.max(0, daysDiff);
+          (exam.date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
+        )
+        return Math.max(0, daysDiff)
       }
     }
 
     // Default: estimate based on probability (high probability = more urgent)
-    return prediction.predictedStruggleProbability > 0.8 ? 1 : 2;
+    return prediction.predictedStruggleProbability > 0.8 ? 1 : 2
   }
 
   /**
@@ -769,33 +795,33 @@ export class StruggleDetectionEngine {
     prediction: any,
     severity: Severity,
     daysUntilDue: number,
-    hasPrerequisiteGap: boolean
+    hasPrerequisiteGap: boolean,
   ): string {
-    const objectiveName = prediction.learningObjective?.objective || 'this topic';
-    const probability = Math.round(prediction.predictedStruggleProbability * 100);
+    const objectiveName = prediction.learningObjective?.objective || 'this topic'
+    const probability = Math.round(prediction.predictedStruggleProbability * 100)
 
-    let urgencyPhrase = '';
+    let urgencyPhrase = ''
     if (daysUntilDue === 0) {
-      urgencyPhrase = 'today';
+      urgencyPhrase = 'today'
     } else if (daysUntilDue === 1) {
-      urgencyPhrase = 'tomorrow';
+      urgencyPhrase = 'tomorrow'
     } else if (daysUntilDue <= 3) {
-      urgencyPhrase = `in ${daysUntilDue} days`;
+      urgencyPhrase = `in ${daysUntilDue} days`
     } else {
-      urgencyPhrase = 'soon';
+      urgencyPhrase = 'soon'
     }
 
-    let baseMessage = `You have a ${probability}% chance of struggling with "${objectiveName}" ${urgencyPhrase}.`;
+    let baseMessage = `You have a ${probability}% chance of struggling with "${objectiveName}" ${urgencyPhrase}.`
 
     // Add specific recommendations
     if (hasPrerequisiteGap) {
-      baseMessage += ' We recommend reviewing prerequisite concepts first.';
+      baseMessage += ' We recommend reviewing prerequisite concepts first.'
     } else if (severity === Severity.HIGH) {
-      baseMessage += ' Consider breaking it into smaller chunks and scheduling extra review time.';
+      baseMessage += ' Consider breaking it into smaller chunks and scheduling extra review time.'
     } else {
-      baseMessage += ' We have some strategies to help you succeed.';
+      baseMessage += ' We have some strategies to help you succeed.'
     }
 
-    return baseMessage;
+    return baseMessage
   }
 }

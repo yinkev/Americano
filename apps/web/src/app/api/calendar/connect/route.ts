@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     if (provider !== 'GOOGLE') {
       return NextResponse.json(
         { error: 'Only Google Calendar is supported in MVP' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -54,14 +54,11 @@ export async function POST(request: NextRequest) {
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request body', details: error.errors },
-        { status: 400 }
+        { error: 'Invalid request body', details: error.issues },
+        { status: 400 },
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to initiate calendar connection' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to initiate calendar connection' }, { status: 500 })
   }
 }

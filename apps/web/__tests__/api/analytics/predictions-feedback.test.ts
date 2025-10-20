@@ -7,7 +7,7 @@
 
 import { POST } from '@/app/api/analytics/predictions/[id]/feedback/route'
 import { NextRequest } from 'next/server'
-import { server, createErrorHandler, create503Handler } from '../../../setup'
+import { server, createErrorHandler, create503Handler } from '../../setup'
 
 describe('POST /api/analytics/predictions/[id]/feedback', () => {
   describe('Success Cases', () => {
@@ -21,7 +21,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
             feedbackType: 'HELPFUL',
             comments: 'The prediction was accurate and helped me prepare',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'pred-1' }) })
@@ -43,7 +43,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
             actualStruggle: false,
             feedbackType: 'NOT_HELPFUL',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'pred-2' }) })
@@ -64,7 +64,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
             feedbackType: 'INACCURATE',
             comments: 'The topic was easier than predicted',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'pred-3' }) })
@@ -78,7 +78,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
   describe('Error Cases', () => {
     it('should handle 404 prediction not found', async () => {
       server.use(
-        createErrorHandler('post', '/predictions/invalid-id/feedback', 404, 'Prediction not found')
+        createErrorHandler('post', '/predictions/invalid-id/feedback', 404, 'Prediction not found'),
       )
 
       const request = new NextRequest(
@@ -89,7 +89,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
             actualStruggle: true,
             feedbackType: 'HELPFUL',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'invalid-id' }) })
@@ -101,12 +101,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
 
     it('should handle 400 invalid feedback data', async () => {
       server.use(
-        createErrorHandler(
-          'post',
-          '/predictions/pred-1/feedback',
-          400,
-          'Invalid feedback type'
-        )
+        createErrorHandler('post', '/predictions/pred-1/feedback', 400, 'Invalid feedback type'),
       )
 
       const request = new NextRequest(
@@ -117,7 +112,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
             actualStruggle: true,
             feedbackType: 'INVALID_TYPE',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'pred-1' }) })
@@ -133,8 +128,8 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
           'post',
           '/predictions/pred-1/feedback',
           500,
-          'Failed to record feedback'
-        )
+          'Failed to record feedback',
+        ),
       )
 
       const request = new NextRequest(
@@ -145,7 +140,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
             actualStruggle: true,
             feedbackType: 'HELPFUL',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'pred-1' }) })
@@ -166,7 +161,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
             actualStruggle: true,
             feedbackType: 'HELPFUL',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'pred-1' }) })
@@ -188,7 +183,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
             actualStruggle: true,
             feedbackType: 'HELPFUL',
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'pred-1' }) })
@@ -213,7 +208,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
             feedbackType: 'HELPFUL',
             comments: longComment,
           }),
-        }
+        },
       )
 
       const response = await POST(request, { params: Promise.resolve({ id: 'pred-1' }) })
@@ -229,7 +224,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
             actualStruggle: true,
             feedbackType: 'HELPFUL',
           }),
-        }
+        },
       )
 
       const response = await POST(request, {
@@ -239,7 +234,13 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
     })
 
     it('should handle all valid feedback types', async () => {
-      const feedbackTypes = ['HELPFUL', 'NOT_HELPFUL', 'INACCURATE', 'INTERVENTION_GOOD', 'INTERVENTION_BAD']
+      const feedbackTypes = [
+        'HELPFUL',
+        'NOT_HELPFUL',
+        'INACCURATE',
+        'INTERVENTION_GOOD',
+        'INTERVENTION_BAD',
+      ]
 
       for (const feedbackType of feedbackTypes) {
         const request = new NextRequest(
@@ -250,7 +251,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
               actualStruggle: true,
               feedbackType,
             }),
-          }
+          },
         )
 
         const response = await POST(request, { params: Promise.resolve({ id: 'pred-1' }) })

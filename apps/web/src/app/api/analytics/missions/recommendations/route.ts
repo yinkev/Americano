@@ -25,7 +25,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   })
 
   if (!user) {
-    return Response.json(errorResponse('USER_NOT_FOUND', `User ${userEmail} not found`), { status: 404 })
+    return Response.json(errorResponse('USER_NOT_FOUND', `User ${userEmail} not found`), {
+      status: 404,
+    })
   }
 
   // Initialize analytics engine
@@ -39,13 +41,15 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     ([key, adjustment]: [string, any]) => ({
       type: key,
       ...adjustment,
-    })
+    }),
   )
 
-  return Response.json(successResponse({
-    recommendations: formattedRecs,
-    rationale: `Based on analysis of your last 14 missions (confidence: ${(
-      recommendations.confidence * 100
-    ).toFixed(0)}%)`,
-  }))
+  return Response.json(
+    successResponse({
+      recommendations: formattedRecs,
+      rationale: `Based on analysis of your last 14 missions (confidence: ${(
+        recommendations.confidence * 100
+      ).toFixed(0)}%)`,
+    }),
+  )
 })

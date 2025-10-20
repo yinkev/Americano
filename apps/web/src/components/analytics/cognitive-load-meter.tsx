@@ -12,17 +12,25 @@
  * Accessibility: ARIA live region, text labels, icons supplement colors
  */
 
-'use client';
+'use client'
 
-import { useMemo } from 'react';
-import { TrendingUp, TrendingDown, Minus, CheckCircle, AlertTriangle, Zap, AlertCircle } from 'lucide-react';
-import { format } from 'date-fns';
+import { useMemo } from 'react'
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  CheckCircle,
+  AlertTriangle,
+  Zap,
+  AlertCircle,
+} from 'lucide-react'
+import { format } from 'date-fns'
 
 interface CognitiveLoadMeterProps {
-  currentLoad: number; // 0-100 scale
-  trend: 'up' | 'down' | 'stable';
-  lastUpdated: Date;
-  className?: string;
+  currentLoad: number // 0-100 scale
+  trend: 'up' | 'down' | 'stable'
+  lastUpdated: Date
+  className?: string
 }
 
 // OKLCH color zones (per Story 5.4 constraints)
@@ -55,9 +63,9 @@ const LOAD_ZONES = {
     message: 'Take a break - your brain needs rest',
     range: [80, 100],
   },
-} as const;
+} as const
 
-type LoadZone = keyof typeof LOAD_ZONES;
+type LoadZone = keyof typeof LOAD_ZONES
 
 export function CognitiveLoadMeter({
   currentLoad,
@@ -67,26 +75,26 @@ export function CognitiveLoadMeter({
 }: CognitiveLoadMeterProps) {
   // Determine current zone
   const currentZone: LoadZone = useMemo(() => {
-    if (currentLoad < 40) return 'low';
-    if (currentLoad < 60) return 'moderate';
-    if (currentLoad < 80) return 'high';
-    return 'critical';
-  }, [currentLoad]);
+    if (currentLoad < 40) return 'low'
+    if (currentLoad < 60) return 'moderate'
+    if (currentLoad < 80) return 'high'
+    return 'critical'
+  }, [currentLoad])
 
-  const zone = LOAD_ZONES[currentZone];
-  const ZoneIcon = zone.icon;
+  const zone = LOAD_ZONES[currentZone]
+  const ZoneIcon = zone.icon
 
   // Calculate SVG arc path for circular gauge
-  const gaugeRadius = 80;
-  const strokeWidth = 16;
-  const centerX = 100;
-  const centerY = 100;
-  const circumference = 2 * Math.PI * gaugeRadius;
-  const loadPercentage = Math.min(Math.max(currentLoad, 0), 100);
-  const arcLength = (loadPercentage / 100) * circumference;
+  const gaugeRadius = 80
+  const strokeWidth = 16
+  const centerX = 100
+  const centerY = 100
+  const circumference = 2 * Math.PI * gaugeRadius
+  const loadPercentage = Math.min(Math.max(currentLoad, 0), 100)
+  const arcLength = (loadPercentage / 100) * circumference
 
   // Trend icon
-  const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus;
+  const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus
 
   return (
     <div
@@ -94,9 +102,7 @@ export function CognitiveLoadMeter({
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h3 className="font-heading font-semibold text-foreground text-lg">
-          Cognitive Load
-        </h3>
+        <h3 className="font-heading font-semibold text-foreground text-lg">Cognitive Load</h3>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <TrendIcon className="size-4" />
           <span className="capitalize">{trend}</span>
@@ -123,15 +129,15 @@ export function CognitiveLoadMeter({
 
           {/* Load arc with solid color zones (NO gradients) */}
           {Object.entries(LOAD_ZONES).map(([zoneName, zoneData]) => {
-            const [zoneMin, zoneMax] = zoneData.range;
+            const [zoneMin, zoneMax] = zoneData.range
 
             // Only render if current load extends into this zone
-            if (loadPercentage <= zoneMin) return null;
+            if (loadPercentage <= zoneMin) return null
 
-            const zoneStart = zoneMin;
-            const zoneEnd = Math.min(loadPercentage, zoneMax);
-            const zoneLength = ((zoneEnd - zoneStart) / 100) * circumference;
-            const zoneOffset = ((100 - zoneStart) / 100) * circumference;
+            const zoneStart = zoneMin
+            const zoneEnd = Math.min(loadPercentage, zoneMax)
+            const zoneLength = ((zoneEnd - zoneStart) / 100) * circumference
+            const zoneOffset = ((100 - zoneStart) / 100) * circumference
 
             return (
               <circle
@@ -149,7 +155,7 @@ export function CognitiveLoadMeter({
                   transition: 'stroke-dasharray 0.5s ease, stroke-dashoffset 0.5s ease',
                 }}
               />
-            );
+            )
           })}
         </svg>
 
@@ -164,9 +170,7 @@ export function CognitiveLoadMeter({
           <div className="text-4xl font-bold font-heading" style={{ color: zone.color }}>
             {Math.round(loadPercentage)}
           </div>
-          <div className="text-sm text-muted-foreground font-medium">
-            / 100
-          </div>
+          <div className="text-sm text-muted-foreground font-medium">/ 100</div>
         </div>
       </div>
 
@@ -184,9 +188,7 @@ export function CognitiveLoadMeter({
       </div>
 
       {/* Supportive message */}
-      <p className="text-sm text-center text-muted-foreground mb-4">
-        {zone.message}
-      </p>
+      <p className="text-sm text-center text-muted-foreground mb-4">{zone.message}</p>
 
       {/* Last updated */}
       <div className="text-xs text-center text-muted-foreground">
@@ -195,10 +197,9 @@ export function CognitiveLoadMeter({
 
       {/* ARIA live region for screen readers */}
       <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
-        Cognitive load is {zone.label} at {Math.round(loadPercentage)} percent.
-        Load is trending {trend}.
-        {zone.message}
+        Cognitive load is {zone.label} at {Math.round(loadPercentage)} percent. Load is trending{' '}
+        {trend}.{zone.message}
       </div>
     </div>
-  );
+  )
 }

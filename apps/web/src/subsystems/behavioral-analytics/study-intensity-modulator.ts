@@ -124,9 +124,7 @@ export class StudyIntensityModulator {
    * @param cognitiveLoad - Cognitive load score (0-100)
    * @returns Intensity level
    */
-  static calculateIntensityLevel(
-    cognitiveLoad: number,
-  ): 'LOW' | 'MEDIUM' | 'HIGH' {
+  static calculateIntensityLevel(cognitiveLoad: number): 'LOW' | 'MEDIUM' | 'HIGH' {
     if (cognitiveLoad < 40) return 'LOW'
     if (cognitiveLoad <= 70) return 'MEDIUM'
     return 'HIGH'
@@ -167,7 +165,8 @@ export class StudyIntensityModulator {
       reasoning.push('Content: Switch to easier review material')
 
       if (cognitiveLoad > 80) {
-        recoveryRecommendation = 'Critical cognitive load detected. Consider taking a rest day or limiting session to 15-minute light review.'
+        recoveryRecommendation =
+          'Critical cognitive load detected. Consider taking a rest day or limiting session to 15-minute light review.'
         reasoning.push('⚠️ Burnout risk: Consider rest day')
       }
     }
@@ -212,7 +211,8 @@ export class StudyIntensityModulator {
     const adjustedDuration = Math.round(
       baseDuration * (1 + recommendation.sessionModulation.durationAdjustment / 100),
     )
-    const adjustedBreakCount = baseBreakCount + recommendation.sessionModulation.breakFrequencyIncrease
+    const adjustedBreakCount =
+      baseBreakCount + recommendation.sessionModulation.breakFrequencyIncrease
 
     let contentDifficultyLevel: 'easy' | 'medium' | 'hard' = 'medium'
     if (recommendation.sessionModulation.contentComplexityReduction) {

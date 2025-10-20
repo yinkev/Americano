@@ -11,9 +11,9 @@
  * Real-time updates: Load meter refreshes every 5 minutes during active session
  */
 
-import { Suspense } from 'react';
-import { Brain, TrendingUp, Activity } from 'lucide-react';
-import { CognitiveHealthDashboard } from './cognitive-health-dashboard';
+import { Suspense } from 'react'
+import { Brain, TrendingUp, Activity } from 'lucide-react'
+import { CognitiveHealthDashboard } from './cognitive-health-dashboard'
 
 // Loading skeleton components
 function LoadMeterSkeleton() {
@@ -25,7 +25,7 @@ function LoadMeterSkeleton() {
       <div className="h-10 bg-muted rounded mb-4" />
       <div className="h-4 bg-muted rounded" />
     </div>
-  );
+  )
 }
 
 function TimelineSkeleton() {
@@ -39,7 +39,7 @@ function TimelineSkeleton() {
       </div>
       <div className="h-[300px] bg-muted rounded-lg" />
     </div>
-  );
+  )
 }
 
 function RiskPanelSkeleton() {
@@ -60,7 +60,7 @@ function RiskPanelSkeleton() {
         <div className="h-12 bg-muted rounded-lg" />
       </div>
     </div>
-  );
+  )
 }
 
 export default function CognitiveHealthPage() {
@@ -78,8 +78,9 @@ export default function CognitiveHealthPage() {
                 Cognitive Health Dashboard
               </h1>
               <p className="text-muted-foreground max-w-2xl">
-                Monitor your cognitive load, identify stress patterns, and prevent burnout with data-driven insights.
-                Your learning effectiveness depends on maintaining a healthy cognitive balance.
+                Monitor your cognitive load, identify stress patterns, and prevent burnout with
+                data-driven insights. Your learning effectiveness depends on maintaining a healthy
+                cognitive balance.
               </p>
             </div>
           </div>
@@ -149,17 +150,18 @@ export default function CognitiveHealthPage() {
           </h3>
           <p className="text-xs text-blue-700">
             This dashboard uses behavioral analytics to estimate your cognitive load in real-time.
-            Cognitive load monitoring helps prevent burnout and optimizes your learning effectiveness
-            by adapting content difficulty and recommending breaks when needed. You can disable this
-            feature in Settings at any time.
+            Cognitive load monitoring helps prevent burnout and optimizes your learning
+            effectiveness by adapting content difficulty and recommending breaks when needed. You
+            can disable this feature in Settings at any time.
           </p>
         </div>
       </div>
     </main>
-  );
+  )
 }
 
 export const metadata = {
   title: 'Cognitive Health Dashboard | Americano',
-  description: 'Monitor your cognitive load, stress patterns, and burnout risk with real-time analytics',
-};
+  description:
+    'Monitor your cognitive load, stress patterns, and burnout risk with real-time analytics',
+}

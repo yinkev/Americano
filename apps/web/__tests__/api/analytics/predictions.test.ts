@@ -33,7 +33,7 @@ describe('GET /api/analytics/predictions', () => {
 
     it('should pass query parameters to FastAPI service', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/predictions?userId=test@example.com&status=CONFIRMED&minProbability=0.7'
+        'http://localhost:3000/api/analytics/predictions?userId=test@example.com&status=CONFIRMED&minProbability=0.7',
       )
 
       const response = await GET(request)
@@ -45,9 +45,7 @@ describe('GET /api/analytics/predictions', () => {
     })
 
     it('should handle empty results gracefully', async () => {
-      server.use(
-        createErrorHandler('get', '/predictions', 200, '')
-      )
+      server.use(createErrorHandler('get', '/predictions', 200, ''))
 
       const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
 
@@ -59,9 +57,7 @@ describe('GET /api/analytics/predictions', () => {
 
   describe('Error Cases', () => {
     it('should handle 404 from FastAPI service', async () => {
-      server.use(
-        createErrorHandler('get', '/predictions', 404, 'Predictions not found')
-      )
+      server.use(createErrorHandler('get', '/predictions', 404, 'Predictions not found'))
 
       const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
 
@@ -73,9 +69,7 @@ describe('GET /api/analytics/predictions', () => {
     })
 
     it('should handle 500 from FastAPI service', async () => {
-      server.use(
-        createErrorHandler('get', '/predictions', 500, 'Internal server error')
-      )
+      server.use(createErrorHandler('get', '/predictions', 500, 'Internal server error'))
 
       const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
 
@@ -117,9 +111,7 @@ describe('GET /api/analytics/predictions', () => {
     })
 
     it('should handle malformed JSON responses', async () => {
-      server.use(
-        createErrorHandler('get', '/predictions', 200, 'not-json')
-      )
+      server.use(createErrorHandler('get', '/predictions', 200, 'not-json'))
 
       const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
 
@@ -133,7 +125,7 @@ describe('GET /api/analytics/predictions', () => {
   describe('Edge Cases', () => {
     it('should handle special characters in query parameters', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/predictions?userId=test%2Buser%40example.com'
+        'http://localhost:3000/api/analytics/predictions?userId=test%2Buser%40example.com',
       )
 
       const response = await GET(request)
@@ -153,7 +145,7 @@ describe('GET /api/analytics/predictions', () => {
 
     it('should handle concurrent requests', async () => {
       const requests = Array.from({ length: 5 }, () =>
-        GET(new NextRequest('http://localhost:3000/api/analytics/predictions'))
+        GET(new NextRequest('http://localhost:3000/api/analytics/predictions')),
       )
 
       const responses = await Promise.all(requests)

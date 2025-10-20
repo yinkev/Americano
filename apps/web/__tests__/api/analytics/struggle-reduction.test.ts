@@ -67,7 +67,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
     it('should handle period query parameter - week', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/struggle-reduction?period=week'
+        'http://localhost:3000/api/analytics/struggle-reduction?period=week',
       )
 
       const response = await GET(request)
@@ -80,7 +80,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
     it('should handle period query parameter - month', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/struggle-reduction?period=month'
+        'http://localhost:3000/api/analytics/struggle-reduction?period=month',
       )
 
       const response = await GET(request)
@@ -92,7 +92,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
     it('should handle period query parameter - all', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/struggle-reduction?period=all'
+        'http://localhost:3000/api/analytics/struggle-reduction?period=all',
       )
 
       const response = await GET(request)
@@ -104,7 +104,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
     it('should pass userId query parameter', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/struggle-reduction?userId=custom@example.com'
+        'http://localhost:3000/api/analytics/struggle-reduction?userId=custom@example.com',
       )
 
       const response = await GET(request)
@@ -117,9 +117,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
   describe('Error Cases', () => {
     it('should handle 404 user not found', async () => {
-      server.use(
-        createErrorHandler('get', '/struggle-reduction', 404, 'User not found')
-      )
+      server.use(createErrorHandler('get', '/struggle-reduction', 404, 'User not found'))
 
       const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
@@ -136,8 +134,8 @@ describe('GET /api/analytics/struggle-reduction', () => {
           'get',
           '/struggle-reduction',
           422,
-          'Insufficient data for reduction metrics'
-        )
+          'Insufficient data for reduction metrics',
+        ),
       )
 
       const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
@@ -151,7 +149,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
     it('should handle 500 internal server error', async () => {
       server.use(
-        createErrorHandler('get', '/struggle-reduction', 500, 'Failed to calculate reduction')
+        createErrorHandler('get', '/struggle-reduction', 500, 'Failed to calculate reduction'),
       )
 
       const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
@@ -230,7 +228,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
       // First week should be higher than last week
       expect(data.timeline[0].struggleRate).toBeGreaterThanOrEqual(
-        data.timeline[data.timeline.length - 1].struggleRate
+        data.timeline[data.timeline.length - 1].struggleRate,
       )
     })
 
@@ -246,7 +244,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
           expect(intervention.applicationsCount).toBeGreaterThanOrEqual(0)
           expect(intervention.successRate).toBeGreaterThanOrEqual(0)
           expect(intervention.successRate).toBeLessThanOrEqual(1)
-        }
+        },
       )
     })
   })
@@ -254,7 +252,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
   describe('Edge Cases', () => {
     it('should handle special characters in userId', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/struggle-reduction?userId=test%2Buser%40example.com'
+        'http://localhost:3000/api/analytics/struggle-reduction?userId=test%2Buser%40example.com',
       )
 
       const response = await GET(request)
@@ -264,7 +262,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
     it('should handle invalid period parameter gracefully', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/struggle-reduction?period=invalid'
+        'http://localhost:3000/api/analytics/struggle-reduction?period=invalid',
       )
 
       const response = await GET(request)
@@ -275,7 +273,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
     it('should handle concurrent requests', async () => {
       const requests = Array.from({ length: 3 }, () =>
-        GET(new NextRequest('http://localhost:3000/api/analytics/struggle-reduction'))
+        GET(new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')),
       )
 
       const responses = await Promise.all(requests)
@@ -290,7 +288,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
       for (const period of periods) {
         const request = new NextRequest(
-          `http://localhost:3000/api/analytics/struggle-reduction?period=${period}`
+          `http://localhost:3000/api/analytics/struggle-reduction?period=${period}`,
         )
 
         const response = await GET(request)

@@ -6,40 +6,49 @@
  * Displays after intervention is completed with 1-5 star rating
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Star, ThumbsUp, ThumbsDown, Meh, TrendingDown } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { FeedbackType, InterventionType } from '@/generated/prisma';
+import { useState } from 'react'
+import { Star, ThumbsUp, ThumbsDown, Meh, TrendingDown } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { toast } from 'sonner'
+
+type InterventionType =
+  | 'PREREQUISITE_REVIEW'
+  | 'DIFFICULTY_PROGRESSION'
+  | 'CONTENT_FORMAT_ADAPT'
+  | 'COGNITIVE_LOAD_REDUCE'
+  | 'SPACED_REPETITION_BOOST'
+  | 'BREAK_SCHEDULE_ADJUST'
+
+type FeedbackType = 'INTERVENTION_GOOD' | 'INTERVENTION_BAD'
 
 interface Intervention {
-  id: string;
-  predictionId: string;
-  interventionType: InterventionType;
-  description: string;
-  reasoning: string;
+  id: string
+  predictionId: string
+  interventionType: InterventionType
+  description: string
+  reasoning: string
 }
 
 interface Props {
-  intervention: Intervention;
-  onFeedbackSubmitted?: () => void;
-  onDismiss?: () => void;
+  intervention: Intervention
+  onFeedbackSubmitted?: () => void
+  onDismiss?: () => void
 }
 
 type HelpfulnessOption = {
-  value: number;
-  label: string;
-  description: string;
-  icon: React.ReactNode;
-  feedbackType: FeedbackType;
-  color: string;
-};
+  value: number
+  label: string
+  description: string
+  icon: React.ReactNode
+  feedbackType: FeedbackType
+  color: string
+}
 
 const HELPFULNESS_OPTIONS: HelpfulnessOption[] = [
   {
@@ -47,7 +56,7 @@ const HELPFULNESS_OPTIONS: HelpfulnessOption[] = [
     label: 'Very helpful',
     description: 'Significantly improved my understanding',
     icon: <ThumbsUp className="size-5" />,
-    feedbackType: FeedbackType.INTERVENTION_GOOD,
+    feedbackType: 'INTERVENTION_GOOD',
     color: 'oklch(0.7 0.12 145)',
   },
   {
@@ -55,7 +64,7 @@ const HELPFULNESS_OPTIONS: HelpfulnessOption[] = [
     label: 'Somewhat helpful',
     description: 'Had some positive impact',
     icon: <Meh className="size-5" />,
-    feedbackType: FeedbackType.INTERVENTION_GOOD,
+    feedbackType: 'INTERVENTION_GOOD',
     color: 'oklch(0.8 0.15 85)',
   },
   {
@@ -63,7 +72,7 @@ const HELPFULNESS_OPTIONS: HelpfulnessOption[] = [
     label: 'Not helpful',
     description: 'Did not improve my learning',
     icon: <ThumbsDown className="size-5" />,
-    feedbackType: FeedbackType.INTERVENTION_BAD,
+    feedbackType: 'INTERVENTION_BAD',
     color: 'oklch(0.6 0.15 25)',
   },
   {
@@ -71,10 +80,10 @@ const HELPFULNESS_OPTIONS: HelpfulnessOption[] = [
     label: 'Made it worse',
     description: 'Increased confusion or difficulty',
     icon: <TrendingDown className="size-5" />,
-    feedbackType: FeedbackType.INTERVENTION_BAD,
+    feedbackType: 'INTERVENTION_BAD',
     color: 'oklch(0.5 0.15 25)',
   },
-];
+]
 
 const getInterventionTypeLabel = (type: InterventionType): string => {
   const labels: Record<InterventionType, string> = {
@@ -84,37 +93,33 @@ const getInterventionTypeLabel = (type: InterventionType): string => {
     COGNITIVE_LOAD_REDUCE: 'Cognitive Load Reduction',
     SPACED_REPETITION_BOOST: 'Spaced Repetition Boost',
     BREAK_SCHEDULE_ADJUST: 'Break Schedule Adjustment',
-  };
-  return labels[type] || type;
-};
+  }
+  return labels[type] || type
+}
 
-export function InterventionFeedbackCard({
-  intervention,
-  onFeedbackSubmitted,
-  onDismiss,
-}: Props) {
-  const [selectedHelpfulness, setSelectedHelpfulness] = useState<number | null>(null);
-  const [starRating, setStarRating] = useState<number>(0);
-  const [hoverRating, setHoverRating] = useState<number>(0);
-  const [comments, setComments] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(false);
+export function InterventionFeedbackCard({ intervention, onFeedbackSubmitted, onDismiss }: Props) {
+  const [selectedHelpfulness, setSelectedHelpfulness] = useState<number | null>(null)
+  const [starRating, setStarRating] = useState<number>(0)
+  const [hoverRating, setHoverRating] = useState<number>(0)
+  const [comments, setComments] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isDismissed, setIsDismissed] = useState(false)
 
-  if (isDismissed) return null;
+  if (isDismissed) return null
 
   const handleSubmit = async () => {
     if (selectedHelpfulness === null && starRating === 0) {
-      toast.error('Please provide a rating');
-      return;
+      toast.error('Please provide a rating')
+      return
     }
 
-    const selectedOption = HELPFULNESS_OPTIONS.find((opt) => opt.value === selectedHelpfulness);
-    const actualHelpfulness = starRating > 0 ? starRating : selectedHelpfulness || 1;
-    const feedbackType =
+    const selectedOption = HELPFULNESS_OPTIONS.find((opt) => opt.value === selectedHelpfulness)
+    const actualHelpfulness = starRating > 0 ? starRating : selectedHelpfulness || 1
+    const feedbackType: FeedbackType =
       selectedOption?.feedbackType ||
-      (actualHelpfulness >= 3 ? FeedbackType.INTERVENTION_GOOD : FeedbackType.INTERVENTION_BAD);
+      (actualHelpfulness >= 3 ? 'INTERVENTION_GOOD' : 'INTERVENTION_BAD')
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
       const response = await fetch(
@@ -130,38 +135,38 @@ export function InterventionFeedbackCard({
             helpfulness: actualHelpfulness,
             comments: comments.trim() || undefined,
           }),
-        }
-      );
+        },
+      )
 
       if (!response.ok) {
-        throw new Error('Failed to submit feedback');
+        throw new Error('Failed to submit feedback')
       }
 
       toast.success('Thank you for your feedback!', {
         description: 'This helps us improve our interventions.',
-      });
+      })
 
       // Notify parent and hide card
       if (onFeedbackSubmitted) {
-        onFeedbackSubmitted();
+        onFeedbackSubmitted()
       }
-      setIsDismissed(true);
+      setIsDismissed(true)
     } catch (error) {
-      console.error('Error submitting feedback:', error);
-      toast.error('Failed to submit feedback. Please try again.');
+      console.error('Error submitting feedback:', error)
+      toast.error('Failed to submit feedback. Please try again.')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleDismissCard = () => {
     if (onDismiss) {
-      onDismiss();
+      onDismiss()
     }
-    setIsDismissed(true);
-  };
+    setIsDismissed(true)
+  }
 
-  const displayRating = hoverRating || starRating;
+  const displayRating = hoverRating || starRating
 
   return (
     <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
@@ -295,7 +300,7 @@ export function InterventionFeedbackCard({
         {/* Submit Button */}
         <Button
           onClick={handleSubmit}
-          disabled={selectedHelpfulness === null && starRating === 0 || isSubmitting}
+          disabled={(selectedHelpfulness === null && starRating === 0) || isSubmitting}
           className="w-full min-h-11 bg-[oklch(0.65_0.15_250)] hover:bg-[oklch(0.60_0.15_250)] text-white"
         >
           {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
@@ -306,5 +311,5 @@ export function InterventionFeedbackCard({
         </p>
       </CardContent>
     </Card>
-  );
+  )
 }

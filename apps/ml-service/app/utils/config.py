@@ -28,24 +28,17 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str
 
-    # CORS (accepts both comma-separated string and JSON array)
-    CORS_ORIGINS: List[str] = Field(default_factory=lambda: ["http://localhost:3000", "http://localhost:3001"])
+    # CORS Origins (comma-separated string)
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3001"
 
-    @field_validator('CORS_ORIGINS', mode='before')
-    @classmethod
-    def parse_cors_origins(cls, v):
-        """Parse CORS_ORIGINS from comma-separated string or JSON array."""
-        if isinstance(v, list):
-            return v
-        if isinstance(v, str):
-            # Try comma-separated format first
-            if ',' in v:
-                return [origin.strip() for origin in v.split(",") if origin.strip()]
-            # Single origin
-            if v.strip():
-                return [v.strip()]
-        # Default fallback
-        return ["http://localhost:3000", "http://localhost:3001"]
+    @property
+    def cors_origins_list(self) -> List[str]:
+        """Parse CORS_ORIGINS string into a list."""
+        try:
+            origins_str = self.CORS_ORIGINS.strip().strip('"\'')
+            return [o.strip() for o in origins_str.split(",") if o.strip()]
+        except Exception:
+            return ["http://localhost:3000", "http://localhost:3001"]
 
     # Logging
     LOG_LEVEL: str = "INFO"

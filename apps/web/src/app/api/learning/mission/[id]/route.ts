@@ -9,10 +9,7 @@ import { prisma } from '@/lib/db'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { withErrorHandler } from '@/lib/api-error'
 
-async function handler(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
+async function handler(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params
 
   // Get mission with study sessions
@@ -36,10 +33,7 @@ async function handler(
   })
 
   if (!mission) {
-    return Response.json(
-      errorResponse('MISSION_NOT_FOUND', 'Mission not found'),
-      { status: 404 }
-    )
+    return Response.json(errorResponse('MISSION_NOT_FOUND', 'Mission not found'), { status: 404 })
   }
 
   // Parse objectives from JSON
@@ -50,7 +44,7 @@ async function handler(
       mission,
       objectives,
       studySessions: mission.studySessions,
-    })
+    }),
   )
 }
 

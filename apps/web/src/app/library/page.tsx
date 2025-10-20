@@ -1,210 +1,210 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Search, Filter, ArrowUpDown } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Search, Filter, ArrowUpDown } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from 'sonner';
-import { LectureList } from '@/components/library/lecture-list';
-import { LectureFilters } from '@/components/library/lecture-filters';
-import { BulkActionToolbar } from '@/components/library/bulk-action-toolbar';
-import { UploadDialog } from '@/components/library/upload-dialog';
-import { CourseDialog } from '@/components/library/course-dialog';
+} from '@/components/ui/select'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { toast } from 'sonner'
+import { LectureList } from '@/components/library/lecture-list'
+import { LectureFilters } from '@/components/library/lecture-filters'
+import { BulkActionToolbar } from '@/components/library/bulk-action-toolbar'
+import { UploadDialog } from '@/components/library/upload-dialog'
+import { CourseDialog } from '@/components/library/course-dialog'
 
 interface Course {
-  id: string;
-  name: string;
-  code: string | null;
-  color: string | null;
+  id: string
+  name: string
+  code: string | null
+  color: string | null
 }
 
 interface Lecture {
-  id: string;
-  title: string;
-  fileName: string;
-  uploadedAt: string;
-  processedAt: string | null;
-  processingStatus: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
-  weekNumber: number | null;
-  topicTags: string[];
-  course: Course;
-  chunkCount: number;
-  objectiveCount: number;
-  cardCount: number;
+  id: string
+  title: string
+  fileName: string
+  uploadedAt: string
+  processedAt: string | null
+  processingStatus: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
+  weekNumber: number | null
+  topicTags: string[]
+  course: Course
+  chunkCount: number
+  objectiveCount: number
+  cardCount: number
 }
 
 interface Pagination {
-  page: number;
-  limit: number;
-  totalCount: number;
-  totalPages: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
+  page: number
+  limit: number
+  totalCount: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPrevPage: boolean
 }
 
 export default function LibraryPage() {
-  const searchParams = useSearchParams();
-  const [lectures, setLectures] = useState<Lecture[]>([]);
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState<Pagination | null>(null);
-  const [selectedLectures, setSelectedLectures] = useState<Set<string>>(new Set());
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [courseDialogOpen, setCourseDialogOpen] = useState(false);
+  const searchParams = useSearchParams()
+  const [lectures, setLectures] = useState<Lecture[]>([])
+  const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState(true)
+  const [pagination, setPagination] = useState<Pagination | null>(null)
+  const [selectedLectures, setSelectedLectures] = useState<Set<string>>(new Set())
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
+  const [courseDialogOpen, setCourseDialogOpen] = useState(false)
 
   // Filters
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCourse, setSelectedCourse] = useState<string>('all');
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState('uploadedAt');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCourse, setSelectedCourse] = useState<string>('all')
+  const [selectedStatus, setSelectedStatus] = useState<string>('all')
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [sortBy, setSortBy] = useState('uploadedAt')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
-    fetchCourses();
-  }, []);
+    fetchCourses()
+  }, [])
 
   useEffect(() => {
-    fetchLectures();
-  }, [selectedCourse, selectedStatus, selectedTags, sortBy, sortOrder, currentPage]);
+    fetchLectures()
+  }, [selectedCourse, selectedStatus, selectedTags, sortBy, sortOrder, currentPage])
 
   // Open dialogs based on URL action parameter
   useEffect(() => {
-    const action = searchParams.get('action');
+    const action = searchParams.get('action')
     if (action === 'upload') {
-      setUploadDialogOpen(true);
+      setUploadDialogOpen(true)
     } else if (action === 'create-course') {
-      setCourseDialogOpen(true);
+      setCourseDialogOpen(true)
     }
-  }, [searchParams]);
+  }, [searchParams])
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch('/api/content/courses');
-      const result = await response.json();
+      const response = await fetch('/api/content/courses')
+      const result = await response.json()
       if (result.success) {
-        setCourses(result.data.courses);
+        setCourses(result.data.courses)
       }
     } catch (error) {
-      console.error('Failed to fetch courses:', error);
+      console.error('Failed to fetch courses:', error)
     }
-  };
+  }
 
   const fetchLectures = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
       const params = new URLSearchParams({
         sortBy,
         sortOrder,
         page: currentPage.toString(),
         limit: '50',
-      });
+      })
 
       if (selectedCourse !== 'all') {
-        params.append('courseId', selectedCourse);
+        params.append('courseId', selectedCourse)
       }
 
       if (selectedStatus !== 'all') {
-        params.append('status', selectedStatus);
+        params.append('status', selectedStatus)
       }
 
       if (selectedTags.length > 0) {
-        params.append('tags', selectedTags.join(','));
+        params.append('tags', selectedTags.join(','))
       }
 
-      const response = await fetch(`/api/content/lectures?${params}`);
-      const result = await response.json();
+      const response = await fetch(`/api/content/lectures?${params}`)
+      const result = await response.json()
 
       if (result.success) {
-        setLectures(result.data.lectures);
-        setPagination(result.data.pagination);
+        setLectures(result.data.lectures)
+        setPagination(result.data.pagination)
       } else {
-        toast.error('Failed to load lectures');
+        toast.error('Failed to load lectures')
       }
     } catch (error) {
-      toast.error('Failed to load lectures');
+      toast.error('Failed to load lectures')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      fetchLectures();
-      return;
+      fetchLectures()
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
     try {
-      const response = await fetch(`/api/content/search?q=${encodeURIComponent(searchQuery)}&limit=50`);
-      const result = await response.json();
+      const response = await fetch(
+        `/api/content/search?q=${encodeURIComponent(searchQuery)}&limit=50`,
+      )
+      const result = await response.json()
 
       if (result.success) {
-        setLectures(result.data.lectures);
-        setPagination(null); // Search results don't have pagination
+        setLectures(result.data.lectures)
+        setPagination(null) // Search results don't have pagination
       } else {
-        toast.error(result.error?.message || 'Search failed');
+        toast.error(result.error?.message || 'Search failed')
       }
     } catch (error) {
-      toast.error('Search failed');
+      toast.error('Search failed')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleClearSearch = () => {
-    setSearchQuery('');
-    fetchLectures();
-  };
+    setSearchQuery('')
+    fetchLectures()
+  }
 
   const toggleLectureSelection = (lectureId: string) => {
-    const newSelection = new Set(selectedLectures);
+    const newSelection = new Set(selectedLectures)
     if (newSelection.has(lectureId)) {
-      newSelection.delete(lectureId);
+      newSelection.delete(lectureId)
     } else {
-      newSelection.add(lectureId);
+      newSelection.add(lectureId)
     }
-    setSelectedLectures(newSelection);
-  };
+    setSelectedLectures(newSelection)
+  }
 
   const toggleSelectAll = () => {
     if (selectedLectures.size === lectures.length && lectures.length > 0) {
-      setSelectedLectures(new Set());
+      setSelectedLectures(new Set())
     } else {
-      setSelectedLectures(new Set(lectures.map(l => l.id)));
+      setSelectedLectures(new Set(lectures.map((l) => l.id)))
     }
-  };
+  }
 
   const handleBulkActionComplete = () => {
-    setSelectedLectures(new Set());
-    fetchLectures();
-  };
+    setSelectedLectures(new Set())
+    fetchLectures()
+  }
 
   const handleCourseDialogSuccess = () => {
-    fetchCourses();
-    setCourseDialogOpen(false);
-  };
+    fetchCourses()
+    setCourseDialogOpen(false)
+  }
 
   return (
     <div className="container mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Library</h1>
-          <p className="text-muted-foreground">
-            Browse and manage your lecture collection
-          </p>
+          <p className="text-muted-foreground">Browse and manage your lecture collection</p>
         </div>
       </div>
 
@@ -240,8 +240,8 @@ export default function LibraryPage() {
         onCourseChange={setSelectedCourse}
         onStatusChange={setSelectedStatus}
         onSortChange={(field, order) => {
-          setSortBy(field);
-          setSortOrder(order);
+          setSortBy(field)
+          setSortOrder(order)
         }}
       />
 
@@ -299,7 +299,7 @@ export default function LibraryPage() {
           {pagination && pagination.totalPages > 1 && (
             <div className="flex items-center justify-between mt-6">
               <p className="text-sm text-muted-foreground">
-                Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
+                Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
                 {Math.min(pagination.page * pagination.limit, pagination.totalCount)} of{' '}
                 {pagination.totalCount} lectures
               </p>
@@ -307,14 +307,14 @@ export default function LibraryPage() {
                 <Button
                   variant="outline"
                   disabled={!pagination.hasPrevPage}
-                  onClick={() => setCurrentPage(p => p - 1)}
+                  onClick={() => setCurrentPage((p) => p - 1)}
                 >
                   Previous
                 </Button>
                 <Button
                   variant="outline"
                   disabled={!pagination.hasNextPage}
-                  onClick={() => setCurrentPage(p => p + 1)}
+                  onClick={() => setCurrentPage((p) => p + 1)}
                 >
                   Next
                 </Button>
@@ -340,5 +340,5 @@ export default function LibraryPage() {
         onSuccess={handleCourseDialogSuccess}
       />
     </div>
-  );
+  )
 }

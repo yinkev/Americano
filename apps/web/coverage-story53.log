@@ -1,0 +1,14 @@
+
+> @americano/web@0.1.0 test:coverage /Users/kyin/Projects/Americano-epic5/apps/web
+> jest --coverage "--testPathPattern=use-study-orchestration|orchestration"
+
+testPathPattern:
+
+  Option "testPathPattern" was replaced by "--testPathPatterns". "--testPathPatterns" is only available as a command-line option.
+  
+  Please update your configuration.
+
+  CLI Options Documentation:
+  https://jestjs.io/docs/cli
+
+ ELIFECYCLE  Command failed with exit code 1.

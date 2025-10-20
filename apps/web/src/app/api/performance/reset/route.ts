@@ -5,19 +5,19 @@
  * Reset all performance data for a user
  */
 
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
 
 export async function DELETE(request: NextRequest) {
   try {
     // Hardcoded user for MVP
-    const userId = 'kevy@americano.dev';
+    const userId = 'kevy@americano.dev'
 
     // Delete all performance metrics
     const deletedMetrics = await prisma.performanceMetric.deleteMany({
       where: { userId },
-    });
+    })
 
     // Reset performance fields on all learning objectives
     const objectives = await prisma.learningObjective.findMany({
@@ -27,7 +27,7 @@ export async function DELETE(request: NextRequest) {
         },
       },
       select: { id: true },
-    });
+    })
 
     await prisma.learningObjective.updateMany({
       where: {
@@ -41,7 +41,7 @@ export async function DELETE(request: NextRequest) {
         totalStudyTimeMs: 0,
         lastStudiedAt: null,
       },
-    });
+    })
 
     return Response.json(
       successResponse({
@@ -50,13 +50,13 @@ export async function DELETE(request: NextRequest) {
           objectivesReset: objectives.length,
         },
         message: 'All performance data has been reset',
-      })
-    );
+      }),
+    )
   } catch (error) {
-    console.error('Error resetting performance data:', error);
+    console.error('Error resetting performance data:', error)
     return Response.json(
       errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to reset performance data'),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

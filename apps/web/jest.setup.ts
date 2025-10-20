@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom'
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -11,15 +11,15 @@ jest.mock('next/navigation', () => ({
       pathname: '/',
       query: {},
       asPath: '/',
-    };
+    }
   },
   useSearchParams() {
-    return new URLSearchParams();
+    return new URLSearchParams()
   },
   usePathname() {
-    return '/';
+    return '/'
   },
-}));
+}))
 
 // Mock Prisma Client
 jest.mock('@/lib/db', () => ({
@@ -62,16 +62,18 @@ jest.mock('@/lib/db', () => ({
       findUnique: jest.fn(),
       upsert: jest.fn(),
     },
-    $transaction: jest.fn((callback) => callback({
-      mission: {
-        findMany: jest.fn(),
-        findUnique: jest.fn(),
-        create: jest.fn(),
-        update: jest.fn(),
-      },
-    })),
+    $transaction: jest.fn((callback) =>
+      callback({
+        mission: {
+          findMany: jest.fn(),
+          findUnique: jest.fn(),
+          create: jest.fn(),
+          update: jest.fn(),
+        },
+      }),
+    ),
   },
-}));
+}))
 
 // Mock Prisma enums
 jest.mock('@prisma/client', () => ({
@@ -90,14 +92,14 @@ jest.mock('@prisma/client', () => ({
   Prisma: {
     ModelName: {},
   },
-}));
+}))
 
 // Mock Web APIs
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn(),
-}));
+}))
 
 global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
@@ -107,7 +109,7 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   rootMargin: '',
   thresholds: [],
   takeRecords: jest.fn(),
-}));
+}))
 
 // Setup will be imported by individual test files to avoid ESM issues
 // DO NOT import MSW setup here - it causes Jest/ESM conflicts
@@ -117,4 +119,4 @@ global.console = {
   ...console,
   error: jest.fn(),
   warn: jest.fn(),
-};
+}

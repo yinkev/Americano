@@ -12,17 +12,13 @@ import { withErrorHandler } from '@/lib/api-error'
 
 async function handler(request: NextRequest) {
   // Get user from header (MVP: hardcoded to kevy@americano.dev)
-  const userEmail =
-    request.headers.get('X-User-Email') || 'kevy@americano.dev'
+  const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev'
   const user = await prisma.user.findUnique({
     where: { email: userEmail },
   })
 
   if (!user) {
-    return Response.json(
-      errorResponse('USER_NOT_FOUND', 'User not found'),
-      { status: 404 }
-    )
+    return Response.json(errorResponse('USER_NOT_FOUND', 'User not found'), { status: 404 })
   }
 
   // Parse date from query params (defaults to tomorrow)
@@ -42,9 +38,7 @@ async function handler(request: NextRequest) {
 
   // Calculate priority breakdown for transparency
   const priorityBreakdown = {
-    highYield: previewMission.objectives.filter(
-      (obj) => obj.objective?.isHighYield
-    ).length,
+    highYield: previewMission.objectives.filter((obj) => obj.objective?.isHighYield).length,
     total: previewMission.objectives.length,
   }
 
@@ -55,7 +49,7 @@ async function handler(request: NextRequest) {
       objectives: previewMission.objectives,
       estimatedMinutes: previewMission.estimatedMinutes,
       priorityBreakdown,
-    })
+    }),
   )
 }
 

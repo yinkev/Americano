@@ -52,7 +52,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
   describe('Query Parameter Validation', () => {
     it('should reject weeks < 8', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation?weeks=5'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation?weeks=5',
       )
 
       const response = await GET(request)
@@ -65,7 +65,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should reject weeks > 52', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation?weeks=60'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation?weeks=60',
       )
 
       const response = await GET(request)
@@ -78,7 +78,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should reject invalid metric values', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation?metric=invalid'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation?metric=invalid',
       )
 
       const response = await GET(request)
@@ -90,7 +90,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should accept valid weeks parameter (8-52)', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation?weeks=16'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation?weeks=16',
       )
 
       const response = await GET(request)
@@ -102,7 +102,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should use default weeks=12 when not specified', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -114,7 +114,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should accept metric parameter', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation?metric=mission'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation?metric=mission',
       )
 
       const response = await GET(request)
@@ -128,7 +128,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
   describe('Statistical Accuracy Validation', () => {
     it('should return Pearson correlation coefficient in valid range [-1, 1]', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -141,7 +141,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should return p-value in valid range [0, 1]', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -154,7 +154,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should return 95% confidence interval with valid bounds', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -171,7 +171,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should include interpretation string', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -186,7 +186,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
   describe('Time Series Data Validation', () => {
     it('should return time series data with correct structure', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -204,7 +204,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should validate behavioral scores are in range [0, 100]', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -218,7 +218,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should validate academic scores are in range [0, 100]', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -234,7 +234,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
   describe('Insights and Causation Warnings', () => {
     it('should always include causation warning', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -245,28 +245,28 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
       expect(data.data.insights.length).toBeGreaterThan(0)
 
       const hasWarning = data.data.insights.some((insight: string) =>
-        insight.toLowerCase().includes('correlation does not imply causation')
+        insight.toLowerCase().includes('correlation does not imply causation'),
       )
       expect(hasWarning).toBe(true)
     })
 
     it('should include statistical significance insight', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
       const data = await response.json()
 
       const hasSignificance = data.data.insights.some((insight: string) =>
-        insight.toLowerCase().includes('statistically significant')
+        insight.toLowerCase().includes('statistically significant'),
       )
       expect(hasSignificance).toBe(true)
     })
 
     it('should provide actionable insights', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -279,7 +279,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
   describe('Data Quality Metrics', () => {
     it('should return data quality metrics', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -293,22 +293,20 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should validate sample size matches time series data length', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
       const data = await response.json()
 
-      expect(data.data.dataQuality.sampleSize).toBe(
-        data.data.timeSeriesData.length
-      )
+      expect(data.data.dataQuality.sampleSize).toBe(data.data.timeSeriesData.length)
     })
   })
 
   describe('Response Structure', () => {
     it('should return success response with correct structure', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation',
       )
 
       const response = await GET(request)
@@ -327,7 +325,7 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     it('should return error response with correct structure', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/behavioral-insights/correlation?weeks=100'
+        'http://localhost:3000/api/analytics/behavioral-insights/correlation?weeks=100',
       )
 
       const response = await GET(request)

@@ -19,9 +19,9 @@ export default async function MissionDetailPage({ params }: PageProps) {
     include: {
       studySessions: {
         orderBy: { startedAt: 'desc' },
-        take: 10
-      }
-    }
+        take: 10,
+      },
+    },
   })
 
   if (!mission) {
@@ -38,38 +38,39 @@ export default async function MissionDetailPage({ params }: PageProps) {
   }>
 
   // Fetch full objective details
-  const objectiveIds = objectives.map(obj => obj.objectiveId)
+  const objectiveIds = objectives.map((obj) => obj.objectiveId)
   const fullObjectives = await prisma.learningObjective.findMany({
     where: { id: { in: objectiveIds } },
     include: {
       lecture: {
         include: {
-          course: true
-        }
+          course: true,
+        },
       },
       prerequisites: {
         include: {
-          prerequisite: true
-        }
-      }
-    }
+          prerequisite: true,
+        },
+      },
+    },
   })
 
   // Merge objective data
-  const enrichedObjectives = objectives.map(obj => {
-    const full = fullObjectives.find(f => f.id === obj.objectiveId)
+  const enrichedObjectives = objectives.map((obj) => {
+    const full = fullObjectives.find((f) => f.id === obj.objectiveId)
     return {
       ...obj,
-      objective: full
+      objective: full,
     }
   })
 
   // Calculate metrics
-  const completedCount = objectives.filter(o => o.completed).length
+  const completedCount = objectives.filter((o) => o.completed).length
   const completionRate = objectives.length > 0 ? (completedCount / objectives.length) * 100 : 0
-  const timeAccuracy = mission.actualMinutes && mission.estimatedMinutes
-    ? (mission.actualMinutes / mission.estimatedMinutes) * 100
-    : null
+  const timeAccuracy =
+    mission.actualMinutes && mission.estimatedMinutes
+      ? (mission.actualMinutes / mission.estimatedMinutes) * 100
+      : null
 
   const statusColors = {
     PENDING: 'bg-gray-100 text-gray-800 border-gray-200',
@@ -90,16 +91,26 @@ export default async function MissionDetailPage({ params }: PageProps) {
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-            <Link href="/" className="hover:text-gray-900">Dashboard</Link>
+            <Link href="/" className="hover:text-gray-900">
+              Dashboard
+            </Link>
             <span>/</span>
-            <Link href="/missions" className="hover:text-gray-900">Missions</Link>
+            <Link href="/missions" className="hover:text-gray-900">
+              Missions
+            </Link>
             <span>/</span>
             <span className="text-gray-900">{mission.date.toLocaleDateString()}</span>
           </div>
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-3xl font-heading font-bold text-gray-900 mb-2">
-                Mission: {mission.date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                Mission:{' '}
+                {mission.date.toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
               </h1>
               <div className="flex items-center gap-3">
                 <Badge variant="outline" className={statusColors[mission.status]}>
@@ -184,16 +195,24 @@ export default async function MissionDetailPage({ params }: PageProps) {
                           </h3>
                           <div className="flex items-center gap-2 flex-wrap">
                             {obj.objective?.complexity && (
-                              <Badge variant="outline" className={`text-xs ${complexityColors[obj.objective.complexity]}`}>
+                              <Badge
+                                variant="outline"
+                                className={`text-xs ${complexityColors[obj.objective.complexity]}`}
+                              >
                                 {obj.objective.complexity}
                               </Badge>
                             )}
                             {obj.objective?.isHighYield && (
-                              <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-800 border-yellow-200">
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-yellow-50 text-yellow-800 border-yellow-200"
+                              >
                                 ⭐ High-Yield
                               </Badge>
                             )}
-                            <span className="text-xs text-gray-500">{obj.estimatedMinutes} minutes</span>
+                            <span className="text-xs text-gray-500">
+                              {obj.estimatedMinutes} minutes
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -203,12 +222,15 @@ export default async function MissionDetailPage({ params }: PageProps) {
                         <div className="text-sm text-gray-600 space-y-1">
                           <p>
                             <span className="font-medium">Source:</span>{' '}
-                            {obj.objective.lecture?.course?.name} - {obj.objective.lecture ? 'Lecture' : 'Unknown'}
+                            {obj.objective.lecture?.course?.name} -{' '}
+                            {obj.objective.lecture ? 'Lecture' : 'Unknown'}
                           </p>
                           {obj.objective.prerequisites.length > 0 && (
                             <p>
                               <span className="font-medium">Prerequisites:</span>{' '}
-                              {obj.objective.prerequisites.map(p => p.prerequisite.objective).join(', ')}
+                              {obj.objective.prerequisites
+                                .map((p) => p.prerequisite.objective)
+                                .join(', ')}
                             </p>
                           )}
                         </div>
@@ -238,7 +260,7 @@ export default async function MissionDetailPage({ params }: PageProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {mission.studySessions.map(session => (
+                {mission.studySessions.map((session) => (
                   <Link
                     key={session.id}
                     href={`/study/sessions/${session.id}`}
@@ -247,13 +269,18 @@ export default async function MissionDetailPage({ params }: PageProps) {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium text-gray-900">
-                          {session.startedAt.toLocaleTimeString()} - {session.completedAt?.toLocaleTimeString() || 'In Progress'}
+                          {session.startedAt.toLocaleTimeString()} -{' '}
+                          {session.completedAt?.toLocaleTimeString() || 'In Progress'}
                         </p>
                         <p className="text-sm text-gray-600">
-                          Duration: {session.durationMs ? Math.round(session.durationMs / 60000) : 0} minutes
+                          Duration:{' '}
+                          {session.durationMs ? Math.round(session.durationMs / 60000) : 0} minutes
                         </p>
                       </div>
-                      <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-200">
+                      <Badge
+                        variant="outline"
+                        className="bg-gray-100 text-gray-800 border-gray-200"
+                      >
                         {session.completedAt ? 'COMPLETED' : 'IN_PROGRESS'}
                       </Badge>
                     </div>
@@ -278,7 +305,8 @@ export default async function MissionDetailPage({ params }: PageProps) {
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm text-gray-700">Time Estimation Accuracy</span>
                   <span className="font-medium text-gray-900">
-                    Estimated {mission.estimatedMinutes}min, actual {mission.actualMinutes}min ({Math.round(timeAccuracy)}% accurate)
+                    Estimated {mission.estimatedMinutes}min, actual {mission.actualMinutes}min (
+                    {Math.round(timeAccuracy)}% accurate)
                   </span>
                 </div>
               )}
@@ -286,7 +314,8 @@ export default async function MissionDetailPage({ params }: PageProps) {
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <span className="text-sm text-gray-700">Completion Rate</span>
                 <span className="font-medium text-gray-900">
-                  {Math.round(completionRate)}% ({completedCount}/{objectives.length} objectives completed)
+                  {Math.round(completionRate)}% ({completedCount}/{objectives.length} objectives
+                  completed)
                 </span>
               </div>
 

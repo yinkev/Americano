@@ -13,11 +13,11 @@ import { MissionStatus } from '@/generated/prisma'
 
 // Formula weights (must sum to 1.0)
 const WEIGHTS = {
-  COMPLETION_RATE: 0.30,
+  COMPLETION_RATE: 0.3,
   PERFORMANCE_IMPROVEMENT: 0.25,
-  TIME_ACCURACY: 0.20,
+  TIME_ACCURACY: 0.2,
   FEEDBACK_RATING: 0.15,
-  STREAK_BONUS: 0.10,
+  STREAK_BONUS: 0.1,
 } as const
 
 /**
@@ -33,9 +33,7 @@ const WEIGHTS = {
  * @param missionId - Mission ID to calculate score for
  * @returns Success score (0.0-1.0)
  */
-export async function calculateMissionSuccessScore(
-  missionId: string
-): Promise<number> {
+export async function calculateMissionSuccessScore(missionId: string): Promise<number> {
   // Fetch mission with all related data
   const mission = await prisma.mission.findUnique({
     where: { id: missionId },
@@ -65,8 +63,7 @@ export async function calculateMissionSuccessScore(
   }>
   const totalObjectives = objectives.length
   const completedObjectives = objectives.filter((o) => o.completed).length
-  const completionRate =
-    totalObjectives > 0 ? completedObjectives / totalObjectives : 0
+  const completionRate = totalObjectives > 0 ? completedObjectives / totalObjectives : 0
 
   // Component 2: Performance Improvement (25%)
   // Simplified: Calculate from session reviews
@@ -76,7 +73,7 @@ export async function calculateMissionSuccessScore(
     for (const session of mission.studySessions) {
       if (session.reviews.length > 0) {
         const goodReviews = session.reviews.filter(
-          (r) => r.rating === 'GOOD' || r.rating === 'EASY'
+          (r) => r.rating === 'GOOD' || r.rating === 'EASY',
         ).length
         const sessionImprovement = goodReviews / session.reviews.length
         performanceImprovement += sessionImprovement
@@ -90,9 +87,7 @@ export async function calculateMissionSuccessScore(
   // Component 3: Time Accuracy (20%)
   let timeAccuracy = 1.0 // Default perfect if no time data
   if (mission.actualMinutes && mission.estimatedMinutes > 0) {
-    const difference = Math.abs(
-      mission.actualMinutes - mission.estimatedMinutes
-    )
+    const difference = Math.abs(mission.actualMinutes - mission.estimatedMinutes)
     timeAccuracy = Math.max(0, 1.0 - difference / mission.estimatedMinutes)
   }
 
@@ -100,8 +95,7 @@ export async function calculateMissionSuccessScore(
   let feedbackRating = 0.5 // Default neutral if no feedback
   if (mission.feedback.length > 0) {
     const avgHelpfulness =
-      mission.feedback.reduce((sum, f) => sum + f.helpfulnessRating, 0) /
-      mission.feedback.length
+      mission.feedback.reduce((sum, f) => sum + f.helpfulnessRating, 0) / mission.feedback.length
     feedbackRating = avgHelpfulness / 5.0 // Normalize 1-5 to 0.0-1.0
   }
 
@@ -132,9 +126,7 @@ export async function calculateMissionSuccessScore(
  *
  * @param missionId - Mission ID
  */
-export async function updateMissionSuccessScore(
-  missionId: string
-): Promise<void> {
+export async function updateMissionSuccessScore(missionId: string): Promise<void> {
   const successScore = await calculateMissionSuccessScore(missionId)
 
   await prisma.mission.update({

@@ -1,7 +1,8 @@
 /**
- * POST /api/analytics/behavioral-insights/goals
+ * GET/POST /api/analytics/behavioral-insights/goals
  *
- * Creates new behavioral goal
+ * GET: Retrieve behavioral goals for user
+ * POST: Create new behavioral goal
  *
  * Story 5.6: Behavioral Insights Dashboard - Task 7
  */
@@ -10,19 +11,24 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
 import { GoalManager } from '@/subsystems/behavioral-analytics/goal-manager'
+import { prisma } from '@/lib/db'
+import { ApiError } from '@/lib/api-error'
 
 // Zod validation schema for request body
 const CreateGoalSchema = z.object({
   userId: z.string().min(1, 'userId is required'),
-  goalType: z.enum([
-    'STUDY_TIME_CONSISTENCY',
-    'SESSION_DURATION',
-    'CONTENT_DIVERSIFICATION',
-    'RETENTION_IMPROVEMENT',
-    'CUSTOM',
-  ], {
-    required_error: 'goalType is required',
-  }),
+  goalType: z.enum(
+    [
+      'STUDY_TIME_CONSISTENCY',
+      'SESSION_DURATION',
+      'CONTENT_DIVERSIFICATION',
+      'RETENTION_IMPROVEMENT',
+      'CUSTOM',
+    ],
+    {
+      message: 'goalType is required',
+    },
+  ),
   title: z.string().optional(),
   description: z.string().optional(),
   targetMetric: z.string().min(1, 'targetMetric is required'),
@@ -31,6 +37,38 @@ const CreateGoalSchema = z.object({
     .string()
     .datetime()
     .transform((val) => new Date(val)),
+})
+
+/**
+ * GET /api/analytics/behavioral-insights/goals
+ *
+ * Query params:
+ * - userId: string (required)
+ *
+ * Returns:
+ * - goals: array of BehavioralGoal objects
+ */
+export const GET = withErrorHandler(async (request: NextRequest) => {
+  // Extract and validate userId
+  const searchParams = request.nextUrl.searchParams
+  const userId = searchParams.get('userId')
+
+  if (!userId) {
+    throw ApiError.badRequest('userId query parameter is required')
+  }
+
+  // Query behavioral goals
+  const goals = await prisma.behavioralGoal.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  return Response.json(
+    successResponse({
+      goals,
+      count: goals.length,
+    }),
+  )
 })
 
 /**
@@ -60,10 +98,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   // Validate deadline is not in the past
   if (validatedBody.deadline < new Date()) {
-    return Response.json(
-      errorResponse('Deadline must be in the future', 'INVALID_DEADLINE'),
-      { status: 400 }
-    )
+    return Response.json(errorResponse('Deadline must be in the future', 'INVALID_DEADLINE'), {
+      status: 400,
+    })
   }
 
   // Validate deadline is not more than 90 days from now
@@ -72,11 +109,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   if (validatedBody.deadline > maxDeadline) {
     return Response.json(
-      errorResponse(
-        'Deadline cannot exceed 90 days from now',
-        'DEADLINE_TOO_FAR'
-      ),
-      { status: 400 }
+      errorResponse('Deadline cannot exceed 90 days from now', 'DEADLINE_TOO_FAR'),
+      { status: 400 },
     )
   }
 
@@ -95,26 +129,17 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       successResponse({
         goal,
       }),
-      { status: 201 }
+      { status: 201 },
     )
   } catch (error) {
     if (error instanceof Error) {
       // Handle specific validation errors from GoalManager
-      if (
-        error.message.includes('Target value') ||
-        error.message.includes('current value')
-      ) {
-        return Response.json(
-          errorResponse(error.message, 'INVALID_TARGET_VALUE'),
-          { status: 400 }
-        )
+      if (error.message.includes('Target value') || error.message.includes('current value')) {
+        return Response.json(errorResponse(error.message, 'INVALID_TARGET_VALUE'), { status: 400 })
       }
 
       if (error.message.includes('Deadline')) {
-        return Response.json(
-          errorResponse(error.message, 'INVALID_DEADLINE'),
-          { status: 400 }
-        )
+        return Response.json(errorResponse(error.message, 'INVALID_DEADLINE'), { status: 400 })
       }
     }
 

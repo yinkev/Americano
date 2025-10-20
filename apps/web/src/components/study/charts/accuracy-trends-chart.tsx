@@ -1,28 +1,31 @@
-'use client';
+'use client'
 
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from 'recharts'
 
 interface AccuracyTrendsData {
-  objectiveName: string;
-  confidenceRating: number; // 1-5
-  selfAssessment: number; // 1-5
+  objectiveName: string
+  confidenceRating: number // 1-5
+  selfAssessment: number // 1-5
 }
 
 interface AccuracyTrendsChartProps {
-  data: AccuracyTrendsData[];
+  data: AccuracyTrendsData[]
 }
 
 export function AccuracyTrendsChart({ data }: AccuracyTrendsChartProps) {
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <LineChart
-        data={data}
-        margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-      >
-        <CartesianGrid
-          strokeDasharray="5 5"
-          stroke="oklch(0.9 0.01 250)"
-        />
+      <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+        <CartesianGrid strokeDasharray="5 5" stroke="oklch(0.9 0.01 250)" />
         <XAxis
           dataKey="objectiveName"
           angle={-45}
@@ -50,10 +53,7 @@ export function AccuracyTrendsChart({ data }: AccuracyTrendsChartProps) {
           labelStyle={{ color: 'oklch(0.3 0.15 250)', fontWeight: 600 }}
           itemStyle={{ color: 'oklch(0.5 0.1 250)' }}
         />
-        <Legend
-          wrapperStyle={{ paddingTop: '20px' }}
-          iconType="line"
-        />
+        <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="line" />
         <Line
           type="monotone"
           dataKey="selfAssessment"
@@ -74,5 +74,5 @@ export function AccuracyTrendsChart({ data }: AccuracyTrendsChartProps) {
         />
       </LineChart>
     </ResponsiveContainer>
-  );
+  )
 }

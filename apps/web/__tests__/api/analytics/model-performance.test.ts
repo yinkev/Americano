@@ -68,7 +68,7 @@ describe('GET /api/analytics/model-performance', () => {
 
     it('should pass userId query parameter', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/model-performance?userId=custom@example.com'
+        'http://localhost:3000/api/analytics/model-performance?userId=custom@example.com',
       )
 
       const response = await GET(request)
@@ -81,9 +81,7 @@ describe('GET /api/analytics/model-performance', () => {
 
   describe('Error Cases', () => {
     it('should handle 404 user not found', async () => {
-      server.use(
-        createErrorHandler('get', '/model-performance', 404, 'User not found')
-      )
+      server.use(createErrorHandler('get', '/model-performance', 404, 'User not found'))
 
       const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
 
@@ -100,8 +98,8 @@ describe('GET /api/analytics/model-performance', () => {
           'get',
           '/model-performance',
           422,
-          'Insufficient data for performance metrics'
-        )
+          'Insufficient data for performance metrics',
+        ),
       )
 
       const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
@@ -115,7 +113,7 @@ describe('GET /api/analytics/model-performance', () => {
 
     it('should handle 500 internal server error', async () => {
       server.use(
-        createErrorHandler('get', '/model-performance', 500, 'Failed to calculate metrics')
+        createErrorHandler('get', '/model-performance', 500, 'Failed to calculate metrics'),
       )
 
       const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
@@ -201,7 +199,7 @@ describe('GET /api/analytics/model-performance', () => {
   describe('Edge Cases', () => {
     it('should handle special characters in userId', async () => {
       const request = new NextRequest(
-        'http://localhost:3000/api/analytics/model-performance?userId=test%2Buser%40example.com'
+        'http://localhost:3000/api/analytics/model-performance?userId=test%2Buser%40example.com',
       )
 
       const response = await GET(request)
@@ -211,7 +209,7 @@ describe('GET /api/analytics/model-performance', () => {
 
     it('should handle concurrent requests', async () => {
       const requests = Array.from({ length: 5 }, () =>
-        GET(new NextRequest('http://localhost:3000/api/analytics/model-performance'))
+        GET(new NextRequest('http://localhost:3000/api/analytics/model-performance')),
       )
 
       const responses = await Promise.all(requests)

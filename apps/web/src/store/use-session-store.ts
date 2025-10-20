@@ -1,5 +1,12 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import {
+  realtimeOrchestrationService,
+  type SessionEvent,
+  type BreakRecommendation,
+  type ContentAdaptation,
+  type SessionRecommendation,
+} from '@/services/realtime-orchestration'
 
 // Mission objective interface for session orchestration (Story 2.5)
 export interface MissionObjective {
@@ -64,6 +71,37 @@ export interface SessionSettings {
   focusMode: boolean
   minimizeMode: boolean
   disableNotifications: boolean
+
+  // Real-time orchestration (Story 5.3)
+  enableRealtimeOrchestration: boolean
+  orchestrationSensitivity: 'low' | 'medium' | 'high' // How sensitive to performance changes
+  autoBreaksEnabled: boolean
+  autoContentAdaptationEnabled: boolean
+  sessionRecommendationsEnabled: boolean
+}
+
+// Real-time orchestration state (Story 5.3)
+export interface OrchestrationState {
+  isActive: boolean
+  currentPhase: 'content' | 'cards' | 'assessment' | 'break'
+  lastEvent: SessionEvent | null
+  currentRecommendation: {
+    break: BreakRecommendation | null
+    content: ContentAdaptation | null
+    session: SessionRecommendation | null
+  }
+  orchestrationHistory: {
+    breaksTaken: number
+    contentAdaptationsAccepted: number
+    sessionRecommendationsAccepted: number
+    totalInteractions: number
+  }
+  performanceMetrics: {
+    currentScore: number
+    trend: 'improving' | 'stable' | 'declining'
+    fatigueLevel: number
+    engagementScore: number
+  }
 }
 
 // Session store state interface
@@ -85,6 +123,9 @@ interface SessionStore {
 
   // Session settings (Story 2.5 Task 10)
   settings: SessionSettings
+
+  // Real-time orchestration state (Story 5.3)
+  orchestration: OrchestrationState
 
   // Actions
   startSession: (sessionId: string, userEmail: string, missionId?: string) => void
@@ -109,6 +150,19 @@ interface SessionStore {
   // Session settings actions (Story 2.5 Task 10)
   updateSettings: (settings: Partial<SessionSettings>) => void
   resetSettings: () => void
+
+  // Real-time orchestration actions (Story 5.3)
+  initializeOrchestration: (currentPhase?: 'content' | 'cards' | 'assessment') => void
+  recordSessionEvent: (event: Omit<SessionEvent, 'timestamp'>) => void
+  updateCurrentPhase: (phase: 'content' | 'cards' | 'assessment' | 'break') => void
+  setBreakRecommendation: (recommendation: BreakRecommendation | null) => void
+  setContentAdaptation: (adaptation: ContentAdaptation | null) => void
+  setSessionRecommendation: (recommendation: SessionRecommendation | null) => void
+  handleBreakTaken: () => void
+  handleContentAdaptation: (accepted: boolean) => void
+  handleSessionRecommendation: (accepted: boolean) => void
+  updatePerformanceMetrics: (metrics: Partial<OrchestrationState['performanceMetrics']>) => void
+  cleanupOrchestration: () => void
 
   // Computed values
   getElapsedTime: () => number
@@ -143,6 +197,37 @@ const DEFAULT_SETTINGS: SessionSettings = {
   focusMode: false,
   minimizeMode: false,
   disableNotifications: false,
+
+  // Real-time orchestration (Story 5.3)
+  enableRealtimeOrchestration: true,
+  orchestrationSensitivity: 'medium',
+  autoBreaksEnabled: true,
+  autoContentAdaptationEnabled: true,
+  sessionRecommendationsEnabled: true,
+}
+
+// Default orchestration state
+const DEFAULT_ORCHESTRATION_STATE: OrchestrationState = {
+  isActive: false,
+  currentPhase: 'content',
+  lastEvent: null,
+  currentRecommendation: {
+    break: null,
+    content: null,
+    session: null,
+  },
+  orchestrationHistory: {
+    breaksTaken: 0,
+    contentAdaptationsAccepted: 0,
+    sessionRecommendationsAccepted: 0,
+    totalInteractions: 0,
+  },
+  performanceMetrics: {
+    currentScore: 0,
+    trend: 'stable',
+    fatigueLevel: 0,
+    engagementScore: 100,
+  },
 }
 
 export const useSessionStore = create<SessionStore>()(
@@ -165,6 +250,9 @@ export const useSessionStore = create<SessionStore>()(
 
       // Session settings (Story 2.5 Task 10) - use defaults
       settings: DEFAULT_SETTINGS,
+
+      // Real-time orchestration state (Story 5.3)
+      orchestration: DEFAULT_ORCHESTRATION_STATE,
 
       startSession: (sessionId: string, userEmail: string, missionId?: string) => {
         set({
@@ -370,6 +458,205 @@ export const useSessionStore = create<SessionStore>()(
 
       resetSettings: () => {
         set({ settings: DEFAULT_SETTINGS })
+      },
+
+      // Real-time orchestration actions (Story 5.3)
+      initializeOrchestration: (currentPhase = 'content') => {
+        const { sessionId, missionId, settings } = get()
+
+        if (!sessionId || !settings.enableRealtimeOrchestration) {
+          return
+        }
+
+        // Initialize the orchestration service
+        realtimeOrchestrationService
+          .initializeSession(sessionId, missionId, currentPhase)
+          .then(() => {
+            set({
+              orchestration: {
+                ...get().orchestration,
+                isActive: true,
+                currentPhase,
+              },
+            })
+          })
+          .catch((error) => {
+            console.error('Failed to initialize orchestration:', error)
+          })
+      },
+
+      recordSessionEvent: (event) => {
+        const { orchestration, settings } = get()
+
+        if (!orchestration.isActive || !settings.enableRealtimeOrchestration) {
+          return
+        }
+
+        const fullEvent: SessionEvent = {
+          ...event,
+          timestamp: new Date(),
+        }
+
+        // Record event in orchestration service
+        realtimeOrchestrationService.recordEvent(fullEvent)
+
+        // Update last event in state
+        set({
+          orchestration: {
+            ...orchestration,
+            lastEvent: fullEvent,
+            orchestrationHistory: {
+              ...orchestration.orchestrationHistory,
+              totalInteractions: orchestration.orchestrationHistory.totalInteractions + 1,
+            },
+          },
+        })
+      },
+
+      updateCurrentPhase: (phase) => {
+        const { orchestration } = get()
+
+        if (!orchestration.isActive) {
+          return
+        }
+
+        set({
+          orchestration: {
+            ...orchestration,
+            currentPhase: phase,
+          },
+        })
+
+        // Record phase change event
+        get().recordSessionEvent({
+          type: phase === 'break' ? 'pause' : 'resume',
+          data: {},
+        })
+      },
+
+      setBreakRecommendation: (recommendation) => {
+        const { orchestration } = get()
+
+        set({
+          orchestration: {
+            ...orchestration,
+            currentRecommendation: {
+              ...orchestration.currentRecommendation,
+              break: recommendation,
+            },
+          },
+        })
+      },
+
+      setContentAdaptation: (adaptation) => {
+        const { orchestration } = get()
+
+        set({
+          orchestration: {
+            ...orchestration,
+            currentRecommendation: {
+              ...orchestration.currentRecommendation,
+              content: adaptation,
+            },
+          },
+        })
+      },
+
+      setSessionRecommendation: (recommendation) => {
+        const { orchestration } = get()
+
+        set({
+          orchestration: {
+            ...orchestration,
+            currentRecommendation: {
+              ...orchestration.currentRecommendation,
+              session: recommendation,
+            },
+          },
+        })
+      },
+
+      handleBreakTaken: () => {
+        const { orchestration } = get()
+
+        set({
+          orchestration: {
+            ...orchestration,
+            currentRecommendation: {
+              ...orchestration.currentRecommendation,
+              break: null,
+            },
+            orchestrationHistory: {
+              ...orchestration.orchestrationHistory,
+              breaksTaken: orchestration.orchestrationHistory.breaksTaken + 1,
+            },
+          },
+        })
+
+        // Update phase to break
+        get().updateCurrentPhase('break')
+      },
+
+      handleContentAdaptation: (accepted) => {
+        const { orchestration } = get()
+
+        set({
+          orchestration: {
+            ...orchestration,
+            currentRecommendation: {
+              ...orchestration.currentRecommendation,
+              content: null,
+            },
+            orchestrationHistory: {
+              ...orchestration.orchestrationHistory,
+              contentAdaptationsAccepted: accepted
+                ? orchestration.orchestrationHistory.contentAdaptationsAccepted + 1
+                : orchestration.orchestrationHistory.contentAdaptationsAccepted,
+            },
+          },
+        })
+      },
+
+      handleSessionRecommendation: (accepted) => {
+        const { orchestration } = get()
+
+        set({
+          orchestration: {
+            ...orchestration,
+            currentRecommendation: {
+              ...orchestration.currentRecommendation,
+              session: null,
+            },
+            orchestrationHistory: {
+              ...orchestration.orchestrationHistory,
+              sessionRecommendationsAccepted: accepted
+                ? orchestration.orchestrationHistory.sessionRecommendationsAccepted + 1
+                : orchestration.orchestrationHistory.sessionRecommendationsAccepted,
+            },
+          },
+        })
+      },
+
+      updatePerformanceMetrics: (metrics) => {
+        const { orchestration } = get()
+
+        set({
+          orchestration: {
+            ...orchestration,
+            performanceMetrics: {
+              ...orchestration.performanceMetrics,
+              ...metrics,
+            },
+          },
+        })
+      },
+
+      cleanupOrchestration: () => {
+        realtimeOrchestrationService.cleanup()
+
+        set({
+          orchestration: DEFAULT_ORCHESTRATION_STATE,
+        })
       },
     }),
     {

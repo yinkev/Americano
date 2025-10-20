@@ -87,10 +87,13 @@ export function usePerformanceMonitoring(options: UsePerformanceMonitoringOption
       }
 
       // Record in orchestration service
-      recordSessionEvent({
-        type: event.type,
-        data: event.data,
-      })
+      // Only record event types that are supported by recordSessionEvent
+      if (['pause', 'resume', 'objective_complete', 'card_review', 'answer'].includes(event.type)) {
+        recordSessionEvent({
+          type: event.type as 'pause' | 'resume' | 'objective_complete' | 'card_review' | 'answer',
+          data: event.data,
+        })
+      }
 
       // Update performance metrics
       const metrics = calculatePerformanceMetrics()

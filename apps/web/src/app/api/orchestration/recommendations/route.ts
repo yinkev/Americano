@@ -22,15 +22,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { userId, date, missionId } = RecommendationsSchema.parse(body)
 
-    const recommender = new StudyTimeRecommender()
-    const intensityModulator = new StudyIntensityModulator()
-
     // Generate time slot recommendations
     const targetDate = date ? new Date(date) : new Date()
-    const recommendations = await recommender.generateRecommendations(userId, targetDate, missionId)
+    const recommendations = await StudyTimeRecommender.generateRecommendations(
+      userId,
+      targetDate,
+      missionId,
+    )
 
     // Calculate cognitive load
-    const cognitiveLoad = await intensityModulator.assessCognitiveLoad(userId)
+    const cognitiveLoad = await StudyIntensityModulator.assessCognitiveLoad(userId)
 
     return NextResponse.json({
       recommendations,
@@ -42,14 +43,11 @@ export async function POST(request: NextRequest) {
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request body', details: error.errors },
-        { status: 400 }
+        { error: 'Invalid request body', details: error.issues },
+        { status: 400 },
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to generate recommendations' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to generate recommendations' }, { status: 500 })
   }
 }

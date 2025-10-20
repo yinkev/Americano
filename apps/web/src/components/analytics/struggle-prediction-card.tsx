@@ -5,15 +5,15 @@
  * Displays individual struggle predictions with probability, confidence, and feature breakdown
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { AlertTriangle, ChevronDown, ChevronUp, Info } from 'lucide-react';
-import { format } from 'date-fns';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react'
+import { AlertTriangle, ChevronDown, ChevronUp, Info } from 'lucide-react'
+import { format } from 'date-fns'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -21,60 +21,60 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog'
 
 interface PredictionFeatures {
-  prerequisiteGap?: number;
-  historicalStruggle?: number;
-  contentComplexity?: number;
-  retentionRate?: number;
-  cognitiveLoad?: number;
-  topicSimilarity?: number;
+  prerequisiteGap?: number
+  historicalStruggle?: number
+  contentComplexity?: number
+  retentionRate?: number
+  cognitiveLoad?: number
+  topicSimilarity?: number
 }
 
 interface Prediction {
-  id: string;
-  topicName: string;
-  predictedStruggleProbability: number;
-  confidence: number;
-  predictedFor: string;
-  features: PredictionFeatures;
+  id: string
+  topicName: string
+  predictedStruggleProbability: number
+  confidence: number
+  predictedFor: string
+  features: PredictionFeatures
 }
 
 interface Props {
-  prediction: Prediction;
+  prediction: Prediction
 }
 
 export function StrugglePredictionCard({ prediction }: Props) {
-  const [expanded, setExpanded] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  const [expanded, setExpanded] = useState(false)
+  const [dismissed, setDismissed] = useState(false)
 
-  if (dismissed) return null;
+  if (dismissed) return null
 
-  const probability = prediction.predictedStruggleProbability * 100;
-  const confidence = prediction.confidence * 100;
+  const probability = prediction.predictedStruggleProbability * 100
+  const confidence = prediction.confidence * 100
 
   // Determine color based on probability
   const getProbabilityColor = (prob: number) => {
-    if (prob < 40) return 'oklch(0.7 0.12 145)'; // Green - Low
-    if (prob < 70) return 'oklch(0.8 0.15 85)'; // Yellow - Medium
-    return 'oklch(0.6 0.15 25)'; // Red - High
-  };
+    if (prob < 40) return 'oklch(0.7 0.12 145)' // Green - Low
+    if (prob < 70) return 'oklch(0.8 0.15 85)' // Yellow - Medium
+    return 'oklch(0.6 0.15 25)' // Red - High
+  }
 
   const getProbabilityLevel = (prob: number) => {
-    if (prob < 40) return 'Low';
-    if (prob < 70) return 'Medium';
-    return 'High';
-  };
+    if (prob < 40) return 'Low'
+    if (prob < 70) return 'Medium'
+    return 'High'
+  }
 
-  const probabilityColor = getProbabilityColor(probability);
-  const probabilityLevel = getProbabilityLevel(probability);
+  const probabilityColor = getProbabilityColor(probability)
+  const probabilityLevel = getProbabilityLevel(probability)
 
   const handleDismiss = async () => {
     // TODO: API call to mark as dismissed
     // await fetch(`/api/analytics/predictions/${prediction.id}/dismiss`, { method: 'POST' });
-    setDismissed(true);
-  };
+    setDismissed(true)
+  }
 
   return (
     <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
@@ -87,10 +87,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
                 className="p-2 rounded-lg shrink-0 mt-0.5"
                 style={{ backgroundColor: `${probabilityColor}/0.1` }}
               >
-                <AlertTriangle
-                  className="size-5"
-                  style={{ color: probabilityColor }}
-                />
+                <AlertTriangle className="size-5" style={{ color: probabilityColor }} />
               </div>
             )}
             <div className="flex-1 min-w-0">
@@ -122,9 +119,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
         {/* Probability Progress Bar */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-foreground">
-              Struggle Probability
-            </span>
+            <span className="text-sm font-medium text-foreground">Struggle Probability</span>
             <span className="text-sm font-semibold" style={{ color: probabilityColor }}>
               {probability.toFixed(0)}%
             </span>
@@ -149,7 +144,8 @@ export function StrugglePredictionCard({ prediction }: Props) {
         <div className="flex items-center gap-2 text-sm">
           <Info className="size-4 text-muted-foreground" />
           <span className="text-muted-foreground">
-            Confidence: <span className="font-semibold text-foreground">{confidence.toFixed(0)}%</span>
+            Confidence:{' '}
+            <span className="font-semibold text-foreground">{confidence.toFixed(0)}%</span>
           </span>
         </div>
 
@@ -161,11 +157,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
           aria-label="Toggle feature breakdown"
         >
           <span>Why this prediction?</span>
-          {expanded ? (
-            <ChevronUp className="size-4" />
-          ) : (
-            <ChevronDown className="size-4" />
-          )}
+          {expanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
         </button>
 
         {expanded && (
@@ -220,27 +212,21 @@ export function StrugglePredictionCard({ prediction }: Props) {
             </DialogTrigger>
             <DialogContent className="bg-white/95 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.15)]">
               <DialogHeader>
-                <DialogTitle className="font-heading text-xl">
-                  Recommended Intervention
-                </DialogTitle>
+                <DialogTitle className="font-heading text-xl">Recommended Intervention</DialogTitle>
                 <DialogDescription>
                   Strategies to help you succeed with {prediction.topicName}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="p-4 rounded-lg bg-muted/50">
-                  <h4 className="font-semibold text-foreground mb-2">
-                    Prerequisite Review
-                  </h4>
+                  <h4 className="font-semibold text-foreground mb-2">Prerequisite Review</h4>
                   <p className="text-sm text-muted-foreground">
-                    Review foundational concepts before tackling this topic. We'll add
-                    preparatory missions to your queue.
+                    Review foundational concepts before tackling this topic. We'll add preparatory
+                    missions to your queue.
                   </p>
                 </div>
                 <div className="p-4 rounded-lg bg-muted/50">
-                  <h4 className="font-semibold text-foreground mb-2">
-                    Spaced Repetition Boost
-                  </h4>
+                  <h4 className="font-semibold text-foreground mb-2">Spaced Repetition Boost</h4>
                   <p className="text-sm text-muted-foreground">
                     Increase review frequency for related concepts to strengthen retention.
                   </p>
@@ -255,17 +241,13 @@ export function StrugglePredictionCard({ prediction }: Props) {
             </DialogContent>
           </Dialog>
 
-          <Button
-            variant="outline"
-            className="min-h-11 px-6"
-            onClick={handleDismiss}
-          >
+          <Button variant="outline" className="min-h-11 px-6" onClick={handleDismiss}>
             Not Concerned
           </Button>
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 /**
@@ -277,20 +259,18 @@ function FeatureBar({
   value,
   description,
 }: {
-  label: string;
-  value: number;
-  description: string;
+  label: string
+  value: number
+  description: string
 }) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-foreground">{label}</span>
-        <span className="text-xs font-semibold text-muted-foreground">
-          {value.toFixed(0)}%
-        </span>
+        <span className="text-xs font-semibold text-muted-foreground">{value.toFixed(0)}%</span>
       </div>
       <Progress value={value} className="h-2 bg-muted/30" />
       <p className="text-xs text-muted-foreground">{description}</p>
     </div>
-  );
+  )
 }

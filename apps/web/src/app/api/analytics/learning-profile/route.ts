@@ -43,7 +43,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       successResponse({
         profile,
         insufficientData: false,
-      })
+      }),
     )
   }
 
@@ -108,6 +108,6 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
         currentSessions: sessionCount,
         currentReviews: reviewCount,
       },
-    })
+    }),
   )
 })

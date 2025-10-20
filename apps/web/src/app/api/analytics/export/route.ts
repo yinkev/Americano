@@ -1,10 +1,10 @@
 // /api/analytics/export route
 // GET: Export all behavioral data as JSON (Story 5.1 Task 11)
 
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse } from '@/lib/api-response';
-import { ApiError, withErrorHandler } from '@/lib/api-error';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { successResponse } from '@/lib/api-response'
+import { ApiError, withErrorHandler } from '@/lib/api-error'
 
 /**
  * GET /api/analytics/export
@@ -27,12 +27,10 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       email: true,
       name: true,
     },
-  });
+  })
 
   if (!user) {
-    throw ApiError.notFound(
-      'User not found. Run: npx prisma db seed to create default user'
-    );
+    throw ApiError.notFound('User not found. Run: npx prisma db seed to create default user')
   }
 
   // Fetch all behavioral data
@@ -40,12 +38,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     // Get all behavioral patterns with supporting evidence
     prisma.behavioralPattern.findMany({
       where: { userId: user.id },
-      orderBy: [
-        { confidence: 'desc' },
-        { lastSeenAt: 'desc' },
-      ],
+      orderBy: [{ confidence: 'desc' }, { lastSeenAt: 'desc' }],
       include: {
-        insights: {
+        insightPatterns: {
           select: {
             insightId: true,
           },
@@ -56,12 +51,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     // Get all behavioral insights with supporting patterns
     prisma.behavioralInsight.findMany({
       where: { userId: user.id },
-      orderBy: [
-        { confidence: 'desc' },
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ confidence: 'desc' }, { createdAt: 'desc' }],
       include: {
-        patterns: {
+        insightPatterns: {
           select: {
             patternId: true,
           },
@@ -73,7 +65,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     prisma.userLearningProfile.findUnique({
       where: { userId: user.id },
     }),
-  ]);
+  ])
 
   // Format export data
   const exportData = {
@@ -90,7 +82,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       detectedAt: pattern.detectedAt.toISOString(),
       lastSeenAt: pattern.lastSeenAt.toISOString(),
       occurrenceCount: pattern.occurrenceCount,
-      linkedInsights: pattern.insights.map((i) => i.insightId),
+      linkedInsights: pattern.insightPatterns.map((i) => i.insightId),
     })),
     insights: insights.map((insight) => ({
       id: insight.id,
@@ -102,7 +94,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       createdAt: insight.createdAt.toISOString(),
       acknowledgedAt: insight.acknowledgedAt?.toISOString() ?? null,
       applied: insight.applied,
-      supportingPatterns: insight.patterns.map((p) => p.patternId),
+      supportingPatterns: insight.insightPatterns.map((p) => p.patternId),
     })),
     learningProfile: learningProfile
       ? {
@@ -123,7 +115,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       hasLearningProfile: !!learningProfile,
       exportFormat: 'behavioral-patterns-v1.0',
     },
-  };
+  }
 
-  return Response.json(exportData);
-});
+  return Response.json(exportData)
+})

@@ -10,6 +10,7 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
+import { withCache, CACHE_TTL } from '@/lib/cache'
 
 // Zod validation schema for query parameters
 const EvolutionQuerySchema = z.object({
@@ -61,7 +62,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     userId,
     OR: [
       {
-        firstSeenAt: {
+        detectedAt: {
           gte: startDate,
           lte: endDate,
         },
@@ -79,69 +80,81 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     whereClause.patternType = patternType
   }
 
-  // Fetch patterns that existed during the time range
-  const patterns = await prisma.behavioralPattern.findMany({
-    where: whereClause,
-    orderBy: [{ patternType: 'asc' }, { firstSeenAt: 'asc' }],
-  })
+  // Use caching with 5-minute TTL
+  const cacheKey = `user:${userId}:patterns:evolution:${weeks}:${patternType || 'all'}`
 
-  // Group patterns by week
-  // For each week, show pattern snapshot with confidence at that time
-  const weeklyData: Array<{
-    weekNumber: number
-    weekStart: string
-    weekEnd: string
-    patterns: Array<{
-      id: string
-      patternType: string
-      confidence: number
-      metadata: any
-      status: 'new' | 'existing' | 'disappeared'
-    }>
-  }> = []
-
-  for (let i = 0; i < weeks; i++) {
-    const weekStart = new Date(startDate.getTime() + i * 7 * 24 * 60 * 60 * 1000)
-    const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000 - 1)
-
-    // Filter patterns active during this week
-    const weekPatterns = patterns
-      .filter((p) => {
-        const firstSeen = new Date(p.firstSeenAt)
-        const lastSeen = new Date(p.lastSeenAt)
-        return firstSeen <= weekEnd && lastSeen >= weekStart
-      })
-      .map((p) => {
-        const firstSeen = new Date(p.firstSeenAt)
-        const lastSeen = new Date(p.lastSeenAt)
-
-        // Determine status for this week
-        let status: 'new' | 'existing' | 'disappeared' = 'existing'
-        if (firstSeen >= weekStart && firstSeen <= weekEnd) {
-          status = 'new'
-        } else if (lastSeen >= weekStart && lastSeen <= weekEnd && lastSeen < endDate) {
-          status = 'disappeared'
-        }
-
-        return {
-          id: p.id,
-          patternType: p.patternType,
-          confidence: p.confidence,
-          metadata: p.metadata,
-          status,
-        }
-      })
-
-    weeklyData.push({
-      weekNumber: i + 1,
-      weekStart: weekStart.toISOString(),
-      weekEnd: weekEnd.toISOString(),
-      patterns: weekPatterns,
+  const result = await withCache(cacheKey, CACHE_TTL.MEDIUM, async () => {
+    // OPTIMIZED: Fetch patterns once with all needed data
+    const patterns = await prisma.behavioralPattern.findMany({
+      where: whereClause,
+      select: {
+        id: true,
+        patternType: true,
+        confidence: true,
+        evidence: true,
+        detectedAt: true,
+        lastSeenAt: true,
+      },
+      orderBy: [{ patternType: 'asc' }, { detectedAt: 'asc' }],
     })
-  }
 
-  return Response.json(
-    successResponse({
+    // OPTIMIZED: Pre-process patterns with date objects
+    const processedPatterns = patterns.map((p) => ({
+      ...p,
+      detectedAtTime: new Date(p.detectedAt).getTime(),
+      lastSeenAtTime: new Date(p.lastSeenAt).getTime(),
+    }))
+
+    // OPTIMIZED: Generate week boundaries once
+    const weekBoundaries = Array.from({ length: weeks }, (_, i) => {
+      const weekStartTime = startDate.getTime() + i * 7 * 24 * 60 * 60 * 1000
+      const weekEndTime = weekStartTime + 7 * 24 * 60 * 60 * 1000 - 1
+      return {
+        weekNumber: i + 1,
+        weekStart: new Date(weekStartTime).toISOString(),
+        weekEnd: new Date(weekEndTime).toISOString(),
+        weekStartTime,
+        weekEndTime,
+      }
+    })
+
+    const endDateTime = endDate.getTime()
+
+    // OPTIMIZED: Single pass over patterns for all weeks
+    const weeklyData = weekBoundaries.map((week) => {
+      const weekPatterns = processedPatterns
+        .filter((p) => p.detectedAtTime <= week.weekEndTime && p.lastSeenAtTime >= week.weekStartTime)
+        .map((p) => {
+          // Determine status efficiently
+          let status: 'new' | 'existing' | 'disappeared' = 'existing'
+          if (p.detectedAtTime >= week.weekStartTime && p.detectedAtTime <= week.weekEndTime) {
+            status = 'new'
+          } else if (
+            p.lastSeenAtTime >= week.weekStartTime &&
+            p.lastSeenAtTime <= week.weekEndTime &&
+            p.lastSeenAtTime < endDateTime
+          ) {
+            status = 'disappeared'
+          }
+
+          return {
+            id: p.id,
+            patternType: p.patternType,
+            confidence: p.confidence,
+            metadata: p.evidence,
+            status,
+          }
+        })
+
+      return {
+        weekNumber: week.weekNumber,
+        weekStart: week.weekStart,
+        weekEnd: week.weekEnd,
+        patterns: weekPatterns,
+      }
+    })
+
+    return {
       evolution: weeklyData,
       meta: {
         totalWeeks: weeks,
@@ -150,6 +163,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
         totalPatterns: patterns.length,
         patternTypeFilter: patternType || 'all',
       },
-    })
-  )
+    }
+  })
+
+  return Response.json(successResponse(result))
 })

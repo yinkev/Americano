@@ -16,6 +16,11 @@ export interface MissionObjective {
   completed: boolean
   completedAt?: Date | string
   notes?: string
+  // Story 5.2: Prediction integration
+  predictionId?: string
+  struggleProbability?: number
+  // Story 5.2: Intervention tracking
+  interventionNote?: string
 }
 
 /**

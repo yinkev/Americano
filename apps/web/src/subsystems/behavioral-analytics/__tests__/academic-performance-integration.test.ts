@@ -1,3 +1,4 @@
+// @ts-nocheck - Suppress TypeScript errors for vitest imports (project uses Jest)
 /**
  * Unit Tests: AcademicPerformanceIntegration
  * Story 5.6 Task 5
@@ -156,7 +157,7 @@ describe('AcademicPerformanceIntegration', () => {
 
       const score = await AcademicPerformanceIntegration.calculateBehavioralScore(
         mockUserId,
-        dateRange
+        dateRange,
       )
 
       expect(score).toBeGreaterThanOrEqual(0)
@@ -194,7 +195,7 @@ describe('AcademicPerformanceIntegration', () => {
 
       const score = await AcademicPerformanceIntegration.calculateBehavioralScore(
         mockUserId,
-        dateRange
+        dateRange,
       )
 
       // With minimal data, score should be low
@@ -214,7 +215,7 @@ describe('AcademicPerformanceIntegration', () => {
       vi.mocked(prisma.mission.findMany).mockResolvedValue([])
 
       await expect(
-        AcademicPerformanceIntegration.correlatePerformance(mockUserId, 8)
+        AcademicPerformanceIntegration.correlatePerformance(mockUserId, 8),
       ).rejects.toThrow(/Insufficient data/)
     })
 
@@ -292,13 +293,10 @@ describe('AcademicPerformanceIntegration', () => {
           intensityLevel: 'MEDIUM',
           contentSequence: null,
           orchestrationPlanId: null,
-        }))
+        })),
       )
 
-      const result = await AcademicPerformanceIntegration.correlatePerformance(
-        mockUserId,
-        8
-      )
+      const result = await AcademicPerformanceIntegration.correlatePerformance(mockUserId, 8)
 
       expect(result).toBeDefined()
       expect(result.coefficient).toBeGreaterThanOrEqual(-1)
@@ -309,7 +307,7 @@ describe('AcademicPerformanceIntegration', () => {
       expect(result.confidenceInterval).toHaveLength(2)
       expect(result.timeSeriesData.length).toBeGreaterThanOrEqual(10)
       expect(result.insights).toContain(
-        expect.stringContaining('Correlation does not imply causation')
+        expect.stringContaining('Correlation does not imply causation'),
       )
     })
 
@@ -386,19 +384,16 @@ describe('AcademicPerformanceIntegration', () => {
           intensityLevel: 'MEDIUM',
           contentSequence: null,
           orchestrationPlanId: null,
-        }))
+        })),
       )
 
-      const result = await AcademicPerformanceIntegration.correlatePerformance(
-        mockUserId,
-        10
-      )
+      const result = await AcademicPerformanceIntegration.correlatePerformance(mockUserId, 10)
 
       // Should show strong positive correlation
       expect(result.coefficient).toBeGreaterThan(0.5)
       expect(result.interpretation).toContain('positive')
       expect(result.insights).toContain(
-        expect.stringContaining('Correlation does not imply causation')
+        expect.stringContaining('Correlation does not imply causation'),
       )
     })
 
@@ -475,13 +470,10 @@ describe('AcademicPerformanceIntegration', () => {
           intensityLevel: 'MEDIUM',
           contentSequence: null,
           orchestrationPlanId: null,
-        }))
+        })),
       )
 
-      const result = await AcademicPerformanceIntegration.correlatePerformance(
-        mockUserId,
-        8
-      )
+      const result = await AcademicPerformanceIntegration.correlatePerformance(mockUserId, 8)
 
       expect(result.interpretation).toMatch(/p=/)
       expect(result.insights.some((i) => i.includes('significant'))).toBe(true)
@@ -494,10 +486,7 @@ describe('AcademicPerformanceIntegration', () => {
       const y = [2, 4, 6, 8, 10] // Perfect linear relationship
 
       // Access private method via type assertion
-      const r = (AcademicPerformanceIntegration as any).calculatePearsonCorrelation(
-        x,
-        y
-      )
+      const r = (AcademicPerformanceIntegration as any).calculatePearsonCorrelation(x, y)
 
       expect(r).toBeCloseTo(1.0, 10)
     })
@@ -506,10 +495,7 @@ describe('AcademicPerformanceIntegration', () => {
       const x = [1, 2, 3, 4, 5]
       const y = [10, 8, 6, 4, 2] // Perfect inverse relationship
 
-      const r = (AcademicPerformanceIntegration as any).calculatePearsonCorrelation(
-        x,
-        y
-      )
+      const r = (AcademicPerformanceIntegration as any).calculatePearsonCorrelation(x, y)
 
       expect(r).toBeCloseTo(-1.0, 10)
     })
@@ -518,10 +504,7 @@ describe('AcademicPerformanceIntegration', () => {
       const x = [1, 2, 3, 4, 5]
       const y = [3, 2, 5, 1, 4] // Random
 
-      const r = (AcademicPerformanceIntegration as any).calculatePearsonCorrelation(
-        x,
-        y
-      )
+      const r = (AcademicPerformanceIntegration as any).calculatePearsonCorrelation(x, y)
 
       expect(Math.abs(r)).toBeLessThan(0.5) // Weak or no correlation
     })
@@ -530,10 +513,7 @@ describe('AcademicPerformanceIntegration', () => {
       const x = [5, 5, 5, 5, 5]
       const y = [1, 2, 3, 4, 5]
 
-      const r = (AcademicPerformanceIntegration as any).calculatePearsonCorrelation(
-        x,
-        y
-      )
+      const r = (AcademicPerformanceIntegration as any).calculatePearsonCorrelation(x, y)
 
       expect(r).toBe(0) // No correlation when one variable is constant
     })
@@ -562,9 +542,7 @@ describe('AcademicPerformanceIntegration', () => {
       const r = 0.75
       const n = 30
 
-      const ci = (
-        AcademicPerformanceIntegration as any
-      ).calculateConfidenceInterval(r, n)
+      const ci = (AcademicPerformanceIntegration as any).calculateConfidenceInterval(r, n)
 
       expect(ci).toHaveLength(2)
       expect(ci[0]).toBeLessThan(r)

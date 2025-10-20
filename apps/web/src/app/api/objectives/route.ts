@@ -1,7 +1,7 @@
-import { NextRequest } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response';
+import { NextRequest } from 'next/server'
+import { z } from 'zod'
+import { prisma } from '@/lib/db'
+import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
 
 // Zod validation schema for query parameters
 const GetObjectivesQuerySchema = z.object({
@@ -11,7 +11,7 @@ const GetObjectivesQuerySchema = z.object({
     .string()
     .transform((val) => val === 'true')
     .optional(),
-});
+})
 
 /**
  * GET /api/objectives
@@ -36,28 +36,28 @@ const GetObjectivesQuerySchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     // Parse and validate query parameters
-    const searchParams = request.nextUrl.searchParams;
+    const searchParams = request.nextUrl.searchParams
     const queryData = {
       lectureId: searchParams.get('lectureId') || undefined,
       complexity: searchParams.get('complexity') || undefined,
       isHighYield: searchParams.get('isHighYield') || undefined,
-    };
+    }
 
-    const validatedQuery = GetObjectivesQuerySchema.parse(queryData);
+    const validatedQuery = GetObjectivesQuerySchema.parse(queryData)
 
     // Build where clause for Prisma query
-    const whereClause: any = {};
+    const whereClause: any = {}
 
     if (validatedQuery.lectureId) {
-      whereClause.lectureId = validatedQuery.lectureId;
+      whereClause.lectureId = validatedQuery.lectureId
     }
 
     if (validatedQuery.complexity) {
-      whereClause.complexity = validatedQuery.complexity;
+      whereClause.complexity = validatedQuery.complexity
     }
 
     if (validatedQuery.isHighYield !== undefined) {
-      whereClause.isHighYield = validatedQuery.isHighYield;
+      whereClause.isHighYield = validatedQuery.isHighYield
     }
 
     // Fetch objectives with lecture information
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
         { pageStart: 'asc' },
         { createdAt: 'asc' },
       ],
-    });
+    })
 
     // Calculate stats
     const stats = {
@@ -104,27 +104,27 @@ export async function GET(request: NextRequest) {
         intermediate: objectives.filter((obj) => obj.complexity === 'INTERMEDIATE').length,
         advanced: objectives.filter((obj) => obj.complexity === 'ADVANCED').length,
       },
-    };
+    }
 
     return Response.json(
       successResponse({
         objectives,
         stats,
-      })
-    );
+      }),
+    )
   } catch (error) {
-    console.error('Objectives fetch error:', error);
+    console.error('Objectives fetch error:', error)
 
     if (error instanceof z.ZodError) {
       return Response.json(
         errorResponse(ErrorCodes.VALIDATION_ERROR, 'Invalid query parameters', error.issues),
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
     return Response.json(
       errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to fetch learning objectives'),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

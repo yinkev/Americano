@@ -44,7 +44,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   })
 
   if (!user) {
-    return Response.json(errorResponse('USER_NOT_FOUND', `User ${userEmail} not found`), { status: 404 })
+    return Response.json(errorResponse('USER_NOT_FOUND', `User ${userEmail} not found`), {
+      status: 404,
+    })
   }
 
   // Calculate date range based on period or explicit dates
@@ -80,17 +82,19 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   // Group by granularity and calculate metric
   const dataPoints = groupAndCalculate(missions, params.metric, params.granularity)
 
-  return Response.json(successResponse({
-    data: dataPoints,
-    metadata: {
-      metric: params.metric,
-      granularity: params.granularity,
-      period: {
-        start: format(startDate, 'yyyy-MM-dd'),
-        end: format(endDate, 'yyyy-MM-dd'),
+  return Response.json(
+    successResponse({
+      data: dataPoints,
+      metadata: {
+        metric: params.metric,
+        granularity: params.granularity,
+        period: {
+          start: format(startDate, 'yyyy-MM-dd'),
+          end: format(endDate, 'yyyy-MM-dd'),
+        },
       },
-    },
-  }))
+    }),
+  )
 })
 
 /**
@@ -99,7 +103,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 function groupAndCalculate(
   missions: any[],
   metric: string,
-  granularity: string
+  granularity: string,
 ): Array<{ date: string; value: number }> {
   const grouped: Record<string, any[]> = {}
 
@@ -131,23 +135,14 @@ function groupAndCalculate(
         break
 
       case 'avg_duration':
-        const durations = groupMissions
-          .filter((m) => m.actualMinutes)
-          .map((m) => m.actualMinutes!)
+        const durations = groupMissions.filter((m) => m.actualMinutes).map((m) => m.actualMinutes!)
         value =
-          durations.length > 0
-            ? durations.reduce((sum, d) => sum + d, 0) / durations.length
-            : 0
+          durations.length > 0 ? durations.reduce((sum, d) => sum + d, 0) / durations.length : 0
         break
 
       case 'success_score':
-        const scores = groupMissions
-          .filter((m) => m.successScore)
-          .map((m) => m.successScore!)
-        value =
-          scores.length > 0
-            ? scores.reduce((sum, s) => sum + s, 0) / scores.length
-            : 0
+        const scores = groupMissions.filter((m) => m.successScore).map((m) => m.successScore!)
+        value = scores.length > 0 ? scores.reduce((sum, s) => sum + s, 0) / scores.length : 0
         break
     }
 

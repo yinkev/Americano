@@ -74,12 +74,12 @@ export class ContentSequencer {
       where: { userId },
     })
 
-    const learningStyle = (userProfile?.learningStyleProfile || {
+    const learningStyle = (userProfile?.learningStyleProfile as unknown as VARKProfile) || {
       visual: 0.25,
       auditory: 0.25,
       kinesthetic: 0.25,
       reading: 0.25,
-    }) as VARKProfile
+    }
 
     // Get mission content
     const mission = await prisma.mission.findUnique({

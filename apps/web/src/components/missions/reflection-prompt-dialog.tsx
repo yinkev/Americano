@@ -85,7 +85,8 @@ export function ReflectionPromptDialog({
                   Reflection Time!
                 </DialogTitle>
                 <DialogDescription className="text-[oklch(0.556_0_0)] mt-1">
-                  You've completed {milestone} missions. Take a moment to reflect on your learning journey.
+                  You've completed {milestone} missions. Take a moment to reflect on your learning
+                  journey.
                 </DialogDescription>
               </div>
             </div>
@@ -96,9 +97,9 @@ export function ReflectionPromptDialog({
           {/* Celebration Message */}
           <div className="rounded-xl bg-[oklch(0.75_0.15_160)]/10 border border-[oklch(0.75_0.15_160)]/20 p-4">
             <p className="text-sm text-[oklch(0.145_0_0)]">
-              <span className="font-semibold">Congratulations!</span> You've shown great
-              consistency by completing {milestone} missions. Research shows that reflection
-              enhances learning retention by 20-30%. Take 2-3 minutes to capture your thoughts.
+              <span className="font-semibold">Congratulations!</span> You've shown great consistency
+              by completing {milestone} missions. Research shows that reflection enhances learning
+              retention by 20-30%. Take 2-3 minutes to capture your thoughts.
             </p>
           </div>
 
@@ -200,9 +201,9 @@ export function ReflectionPromptDialog({
           {/* Benefits Note */}
           <div className="rounded-lg bg-[oklch(0.97_0_0)] p-3">
             <p className="text-xs text-[oklch(0.556_0_0)]">
-              <span className="font-semibold">Why reflect?</span> Your reflections help
-              Americano personalize future missions and identify areas where you need more
-              support. They also serve as a personal learning journal you can review anytime.
+              <span className="font-semibold">Why reflect?</span> Your reflections help Americano
+              personalize future missions and identify areas where you need more support. They also
+              serve as a personal learning journal you can review anytime.
             </p>
           </div>
 

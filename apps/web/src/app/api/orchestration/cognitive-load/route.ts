@@ -18,20 +18,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'userId is required' }, { status: 400 })
     }
 
-    const modulator = new StudyIntensityModulator()
-
     // Calculate cognitive load
-    const load = await modulator.assessCognitiveLoad(userId)
-    const level = modulator.calculateIntensityLevel(load)
+    const load = await StudyIntensityModulator.assessCognitiveLoad(userId)
+    const level = StudyIntensityModulator.calculateIntensityLevel(load)
 
     // Generate recommendation based on level
     let recommendation = ''
     if (level === 'LOW') {
-      recommendation = 'Your cognitive capacity is high. This is a good time for challenging content.'
+      recommendation =
+        'Your cognitive capacity is high. This is a good time for challenging content.'
     } else if (level === 'MEDIUM') {
       recommendation = 'Your cognitive load is optimal. Maintain current study pace.'
     } else {
-      recommendation = 'Your cognitive load is high. Consider taking a break or reducing study intensity.'
+      recommendation =
+        'Your cognitive load is high. Consider taking a break or reducing study intensity.'
     }
 
     const response: any = {
@@ -62,9 +62,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response)
   } catch (error) {
     console.error('Cognitive load assessment error:', error)
-    return NextResponse.json(
-      { error: 'Failed to assess cognitive load' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to assess cognitive load' }, { status: 500 })
   }
 }

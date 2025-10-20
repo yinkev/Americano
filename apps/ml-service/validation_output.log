@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/kyin/Projects/Americano-epic5/apps/ml-service/scripts/validate_model.py", line 49, in <module>
+    from scipy.stats import binom_test
+ImportError: cannot import name 'binom_test' from 'scipy.stats' (/Users/kyin/.pyenv/versions/3.13.1/lib/python3.13/site-packages/scipy/stats/__init__.py)

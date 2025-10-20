@@ -1,0 +1,22 @@
+
+> @americano/web@0.1.0 typecheck /Users/kyin/Projects/Americano-epic5/apps/web
+> tsc -p tsconfig.json --noEmit
+
+src/subsystems/behavioral-analytics/struggle-detection-engine.ts(320,29): error TS2339: Property 'features' does not exist on type 'FeatureVector'.
+src/subsystems/behavioral-analytics/struggle-feature-extractor.ts(421,57): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(callbackfn: (previousValue: 0.5 | 1 | 0 | 0.25 | 0.75, currentValue: 0.5 | 1 | 0 | 0.25 | 0.75, currentIndex: number, array: (0.5 | 1 | 0 | 0.25 | 0.75)[]) => 0.5 | 1 | 0 | 0.25 | 0.75, initialValue: 0.5 | ... 3 more ... | 0.75): 0.5 | ... 3 more ... | 0.75', gave the following error.
+    Type 'number' is not assignable to type '0.5 | 1 | 0 | 0.25 | 0.75'.
+  Overload 2 of 3, '(callbackfn: (previousValue: 0.5 | 1 | 0 | 0.25 | 0.75, currentValue: 0.5 | 1 | 0 | 0.25 | 0.75, currentIndex: number, array: (0.5 | 1 | 0 | 0.25 | 0.75)[]) => 0.5 | 1 | 0 | 0.25 | 0.75, initialValue: 0.5 | ... 3 more ... | 0.75): 0.5 | ... 3 more ... | 0.75', gave the following error.
+    Type 'number' is not assignable to type '0.5 | 1 | 0 | 0.25 | 0.75'.
+src/subsystems/behavioral-analytics/struggle-feature-extractor.ts(486,59): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(callbackfn: (previousValue: 0.5 | 1 | 0 | 0.25 | 0.75, currentValue: 0.5 | 1 | 0 | 0.25 | 0.75, currentIndex: number, array: (0.5 | 1 | 0 | 0.25 | 0.75)[]) => 0.5 | 1 | 0 | 0.25 | 0.75, initialValue: 0.5 | ... 3 more ... | 0.75): 0.5 | ... 3 more ... | 0.75', gave the following error.
+    Type 'number' is not assignable to type '0.5 | 1 | 0 | 0.25 | 0.75'.
+  Overload 2 of 3, '(callbackfn: (previousValue: 0.5 | 1 | 0 | 0.25 | 0.75, currentValue: 0.5 | 1 | 0 | 0.25 | 0.75, currentIndex: number, array: (0.5 | 1 | 0 | 0.25 | 0.75)[]) => 0.5 | 1 | 0 | 0.25 | 0.75, initialValue: 0.5 | ... 3 more ... | 0.75): 0.5 | ... 3 more ... | 0.75', gave the following error.
+    Type 'number' is not assignable to type '0.5 | 1 | 0 | 0.25 | 0.75'.
+src/subsystems/behavioral-analytics/struggle-reduction-analyzer.ts(700,11): error TS2322: Type 'null' is not assignable to type 'string | NestedStringFilter<"StrugglePrediction"> | undefined'.
+src/subsystems/behavioral-analytics/struggle-reduction-analyzer.ts(727,23): error TS2551: Property 'learningObjective' does not exist on type '{ id: string; userId: string; acknowledgedAt: Date | null; learningObjectiveId: string; interventionApplied: boolean; interventionId: string | null; topicId: string | null; predictedStruggleProbability: number; ... 7 more ...; actualOutcomeRecordedAt: Date | null; }'. Did you mean 'learningObjectiveId'?
+src/subsystems/behavioral-analytics/struggle-reduction-analyzer.ts(729,34): error TS2551: Property 'learningObjective' does not exist on type '{ id: string; userId: string; acknowledgedAt: Date | null; learningObjectiveId: string; interventionApplied: boolean; interventionId: string | null; topicId: string | null; predictedStruggleProbability: number; ... 7 more ...; actualOutcomeRecordedAt: Date | null; }'. Did you mean 'learningObjectiveId'?
+src/subsystems/behavioral-analytics/struggle-reduction-analyzer.ts(733,45): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/subsystems/behavioral-analytics/struggle-reduction-analyzer.ts(733,48): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/subsystems/behavioral-analytics/study-time-recommender.ts(280,9): error TS2353: Object literal may only specify known properties, and 'reason' does not exist in type '(Without<ScheduleAdaptationCreateInput, ScheduleAdaptationUncheckedCreateInput> & ScheduleAdaptationUncheckedCreateInput) | (Without<...> & ScheduleAdaptationCreateInput)'.
+ ELIFECYCLE  Command failed with exit code 1.

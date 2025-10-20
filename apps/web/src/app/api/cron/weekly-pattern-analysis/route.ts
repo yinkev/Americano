@@ -54,14 +54,8 @@ export async function GET(request: NextRequest) {
     // Optional authorization check for cron jobs
     // Vercel Cron sends a special header that can be validated
     const authHeader = request.headers.get('authorization')
-    if (
-      process.env.CRON_SECRET &&
-      authHeader !== `Bearer ${process.env.CRON_SECRET}`
-    ) {
-      return NextResponse.json(
-        { error: 'Unauthorized - Invalid cron secret' },
-        { status: 401 }
-      )
+    if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return NextResponse.json({ error: 'Unauthorized - Invalid cron secret' }, { status: 401 })
     }
 
     console.log('[Cron] Starting weekly pattern analysis job...')
@@ -116,7 +110,9 @@ export async function GET(request: NextRequest) {
 
         // Check if analysis is due (null or > 7 days old)
         if (lastAnalyzedAt && lastAnalyzedAt > sevenDaysAgo) {
-          console.log(`[Cron] Skipping user ${user.id} - analyzed recently (${lastAnalyzedAt.toISOString()})`)
+          console.log(
+            `[Cron] Skipping user ${user.id} - analyzed recently (${lastAnalyzedAt.toISOString()})`,
+          )
           results.skipped++
           continue
         }
@@ -150,13 +146,13 @@ export async function GET(request: NextRequest) {
         ])
 
         console.log(
-          `[Cron] User ${user.id} data: ${studySessionCount} sessions, ${reviewCount} reviews`
+          `[Cron] User ${user.id} data: ${studySessionCount} sessions, ${reviewCount} reviews`,
         )
 
         // Check if user has sufficient data
         if (studySessionCount < MIN_SESSIONS || reviewCount < MIN_REVIEWS) {
           console.log(
-            `[Cron] Skipping user ${user.id} - insufficient data (need ${MIN_SESSIONS} sessions and ${MIN_REVIEWS} reviews)`
+            `[Cron] Skipping user ${user.id} - insufficient data (need ${MIN_SESSIONS} sessions and ${MIN_REVIEWS} reviews)`,
           )
           results.insufficientData++
 
@@ -164,7 +160,7 @@ export async function GET(request: NextRequest) {
           // Email: "Complete {weeksNeeded} more weeks of study sessions to unlock personalized learning patterns"
           // In-app: Progress bar notification
           console.log(
-            `[TODO] Send insufficient data notification to user ${user.id}: Need ${Math.max(0, MIN_SESSIONS - studySessionCount)} more sessions, ${Math.max(0, MIN_REVIEWS - reviewCount)} more reviews`
+            `[TODO] Send insufficient data notification to user ${user.id}: Need ${Math.max(0, MIN_SESSIONS - studySessionCount)} more sessions, ${Math.max(0, MIN_REVIEWS - reviewCount)} more reviews`,
           )
 
           continue
@@ -185,11 +181,11 @@ export async function GET(request: NextRequest) {
 
         // Count new insights (not yet acknowledged)
         const newInsightsCount = analysisResults.insights.filter(
-          (insight) => !insight.acknowledgedAt
+          (insight) => !insight.acknowledgedAt,
         ).length
 
         console.log(
-          `[Cron] Analysis complete for user ${user.id}: ${analysisResults.patterns.length} patterns, ${newInsightsCount} new insights`
+          `[Cron] Analysis complete for user ${user.id}: ${analysisResults.patterns.length} patterns, ${newInsightsCount} new insights`,
         )
 
         // Send notifications if new insights were generated
@@ -198,14 +194,14 @@ export async function GET(request: NextRequest) {
           // Subject: "We've discovered {count} new insights about your learning patterns"
           // Body: Summarize top 3 insights, link to /analytics/learning-patterns
           console.log(
-            `[TODO] Send email to ${user.email}: "We've discovered ${newInsightsCount} new insights about your learning patterns"`
+            `[TODO] Send email to ${user.email}: "We've discovered ${newInsightsCount} new insights about your learning patterns"`,
           )
 
           // TODO: Create in-app notification
           // Badge count on analytics nav item
           // Toast notification on next login
           console.log(
-            `[TODO] Create in-app notification for user ${user.id}: ${newInsightsCount} new insights available`
+            `[TODO] Create in-app notification for user ${user.id}: ${newInsightsCount} new insights available`,
           )
 
           results.notifications++
@@ -226,7 +222,7 @@ export async function GET(request: NextRequest) {
         timestamp: now.toISOString(),
         results,
       },
-      { status: 200 }
+      { status: 200 },
     )
   } catch (error) {
     console.error('[Cron] Error in weekly pattern analysis job:', error)
@@ -237,7 +233,7 @@ export async function GET(request: NextRequest) {
         error: 'Internal server error during pattern analysis',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

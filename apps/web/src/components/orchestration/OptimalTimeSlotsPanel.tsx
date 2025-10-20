@@ -6,43 +6,38 @@
  * availability status, and reasoning tooltips
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Calendar, Clock, Star, AlertCircle, Info, CheckCircle } from 'lucide-react';
-import { format } from 'date-fns';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { useState, useEffect } from 'react'
+import { Calendar, Clock, Star, AlertCircle, Info, CheckCircle } from 'lucide-react'
+import { format } from 'date-fns'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface TimeSlot {
-  startTime: string;
-  endTime: string;
-  duration: number;
-  score: number;
-  confidence: number;
-  reasoning: string[];
-  calendarConflict: boolean;
-  conflictingEvents?: Array<{ summary: string; start: string; end: string }>;
+  startTime: string
+  endTime: string
+  duration: number
+  score: number
+  confidence: number
+  reasoning: string[]
+  calendarConflict: boolean
+  conflictingEvents?: Array<{ summary: string; start: string; end: string }>
 }
 
 interface Props {
-  userId: string;
-  onSelectSlot: (slot: TimeSlot) => void;
+  userId: string
+  onSelectSlot: (slot: TimeSlot) => void
 }
 
 export function OptimalTimeSlotsPanel({ userId, onSelectSlot }: Props) {
-  const [slots, setSlots] = useState<TimeSlot[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [slots, setSlots] = useState<TimeSlot[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchRecommendations() {
@@ -51,21 +46,21 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot }: Props) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId }),
-        });
+        })
 
-        if (!res.ok) throw new Error('Failed to fetch recommendations');
+        if (!res.ok) throw new Error('Failed to fetch recommendations')
 
-        const data = await res.json();
-        setSlots(data.recommendations || []);
+        const data = await res.json()
+        setSlots(data.recommendations || [])
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetchRecommendations();
-  }, [userId]);
+    fetchRecommendations()
+  }, [userId])
 
   if (loading) {
     return (
@@ -79,7 +74,7 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot }: Props) {
           ))}
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (error || slots.length === 0) {
@@ -92,12 +87,13 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot }: Props) {
           <Alert className="bg-white/80 backdrop-blur-md">
             <AlertCircle className="size-4" />
             <AlertDescription>
-              {error || 'No recommendations available. Complete more study sessions to unlock personalized timing.'}
+              {error ||
+                'No recommendations available. Complete more study sessions to unlock personalized timing.'}
             </AlertDescription>
           </Alert>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -120,8 +116,8 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot }: Props) {
                 }}
               >
                 <p className="text-sm">
-                  Recommendations based on your historical performance patterns and calendar availability.
-                  Higher confidence indicates more reliable predictions.
+                  Recommendations based on your historical performance patterns and calendar
+                  availability. Higher confidence indicates more reliable predictions.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -140,53 +136,51 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot }: Props) {
         ))}
       </CardContent>
     </Card>
-  );
+  )
 }
 
 /**
  * Individual Time Slot Card
  */
 interface TimeSlotCardProps {
-  slot: TimeSlot;
-  rank: number;
-  onSelect: () => void;
+  slot: TimeSlot
+  rank: number
+  onSelect: () => void
 }
 
 function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(false)
 
-  const startTime = new Date(slot.startTime);
-  const endTime = new Date(slot.endTime);
-  const confidenceStars = Math.round(slot.confidence * 5);
+  const startTime = new Date(slot.startTime)
+  const endTime = new Date(slot.endTime)
+  const confidenceStars = Math.round(slot.confidence * 5)
 
   // Determine availability color
   const getAvailabilityColor = () => {
     if (slot.calendarConflict) {
-      return 'oklch(0.6 0.15 25)'; // Red - Busy
+      return 'oklch(0.6 0.15 25)' // Red - Busy
     }
     if (slot.score > 80) {
-      return 'oklch(0.7 0.12 145)'; // Green - Available + Optimal
+      return 'oklch(0.7 0.12 145)' // Green - Available + Optimal
     }
-    return 'oklch(0.8 0.15 85)'; // Yellow - Available but suboptimal
-  };
+    return 'oklch(0.8 0.15 85)' // Yellow - Available but suboptimal
+  }
 
   const getAvailabilityLabel = () => {
-    if (slot.calendarConflict) return 'Busy';
-    if (slot.score > 80) return 'Optimal';
-    return 'Available';
-  };
+    if (slot.calendarConflict) return 'Busy'
+    if (slot.score > 80) return 'Optimal'
+    return 'Available'
+  }
 
-  const availabilityColor = getAvailabilityColor();
-  const availabilityLabel = getAvailabilityLabel();
+  const availabilityColor = getAvailabilityColor()
+  const availabilityLabel = getAvailabilityLabel()
 
   return (
     <div
       className="p-4 rounded-lg border transition-all hover:shadow-md"
       style={{
         backgroundColor: 'oklch(0.98 0.01 230)',
-        borderColor: slot.calendarConflict
-          ? availabilityColor
-          : 'oklch(0.9 0.02 230)',
+        borderColor: slot.calendarConflict ? availabilityColor : 'oklch(0.9 0.02 230)',
         borderWidth: slot.calendarConflict ? '2px' : '1px',
       }}
     >
@@ -285,7 +279,8 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
               >
                 <span className="font-medium">{event.summary}</span>
                 <span className="text-muted-foreground ml-2">
-                  {format(new Date(event.start), 'h:mm a')} - {format(new Date(event.end), 'h:mm a')}
+                  {format(new Date(event.start), 'h:mm a')} -{' '}
+                  {format(new Date(event.end), 'h:mm a')}
                 </span>
               </div>
             ))}
@@ -326,5 +321,5 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
         )}
       </div>
     </div>
-  );
+  )
 }

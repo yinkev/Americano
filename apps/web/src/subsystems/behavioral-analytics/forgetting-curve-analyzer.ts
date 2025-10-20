@@ -87,9 +87,7 @@ export class ForgettingCurveAnalyzer {
    * @param userId - User ID to analyze
    * @returns Personalized forgetting curve model
    */
-  static async calculatePersonalizedForgettingCurve(
-    userId: string
-  ): Promise<ForgettingCurveModel> {
+  static async calculatePersonalizedForgettingCurve(userId: string): Promise<ForgettingCurveModel> {
     // Step 1: Query reviews with sufficient review counts
     const reviews = await prisma.review.findMany({
       where: {
@@ -125,9 +123,11 @@ export class ForgettingCurveAnalyzer {
 
     // Step 2: Check minimum requirements
     const totalReviews = reviews.length
-    const dateRange = reviews.length > 0
-      ? (reviews[reviews.length - 1].reviewedAt.getTime() - reviews[0].reviewedAt.getTime()) / (1000 * 60 * 60 * 24)
-      : 0
+    const dateRange =
+      reviews.length > 0
+        ? (reviews[reviews.length - 1].reviewedAt.getTime() - reviews[0].reviewedAt.getTime()) /
+          (1000 * 60 * 60 * 24)
+        : 0
 
     if (totalReviews < MIN_REVIEWS || dateRange < MIN_DAYS) {
       // Insufficient data - return default Ebbinghaus curve
@@ -148,20 +148,14 @@ export class ForgettingCurveAnalyzer {
         const currentReview = cardReviews[i]
 
         for (const interval of SAMPLE_INTERVALS) {
-          const nextReview = this.getNextReviewAfterInterval(
-            cardReviews,
-            i,
-            interval
-          )
+          const nextReview = this.getNextReviewAfterInterval(cardReviews, i, interval)
 
           if (nextReview) {
             const daysSinceReview =
               (nextReview.reviewedAt.getTime() - currentReview.reviewedAt.getTime()) /
               (1000 * 60 * 60 * 24)
 
-            const retentionScore = PerformanceCalculator.calculateRetentionScore([
-              nextReview,
-            ])
+            const retentionScore = PerformanceCalculator.calculateRetentionScore([nextReview])
 
             dataPoints.push({
               days: daysSinceReview,
@@ -210,9 +204,7 @@ export class ForgettingCurveAnalyzer {
    * @param userId - User ID to analyze
    * @returns Array of retention data points at standard intervals
    */
-  static async analyzeRetentionByTimeInterval(
-    userId: string
-  ): Promise<RetentionCurveData[]> {
+  static async analyzeRetentionByTimeInterval(userId: string): Promise<RetentionCurveData[]> {
     const reviews = await prisma.review.findMany({
       where: {
         userId,
@@ -257,9 +249,7 @@ export class ForgettingCurveAnalyzer {
           const nextReview = this.getNextReviewAfterInterval(cardReviews, i, interval)
 
           if (nextReview) {
-            const retentionScore = PerformanceCalculator.calculateRetentionScore([
-              nextReview,
-            ])
+            const retentionScore = PerformanceCalculator.calculateRetentionScore([nextReview])
 
             intervalData.get(interval)?.retentions.push(retentionScore)
           }
@@ -273,8 +263,7 @@ export class ForgettingCurveAnalyzer {
     for (const interval of SAMPLE_INTERVALS) {
       const data = intervalData.get(interval)
       if (data && data.retentions.length > 0) {
-        const avgRetention =
-          data.retentions.reduce((sum, r) => sum + r, 0) / data.retentions.length
+        const avgRetention = data.retentions.reduce((sum, r) => sum + r, 0) / data.retentions.length
 
         retentionCurve.push({
           days: interval,
@@ -296,7 +285,7 @@ export class ForgettingCurveAnalyzer {
    */
   static async predictRetentionDecay(
     userId: string,
-    objectiveId: string
+    objectiveId: string,
   ): Promise<RetentionPrediction> {
     // Get personalized forgetting curve
     const curve = await this.calculatePersonalizedForgettingCurve(userId)
@@ -326,8 +315,7 @@ export class ForgettingCurveAnalyzer {
     }
 
     // Calculate days since last review
-    const daysSinceReview =
-      (Date.now() - lastReview.reviewedAt.getTime()) / (1000 * 60 * 60 * 24)
+    const daysSinceReview = (Date.now() - lastReview.reviewedAt.getTime()) / (1000 * 60 * 60 * 24)
 
     // Calculate current retention using personalized curve: R(t) = R₀ × e^(-kt)
     const currentRetention = curve.R0 * Math.exp(-curve.k * daysSinceReview)
@@ -338,18 +326,18 @@ export class ForgettingCurveAnalyzer {
     const targetRetention = 0.5
     const daysUntilForgetting = Math.max(
       0,
-      -Math.log(targetRetention / curve.R0) / curve.k - daysSinceReview
+      -Math.log(targetRetention / curve.R0) / curve.k - daysSinceReview,
     )
 
     // Recommend review when retention is expected to drop to 0.7 (optimal spacing)
     const optimalRetention = 0.7
     const daysUntilOptimalReview = Math.max(
       0,
-      -Math.log(optimalRetention / curve.R0) / curve.k - daysSinceReview
+      -Math.log(optimalRetention / curve.R0) / curve.k - daysSinceReview,
     )
 
     const recommendedReviewDate = new Date(
-      Date.now() + daysUntilOptimalReview * 24 * 60 * 60 * 1000
+      Date.now() + daysUntilOptimalReview * 24 * 60 * 60 * 1000,
     )
 
     return {
@@ -372,7 +360,7 @@ export class ForgettingCurveAnalyzer {
   private static getNextReviewAfterInterval(
     reviews: Review[],
     currentIndex: number,
-    targetInterval: number
+    targetInterval: number,
   ): Review | null {
     const currentReview = reviews[currentIndex]
     const targetTime = currentReview.reviewedAt.getTime() + targetInterval * 24 * 60 * 60 * 1000

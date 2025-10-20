@@ -1,54 +1,54 @@
-"use client"
+'use client'
 
-import { useState, KeyboardEvent } from 'react';
-import { X } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { useState, KeyboardEvent } from 'react'
+import { X } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 interface TagInputProps {
-  value: string[];
-  onChange: (tags: string[]) => void;
-  maxTags?: number;
+  value: string[]
+  onChange: (tags: string[]) => void
+  maxTags?: number
 }
 
 export function TagInput({ value, onChange, maxTags = 10 }: TagInputProps) {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState('')
 
   const addTag = (tag: string) => {
-    const trimmedTag = tag.trim();
+    const trimmedTag = tag.trim()
 
-    if (!trimmedTag) return;
+    if (!trimmedTag) return
 
     if (trimmedTag.length > 30) {
-      return;
+      return
     }
 
     if (value.includes(trimmedTag)) {
-      setInputValue('');
-      return;
+      setInputValue('')
+      return
     }
 
     if (value.length >= maxTags) {
-      return;
+      return
     }
 
-    onChange([...value, trimmedTag]);
-    setInputValue('');
-  };
+    onChange([...value, trimmedTag])
+    setInputValue('')
+  }
 
   const removeTag = (tagToRemove: string) => {
-    onChange(value.filter((tag) => tag !== tagToRemove));
-  };
+    onChange(value.filter((tag) => tag !== tagToRemove))
+  }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      e.preventDefault();
-      addTag(inputValue);
+      e.preventDefault()
+      addTag(inputValue)
     } else if (e.key === 'Backspace' && !inputValue && value.length > 0) {
-      removeTag(value[value.length - 1]);
+      removeTag(value[value.length - 1])
     }
-  };
+  }
 
   return (
     <div className="space-y-2">
@@ -88,8 +88,9 @@ export function TagInput({ value, onChange, maxTags = 10 }: TagInputProps) {
       )}
 
       <p className="text-xs text-muted-foreground">
-        {value.length}/{maxTags} tags • Press Enter or click Add to create a tag • Max 30 characters per tag
+        {value.length}/{maxTags} tags • Press Enter or click Add to create a tag • Max 30 characters
+        per tag
       </p>
     </div>
-  );
+  )
 }

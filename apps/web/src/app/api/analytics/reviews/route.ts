@@ -11,11 +11,7 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { MissionReviewEngine } from '@/lib/mission-review-engine'
 import { ReviewPeriod } from '@/generated/prisma'
-import {
-  successResponse,
-  errorResponse,
-  withErrorHandler,
-} from '@/lib/api-response'
+import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
 
 // Zod validation schemas
 const GetReviewsQuerySchema = z.object({
@@ -77,22 +73,24 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const reviewEngine = new MissionReviewEngine()
   const reviews = await reviewEngine.getUserReviews(
     user.id,
-    validatedParams.period as ReviewPeriod | undefined
+    validatedParams.period as ReviewPeriod | undefined,
   )
 
-  return Response.json(successResponse({
-    reviews: reviews.map((review) => ({
-      id: review.id,
-      period: review.period,
-      startDate: review.startDate.toISOString(),
-      endDate: review.endDate.toISOString(),
-      summary: review.summary,
-      highlights: review.highlights,
-      insights: review.insights,
-      recommendations: review.recommendations,
-      generatedAt: review.generatedAt.toISOString(),
-    })),
-  }))
+  return Response.json(
+    successResponse({
+      reviews: reviews.map((review) => ({
+        id: review.id,
+        period: review.period,
+        startDate: review.startDate.toISOString(),
+        endDate: review.endDate.toISOString(),
+        summary: review.summary,
+        highlights: review.highlights,
+        insights: review.insights,
+        recommendations: review.recommendations,
+        generatedAt: review.generatedAt.toISOString(),
+      })),
+    }),
+  )
 })
 
 /**
@@ -140,9 +138,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   const body = await request.json()
   const validatedBody = GenerateReviewBodySchema.parse(body)
 
-  const startDate = validatedBody.startDate
-    ? new Date(validatedBody.startDate)
-    : undefined
+  const startDate = validatedBody.startDate ? new Date(validatedBody.startDate) : undefined
 
   // Generate review using MissionReviewEngine
   const reviewEngine = new MissionReviewEngine()
@@ -168,6 +164,6 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         generatedAt: review.generatedAt.toISOString(),
       },
     }),
-    { status: 201 }
+    { status: 201 },
   )
 })

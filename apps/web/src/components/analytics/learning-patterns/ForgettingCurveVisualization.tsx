@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import {
   LineChart,
@@ -10,38 +10,38 @@ import {
   ResponsiveContainer,
   ReferenceLine,
   Legend,
-} from 'recharts';
+} from 'recharts'
 
 interface ForgettingCurveProps {
   curve: {
-    R0: number;
-    k: number;
-    halfLife: number;
-  };
+    R0: number
+    k: number
+    halfLife: number
+  }
 }
 
 export function ForgettingCurveVisualization({ curve }: ForgettingCurveProps) {
   // Standard Ebbinghaus curve parameters
-  const standardR0 = 1.0;
-  const standardK = 0.14;
+  const standardR0 = 1.0
+  const standardK = 0.14
 
   // Generate data points for both curves
-  const days = Array.from({ length: 31 }, (_, i) => i); // 0 to 30 days
+  const days = Array.from({ length: 31 }, (_, i) => i) // 0 to 30 days
   const chartData = days.map((day) => ({
     day,
     personalRetention: Math.round(curve.R0 * Math.exp(-curve.k * day) * 100),
     standardRetention: Math.round(standardR0 * Math.exp(-standardK * day) * 100),
-  }));
+  }))
 
   // Calculate deviation percentage
-  const standardHalfLife = Math.log(2) / standardK;
+  const standardHalfLife = Math.log(2) / standardK
   const deviationPercent = Math.round(
-    ((standardHalfLife - curve.halfLife) / standardHalfLife) * 100
-  );
-  const isFaster = curve.k > standardK;
+    ((standardHalfLife - curve.halfLife) / standardHalfLife) * 100,
+  )
+  const isFaster = curve.k > standardK
 
   // Calculate recommended review frequency
-  const recommendedDays = Math.max(1, Math.round(curve.halfLife * 0.6)); // Review before 60% of half-life
+  const recommendedDays = Math.max(1, Math.round(curve.halfLife * 0.6)) // Review before 60% of half-life
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -63,18 +63,15 @@ export function ForgettingCurveVisualization({ curve }: ForgettingCurveProps) {
             Standard: {payload[1].value}%
           </p>
         </div>
-      );
+      )
     }
-    return null;
-  };
+    return null
+  }
 
   return (
     <div className="space-y-4">
       <ResponsiveContainer width="100%" height={320}>
-        <LineChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-        >
+        <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0.02 230)" />
           <XAxis
             dataKey="day"
@@ -153,45 +150,27 @@ export function ForgettingCurveVisualization({ curve }: ForgettingCurveProps) {
 
       {/* Curve Parameters */}
       <div className="grid grid-cols-3 gap-4 text-sm">
-        <div
-          className="p-3 rounded-md"
-          style={{ backgroundColor: 'oklch(0.97 0.01 230)' }}
-        >
+        <div className="p-3 rounded-md" style={{ backgroundColor: 'oklch(0.97 0.01 230)' }}>
           <p style={{ color: 'oklch(0.6 0.03 230)' }} className="text-xs mb-1">
             Initial Retention (R₀)
           </p>
-          <p
-            className="text-lg font-semibold"
-            style={{ color: 'oklch(0.4 0.15 230)' }}
-          >
+          <p className="text-lg font-semibold" style={{ color: 'oklch(0.4 0.15 230)' }}>
             {Math.round(curve.R0 * 100)}%
           </p>
         </div>
-        <div
-          className="p-3 rounded-md"
-          style={{ backgroundColor: 'oklch(0.97 0.01 230)' }}
-        >
+        <div className="p-3 rounded-md" style={{ backgroundColor: 'oklch(0.97 0.01 230)' }}>
           <p style={{ color: 'oklch(0.6 0.03 230)' }} className="text-xs mb-1">
             Decay Rate (k)
           </p>
-          <p
-            className="text-lg font-semibold"
-            style={{ color: 'oklch(0.4 0.15 230)' }}
-          >
+          <p className="text-lg font-semibold" style={{ color: 'oklch(0.4 0.15 230)' }}>
             {curve.k.toFixed(3)}
           </p>
         </div>
-        <div
-          className="p-3 rounded-md"
-          style={{ backgroundColor: 'oklch(0.97 0.01 230)' }}
-        >
+        <div className="p-3 rounded-md" style={{ backgroundColor: 'oklch(0.97 0.01 230)' }}>
           <p style={{ color: 'oklch(0.6 0.03 230)' }} className="text-xs mb-1">
             Half-Life
           </p>
-          <p
-            className="text-lg font-semibold"
-            style={{ color: 'oklch(0.4 0.15 230)' }}
-          >
+          <p className="text-lg font-semibold" style={{ color: 'oklch(0.4 0.15 230)' }}>
             {curve.halfLife.toFixed(1)} days
           </p>
         </div>
@@ -201,9 +180,7 @@ export function ForgettingCurveVisualization({ curve }: ForgettingCurveProps) {
       <div
         className="p-4 rounded-md"
         style={{
-          backgroundColor: isFaster
-            ? 'oklch(0.97 0.01 60)'
-            : 'oklch(0.97 0.01 145)',
+          backgroundColor: isFaster ? 'oklch(0.97 0.01 60)' : 'oklch(0.97 0.01 145)',
         }}
       >
         <p
@@ -239,5 +216,5 @@ export function ForgettingCurveVisualization({ curve }: ForgettingCurveProps) {
         </p>
       </div>
     </div>
-  );
+  )
 }

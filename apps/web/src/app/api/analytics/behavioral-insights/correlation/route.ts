@@ -59,7 +59,7 @@ function errorResponse(message: string, status: number = 400) {
       success: false,
       error: message,
     },
-    { status }
+    { status },
   )
 }
 
@@ -109,9 +109,9 @@ export async function GET(request: NextRequest) {
 
     if (!validatedParams.success) {
       return errorResponse(
-        `Invalid query parameters: ${validatedParams.error.errors
+        `Invalid query parameters: ${validatedParams.error.issues
           .map((e) => `${e.path.join('.')}: ${e.message}`)
-          .join(', ')}`
+          .join(', ')}`,
       )
     }
 
@@ -124,10 +124,7 @@ export async function GET(request: NextRequest) {
     let correlationResult
 
     try {
-      correlationResult = await AcademicPerformanceIntegration.correlatePerformance(
-        userId,
-        weeks
-      )
+      correlationResult = await AcademicPerformanceIntegration.correlatePerformance(userId, weeks)
     } catch (error) {
       if (error instanceof Error && error.message.includes('Insufficient data')) {
         return errorResponse(error.message, 400)
@@ -149,9 +146,6 @@ export async function GET(request: NextRequest) {
     return successResponse(response)
   } catch (error) {
     console.error('[Correlation API Error]:', error)
-    return errorResponse(
-      error instanceof Error ? error.message : 'Internal server error',
-      500
-    )
+    return errorResponse(error instanceof Error ? error.message : 'Internal server error', 500)
   }
 }

@@ -23,7 +23,7 @@ const ArticleQuerySchema = z.object({
  */
 async function injectPersonalizedData(
   article: any,
-  userId: string
+  userId: string,
 ): Promise<{ content: string; personalizedSections: any }> {
   let personalizedContent = article.content
   const personalizedSections: any = {}
@@ -63,11 +63,13 @@ Based on your study patterns, we've calculated your personal forgetting curve:
 
 **What this means for you:**
 
-${curve.k < 0.05
-  ? '✅ **Excellent retention!** Your forgetting curve is slower than average. You retain information well over time.'
-  : curve.k < 0.08
-  ? '✓ **Good retention.** Your decay rate is average. Spaced reviews will optimize your learning.'
-  : '⚠️ **Faster forgetting.** Your curve suggests more frequent review intervals would help. Consider reviewing material sooner.'}
+${
+  curve.k < 0.05
+    ? '✅ **Excellent retention!** Your forgetting curve is slower than average. You retain information well over time.'
+    : curve.k < 0.08
+      ? '✓ **Good retention.** Your decay rate is average. Spaced reviews will optimize your learning.'
+      : '⚠️ **Faster forgetting.** Your curve suggests more frequent review intervals would help. Consider reviewing material sooner.'
+}
 
 **Optimal Review Schedule (personalized for you):**
 1. First review: ${curve.optimalIntervals?.[0] || 1} day after learning
@@ -133,8 +135,8 @@ ${
   dominant.value >= 40
     ? `You have a **strong ${dominant.name.toLowerCase()} preference**. While this is your strength, remember to incorporate other modalities for deeper learning.`
     : dominant.value >= 30
-    ? `You show a **moderate ${dominant.name.toLowerCase()} preference**. Your balanced profile suggests you can adapt well to different learning formats.`
-    : `You have a **multimodal learning profile** with no single dominant style. This is actually advantageous - you can learn effectively through various methods!`
+      ? `You show a **moderate ${dominant.name.toLowerCase()} preference**. Your balanced profile suggests you can adapt well to different learning formats.`
+      : `You have a **multimodal learning profile** with no single dominant style. This is actually advantageous - you can learn effectively through various methods!`
 }
 
 **Personalized Recommendations:**
@@ -142,10 +144,10 @@ ${
   dominant.name === 'Visual'
     ? '- Create mind maps and flowcharts for complex topics\n- Use color-coding in your notes\n- Draw diagrams before reading text explanations\n- **Growth area**: Practice explaining concepts verbally'
     : dominant.name === 'Auditory'
-    ? '- Record yourself explaining concepts\n- Join study groups for discussion\n- Listen to lecture recordings actively\n- **Growth area**: Create visual summaries of key topics'
-    : dominant.name === 'Reading/Writing'
-    ? '- Write detailed summaries in your own words\n- Create comprehensive study notes\n- Rewrite concepts multiple times\n- **Growth area**: Convert text notes to diagrams'
-    : '- Use clinical simulations and hands-on practice\n- Pace while reviewing flashcards\n- Build physical models of concepts\n- **Growth area**: Practice with abstract theoretical content'
+      ? '- Record yourself explaining concepts\n- Join study groups for discussion\n- Listen to lecture recordings actively\n- **Growth area**: Create visual summaries of key topics'
+      : dominant.name === 'Reading/Writing'
+        ? '- Write detailed summaries in your own words\n- Create comprehensive study notes\n- Rewrite concepts multiple times\n- **Growth area**: Convert text notes to diagrams'
+        : '- Use clinical simulations and hands-on practice\n- Pace while reviewing flashcards\n- Build physical models of concepts\n- **Growth area**: Practice with abstract theoretical content'
 }
 
 *Analysis based on ${vark.confidenceLevel >= 0.7 ? 'high' : vark.confidenceLevel >= 0.5 ? 'moderate' : 'preliminary'} confidence (${(vark.confidenceLevel * 100).toFixed(0)}%) from ${vark.sessionCount || 0} sessions.*
@@ -181,7 +183,7 @@ We'll analyze your content preferences to determine:
 
       if (patterns.length > 0) {
         const pattern = patterns[0]
-        const data = pattern.patternData as any
+        const data = pattern.evidence as any
 
         // Determine chronotype
         const peakHour = data.optimalStartHour || 10
@@ -189,8 +191,8 @@ We'll analyze your content preferences to determine:
           peakHour < 10
             ? 'Lark (Morning Type)'
             : peakHour >= 16
-            ? 'Owl (Evening Type)'
-            : 'Hummingbird (Intermediate)'
+              ? 'Owl (Evening Type)'
+              : 'Hummingbird (Intermediate)'
 
         injectedHTML = `
 ## Your Chronotype & Optimal Study Times
@@ -203,15 +205,20 @@ ${
   chronotype.includes('Lark')
     ? '🌅 You perform best in the morning hours. Your alertness peaks early and declines in the afternoon.'
     : chronotype.includes('Owl')
-    ? '🦉 You\'re an evening type. Your cognitive performance peaks later in the day.'
-    : '🐦 You have a balanced circadian rhythm with good performance throughout the day.'
+      ? "🦉 You're an evening type. Your cognitive performance peaks later in the day."
+      : '🐦 You have a balanced circadian rhythm with good performance throughout the day.'
 }
 
 **Your Peak Performance Windows:**
 
-${data.performancePeaks?.map((peak: any, i: number) =>
-  `${i + 1}. **${peak.startHour}:00 - ${peak.endHour}:00** (${peak.effectivenessScore?.toFixed(1)}% effectiveness)`
-).join('\n') || '- Data still being analyzed'}
+${
+  data.performancePeaks
+    ?.map(
+      (peak: any, i: number) =>
+        `${i + 1}. **${peak.startHour}:00 - ${peak.endHour}:00** (${peak.effectivenessScore?.toFixed(1)}% effectiveness)`,
+    )
+    .join('\n') || '- Data still being analyzed'
+}
 
 **Recommendations for Your Schedule:**
 
@@ -225,8 +232,8 @@ ${
   chronotype.includes('Lark')
     ? '- After 3 PM (your energy naturally dips)\n- Late evening (consider pre-sleep review only)'
     : chronotype.includes('Owl')
-    ? '- Before 10 AM (if possible, schedule lighter tasks)\n- Early afternoon (unless using strategic caffeine)'
-    : '- Early afternoon (1-3 PM post-lunch dip is common)'
+      ? '- Before 10 AM (if possible, schedule lighter tasks)\n- Early afternoon (unless using strategic caffeine)'
+      : '- Early afternoon (1-3 PM post-lunch dip is common)'
 }
 
 **Optimization Tips:**
@@ -271,12 +278,12 @@ We'll identify:
 
       if (reviews.length >= 20) {
         // Calculate accuracy: GOOD and EASY are correct, AGAIN and HARD are incorrect
-        const correct = reviews.filter(r => r.rating === 'GOOD' || r.rating === 'EASY').length
+        const correct = reviews.filter((r) => r.rating === 'GOOD' || r.rating === 'EASY').length
         const accuracy = (correct / reviews.length) * 100
 
         // Group by week to show trend
         const weeklyData: { [key: string]: { correct: number; total: number } } = {}
-        reviews.forEach(review => {
+        reviews.forEach((review) => {
           const week = new Date(review.reviewedAt)
           week.setDate(week.getDate() - week.getDay()) // Start of week
           const weekKey = week.toISOString().split('T')[0]
@@ -309,10 +316,10 @@ We'll identify:
 
 ${
   accuracy >= 75
-    ? '✅ **Excellent recall!** You\'re retrieving information effectively. Keep up the active practice.'
+    ? "✅ **Excellent recall!** You're retrieving information effectively. Keep up the active practice."
     : accuracy >= 60
-    ? '✓ **Good recall.** You\'re on the right track. Consider more frequent reviews for struggling topics.'
-    : '⚠️ **Room for improvement.** Your recall accuracy suggests material needs more active practice before long-term retention.'
+      ? "✓ **Good recall.** You're on the right track. Consider more frequent reviews for struggling topics."
+      : '⚠️ **Room for improvement.** Your recall accuracy suggests material needs more active practice before long-term retention.'
 }
 
 **Weekly Trend:**
@@ -320,18 +327,18 @@ ${
   trend > 5
     ? `📈 **Improving** (+${trend.toFixed(1)}% vs last week) - Your active recall is getting stronger!`
     : trend < -5
-    ? `📉 **Declining** (${trend.toFixed(1)}% vs last week) - Consider reviewing study strategies or reducing cognitive load.`
-    : `📊 **Stable** (${trend >= 0 ? '+' : ''}${trend.toFixed(1)}% vs last week) - Maintaining consistent performance.`
+      ? `📉 **Declining** (${trend.toFixed(1)}% vs last week) - Consider reviewing study strategies or reducing cognitive load.`
+      : `📊 **Stable** (${trend >= 0 ? '+' : ''}${trend.toFixed(1)}% vs last week) - Maintaining consistent performance.`
 }
 
 **What Your Data Tells Us:**
 
 ${
   accuracy >= 75
-    ? '- You\'re spacing reviews appropriately\n- Active recall is working well for you\n- Material difficulty matches your current level'
+    ? "- You're spacing reviews appropriately\n- Active recall is working well for you\n- Material difficulty matches your current level"
     : accuracy >= 60
-    ? '- Some concepts need more frequent review\n- Try increasing active recall frequency\n- Consider breaking complex topics into smaller chunks'
-    : '- Material may be too difficult (reduce cognitive load)\n- Increase review frequency significantly\n- Focus on understanding before memorization\n- Use more elaborative rehearsal (explain why, not just what)'
+      ? '- Some concepts need more frequent review\n- Try increasing active recall frequency\n- Consider breaking complex topics into smaller chunks'
+      : '- Material may be too difficult (reduce cognitive load)\n- Increase review frequency significantly\n- Focus on understanding before memorization\n- Use more elaborative rehearsal (explain why, not just what)'
 }
 
 **Optimization Recommendations:**
@@ -385,18 +392,16 @@ We'll show you:
 
       if (sessions.length >= 10) {
         // Calculate average session metrics
-        const avgDuration = sessions.reduce((sum, s) => sum + (s.durationMs || 0), 0) / sessions.length / (60 * 1000)
-        const avgReviews = sessions.reduce((sum, s) => sum + s.reviewsCompleted, 0) / sessions.length
-        const avgNewCards = sessions.reduce((sum, s) => sum + s.newCardsStudied, 0) / sessions.length
+        const avgDuration =
+          sessions.reduce((sum, s) => sum + (s.durationMs || 0), 0) / sessions.length / (60 * 1000)
+        const avgReviews =
+          sessions.reduce((sum, s) => sum + s.reviewsCompleted, 0) / sessions.length
+        const avgNewCards =
+          sessions.reduce((sum, s) => sum + s.newCardsStudied, 0) / sessions.length
 
         // Estimate cognitive load based on session intensity
         const intensity = (avgReviews + avgNewCards * 2) / avgDuration // Cards per minute (weighted for new cards)
-        const loadLevel =
-          intensity > 1.5
-            ? 'HIGH'
-            : intensity > 0.8
-            ? 'MODERATE'
-            : 'LOW'
+        const loadLevel = intensity > 1.5 ? 'HIGH' : intensity > 0.8 ? 'MODERATE' : 'LOW'
 
         injectedHTML = `
 ## Your Cognitive Load Patterns
@@ -430,7 +435,7 @@ Your sessions are quite intense (${intensity.toFixed(1)} cards/minute). This sug
 - **Simplify materials**: Use cleaner, less cluttered resources
 - **Check prerequisites**: Ensure foundational knowledge is solid`
     : loadLevel === 'MODERATE'
-    ? `✓ **Optimal Cognitive Load**
+      ? `✓ **Optimal Cognitive Load**
 
 Your study sessions are well-balanced (${intensity.toFixed(1)} cards/minute):
 - Good pace for processing information
@@ -441,7 +446,7 @@ Your study sessions are well-balanced (${intensity.toFixed(1)} cards/minute):
 - Continue current session structure
 - Monitor for fatigue over multiple days
 - Adjust if difficulty increases`
-    : `📊 **Low Cognitive Load**
+      : `📊 **Low Cognitive Load**
 
 Your sessions are quite relaxed (${intensity.toFixed(1)} cards/minute). This could mean:
 - Material is well within your capability
@@ -461,8 +466,8 @@ ${
   avgDuration > 60
     ? '⚠️ Sessions may be too long (fatigue increases extraneous load)\n'
     : avgDuration < 30
-    ? 'ℹ️ Very short sessions - ensure you\'re getting into focused state\n'
-    : '✓ Session duration is appropriate\n'
+      ? "ℹ️ Very short sessions - ensure you're getting into focused state\n"
+      : '✓ Session duration is appropriate\n'
 }
 ${
   intensity > 2
@@ -506,7 +511,7 @@ We'll analyze:
   if (injectedHTML) {
     personalizedContent = personalizedContent.replace(
       placeholder || '{YOUR_DATA_PLACEHOLDER}',
-      injectedHTML
+      injectedHTML,
     )
   }
 
@@ -526,10 +531,7 @@ We'll analyze:
  * - Creates/updates ArticleRead tracking record
  */
 export const GET = withErrorHandler(
-  async (
-    request: NextRequest,
-    { params }: { params: Promise<{ articleId: string }> }
-  ) => {
+  async (request: NextRequest, { params }: { params: Promise<{ articleId: string }> }) => {
     const { articleId } = await params
 
     // Extract and validate query parameters
@@ -546,15 +548,14 @@ export const GET = withErrorHandler(
     })
 
     if (!article) {
-      return Response.json(
-        errorResponse('Article not found', 'NOT_FOUND'),
-        { status: 404 }
-      )
+      return Response.json(errorResponse('Article not found', 'NOT_FOUND'), { status: 404 })
     }
 
     // Inject personalized data into article content
-    const { content: personalizedContent, personalizedSections } =
-      await injectPersonalizedData(article, userId)
+    const { content: personalizedContent, personalizedSections } = await injectPersonalizedData(
+      article,
+      userId,
+    )
 
     // Check if user has read this article before
     const existingRead = await prisma.articleRead.findUnique({
@@ -599,7 +600,7 @@ export const GET = withErrorHandler(
           helpful: existingRead?.helpful,
           rating: existingRead?.rating,
         },
-      })
+      }),
     )
-  }
+  },
 )

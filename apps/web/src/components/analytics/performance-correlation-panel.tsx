@@ -5,9 +5,9 @@
  * Visualizes correlation between mission completion and performance improvement
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   ScatterChart,
   Scatter,
@@ -17,59 +17,57 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
-} from 'recharts';
-import { TrendingUp, Info } from 'lucide-react';
+} from 'recharts'
+import { TrendingUp, Info } from 'lucide-react'
 
 interface CorrelationData {
-  correlationCoefficient: number;
-  pValue: number;
-  sampleSize: number;
-  confidence: 'LOW' | 'MEDIUM' | 'HIGH';
+  correlationCoefficient: number
+  pValue: number
+  sampleSize: number
+  confidence: 'LOW' | 'MEDIUM' | 'HIGH'
   dataPoints: Array<{
-    completionRate: number;
-    masteryImprovement: number;
-  }>;
-  insight: string;
+    completionRate: number
+    masteryImprovement: number
+  }>
+  insight: string
 }
 
 export function PerformanceCorrelationPanel() {
-  const [data, setData] = useState<CorrelationData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [showExplanation, setShowExplanation] = useState(false);
+  const [data, setData] = useState<CorrelationData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [showExplanation, setShowExplanation] = useState(false)
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   async function fetchData() {
     try {
-      setLoading(true);
+      setLoading(true)
       const response = await fetch('/api/analytics/missions/correlation', {
         headers: {
           'X-User-Email': 'kevy@americano.dev',
         },
-      });
+      })
 
-      if (!response.ok) throw new Error('Failed to fetch correlation data');
+      if (!response.ok) throw new Error('Failed to fetch correlation data')
 
-      const result = await response.json();
-      setData(result.data);
+      const result = await response.json()
+      setData(result.data)
     } catch (error) {
-      console.error('Error fetching correlation data:', error);
-      setData(null);
+      console.error('Error fetching correlation data:', error)
+      setData(null)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30">
-        <div className="text-sm text-[oklch(0.556_0_0)]">
-          Loading correlation analysis...
-        </div>
+        <div className="text-sm text-[oklch(0.556_0_0)]">Loading correlation analysis...</div>
       </div>
-    );
+    )
   }
 
   if (!data || data.sampleSize < 7) {
@@ -83,43 +81,40 @@ export function PerformanceCorrelationPanel() {
           Complete at least 7 missions to see performance insights
         </p>
       </div>
-    );
+    )
   }
 
   // Transform data for scatter plot (convert to percentages for display)
   const scatterData = data.dataPoints.map((point) => ({
     completionRate: point.completionRate * 100,
     masteryImprovement: point.masteryImprovement * 100,
-  }));
+  }))
 
   // Determine correlation strength
   const getCorrelationStrength = (r: number): string => {
-    const abs = Math.abs(r);
-    if (abs >= 0.7) return 'Strong';
-    if (abs >= 0.4) return 'Moderate';
-    if (abs >= 0.2) return 'Weak';
-    return 'Very Weak';
-  };
+    const abs = Math.abs(r)
+    if (abs >= 0.7) return 'Strong'
+    if (abs >= 0.4) return 'Moderate'
+    if (abs >= 0.2) return 'Weak'
+    return 'Very Weak'
+  }
 
-  const correlationStrength = getCorrelationStrength(
-    data.correlationCoefficient
-  );
-  const correlationDirection =
-    data.correlationCoefficient > 0 ? 'positive' : 'negative';
+  const correlationStrength = getCorrelationStrength(data.correlationCoefficient)
+  const correlationDirection = data.correlationCoefficient > 0 ? 'positive' : 'negative'
 
   // Get confidence indicator color
   const getConfidenceColor = (confidence: string): string => {
     switch (confidence) {
       case 'HIGH':
-        return 'oklch(0.75 0.15 160)'; // Green
+        return 'oklch(0.75 0.15 160)' // Green
       case 'MEDIUM':
-        return 'oklch(0.7 0.15 50)'; // Orange
+        return 'oklch(0.7 0.15 50)' // Orange
       case 'LOW':
-        return 'oklch(0.65 0.15 10)'; // Red
+        return 'oklch(0.65 0.15 10)' // Red
       default:
-        return 'oklch(0.556 0 0)'; // Gray
+        return 'oklch(0.556 0 0)' // Gray
     }
-  };
+  }
 
   return (
     <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
@@ -150,15 +145,13 @@ export function PerformanceCorrelationPanel() {
             Understanding Correlation
           </h4>
           <p className="text-xs text-[oklch(0.556_0_0)] leading-relaxed">
-            This chart shows the relationship between how often you complete
-            missions and how much your mastery improves. Each dot represents a
-            time period. A strong positive correlation means completing more
-            missions typically leads to better learning outcomes.
+            This chart shows the relationship between how often you complete missions and how much
+            your mastery improves. Each dot represents a time period. A strong positive correlation
+            means completing more missions typically leads to better learning outcomes.
           </p>
           <p className="text-xs text-[oklch(0.556_0_0)] mt-2 leading-relaxed">
-            <strong>Note:</strong> Correlation does not imply causation.
-            Statistical significance (p-value) indicates confidence in the
-            relationship.
+            <strong>Note:</strong> Correlation does not imply causation. Statistical significance
+            (p-value) indicates confidence in the relationship.
           </p>
         </div>
       )}
@@ -177,22 +170,15 @@ export function PerformanceCorrelationPanel() {
 
         <div className="p-4 bg-white/60 rounded-xl">
           <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Confidence</p>
-          <p
-            className="text-2xl font-bold"
-            style={{ color: getConfidenceColor(data.confidence) }}
-          >
+          <p className="text-2xl font-bold" style={{ color: getConfidenceColor(data.confidence) }}>
             {data.confidence}
           </p>
-          <p className="text-xs text-[oklch(0.556_0_0)] mt-1">
-            p = {data.pValue.toFixed(3)}
-          </p>
+          <p className="text-xs text-[oklch(0.556_0_0)] mt-1">p = {data.pValue.toFixed(3)}</p>
         </div>
 
         <div className="p-4 bg-white/60 rounded-xl">
           <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Sample Size</p>
-          <p className="text-2xl font-bold text-[oklch(0.145_0_0)]">
-            {data.sampleSize}
-          </p>
+          <p className="text-2xl font-bold text-[oklch(0.145_0_0)]">{data.sampleSize}</p>
           <p className="text-xs text-[oklch(0.556_0_0)] mt-1">data points</p>
         </div>
       </div>
@@ -200,11 +186,7 @@ export function PerformanceCorrelationPanel() {
       {/* Scatter Plot */}
       <ResponsiveContainer width="100%" height={300}>
         <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="oklch(0.9 0 0)"
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" vertical={false} />
           <XAxis
             type="number"
             dataKey="completionRate"
@@ -285,12 +267,8 @@ export function PerformanceCorrelationPanel() {
             <TrendingUp className="size-5 text-[oklch(0.75_0.15_160)]" />
           </div>
           <div className="flex-1">
-            <h4 className="text-sm font-semibold text-[oklch(0.145_0_0)] mb-1">
-              Key Insight
-            </h4>
-            <p className="text-sm text-[oklch(0.556_0_0)] leading-relaxed">
-              {data.insight}
-            </p>
+            <h4 className="text-sm font-semibold text-[oklch(0.145_0_0)] mb-1">Key Insight</h4>
+            <p className="text-sm text-[oklch(0.556_0_0)] leading-relaxed">{data.insight}</p>
           </div>
         </div>
       </div>
@@ -298,13 +276,13 @@ export function PerformanceCorrelationPanel() {
       {/* Statistical Note */}
       <div className="mt-4 pt-4 border-t border-[oklch(0.922_0_0)]">
         <p className="text-xs text-[oklch(0.556_0_0)] leading-relaxed">
-          <strong>Statistical Note:</strong> Pearson correlation coefficient (r
-          = {data.correlationCoefficient.toFixed(2)}) with{' '}
-          {data.pValue < 0.05 ? 'statistical significance' : 'low significance'}{' '}
-          (p = {data.pValue.toFixed(3)}). {data.confidence} confidence based on
-          sample size of {data.sampleSize}.
+          <strong>Statistical Note:</strong> Pearson correlation coefficient (r ={' '}
+          {data.correlationCoefficient.toFixed(2)}) with{' '}
+          {data.pValue < 0.05 ? 'statistical significance' : 'low significance'} (p ={' '}
+          {data.pValue.toFixed(3)}). {data.confidence} confidence based on sample size of{' '}
+          {data.sampleSize}.
         </p>
       </div>
     </div>
-  );
+  )
 }

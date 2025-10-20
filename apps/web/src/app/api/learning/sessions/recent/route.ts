@@ -1,8 +1,8 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse } from '@/lib/api-response';
-import { withErrorHandler, ApiError } from '@/lib/api-error';
-import { z } from 'zod';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { successResponse } from '@/lib/api-response'
+import { withErrorHandler, ApiError } from '@/lib/api-error'
+import { z } from 'zod'
 
 /**
  * GET /api/learning/sessions/recent
@@ -20,35 +20,35 @@ import { z } from 'zod';
 const recentSessionsSchema = z.object({
   limit: z.coerce.number().min(1).max(50).default(10),
   missionId: z.string().optional(),
-});
+})
 
 export const GET = withErrorHandler(async (request: NextRequest) => {
-  const searchParams = request.nextUrl.searchParams;
+  const searchParams = request.nextUrl.searchParams
 
   const queryParams = {
     limit: searchParams.get('limit') || '10',
     missionId: searchParams.get('missionId') || undefined,
-  };
+  }
 
-  const validatedParams = recentSessionsSchema.parse(queryParams);
+  const validatedParams = recentSessionsSchema.parse(queryParams)
 
   // Get user from header (MVP: no auth)
-  const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev';
+  const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev'
   const user = await prisma.user.findUnique({
     where: { email: userEmail },
-  });
+  })
 
   if (!user) {
-    throw ApiError.notFound('User');
+    throw ApiError.notFound('User')
   }
 
   // Build where clause
   const where: any = {
     userId: user.id,
-  };
+  }
 
   if (validatedParams.missionId) {
-    where.missionId = validatedParams.missionId;
+    where.missionId = validatedParams.missionId
   }
 
   // Fetch recent sessions with summary data
@@ -76,45 +76,40 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       startedAt: 'desc',
     },
     take: validatedParams.limit,
-  });
+  })
 
   // Calculate summary statistics for each session
   const sessionsWithStats = sessions.map((session) => {
-    const objectiveCompletions = (session.objectiveCompletions || []) as any[];
-    const missionObjectives = (session.missionObjectives || []) as any[];
+    const objectiveCompletions = (session.objectiveCompletions || []) as any[]
+    const missionObjectives = (session.missionObjectives || []) as any[]
 
     // Calculate card statistics
-    const totalCards = session.reviews.length;
+    const totalCards = session.reviews.length
     const correctCards = session.reviews.filter(
-      (r) => r.rating === 'GOOD' || r.rating === 'EASY'
-    ).length;
-    const cardAccuracy = totalCards > 0 ? correctCards / totalCards : 0;
+      (r) => r.rating === 'GOOD' || r.rating === 'EASY',
+    ).length
+    const cardAccuracy = totalCards > 0 ? correctCards / totalCards : 0
 
-    const totalCardTimeMs = session.reviews.reduce(
-      (sum, r) => sum + r.timeSpentMs,
-      0
-    );
+    const totalCardTimeMs = session.reviews.reduce((sum, r) => sum + r.timeSpentMs, 0)
 
     // Calculate objective statistics
-    const objectivesCompleted = objectiveCompletions.length;
-    const totalObjectives = missionObjectives.length;
-    const completionRate =
-      totalObjectives > 0 ? objectivesCompleted / totalObjectives : 0;
+    const objectivesCompleted = objectiveCompletions.length
+    const totalObjectives = missionObjectives.length
+    const completionRate = totalObjectives > 0 ? objectivesCompleted / totalObjectives : 0
 
     const totalObjectiveTimeMs = objectiveCompletions.reduce(
       (sum: number, c: any) => sum + (c.timeSpentMs || 0),
-      0
-    );
+      0,
+    )
 
     // Average self-assessment
     const assessments = objectiveCompletions
       .map((c: any) => c.selfAssessment)
-      .filter((a: any) => a !== undefined);
+      .filter((a: any) => a !== undefined)
     const averageSelfAssessment =
       assessments.length > 0
-        ? assessments.reduce((sum: number, a: number) => sum + a, 0) /
-          assessments.length
-        : null;
+        ? assessments.reduce((sum: number, a: number) => sum + a, 0) / assessments.length
+        : null
 
     return {
       id: session.id,
@@ -136,8 +131,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
           cardMs: totalCardTimeMs,
         },
       },
-    };
-  });
+    }
+  })
 
   // Calculate aggregate statistics across all sessions
   const aggregateStats = {
@@ -145,23 +140,19 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     totalStudyTimeMs: sessions.reduce((sum, s) => sum + (s.durationMs || 0), 0),
     totalObjectivesCompleted: sessionsWithStats.reduce(
       (sum, s) => sum + s.summary.objectivesCompleted,
-      0
+      0,
     ),
-    totalCardsReviewed: sessionsWithStats.reduce(
-      (sum, s) => sum + s.summary.totalCards,
-      0
-    ),
+    totalCardsReviewed: sessionsWithStats.reduce((sum, s) => sum + s.summary.totalCards, 0),
     averageSessionDurationMs:
       sessions.length > 0
-        ? sessions.reduce((sum, s) => sum + (s.durationMs || 0), 0) /
-          sessions.length
+        ? sessions.reduce((sum, s) => sum + (s.durationMs || 0), 0) / sessions.length
         : 0,
     averageCardAccuracy:
       sessionsWithStats.length > 0
         ? sessionsWithStats.reduce((sum, s) => sum + s.summary.cardAccuracy, 0) /
           sessionsWithStats.length
         : 0,
-  };
+  }
 
   return Response.json(
     successResponse({
@@ -171,6 +162,6 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
         limit: validatedParams.limit,
         returned: sessions.length,
       },
-    })
-  );
-});
+    }),
+  )
+})

@@ -34,7 +34,7 @@ describe('ML Service Proxy Integration', () => {
             userId: testUserId,
             daysAhead: 7,
           }),
-        }
+        },
       )
 
       const generateResponse = await generatePredictions(generateRequest)
@@ -48,7 +48,7 @@ describe('ML Service Proxy Integration', () => {
 
       // Step 2: Retrieve predictions
       const getPredictionsRequest = new NextRequest(
-        `http://localhost:3000/api/analytics/predictions?userId=${testUserId}`
+        `http://localhost:3000/api/analytics/predictions?userId=${testUserId}`,
       )
 
       const getPredictionsResponse = await getPredictions(getPredictionsRequest)
@@ -68,7 +68,7 @@ describe('ML Service Proxy Integration', () => {
             feedbackType: 'HELPFUL',
             comments: 'Integration test feedback',
           }),
-        }
+        },
       )
 
       const feedbackResponse = await submitFeedback(feedbackRequest, {
@@ -82,7 +82,7 @@ describe('ML Service Proxy Integration', () => {
 
       // Step 4: Check model performance updated
       const performanceRequest = new NextRequest(
-        `http://localhost:3000/api/analytics/model-performance?userId=${testUserId}`
+        `http://localhost:3000/api/analytics/model-performance?userId=${testUserId}`,
       )
 
       const performanceResponse = await getModelPerformance(performanceRequest)
@@ -96,7 +96,7 @@ describe('ML Service Proxy Integration', () => {
     it('should complete intervention workflow', async () => {
       // Step 1: Get available interventions
       const getInterventionsRequest = new NextRequest(
-        `http://localhost:3000/api/analytics/interventions?userId=${testUserId}`
+        `http://localhost:3000/api/analytics/interventions?userId=${testUserId}`,
       )
 
       const getInterventionsResponse = await getInterventions(getInterventionsRequest)
@@ -116,7 +116,7 @@ describe('ML Service Proxy Integration', () => {
           body: JSON.stringify({
             applyToMissionId: 'test-mission-123',
           }),
-        }
+        },
       )
 
       const applyResponse = await applyIntervention(applyRequest, {
@@ -130,7 +130,7 @@ describe('ML Service Proxy Integration', () => {
 
       // Step 3: Verify struggle reduction metrics updated
       const reductionRequest = new NextRequest(
-        `http://localhost:3000/api/analytics/struggle-reduction?userId=${testUserId}`
+        `http://localhost:3000/api/analytics/struggle-reduction?userId=${testUserId}`,
       )
 
       const reductionResponse = await getStruggleReduction(reductionRequest)
@@ -147,16 +147,14 @@ describe('ML Service Proxy Integration', () => {
       // Predictions endpoint fails
       server.use(create503Handler('get', '/predictions'))
 
-      const predictionsRequest = new NextRequest(
-        'http://localhost:3000/api/analytics/predictions'
-      )
+      const predictionsRequest = new NextRequest('http://localhost:3000/api/analytics/predictions')
       const predictionsResponse = await getPredictions(predictionsRequest)
 
       expect(predictionsResponse.status).toBe(503)
 
       // But interventions endpoint still works
       const interventionsRequest = new NextRequest(
-        'http://localhost:3000/api/analytics/interventions'
+        'http://localhost:3000/api/analytics/interventions',
       )
       const interventionsResponse = await getInterventions(interventionsRequest)
 
@@ -170,7 +168,7 @@ describe('ML Service Proxy Integration', () => {
         create503Handler('get', '/predictions'),
         create503Handler('get', '/interventions'),
         create503Handler('get', '/model-performance'),
-        create503Handler('get', '/struggle-reduction')
+        create503Handler('get', '/struggle-reduction'),
       )
 
       const requests = [
@@ -178,15 +176,15 @@ describe('ML Service Proxy Integration', () => {
           new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
             method: 'POST',
             body: JSON.stringify({ userId: testUserId }),
-          })
+          }),
         ),
         getPredictions(new NextRequest('http://localhost:3000/api/analytics/predictions')),
         getInterventions(new NextRequest('http://localhost:3000/api/analytics/interventions')),
         getModelPerformance(
-          new NextRequest('http://localhost:3000/api/analytics/model-performance')
+          new NextRequest('http://localhost:3000/api/analytics/model-performance'),
         ),
         getStruggleReduction(
-          new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+          new NextRequest('http://localhost:3000/api/analytics/struggle-reduction'),
         ),
       ]
 
@@ -212,7 +210,7 @@ describe('ML Service Proxy Integration', () => {
             predictions: [],
             count: 0,
           })
-        })
+        }),
       )
 
       // First attempt fails
@@ -236,26 +234,26 @@ describe('ML Service Proxy Integration', () => {
         switch (endpoint) {
           case 0:
             return getPredictions(
-              new NextRequest('http://localhost:3000/api/analytics/predictions')
+              new NextRequest('http://localhost:3000/api/analytics/predictions'),
             )
           case 1:
             return getInterventions(
-              new NextRequest('http://localhost:3000/api/analytics/interventions')
+              new NextRequest('http://localhost:3000/api/analytics/interventions'),
             )
           case 2:
             return getModelPerformance(
-              new NextRequest('http://localhost:3000/api/analytics/model-performance')
+              new NextRequest('http://localhost:3000/api/analytics/model-performance'),
             )
           case 3:
             return getStruggleReduction(
-              new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+              new NextRequest('http://localhost:3000/api/analytics/struggle-reduction'),
             )
           default:
             return generatePredictions(
               new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
                 method: 'POST',
                 body: JSON.stringify({ userId: `user-${i}@example.com` }),
-              })
+              }),
             )
         }
       })
@@ -277,7 +275,9 @@ describe('ML Service Proxy Integration', () => {
       const responses = []
 
       for (let i = 0; i < 10; i++) {
-        const request = new NextRequest(`http://localhost:3000/api/analytics/predictions?userId=user-${i}@test.com`)
+        const request = new NextRequest(
+          `http://localhost:3000/api/analytics/predictions?userId=user-${i}@test.com`,
+        )
         const response = await getPredictions(request)
         const data = await response.json()
 
@@ -307,7 +307,7 @@ describe('ML Service Proxy Integration', () => {
             userId: testUserId,
             daysAhead: 7,
           }),
-        }
+        },
       )
 
       const generateResponse = await generatePredictions(generateRequest)
@@ -315,7 +315,7 @@ describe('ML Service Proxy Integration', () => {
 
       // Retrieve predictions
       const getRequest = new NextRequest(
-        `http://localhost:3000/api/analytics/predictions?userId=${testUserId}`
+        `http://localhost:3000/api/analytics/predictions?userId=${testUserId}`,
       )
 
       const getResponse = await getPredictions(getRequest)
@@ -337,7 +337,7 @@ describe('ML Service Proxy Integration', () => {
           body: JSON.stringify({
             userId: testUserId,
           }),
-        }
+        },
       )
 
       const generateResponse = await generatePredictions(generateRequest)
@@ -358,7 +358,7 @@ describe('ML Service Proxy Integration', () => {
             actualStruggle: true,
             feedbackType: 'HELPFUL',
           }),
-        }
+        },
       )
 
       const feedbackResponse = await submitFeedback(feedbackRequest, {
@@ -379,7 +379,7 @@ describe('ML Service Proxy Integration', () => {
 
       for (const maliciousInput of maliciousInputs) {
         const request = new NextRequest(
-          `http://localhost:3000/api/analytics/predictions?userId=${encodeURIComponent(maliciousInput)}`
+          `http://localhost:3000/api/analytics/predictions?userId=${encodeURIComponent(maliciousInput)}`,
         )
 
         const response = await getPredictions(request)
@@ -403,7 +403,7 @@ describe('ML Service Proxy Integration', () => {
           {
             method: 'POST',
             body: JSON.stringify(invalidBody),
-          }
+          },
         )
 
         try {

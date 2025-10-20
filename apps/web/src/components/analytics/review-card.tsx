@@ -10,7 +10,18 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, TrendingUp, Target, Lightbulb, Award, Calendar, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import {
+  ChevronDown,
+  ChevronUp,
+  TrendingUp,
+  Target,
+  Lightbulb,
+  Award,
+  Calendar,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -88,10 +99,17 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
 
   // Get success score rating
   const getSuccessRating = (score: number): { label: string; color: string } => {
-    if (score >= 0.8) return { label: 'EXCELLENT', color: 'bg-green-500/10 text-green-700 border-green-500/20' }
-    if (score >= 0.7) return { label: 'GOOD', color: 'bg-blue-500/10 text-blue-700 border-blue-500/20' }
-    if (score >= 0.6) return { label: 'FAIR', color: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20' }
-    if (score >= 0.5) return { label: 'NEEDS IMPROVEMENT', color: 'bg-orange-500/10 text-orange-700 border-orange-500/20' }
+    if (score >= 0.8)
+      return { label: 'EXCELLENT', color: 'bg-green-500/10 text-green-700 border-green-500/20' }
+    if (score >= 0.7)
+      return { label: 'GOOD', color: 'bg-blue-500/10 text-blue-700 border-blue-500/20' }
+    if (score >= 0.6)
+      return { label: 'FAIR', color: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20' }
+    if (score >= 0.5)
+      return {
+        label: 'NEEDS IMPROVEMENT',
+        color: 'bg-orange-500/10 text-orange-700 border-orange-500/20',
+      }
     return { label: 'POOR', color: 'bg-red-500/10 text-red-700 border-red-500/20' }
   }
 
@@ -127,11 +145,7 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
             onClick={() => setIsExpanded(!isExpanded)}
             className="ml-2"
           >
-            {isExpanded ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
+            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </Button>
         </div>
       </CardHeader>
@@ -149,15 +163,17 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
 
           <div className="space-y-1">
             <div className="text-sm text-muted-foreground">Completion Rate</div>
-            <div className={`text-2xl font-bold ${getCompletionRateColor(review.summary.completionRate)}`}>
+            <div
+              className={`text-2xl font-bold ${getCompletionRateColor(review.summary.completionRate)}`}
+            >
               {(review.summary.completionRate * 100).toFixed(0)}%
             </div>
             <div className="text-xs text-muted-foreground">
               {review.summary.completionRate >= 0.7 && review.summary.completionRate <= 0.9
                 ? 'Optimal range'
                 : review.summary.completionRate > 0.9
-                ? 'Above target'
-                : 'Below target'}
+                  ? 'Above target'
+                  : 'Below target'}
             </div>
           </div>
 
@@ -186,7 +202,8 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
             <Separator />
 
             {/* Highlights Section */}
-            {(review.highlights.personalBests.length > 0 || review.highlights.topObjectives.length > 0) && (
+            {(review.highlights.personalBests.length > 0 ||
+              review.highlights.topObjectives.length > 0) && (
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Award className="h-4 w-4 text-[oklch(0.6_0.15_250)]" />
@@ -307,17 +324,12 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <Badge
-                                variant="outline"
-                                className={priorityColors[item.priority]}
-                              >
+                              <Badge variant="outline" className={priorityColors[item.priority]}>
                                 {item.priority}
                               </Badge>
                               <div className="font-medium text-sm">{item.action}</div>
                             </div>
-                            <div className="text-xs text-muted-foreground">
-                              {item.reason}
-                            </div>
+                            <div className="text-xs text-muted-foreground">{item.reason}</div>
                           </div>
                         </div>
                       </div>
@@ -342,7 +354,8 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
             <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
               <Clock className="h-3 w-3" />
               <span>
-                Generated {new Date(review.generatedAt).toLocaleDateString('en-US', {
+                Generated{' '}
+                {new Date(review.generatedAt).toLocaleDateString('en-US', {
                   month: 'short',
                   day: 'numeric',
                   year: 'numeric',

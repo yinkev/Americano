@@ -1,25 +1,25 @@
-'use client';
+'use client'
 
-import { Badge } from '@/components/ui/badge';
-import { Target, CheckCircle2, Circle } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge'
+import { Target, CheckCircle2, Circle } from 'lucide-react'
+import { Card } from '@/components/ui/card'
 
 interface MissionObjective {
-  objectiveId: string;
+  objectiveId: string
   objective?: {
-    id: string;
-    objective: string;
-    complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
-    isHighYield: boolean;
-  };
-  estimatedMinutes: number;
-  completed: boolean;
+    id: string
+    objective: string
+    complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
+    isHighYield: boolean
+  }
+  estimatedMinutes: number
+  completed: boolean
 }
 
 interface MissionProgressHeaderProps {
-  objectives: MissionObjective[];
-  currentObjectiveIndex: number;
-  estimatedTotalMinutes: number;
+  objectives: MissionObjective[]
+  currentObjectiveIndex: number
+  estimatedTotalMinutes: number
 }
 
 export function MissionProgressHeader({
@@ -27,14 +27,14 @@ export function MissionProgressHeader({
   currentObjectiveIndex,
   estimatedTotalMinutes,
 }: MissionProgressHeaderProps) {
-  const completedCount = objectives.filter((obj) => obj.completed).length;
-  const totalCount = objectives.length;
-  const percentComplete = Math.round((completedCount / totalCount) * 100);
+  const completedCount = objectives.filter((obj) => obj.completed).length
+  const totalCount = objectives.length
+  const percentComplete = Math.round((completedCount / totalCount) * 100)
 
   // Calculate remaining time (sum of uncompleted objectives)
   const remainingMinutes = objectives
     .filter((obj) => !obj.completed)
-    .reduce((sum, obj) => sum + obj.estimatedMinutes, 0);
+    .reduce((sum, obj) => sum + obj.estimatedMinutes, 0)
 
   return (
     <Card
@@ -85,8 +85,8 @@ export function MissionProgressHeader({
         {/* Objectives List */}
         <div className="space-y-2">
           {objectives.map((obj, index) => {
-            const isCurrent = index === currentObjectiveIndex;
-            const isCompleted = obj.completed;
+            const isCurrent = index === currentObjectiveIndex
+            const isCompleted = obj.completed
 
             return (
               <div
@@ -99,18 +99,15 @@ export function MissionProgressHeader({
                   background: isCurrent
                     ? 'oklch(0.55 0.2 250 / 0.1)'
                     : isCompleted
-                    ? 'oklch(0.98 0.005 250)'
-                    : 'oklch(0.99 0.003 250)',
+                      ? 'oklch(0.98 0.005 250)'
+                      : 'oklch(0.99 0.003 250)',
                   ...(isCurrent && { outline: '2px solid oklch(0.55 0.2 250)' }),
                 }}
               >
                 {/* Status Icon */}
                 <div className="flex-shrink-0 mt-0.5">
                   {isCompleted ? (
-                    <CheckCircle2
-                      className="w-5 h-5"
-                      style={{ color: 'oklch(0.65 0.2 140)' }}
-                    />
+                    <CheckCircle2 className="w-5 h-5" style={{ color: 'oklch(0.65 0.2 140)' }} />
                   ) : isCurrent ? (
                     <div
                       className="w-5 h-5 rounded-full border-2 flex items-center justify-center"
@@ -135,8 +132,8 @@ export function MissionProgressHeader({
                         color: isCurrent
                           ? 'oklch(0.3 0.15 250)'
                           : isCompleted
-                          ? 'oklch(0.6 0.1 250)'
-                          : 'oklch(0.4 0.15 250)',
+                            ? 'oklch(0.6 0.1 250)'
+                            : 'oklch(0.4 0.15 250)',
                       }}
                     >
                       {obj.objective?.objective || 'Unknown objective'}
@@ -155,10 +152,10 @@ export function MissionProgressHeader({
                   {obj.estimatedMinutes}m
                 </Badge>
               </div>
-            );
+            )
           })}
         </div>
       </div>
     </Card>
-  );
+  )
 }

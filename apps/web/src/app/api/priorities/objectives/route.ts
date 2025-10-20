@@ -29,11 +29,13 @@ async function GET(request: NextRequest) {
   const engine = new PrioritizationEngine()
   const objectives = await engine.getPrioritizedObjectives(userId, filters)
 
-  return Response.json(successResponse({
-    objectives,
-    totalCount: objectives.length,
-    filters,
-  }))
+  return Response.json(
+    successResponse({
+      objectives,
+      totalCount: objectives.length,
+      filters,
+    }),
+  )
 }
 
 const GETHandler = withErrorHandler(GET)

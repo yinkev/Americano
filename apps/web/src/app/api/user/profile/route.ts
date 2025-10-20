@@ -2,11 +2,11 @@
 // GET: Fetch user profile
 // PATCH: Update user profile
 
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { ApiError, withErrorHandler } from '@/lib/api-error';
-import { validateRequest, updateUserProfileSchema } from '@/lib/validation';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { successResponse, errorResponse } from '@/lib/api-response'
+import { ApiError, withErrorHandler } from '@/lib/api-error'
+import { validateRequest, updateUserProfileSchema } from '@/lib/validation'
 
 /**
  * GET /api/user/profile
@@ -32,12 +32,10 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
         },
       },
     },
-  });
+  })
 
   if (!user) {
-    throw ApiError.notFound(
-      'User not found. Run: npx prisma db seed to create default user'
-    );
+    throw ApiError.notFound('User not found. Run: npx prisma db seed to create default user')
   }
 
   return Response.json(
@@ -50,9 +48,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
           sessionCount: user._count.studySessions,
         },
       },
-    })
-  );
-});
+    }),
+  )
+})
 
 /**
  * PATCH /api/user/profile
@@ -63,27 +61,25 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
  */
 export const PATCH = withErrorHandler(async (request: NextRequest) => {
   // Validate request body
-  const data = await validateRequest(request, updateUserProfileSchema);
+  const data = await validateRequest(request, updateUserProfileSchema)
 
   // For MVP: Use hardcoded Kevy user (auth deferred)
   const existingUser = await prisma.user.findFirst({
     where: { email: 'kevy@americano.dev' },
-  });
+  })
 
   if (!existingUser) {
-    throw ApiError.notFound(
-      'User not found. Run: npx prisma db seed to create default user'
-    );
+    throw ApiError.notFound('User not found. Run: npx prisma db seed to create default user')
   }
 
   // Check if email is being changed to one that already exists
   if (data.email && data.email !== existingUser.email) {
     const emailExists = await prisma.user.findUnique({
       where: { email: data.email },
-    });
+    })
 
     if (emailExists) {
-      throw ApiError.conflict('Email already in use');
+      throw ApiError.conflict('Email already in use')
     }
   }
 
@@ -101,11 +97,11 @@ export const PATCH = withErrorHandler(async (request: NextRequest) => {
       createdAt: true,
       updatedAt: true,
     },
-  });
+  })
 
   return Response.json(
     successResponse({
       user: updatedUser,
-    })
-  );
-});
+    }),
+  )
+})

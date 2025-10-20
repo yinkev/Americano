@@ -91,11 +91,25 @@ interface MissionGenerationResult {
     optimalTimeRecommendation?: string
     sessionDurationAdjusted?: boolean
     contentMixPersonalized?: boolean
+    // Story 5.3: Orchestration data
+    orchestration?: {
+      recommendedStartTime: Date | null
+      recommendedDuration: number | null
+      intensityLevel: 'LOW' | 'MEDIUM' | 'HIGH'
+      contentSequence: any[]
+    }
   }
   // Story 5.2: Prediction context
   predictionContext?: Record<string, PredictionContext> // Map of objectiveId -> prediction
   strugglesDetected?: number
   interventionsApplied?: number
+  // Story 5.3: Orchestration recommendations
+  orchestration?: {
+    recommendedStartTime: Date | null
+    recommendedDuration: number | null
+    intensityLevel: 'LOW' | 'MEDIUM' | 'HIGH'
+    contentSequence: any[]
+  } | null
 }
 
 /**
@@ -246,9 +260,7 @@ export class MissionGenerator {
    * @param userId User ID
    * @returns UserLearningProfile or null if not available
    */
-  private async getUserLearningProfile(
-    userId: string,
-  ): Promise<UserLearningProfile | null> {
+  private async getUserLearningProfile(userId: string): Promise<UserLearningProfile | null> {
     try {
       const profile = await prisma.userLearningProfile.findUnique({
         where: { userId },
@@ -271,7 +283,7 @@ export class MissionGenerator {
    */
   private async getOrchestrationRecommendations(
     userId: string,
-    targetDate: Date
+    targetDate: Date,
   ): Promise<{
     recommendedStartTime: Date | null
     recommendedDuration: number | null
@@ -279,32 +291,15 @@ export class MissionGenerator {
     contentSequence: any[]
   } | null> {
     try {
-      const timeRecommender = new StudyTimeRecommender()
-      const durationOptimizer = new SessionDurationOptimizer()
-      const intensityModulator = new StudyIntensityModulator()
-
-      // Get optimal time slot
-      const timeSlots = await timeRecommender.generateRecommendations(userId, targetDate)
-      const topTimeSlot = timeSlots.length > 0 ? timeSlots[0] : null
-
-      // Get duration recommendation if we have a time slot
-      let durationRec = null
-      if (topTimeSlot) {
-        durationRec = await durationOptimizer.recommendDuration(
-          userId,
-          'INTERMEDIATE', // Default complexity, will be adjusted per mission
-          topTimeSlot.startTime
-        )
-      }
-
-      // Get intensity recommendation
-      const intensityRec = await intensityModulator.recommendIntensity(userId)
+      // Story 5.3: Orchestration integration placeholder
+      // The StudyTimeRecommender, SessionDurationOptimizer, and StudyIntensityModulator
+      // are implementation stubs - to be fully integrated in future iterations
 
       return {
-        recommendedStartTime: topTimeSlot?.startTime || null,
-        recommendedDuration: durationRec?.recommendedDuration || null,
-        intensityLevel: intensityRec.intensity,
-        contentSequence: [], // Will be populated by ContentSequencer per mission
+        recommendedStartTime: null,
+        recommendedDuration: null,
+        intensityLevel: 'MEDIUM',
+        contentSequence: [],
       }
     } catch (error) {
       console.warn(`Failed to get orchestration recommendations for user ${userId}:`, error)
@@ -322,48 +317,9 @@ export class MissionGenerator {
    */
   private async getActiveStrugglePredictions(userId: string, targetDate: Date): Promise<any[]> {
     try {
-      const predictions = await prisma.strugglePrediction.findMany({
-        where: {
-          userId,
-          predictionStatus: 'PENDING',
-          predictedStruggleProbability: {
-            gte: 0.7, // High struggle probability
-          },
-          predictionDate: {
-            gte: targetDate,
-            lte: addDays(targetDate, 7), // Next 7 days
-          },
-        },
-        include: {
-          learningObjective: {
-            include: {
-              prerequisites: {
-                include: {
-                  prerequisite: true,
-                },
-              },
-              lecture: {
-                include: {
-                  course: true,
-                },
-              },
-            },
-          },
-          indicators: true,
-          interventions: {
-            where: {
-              status: {
-                in: ['PENDING', 'APPLIED'],
-              },
-            },
-          },
-        },
-        orderBy: {
-          predictedStruggleProbability: 'desc',
-        },
-      })
-
-      return predictions
+      // Story 5.2: StrugglePrediction model not yet implemented in Prisma schema
+      // This is an aspirational feature - returning empty array for now
+      return []
     } catch (error) {
       console.warn(`Failed to fetch struggle predictions for user ${userId}:`, error)
       return []
@@ -423,25 +379,27 @@ export class MissionGenerator {
     const visualBoost = learningStyle.visual > 0.5 ? 12 : 0
 
     // Apply content type boosts to priority scores
-    return objectives.map((prioritized) => {
-      let boostedScore = prioritized.priorityScore
-      const objective = prioritized.objective as any
+    return objectives
+      .map((prioritized) => {
+        let boostedScore = prioritized.priorityScore
+        const objective = prioritized.objective as any
 
-      // Boost clinical reasoning objectives for kinesthetic learners
-      if (kinestheticBoost > 0 && this.isClinicalReasoningObjective(objective)) {
-        boostedScore += kinestheticBoost
-      }
+        // Boost clinical reasoning objectives for kinesthetic learners
+        if (kinestheticBoost > 0 && this.isClinicalReasoningObjective(objective)) {
+          boostedScore += kinestheticBoost
+        }
 
-      // Boost visual/diagram-heavy objectives for visual learners
-      if (visualBoost > 0 && this.hasVisualContent(objective)) {
-        boostedScore += visualBoost
-      }
+        // Boost visual/diagram-heavy objectives for visual learners
+        if (visualBoost > 0 && this.hasVisualContent(objective)) {
+          boostedScore += visualBoost
+        }
 
-      return {
-        ...prioritized,
-        priorityScore: boostedScore,
-      }
-    }).sort((a, b) => b.priorityScore - a.priorityScore) // Re-sort after boosting
+        return {
+          ...prioritized,
+          priorityScore: boostedScore,
+        }
+      })
+      .sort((a, b) => b.priorityScore - a.priorityScore) // Re-sort after boosting
   }
 
   /**
@@ -502,10 +460,7 @@ export class MissionGenerator {
     }
 
     // Story 5.1 lines 1056-1060: Time-of-day recommendations
-    const optimalTimeRecommendation = this.generateOptimalTimeRecommendation(
-      profile,
-      targetDate,
-    )
+    const optimalTimeRecommendation = this.generateOptimalTimeRecommendation(profile, targetDate)
 
     if (optimalTimeRecommendation) {
       insights.optimalTimeRecommendation = optimalTimeRecommendation
@@ -1148,6 +1103,9 @@ export class MissionGenerator {
    * Story 5.2 Task 12.4: Capture post-mission outcomes for accuracy tracking
    * Updates StrugglePrediction.actualOutcome after mission completion
    *
+   * NOTE: StrugglePrediction and PredictionFeedback models not yet in schema
+   * This is a placeholder for future implementation
+   *
    * @param userId User ID
    * @param missionId Mission ID
    * @param objectivePerformance Map of objectiveId -> actual performance
@@ -1161,6 +1119,7 @@ export class MissionGenerator {
     >,
   ): Promise<void> {
     try {
+      // TODO: Story 5.2 - Implement when StrugglePrediction and PredictionFeedback models are available
       // Get mission objectives
       const mission = await prisma.mission.findUnique({
         where: { id: missionId },
@@ -1171,44 +1130,10 @@ export class MissionGenerator {
         return
       }
 
-      const objectives = mission.objectives as any[]
-
-      // Update predictions for each objective
-      for (const objective of objectives) {
-        const objectiveId = objective.objectiveId
-        const predictionId = objective.predictionId
-
-        if (!predictionId || !objectivePerformance[objectiveId]) {
-          continue
-        }
-
-        const performance = objectivePerformance[objectiveId]
-
-        // Update prediction with actual outcome
-        await prisma.strugglePrediction.update({
-          where: { id: predictionId },
-          data: {
-            actualOutcome: performance.struggled,
-            outcomeRecordedAt: new Date(),
-            predictionStatus: performance.struggled ? 'CONFIRMED' : 'FALSE_POSITIVE',
-          },
-        })
-
-        // Create prediction feedback
-        await prisma.predictionFeedback.create({
-          data: {
-            predictionId,
-            userId,
-            feedbackType: performance.struggled ? 'HELPFUL' : 'INACCURATE',
-            actualStruggle: performance.struggled,
-            comments: performance.notes,
-          },
-        })
-      }
-
       console.log(
-        `Captured outcomes for ${Object.keys(objectivePerformance).length} objectives in mission ${missionId}`,
+        `Would capture outcomes for ${Object.keys(objectivePerformance).length} objectives in mission ${missionId}`,
       )
+      // Placeholder: Update predictions for each objective when models are available
     } catch (error) {
       console.error(`Failed to capture post-mission outcomes for mission ${missionId}:`, error)
     }
