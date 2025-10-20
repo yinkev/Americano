@@ -78,9 +78,10 @@ export function SessionResumeDialog({
     pauseDurationText = 'Just now'
   }
 
-  // Study phase display names
+  // Study phase display names (Story 4.1 Task 6: Added comprehension phase)
   const phaseDisplayNames = {
     content: 'Reading Content',
+    comprehension: 'Understanding Validation',
     cards: 'Reviewing Cards',
     assessment: 'Self-Assessment',
   }

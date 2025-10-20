@@ -22,6 +22,18 @@ interface ObjectiveCompletion {
   notes?: string;
 }
 
+interface CalibrationMetrics {
+  totalValidations: number;
+  avgConfidenceVsPerformanceGap: number;
+  categoryDistribution: {
+    overconfident: number;
+    underconfident: number;
+    calibrated: number;
+  };
+  reflectionCompletionRate: number;
+  calibrationTimeMinutes: number;
+}
+
 interface SessionData {
   id: string;
   userId: string;
@@ -58,6 +70,7 @@ interface SessionData {
       } | null;
     };
   }>;
+  calibrationMetrics?: CalibrationMetrics;
 }
 
 export default function SessionSummaryPage({
@@ -748,6 +761,108 @@ View full summary: ${window.location.href}`;
                   </>
                 );
               })()}
+            </div>
+          </div>
+        )}
+
+        {/* Story 4.4 Task 10.6-10.8: Calibration Metrics */}
+        {session.calibrationMetrics && session.calibrationMetrics.totalValidations > 0 && (
+          <div
+            className="rounded-2xl p-6 backdrop-blur-md mb-8"
+            style={{
+              background: 'oklch(1 0 0 / 0.8)',
+              boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
+            }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <Target className="h-5 w-5" style={{ color: 'oklch(0.6 0.18 230)' }} />
+              <h3 className="font-semibold" style={{ color: 'oklch(0.4 0.15 250)' }}>
+                Confidence Calibration
+              </h3>
+            </div>
+            <div className="space-y-3">
+              {/* Average Gap */}
+              <div
+                className="p-4 rounded-xl"
+                style={{ background: 'oklch(0.98 0.005 250)' }}
+              >
+                <p className="text-sm" style={{ color: 'oklch(0.4 0.15 250)' }}>
+                  <strong>Average Confidence-Performance Gap:</strong>{' '}
+                  {session.calibrationMetrics.avgConfidenceVsPerformanceGap}%
+                  {session.calibrationMetrics.avgConfidenceVsPerformanceGap <= 15 && ' - Well calibrated!'}
+                  {session.calibrationMetrics.avgConfidenceVsPerformanceGap > 15 && ' - Consider reviewing self-assessment accuracy'}
+                </p>
+              </div>
+
+              {/* Category Distribution */}
+              <div
+                className="p-4 rounded-xl"
+                style={{ background: 'oklch(0.98 0.005 250)' }}
+              >
+                <p className="text-sm font-medium mb-2" style={{ color: 'oklch(0.4 0.15 250)' }}>
+                  Calibration Category Distribution:
+                </p>
+                <div className="grid grid-cols-3 gap-4 mt-2">
+                  <div className="text-center">
+                    <div
+                      className="text-2xl font-bold mb-1"
+                      style={{ color: 'oklch(0.65 0.20 25)' }}
+                    >
+                      {session.calibrationMetrics.categoryDistribution.overconfident}
+                    </div>
+                    <div className="text-xs" style={{ color: 'oklch(0.5 0.1 250)' }}>
+                      Overconfident
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div
+                      className="text-2xl font-bold mb-1"
+                      style={{ color: 'oklch(0.6 0.18 230)' }}
+                    >
+                      {session.calibrationMetrics.categoryDistribution.underconfident}
+                    </div>
+                    <div className="text-xs" style={{ color: 'oklch(0.5 0.1 250)' }}>
+                      Underconfident
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div
+                      className="text-2xl font-bold mb-1"
+                      style={{ color: 'oklch(0.7 0.15 145)' }}
+                    >
+                      {session.calibrationMetrics.categoryDistribution.calibrated}
+                    </div>
+                    <div className="text-xs" style={{ color: 'oklch(0.5 0.1 250)' }}>
+                      Calibrated
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reflection Completion */}
+              <div
+                className="p-4 rounded-xl"
+                style={{ background: 'oklch(0.98 0.005 250)' }}
+              >
+                <p className="text-sm" style={{ color: 'oklch(0.4 0.15 250)' }}>
+                  <strong>Metacognitive Reflection:</strong>{' '}
+                  {session.calibrationMetrics.reflectionCompletionRate}% completion rate
+                  {session.calibrationMetrics.reflectionCompletionRate >= 80 && ' - Excellent engagement!'}
+                  {session.calibrationMetrics.reflectionCompletionRate >= 50 && session.calibrationMetrics.reflectionCompletionRate < 80 && ' - Good reflection practice'}
+                  {session.calibrationMetrics.reflectionCompletionRate < 50 && ' - Try reflecting more often to build metacognitive awareness'}
+                </p>
+              </div>
+
+              {/* Total Validations */}
+              <div
+                className="p-4 rounded-xl"
+                style={{ background: 'oklch(0.98 0.005 250)' }}
+              >
+                <p className="text-sm" style={{ color: 'oklch(0.4 0.15 250)' }}>
+                  <strong>Total Comprehension Validations:</strong>{' '}
+                  {session.calibrationMetrics.totalValidations}
+                </p>
+              </div>
             </div>
           </div>
         )}

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.1</storyId>
+    <title>Natural Language Comprehension Prompts</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-4.1.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>explain concepts in natural language (as if teaching a patient)</iWant>
+    <soThat>I can validate my true understanding beyond rote memorization and pattern recognition</soThat>
+    <tasks>
+      <task id="1">Database Schema Extensions (AC: #7)</task>
+      <task id="2">Prompt Generation Engine (AC: #1)</task>
+      <task id="3">AI Evaluation Engine (AC: #3, #4)</task>
+      <task id="4">API Endpoints (AC: #1, #2, #3, #6, #7)</task>
+      <task id="5">Comprehension Prompt Component (AC: #2, #5, #8)</task>
+      <task id="6">Session Integration (AC: #6)</task>
+      <task id="7">Comprehension Analytics Page (AC: #7)</task>
+      <task id="8">Prompt Variation System (AC: #1 - Prevent Pattern Recognition)</task>
+      <task id="9">Calibration Insights Engine (AC: #8)</task>
+      <task id="10">Testing and Validation (AC: All)</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">
+      <name>Prompt Generation</name>
+      <description>System automatically generates "Explain to a patient" prompts for learning objectives during study sessions. Prompts use plain language appropriate for patient education. Prompts vary in structure to prevent pattern recognition. Generation integrated with Study Session Orchestration (Story 2.5)</description>
+    </criterion>
+    <criterion id="2">
+      <name>Natural Language Input</name>
+      <description>User can type multi-paragraph explanations in textarea with no character limits. Interface provides guidance on what makes a good explanation. User can edit/revise before submission. Submission triggers AI evaluation</description>
+    </criterion>
+    <criterion id="3">
+      <name>AI Evaluation (ChatMock/GPT-5)</name>
+      <description>AI evaluates response for comprehension depth using rubric. Medical accuracy check (correct terminology, facts, relationships). Clarity assessment (patient-appropriate language, logical flow). Completeness scoring (covers key concepts from learning objective). Generates structured evaluation object (score 0-100, strengths[], gaps[])</description>
+    </criterion>
+    <criterion id="4">
+      <name>Comprehension Scoring</name>
+      <description>System calculates multi-dimensional score reflecting understanding depth. Terminology usage (20%): Correct medical terms in appropriate context. Concept relationships (30%): Demonstrates connections between ideas. Clinical application (30%): Can apply to real-world patient scenarios. Communication clarity (20%): Patient-friendly language without losing accuracy. Overall score: 0-100 scale with thresholds (0-59: Needs Review, 60-79: Developing, 80-100: Proficient)</description>
+    </criterion>
+    <criterion id="5">
+      <name>Feedback Display</name>
+      <description>User receives actionable feedback highlighting strengths and knowledge gaps. Visual score display (progress ring, color-coded). Strengths section: What user explained well (bulleted list). Gaps section: What's missing or incorrect (bulleted list with hints). Specific suggestions for improvement. Option to retry explanation after reviewing feedback</description>
+    </criterion>
+    <criterion id="6">
+      <name>Session Integration</name>
+      <description>Comprehension prompts seamlessly integrate into study session flow (Story 2.5). Appear after objective content review (before flashcard reviews). Optional: User can skip if time-pressured (but tracked as skipped). Results feed into Session Summary (time spent, score, improvement). Mission objective completion considers comprehension score (threshold: 60%)</description>
+    </criterion>
+    <criterion id="7">
+      <name>Historical Metrics</name>
+      <description>System tracks comprehension performance over time per learning objective. ComprehensionMetric model stores (objectiveId, date, score, attempt, feedback summary). Progress page displays comprehension trends (line chart: score over time per objective). Identifies objectives with consistently low comprehension scores (less than 60% avg over 3+ attempts)</description>
+    </criterion>
+    <criterion id="8">
+      <name>Confidence Calibration</name>
+      <description>User self-assesses confidence before typing explanation. 5-point scale: Very Uncertain to Very Confident. Tracked alongside AI score to detect overconfidence/underconfidence. Feedback includes calibration note: "You felt X, AI scored Y - calibration insight". Historical calibration accuracy tracked (correlation coefficient between confidence and score)</description>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR5: Understanding Validation Engine, Epic 4: Understanding Validation</section>
+        <snippet>Epic 4 (Understanding Validation Engine): Validates genuine comprehension vs pattern recognition/superficial memorization through multi-dimensional assessment: (1) Natural language explanations (Story 4.1), (2) Clinical reasoning scenarios (Story 4.2), (3) Productive failure/memory anchoring (Story 4.3), (4) Confidence calibration (Story 4.4), (5) Adaptive questioning (Story 4.5), (6) Comprehensive analytics (Story 4.6)</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>Subsystem 4: Understanding Validation Engine, Database Schema, API Architecture</section>
+        <snippet>Subsystem 4 includes ValidationPrompt model (id, promptText, promptType, conceptName, expectedCriteria[]), ValidationResponse model (id, promptId FK, sessionId FK, userAnswer, aiEvaluation, score, confidence, respondedAt), ComprehensionMetric model (id, conceptName, date, avgScore, sampleSize, trend). Complete database schema with 20+ models, 40+ API endpoints organized by subsystem, pgvector semantic search support.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic Breakdown Document</title>
+        <section>Epic 4: Understanding Validation Engine, Story 4.1 Details</section>
+        <snippet>Story 4.1 (Natural Language Comprehension Prompts): Foundation story enabling "Explain to a patient" comprehension validation - core market differentiator vs competitors. Automatically generates patient education prompts for learning objectives. AI evaluates responses for medical accuracy, clarity, and clinical application using 4-dimensional scoring rubric (terminology 20%, relationships 30%, application 30%, clarity 20%). Tracks confidence calibration and comprehension trends over time.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-specification.md</path>
+        <title>UX/UI Specification</title>
+        <section>Design System: Colors, Glassmorphism, Typography, Touch Targets, Accessibility</section>
+        <snippet>Design System: OKLCH color space (NO gradients). Colors: Success oklch(0.7 0.15 145) green, Warning oklch(0.75 0.12 85) yellow, Error oklch(0.65 0.20 25) red, Primary oklch(0.6 0.18 230) blue. Glassmorphism: bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]. Typography: Inter (body), DM Sans (headings). Touch Targets: Minimum 44px. Accessibility: ARIA labels, keyboard navigation, screen reader support.</snippet>
+      </doc>
+      <doc>
+        <path>docs/api-endpoints.md</path>
+        <title>API Endpoints Documentation</title>
+        <section>RESTful API Architecture, Error Handling, Zod Validation Schemas</section>
+        <snippet>RESTful Next.js API Routes with consistent error handling (errorResponse helper), Zod validation schemas for all endpoints, standardized response format with successResponse/errorResponse utilities. All endpoints follow Next.js 15 async params pattern, proper error codes/messages, user-aware isolation (hardcoded kevy@americano.dev for MVP).</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-2.1.md</path>
+        <title>Story 2.1: Learning Objective Extraction from Content</title>
+        <section>Dev Notes: ChatMock Integration, Medical Terminology Preservation</section>
+        <snippet>Story 2.1 prerequisite provides ChatMock client (src/lib/ai/chatmock-client.ts) with medical terminology preservation via prompt engineering. LearningObjective model includes complexity enum (BASIC/INTERMEDIATE/ADVANCED), pageNumber for PDF linking, boardExamTags (USMLE/COMLEX/NBME), and ObjectivePrerequisite join table for dependency mapping. Background processing via ContentAnalyzer integrated in ProcessingOrchestrator.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-2.4.md</path>
+        <title>Story 2.4: Daily Mission Generation and Display</title>
+        <section>Mission Model, Mission Generation Algorithm, Study Session Integration</section>
+        <snippet>Story 2.4 prerequisite defines Mission model with state machine (PENDING to IN_PROGRESS to COMPLETED/SKIPPED), objectives array (2-4 items), time estimation algorithm. MissionGenerator class (src/lib/mission-generator.ts) prioritizes objectives using FSRS (40%) + high-yield (30%) + weak areas (30%). Mission card UI component displays daily mission on dashboard. Study session links to missions via missionId FK.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-2.5.md</path>
+        <title>Story 2.5: Time-Boxed Study Session Orchestration</title>
+        <section>StudySession Extension, Session Flow, ObjectiveCompletion Tracking</section>
+        <snippet>Story 2.5 prerequisite extends StudySession model with missionId FK, currentObjectiveIndex, objectiveCompletions tracking. Study page (/study) orchestrates objective-by-objective flow: content review to comprehension prompt to flashcard reviews to objective completion. Session state persisted via Zustand store with localStorage. Auto-progression optional with settings toggle. Session timer uses Date.now() for accuracy.</snippet>
+      </doc>
+      <doc>
+        <path>docs/AGENTS.MD</path>
+        <title>BMad Agent Ecosystem Protocol</title>
+        <section>Documentation-First Development, ChatMock Integration Patterns, Medical Terminology Preservation</section>
+        <snippet>AGENTS.MD enforces documentation-first development: fetch latest docs from context7/shadcn MCPs before implementation. ChatMock integration patterns: use temperature 0.3 for consistent evaluation, max tokens 2000 for detailed feedback, retry logic for transient failures. Medical terminology preservation: ChatMock system prompt must emphasize medical accuracy and terminology preservation (avoid oversimplification). All implementations must verify API specs via MCP tools before code changes.</snippet>
+      </doc>
+      <doc>
+        <path>apps/web/prisma/schema.prisma</path>
+        <title>Prisma Database Schema</title>
+        <section>ValidationPrompt, ValidationResponse, ComprehensionMetric Models</section>
+        <snippet>Prisma schema includes ValidationPrompt model (id String, promptText String, promptType String, conceptName String, expectedCriteria Json[], createdAt DateTime), ValidationResponse model (id String, promptId FK, sessionId FK, userAnswer String, aiEvaluation Json, score Int, confidence Int, respondedAt DateTime), ComprehensionMetric model (id String, conceptName String, date DateTime, avgScore Float, sampleSize Int, trend String). Database uses PostgreSQL with pgvector (1536 dims) for semantic search.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>apps/web/src/lib/ai/chatmock-client.ts</path>
+        <kind>library</kind>
+        <symbol>ChatMockClient</symbol>
+        <lines>1-150</lines>
+        <reason>Existing ChatMock integration from Story 2.1. Must reuse for prompt generation and AI evaluation with medical terminology preservation. Temperature 0.3 for consistency, max tokens 2000 for detailed feedback.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/mission-generator.ts</path>
+        <kind>library</kind>
+        <symbol>MissionGenerator</symbol>
+        <lines>1-200</lines>
+        <reason>Existing mission generation from Story 2.4. Context for integrating comprehension prompts into mission flow. getPrioritizedObjectives method handles objective prioritization logic.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-response.ts</path>
+        <kind>library</kind>
+        <symbol>successResponse, errorResponse, ApiError</symbol>
+        <lines>1-80</lines>
+        <reason>Standardized API response utilities from Story 1.5. Must use for all validation endpoints to maintain consistent error handling and response format.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/db.ts</path>
+        <kind>library</kind>
+        <symbol>prisma</symbol>
+        <lines>1-50</lines>
+        <reason>Prisma client singleton from Story 1.5. Must use for all database queries and migrations related to ValidationPrompt, ValidationResponse, ComprehensionMetric models.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/study/objective-content-panel.tsx</path>
+        <kind>component</kind>
+        <symbol>ObjectiveContentPanel</symbol>
+        <lines>1-150</lines>
+        <reason>Existing component from Story 2.5. Shows objective content review before flashcards. ComprehensionPromptDialog must appear after this component completes (trigger point for Story 4.1).</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/study/flashcard-review.tsx</path>
+        <kind>component</kind>
+        <symbol>FlashcardReview</symbol>
+        <lines>1-200</lines>
+        <reason>Existing flashcard component from Story 2.5. ComprehensionPromptDialog appears BEFORE flashcard reviews (after content review, before cards). Must coordinate component sequencing in study page.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/learning/sessions/[id]/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>GET /api/learning/sessions/[id]</symbol>
+        <lines>1-100</lines>
+        <reason>Existing session detail API from Story 1.6. Must integrate comprehension responses into session summary (time spent on prompts, scores, improvements).</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/study/page.tsx</path>
+        <kind>page</kind>
+        <symbol>StudyPage</symbol>
+        <lines>1-300</lines>
+        <reason>Main study page orchestrating session flow. Must inject ComprehensionPromptDialog trigger after objective content review (before flashcards) with proper timing and state management.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <package name="@prisma/client" version="^6.17.1">Prisma ORM client for database operations</package>
+        <package name="zod" version="^4.1.12">Schema validation for API endpoints</package>
+        <package name="zustand" version="^5.0.8">State management for UI component state and dialog visibility</package>
+        <package name="date-fns" version="^4.1.0">Date formatting and manipulation for comprehension trends</package>
+        <package name="recharts" version="^3.2.1">Chart library for comprehension trends line chart and analytics</package>
+        <package name="openai" version="^6.3.0">ChatMock API client for prompt generation and AI evaluation</package>
+        <package name="react" version="^19.2.0">React framework (v19 with latest features)</package>
+        <package name="react-hook-form" version="^7.65.0">Form management for comprehension prompt dialog</package>
+        <package name="@radix-ui/*" version="^1.x">Component primitives (Dialog, Slider, Progress for confidence/score UI)</package>
+        <package name="lucide-react" version="^0.545.0">Icons for UI components</package>
+        <package name="next" version="^15.5.5">Next.js App Router with async params</package>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="1">Database schema changes for ValidationPrompt, ValidationResponse, ComprehensionMetric models must be implemented via Prisma migrations. Existing Prisma schema at apps/web/prisma/schema.prisma must be extended with new models and relationships.</constraint>
+    <constraint id="2">ChatMock (GPT-5) must be used for both prompt generation and AI evaluation. Medical terminology must be preserved in system prompts (reference AGENTS.MD protocol). Temperature 0.3 for consistency, max tokens 2000 for detailed feedback.</constraint>
+    <constraint id="3">Prompt generation engine must implement 3 template types (Direct Question, Clinical Scenario, Teaching Simulation) with random selection to prevent pattern recognition. Vary phrasing within templates using ChatMock.</constraint>
+    <constraint id="4">Evaluation rubric must be structured and returned as JSON object: { score: 0-100, terminologyScore: 0-100, relationshipsScore: 0-100, applicationScore: 0-100, clarityScore: 0-100, strengths: string[], gaps: string[] }</constraint>
+    <constraint id="5">Confidence calibration formula: confidenceNormalized = (confidenceLevel - 1) * 25 (1-5 scale to 0-100), calibrationDelta = confidenceNormalized - score. Classification: Overconfident (delta > 15), Underconfident (delta less than -15), Calibrated (else).</constraint>
+    <constraint id="6">ComprehensionPromptDialog must be injected into study session flow AFTER objective content review and BEFORE flashcard reviews (Story 2.5 orchestration). Must respect optional skip feature (tracked as skipped in metrics).</constraint>
+    <constraint id="7">All API endpoints must follow Next.js 15 async params pattern (verified via context7 MCP). Use consistent error handling (ApiError, withErrorHandler wrapper from Story 1.5). Zod validation schemas required for all request bodies.</constraint>
+    <constraint id="8">UI components must use glassmorphism design (NO gradients per design system). OKLCH colors: Success green, Warning yellow, Error red, Primary blue. Minimum 44px touch targets. Accessibility: ARIA labels, keyboard navigation, semantic HTML.</constraint>
+    <constraint id="9">Session integration: ComprehensionMetric aggregates should not block session completion flow. Store individual responses immediately, batch aggregation to ComprehensionMetric table via background job (document as future optimization).</constraint>
+    <constraint id="10">Performance target: Prompt generation (less than 2 seconds), AI evaluation (less than 5 seconds), metrics query (less than 100ms). Cache recent prompts within 7 days to avoid regenerating same prompt for same objective.</constraint>
+    <constraint id="11">Medical terminology preservation: ChatMock system prompt must explicitly request medical accuracy and terminology preservation. Avoid oversimplification that loses clinical meaning.</constraint>
+    <constraint id="12">Authentication: Hardcoded kevy@americano.dev for MVP (auth deferred per architecture). Session/response records must include userId for future multi-user support.</constraint>
+    <constraint id="13">Testing: Jest for unit tests, React Testing Library for component tests. Test coverage targets: prompt generation (5+ templates), AI evaluation (10+ response types), calibration logic (3+ scenarios).</constraint>
+    <constraint id="14">Error handling: ChatMock API failures must have retry logic (max 3 attempts, exponential backoff). User-friendly error messages for API failures. Validation errors via Zod schemas.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/validation/prompts/generate</name>
+      <kind>REST endpoint</kind>
+      <signature>{ objectiveId: string, sessionId?: string } to { prompt: ValidationPrompt }</signature>
+      <path>apps/web/src/app/api/validation/prompts/generate/route.ts</path>
+      <description>Generate "Explain to a patient" prompt for objectiveId. Returns prompt text, promptType (Direct Question/Clinical Scenario/Teaching Simulation), conceptName, expectedCriteria array.</description>
+    </interface>
+    <interface>
+      <name>POST /api/validation/responses</name>
+      <kind>REST endpoint</kind>
+      <signature>{ promptId: string, sessionId?: string, userAnswer: string, confidenceLevel: 1-5 } to { evaluation: JSON, score: 0-100, feedback: string, calibration: string }</signature>
+      <path>apps/web/src/app/api/validation/responses/route.ts</path>
+      <description>Submit user explanation for evaluation. Calls ResponseEvaluator to get structured evaluation, stores ValidationResponse, updates ComprehensionMetric. Returns score breakdown, strengths[], gaps[], calibration note.</description>
+    </interface>
+    <interface>
+      <name>GET /api/validation/metrics/:objectiveId</name>
+      <kind>REST endpoint</kind>
+      <signature>{ objectiveId: string } to { metrics: ComprehensionMetric[], trend: string, avgScore: number }</signature>
+      <path>apps/web/src/app/api/validation/metrics/[objectiveId]/route.ts</path>
+      <description>Fetch comprehension history for objective. Returns array of ComprehensionMetric records (date, score, sampleSize), trend (improving/stable/worsening), average score over time. Powers progress page trends chart.</description>
+    </interface>
+    <interface>
+      <name>ValidationPromptGenerator</name>
+      <kind>TypeScript class</kind>
+      <signature>generateExplainToPatientPrompt(objectiveId: string): Promise(ValidationPrompt)</signature>
+      <path>apps/web/src/lib/validation-prompt-generator.ts</path>
+      <description>Generate varied patient education prompts from learning objectives. Implements 3 template types with random selection. Uses ChatMock (GPT-5) with system prompt emphasizing patient-appropriate language and clinical accuracy.</description>
+    </interface>
+    <interface>
+      <name>ResponseEvaluator</name>
+      <kind>TypeScript class</kind>
+      <signature>evaluateResponse(promptId: string, userAnswer: string, confidenceLevel: 1-5): Promise({ score: number, subscores: {...}, strengths: string[], gaps: string[], calibrationDelta: number })</signature>
+      <path>apps/web/src/lib/response-evaluator.ts</path>
+      <description>Evaluate user explanation against 4-dimensional rubric using ChatMock. Returns weighted score (terminology 20%, relationships 30%, application 30%, clarity 20%), individual subscores, strengths/gaps lists, calibration delta.</description>
+    </interface>
+    <interface>
+      <name>ConfidenceCalibrator</name>
+      <kind>TypeScript class</kind>
+      <signature>calculateCalibration(confidenceLevel: 1-5, score: 0-100): { delta: number, classification: string, note: string }</signature>
+      <path>apps/web/src/lib/confidence-calibrator.ts</path>
+      <description>Calculate confidence calibration metrics. Returns calibration delta (normalized confidence - score), classification (Overconfident/Underconfident/Calibrated), user-friendly insight message for feedback display.</description>
+    </interface>
+    <interface>
+      <name>ComprehensionPromptDialog</name>
+      <kind>React component</kind>
+      <signature>ComprehensionPromptDialog prompt={ValidationPrompt} objectiveId={string} sessionId={string} onComplete={(response) => void} onSkip={() => void}</signature>
+      <path>apps/web/src/components/study/ComprehensionPromptDialog.tsx</path>
+      <description>Dialog for comprehension prompt display and response submission. Shows prompt text, confidence slider (1-5), textarea for explanation, submit button, loading state, evaluation results (score progress ring, strengths/gaps lists, calibration note), retry/skip buttons. Glassmorphism design, min 44px targets.</description>
+    </interface>
+    <interface>
+      <name>Prisma Schema Models</name>
+      <kind>Database models</kind>
+      <signature>ValidationPrompt { id, promptText, promptType, conceptName, expectedCriteria, createdAt }, ValidationResponse { id, promptId FK, sessionId FK, userAnswer, aiEvaluation JSON, score, confidence, respondedAt }, ComprehensionMetric { id, conceptName, date, avgScore, sampleSize, trend }</signature>
+      <path>apps/web/prisma/schema.prisma</path>
+      <description>Database models for comprehension validation system. ValidationPrompt stores generated prompts (with caching for 7 days). ValidationResponse stores user responses with evaluation results. ComprehensionMetric aggregates scores per objective over time.</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Jest for unit tests, React Testing Library for component tests (from project configuration in package.json). Test command: npm test. All tests in apps/web/src/__tests__/ directory organized by domain (components, lib). Coverage targets: 70%+ for critical paths (AI evaluation, scoring calculations). Mock ChatMock API responses for deterministic testing. Use Prisma in-memory SQLite for integration tests (document as future optimization). Component tests use user-centric queries (screen.getByRole, screen.getByText) following RTL best practices.</standards>
+
+    <locations>
+      <location>apps/web/src/__tests__/components/</location>
+      <location>apps/web/src/__tests__/lib/</location>
+      <location>apps/web/src/__tests__/api/ (future E2E test directory)</location>
+    </locations>
+
+    <ideas>
+      <idea acId="1">Test ValidationPromptGenerator: (a) Generate prompts for 5 different learning objectives and verify varied templates (Direct Question, Clinical Scenario, Teaching Simulation appear), (b) Verify prompt text uses patient-appropriate language, (c) Verify caching works within 7 days, (d) Test ChatMock API retry on failure</idea>
+      <idea acId="1">Test prompt variation: Generate 10 prompts for same objective and verify no exact duplicates (ChatMock varies phrasing). Verify all 3 template types used over 30 generations.</idea>
+      <idea acId="2">Test ComprehensionPromptDialog component: (a) Render with sample prompt, verify text displays correctly, (b) Test confidence slider (1-5 values), verify values captured correctly, (c) Test textarea input (multi-paragraph), verify no character limits enforced, (d) Test submit button disabled state during loading</idea>
+      <idea acId="2">Test dialog guidance: Verify guidance tooltip appears on hover, suggests key elements (terminology, relationships, examples), helpful hint content</idea>
+      <idea acId="3">Test ResponseEvaluator: (a) Submit 5 strong explanations (correct terminology, clear relationships, good application), verify scores 80-100, (b) Submit 5 weak explanations (missing concepts, unclear language, no application), verify scores 0-59, (c) Submit 5 medium explanations (some accuracy, partial relationships), verify scores 60-79</idea>
+      <idea acId="3">Test AI evaluation rubric: (a) Test terminology scoring (medical jargon usage accuracy), (b) Test relationships scoring (concept connections demonstrated), (c) Test application scoring (clinical scenario application), (d) Test clarity scoring (patient-friendly language)</idea>
+      <idea acId="4">Test score calculation: Verify weighted formula exact match: (terminology*0.20 + relationships*0.30 + application*0.30 + clarity*0.20). Test boundary conditions (all zeros = 0, all 100s = 100, mixed = proper average).</idea>
+      <idea acId="5">Test feedback display: (a) Verify progress ring shows correct color (red 0-59, yellow 60-79, green 80-100), (b) Verify strengths list appears with 2-3 bullet points, (c) Verify gaps list appears with 2-3 bullet points with hints, (d) Verify calibration note displays appropriate message</idea>
+      <idea acId="5">Test retry flow: After feedback, verify textarea clears, can submit new explanation, previous response not lost in history</idea>
+      <idea acId="6">Test session integration: (a) Start study session to verify ComprehensionPromptDialog appears after objective content review, before flashcards, (b) Test skip button to verify response recorded as skipped, session continues, (c) Verify prompt time tracked in session duration, (d) Verify score feeds to session summary</idea>
+      <idea acId="7">Test ComprehensionMetric model: (a) Submit 3 responses for objective A at different times, verify ComprehensionMetric aggregates correctly, (b) Query metrics for objective to verify date range, avgScore, sampleSize, trend calculated</idea>
+      <idea acId="7">Test analytics page: (a) Render comprehension progress page, verify line chart displays scores over time, (b) Test weak area identification (objectives with avg less than 60%), verify flagged correctly, (c) Test filters (by course, date range), verify results filtered</idea>
+      <idea acId="8">Test confidence calibration: (a) Submit overconfident response (confidence 5, score 40) to verify delta greater than 15, message suggests "beware overconfidence", (b) Submit underconfident response (confidence 1, score 85) to verify delta less than -15, message suggests "trust yourself", (c) Submit calibrated response (confidence 3, score 60) to verify delta ~0, message indicates "well calibrated"</idea>
+      <idea acId="8">Test calibration accuracy tracking: Over 5 responses, verify correlation coefficient calculation between confidence and actual score</idea>
+      <idea acId="all">Test error handling: (a) ChatMock API failure to verify retry logic, user sees friendly error message, (b) Database error to verify API returns 500 with error code, (c) Invalid objective ID to verify 404 response, (d) Malformed request to verify Zod validation error</idea>
+      <idea acId="all">Test medical terminology preservation: Submit explanation with correct medical terminology, verify ChatMock evaluation preserves terms accurately (not oversimplified). Verify ChatMock system prompt includes medical accuracy emphasis.</idea>
+    </ideas>
+  </tests>
+</story-context>

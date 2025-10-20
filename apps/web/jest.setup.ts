@@ -1,13 +1,5 @@
 import '@testing-library/jest-dom';
 
-// Declare vi global for Vitest compatibility
-declare global {
-  var vi: typeof jest;
-}
-
-// Create Vitest compatibility layer for tests migrated from Vitest
-globalThis.vi = jest;
-
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
@@ -70,36 +62,81 @@ jest.mock('@/lib/db', () => ({
       findUnique: jest.fn(),
       upsert: jest.fn(),
     },
-    searchQuery: {
-      create: jest.fn(),
+    // Clinical scenario models (Story 4.2)
+    clinicalScenario: {
       findMany: jest.fn(),
-      count: jest.fn(),
-      deleteMany: jest.fn(),
-      updateMany: jest.fn(),
-    },
-    searchClick: {
+      findUnique: jest.fn(),
+      findFirst: jest.fn(),
       create: jest.fn(),
-      findMany: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
       count: jest.fn(),
-      deleteMany: jest.fn(),
     },
-    lecture: {
+    scenarioResponse: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      aggregate: jest.fn(),
+      groupBy: jest.fn(),
+    },
+    clinicalReasoningMetric: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      upsert: jest.fn(),
+      aggregate: jest.fn(),
+      groupBy: jest.fn(),
+    },
+    validationPrompt: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn(),
+    },
+    validationResponse: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      aggregate: jest.fn(),
+      count: jest.fn(),
+    },
+    calibrationMetric: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      upsert: jest.fn(),
+    },
+    learningObjective: {
       findMany: jest.fn(),
       findUnique: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
     },
-    contentChunk: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-    },
-    $queryRaw: jest.fn(),
-    $executeRaw: jest.fn(),
     $transaction: jest.fn((callback) => callback({
       mission: {
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+      },
+      clinicalScenario: {
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
+      },
+      scenarioResponse: {
         findMany: jest.fn(),
         findUnique: jest.fn(),
         create: jest.fn(),
@@ -109,8 +146,8 @@ jest.mock('@/lib/db', () => ({
   },
 }));
 
-// Mock Prisma enums (using generated path)
-jest.mock('@/generated/prisma', () => ({
+// Mock Prisma enums
+jest.mock('@prisma/client', () => ({
   PrismaClient: jest.fn(),
   MissionStatus: {
     COMPLETED: 'COMPLETED',
@@ -122,6 +159,30 @@ jest.mock('@/generated/prisma', () => ({
     WEEKLY: 'WEEKLY',
     MONTHLY: 'MONTHLY',
     ALL_TIME: 'ALL_TIME',
+  },
+  // Clinical scenario enums (Story 4.2)
+  ScenarioType: {
+    DIAGNOSIS: 'DIAGNOSIS',
+    MANAGEMENT: 'MANAGEMENT',
+    DIFFERENTIAL: 'DIFFERENTIAL',
+    COMPLICATIONS: 'COMPLICATIONS',
+  },
+  PromptType: {
+    EXPLAIN_TO_PATIENT: 'EXPLAIN_TO_PATIENT',
+    CLINICAL_REASONING: 'CLINICAL_REASONING',
+    CONTROLLED_FAILURE: 'CONTROLLED_FAILURE',
+  },
+  ObjectiveComplexity: {
+    BASIC: 'BASIC',
+    INTERMEDIATE: 'INTERMEDIATE',
+    ADVANCED: 'ADVANCED',
+  },
+  MasteryLevel: {
+    NOT_STARTED: 'NOT_STARTED',
+    BEGINNER: 'BEGINNER',
+    INTERMEDIATE: 'INTERMEDIATE',
+    ADVANCED: 'ADVANCED',
+    MASTERED: 'MASTERED',
   },
   Prisma: {
     ModelName: {},

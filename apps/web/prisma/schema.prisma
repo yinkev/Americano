@@ -36,19 +36,29 @@ model User {
   // Story 2.6: Mission adaptation tracking
   lastMissionAdaptation DateTime? // Throttle adaptations to max 1/week
 
+  // Story 5.1: Behavioral pattern analysis preferences
+  behavioralAnalysisEnabled     Boolean @default(true)
+  learningStyleProfilingEnabled Boolean @default(true)
+  shareAnonymizedPatterns       Boolean @default(false)
+
+  // Story 4.4: Peer calibration comparison privacy opt-in
+  sharePeerCalibrationData Boolean @default(false)
+
   // Relations
-  courses          Course[]
-  lectures         Lecture[]
-  studySessions    StudySession[]
-  missions         Mission[]
-  reviews          Review[]
-  exams            Exam[]
-  coursePriorities CoursePriority[]
-  streak           Streak?
-  achievements     Achievement[]
-  studyGoals       StudyGoal[]
-  missionStreak    MissionStreak?
-  missionReviews   MissionReview[]
+  courses                  Course[]
+  lectures                 Lecture[]
+  studySessions            StudySession[]
+  missions                 Mission[]
+  reviews                  Review[]
+  exams                    Exam[]
+  coursePriorities         CoursePriority[]
+  streak                   Streak?
+  achievements             Achievement[]
+  studyGoals               StudyGoal[]
+  missionStreak            MissionStreak?
+  missionReviews           MissionReview[]
+  scenarioResponses        ScenarioResponse[]
+  clinicalReasoningMetrics ClinicalReasoningMetric[]
 
   @@map("users")
 }
@@ -92,19 +102,17 @@ model Lecture {
   processedPages        Int       @default(0) // Number of pages processed
   processingStartedAt   DateTime? // When processing started
   estimatedCompletionAt DateTime? // ETA for completion
-  embeddingProgress     Float     @default(0) // 0.0-1.0 embedding generation progress
 
   // Metadata
   weekNumber Int?
   topicTags  String[]
 
   // Relations
-  user               User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course             Course                   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course             Course              @relation(fields: [courseId], references: [id], onDelete: Cascade)
   contentChunks      ContentChunk[]
   learningObjectives LearningObjective[]
   cards              Card[]
-  firstAidMappings   LectureFirstAidMapping[]
 
   @@index([userId])
   @@index([courseId])
@@ -115,10 +123,8 @@ model Lecture {
 enum ProcessingStatus {
   PENDING
   PROCESSING
-  EMBEDDING
   COMPLETED
   FAILED
-  EMBEDDING_FAILED
 }
 
 model ContentChunk {
@@ -131,11 +137,7 @@ model ContentChunk {
   createdAt  DateTime                     @default(now())
 
   // Relations
-  lecture             Lecture                 @relation(fields: [lectureId], references: [id], onDelete: Cascade)
-  recommendationsFrom ContentRecommendation[] @relation("SourceContent")
-  recommendationsTo   ContentRecommendation[] @relation("RecommendedContent")
-  conflictsAsSourceA  Conflict[]              @relation("SourceAConflicts")
-  conflictsAsSourceB  Conflict[]              @relation("SourceBConflicts")
+  lecture Lecture @relation(fields: [lectureId], references: [id], onDelete: Cascade)
 
   @@index([lectureId])
   @@map("content_chunks")
@@ -160,12 +162,17 @@ model LearningObjective {
   weaknessScore    Float        @default(0.5) // 0.0-1.0, higher = weaker
 
   // Relations
-  lecture            Lecture                 @relation(fields: [lectureId], references: [id], onDelete: Cascade)
-  cards              Card[]
-  prerequisites      ObjectivePrerequisite[] @relation("Objective")
-  dependents         ObjectivePrerequisite[] @relation("Prerequisite")
-  performanceMetrics PerformanceMetric[]
-  priorityFeedback   PriorityFeedback[]
+  lecture              Lecture                 @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  cards                Card[]
+  prerequisites        ObjectivePrerequisite[] @relation("Objective")
+  dependents           ObjectivePrerequisite[] @relation("Prerequisite")
+  performanceMetrics   PerformanceMetric[]
+  priorityFeedback     PriorityFeedback[]
+  comprehensionMetrics ComprehensionMetric[]
+  validationPrompts    ValidationPrompt[]
+  clinicalScenarios    ClinicalScenario[]
+  controlledFailures   ControlledFailure[]
+  masteryVerifications MasteryVerification[]
 
   @@index([lectureId])
   @@index([isHighYield])
@@ -341,6 +348,7 @@ model StudySession {
   mission             Mission?             @relation(fields: [missionId], references: [id], onDelete: SetNull)
   reviews             Review[]
   validationResponses ValidationResponse[]
+  scenarioResponses   ScenarioResponse[]
 
   @@index([userId])
   @@index([startedAt])
@@ -360,10 +368,8 @@ model Concept {
   createdAt   DateTime                     @default(now())
 
   // Relations
-  relatedFrom      ConceptRelationship[]    @relation("ConceptFrom")
-  relatedTo        ConceptRelationship[]    @relation("ConceptTo")
-  conflicts        Conflict[]
-  firstAidMappings FirstAidConceptMapping[]
+  relatedFrom ConceptRelationship[] @relation("ConceptFrom")
+  relatedTo   ConceptRelationship[] @relation("ConceptTo")
 
   @@index([category])
   @@map("concepts")
@@ -377,11 +383,6 @@ model ConceptRelationship {
   strength      Float            @default(1.0) // 0.0 to 1.0
   createdAt     DateTime         @default(now())
 
-  // User annotations (Story 3.2 Task 1.3)
-  isUserDefined Boolean @default(false)
-  userNote      String? @db.Text
-  createdBy     String? // userId for custom connections
-
   // Relations
   fromConcept Concept @relation("ConceptFrom", fields: [fromConceptId], references: [id], onDelete: Cascade)
   toConcept   Concept @relation("ConceptTo", fields: [toConceptId], references: [id], onDelete: Cascade)
@@ -389,7 +390,6 @@ model ConceptRelationship {
   @@unique([fromConceptId, toConceptId, relationship])
   @@index([fromConceptId])
   @@index([toConceptId])
-  @@index([isUserDefined])
   @@map("concept_relationships")
 }
 
@@ -412,9 +412,27 @@ model ValidationPrompt {
   expectedCriteria String[] // Key points expected in answer
   createdAt        DateTime   @default(now())
 
-  // Relations
-  responses ValidationResponse[]
+  // Story 4.1 Task 1.1: Prompt variation metadata
+  promptData Json? // {templateType: "direct" | "scenario" | "teaching", variation: string, seed: number}
 
+  // Story 4.1: Link to learning objective for context
+  objectiveId String?
+
+  // Story 4.5 Task 1: Adaptive questioning fields
+  difficultyLevel     Int       @default(50) // 0-100 scale for adaptive difficulty
+  discriminationIndex Float? // Item Response Theory discrimination parameter (calculated after ≥20 responses)
+  timesUsed           Int       @default(0) // Track usage for question rotation
+  lastUsedAt          DateTime? // Enforce 2-week cooldown period
+
+  // Relations
+  responses         ValidationResponse[]
+  learningObjective LearningObjective?   @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+
+  @@index([conceptName])
+  @@index([objectiveId])
+  @@index([createdAt])
+  @@index([difficultyLevel]) // Query questions by difficulty for adaptive selection
+  @@index([lastUsedAt]) // Query unused questions with cooldown enforcement
   @@map("validation_prompts")
 }
 
@@ -424,15 +442,114 @@ enum PromptType {
   CONTROLLED_FAILURE
 }
 
+// Story 4.3: Emotion tagging for controlled failure memory anchoring
+enum EmotionTag {
+  SURPRISE
+  CONFUSION
+  FRUSTRATION
+  AHA_MOMENT
+}
+
+// Story 4.2: Clinical Reasoning Scenarios
+enum ScenarioType {
+  DIAGNOSIS
+  MANAGEMENT
+  DIFFERENTIAL
+  COMPLICATIONS
+}
+
+model ClinicalScenario {
+  id             String       @id @default(cuid())
+  objectiveId    String
+  scenarioType   ScenarioType
+  difficulty     String // BASIC, INTERMEDIATE, ADVANCED
+  caseText       Json // Multi-stage case structure
+  boardExamTopic String?
+  createdAt      DateTime     @default(now())
+
+  objective LearningObjective  @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+  responses ScenarioResponse[]
+
+  @@index([objectiveId])
+  @@index([boardExamTopic])
+  @@index([createdAt])
+  @@map("clinical_scenarios")
+}
+
+model ScenarioResponse {
+  id               String   @id @default(cuid())
+  scenarioId       String
+  userId           String
+  sessionId        String?
+  userChoices      Json // User selections at each stage
+  userReasoning    String   @db.Text
+  score            Int // Overall score 0-100
+  competencyScores Json // { dataGathering, diagnosis, management, clinicalReasoning }
+  timeSpent        Int // seconds
+  respondedAt      DateTime @default(now())
+
+  scenario ClinicalScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session  StudySession?    @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([scenarioId])
+  @@index([userId])
+  @@index([respondedAt])
+  @@map("scenario_responses")
+}
+
+model ClinicalReasoningMetric {
+  id               String   @id @default(cuid())
+  userId           String
+  scenarioType     String
+  competencyScores Json // { dataGathering, diagnosis, management, clinicalReasoning }
+  boardExamTopic   String?
+  date             DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@index([scenarioType])
+  @@index([boardExamTopic])
+  @@map("clinical_reasoning_metrics")
+}
+
 model ValidationResponse {
   id           String   @id @default(cuid())
   promptId     String
   sessionId    String?
+  userId       String // User who submitted the response
   userAnswer   String   @db.Text
   aiEvaluation String   @db.Text
   score        Float // 0.0 to 1.0
-  confidence   Float? // User's self-reported confidence
+  confidence   Float? // Legacy field (Float), kept for backward compatibility
   respondedAt  DateTime @default(now())
+
+  // Story 4.1 Task 1.2: Comprehension validation fields
+  confidenceLevel  Int? // 1-5 scale (new standard for comprehension validation)
+  calibrationDelta Float? // confidenceNormalized - (score * 100)
+  detailedFeedback Json? // {subscores: {terminology, relationships, application, clarity}, strengths: string[], gaps: string[], calibrationNote: string}
+  skipped          Boolean @default(false) // Track if user skipped the prompt
+
+  // Story 4.3 Task 1: Controlled failure tracking fields
+  isControlledFailure Boolean @default(false) // Marks if this was a controlled failure challenge
+  retryAttemptNumber  Int? // Tracks which retry attempt this is (1, 2, 3, etc.)
+
+  // Story 4.4 Task 1: Confidence calibration tracking fields
+  preAssessmentConfidence  Int? // 1-5 scale captured BEFORE seeing assessment details
+  postAssessmentConfidence Int? // 1-5 scale captured AFTER seeing assessment but BEFORE submitting
+  confidenceShift          Int? // Calculated: postAssessmentConfidence - preAssessmentConfidence
+  confidenceRationale      String? @db.Text // User's explanation for confidence level
+  reflectionNotes          String? @db.Text // Metacognitive reflection response
+  calibrationCategory      CalibrationCategory? // OVERCONFIDENT, UNDERCONFIDENT, CALIBRATED
+
+  // Story 4.5 Task 1: Adaptive questioning difficulty tracking
+  initialDifficulty      Int? // Difficulty level when question was presented (0-100)
+  adjustedDifficulty     Int? // Difficulty level after response (for next question)
+  difficultyChangeReason String? @db.Text // Explanation for difficulty adjustment (e.g., "Score 90% - increased difficulty")
+  isFollowUpQuestion     Boolean @default(false) // Marks if this was a follow-up question
+  parentPromptId         String? // References parent prompt if this is a follow-up
+  timeToRespond          Int? // Time in milliseconds to complete response
 
   // Relations
   prompt  ValidationPrompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
@@ -440,7 +557,21 @@ model ValidationResponse {
 
   @@index([promptId])
   @@index([respondedAt])
+  @@index([sessionId])
+  @@index([userId])
+  @@index([userId, respondedAt])
+  @@index([calibrationCategory])
+  @@index([parentPromptId]) // Query follow-up questions efficiently
+  @@index([isFollowUpQuestion]) // Filter follow-up vs original questions
   @@map("validation_responses")
+}
+
+// Story 4.4: Calibration category classification
+enum CalibrationCategory {
+  OVERCONFIDENT // confidence > actual score + 15
+  UNDERCONFIDENT // confidence < actual score - 15
+  CALIBRATED // abs(confidence - score) <= 15
+  UNKNOWN // Insufficient data
 }
 
 model ComprehensionMetric {
@@ -451,9 +582,141 @@ model ComprehensionMetric {
   sampleSize  Int // Number of validations
   trend       String? // "improving", "stable", "declining"
 
-  @@unique([conceptName, date])
+  // Story 4.1 Task 1.3: Per-user objective-level tracking
+  objectiveId String?
+  userId      String
+
+  // Relations
+  learningObjective LearningObjective? @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+
+  @@unique([conceptName, date, userId])
   @@index([conceptName])
+  @@index([objectiveId])
+  @@index([userId])
   @@map("comprehension_metrics")
+}
+
+// Story 4.5: Mastery Verification Tracking
+model MasteryVerification {
+  id               String                  @id @default(cuid())
+  userId           String
+  objectiveId      String
+  status           MasteryStatus           @default(NOT_STARTED)
+  verifiedAt       DateTime? // When mastery was achieved (null if not verified)
+  criteria         Json // Stores verification criteria met: {consecutiveScores: boolean, multipleTypes: boolean, difficultyMatch: boolean, calibrationAccuracy: boolean, timeSpaced: boolean}
+  completedAt      DateTime?
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+
+  // Relations
+  learningObjective LearningObjective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, objectiveId]) // One mastery record per user per objective
+  @@index([userId])
+  @@index([objectiveId])
+  @@index([status])
+  @@index([userId, status]) // Query user's in-progress mastery verification
+  @@map("mastery_verifications")
+}
+
+// Story 4.5: Mastery verification status enum
+enum MasteryStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  VERIFIED
+}
+
+// Story 4.5: Adaptive Session Tracking (IRT-based)
+model AdaptiveSession {
+  id                  String   @id @default(cuid())
+  userId              String
+  sessionId           String? // Link to StudySession if part of broader session
+  initialDifficulty   Int // Starting difficulty level (0-100)
+  currentDifficulty   Int // Current difficulty after adjustments (0-100)
+  irtEstimate         Float? // Theta parameter (knowledge estimate) from IRT model
+  confidenceInterval  Float? // ±X points at 95% confidence (for early stopping)
+  questionCount       Int      @default(0) // Number of questions asked in this adaptive session
+  trajectory          Json? // Array of {questionId, difficulty, score, adjustment} for session summary
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([userId, createdAt]) // Query recent adaptive sessions
+  @@map("adaptive_sessions")
+}
+
+// Story 4.4: Confidence Calibration Metrics (daily aggregates)
+model CalibrationMetric {
+  id                   String   @id @default(cuid())
+  userId               String
+  objectiveId          String? // Optional: calibration metrics per learning objective
+  date                 DateTime @default(now())
+  avgDelta             Float // Average calibration delta for the period
+  correlationCoeff     Float // Pearson's r correlation coefficient
+  sampleSize           Int // Number of validation responses in this period
+  trend                String? // "improving", "stable", "declining"
+  overconfidentCount   Int      @default(0) // Count of OVERCONFIDENT responses
+  underconfidentCount  Int      @default(0) // Count of UNDERCONFIDENT responses
+  calibratedCount      Int      @default(0) // Count of CALIBRATED responses
+  meanAbsoluteError    Float? // MAE of calibration deltas
+  createdAt            DateTime @default(now())
+
+  @@unique([userId, date, objectiveId])
+  @@index([userId, date])
+  @@index([objectiveId])
+  @@index([correlationCoeff])
+  @@map("calibration_metrics")
+}
+
+// Story 4.3: Controlled Failure and Memory Anchoring
+model ControlledFailure {
+  id            String  @id @default(cuid())
+  objectiveId   String
+  userId        String
+  promptId      String // Link to ValidationPrompt
+  responseId    String? // Link to ValidationResponse
+  attemptNumber Int // 1 = initial failure, 2 = first retry, 3 = second retry, etc.
+  isCorrect     Boolean // False for initial failure, track progress on retries
+
+  // Emotion anchoring fields
+  emotionTag    EmotionTag?
+  personalNotes String?     @db.Text // User's personal reflection on what clicked
+
+  // Spaced repetition retry scheduling
+  retestSchedule Json // Array of ISO date strings ["+1d", "+3d", "+7d", "+14d", "+30d"]
+  nextRetryAt    DateTime? // Next scheduled retry date (for query optimization)
+
+  // Tracking
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  learningObjective LearningObjective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+
+  // Performance indexes (Story context constraint #6)
+  @@index([userId, objectiveId]) // Query failures by user and concept
+  @@index([nextRetryAt]) // Query pending retries efficiently
+  @@index([userId, nextRetryAt]) // User's pending retries
+  @@map("controlled_failures")
+}
+
+model FailurePattern {
+  id                 String   @id @default(cuid())
+  userId             String
+  patternType        String // "category_cluster", "systematic_error", "temporal_pattern"
+  affectedObjectives Json // Array of objectiveId strings that exhibit this pattern
+  patternDescription String   @db.Text // Human-readable description (e.g., "Confuses ACE inhibitors vs ARBs")
+  remediation        String   @db.Text // Suggested remediation strategy
+  confidence         Float    @default(0.5) // 0.0-1.0 confidence in pattern detection
+  detectedAt         DateTime @default(now())
+  lastSeenAt         DateTime @default(now()) // Last time this pattern was observed
+
+  // Relations tracking
+  @@index([userId])
+  @@index([patternType])
+  @@index([userId, lastSeenAt]) // Query recent patterns for dashboard
+  @@map("failure_patterns")
 }
 
 // ============================================
@@ -466,6 +729,15 @@ model BehavioralEvent {
   eventType EventType
   eventData Json // Flexible JSON for event-specific data
   timestamp DateTime  @default(now())
+
+  // Story 5.1: Enhanced behavioral tracking fields
+  completionQuality       CompletionQuality?
+  contentType             String?
+  dayOfWeek               String?
+  difficultyLevel         String?
+  engagementLevel         EngagementLevel?
+  sessionPerformanceScore Float?
+  timeOfDay               String?
 
   @@index([userId])
   @@index([eventType])
@@ -483,10 +755,6 @@ enum EventType {
   LECTURE_UPLOADED
   SEARCH_PERFORMED
   GRAPH_VIEWED
-  RECOMMENDATION_VIEWED
-  RECOMMENDATION_CLICKED
-  RECOMMENDATION_DISMISSED
-  RECOMMENDATION_RATED
 }
 
 model LearningPattern {
@@ -743,7 +1011,6 @@ model MissionFeedback {
   paceRating             PaceRating
   improvementSuggestions String?    @db.Text
 
-  createdAt   DateTime @default(now())
   submittedAt DateTime @default(now())
 
   // Relations
@@ -805,608 +1072,159 @@ enum ReviewPeriod {
 }
 
 // ============================================
-// Story 3.1: Semantic Search Implementation
+// Story 5.1: Behavioral Pattern Analysis
 // ============================================
 
-model SearchQuery {
-  id             String   @id @default(cuid())
-  userId         String
-  query          String   @db.Text
-  filters        Json? // { courseIds?: string[], dateRange?: { start, end }, contentTypes?: string[] }
-  resultCount    Int      @default(0)
-  topResultId    String? // ID of the top result for analytics
-  responseTimeMs Int? // Performance tracking
-  timestamp      DateTime @default(now())
+model BehavioralPattern {
+  id              String                @id @default(cuid())
+  userId          String
+  patternType     BehavioralPatternType
+  patternData     Json
+  confidence      Float
+  firstDetectedAt DateTime              @default(now())
+  lastSeenAt      DateTime              @default(now())
 
-  // Privacy: anonymized after 90 days (GDPR compliance)
-  isAnonymized Boolean   @default(false)
-  anonymizedAt DateTime?
-
-  // Relations
-  clicks SearchClick[]
-
-  @@index([userId, timestamp])
-  @@index([timestamp])
-  @@index([isAnonymized])
-  // Story 3.6 Task 9.4: Composite indexes for query optimization
-  @@index([userId, resultCount, timestamp])
-  // Note: Text column indexing in PostgreSQL uses hash by default for equality checks
-  @@index([userId, query, timestamp])
-  @@map("search_queries")
-}
-
-// Task 6.2: Track click-through rates on search results
-model SearchClick {
-  id            String   @id @default(cuid())
-  searchQueryId String
-  userId        String
-  resultId      String // ID of clicked result (lectureId, objectiveId, etc.)
-  resultType    String // "lecture" | "chunk" | "objective" | "concept"
-  position      Int // Position in search results (0-based)
-  similarity    Float? // Similarity score of clicked result
-  timestamp     DateTime @default(now())
-
-  // Relations
-  searchQuery SearchQuery @relation(fields: [searchQueryId], references: [id], onDelete: Cascade)
-
-  @@index([searchQueryId])
-  @@index([userId, timestamp])
-  @@index([resultId, resultType])
-  @@map("search_clicks")
-}
-
-// ============================================
-// Story 3.6: Advanced Search and Discovery Features
-// ============================================
-
-// Task 2.2: Search suggestion model for autocomplete
-model SearchSuggestion {
-  id             String         @id @default(cuid())
-  term           String         @unique
-  suggestionType SuggestionType
-  frequency      Int            @default(1) // How often this term is searched
-  lastUsed       DateTime       @default(now())
-  metadata       Json? // { source: "medical_term" | "content_title" | "concept", category?: string }
-  createdAt      DateTime       @default(now())
-
-  @@index([term, frequency])
-  @@index([suggestionType])
-  @@index([lastUsed])
-  @@map("search_suggestions")
-}
-
-enum SuggestionType {
-  MEDICAL_TERM // Medical terminology
-  PREVIOUS_SEARCH // User's search history
-  CONTENT_TITLE // From lecture titles
-  CONCEPT // From knowledge graph concepts
-  LEARNING_OBJECTIVE // From extracted objectives
-}
-
-// Task 3.1: Saved search model with alert configuration
-model SavedSearch {
-  id             String         @id @default(cuid())
-  userId         String
-  name           String // User-provided name
-  query          String         @db.Text
-  filters        Json? // { courseIds?, dateRange?, contentTypes?, minSimilarity? }
-  alertEnabled   Boolean        @default(false)
-  alertFrequency AlertFrequency @default(IMMEDIATE)
-  lastRun        DateTime?
-  resultCount    Int? // Results from last run
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-
-  // Relations
-  alerts SearchAlert[]
+  insights InsightPattern[]
 
   @@index([userId])
-  @@index([createdAt])
-  @@map("saved_searches")
-}
-
-enum AlertFrequency {
-  IMMEDIATE // Check on every new content addition
-  DAILY // Daily digest
-  WEEKLY // Weekly summary
-}
-
-// Task 3.3: Search alerts for notifying about new matching content
-model SearchAlert {
-  id               String   @id @default(cuid())
-  savedSearchId    String
-  userId           String
-  triggeredBy      String // Content ID that triggered the alert
-  triggeredType    String // "lecture" | "chunk" | "concept"
-  newResultCount   Int // Number of new results
-  lastNotified     DateTime @default(now())
-  notificationSent Boolean  @default(false)
-  viewed           Boolean  @default(false)
-  createdAt        DateTime @default(now())
-
-  // Relations
-  savedSearch SavedSearch @relation(fields: [savedSearchId], references: [id], onDelete: Cascade)
-
-  @@index([savedSearchId])
-  @@index([userId])
-  @@index([notificationSent])
-  @@index([createdAt])
-  @@map("search_alerts")
-}
-
-// Task 5.1: Search analytics aggregation model
-model SearchAnalytics {
-  id               String   @id @default(cuid())
-  userId           String? // Null for platform-wide analytics
-  date             DateTime @default(now())
-  query            String   @db.Text
-  searchCount      Int      @default(1)
-  avgResultCount   Float
-  avgSimilarity    Float? // Average top result similarity
-  avgClickPosition Float? // Average position of clicked results
-  zeroResultCount  Int      @default(0) // How many times this query returned 0 results
-
-  @@unique([userId, date, query])
-  @@index([userId, date])
-  @@index([date])
-  @@index([query])
-  @@map("search_analytics")
-}
-
-// ============================================
-// Story 3.5: Context-Aware Content Recommendations
-// ============================================
-
-model ContentRecommendation {
-  id                   String               @id @default(cuid())
-  userId               String
-  recommendedContentId String
-  sourceContentId      String? // Content that triggered recommendation
-  score                Float // 0.0 to 1.0
-  reasoning            String               @db.Text // Human-readable explanation
-  status               RecommendationStatus @default(PENDING)
-  contextType          String // 'session', 'objective', 'mission'
-  contextId            String // sessionId, objectiveId, missionId
-  sourceType           ContentSourceType // Source of recommended content
-  createdAt            DateTime             @default(now())
-  viewedAt             DateTime?
-  dismissedAt          DateTime?
-
-  // Relations
-  recommendedContent ContentChunk             @relation("RecommendedContent", fields: [recommendedContentId], references: [id], onDelete: Cascade)
-  sourceContent      ContentChunk?            @relation("SourceContent", fields: [sourceContentId], references: [id], onDelete: SetNull)
-  feedback           RecommendationFeedback[]
-
-  @@index([userId])
-  @@index([status])
-  @@index([contextType, contextId])
-  @@index([createdAt])
-  @@index([userId, contextType, contextId]) // Composite for cache lookups
-  @@map("content_recommendations")
-}
-
-enum RecommendationStatus {
-  PENDING
-  VIEWED
-  DISMISSED
-  RATED
-}
-
-enum ContentSourceType {
-  LECTURE
-  FIRST_AID
-  EXTERNAL_ARTICLE
-  CONCEPT_NOTE
-  USER_NOTE
-}
-
-model RecommendationFeedback {
-  id               String   @id @default(cuid())
-  recommendationId String
-  userId           String
-  rating           Int // 1-5 stars
-  feedbackText     String?  @db.Text
-  helpful          Boolean? // Was this recommendation helpful?
-  createdAt        DateTime @default(now())
-
-  // Relations
-  recommendation ContentRecommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
-
-  @@index([recommendationId])
-  @@index([userId])
-  @@index([createdAt])
-  @@map("recommendation_feedback")
-}
-
-model RecommendationAnalytics {
-  id                   String   @id @default(cuid())
-  userId               String
-  date                 DateTime @default(now())
-  totalRecommendations Int
-  viewedCount          Int
-  clickedCount         Int
-  dismissedCount       Int
-  avgRating            Float?
-  avgEngagementTimeMs  Int?
-  topSourceTypes       Json // Array of {type, count}
-
-  @@unique([userId, date])
-  @@index([userId])
-  @@index([date])
-  @@map("recommendation_analytics")
-}
-
-// ============================================
-// Story 3.4: Content Conflict Detection
-// ============================================
-
-model Source {
-  id               String     @id @default(cuid())
-  name             String     @unique
-  type             SourceType
-  credibilityScore Int // 0-100 scale based on authority and evidence level
-  medicalSpecialty String? // "cardiology", "neurology", etc.
-  lastUpdated      DateTime?
-  metadata         Json? // { publisher, edition, authors[], url?, doi? }
-  createdAt        DateTime   @default(now())
-
-  // Relations
-  userPreferences UserSourcePreference[]
-
-  @@index([type])
-  @@index([credibilityScore])
-  @@map("sources")
-}
-
-enum SourceType {
-  FIRST_AID
-  LECTURE
-  TEXTBOOK
-  JOURNAL
-  GUIDELINE
-  USER_NOTES
-}
-
-model Conflict {
-  id                String           @id @default(cuid())
-  conceptId         String? // Link to knowledge graph concept (optional)
-  sourceAChunkId    String? // Lecture content chunk (optional)
-  sourceBChunkId    String? // Lecture content chunk (optional)
-  sourceAFirstAidId String? // First Aid section (Story 3.3 Task 5.3)
-  sourceBFirstAidId String? // First Aid section (Story 3.3 Task 5.3)
-  conflictType      ConflictType
-  severity          ConflictSeverity
-  description       String           @db.Text
-  status            ConflictStatus   @default(ACTIVE)
-  createdAt         DateTime         @default(now())
-  resolvedAt        DateTime?
-
-  // Relations
-  concept         Concept?             @relation(fields: [conceptId], references: [id], onDelete: SetNull)
-  sourceAChunk    ContentChunk?        @relation("SourceAConflicts", fields: [sourceAChunkId], references: [id], onDelete: Cascade)
-  sourceBChunk    ContentChunk?        @relation("SourceBConflicts", fields: [sourceBChunkId], references: [id], onDelete: Cascade)
-  sourceAFirstAid FirstAidSection?     @relation("FirstAidSourceA", fields: [sourceAFirstAidId], references: [id], onDelete: Cascade)
-  sourceBFirstAid FirstAidSection?     @relation("FirstAidSourceB", fields: [sourceBFirstAidId], references: [id], onDelete: Cascade)
-  resolutions     ConflictResolution[]
-  history         ConflictHistory[]
-  flags           ConflictFlag[]
-
-  @@index([conceptId, status])
-  @@index([severity])
-  @@index([status])
-  @@index([createdAt])
-  @@map("conflicts")
-}
-
-enum ConflictType {
-  DOSAGE
-  CONTRAINDICATION
-  MECHANISM
-  TREATMENT
-  DIAGNOSIS
-  PROGNOSIS
-  OTHER
-}
-
-enum ConflictSeverity {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
-enum ConflictStatus {
-  ACTIVE
-  RESOLVED
-  DISMISSED
-  UNDER_REVIEW
-}
-
-model ConflictResolution {
-  id                String   @id @default(cuid())
-  conflictId        String
-  resolvedBy        String // userId or "system"
-  resolution        String   @db.Text
-  preferredSourceId String?
-  evidence          String?  @db.Text
-  resolvedAt        DateTime @default(now())
-  notes             String?  @db.Text
-
-  // Relations
-  conflict Conflict @relation(fields: [conflictId], references: [id], onDelete: Cascade)
-
-  @@index([conflictId])
-  @@index([resolvedAt])
-  @@map("conflict_resolutions")
-}
-
-model ConflictHistory {
-  id         String          @id @default(cuid())
-  conflictId String
-  changeType ChangeType
-  oldStatus  ConflictStatus?
-  newStatus  ConflictStatus?
-  changedBy  String // userId or "system"
-  changedAt  DateTime        @default(now())
-  notes      String?         @db.Text
-
-  // Relations
-  conflict Conflict @relation(fields: [conflictId], references: [id], onDelete: Cascade)
-
-  @@index([conflictId])
-  @@index([changedAt])
-  @@map("conflict_history")
-}
-
-enum ChangeType {
-  DETECTED
-  RESOLVED
-  REOPENED
-  DISMISSED
-  EVIDENCE_UPDATED
-  SOURCE_UPDATED
-}
-
-model ConflictFlag {
-  id                String   @id @default(cuid())
-  conflictId        String? // Null if flagging new potential conflict
-  userId            String
-  sourceAChunkId    String?
-  sourceBChunkId    String?
-  sourceAFirstAidId String? // Story 3.3 Task 5.4
-  sourceBFirstAidId String? // Story 3.3 Task 5.4
-  description       String   @db.Text
-  userNotes         String?  @db.Text
-  flaggedAt         DateTime @default(now())
-  status            String   @default("PENDING") // PENDING, REVIEWED, APPROVED, REJECTED
-
-  // Relations
-  conflict Conflict? @relation(fields: [conflictId], references: [id], onDelete: SetNull)
-
-  @@index([userId])
-  @@index([status])
-  @@index([flaggedAt])
-  @@map("conflict_flags")
-}
-
-model UserSourcePreference {
-  id         String     @id @default(cuid())
-  userId     String
-  sourceId   String
-  trustLevel TrustLevel
-  priority   Int // 1-N ranking for automatic resolution
-  notes      String?    @db.Text
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-
-  // Relations
-  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, sourceId])
-  @@index([userId])
-  @@index([priority])
-  @@map("user_source_preferences")
-}
-
-enum TrustLevel {
-  HIGH
-  MEDIUM
-  LOW
-  BLOCKED
-}
-
-// ============================================
-// Story 3.3: First Aid Integration
-// ============================================
-
-// Task 1.4: First Aid Section model
-model FirstAidSection {
-  id          String  @id @default(cuid())
-  userId      String // User who uploaded this First Aid content
-  edition     String // "2026", "2025", etc.
-  year        Int // 2026, 2025
-  system      String // "Cardiovascular", "Respiratory", "GI", etc.
-  section     String // Major section title
-  subsection  String? // Optional subsection
-  pageNumber  Int // Page in physical book
-  content     String  @db.Text
-  isHighYield Boolean @default(false) // Starred content
-
-  // Structure preservation (Task 1.2)
-  mnemonics            String[] // List of mnemonics in this section
-  clinicalCorrelations String[] // Clinical application notes
-  visualMarkers        Json? // { stars: boolean, boxes: string[], diagrams: string[] }
-
-  // Embeddings for semantic search (Task 1.3)
-  embedding Unsupported("vector(1536)")? // gemini-embedding-001
-
-  // Copyright and access control (Task 7.1)
-  encryptionKeyHash String? // User-specific encryption key hash
-  accessCount       Int       @default(0) // Track access for rate limiting
-  lastAccessedAt    DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  lectureMappings    LectureFirstAidMapping[]
-  conflictsAsSourceA Conflict[]               @relation("FirstAidSourceA")
-  conflictsAsSourceB Conflict[]               @relation("FirstAidSourceB")
-  conceptMappings    FirstAidConceptMapping[]
-
-  @@index([userId])
-  @@index([edition, system])
-  @@index([isHighYield])
-  @@index([pageNumber])
-  @@map("first_aid_sections")
-}
-
-// Task 2.2: Lecture-to-First Aid mapping
-model LectureFirstAidMapping {
-  id                String          @id @default(cuid())
-  lectureId         String
-  firstAidSectionId String
-  confidence        Float // 0.0-1.0 similarity score
-  priority          MappingPriority @default(STANDARD)
-
-  // Mapping rationale (Task 2.4)
-  rationale     String?          @db.Text
-  userFeedback  MappingFeedback? // User validation
-  feedbackNotes String?          @db.Text
-
-  // Metadata
-  autoMapped  Boolean   @default(true) // Auto-generated vs manual
-  mappedAt    DateTime  @default(now())
-  validatedAt DateTime?
-
-  // Relations
-  lecture         Lecture         @relation(fields: [lectureId], references: [id], onDelete: Cascade)
-  firstAidSection FirstAidSection @relation(fields: [firstAidSectionId], references: [id], onDelete: Cascade)
-
-  @@unique([lectureId, firstAidSectionId])
-  @@index([lectureId])
-  @@index([firstAidSectionId])
+  @@index([patternType])
   @@index([confidence])
-  @@index([priority])
-  @@map("lecture_first_aid_mappings")
+  @@map("behavioral_patterns")
 }
 
-enum MappingPriority {
-  HIGH_YIELD // Starred First Aid content
-  STANDARD // Normal mapping
-  SUGGESTED // Low confidence, needs review
+enum BehavioralPatternType {
+  OPTIMAL_STUDY_TIME
+  STRUGGLE_TOPIC
+  CONTENT_PREFERENCE
+  SESSION_LENGTH
+  DAY_OF_WEEK_PATTERN
+  PERFORMANCE_CORRELATION
+  SESSION_DURATION_PREFERENCE
+  CONTENT_TYPE_PREFERENCE
+  PERFORMANCE_PEAK
+  ATTENTION_CYCLE
+  FORGETTING_CURVE
 }
 
-enum MappingFeedback {
-  HELPFUL
-  NOT_HELPFUL
-  SOMEWHAT_HELPFUL
+model BehavioralInsight {
+  id             String      @id @default(cuid())
+  userId         String
+  insightType    InsightType
+  message        String      @db.Text
+  actionable     Boolean     @default(true)
+  priority       Int         @default(5)
+  createdAt      DateTime    @default(now())
+  acknowledgedAt DateTime?
+
+  patterns InsightPattern[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([acknowledgedAt])
+  @@map("behavioral_insights")
 }
 
-// First Aid Guideline model (from user requirements)
-model FirstAidGuideline {
+enum InsightType {
+  STUDY_TIME_OPTIMIZATION
+  CONTENT_DIFFICULTY_MATCH
+  ENGAGEMENT_BOOST
+  PERFORMANCE_IMPROVEMENT
+  SESSION_LENGTH_ADJUSTMENT
+  CONTENT_PREFERENCE
+  RETENTION_STRATEGY
+}
+
+model InsightPattern {
+  id        String @id @default(cuid())
+  insightId String
+  patternId String
+
+  insight BehavioralInsight @relation(fields: [insightId], references: [id], onDelete: Cascade)
+  pattern BehavioralPattern @relation(fields: [patternId], references: [id], onDelete: Cascade)
+
+  @@unique([insightId, patternId])
+  @@index([insightId])
+  @@index([patternId])
+  @@map("insight_patterns")
+}
+
+model UserLearningProfile {
   id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  content     String   @db.Text
-  category    String // "CPR", "Bleeding", "Burns", etc.
-  edition     String // "2024 Edition"
-  publishedAt DateTime
+  userId      String   @unique
+  profileData Json
+  lastUpdated DateTime @default(now())
 
-  // Vector embedding for semantic search
-  embedding Unsupported("vector(1536)")?
-
-  // Relationships
-  conceptMappings FirstAidConceptMapping[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([category])
-  @@index([edition])
-  @@map("first_aid_guidelines")
+  @@index([userId])
+  @@map("user_learning_profiles")
 }
 
-// First Aid Concept Mapping model (from user requirements)
-model FirstAidConceptMapping {
-  id String @id @default(cuid())
-
-  // Foreign keys - flexible to support both guidelines and sections
-  guidelineId String?
-  guideline   FirstAidGuideline? @relation(fields: [guidelineId], references: [id], onDelete: Cascade)
-
-  sectionId String?
-  section   FirstAidSection? @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-
-  conceptId String
-  concept   Concept @relation(fields: [conceptId], references: [id], onDelete: Cascade)
-
-  // Mapping metadata
-  relevanceScore Float       @default(0.5) // 0-1 score
-  mappingType    MappingType // DIRECT, CONTEXTUAL, PROCEDURAL
-  sourceSection  String? // Section within guideline/section
-
-  createdAt DateTime @default(now())
-
-  @@unique([guidelineId, conceptId])
-  @@unique([sectionId, conceptId])
-  @@index([conceptId])
-  @@index([relevanceScore])
-  @@index([mappingType])
-  @@map("first_aid_concept_mappings")
+enum CompletionQuality {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+  RUSHED
+  NORMAL
+  THOROUGH
 }
 
-// First Aid Version model (from user requirements)
-model FirstAidVersion {
+enum EngagementLevel {
+  VERY_HIGH
+  HIGH
+  MEDIUM
+  LOW
+  VERY_LOW
+}
+
+// ============================================
+// Story 4.6: Comprehensive Understanding Analytics
+// ============================================
+
+model UnderstandingPrediction {
+  id                  String   @id @default(cuid())
+  userId              String
+  objectiveId         String
+  predictionType      String // EXAM_SUCCESS, FORGETTING_RISK, MASTERY_DATE
+  predictedValue      Float
+  confidenceInterval  Json // { lower: number, upper: number }
+  predictedAt         DateTime @default(now())
+  actualValue         Float?
+  accuracy            Float?
+
+  @@index([userId])
+  @@index([objectiveId])
+  @@index([predictedAt])
+  @@map("understanding_predictions")
+}
+
+model PeerBenchmark {
   id           String   @id @default(cuid())
-  edition      String   @unique // "2024 Edition"
-  publishedAt  DateTime
-  downloadedAt DateTime @default(now())
-  isActive     Boolean  @default(true)
-  sourceUrl    String?
+  objectiveId  String
+  metric       String // comprehension_score, reasoning_score, etc
+  percentile25 Float
+  percentile50 Float
+  percentile75 Float
+  mean         Float
+  stdDev       Float
+  sampleSize   Int
+  calculatedAt DateTime @default(now())
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([isActive])
-  @@index([publishedAt])
-  @@map("first_aid_versions")
+  @@unique([objectiveId, metric])
+  @@index([objectiveId])
+  @@map("peer_benchmarks")
 }
 
-enum MappingType {
-  DIRECT // Guideline directly mentions concept
-  CONTEXTUAL // Related by context/symptoms
-  PROCEDURAL // Part of same procedure/protocol
-}
+model DailyInsight {
+  id                  String    @id @default(cuid())
+  userId              String
+  date                DateTime
+  insightType         String // daily_priority, weekly_top3, etc
+  message             String
+  recommendedActions  Json // string[]
+  priority            Int // 1-10
+  dismissed           Boolean   @default(false)
 
-// Task 6.1: First Aid edition tracking
-model FirstAidEdition {
-  id            String   @id @default(cuid())
-  userId        String // User who owns this edition
-  year          Int // 2026, 2025
-  versionNumber String // "2026.1", "2025.0"
-  uploadedAt    DateTime @default(now())
-  isActive      Boolean  @default(true) // Latest edition
-
-  // Edition management (Task 6.2)
-  changeLog          String?              @db.Text // What changed from previous edition
-  mappingStatus      EditionMappingStatus @default(PENDING)
-  processingProgress Int                  @default(0) // 0-100 percentage
-
-  // Metadata
-  sectionCount   Int @default(0)
-  highYieldCount Int @default(0)
-  totalPages     Int @default(0)
-
-  @@unique([userId, year])
-  @@index([userId, isActive])
-  @@index([year])
-  @@map("first_aid_editions")
-}
-
-enum EditionMappingStatus {
-  PENDING // Not yet processed
-  IN_PROGRESS // Currently mapping
-  COMPLETED // All mappings done
-  FAILED // Processing failed
+  @@index([userId])
+  @@index([date])
+  @@map("daily_insights")
 }
