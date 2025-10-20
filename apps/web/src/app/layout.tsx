@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
 import { ChatFAB } from '@/components/ai/chat-fab'
+import { PageTransition } from '@/components/page-transition'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -33,6 +34,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased">
+        {/* WCAG 2.1: Skip to main content link for keyboard navigation */}
+        <a href="#main-content" className="skip-to-main">
+          Skip to main content
+        </a>
+
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -43,11 +49,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <AppSidebar />
             <SidebarInset>
               <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-3 border-b border-white/20 bg-white/95 backdrop-blur-xl shadow-[0_4px_16px_rgba(31,38,135,0.06)] px-4">
-                <SidebarTrigger className="flex items-center justify-center size-9 rounded-xl bg-white hover:bg-white/70 shadow-[0_2px_8px_rgba(31,38,135,0.08)] hover:shadow-[0_4px_12px_rgba(31,38,135,0.12)] transition-all duration-200 border border-white/40" />
-                <div className="h-5 w-px bg-border/30" />
+                <SidebarTrigger
+                  className="flex items-center justify-center size-9 rounded-xl bg-white hover:bg-white/70 shadow-[0_2px_8px_rgba(31,38,135,0.08)] hover:shadow-[0_4px_12px_rgba(31,38,135,0.12)] transition-all duration-200 border border-white/40"
+                  aria-label="Toggle sidebar"
+                />
+                <div className="h-5 w-px bg-border/30" aria-hidden="true" />
                 <h1 className="text-lg font-heading font-bold text-primary">Americano</h1>
               </header>
-              <main className="flex-1">{children}</main>
+              <main id="main-content" className="flex-1" role="main">
+                <PageTransition>{children}</PageTransition>
+              </main>
             </SidebarInset>
           </SidebarProvider>
           <ChatFAB />

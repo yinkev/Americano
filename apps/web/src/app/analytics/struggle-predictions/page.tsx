@@ -48,13 +48,7 @@ export default function StrugglePredictionsPage() {
               </h2>
               <span className="ml-auto text-sm text-muted-foreground">Next 7 days</span>
             </div>
-            <Suspense
-              fallback={
-                <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-48 flex items-center justify-center">
-                  <p className="text-sm text-muted-foreground">Loading predictions...</p>
-                </div>
-              }
-            >
+            <Suspense fallback={<AnalyticsCardSkeleton showChart={false} />}>
               <ActivePredictions />
             </Suspense>
           </section>
@@ -67,13 +61,7 @@ export default function StrugglePredictionsPage() {
                 Prediction Accuracy Trends
               </h2>
             </div>
-            <Suspense
-              fallback={
-                <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-96 flex items-center justify-center">
-                  <p className="text-sm text-muted-foreground">Loading accuracy data...</p>
-                </div>
-              }
-            >
+            <Suspense fallback={<ChartSkeleton variant="line" height={384} />}>
               <PredictionAccuracyChart />
             </Suspense>
           </section>
@@ -86,13 +74,7 @@ export default function StrugglePredictionsPage() {
                 Upcoming Challenges Timeline
               </h2>
             </div>
-            <Suspense
-              fallback={
-                <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-64 flex items-center justify-center">
-                  <p className="text-sm text-muted-foreground">Loading timeline...</p>
-                </div>
-              }
-            >
+            <Suspense fallback={<TimelineSkeleton variant="horizontal" items={7} />}>
               <StruggleRiskTimeline daysAhead={7} />
             </Suspense>
           </section>
@@ -105,13 +87,7 @@ export default function StrugglePredictionsPage() {
                 Struggle Reduction Metrics
               </h2>
             </div>
-            <Suspense
-              fallback={
-                <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-64 flex items-center justify-center">
-                  <p className="text-sm text-muted-foreground">Loading metrics...</p>
-                </div>
-              }
-            >
+            <Suspense fallback={<AnalyticsCardSkeleton showStats variant="wide" />}>
               <StruggleReductionMetrics />
             </Suspense>
           </section>
@@ -125,13 +101,7 @@ export default function StrugglePredictionsPage() {
                   Model Performance Analytics
                 </h2>
               </div>
-              <Suspense
-                fallback={
-                  <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-96 flex items-center justify-center">
-                    <p className="text-sm text-muted-foreground">Loading model metrics...</p>
-                  </div>
-                }
-              >
+              <Suspense fallback={<ChartSkeleton variant="bar" height={384} showLegend />}>
                 <ModelPerformanceMetrics isAdmin={true} />
               </Suspense>
             </section>
@@ -148,13 +118,7 @@ export default function StrugglePredictionsPage() {
                 Recommended Interventions
               </h2>
             </div>
-            <Suspense
-              fallback={
-                <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 h-96 flex items-center justify-center">
-                  <p className="text-sm text-muted-foreground">Loading interventions...</p>
-                </div>
-              }
-            >
+            <Suspense fallback={<AnalyticsCardSkeleton variant="compact" />}>
               <InterventionRecommendationPanel />
             </Suspense>
           </section>

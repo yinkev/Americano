@@ -51,8 +51,6 @@ const config: Config = {
         },
       },
     ],
-    // Transform ESM JavaScript files in node_modules using Babel
-    '^.+\\.jsx?$': 'babel-jest',
   },
   // MSW setup for API mocking
   testEnvironmentOptions: {

@@ -1,0 +1,2378 @@
+openapi: 3.1.0
+info:
+  title: Americano API
+  version: 1.0.0
+  description: |
+    **Americano** is an AI-powered adaptive learning platform for medical education.
+
+    This API provides comprehensive endpoints for:
+    - **Content Management**: Lectures, courses, learning objectives
+    - **Learning Engine**: Missions, study sessions, progress tracking
+    - **Behavioral Analytics**: Learning patterns, predictions, personalization
+    - **Performance Analytics**: Reviews, mastery metrics, recommendations
+
+    ## Epic 5: Behavioral Twin Engine
+
+    This API includes advanced behavioral analytics capabilities:
+    - Learning pattern recognition and analysis (Story 5.1)
+    - Struggle prediction and interventions (Story 5.2, 5.3)
+    - Burnout prevention and cognitive load monitoring (Story 5.4)
+    - Adaptive personalization with A/B testing (Story 5.5)
+    - Learning science education integration (Story 5.6)
+
+    ## Authentication
+
+    **MVP Status**: Authentication is currently deferred. All endpoints use a hardcoded test user (`kevy@americano.dev`).
+
+    **Production**: Will implement OAuth 2.0 / JWT authentication. Add `Authorization: Bearer <token>` header.
+
+    ## Rate Limiting
+
+    **MVP Status**: Rate limiting is currently disabled (single-user system).
+
+    **Production**: Will implement rate limits via Upstash or Vercel Edge Config.
+
+    ## Base URL
+
+    - **Development**: `http://localhost:3000/api`
+    - **Production**: `https://americano.app/api` (TBD)
+
+  contact:
+    name: Americano Team
+    email: support@americano.app
+  license:
+    name: Proprietary
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+  - url: https://americano.app/api
+    description: Production server (TBD)
+
+tags:
+  - name: User
+    description: User profile and settings management
+  - name: Courses
+    description: Course creation and management
+  - name: Lectures
+    description: Lecture upload, processing, and retrieval
+  - name: Learning Objectives
+    description: AI-extracted learning objectives from lectures
+  - name: Missions
+    description: Daily adaptive learning missions
+  - name: Study Sessions
+    description: Active study session management
+  - name: Reviews
+    description: Spaced repetition review system
+  - name: Performance
+    description: Performance tracking and mastery metrics
+  - name: Analytics - Patterns
+    description: Behavioral pattern recognition (Story 5.1)
+  - name: Analytics - Predictions
+    description: Struggle prediction and interventions (Story 5.2, 5.3)
+  - name: Analytics - Cognitive Load
+    description: Burnout prevention and cognitive health (Story 5.4)
+  - name: Analytics - Behavioral Insights
+    description: Behavioral insights dashboard (Stories 5.1, 5.2, 5.6)
+  - name: Personalization
+    description: Adaptive personalization engine (Story 5.5)
+  - name: Orchestration
+    description: Study session orchestration and timing (Story 5.3)
+  - name: Calendar
+    description: Calendar integration for scheduling (Story 5.3)
+
+components:
+  schemas:
+    # Common Response Schemas
+    SuccessResponse:
+      type: object
+      required:
+        - success
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          description: Response payload (varies by endpoint)
+
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              enum:
+                - VALIDATION_ERROR
+                - NOT_FOUND
+                - UNAUTHORIZED
+                - FORBIDDEN
+                - CONFLICT
+                - BAD_REQUEST
+                - INTERNAL_ERROR
+                - DATABASE_ERROR
+                - FETCH_FAILED
+                - CREATE_FAILED
+                - UPDATE_FAILED
+                - DELETE_FAILED
+                - ML_SERVICE_ERROR
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Request validation failed
+            details:
+              type: object
+              description: Additional error context (optional)
+
+    # Pagination Schema
+    Pagination:
+      type: object
+      required:
+        - page
+        - limit
+        - totalCount
+        - totalPages
+        - hasNextPage
+        - hasPrevPage
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          example: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          example: 50
+        totalCount:
+          type: integer
+          example: 123
+        totalPages:
+          type: integer
+          example: 3
+        hasNextPage:
+          type: boolean
+          example: true
+        hasPrevPage:
+          type: boolean
+          example: false
+
+    # User Schemas
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: cuid
+          example: clx123abc456
+        email:
+          type: string
+          format: email
+          example: kevy@americano.dev
+        name:
+          type: string
+          nullable: true
+          example: Kevy
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-14T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-10-15T08:30:00Z"
+        autoGenerateMissions:
+          type: boolean
+          default: true
+        defaultMissionMinutes:
+          type: integer
+          default: 50
+        missionDifficulty:
+          type: string
+          enum: [AUTO, EASY, MODERATE, CHALLENGING]
+          default: AUTO
+        preferredStudyTime:
+          type: string
+          nullable: true
+          example: "07:00"
+        includeInAnalytics:
+          type: boolean
+          default: true
+        performanceTrackingEnabled:
+          type: boolean
+          default: true
+        behavioralAnalysisEnabled:
+          type: boolean
+          default: true
+          description: Enable Epic 5 behavioral analytics features
+        learningStyleProfilingEnabled:
+          type: boolean
+          default: true
+          description: Enable learning style analysis (Story 5.1)
+        shareAnonymizedPatterns:
+          type: boolean
+          default: false
+          description: Share anonymized learning patterns for research
+
+    # Course Schemas
+    Course:
+      type: object
+      required:
+        - id
+        - userId
+        - name
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: cuid
+        userId:
+          type: string
+          format: cuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Gross Anatomy
+        code:
+          type: string
+          maxLength: 20
+          nullable: true
+          example: ANAT 505
+        term:
+          type: string
+          maxLength: 50
+          nullable: true
+          example: Fall 2025
+        color:
+          type: string
+          description: OKLCH color format (no gradients allowed per design system)
+          pattern: "^oklch\\([0-9.]+ [0-9.]+ [0-9.]+\\)$"
+          nullable: true
+          example: "oklch(0.7 0.15 230)"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        lectureCount:
+          type: integer
+          description: Count of associated lectures (computed field)
+
+    # Lecture Schemas
+    ProcessingStatus:
+      type: string
+      enum:
+        - PENDING
+        - PROCESSING
+        - COMPLETED
+        - FAILED
+        - EMBEDDING
+        - EMBEDDING_FAILED
+
+    Lecture:
+      type: object
+      required:
+        - id
+        - userId
+        - courseId
+        - title
+        - fileName
+        - fileUrl
+        - fileSize
+        - processingStatus
+        - uploadedAt
+      properties:
+        id:
+          type: string
+          format: cuid
+        userId:
+          type: string
+          format: cuid
+        courseId:
+          type: string
+          format: cuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: "Lecture 1: Introduction to Gross Anatomy"
+        fileName:
+          type: string
+          example: lecture1.pdf
+        fileUrl:
+          type: string
+          format: uri
+          example: "/uploads/lectures/lecture1.pdf"
+        fileSize:
+          type: integer
+          description: File size in bytes
+          example: 1024000
+        processingStatus:
+          $ref: '#/components/schemas/ProcessingStatus'
+        uploadedAt:
+          type: string
+          format: date-time
+        processedAt:
+          type: string
+          format: date-time
+          nullable: true
+        weekNumber:
+          type: integer
+          minimum: 1
+          maximum: 52
+          nullable: true
+          example: 1
+        topicTags:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            minLength: 1
+            maxLength: 30
+          example: ["anatomy", "musculoskeletal", "upper-limb"]
+        estimatedCompletionAt:
+          type: string
+          format: date-time
+          nullable: true
+        processedPages:
+          type: integer
+          minimum: 0
+          default: 0
+        processingProgress:
+          type: integer
+          minimum: 0
+          maximum: 100
+          default: 0
+        processingStartedAt:
+          type: string
+          format: date-time
+          nullable: true
+        totalPages:
+          type: integer
+          nullable: true
+        embeddingProgress:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          default: 0
+        course:
+          $ref: '#/components/schemas/Course'
+          description: Associated course (populated in GET responses)
+        chunkCount:
+          type: integer
+          description: Count of content chunks (computed field)
+        objectiveCount:
+          type: integer
+          description: Count of learning objectives (computed field)
+        cardCount:
+          type: integer
+          description: Count of flashcards (computed field)
+
+    # Learning Objective Schemas
+    ObjectiveComplexity:
+      type: string
+      enum:
+        - BASIC
+        - INTERMEDIATE
+        - ADVANCED
+      description: |
+        Complexity levels for learning objectives:
+        - BASIC: Foundational knowledge (recall, recognition)
+        - INTERMEDIATE: Application and integration (comprehension, analysis)
+        - ADVANCED: Synthesis and evaluation (clinical reasoning, problem-solving)
+
+    MasteryLevel:
+      type: string
+      enum:
+        - NOT_STARTED
+        - BEGINNER
+        - INTERMEDIATE
+        - ADVANCED
+        - MASTERED
+      description: User's current mastery level for this objective
+
+    LearningObjective:
+      type: object
+      required:
+        - id
+        - lectureId
+        - objective
+        - complexity
+        - extractedBy
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: cuid
+        lectureId:
+          type: string
+          format: cuid
+        objective:
+          type: string
+          minLength: 10
+          description: Precise medical terminology preserved by AI extraction
+          example: "Explain the anatomical structure and function of the brachial plexus"
+        isHighYield:
+          type: boolean
+          default: false
+          description: Clinically critical or frequently tested on board exams
+        extractedBy:
+          type: string
+          default: gpt-5
+          description: AI model used for extraction (ChatMock GPT-5)
+          example: gpt-5
+        createdAt:
+          type: string
+          format: date-time
+        complexity:
+          $ref: '#/components/schemas/ObjectiveComplexity'
+        boardExamTags:
+          type: array
+          items:
+            type: string
+          description: USMLE/COMLEX/NBME board exam tags
+          example: ["USMLE-Step1-Cardio", "COMLEX-L1-OPP"]
+        pageStart:
+          type: integer
+          nullable: true
+          description: Starting page number in lecture PDF
+        pageEnd:
+          type: integer
+          nullable: true
+          description: Ending page number in lecture PDF
+        lastStudiedAt:
+          type: string
+          format: date-time
+          nullable: true
+        masteryLevel:
+          $ref: '#/components/schemas/MasteryLevel'
+        totalStudyTimeMs:
+          type: integer
+          default: 0
+          description: Total milliseconds spent studying this objective
+        weaknessScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          default: 0.5
+          description: Inverse of performance (1.0 = weak, 0.0 = strong)
+
+    # Mission Schemas
+    MissionStatus:
+      type: string
+      enum:
+        - PENDING
+        - IN_PROGRESS
+        - COMPLETED
+        - SKIPPED
+
+    Mission:
+      type: object
+      required:
+        - id
+        - userId
+        - date
+        - status
+        - estimatedMinutes
+        - objectives
+      properties:
+        id:
+          type: string
+          format: cuid
+        userId:
+          type: string
+          format: cuid
+        date:
+          type: string
+          format: date-time
+          description: Mission generation date
+        status:
+          $ref: '#/components/schemas/MissionStatus'
+        estimatedMinutes:
+          type: integer
+          minimum: 15
+          maximum: 180
+          example: 50
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+        reviewCardCount:
+          type: integer
+          default: 0
+          description: Number of spaced repetition reviews
+        newContentCount:
+          type: integer
+          default: 0
+          description: Number of new learning objectives
+        actualMinutes:
+          type: integer
+          nullable: true
+          description: Actual time spent (tracked during session)
+        completedObjectivesCount:
+          type: integer
+          default: 0
+        objectives:
+          type: object
+          description: JSON structure containing mission objectives
+          additionalProperties: true
+        difficultyRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+          description: User-submitted difficulty rating
+        successScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          nullable: true
+          description: Mission success calculation (0.0-1.0)
+        recommendedStartTime:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optimal study time (Story 5.3 - Session Orchestration)
+        actualStartTime:
+          type: string
+          format: date-time
+          nullable: true
+        sessionPerformanceScore:
+          type: number
+          format: float
+          nullable: true
+          description: Performance during session execution
+        recommendedDuration:
+          type: integer
+          nullable: true
+          description: Recommended session duration in minutes (Story 5.3)
+        actualDuration:
+          type: integer
+          nullable: true
+
+    # Behavioral Analytics Schemas (Epic 5)
+
+    BehavioralPatternType:
+      type: string
+      enum:
+        - OPTIMAL_STUDY_TIME
+        - SESSION_DURATION_PREFERENCE
+        - CONTENT_TYPE_PREFERENCE
+        - PERFORMANCE_PEAK
+        - ATTENTION_CYCLE
+        - FORGETTING_CURVE
+      description: |
+        Types of behavioral patterns detected (Story 5.1):
+        - OPTIMAL_STUDY_TIME: Time-of-day performance patterns
+        - SESSION_DURATION_PREFERENCE: Preferred session length
+        - CONTENT_TYPE_PREFERENCE: Learning style preferences
+        - PERFORMANCE_PEAK: Peak cognitive performance windows
+        - ATTENTION_CYCLE: Attention span and break patterns
+        - FORGETTING_CURVE: Personalized retention curves
+
+    BehavioralPattern:
+      type: object
+      required:
+        - id
+        - userId
+        - patternType
+        - patternName
+        - confidence
+        - evidence
+        - detectedAt
+      properties:
+        id:
+          type: string
+          format: cuid
+        userId:
+          type: string
+          format: cuid
+        patternType:
+          $ref: '#/components/schemas/BehavioralPatternType'
+        patternName:
+          type: string
+          example: "Morning Peak Performance"
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Statistical confidence in pattern (0.0-1.0)
+          example: 0.87
+        evidence:
+          type: object
+          description: Supporting data and statistical analysis
+          additionalProperties: true
+          example:
+            avgPerformance: 0.85
+            sampleSize: 24
+            pValue: 0.003
+        detectedAt:
+          type: string
+          format: date-time
+        lastSeenAt:
+          type: string
+          format: date-time
+          description: Most recent occurrence
+        occurrenceCount:
+          type: integer
+          minimum: 1
+          description: Number of times pattern observed
+
+    StrugglePrediction:
+      type: object
+      required:
+        - id
+        - userId
+        - learningObjectiveId
+        - predictedStruggleProbability
+        - predictionConfidence
+        - strugglingFactors
+      properties:
+        id:
+          type: string
+          format: cuid
+        userId:
+          type: string
+          format: cuid
+        learningObjectiveId:
+          type: string
+          format: cuid
+        topicId:
+          type: string
+          format: cuid
+          nullable: true
+          description: Associated course or topic
+        predictedStruggleProbability:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Probability of struggle (0.0-1.0)
+          example: 0.73
+        predictionConfidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Model confidence in prediction
+          example: 0.85
+        predictionStatus:
+          type: string
+          enum:
+            - PENDING
+            - CONFIRMED
+            - FALSE_POSITIVE
+            - MISSED
+            - DISMISSED
+            - RESOLVED
+          default: PENDING
+        featureVector:
+          type: object
+          nullable: true
+          description: ML feature data for analysis
+          additionalProperties: true
+        strugglingFactors:
+          type: array
+          items:
+            type: object
+            properties:
+              factor:
+                type: string
+                enum:
+                  - LOW_RETENTION
+                  - PREREQUISITE_GAP
+                  - COMPLEXITY_MISMATCH
+                  - COGNITIVE_OVERLOAD
+                  - HISTORICAL_STRUGGLE_PATTERN
+              weight:
+                type: number
+                format: float
+              description:
+                type: string
+          example:
+            - factor: PREREQUISITE_GAP
+              weight: 0.35
+              description: "Missing foundational concepts in cardiac anatomy"
+        predictionDate:
+          type: string
+          format: date-time
+          description: When prediction targets
+        predictedAt:
+          type: string
+          format: date-time
+          description: When prediction was made
+        acknowledgedAt:
+          type: string
+          format: date-time
+          nullable: true
+        actualOutcome:
+          type: boolean
+          nullable: true
+          description: Did struggle actually occur?
+        actualOutcomeRecordedAt:
+          type: string
+          format: date-time
+          nullable: true
+        interventionApplied:
+          type: boolean
+          default: false
+        interventionId:
+          type: string
+          nullable: true
+
+    InterventionRecommendation:
+      type: object
+      required:
+        - id
+        - userId
+        - interventionType
+        - description
+        - reasoning
+        - priority
+      properties:
+        id:
+          type: string
+          format: cuid
+        userId:
+          type: string
+          format: cuid
+        predictionId:
+          type: string
+          format: cuid
+          nullable: true
+          description: Link to StrugglePrediction
+        interventionType:
+          type: string
+          enum:
+            - PREREQUISITE_REVIEW
+            - DIFFICULTY_PROGRESSION
+            - SPACING_ADJUSTMENT
+            - CONTENT_VARIATION
+            - BREAK_RECOMMENDATION
+            - FOCUS_SESSION
+            - CONTENT_FORMAT_ADAPT
+            - COGNITIVE_LOAD_REDUCE
+            - SPACED_REPETITION_BOOST
+            - BREAK_SCHEDULE_ADJUST
+        description:
+          type: string
+          example: "Review cardiac anatomy prerequisites before studying conduction system"
+        reasoning:
+          type: string
+          example: "Predicted struggle due to prerequisite gap (weight: 0.35)"
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: Priority score (10 = highest)
+          example: 8
+        status:
+          type: string
+          enum:
+            - PENDING
+            - IN_PROGRESS
+            - COMPLETED
+            - SKIPPED
+            - FAILED
+          default: PENDING
+        relatedObjectiveId:
+          type: string
+          format: cuid
+          nullable: true
+        appliedToMissionId:
+          type: string
+          format: cuid
+          nullable: true
+        appliedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        acknowledgedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    CognitiveLoadMetric:
+      type: object
+      required:
+        - id
+        - userId
+        - loadScore
+        - stressIndicators
+        - confidenceLevel
+        - timestamp
+      properties:
+        id:
+          type: string
+          format: cuid
+        userId:
+          type: string
+          format: cuid
+        sessionId:
+          type: string
+          format: cuid
+          nullable: true
+        loadScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Cognitive load score (0=fresh, 100=overloaded)
+          example: 45.8
+        stressIndicators:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - RESPONSE_LATENCY_SPIKE
+                  - ERROR_CLUSTERING
+                  - REPEAT_ATTEMPTS
+                  - ENGAGEMENT_DROP
+                  - ABANDONMENT_SIGNAL
+              severity:
+                type: string
+                enum: [LOW, MEDIUM, HIGH, CRITICAL]
+              value:
+                type: number
+              description:
+                type: string
+          example:
+            - type: RESPONSE_LATENCY_SPIKE
+              severity: MEDIUM
+              value: 2.3
+              description: "Response time 2.3x slower than baseline"
+        confidenceLevel:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Data quality confidence
+          example: 0.85
+        timestamp:
+          type: string
+          format: date-time
+
+    BurnoutRiskAssessment:
+      type: object
+      required:
+        - id
+        - userId
+        - riskScore
+        - riskLevel
+        - contributingFactors
+        - recommendations
+        - assessmentDate
+      properties:
+        id:
+          type: string
+          format: cuid
+        userId:
+          type: string
+          format: cuid
+        riskScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Burnout risk score (0=low, 100=critical)
+          example: 42.5
+        riskLevel:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          description: |
+            Risk levels:
+            - LOW: <25 (continue current routine)
+            - MEDIUM: 25-50 (suggest rest day, reduce complexity)
+            - HIGH: 50-75 (mandatory rest day, reduce hours 30%)
+            - CRITICAL: >75 (2-3 day break, disable new content)
+        contributingFactors:
+          type: array
+          items:
+            type: object
+            properties:
+              factor:
+                type: string
+                enum:
+                  - STUDY_INTENSITY
+                  - PERFORMANCE_DECLINE
+                  - CHRONIC_HIGH_LOAD
+                  - SESSION_IRREGULARITY
+                  - ENGAGEMENT_DECAY
+                  - RECOVERY_DEFICIT
+              weight:
+                type: number
+                format: float
+              score:
+                type: number
+              description:
+                type: string
+          example:
+            - factor: CHRONIC_HIGH_LOAD
+              weight: 0.25
+              score: 65
+              description: "7 of last 14 days with load >60"
+        warningSignals:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              signal:
+                type: string
+              detectedAt:
+                type: string
+                format: date-time
+        recommendations:
+          type: array
+          items:
+            type: string
+          example:
+            - "Take a rest day tomorrow"
+            - "Reduce mission duration to 30 minutes"
+            - "Focus on review-only content for 3 days"
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          default: 0.7
+        assessmentDate:
+          type: string
+          format: date-time
+        interventionApplied:
+          type: boolean
+          default: false
+        interventionId:
+          type: string
+          nullable: true
+
+    PersonalizationConfig:
+      type: object
+      required:
+        - config
+      properties:
+        config:
+          type: object
+          properties:
+            missionPersonalization:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                strategy:
+                  type: string
+                  enum: [default, pattern-based, prediction-heavy, balanced, conservative]
+                parameters:
+                  type: object
+                  additionalProperties: true
+                confidence:
+                  type: number
+                  format: float
+                  minimum: 0
+                  maximum: 1
+            contentPersonalization:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                strategy:
+                  type: string
+                parameters:
+                  type: object
+                confidence:
+                  type: number
+            assessmentPersonalization:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                strategy:
+                  type: string
+                parameters:
+                  type: object
+                confidence:
+                  type: number
+            sessionPersonalization:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                strategy:
+                  type: string
+                parameters:
+                  type: object
+                confidence:
+                  type: number
+        dataQualityScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Overall data quality (requires 0.6+ for personalization)
+        lastAnalyzedAt:
+          type: string
+          format: date-time
+
+paths:
+  # User Endpoints
+  /user/profile:
+    get:
+      summary: Get user profile
+      tags: [User]
+      operationId: getUserProfile
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      stats:
+                        type: object
+                        properties:
+                          courseCount:
+                            type: integer
+                          lectureCount:
+                            type: integer
+                          sessionCount:
+                            type: integer
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      summary: Update user profile
+      tags: [User]
+      operationId: updateUserProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Course Endpoints
+  /content/courses:
+    get:
+      summary: List all courses
+      tags: [Courses]
+      operationId: listCourses
+      responses:
+        '200':
+          description: Courses retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  courses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+
+    post:
+      summary: Create a new course
+      tags: [Courses]
+      operationId: createCourse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                code:
+                  type: string
+                  maxLength: 20
+                term:
+                  type: string
+                  maxLength: 50
+                color:
+                  type: string
+                  pattern: "^oklch\\([0-9.]+ [0-9.]+ [0-9.]+\\)$"
+      responses:
+        '201':
+          description: Course created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  course:
+                    $ref: '#/components/schemas/Course'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /content/courses/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: cuid
+
+    get:
+      summary: Get course by ID
+      tags: [Courses]
+      operationId: getCourse
+      responses:
+        '200':
+          description: Course retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  course:
+                    $ref: '#/components/schemas/Course'
+        '404':
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      summary: Update course
+      tags: [Courses]
+      operationId: updateCourse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+                term:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '200':
+          description: Course updated successfully
+        '404':
+          description: Course not found
+        '422':
+          description: Validation error
+
+    delete:
+      summary: Delete course
+      tags: [Courses]
+      operationId: deleteCourse
+      responses:
+        '200':
+          description: Course deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Cannot delete course with lectures
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Course not found
+
+  # Analytics - Predictions Endpoints (Story 5.2, 5.3)
+  /analytics/predictions:
+    get:
+      summary: Retrieve struggle predictions
+      description: |
+        Fetches stored struggle predictions with filtering.
+
+        **ML Service Proxy**: This endpoint proxies to the FastAPI ML service at `${ML_SERVICE_URL}/predictions`.
+
+        **Story**: 5.2 - Predictive Analytics for Learning Struggles
+      tags: [Analytics - Predictions]
+      operationId: getPredictions
+      parameters:
+        - name: userId
+          in: query
+          schema:
+            type: string
+            default: kevy@americano.dev
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, CONFIRMED, FALSE_POSITIVE, MISSED]
+        - name: minProbability
+          in: query
+          schema:
+            type: number
+            format: float
+            minimum: 0
+            maximum: 1
+            default: 0.5
+      responses:
+        '200':
+          description: Predictions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  predictions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StrugglePrediction'
+        '503':
+          description: ML service unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  detail:
+                    type: string
+
+  /analytics/predictions/generate:
+    post:
+      summary: Generate struggle predictions
+      description: |
+        Triggers ML model to generate struggle predictions for user's learning objectives.
+
+        **ML Service Proxy**: POST to `${ML_SERVICE_URL}/predictions/generate`
+
+        **Story**: 5.2 - Predictive Analytics, Task 10
+      tags: [Analytics - Predictions]
+      operationId: generatePredictions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+              properties:
+                userId:
+                  type: string
+                  default: kevy@americano.dev
+                objectiveIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Specific objectives to predict (optional, predicts all if omitted)
+      responses:
+        '201':
+          description: Predictions generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  predictions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StrugglePrediction'
+                  count:
+                    type: integer
+        '503':
+          description: ML service unavailable
+
+  /analytics/predictions/{id}/feedback:
+    post:
+      summary: Submit prediction feedback
+      description: |
+        Records actual outcome for a prediction to improve model accuracy.
+
+        **ML Service Proxy**: POST to `${ML_SERVICE_URL}/predictions/{id}/feedback`
+
+        **Story**: 5.2 - Feedback Loop (Task 8)
+      tags: [Analytics - Predictions]
+      operationId: submitPredictionFeedback
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: cuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - actualOutcome
+                - feedbackType
+              properties:
+                actualOutcome:
+                  type: boolean
+                  description: Did struggle actually occur?
+                feedbackType:
+                  type: string
+                  enum: [POSITIVE, NEGATIVE, NEUTRAL, IMPROVED, DECLINED]
+                notes:
+                  type: string
+                  description: Optional user comments
+      responses:
+        '200':
+          description: Feedback recorded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  updatedPrediction:
+                    $ref: '#/components/schemas/StrugglePrediction'
+        '404':
+          description: Prediction not found
+
+  # Analytics - Interventions (Story 5.2, 5.3)
+  /analytics/interventions:
+    get:
+      summary: Get intervention recommendations
+      description: |
+        Retrieves personalized intervention recommendations to prevent predicted struggles.
+
+        **Story**: 5.2 - Intervention Engine (Task 7)
+      tags: [Analytics - Predictions]
+      operationId: getInterventions
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, IN_PROGRESS, COMPLETED, SKIPPED, FAILED]
+        - name: minPriority
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 5
+      responses:
+        '200':
+          description: Interventions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  interventions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InterventionRecommendation'
+
+  /analytics/interventions/{id}/apply:
+    post:
+      summary: Apply intervention recommendation
+      description: |
+        Marks intervention as applied and triggers appropriate system adaptations.
+
+        **Story**: 5.2 - Task 7.4 (Apply Interventions)
+      tags: [Analytics - Predictions]
+      operationId: applyIntervention
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: cuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                missionId:
+                  type: string
+                  description: Mission to apply intervention to
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Intervention applied successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  intervention:
+                    $ref: '#/components/schemas/InterventionRecommendation'
+                  adaptations:
+                    type: object
+                    description: System adaptations triggered
+        '404':
+          description: Intervention not found
+
+  # Analytics - Cognitive Load (Story 5.4)
+  /analytics/cognitive-load/current:
+    get:
+      summary: Get current cognitive load state
+      description: |
+        Returns user's current cognitive load state with stress indicators.
+
+        **Story**: 5.4 - Cognitive Load Monitoring (Task 8.2)
+      tags: [Analytics - Cognitive Load]
+      operationId: getCurrentCognitiveLoad
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Current load state retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      loadScore:
+                        type: number
+                        format: float
+                        example: 45.8
+                      loadLevel:
+                        type: string
+                        enum: [LOW, MODERATE, HIGH, CRITICAL]
+                        example: MODERATE
+                      stressIndicators:
+                        type: array
+                        items:
+                          type: object
+                      timestamp:
+                        type: string
+                        format: date-time
+                      trend:
+                        type: string
+                        enum: [INCREASING, STABLE, DECREASING]
+
+  /analytics/cognitive-load/calculate:
+    post:
+      summary: Calculate cognitive load for session
+      description: |
+        Calculates cognitive load for current or specific session based on behavioral data.
+
+        **Story**: 5.4 - Real-Time Monitoring (Task 8.1)
+      tags: [Analytics - Cognitive Load]
+      operationId: calculateCognitiveLoad
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+              properties:
+                userId:
+                  type: string
+                sessionId:
+                  type: string
+                  description: Optional session ID (uses current if omitted)
+                behavioralData:
+                  type: object
+                  description: Real-time behavioral metrics
+                  properties:
+                    responseTimes:
+                      type: array
+                      items:
+                        type: number
+                    errors:
+                      type: integer
+                    totalAttempts:
+                      type: integer
+                    pauses:
+                      type: array
+                      items:
+                        type: object
+                    sessionDuration:
+                      type: integer
+      responses:
+        '200':
+          description: Cognitive load calculated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      loadScore:
+                        type: number
+                      stressIndicators:
+                        type: array
+                        items:
+                          type: object
+                      overloadDetected:
+                        type: boolean
+                      recommendations:
+                        type: array
+                        items:
+                          type: string
+
+  /analytics/cognitive-load/history:
+    get:
+      summary: Get cognitive load history
+      description: |
+        Time-series cognitive load data for timeline visualization.
+
+        **Story**: 5.4 - Dashboard (Task 8.3)
+      tags: [Analytics - Cognitive Load]
+      operationId: getCognitiveLoadHistory
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: granularity
+          in: query
+          schema:
+            type: string
+            enum: [hour, day, week]
+            default: day
+      responses:
+        '200':
+          description: Load history retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      dataPoints:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            timestamp:
+                              type: string
+                              format: date-time
+                            loadScore:
+                              type: number
+                            sessionId:
+                              type: string
+                              nullable: true
+                            stressIndicators:
+                              type: array
+
+  /analytics/burnout-risk:
+    get:
+      summary: Get burnout risk assessment
+      description: |
+        Returns current burnout risk assessment with contributing factors.
+
+        **Story**: 5.4 - Burnout Prevention (Task 8.4)
+      tags: [Analytics - Cognitive Load]
+      operationId: getBurnoutRisk
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Burnout risk assessment retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/BurnoutRiskAssessment'
+
+  # Personalization Endpoints (Story 5.5)
+  /personalization/config:
+    get:
+      summary: Get personalization configuration
+      description: |
+        Fetches active personalization configuration for user.
+
+        Returns default config if insufficient data (dataQualityScore < 0.6).
+
+        **Story**: 5.5 - Adaptive Personalization Engine
+      tags: [Personalization]
+      operationId: getPersonalizationConfig
+      responses:
+        '200':
+          description: Configuration retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PersonalizationConfig'
+                  message:
+                    type: string
+                    description: Warning if insufficient data
+        '404':
+          description: User not found
+
+  /personalization/preferences:
+    get:
+      summary: Get personalization preferences
+      description: |
+        Retrieves user's personalization preference settings.
+
+        **Story**: 5.5 - User Control (Task 11)
+      tags: [Personalization]
+      operationId: getPersonalizationPreferences
+      responses:
+        '200':
+          description: Preferences retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  preferences:
+                    type: object
+                    properties:
+                      personalizationLevel:
+                        type: string
+                        enum: [NONE, LOW, MEDIUM, HIGH]
+                      autoAdaptEnabled:
+                        type: boolean
+                      missionPersonalizationEnabled:
+                        type: boolean
+                      contentPersonalizationEnabled:
+                        type: boolean
+                      assessmentPersonalizationEnabled:
+                        type: boolean
+                      sessionPersonalizationEnabled:
+                        type: boolean
+                      disabledFeatures:
+                        type: array
+                        items:
+                          type: string
+
+    patch:
+      summary: Update personalization preferences
+      description: |
+        Updates user's personalization settings.
+
+        **Story**: 5.5 - User Control (Task 11.2)
+      tags: [Personalization]
+      operationId: updatePersonalizationPreferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                personalizationLevel:
+                  type: string
+                  enum: [NONE, LOW, MEDIUM, HIGH]
+                autoAdaptEnabled:
+                  type: boolean
+                missionPersonalizationEnabled:
+                  type: boolean
+                contentPersonalizationEnabled:
+                  type: boolean
+                assessmentPersonalizationEnabled:
+                  type: boolean
+                sessionPersonalizationEnabled:
+                  type: boolean
+                disabledFeatures:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Preferences updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  preferences:
+                    type: object
+
+  /personalization/effectiveness:
+    get:
+      summary: Get personalization effectiveness metrics
+      description: |
+        Retrieves effectiveness metrics for active personalization strategies.
+
+        **Story**: 5.5 - Effectiveness Measurement (Task 10)
+      tags: [Personalization]
+      operationId: getPersonalizationEffectiveness
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Effectiveness metrics retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      retentionImprovement:
+                        type: number
+                        format: float
+                        description: Percentage improvement in retention
+                        example: 15.3
+                      performanceImprovement:
+                        type: number
+                        format: float
+                        example: 12.8
+                      completionRateChange:
+                        type: number
+                        format: float
+                        example: 8.5
+                      engagementChange:
+                        type: number
+                        format: float
+                        example: 10.2
+                      correlation:
+                        type: number
+                        format: float
+                        description: Pearson correlation coefficient
+                        example: 0.78
+                      pValue:
+                        type: number
+                        format: float
+                        description: Statistical significance
+                        example: 0.003
+                      isStatisticallySignificant:
+                        type: boolean
+                        example: true
+                      sampleSize:
+                        type: integer
+                        example: 42
+
+  # Behavioral Insights Dashboard (Story 5.6)
+  /analytics/behavioral-insights/dashboard:
+    get:
+      summary: Get behavioral insights dashboard data
+      description: |
+        Comprehensive dashboard data for all 4 tabs:
+        - Patterns: Top 5 behavioral patterns
+        - Progress: Behavioral metrics (consistency, focus, retention, efficiency)
+        - Goals: Active goals with progress
+        - Learn: Learning science articles integration
+
+        **Story**: 5.6 - Behavioral Insights Dashboard (Task 12.1)
+      tags: [Analytics - Behavioral Insights]
+      operationId: getBehavioralInsightsDashboard
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dashboard data retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      patterns:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/BehavioralPattern'
+                        maxItems: 5
+                      recommendations:
+                        type: array
+                        items:
+                          type: object
+                        maxItems: 5
+                      goals:
+                        type: array
+                        items:
+                          type: object
+                      metrics:
+                        type: object
+                        properties:
+                          consistency:
+                            type: integer
+                            description: Percentage (0-100)
+                            example: 85
+                          focus:
+                            type: integer
+                            example: 78
+                          retention:
+                            type: integer
+                            example: 75
+                          efficiency:
+                            type: integer
+                            example: 80
+                      correlationData:
+                        type: object
+                        nullable: true
+                      meta:
+                        type: object
+                        properties:
+                          patternsCount:
+                            type: integer
+                          recommendationsCount:
+                            type: integer
+                          activeGoalsCount:
+                            type: integer
+                          recentInsightsCount:
+                            type: integer
+                          lastUpdated:
+                            type: string
+                            format: date-time
+
+  # Orchestration Endpoints (Story 5.3)
+  /orchestration/recommendations:
+    post:
+      summary: Generate study time recommendations
+      description: |
+        Generates optimal study time recommendations based on behavioral patterns.
+
+        **Story**: 5.3 - Session Orchestration (Task 8.1)
+      tags: [Orchestration]
+      operationId: getOrchestrationRecommendations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+              properties:
+                userId:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                missionId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Recommendations generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      recommendations:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            startTime:
+                              type: string
+                              format: date-time
+                            duration:
+                              type: integer
+                            confidence:
+                              type: number
+                              format: float
+                            reasoning:
+                              type: string
+                            calendarConflict:
+                              type: boolean
+                      cognitiveLoad:
+                        type: number
+                        format: float
+
+  /orchestration/session-plan:
+    post:
+      summary: Generate session orchestration plan
+      description: |
+        Creates complete session plan with timing, breaks, and content sequencing.
+
+        **Story**: 5.3 - Session Orchestration (Task 8.2)
+      tags: [Orchestration]
+      operationId: generateSessionPlan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - missionId
+                - startTime
+              properties:
+                userId:
+                  type: string
+                missionId:
+                  type: string
+                startTime:
+                  type: string
+                  format: date-time
+                duration:
+                  type: integer
+                  nullable: true
+                  description: Optional override (uses recommended if omitted)
+                intensity:
+                  type: string
+                  enum: [LOW, MEDIUM, HIGH]
+                  nullable: true
+      responses:
+        '200':
+          description: Session plan generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      plan:
+                        type: object
+                        properties:
+                          startTime:
+                            type: string
+                            format: date-time
+                          endTime:
+                            type: string
+                            format: date-time
+                          breaks:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                time:
+                                  type: integer
+                                  description: Minutes into session
+                                duration:
+                                  type: integer
+                                  description: Break duration (minutes)
+                          contentSequence:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                id:
+                                  type: string
+                                duration:
+                                  type: integer
+                                phase:
+                                  type: string
+                                  enum: [warmup, peak, winddown]
+                          intensity:
+                            type: string
+                            enum: [LOW, MEDIUM, HIGH]
+                      confidence:
+                        type: number
+                        format: float
+
+  /orchestration/cognitive-load:
+    get:
+      summary: Get current cognitive load for orchestration
+      description: |
+        Calculates current cognitive load with 7-day trend for orchestration decisions.
+
+        **Story**: 5.3 - Cognitive Load Integration (Task 8.3)
+      tags: [Orchestration]
+      operationId: getOrchestrationCognitiveLoad
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: includeTrend
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Cognitive load retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      load:
+                        type: number
+                        format: float
+                        example: 45
+                      level:
+                        type: string
+                        enum: [LOW, MODERATE, HIGH, CRITICAL]
+                        example: MODERATE
+                      trend:
+                        type: array
+                        nullable: true
+                        items:
+                          type: object
+                          properties:
+                            date:
+                              type: string
+                              format: date
+                            load:
+                              type: number
+                      recommendation:
+                        type: string
+                        example: "Your cognitive load is moderate. Standard intensity recommended."
+
+  # Calendar Integration (Story 5.3)
+  /calendar/connect:
+    post:
+      summary: Initiate calendar OAuth flow
+      description: |
+        Initiates OAuth 2.0 flow for Google Calendar integration.
+
+        Returns authorization URL for user to complete OAuth.
+
+        **Story**: 5.3 - Calendar Integration (Task 6.4)
+      tags: [Calendar]
+      operationId: connectCalendar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - provider
+              properties:
+                provider:
+                  type: string
+                  enum: [GOOGLE]
+                  description: Currently only Google Calendar supported
+      responses:
+        '200':
+          description: Authorization URL generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  authorizationUrl:
+                    type: string
+                    format: uri
+                    description: User should be redirected to this URL
+
+  /calendar/callback:
+    get:
+      summary: OAuth callback handler
+      description: |
+        Handles OAuth callback, exchanges code for tokens.
+
+        **Story**: 5.3 - Calendar Integration (Task 6.4)
+      tags: [Calendar]
+      operationId: calendarCallback
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Authorization code from OAuth provider
+        - name: state
+          in: query
+          schema:
+            type: string
+          description: State parameter for CSRF protection
+      responses:
+        '302':
+          description: Redirect to app with success/error status
+
+  /calendar/status:
+    get:
+      summary: Get calendar integration status
+      description: |
+        Checks integration status and last sync time.
+
+        **Story**: 5.3 - Calendar Integration (Task 6.5)
+      tags: [Calendar]
+      operationId: getCalendarStatus
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Status retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      connected:
+                        type: boolean
+                      provider:
+                        type: string
+                        nullable: true
+                      email:
+                        type: string
+                        nullable: true
+                      lastSyncAt:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      syncEnabled:
+                        type: boolean
+
+  /calendar/sync:
+    post:
+      summary: Trigger manual calendar sync
+      description: |
+        Manually syncs calendar events and updates availability.
+
+        **Story**: 5.3 - Calendar Integration (Task 6.5)
+      tags: [Calendar]
+      operationId: syncCalendar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Sync completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      eventsProcessed:
+                        type: integer
+                      lastSyncAt:
+                        type: string
+                        format: date-time
+        '503':
+          description: Calendar service unavailable
+
+  /calendar/disconnect:
+    delete:
+      summary: Disconnect calendar integration
+      description: |
+        Revokes OAuth tokens and removes calendar integration.
+
+        **Story**: 5.3 - Calendar Integration (Task 6.4)
+      tags: [Calendar]
+      operationId: disconnectCalendar
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Calendar disconnected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: "Google Calendar disconnected successfully"
+
+# Response Examples
+externalDocs:
+  description: Americano Documentation
+  url: https://github.com/americano/docs

@@ -185,6 +185,15 @@ const nextConfig = {
 
   // Webpack optimizations (only applies when NOT using Turbopack)
   webpack: (config, { dev, isServer }) => {
+    // FIX: Webpack SSR tslib resolution issue
+    // Force webpack to use CommonJS version of tslib for SSR compatibility
+    if (isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        tslib: require.resolve('tslib'),
+      }
+    }
+
     if (!dev && !isServer) {
       // Production optimizations
       config.optimization = {

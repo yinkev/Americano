@@ -13,6 +13,7 @@
 
 'use client'
 
+import { motion } from 'motion/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -20,6 +21,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { format } from 'date-fns'
 import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
+import { chartVariants, getAnimationConfig } from '@/lib/animation-variants'
 
 // Pattern type definitions
 type PatternType =
@@ -190,9 +192,18 @@ export function PatternEvolutionTimeline({
         <div className="relative overflow-x-auto pb-4" role="img" aria-label="Timeline visualization showing pattern evolution across weeks">
           <div className="min-w-max">
             {/* Pattern Type Lanes */}
-            <div className="space-y-8">
-              {allPatternTypes.map((patternType) => (
-                <div key={patternType} className="relative">
+            <motion.div
+              className="space-y-8"
+              variants={getAnimationConfig(chartVariants.container)}
+              initial="hidden"
+              animate="show"
+            >
+              {allPatternTypes.map((patternType, laneIndex) => (
+                <motion.div
+                  key={patternType}
+                  className="relative"
+                  variants={getAnimationConfig(chartVariants.timelineItem)}
+                >
                   {/* Lane Label */}
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-32 w-28 text-right">
                     <span className="text-sm font-medium">{PATTERN_LABELS[patternType]}</span>
@@ -208,21 +219,30 @@ export function PatternEvolutionTimeline({
                         const xPosition = (weekIndex / (weeksToShow - 1)) * 100
 
                         return (
-                          <div
+                          <motion.div
                             key={week.weekNumber}
                             className="absolute"
                             style={{ left: `${xPosition}%` }}
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{
+                              delay: laneIndex * 0.1 + weekIndex * 0.05,
+                              duration: 0.3,
+                              ease: 'easeOut',
+                            }}
                           >
                             {pattern ? (
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <div
-                                      className="w-6 h-6 rounded-full border-2 border-white shadow-md cursor-pointer hover:scale-125 transition-transform"
+                                    <motion.div
+                                      className="w-6 h-6 rounded-full border-2 border-white shadow-md cursor-pointer"
                                       style={{
                                         backgroundColor: PATTERN_COLORS[patternType],
                                         opacity: STATUS_CONFIG[pattern.status].opacity,
                                       }}
+                                      whileHover={{ scale: 1.25 }}
+                                      transition={{ duration: 0.15, ease: 'easeOut' }}
                                     />
                                   </TooltipTrigger>
                                   <TooltipContent>
@@ -246,14 +266,14 @@ export function PatternEvolutionTimeline({
                               // Empty marker for weeks without this pattern
                               <div className="w-6 h-6 rounded-full border border-gray-300 bg-white opacity-30" />
                             )}
-                          </div>
+                          </motion.div>
                         )
                       })}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
             {/* Week Labels */}
             <div className="flex items-center justify-between mt-6 px-1">

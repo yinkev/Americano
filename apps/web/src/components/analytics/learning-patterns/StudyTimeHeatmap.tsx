@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { motion } from 'motion/react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { chartVariants, getAnimationConfig } from '@/lib/animation-variants'
 
 interface HeatmapCell {
   day: number
@@ -122,7 +124,14 @@ export function StudyTimeHeatmap() {
           {/* Heatmap grid */}
           <div className="space-y-1">
             {DAYS.map((dayLabel, dayIndex) => (
-              <div key={dayLabel} className="flex items-center gap-1">
+              <motion.div
+                key={dayLabel}
+                className="flex items-center gap-1"
+                variants={getAnimationConfig(chartVariants.heatmapRow)}
+                initial="hidden"
+                animate="show"
+                custom={dayIndex}
+              >
                 <div className="w-12 text-xs font-medium" style={{ color: 'oklch(0.5 0.05 230)' }}>
                   {dayLabel}
                 </div>
@@ -131,9 +140,9 @@ export function StudyTimeHeatmap() {
                     const cellData = getCellData(dayIndex, hour)
                     const isOptimal = isOptimalWindow(dayIndex, hour, data.optimalWindows)
                     return (
-                      <div
+                      <motion.div
                         key={`${dayIndex}-${hour}`}
-                        className="flex-1 aspect-square rounded-sm cursor-pointer transition-all hover:scale-110"
+                        className="flex-1 aspect-square rounded-sm cursor-pointer"
                         style={{
                           backgroundColor: getPerformanceColor(cellData.avgPerformance),
                           border: isOptimal
@@ -142,6 +151,9 @@ export function StudyTimeHeatmap() {
                           minWidth: '16px',
                           minHeight: '16px',
                         }}
+                        variants={getAnimationConfig(chartVariants.heatmapCell)}
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.15, ease: 'easeOut' }}
                         onMouseEnter={(e) => handleMouseEnter(cellData, e)}
                         onMouseMove={handleMouseMove}
                         onMouseLeave={handleMouseLeave}
@@ -149,7 +161,7 @@ export function StudyTimeHeatmap() {
                     )
                   })}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
 

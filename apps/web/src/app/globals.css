@@ -5,31 +5,79 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Base Colors */
   --background: oklch(0.985 0 0);
   --foreground: oklch(0.145 0 0);
+
+  /* Card & Popover */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
+
+  /* Primary (Brand) */
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
+
+  /* Secondary */
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
+
+  /* Muted */
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
+
+  /* Accent */
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
+
+  /* Destructive (Error) */
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  /* Success - NEW */
+  --success: oklch(0.7 0.15 145);
+  --success-foreground: oklch(0.98 0.01 145);
+
+  /* Warning - NEW */
+  --warning: oklch(0.8 0.15 90);
+  --warning-foreground: oklch(0.3 0.12 90);
+
+  /* Info - NEW */
+  --info: oklch(0.65 0.18 240);
+  --info-foreground: oklch(0.97 0.02 240);
+
+  /* Borders & Inputs */
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
+
+  /* Chart Colors */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
+
+  /* Chart UI Elements - NEW */
+  --chart-grid: oklch(0.9 0.02 230);
+  --chart-axis: oklch(0.6 0.03 230);
+  --chart-text: oklch(0.5 0.05 230);
+
+  /* Cognitive Load Zones - NEW */
+  --load-low: oklch(0.7 0.15 145);
+  --load-low-bg: oklch(0.95 0.1 145);
+  --load-moderate: oklch(0.8 0.15 90);
+  --load-moderate-bg: oklch(0.95 0.12 90);
+  --load-high: oklch(0.7 0.15 50);
+  --load-high-bg: oklch(0.95 0.12 50);
+  --load-critical: oklch(0.6 0.20 30);
+  --load-critical-bg: oklch(0.95 0.15 30);
+
+  /* Border Radius */
   --radius: 0.625rem;
+
+  /* Sidebar */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -41,30 +89,76 @@
 }
 
 .dark {
+  /* Base Colors */
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
+
+  /* Card & Popover */
   --card: oklch(0.145 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
+
+  /* Primary (Brand) */
   --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.205 0 0);
+
+  /* Secondary */
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
+
+  /* Muted */
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
+
+  /* Accent */
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
+
+  /* Destructive (Error) */
   --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  /* Success - NEW */
+  --success: oklch(0.75 0.18 145);
+  --success-foreground: oklch(0.2 0.1 145);
+
+  /* Warning - NEW */
+  --warning: oklch(0.85 0.18 85);
+  --warning-foreground: oklch(0.3 0.12 85);
+
+  /* Info - NEW */
+  --info: oklch(0.7 0.2 240);
+  --info-foreground: oklch(0.25 0.12 240);
+
+  /* Borders & Inputs */
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
+
+  /* Chart Colors */
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
+
+  /* Chart UI Elements - NEW */
+  --chart-grid: oklch(0.3 0.02 230);
+  --chart-axis: oklch(0.5 0.03 230);
+  --chart-text: oklch(0.7 0.05 230);
+
+  /* Cognitive Load Zones - NEW */
+  --load-low: oklch(0.75 0.18 145);
+  --load-low-bg: oklch(0.25 0.12 145);
+  --load-moderate: oklch(0.85 0.18 85);
+  --load-moderate-bg: oklch(0.3 0.14 85);
+  --load-high: oklch(0.75 0.18 50);
+  --load-high-bg: oklch(0.3 0.14 50);
+  --load-critical: oklch(0.7 0.22 30);
+  --load-critical-bg: oklch(0.3 0.16 30);
+
+  /* Sidebar */
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -76,34 +170,83 @@
 }
 
 @theme inline {
+  /* Base Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Card & Popover */
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+
+  /* Primary (Brand) */
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+
+  /* Secondary */
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+
+  /* Muted */
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+
+  /* Accent */
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+
+  /* Destructive (Error) */
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+
+  /* Success - NEW */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  /* Warning - NEW */
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  /* Info - NEW */
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  /* Borders & Inputs */
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  /* Chart Colors */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Chart UI Elements - NEW */
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-axis: var(--chart-axis);
+  --color-chart-text: var(--chart-text);
+
+  /* Cognitive Load Zones - NEW */
+  --color-load-low: var(--load-low);
+  --color-load-low-bg: var(--load-low-bg);
+  --color-load-moderate: var(--load-moderate);
+  --color-load-moderate-bg: var(--load-moderate-bg);
+  --color-load-high: var(--load-high);
+  --color-load-high-bg: var(--load-high-bg);
+  --color-load-critical: var(--load-critical);
+  --color-load-critical-bg: var(--load-critical-bg);
+
+  /* Border Radius (8px grid: 8, 16, 24, 32) */
+  --radius-sm: 0.5rem; /* 8px */
+  --radius-md: 0.625rem; /* 10px - keeping for existing components */
+  --radius-lg: 1rem; /* 16px */
+  --radius-xl: 1.5rem; /* 24px */
+  --radius-2xl: 2rem; /* 32px */
+
+  /* Sidebar */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -112,8 +255,32 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Typography */
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-heading: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Font Sizes (consistent scale: 12, 14, 16, 18, 20, 24, 30, 36, 48) */
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem; /* 36px */
+  --font-size-5xl: 3rem; /* 48px */
+
+  /* Spacing (8px grid: 8, 16, 24, 32, 40, 48, 64, 80, 96) */
+  --spacing-1: 0.5rem; /* 8px */
+  --spacing-2: 1rem; /* 16px */
+  --spacing-3: 1.5rem; /* 24px */
+  --spacing-4: 2rem; /* 32px */
+  --spacing-5: 2.5rem; /* 40px */
+  --spacing-6: 3rem; /* 48px */
+  --spacing-8: 4rem; /* 64px */
+  --spacing-10: 5rem; /* 80px */
+  --spacing-12: 6rem; /* 96px */
 }
 
 @layer base {
@@ -130,5 +297,40 @@
   h5,
   h6 {
     @apply font-heading;
+  }
+
+  /* WCAG 2.1 AAA: Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* WCAG 2.1 AAA: Ensure focus indicators are visible */
+  *:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  /* WCAG 2.1: Skip to main content link for keyboard navigation */
+  .skip-to-main {
+    position: absolute;
+    left: -9999px;
+    z-index: 999;
+    padding: 1rem 1.5rem;
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+  }
+
+  .skip-to-main:focus {
+    left: 1rem;
+    top: 1rem;
   }
 }

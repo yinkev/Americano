@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { motion } from 'motion/react'
 import {
   ScatterChart,
   Scatter,
@@ -14,6 +15,8 @@ import {
 } from 'recharts'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { chartVariants, getAnimationConfig } from '@/lib/animation-variants'
+import { chartTheme, applyChartTheme, getDataColors } from '@/lib/chart-theme'
 
 interface SessionDataPoint {
   duration: number
@@ -77,19 +80,16 @@ export function SessionPerformanceChart() {
       const data = payload[0].payload
       return (
         <div
-          className="px-3 py-2 rounded-md shadow-lg"
-          style={{
-            backgroundColor: 'oklch(0.95 0.01 230)',
-            border: '1px solid oklch(0.85 0.02 230)',
-          }}
+          className="px-3 py-2 rounded-lg shadow-lg backdrop-blur-sm"
+          style={chartTheme.tooltip.contentStyle}
         >
-          <p className="text-sm font-medium" style={{ color: 'oklch(0.3 0.08 230)' }}>
+          <p className="text-sm font-medium mb-1" style={chartTheme.tooltip.labelStyle}>
             {data.timeOfDay.charAt(0).toUpperCase() + data.timeOfDay.slice(1)} Session
           </p>
-          <p className="text-xs mt-1" style={{ color: 'oklch(0.5 0.05 230)' }}>
+          <p className="text-xs" style={chartTheme.tooltip.itemStyle}>
             Duration: {data.duration} minutes
           </p>
-          <p className="text-xs" style={{ color: 'oklch(0.5 0.05 230)' }}>
+          <p className="text-xs" style={chartTheme.tooltip.itemStyle}>
             Performance: {Math.round(data.performance)}
           </p>
         </div>
@@ -99,68 +99,81 @@ export function SessionPerformanceChart() {
   }
 
   return (
-    <div className="space-y-4" role="region" aria-label="Session Performance Analysis">
+    <motion.div
+      className="space-y-4"
+      role="region"
+      aria-label="Session Performance Analysis"
+      variants={getAnimationConfig(chartVariants.container)}
+      initial="hidden"
+      animate="show"
+    >
       <ResponsiveContainer width="100%" height={320}>
         <ScatterChart
-          margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          {...applyChartTheme()}
           role="img"
           aria-label={`Scatter chart showing performance vs duration for ${data.sessions.length} study sessions across different times of day. Current average is ${data.currentAverage.duration} minutes with ${Math.round(data.currentAverage.performance)} performance. Recommended duration is ${data.recommended.duration} minutes.`}
           tabIndex={0}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0.02 230)" />
+          <CartesianGrid {...chartTheme.grid} />
           <XAxis
             type="number"
             dataKey="duration"
             name="Duration"
             unit=" min"
+            {...chartTheme.axis}
             label={{
               value: 'Session Duration (minutes)',
               position: 'insideBottom',
               offset: -10,
-              style: { fill: 'oklch(0.5 0.05 230)', fontSize: 12 },
+              ...chartTheme.axisLabel.style,
             }}
-            stroke="oklch(0.6 0.03 230)"
           />
           <YAxis
             type="number"
             dataKey="performance"
             name="Performance"
             domain={[0, 100]}
+            {...chartTheme.axis}
             label={{
               value: 'Performance Score',
               angle: -90,
               position: 'insideLeft',
-              style: { fill: 'oklch(0.5 0.05 230)', fontSize: 12 },
+              ...chartTheme.axisLabel.style,
             }}
-            stroke="oklch(0.6 0.03 230)"
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend
-            wrapperStyle={{
-              paddingTop: '10px',
-              fontSize: '12px',
-              color: 'oklch(0.5 0.05 230)',
-            }}
-          />
+          <Legend {...chartTheme.legend} />
 
-          {/* Scatter plots for each time of day */}
+          {/* Scatter plots for each time of day - with animation */}
           <Scatter
             name="Morning"
             data={morningData}
             fill={TIME_OF_DAY_COLORS.morning}
             fillOpacity={0.6}
+            isAnimationActive={true}
+            animationBegin={0}
+            animationDuration={800}
+            animationEasing="ease-out"
           />
           <Scatter
             name="Afternoon"
             data={afternoonData}
             fill={TIME_OF_DAY_COLORS.afternoon}
             fillOpacity={0.6}
+            isAnimationActive={true}
+            animationBegin={200}
+            animationDuration={800}
+            animationEasing="ease-out"
           />
           <Scatter
             name="Evening"
             data={eveningData}
             fill={TIME_OF_DAY_COLORS.evening}
             fillOpacity={0.6}
+            isAnimationActive={true}
+            animationBegin={400}
+            animationDuration={800}
+            animationEasing="ease-out"
           />
 
           {/* Current average marker */}
@@ -214,6 +227,6 @@ export function SessionPerformanceChart() {
         Your current average is {data.currentAverage.duration} minute sessions with {Math.round(data.currentAverage.performance)} percent performance.
         Recommended session length is {data.recommended.duration} minutes for optimal {Math.round(data.recommended.performance)} percent performance.
       </div>
-    </div>
+    </motion.div>
   )
 }

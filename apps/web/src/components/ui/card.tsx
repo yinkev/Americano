@@ -1,15 +1,65 @@
+'use client'
+
 import * as React from 'react'
+import { motion } from 'motion/react'
 
 import { cn } from '@/lib/utils'
+import { cardVariants as animationVariants, getAnimationConfig } from '@/lib/animation-variants'
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn('rounded-xl border bg-card text-card-foreground shadow', className)}
-      {...props}
-    />
-  ),
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  /**
+   * Interactive cards have hover lift + scale effect (for clickable cards)
+   * Static cards have subtle shadow-only effect (for info cards)
+   * Glow cards have OKLCH-based glow effect
+   */
+  interactive?: 'interactive' | 'static' | 'glow' | false
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, interactive = false, onClick, ...props }, ref) => {
+    // Determine if card should be interactive
+    const isInteractive = interactive !== false || !!onClick
+
+    // Select animation variant
+    const variant = interactive === 'glow'
+      ? animationVariants.glow
+      : interactive === 'static'
+        ? animationVariants.static
+        : interactive === 'interactive' || isInteractive
+          ? animationVariants.interactive
+          : null
+
+    if (!variant) {
+      // No animation - static card
+      return (
+        <div
+          ref={ref}
+          className={cn('rounded-xl border bg-card text-card-foreground shadow', className)}
+          onClick={onClick}
+          {...props}
+        />
+      )
+    }
+
+    return (
+      <motion.div
+        ref={ref}
+        className={cn(
+          'rounded-xl border bg-card text-card-foreground shadow',
+          isInteractive && 'cursor-pointer',
+          className
+        )}
+        onClick={onClick}
+        initial="rest"
+        whileHover="hover"
+        variants={{
+          rest: getAnimationConfig(variant.rest),
+          hover: getAnimationConfig(variant.hover),
+        }}
+        {...props}
+      />
+    )
+  },
 )
 Card.displayName = 'Card'
 
