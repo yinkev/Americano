@@ -86,8 +86,8 @@ export function StudyTimeHeatmap() {
 
   if (error || !data) {
     return (
-      <Alert className="bg-white/80 backdrop-blur-md">
-        <AlertDescription>{error || 'No heatmap data available'}</AlertDescription>
+      <Alert className="bg-destructive/10 border-destructive/20">
+        <AlertDescription className="text-destructive">{error || 'No heatmap data available'}</AlertDescription>
       </Alert>
     )
   }
@@ -113,7 +113,7 @@ export function StudyTimeHeatmap() {
             {HOURS.filter((h) => h % 2 === 0).map((hour) => (
               <div
                 key={hour}
-                className="flex-1 text-center text-xs"
+                className="flex-1 text-center text-[13px]"
                 style={{ color: 'oklch(0.6 0.03 230)', minWidth: '32px' }}
               >
                 {hour}h
@@ -132,7 +132,7 @@ export function StudyTimeHeatmap() {
                 animate="show"
                 custom={dayIndex}
               >
-                <div className="w-12 text-xs font-medium" style={{ color: 'oklch(0.5 0.05 230)' }}>
+                <div className="w-12 text-[13px] font-medium" style={{ color: 'oklch(0.5 0.05 230)' }}>
                   {dayLabel}
                 </div>
                 <div className="flex gap-1 flex-1">
@@ -166,7 +166,7 @@ export function StudyTimeHeatmap() {
           </div>
 
           {/* Legend */}
-          <div className="flex items-center gap-4 mt-4 text-xs">
+          <div className="flex items-center gap-4 mt-4 text-[13px]">
             <span style={{ color: 'oklch(0.6 0.03 230)' }}>Performance:</span>
             <div className="flex items-center gap-1">
               <div className="w-4 h-4 rounded" style={{ backgroundColor: 'oklch(0.9 0.05 145)' }} />
@@ -200,13 +200,13 @@ export function StudyTimeHeatmap() {
             transform: 'translate(0, -100%)',
           }}
         >
-          <div className="text-sm font-medium">
+          <div className="text-[13px] font-medium">
             {DAYS[hoveredCell.day]} {hoveredCell.hour}:00
           </div>
-          <div className="text-xs mt-1">
+          <div className="text-[13px] mt-1">
             Avg Performance: {Math.round(hoveredCell.avgPerformance)}
           </div>
-          <div className="text-xs">
+          <div className="text-[13px]">
             {hoveredCell.sessionCount} session{hoveredCell.sessionCount !== 1 ? 's' : ''}
           </div>
         </div>

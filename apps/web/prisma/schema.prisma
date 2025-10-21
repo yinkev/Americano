@@ -368,20 +368,27 @@ model BehavioralEvent {
 // ============================================
 
 model BehavioralPattern {
-  id             String                @id @default(cuid())
-  userId         String
-  patternType    BehavioralPatternType
-  patternName    String
-  confidence     Float
-  evidence       Json
-  detectedAt     DateTime              @default(now())
-  lastSeenAt     DateTime              @default(now())
-  occurrenceCount Int                  @default(1)
+  id              String                @id @default(cuid())
+  userId          String
+  patternType     BehavioralPatternType
+  patternData     Json                  // Stores pattern metadata (legacy, additional data)
+  confidence      Float
+  firstDetectedAt DateTime              @default(now())
+  lastSeenAt      DateTime              @default(now())
+
+  // Extracted fields for type-safe access
+  patternName     String?               // Human-readable pattern name
+  evidence        String[]              // Array of evidence strings
+  occurrenceCount Int                   @default(0) // Number of times pattern observed
+  detectedAt      DateTime              @default(now()) // Alias for firstDetectedAt for backward compatibility
+
   insightPatterns InsightPattern[]
 
   @@index([userId])
   @@index([patternType])
   @@index([confidence])
+  @@index([occurrenceCount])
+  @@index([detectedAt])
   @@index([userId, patternType, confidence]) // Composite for filtered pattern queries
   @@index([userId, lastSeenAt])              // For recent pattern tracking
   @@map("behavioral_patterns")

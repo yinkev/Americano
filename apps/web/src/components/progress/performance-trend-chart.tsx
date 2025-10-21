@@ -129,37 +129,37 @@ export function PerformanceTrendChart({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-        <div className="text-sm text-gray-500">Loading performance data...</div>
+      <div className="flex items-center justify-center h-64 bg-white border shadow-sm rounded-lg">
+        <div className="text-[13px] text-muted-foreground">Loading performance data...</div>
       </div>
     )
   }
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-        <div className="text-sm text-gray-500">No performance data available yet.</div>
+      <div className="flex items-center justify-center h-64 bg-white border shadow-sm rounded-lg">
+        <div className="text-[13px] text-muted-foreground">No performance data available yet.</div>
       </div>
     )
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
+    <div className="bg-white border shadow-sm rounded-lg p-4 hover:shadow-md transition-shadow duration-300">
       {/* Controls */}
       <div className="flex flex-wrap gap-4 mb-6">
         {/* Time Range Selector */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Time Range</label>
+          <label className="block text-[11px] font-medium text-foreground mb-2 uppercase tracking-wide">Time Range</label>
           <div className="flex gap-2">
             {(['7d', '30d', '90d', 'all'] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => setSelectedRange(range)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                className={`h-9 px-4 rounded-lg text-[13px] font-medium transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] ${
                   selectedRange === range
-                    ? 'bg-[oklch(0.55_0.22_264)] text-white'
-                    : 'bg-white/60 text-gray-700 hover:bg-white/80'
-                } shadow-sm`}
+                    ? 'bg-clinical text-clinical-foreground shadow-sm'
+                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                }`}
               >
                 {range === 'all' ? 'All Time' : range.toUpperCase()}
               </button>
@@ -169,17 +169,17 @@ export function PerformanceTrendChart({
 
         {/* Metric Type Selector */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Metric</label>
+          <label className="block text-[11px] font-medium text-foreground mb-2 uppercase tracking-wide">Metric</label>
           <div className="flex gap-2">
             {(['retention', 'studyTime', 'reviewCount'] as const).map((metric) => (
               <button
                 key={metric}
                 onClick={() => setSelectedMetric(metric)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                className={`h-9 px-4 rounded-lg text-[13px] font-medium transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] ${
                   selectedMetric === metric
-                    ? 'bg-[oklch(0.55_0.22_264)] text-white'
-                    : 'bg-white/60 text-gray-700 hover:bg-white/80'
-                } shadow-sm`}
+                    ? 'bg-clinical text-clinical-foreground shadow-sm'
+                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                }`}
               >
                 {metricLabels[metric]}
               </button>
@@ -228,7 +228,7 @@ export function PerformanceTrendChart({
       <div className="mt-4 flex justify-end">
         <button
           onClick={() => exportToCSV()}
-          className="px-4 py-2 rounded-xl text-sm font-medium bg-white/60 text-gray-700 hover:bg-white/80 shadow-sm transition-colors"
+          className="h-9 px-4 rounded-lg text-[13px] font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-150 hover:scale-[1.02] active:scale-[0.98]"
         >
           Export CSV
         </button>

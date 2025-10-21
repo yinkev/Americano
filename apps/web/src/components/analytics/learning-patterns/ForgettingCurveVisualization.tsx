@@ -53,13 +53,13 @@ export function ForgettingCurveVisualization({ curve }: ForgettingCurveProps) {
             border: '1px solid oklch(0.85 0.02 230)',
           }}
         >
-          <p className="text-sm font-medium" style={{ color: 'oklch(0.3 0.08 230)' }}>
+          <p className="text-[13px] font-medium" style={{ color: 'oklch(0.3 0.08 230)' }}>
             Day {payload[0].payload.day}
           </p>
-          <p className="text-xs mt-1" style={{ color: 'oklch(0.5 0.2 230)' }}>
+          <p className="text-[13px] mt-1 text-info">
             Your retention: {payload[0].value}%
           </p>
-          <p className="text-xs" style={{ color: 'oklch(0.7 0.05 230)' }}>
+          <p className="text-[13px]" style={{ color: 'oklch(0.7 0.05 230)' }}>
             Standard: {payload[1].value}%
           </p>
         </div>
@@ -149,28 +149,28 @@ export function ForgettingCurveVisualization({ curve }: ForgettingCurveProps) {
       </ResponsiveContainer>
 
       {/* Curve Parameters */}
-      <div className="grid grid-cols-3 gap-4 text-sm">
+      <div className="grid grid-cols-3 gap-4 text-[13px]">
         <div className="p-3 rounded-md" style={{ backgroundColor: 'oklch(0.97 0.01 230)' }}>
-          <p style={{ color: 'oklch(0.6 0.03 230)' }} className="text-xs mb-1">
+          <p style={{ color: 'oklch(0.6 0.03 230)' }} className="text-[13px] mb-1">
             Initial Retention (R₀)
           </p>
-          <p className="text-lg font-semibold" style={{ color: 'oklch(0.4 0.15 230)' }}>
+          <p className="text-[16px] font-semibold text-info">
             {Math.round(curve.R0 * 100)}%
           </p>
         </div>
         <div className="p-3 rounded-md" style={{ backgroundColor: 'oklch(0.97 0.01 230)' }}>
-          <p style={{ color: 'oklch(0.6 0.03 230)' }} className="text-xs mb-1">
+          <p style={{ color: 'oklch(0.6 0.03 230)' }} className="text-[13px] mb-1">
             Decay Rate (k)
           </p>
-          <p className="text-lg font-semibold" style={{ color: 'oklch(0.4 0.15 230)' }}>
+          <p className="text-[16px] font-semibold text-warning">
             {curve.k.toFixed(3)}
           </p>
         </div>
         <div className="p-3 rounded-md" style={{ backgroundColor: 'oklch(0.97 0.01 230)' }}>
-          <p style={{ color: 'oklch(0.6 0.03 230)' }} className="text-xs mb-1">
+          <p style={{ color: 'oklch(0.6 0.03 230)' }} className="text-[13px] mb-1">
             Half-Life
           </p>
-          <p className="text-lg font-semibold" style={{ color: 'oklch(0.4 0.15 230)' }}>
+          <p className="text-[16px] font-semibold text-success">
             {curve.halfLife.toFixed(1)} days
           </p>
         </div>
@@ -178,20 +178,20 @@ export function ForgettingCurveVisualization({ curve }: ForgettingCurveProps) {
 
       {/* Insight Annotation */}
       <div
-        className="p-4 rounded-md"
+        className="p-3 rounded-md"
         style={{
           backgroundColor: isFaster ? 'oklch(0.97 0.01 60)' : 'oklch(0.97 0.01 145)',
         }}
       >
         <p
-          className="text-sm font-medium mb-2"
+          className="text-[13px] font-medium mb-2"
           style={{
             color: isFaster ? 'oklch(0.4 0.15 60)' : 'oklch(0.4 0.15 145)',
           }}
         >
           Personalized Retention Analysis
         </p>
-        <p className="text-sm" style={{ color: 'oklch(0.5 0.05 230)' }}>
+        <p className="text-[13px]" style={{ color: 'oklch(0.5 0.05 230)' }}>
           Your retention decays{' '}
           <span
             className="font-semibold"

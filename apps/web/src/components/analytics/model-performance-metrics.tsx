@@ -6,6 +6,7 @@
  * - Confusion matrix heatmap
  * - Feature importance bar chart
  * - A/B test results (if multi-armed bandit active)
+ * Epic 5 UI Transformation: Already using shadcn/ui components
  */
 
 'use client'

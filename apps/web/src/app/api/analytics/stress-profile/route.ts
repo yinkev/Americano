@@ -50,17 +50,24 @@ export async function GET(request: NextRequest) {
 
     // Fetch stress-related patterns to enhance profile
     // Use BehavioralPattern as proxy for stress patterns
-    const stressPatterns = await prisma.behavioralPattern.findMany({
-      where: {
-        userId,
-        confidence: { gte: 0.6 },
-        patternType: {
-          in: ['ATTENTION_CYCLE', 'PERFORMANCE_PEAK'], // Stress-related patterns
+    // Wrap in try-catch for graceful degradation if table doesn't exist or query fails
+    let stressPatterns = []
+    try {
+      stressPatterns = await prisma.behavioralPattern.findMany({
+        where: {
+          userId,
+          confidence: { gte: 0.6 },
+          patternType: {
+            in: ['ATTENTION_CYCLE', 'PERFORMANCE_PEAK'], // Stress-related patterns
+          },
         },
-      },
-      orderBy: { occurrenceCount: 'desc' },
-      take: 5,
-    })
+        orderBy: { occurrenceCount: 'desc' },
+        take: 5,
+      })
+    } catch (error) {
+      console.warn('Failed to fetch behavioral patterns, using defaults:', error)
+      stressPatterns = []
+    }
 
     // Identify primary stressors from patterns
     const primaryStressors = stressPatterns.map((p) => ({
@@ -70,9 +77,15 @@ export async function GET(request: NextRequest) {
     }))
 
     // Calculate profile confidence based on data quality
-    const cognitiveLoadCount = await prisma.cognitiveLoadMetric.count({
-      where: { userId },
-    })
+    let cognitiveLoadCount = 0
+    try {
+      cognitiveLoadCount = await prisma.cognitiveLoadMetric.count({
+        where: { userId },
+      })
+    } catch (error) {
+      console.warn('Failed to count cognitive load metrics, using default:', error)
+      cognitiveLoadCount = 0
+    }
 
     const profileConfidence = Math.min(
       1.0,
@@ -87,7 +100,7 @@ export async function GET(request: NextRequest) {
       primaryStressors,
       loadTolerance: learningStyle.loadTolerance || 65,
       avgCognitiveLoad: learningStyle.avgCognitiveLoad || null,
-      avgRecoveryTime: stressProfile.avgRecoveryTime,
+      avgRecoveryTime: stressProfile.avgRecoveryTime || 24,
       effectiveCopingStrategies: stressProfile.copingStrategies || [],
       profileConfidence,
       lastAnalyzedAt: userProfile.lastAnalyzedAt,

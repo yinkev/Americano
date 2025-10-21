@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 import { successResponse } from '@/lib/api-response'
 import { withErrorHandler, ApiError } from '@/lib/api-error'
+import { getMissionObjectives } from '@/types/mission-helpers'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -37,8 +38,8 @@ async function handleGET(request: NextRequest, context: RouteContext) {
   }
 
   // Expand objectives from JSON to include objective details
-  const objectives = mission.objectives as any[]
-  const objectiveIds = objectives.map((obj) => obj.objectiveId)
+  const objectives = getMissionObjectives(mission)
+  const objectiveIds = objectives.map((obj) => obj.id)
   const objectiveDetails = await prisma.learningObjective.findMany({
     where: {
       id: { in: objectiveIds },

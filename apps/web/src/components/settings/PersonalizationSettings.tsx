@@ -193,9 +193,9 @@ export function PersonalizationSettings() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
-        <CardContent className="p-6 h-64 flex items-center justify-center">
-          <p className="text-sm text-muted-foreground">Loading personalization settings...</p>
+      <Card className="bg-white border shadow-sm rounded-lg">
+        <CardContent className="p-4 h-64 flex items-center justify-center">
+          <p className="text-[13px] text-muted-foreground">Loading personalization settings...</p>
         </CardContent>
       </Card>
     )
@@ -203,9 +203,9 @@ export function PersonalizationSettings() {
 
   if (!preferences) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
-        <CardContent className="p-6 h-64 flex items-center justify-center">
-          <p className="text-sm text-muted-foreground">Failed to load preferences</p>
+      <Card className="bg-white border shadow-sm rounded-lg">
+        <CardContent className="p-4 h-64 flex items-center justify-center">
+          <p className="text-[13px] text-muted-foreground">Failed to load preferences</p>
         </CardContent>
       </Card>
     )
@@ -216,23 +216,23 @@ export function PersonalizationSettings() {
 
   return (
     <>
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
-        <CardHeader>
+      <Card className="bg-white border shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg">
+        <CardHeader className="p-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <CardTitle className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                <Sparkles className="size-5 text-[oklch(0.7_0.15_230)]" />
+              <CardTitle className="text-[20px] font-heading font-semibold tracking-tight flex items-center gap-2">
+                <Sparkles className="size-5" style={{ color: 'oklch(0.7 0.15 230)' }} />
                 Personalization Settings
               </CardTitle>
-              <CardDescription className="text-gray-600 mt-1">
+              <CardDescription className="text-[13px] text-muted-foreground mt-1">
                 Control how the platform adapts to your learning patterns
               </CardDescription>
             </div>
             <Badge
               variant="outline"
-              className="shrink-0 px-3 py-1.5"
+              className="shrink-0 px-3 py-1.5 text-[11px]"
               style={{
-                backgroundColor: `${currentLevel.color}/0.1`,
+                backgroundColor: `${currentLevel.color}15`,
                 borderColor: currentLevel.color,
                 color: currentLevel.color,
               }}
@@ -242,15 +242,15 @@ export function PersonalizationSettings() {
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="p-4 space-y-6">
           {/* Personalization Level Slider */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label className="text-base font-semibold text-foreground">Personalization Level</Label>
+              <Label className="text-[15px] font-semibold">Personalization Level</Label>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 gap-2"
+                className="h-8 gap-2 text-[13px] hover:scale-[1.02] active:scale-[0.98] transition-transform duration-150"
                 onClick={() => window.open('/analytics/personalization', '_blank')}
               >
                 <TrendingUp className="size-4" />
@@ -266,7 +266,7 @@ export function PersonalizationSettings() {
                 onValueChange={handleLevelChange}
                 className="w-full"
               />
-              <div className="flex justify-between text-xs text-muted-foreground">
+              <div className="flex justify-between text-[11px] text-muted-foreground">
                 {PERSONALIZATION_LEVELS.map((level) => (
                   <span key={level.value} className={level.value === currentLevelIndex ? 'font-semibold text-foreground' : ''}>
                     {level.label}
@@ -274,28 +274,28 @@ export function PersonalizationSettings() {
                 ))}
               </div>
             </div>
-            <div className="p-4 rounded-xl bg-muted/30 border border-border">
+            <div className="p-4 rounded-lg bg-muted/30 border border-border">
               <div className="flex items-start gap-3">
-                <Info className="size-5 text-[oklch(0.7_0.15_230)] shrink-0 mt-0.5" />
+                <Info className="size-5 shrink-0 mt-0.5" style={{ color: 'oklch(0.7 0.15 230)' }} />
                 <div>
-                  <p className="text-sm font-medium text-foreground mb-1">{currentLevel.description}</p>
+                  <p className="text-[13px] font-medium mb-1">{currentLevel.description}</p>
                   {preferences.personalizationLevel === 'NONE' && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[11px] text-muted-foreground">
                       Standard recommendations without adaptation to your learning patterns.
                     </p>
                   )}
                   {preferences.personalizationLevel === 'LOW' && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[11px] text-muted-foreground">
                       Adapts mission timing and session duration based on your patterns.
                     </p>
                   )}
                   {preferences.personalizationLevel === 'MEDIUM' && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[11px] text-muted-foreground">
                       Adds content recommendations and assessment difficulty adjustments.
                     </p>
                   )}
                   {preferences.personalizationLevel === 'HIGH' && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[11px] text-muted-foreground">
                       Full adaptive experience with cognitive load monitoring and proactive interventions.
                     </p>
                   )}
@@ -308,17 +308,17 @@ export function PersonalizationSettings() {
 
           {/* Feature-Level Toggles */}
           <div className="space-y-4">
-            <Label className="text-base font-semibold text-foreground">Individual Features</Label>
+            <Label className="text-[15px] font-semibold">Individual Features</Label>
             <div className="space-y-3">
               {/* Mission Timing */}
-              <div className="flex items-center justify-between p-4 rounded-xl bg-muted/10 border border-border hover:border-primary/30 transition-colors">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-start gap-3 flex-1">
-                  <Clock className="size-5 text-[oklch(0.7_0.15_230)] shrink-0 mt-1" />
+                  <Clock className="size-5 shrink-0 mt-1" style={{ color: 'oklch(0.7 0.15 230)' }} />
                   <div className="flex-1">
-                    <Label htmlFor="mission-timing" className="text-sm font-medium text-foreground cursor-pointer">
+                    <Label htmlFor="mission-timing" className="text-[13px] font-medium cursor-pointer">
                       Adapt Mission Timing
                     </Label>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-[11px] text-muted-foreground mt-1">
                       Recommend optimal study times based on your performance patterns
                     </p>
                   </div>
@@ -332,14 +332,14 @@ export function PersonalizationSettings() {
               </div>
 
               {/* Session Duration */}
-              <div className="flex items-center justify-between p-4 rounded-xl bg-muted/10 border border-border hover:border-primary/30 transition-colors">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-start gap-3 flex-1">
-                  <Activity className="size-5 text-[oklch(0.7_0.15_145)] shrink-0 mt-1" />
+                  <Activity className="size-5 shrink-0 mt-1" style={{ color: 'oklch(0.7 0.15 145)' }} />
                   <div className="flex-1">
-                    <Label htmlFor="session-duration" className="text-sm font-medium text-foreground cursor-pointer">
+                    <Label htmlFor="session-duration" className="text-[13px] font-medium cursor-pointer">
                       Adapt Session Duration
                     </Label>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-[11px] text-muted-foreground mt-1">
                       Adjust session length based on your attention patterns and focus capacity
                     </p>
                   </div>
@@ -353,14 +353,14 @@ export function PersonalizationSettings() {
               </div>
 
               {/* Content Recommendations */}
-              <div className="flex items-center justify-between p-4 rounded-xl bg-muted/10 border border-border hover:border-primary/30 transition-colors">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-start gap-3 flex-1">
-                  <BookOpen className="size-5 text-[oklch(0.8_0.15_85)] shrink-0 mt-1" />
+                  <BookOpen className="size-5 shrink-0 mt-1" style={{ color: 'oklch(0.8 0.15 85)' }} />
                   <div className="flex-1">
-                    <Label htmlFor="content-recs" className="text-sm font-medium text-foreground cursor-pointer">
+                    <Label htmlFor="content-recs" className="text-[13px] font-medium cursor-pointer">
                       Personalize Content Recommendations
                     </Label>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-[11px] text-muted-foreground mt-1">
                       Tailor content suggestions to your learning style (visual, kinesthetic, etc.)
                     </p>
                   </div>
@@ -374,14 +374,14 @@ export function PersonalizationSettings() {
               </div>
 
               {/* Assessment Difficulty */}
-              <div className="flex items-center justify-between p-4 rounded-xl bg-muted/10 border border-border hover:border-primary/30 transition-colors">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-start gap-3 flex-1">
-                  <Target className="size-5 text-[oklch(0.6_0.15_25)] shrink-0 mt-1" />
+                  <Target className="size-5 shrink-0 mt-1" style={{ color: 'oklch(0.6 0.15 25)' }} />
                   <div className="flex-1">
-                    <Label htmlFor="assessment-diff" className="text-sm font-medium text-foreground cursor-pointer">
+                    <Label htmlFor="assessment-diff" className="text-[13px] font-medium cursor-pointer">
                       Adapt Assessment Difficulty
                     </Label>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-[11px] text-muted-foreground mt-1">
                       Optimize question difficulty and frequency based on your progress
                     </p>
                   </div>
@@ -395,14 +395,14 @@ export function PersonalizationSettings() {
               </div>
 
               {/* Cognitive Load Auto-Adjust */}
-              <div className="flex items-center justify-between p-4 rounded-xl bg-muted/10 border border-border hover:border-primary/30 transition-colors">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-start gap-3 flex-1">
-                  <Brain className="size-5 text-[oklch(0.7_0.15_300)] shrink-0 mt-1" />
+                  <Brain className="size-5 shrink-0 mt-1" style={{ color: 'oklch(0.7 0.15 300)' }} />
                   <div className="flex-1">
-                    <Label htmlFor="cognitive-load" className="text-sm font-medium text-foreground cursor-pointer">
+                    <Label htmlFor="cognitive-load" className="text-[13px] font-medium cursor-pointer">
                       Auto-Adjust Based on Cognitive Load
                     </Label>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-[11px] text-muted-foreground mt-1">
                       Automatically reduce difficulty when stress or burnout is detected
                     </p>
                   </div>
@@ -421,11 +421,11 @@ export function PersonalizationSettings() {
 
           {/* Manual Override Actions */}
           <div className="space-y-4">
-            <Label className="text-base font-semibold text-foreground">Manual Overrides</Label>
+            <Label className="text-[15px] font-semibold">Manual Overrides</Label>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <Button
                 variant="outline"
-                className="justify-start gap-2"
+                className="justify-start gap-2 text-[13px] hover:scale-[1.02] active:scale-[0.98] transition-transform duration-150"
                 onClick={() => setShowResetDialog(true)}
                 disabled={saving}
               >
@@ -434,19 +434,19 @@ export function PersonalizationSettings() {
               </Button>
               <Button
                 variant="outline"
-                className="justify-start gap-2"
+                className="justify-start gap-2 text-[13px] hover:scale-[1.02] active:scale-[0.98] transition-transform duration-150"
                 onClick={() => setShowPauseDialog(true)}
                 disabled={saving || preferences.personalizationLevel === 'NONE'}
               >
                 <Pause className="size-4" />
                 Pause for 1 Week
               </Button>
-              <Button variant="outline" className="justify-start gap-2" disabled>
+              <Button variant="outline" className="justify-start gap-2 text-[13px]" disabled>
                 <BookOpen className="size-4" />
                 Prefer Standard Missions
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground">
               Reset will clear all personalization data and restart from defaults. Pause temporarily disables
               personalization while keeping your data.
             </p>
@@ -454,9 +454,9 @@ export function PersonalizationSettings() {
 
           {/* Save Changes */}
           {hasChanges && (
-            <div className="flex items-center justify-between p-4 rounded-xl bg-[oklch(0.7_0.15_230)]/10 border border-[oklch(0.7_0.15_230)]/30">
-              <p className="text-sm font-medium text-foreground">You have unsaved changes</p>
-              <Button onClick={handleSave} disabled={saving} className="gap-2">
+            <div className="flex items-center justify-between p-4 rounded-lg border" style={{ backgroundColor: 'oklch(0.7 0.15 230 / 0.1)', borderColor: 'oklch(0.7 0.15 230 / 0.3)' }}>
+              <p className="text-[13px] font-medium">You have unsaved changes</p>
+              <Button onClick={handleSave} disabled={saving} className="gap-2 text-[13px] hover:scale-[1.02] active:scale-[0.98] transition-transform duration-150">
                 {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
@@ -466,18 +466,18 @@ export function PersonalizationSettings() {
 
       {/* Reset Confirmation Dialog */}
       <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
-        <AlertDialogContent className="bg-white/95 backdrop-blur-md">
+        <AlertDialogContent className="bg-white border shadow-lg">
           <AlertDialogHeader>
-            <AlertDialogTitle>Reset All Personalizations?</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
+            <AlertDialogTitle className="text-[16px]">Reset All Personalizations?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2 text-[13px]">
               <p>This will:</p>
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="list-disc list-inside space-y-1">
                 <li>Clear all learning profile data</li>
                 <li>Reset personalization level to MEDIUM</li>
                 <li>Restart pattern analysis from scratch</li>
                 <li>Remove all personalized recommendations</li>
               </ul>
-              <p className="font-semibold text-foreground mt-3">This action cannot be undone.</p>
+              <p className="font-semibold mt-3">This action cannot be undone.</p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -489,12 +489,12 @@ export function PersonalizationSettings() {
 
       {/* Pause Confirmation Dialog */}
       <AlertDialog open={showPauseDialog} onOpenChange={setShowPauseDialog}>
-        <AlertDialogContent className="bg-white/95 backdrop-blur-md">
+        <AlertDialogContent className="bg-white border shadow-lg">
           <AlertDialogHeader>
-            <AlertDialogTitle>Pause Personalization?</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
+            <AlertDialogTitle className="text-[16px]">Pause Personalization?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2 text-[13px]">
               <p>Personalization will be paused for 1 week. During this time:</p>
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="list-disc list-inside space-y-1">
                 <li>You'll receive standard, non-personalized recommendations</li>
                 <li>Your existing data will be preserved</li>
                 <li>You can re-enable personalization anytime</li>

@@ -1,6 +1,7 @@
 'use client'
 
 import { Flame, Brain, TrendingUp, Award } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const stats = [
   {
@@ -39,46 +40,47 @@ const stats = [
 
 export function ProgressSummary() {
   return (
-    <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
-      {/* Card Header */}
-      <h2 className="text-xl font-heading font-semibold text-[oklch(0.145_0_0)] mb-6">
-        Your Progress
-      </h2>
+    <Card interactive="static" className="bg-white/80 backdrop-blur-md border-white/30">
+      <CardHeader>
+        <CardTitle className="text-xl font-heading font-semibold">Your Progress</CardTitle>
+      </CardHeader>
 
-      {/* Stats Grid - 2x2 on larger screens, stacked on mobile */}
-      <div className="grid grid-cols-2 gap-4">
-        {stats.map((stat) => (
-          <div
-            key={stat.id}
-            className="rounded-xl bg-white/60 backdrop-blur-sm border border-white/40 p-4
-                       hover:scale-[1.02] transition-transform duration-200"
-          >
-            <div className="flex items-center gap-3">
-              {/* Icon */}
-              <div
-                className="rounded-lg p-2"
-                style={{ backgroundColor: `var(--bg-${stat.id}, ${stat.bgColor})` }}
-              >
-                <stat.icon
-                  className="size-5"
-                  style={{ color: `var(--color-${stat.id}, ${stat.color})` }}
-                />
-              </div>
-
-              {/* Value and Label */}
-              <div className="flex-1 min-w-0">
-                <p
-                  className="text-2xl font-heading font-bold leading-none"
-                  style={{ color: `var(--color-${stat.id}, ${stat.color})` }}
+      <CardContent>
+        {/* Stats Grid - 2x2 on larger screens, stacked on mobile */}
+        <div className="grid grid-cols-2 gap-4">
+          {stats.map((stat) => (
+            <div
+              key={stat.id}
+              className="rounded-xl bg-white/60 backdrop-blur-sm border border-white/40 p-4
+                         hover:scale-[1.02] transition-transform duration-200"
+            >
+              <div className="flex items-center gap-3">
+                {/* Icon */}
+                <div
+                  className="rounded-lg p-2"
+                  style={{ backgroundColor: `var(--bg-${stat.id}, ${stat.bgColor})` }}
                 >
-                  {stat.value}
-                </p>
-                <p className="text-xs text-[oklch(0.556_0_0)] mt-1 leading-tight">{stat.label}</p>
+                  <stat.icon
+                    className="size-5"
+                    style={{ color: `var(--color-${stat.id}, ${stat.color})` }}
+                  />
+                </div>
+
+                {/* Value and Label */}
+                <div className="flex-1 min-w-0">
+                  <p
+                    className="text-2xl font-heading font-bold leading-none"
+                    style={{ color: `var(--color-${stat.id}, ${stat.color})` }}
+                  >
+                    {stat.value}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1 leading-tight">{stat.label}</p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   )
 }

@@ -1,5 +1,13 @@
 /**
  * BehavioralGoalsSection Component
+ * Story 5.6: Behavioral Insights Dashboard - Task 4 (Behavioral Goals)
+ *
+ * Epic 5 UI Transformation:
+ * - OKLCH colors for progress bars and status badges (no gradients)
+ * - Design tokens from /lib/design-tokens.ts
+ * - Typography system (font-heading, precise text sizes)
+ * - Glassmorphism effects (bg-white/80 backdrop-blur-md)
+ * - Fast hover animations (150ms)
  *
  * Displays behavioral goals with progress tracking and goal creation dialog.
  * Features:
@@ -7,8 +15,6 @@
  * - Status indicators (active, completed, failed, abandoned)
  * - Dialog form for creating new goals
  * - Progress tracking from API
- *
- * Story 5.6: Behavioral Insights Dashboard - Task 4 (Behavioral Goals)
  */
 
 'use client'
@@ -37,6 +43,7 @@ import {
 } from '@/components/ui/select'
 import { AlertCircle, Plus, Target, TrendingUp, Clock } from 'lucide-react'
 import { format } from 'date-fns'
+import { typography, colors } from '@/lib/design-tokens'
 
 type GoalType =
   | 'INCREASE_RETENTION'
@@ -218,11 +225,11 @@ export function BehavioralGoalsSection({
   // Empty state
   if (!isLoading && !isLoadingProp && goals.length === 0 && !error) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md">
+      <Card className="bg-white/80 backdrop-blur-md shadow-sm">
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <Target className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No Goals Yet</h3>
-          <p className="text-muted-foreground text-center max-w-md mb-4">
+          <Target className="size-12 text-muted-foreground mb-4" />
+          <h3 className={`${typography.heading.h3} mb-2`}>No Goals Yet</h3>
+          <p className={`${typography.body.base} text-muted-foreground text-center max-w-md mb-4`}>
             Create your first behavioral goal to start improving your learning habits
           </p>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

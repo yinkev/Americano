@@ -176,10 +176,12 @@ export default function MissionReviewsPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <TrendingUp className="h-6 w-6 text-[oklch(0.6_0.15_250)]" />
-          <h1 className="text-3xl font-bold">Mission Reviews</h1>
+          <TrendingUp className="h-6 w-6" style={{ color: 'oklch(0.6 0.15 250)' }} />
+          <h1 className="text-[28px] md:text-[32px] font-heading font-bold tracking-tight text-foreground">
+            Mission Reviews
+          </h1>
         </div>
-        <p className="text-muted-foreground">
+        <p className="text-[15px] text-muted-foreground leading-relaxed">
           Weekly and monthly summaries of your mission performance, insights, and recommendations
         </p>
       </div>

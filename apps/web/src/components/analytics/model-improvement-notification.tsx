@@ -4,6 +4,7 @@
  *
  * Toast notification shown when model accuracy improves after user feedback
  * Displays success message with updated accuracy percentage
+ * Epic 5 UI Transformation: Uses sonner toast library (already integrated)
  */
 
 'use client'

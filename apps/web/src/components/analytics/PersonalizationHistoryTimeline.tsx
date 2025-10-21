@@ -155,24 +155,24 @@ export function PersonalizationHistoryTimeline() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
         <CardContent className="p-6 h-96 flex items-center justify-center">
-          <p className="text-sm text-muted-foreground">Loading history...</p>
+          <p className="text-[13px] text-muted-foreground">Loading history...</p>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
       <CardHeader>
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <CardTitle className="font-heading text-lg flex items-center gap-2">
-              <History className="size-5 text-[oklch(0.7_0.15_300)]" />
+            <CardTitle className="font-heading font-semibold text-[18px] flex items-center gap-2">
+              <History className="size-5" style={{ color: 'oklch(0.7 0.15 300)' }} />
               Personalization History
             </CardTitle>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-[11px] text-muted-foreground mt-1">
               Timeline of personalization events and adaptations
             </p>
           </div>

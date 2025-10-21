@@ -18,6 +18,13 @@ import type {
   BehavioralPatternType,
   InsightType,
 } from '@/generated/prisma'
+import type {
+  BehavioralPatternData,
+  LearningStyleProfile,
+  ContentPreferences,
+  PersonalizedForgettingCurve,
+  PreferredStudyTime,
+} from '@/types/prisma-json'
 import { StudyTimeAnalyzer } from './study-time-analyzer'
 import { SessionDurationAnalyzer } from './session-duration-analyzer'
 import { ContentPreferenceAnalyzer } from './content-preference-analyzer'
@@ -255,7 +262,7 @@ export class BehavioralPatternEngine {
             occurrenceCount: existing.occurrenceCount + 1,
             lastSeenAt: new Date(),
             confidence: newConfidence,
-            evidence: newPattern.evidence as any,
+            evidence: newPattern.evidence,
           },
         })
         updated++
@@ -268,8 +275,9 @@ export class BehavioralPatternEngine {
     // Handle patterns not seen in this analysis
     for (const existing of existingPatterns) {
       if (!seenPatternIds.has(existing.id)) {
-        const evidence = existing.evidence as { consecutiveNonOccurrences?: number }
-        const consecutiveNonOccurrences = (evidence.consecutiveNonOccurrences || 0) + 1
+        const evidenceArray = existing.evidence as string[]
+        const evidenceData = existing.patternData as BehavioralPatternData & { consecutiveNonOccurrences?: number }
+        const consecutiveNonOccurrences = (evidenceData?.consecutiveNonOccurrences || 0) + 1
 
         if (consecutiveNonOccurrences >= MAX_CONSECUTIVE_NON_OCCURRENCES) {
           // Delete pattern
@@ -291,10 +299,10 @@ export class BehavioralPatternEngine {
               where: { id: existing.id },
               data: {
                 confidence: newConfidence,
-                evidence: {
-                  ...evidence,
+                patternData: {
+                  ...evidenceData,
                   consecutiveNonOccurrences,
-                } as any,
+                } as Prisma.JsonValue,
               },
             })
             deprecated++
@@ -483,15 +491,21 @@ export class BehavioralPatternEngine {
         patternType: 'OPTIMAL_STUDY_TIME' as BehavioralPatternType,
         patternName: `Optimal study time: ${timePattern.hourOfDay}:00`,
         confidence: timePattern.confidence,
-        evidence: {
+        patternData: {
           hourOfDay: timePattern.hourOfDay,
           sessionCount: timePattern.sessionCount,
           avgPerformanceScore: timePattern.avgPerformanceScore,
           avgRetention: timePattern.avgRetention,
           completionRate: timePattern.completionRate,
           timeOfDayScore: timePattern.timeOfDayScore,
-        } as any,
+        } as Prisma.JsonValue,
+        evidence: [
+          `${timePattern.sessionCount} sessions analyzed`,
+          `Performance score: ${Math.round(timePattern.avgPerformanceScore * 100)}%`,
+          `Retention rate: ${Math.round(timePattern.avgRetention * 100)}%`,
+        ],
         occurrenceCount: 1,
+        firstDetectedAt: new Date(),
       })
     }
 
@@ -502,12 +516,17 @@ export class BehavioralPatternEngine {
         patternType: 'SESSION_DURATION_PREFERENCE' as BehavioralPatternType,
         patternName: `Optimal session duration: ${analysis.durationPattern.recommendedDuration} minutes`,
         confidence: analysis.durationPattern.confidence,
-        evidence: {
+        patternData: {
           recommendedDuration: analysis.durationPattern.recommendedDuration,
           optimalBucket: analysis.durationPattern.optimalBucket,
           totalSessionsAnalyzed: analysis.durationPattern.totalSessionsAnalyzed,
-        } as any,
+        } as Prisma.JsonValue,
+        evidence: [
+          `${analysis.durationPattern.totalSessionsAnalyzed} sessions analyzed`,
+          `Optimal range: ${analysis.durationPattern.optimalBucket}`,
+        ],
         occurrenceCount: 1,
+        firstDetectedAt: new Date(),
       })
     }
 
@@ -519,12 +538,17 @@ export class BehavioralPatternEngine {
         patternType: 'CONTENT_TYPE_PREFERENCE' as BehavioralPatternType,
         patternName: `Prefers ${topContentType[0]} content`,
         confidence: Math.min(1.0, topContentType[1] * 1.5),
-        evidence: {
+        patternData: {
           contentPreferences: analysis.contentPrefs,
           topContentType: topContentType[0],
           effectiveness: topContentType[1],
-        } as any,
+        } as Prisma.JsonValue,
+        evidence: [
+          `Top content type: ${topContentType[0]}`,
+          `Effectiveness: ${Math.round(topContentType[1] * 100)}%`,
+        ],
         occurrenceCount: 1,
+        firstDetectedAt: new Date(),
       })
     }
 
@@ -535,13 +559,19 @@ export class BehavioralPatternEngine {
         patternType: 'FORGETTING_CURVE' as BehavioralPatternType,
         patternName: `Personal forgetting curve: ${analysis.forgettingCurve.deviation}`,
         confidence: analysis.forgettingCurve.confidence,
-        evidence: {
+        patternData: {
           R0: analysis.forgettingCurve.R0,
           k: analysis.forgettingCurve.k,
           halfLife: analysis.forgettingCurve.halfLife,
           deviation: analysis.forgettingCurve.deviation,
-        } as any,
+        } as Prisma.JsonValue,
+        evidence: [
+          `Half-life: ${Math.round(analysis.forgettingCurve.halfLife)} days`,
+          `Deviation: ${analysis.forgettingCurve.deviation}`,
+          `Decay rate (k): ${analysis.forgettingCurve.k.toFixed(3)}`,
+        ],
         occurrenceCount: 1,
+        firstDetectedAt: new Date(),
       })
     }
 
@@ -579,7 +609,7 @@ export class BehavioralPatternEngine {
             occurrenceCount: existing.occurrenceCount + 1,
             lastSeenAt: new Date(),
             confidence: Math.min(MAX_CONFIDENCE, existing.confidence + CONFIDENCE_INCREMENT),
-            evidence: pattern.evidence as any,
+            evidence: pattern.evidence,
           },
         })
         savedPatterns.push(updated)
@@ -589,10 +619,12 @@ export class BehavioralPatternEngine {
           data: {
             userId: pattern.userId,
             patternType: pattern.patternType,
+            patternData: pattern.patternData,
             patternName: pattern.patternName,
             confidence: pattern.confidence,
-            evidence: pattern.evidence as any,
+            evidence: pattern.evidence,
             occurrenceCount: pattern.occurrenceCount,
+            firstDetectedAt: pattern.firstDetectedAt,
             detectedAt: new Date(),
             lastSeenAt: new Date(),
           },
@@ -622,10 +654,11 @@ export class BehavioralPatternEngine {
     },
   ): Promise<UserLearningProfile> {
     // Convert study time patterns to preferred study times
-    const preferredStudyTimes = analysis.studyTimePatterns.map((p) => ({
+    const preferredStudyTimes: PreferredStudyTime[] = analysis.studyTimePatterns.map((p) => ({
       dayOfWeek: -1, // All days (not day-specific yet)
       startHour: p.hourOfDay,
       endHour: p.hourOfDay + 1,
+      effectiveness: p.confidence,
     }))
 
     // Calculate data quality score
@@ -649,23 +682,27 @@ export class BehavioralPatternEngine {
           : 45,
       ),
       optimalSessionDuration: analysis.durationPattern.recommendedDuration,
-      contentPreferences: JSON.parse(JSON.stringify(analysis.contentPrefs)) as any,
-      learningStyleProfile: JSON.parse(JSON.stringify(analysis.learningStyle)) as any,
-      personalizedForgettingCurve: JSON.parse(
-        JSON.stringify({
-          R0: analysis.forgettingCurve.R0,
-          k: analysis.forgettingCurve.k,
-          halfLife: analysis.forgettingCurve.halfLife,
-        }),
-      ) as any,
+      contentPreferences: analysis.contentPrefs as Prisma.JsonValue,
+      learningStyleProfile: analysis.learningStyle as Prisma.JsonValue,
+      personalizedForgettingCurve: {
+        initialRetention: analysis.forgettingCurve.R0,
+        decayRate: analysis.forgettingCurve.k,
+        stabilityFactor: analysis.forgettingCurve.halfLife,
+      } as Prisma.JsonValue,
       lastAnalyzedAt: new Date(),
       dataQualityScore,
     }
 
     return await prisma.userLearningProfile.upsert({
       where: { userId },
-      update: profileData as Parameters<typeof prisma.userLearningProfile.update>[0]['data'],
-      create: profileData as Parameters<typeof prisma.userLearningProfile.create>[0]['data'],
+      update: {
+        ...profileData,
+        preferredStudyTimes: profileData.preferredStudyTimes as Prisma.JsonValue,
+      },
+      create: {
+        ...profileData,
+        preferredStudyTimes: profileData.preferredStudyTimes as Prisma.JsonValue,
+      },
     })
   }
 
@@ -681,35 +718,34 @@ export class BehavioralPatternEngine {
       return existing
     }
 
+    const defaultContentPrefs: ContentPreferences = {
+      preferredTypes: ['lectures', 'flashcards', 'validation', 'clinicalReasoning'],
+      difficultyPreference: 'balanced',
+      interactivityLevel: 'medium',
+    }
+
+    const defaultLearningStyle: LearningStyleProfile = {
+      visual: 0.25,
+      auditory: 0.25,
+      kinesthetic: 0.25,
+      reading: 0.25,
+    }
+
+    const defaultForgettingCurve: PersonalizedForgettingCurve = {
+      initialRetention: 1.0,
+      decayRate: 0.14,
+      stabilityFactor: 5,
+    }
+
     return await prisma.userLearningProfile.create({
       data: {
         userId,
         preferredStudyTimes: [],
         averageSessionDuration: 45,
         optimalSessionDuration: 45,
-        contentPreferences: JSON.parse(
-          JSON.stringify({
-            lectures: 0.25,
-            flashcards: 0.25,
-            validation: 0.25,
-            clinicalReasoning: 0.25,
-          }),
-        ) as any,
-        learningStyleProfile: JSON.parse(
-          JSON.stringify({
-            visual: 0.25,
-            auditory: 0.25,
-            kinesthetic: 0.25,
-            reading: 0.25,
-          }),
-        ) as any,
-        personalizedForgettingCurve: JSON.parse(
-          JSON.stringify({
-            R0: 1.0,
-            k: 0.14,
-            halfLife: 5,
-          }),
-        ) as any,
+        contentPreferences: defaultContentPrefs as Prisma.JsonValue,
+        learningStyleProfile: defaultLearningStyle as Prisma.JsonValue,
+        personalizedForgettingCurve: defaultForgettingCurve as Prisma.JsonValue,
         lastAnalyzedAt: new Date(),
         dataQualityScore: 0,
       },
@@ -728,59 +764,76 @@ export class BehavioralPatternEngine {
     supportingPatternIds: string[]
     impact: number
   } | null {
-    const evidence = pattern.evidence as any
+    const evidenceArray = pattern.evidence as string[]
+    const patternData = pattern.patternData as BehavioralPatternData & Record<string, unknown>
 
     switch (pattern.patternType) {
-      case 'OPTIMAL_STUDY_TIME':
+      case 'OPTIMAL_STUDY_TIME': {
+        const timeOfDayScore = patternData.timeOfDayScore as number || 80
+        const hourOfDay = patternData.hourOfDay as number || 9
+        const sessionCount = patternData.sessionCount as number || 0
+
         return {
           insightType: 'STUDY_TIME_OPTIMIZATION' as InsightType,
           title: 'Study during your peak hours',
-          description: `You perform ${Math.round(((evidence.timeOfDayScore - 70) / 70) * 100)}% better during ${evidence.hourOfDay}:00-${evidence.hourOfDay + 1}:00 based on ${evidence.sessionCount} sessions.`,
-          actionableRecommendation: `Schedule high-priority missions during ${evidence.hourOfDay}:00-${evidence.hourOfDay + 1}:00 for optimal retention and performance.`,
+          description: `You perform ${Math.round(((timeOfDayScore - 70) / 70) * 100)}% better during ${hourOfDay}:00-${hourOfDay + 1}:00 based on ${sessionCount} sessions.`,
+          actionableRecommendation: `Schedule high-priority missions during ${hourOfDay}:00-${hourOfDay + 1}:00 for optimal retention and performance.`,
           confidence: pattern.confidence,
           supportingPatternIds: [pattern.id],
           impact: pattern.confidence * 1.2, // High impact for study time optimization
         }
+      }
 
-      case 'SESSION_DURATION_PREFERENCE':
+      case 'SESSION_DURATION_PREFERENCE': {
+        const recommendedDuration = patternData.recommendedDuration as number || 45
+        const totalSessionsAnalyzed = patternData.totalSessionsAnalyzed as number || 0
+
         return {
           insightType: 'SESSION_LENGTH_ADJUSTMENT' as InsightType,
           title: 'Optimize your session length',
-          description: `Your optimal session length is ${evidence.recommendedDuration} minutes (based on ${evidence.totalSessionsAnalyzed} sessions).`,
-          actionableRecommendation: `Adjust mission duration preferences to ${evidence.recommendedDuration} minutes for better completion rates and reduced fatigue.`,
+          description: `Your optimal session length is ${recommendedDuration} minutes (based on ${totalSessionsAnalyzed} sessions).`,
+          actionableRecommendation: `Adjust mission duration preferences to ${recommendedDuration} minutes for better completion rates and reduced fatigue.`,
           confidence: pattern.confidence,
           supportingPatternIds: [pattern.id],
           impact: pattern.confidence * 1.0,
         }
+      }
 
-      case 'CONTENT_TYPE_PREFERENCE':
+      case 'CONTENT_TYPE_PREFERENCE': {
+        const topContentType = patternData.topContentType as string || 'flashcards'
+        const effectiveness = patternData.effectiveness as number || 0.5
+
         return {
           insightType: 'CONTENT_PREFERENCE' as InsightType,
           title: 'Focus on your preferred content type',
-          description: `You learn best with ${evidence.topContentType} (${Math.round(evidence.effectiveness * 100)}% effectiveness).`,
-          actionableRecommendation: `Prioritize ${evidence.topContentType} content in your study sessions for improved learning outcomes.`,
+          description: `You learn best with ${topContentType} (${Math.round(effectiveness * 100)}% effectiveness).`,
+          actionableRecommendation: `Prioritize ${topContentType} content in your study sessions for improved learning outcomes.`,
           confidence: pattern.confidence,
           supportingPatternIds: [pattern.id],
           impact: pattern.confidence * 0.9,
         }
+      }
 
-      case 'FORGETTING_CURVE':
+      case 'FORGETTING_CURVE': {
+        const halfLife = patternData.halfLife as number || 5
+        const k = patternData.k as number || 0.14
         const standardHalfLife = Math.log(2) / 0.14
         const deviationPercent = Math.abs(
-          ((evidence.halfLife - standardHalfLife) / standardHalfLife) * 100,
+          ((halfLife - standardHalfLife) / standardHalfLife) * 100,
         )
-        const fasterSlower = evidence.k > 0.14 ? 'faster' : 'slower'
-        const recommendedDays = Math.round(evidence.halfLife * 0.7) // Review before 50% decay
+        const fasterSlower = k > 0.14 ? 'faster' : 'slower'
+        const recommendedDays = Math.round(halfLife * 0.7) // Review before 50% decay
 
         return {
           insightType: 'RETENTION_STRATEGY' as InsightType,
           title: 'Personalize your review schedule',
-          description: `Your retention decays ${Math.round(deviationPercent)}% ${fasterSlower} than average (half-life: ${Math.round(evidence.halfLife)} days).`,
+          description: `Your retention decays ${Math.round(deviationPercent)}% ${fasterSlower} than average (half-life: ${Math.round(halfLife)} days).`,
           actionableRecommendation: `Adjust review frequency to every ${recommendedDays} days to maintain 70%+ retention.`,
           confidence: pattern.confidence,
           supportingPatternIds: [pattern.id],
           impact: pattern.confidence * 1.1, // High impact for retention optimization
         }
+      }
 
       default:
         return null

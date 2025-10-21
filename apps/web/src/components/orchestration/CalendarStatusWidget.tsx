@@ -1,9 +1,12 @@
 /**
  * CalendarStatusWidget Component
- * Story 5.3 Task 7.5
+ * Story 5.4 - Orchestration Components Epic 5 Transformation
  *
  * Compact widget showing calendar integration status with
- * connect/disconnect/sync actions
+ * connect/disconnect/sync actions.
+ *
+ * Epic 5 Design: Clean status cards, OKLCH colors, NO gradients
+ * Accessibility: ARIA labels, semantic HTML, keyboard navigation
  */
 
 'use client'
@@ -20,7 +23,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -46,9 +49,10 @@ interface CalendarStatus {
 interface Props {
   userId: string
   onStatusChange?: (connected: boolean) => void
+  className?: string
 }
 
-export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
+export function CalendarStatusWidget({ userId, onStatusChange, className = '' }: Props) {
   const [status, setStatus] = useState<CalendarStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
@@ -154,11 +158,11 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-        <CardHeader className="pb-3">
-          <CardTitle className="font-heading text-lg">Calendar Integration</CardTitle>
+      <Card className={`shadow-sm ${className}`}>
+        <CardHeader className="p-4 pb-0">
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">Calendar Integration</h3>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 pt-4">
           <Skeleton className="h-20 w-full" />
         </CardContent>
       </Card>
@@ -168,27 +172,27 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
   // Not Connected State
   if (!status?.connected) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-        <CardHeader className="pb-3">
-          <CardTitle className="font-heading text-lg flex items-center gap-2">
-            <Calendar className="size-5" style={{ color: 'oklch(0.6 0.05 230)' }} />
-            Calendar Integration
-          </CardTitle>
+      <Card className={`shadow-sm ${className}`}>
+        <CardHeader className="p-4 pb-0">
+          <div className="flex items-center gap-2">
+            <Calendar className="size-5 text-info" />
+            <h3 className="font-heading font-semibold text-foreground text-[16px]">Calendar Integration</h3>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="p-4 pt-4 space-y-4">
           <div
             className="p-4 rounded-lg text-center space-y-3"
-            style={{ backgroundColor: 'oklch(0.95 0.01 230)' }}
+            style={{ backgroundColor: 'oklch(0.95 0 0)' }}
           >
             <Calendar
-              className="size-12 mx-auto"
-              style={{ color: 'oklch(0.6 0.05 230)', strokeWidth: 1.5 }}
+              className="size-12 mx-auto text-info"
+              style={{ strokeWidth: 1.5 }}
             />
             <div>
-              <p className="text-sm font-medium text-foreground mb-1">
+              <p className="text-[13px] font-medium text-foreground mb-1">
                 Connect your calendar for smarter scheduling
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground">
                 We'll avoid conflicts and suggest optimal study times based on your availability
               </p>
             </div>
@@ -198,7 +202,7 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
             onClick={handleConnect}
             className="w-full min-h-11"
             style={{
-              backgroundColor: 'oklch(0.7 0.12 145)',
+              backgroundColor: 'oklch(0.7 0.15 145)',
               color: 'white',
             }}
           >
@@ -206,7 +210,7 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
             Connect Google Calendar
           </Button>
 
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
             <AlertCircle className="size-3 shrink-0" />
             <span>We only read availability for scheduling. You can disconnect anytime.</span>
           </div>
@@ -239,33 +243,33 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-      <CardHeader className="pb-3">
-        <CardTitle className="font-heading text-lg flex items-center gap-2">
-          <Calendar className="size-5" style={{ color: 'oklch(0.7 0.12 145)' }} />
-          Calendar Integration
-        </CardTitle>
+    <Card className={`shadow-sm ${className}`}>
+      <CardHeader className="p-4 pb-0">
+        <div className="flex items-center gap-2">
+          <Calendar className="size-5" style={{ color: 'oklch(0.7 0.15 145)' }} />
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">Calendar Integration</h3>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="p-4 pt-4 space-y-4">
         {/* Connected Status */}
         <div
           className="p-4 rounded-lg"
           style={{
-            backgroundColor: 'oklch(0.7 0.12 145)/0.1',
-            borderLeft: '3px solid oklch(0.7 0.12 145)',
+            backgroundColor: 'color-mix(in oklch, oklch(0.7 0.15 145), transparent 95%)',
+            borderLeft: '3px solid oklch(0.7 0.15 145)',
           }}
         >
           <div className="flex items-start gap-3">
             <div className="text-2xl">{getProviderIcon()}</div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <CheckCircle className="size-4" style={{ color: 'oklch(0.7 0.12 145)' }} />
-                <span className="text-sm font-semibold text-foreground">
+                <CheckCircle className="size-4" style={{ color: 'oklch(0.7 0.15 145)' }} />
+                <span className="text-[13px] font-semibold text-foreground">
                   {getProviderLabel()} Connected
                 </span>
               </div>
               {status.lastSyncAt && (
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                   <Clock className="size-3" />
                   <span>
                     Last sync:{' '}
@@ -278,9 +282,9 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
               variant="outline"
               className="shrink-0 px-2 py-0.5"
               style={{
-                backgroundColor: 'oklch(0.7 0.12 145)/0.1',
-                borderColor: 'oklch(0.7 0.12 145)',
-                color: 'oklch(0.5 0.2 145)',
+                backgroundColor: 'color-mix(in oklch, oklch(0.7 0.15 145), transparent 90%)',
+                borderColor: 'oklch(0.7 0.15 145)',
+                color: 'oklch(0.5 0.20 145)',
               }}
             >
               Active
@@ -317,9 +321,9 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
                 Disconnect
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-white/95 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.15)]">
+            <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle className="font-heading">Disconnect Calendar?</AlertDialogTitle>
+                <AlertDialogTitle className="font-heading text-[20px]">Disconnect Calendar?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This will remove calendar integration and stop syncing your availability. Study
                   time recommendations will be based solely on your historical patterns.
@@ -330,7 +334,7 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
                 <AlertDialogAction
                   onClick={handleDisconnect}
                   style={{
-                    backgroundColor: 'oklch(0.6 0.15 25)',
+                    backgroundColor: 'oklch(0.6 0.20 30)',
                     color: 'white',
                   }}
                 >
@@ -350,7 +354,7 @@ export function CalendarStatusWidget({ userId, onStatusChange }: Props) {
 
         {/* Settings Link */}
         <button
-          className="w-full flex items-center justify-center gap-2 py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          className="w-full flex items-center justify-center gap-2 py-2 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
           onClick={() => (window.location.href = '/settings?tab=calendar')}
         >
           <Settings className="size-3" />

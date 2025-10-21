@@ -22,7 +22,7 @@ const redisConfig: RedisOptions = {
   maxRetriesPerRequest: 3,
   enableReadyCheck: true,
   enableOfflineQueue: true,
-  lazyConnect: false,
+  lazyConnect: true, // Don't connect until first command
 
   // Retry strategy with exponential backoff
   retryStrategy(times: number) {
@@ -41,7 +41,6 @@ const redisConfig: RedisOptions = {
 
   // Timeouts
   connectTimeout: 10000,
-  lazyConnect: true, // Don't connect until first command
 }
 
 /**
@@ -62,10 +61,19 @@ export async function initializeRedis(): Promise<boolean> {
 
   connectionAttempted = true
 
+  // Check if Redis is disabled via env var
+  if (process.env.REDIS_DISABLED === 'true') {
+    console.log('[Redis] Disabled via REDIS_DISABLED env var, using in-memory cache only')
+    isRedisAvailable = false
+    redisClient = null
+    return false
+  }
+
   try {
+    console.log('[Redis] Initializing connection...')
     redisClient = new Redis(redisConfig)
 
-    // Set up error handler
+    // Set up error handler BEFORE attempting connection
     redisClient.on('error', (err: Error) => {
       console.warn('[Redis] Connection error:', err.message)
       isRedisAvailable = false
@@ -80,16 +88,39 @@ export async function initializeRedis(): Promise<boolean> {
       console.log('[Redis] Reconnecting...')
     })
 
-    // Test connection
-    await redisClient.ping()
+    redisClient.on('close', () => {
+      console.log('[Redis] Connection closed')
+      isRedisAvailable = false
+    })
+
+    // Explicitly connect (since lazyConnect: true)
+    await redisClient.connect()
+
+    // Test connection with timeout
+    const pingTimeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Redis ping timeout after 5s')), 5000)
+    )
+    await Promise.race([redisClient.ping(), pingTimeout])
+
     isRedisAvailable = true
     console.log('[Redis] Initialization successful')
     return true
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     console.warn('[Redis] Initialization failed, falling back to in-memory cache:', message)
+    console.warn('[Redis] This is normal in development. Set REDIS_DISABLED=true to skip attempts.')
     isRedisAvailable = false
-    redisClient = null
+
+    // Clean up failed connection
+    if (redisClient) {
+      try {
+        await redisClient.quit()
+      } catch (e) {
+        // Ignore cleanup errors
+      }
+      redisClient = null
+    }
+
     return false
   }
 }

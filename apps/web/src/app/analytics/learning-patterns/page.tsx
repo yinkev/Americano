@@ -82,30 +82,30 @@ function ProfileSummaryCard({ profile }: { profile: UserLearningProfile }) {
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)]">
-      <div className="p-6">
-        <h2 className="text-xl font-semibold mb-4" style={{ color: 'oklch(0.3 0.05 230)' }}>
+    <Card className="shadow-sm hover:shadow-md transition-shadow">
+      <div className="p-4">
+        <h2 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.05 230)' }}>
           Learning Profile Summary
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <p className="text-sm font-medium" style={{ color: 'oklch(0.5 0.05 230)' }}>
+            <p className="text-[13px] font-medium" style={{ color: 'oklch(0.5 0.05 230)' }}>
               Average Session Duration
             </p>
-            <p className="text-2xl font-bold" style={{ color: 'oklch(0.3 0.1 230)' }}>
+            <p className="text-2xl font-bold text-info">
               {profile.averageSessionDuration} min
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium" style={{ color: 'oklch(0.5 0.05 230)' }}>
+            <p className="text-[13px] font-medium" style={{ color: 'oklch(0.5 0.05 230)' }}>
               Optimal Duration
             </p>
-            <p className="text-2xl font-bold" style={{ color: 'oklch(0.3 0.1 145)' }}>
+            <p className="text-2xl font-bold text-success">
               {profile.optimalSessionDuration} min
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium" style={{ color: 'oklch(0.5 0.05 230)' }}>
+            <p className="text-[13px] font-medium" style={{ color: 'oklch(0.5 0.05 230)' }}>
               Dominant Learning Style
             </p>
             <p className="text-2xl font-bold" style={{ color: 'oklch(0.3 0.1 280)' }}>
@@ -115,7 +115,7 @@ function ProfileSummaryCard({ profile }: { profile: UserLearningProfile }) {
           </div>
         </div>
         <div className="mt-4">
-          <p className="text-sm font-medium mb-2" style={{ color: 'oklch(0.5 0.05 230)' }}>
+          <p className="text-[13px] font-medium mb-2" style={{ color: 'oklch(0.5 0.05 230)' }}>
             Data Quality Score
           </p>
           <Progress value={profile.dataQualityScore * 100} className="h-2" />
@@ -135,18 +135,18 @@ function InsufficientDataMessage({
   requirements: { weeksNeeded: number; sessionsNeeded: number; reviewsNeeded: number }
 }) {
   return (
-    <Alert className="bg-white/80 backdrop-blur-md border border-[oklch(0.85_0.05_60)]">
+    <Alert className="bg-warning/10 border-warning/20">
       <AlertDescription>
         <div className="space-y-4">
-          <p className="font-medium" style={{ color: 'oklch(0.4 0.1 60)' }}>
+          <p className="font-medium text-warning">
             Insufficient data for behavioral pattern analysis
           </p>
-          <p className="text-sm" style={{ color: 'oklch(0.5 0.05 230)' }}>
+          <p className="text-[13px]" style={{ color: 'oklch(0.5 0.05 230)' }}>
             Complete the following to unlock personalized learning patterns:
           </p>
           <div className="space-y-3">
             <div>
-              <div className="flex justify-between text-sm mb-1">
+              <div className="flex justify-between text-[13px] mb-1">
                 <span style={{ color: 'oklch(0.5 0.05 230)' }}>Weeks of study</span>
                 <span style={{ color: 'oklch(0.4 0.08 230)' }}>
                   {Math.max(0, requirements.weeksNeeded)} more needed
@@ -158,7 +158,7 @@ function InsufficientDataMessage({
               />
             </div>
             <div>
-              <div className="flex justify-between text-sm mb-1">
+              <div className="flex justify-between text-[13px] mb-1">
                 <span style={{ color: 'oklch(0.5 0.05 230)' }}>Study sessions</span>
                 <span style={{ color: 'oklch(0.4 0.08 230)' }}>
                   {Math.max(0, requirements.sessionsNeeded)} more needed
@@ -170,7 +170,7 @@ function InsufficientDataMessage({
               />
             </div>
             <div>
-              <div className="flex justify-between text-sm mb-1">
+              <div className="flex justify-between text-[13px] mb-1">
                 <span style={{ color: 'oklch(0.5 0.05 230)' }}>Card reviews</span>
                 <span style={{ color: 'oklch(0.4 0.08 230)' }}>
                   {Math.max(0, requirements.reviewsNeeded)} more needed
@@ -197,7 +197,7 @@ export default async function LearningPatternsPage() {
         <h1 className="text-3xl font-bold mb-2" style={{ color: 'oklch(0.3 0.1 230)' }}>
           Learning Patterns & Insights
         </h1>
-        <p className="text-base" style={{ color: 'oklch(0.5 0.05 230)' }}>
+        <p className="text-[16px]" style={{ color: 'oklch(0.5 0.05 230)' }}>
           Understand your unique learning patterns and optimize your study approach
         </p>
       </div>
@@ -205,14 +205,14 @@ export default async function LearningPatternsPage() {
       {data.insufficientData ? (
         <InsufficientDataMessage requirements={data.dataRequirements!} />
       ) : data.profile ? (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Learning Profile Summary */}
           <ProfileSummaryCard profile={data.profile} />
 
           {/* Study Time Heatmap */}
-          <Card className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)]">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
+            <div className="p-4">
+              <h3 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                 Optimal Study Times
               </h3>
               <Suspense fallback={<HeatmapSkeleton />}>
@@ -222,10 +222,10 @@ export default async function LearningPatternsPage() {
           </Card>
 
           {/* Session Performance & Learning Style */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)]">
-              <div className="p-6">
-                <h3 className="text-lg font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
+              <div className="p-4">
+                <h3 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                   Session Performance Patterns
                 </h3>
                 <Suspense fallback={<ChartSkeleton variant="line" height={320} />}>
@@ -234,9 +234,9 @@ export default async function LearningPatternsPage() {
               </div>
             </Card>
 
-            <Card className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)]">
-              <div className="p-6">
-                <h3 className="text-lg font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
+            <Card className="shadow-sm hover:shadow-md transition-shadow">
+              <div className="p-4">
+                <h3 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                   Learning Style Profile (VARK)
                 </h3>
                 <Suspense fallback={<ChartSkeleton variant="radar" height={320} />}>
@@ -247,9 +247,9 @@ export default async function LearningPatternsPage() {
           </div>
 
           {/* Forgetting Curve */}
-          <Card className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)]">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
+            <div className="p-4">
+              <h3 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                 Personal Forgetting Curve
               </h3>
               <Suspense fallback={<ChartSkeleton variant="area" height={320} />}>
@@ -259,9 +259,9 @@ export default async function LearningPatternsPage() {
           </Card>
 
           {/* Behavioral Insights */}
-          <Card className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)]">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
+          <Card className="shadow-sm hover:shadow-md transition-shadow">
+            <div className="p-4">
+              <h3 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                 Actionable Insights
               </h3>
               <Suspense fallback={<AnalyticsCardSkeleton showHeader={false} showStats={false} />}>
@@ -271,7 +271,7 @@ export default async function LearningPatternsPage() {
           </Card>
         </div>
       ) : (
-        <Alert className="bg-white/80 backdrop-blur-md">
+        <Alert>
           <AlertDescription>
             No learning profile data available. Please try again later.
           </AlertDescription>

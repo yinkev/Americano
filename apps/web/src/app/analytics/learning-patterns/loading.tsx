@@ -18,36 +18,36 @@ export default function Loading() {
       </div>
 
       {/* Content Skeletons */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Profile Summary Card */}
         <AnalyticsCardSkeleton showHeader showStats />
 
         {/* Heatmap */}
-        <div className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)] rounded-xl p-6">
+        <div className="bg-white border border-[oklch(0.9_0.02_230)] rounded-xl p-4 shadow-sm">
           <div className="h-6 w-48 bg-[oklch(0.9_0.02_230)] rounded mb-4 animate-pulse" />
           <HeatmapSkeleton />
         </div>
 
         {/* Two Column Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)] rounded-xl p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="bg-white border border-[oklch(0.9_0.02_230)] rounded-xl p-4 shadow-sm">
             <div className="h-6 w-56 bg-[oklch(0.9_0.02_230)] rounded mb-4 animate-pulse" />
             <ChartSkeleton variant="line" height={320} />
           </div>
-          <div className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)] rounded-xl p-6">
+          <div className="bg-white border border-[oklch(0.9_0.02_230)] rounded-xl p-4 shadow-sm">
             <div className="h-6 w-48 bg-[oklch(0.9_0.02_230)] rounded mb-4 animate-pulse" />
             <ChartSkeleton variant="radar" height={320} />
           </div>
         </div>
 
         {/* Forgetting Curve */}
-        <div className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)] rounded-xl p-6">
+        <div className="bg-white border border-[oklch(0.9_0.02_230)] rounded-xl p-4 shadow-sm">
           <div className="h-6 w-56 bg-[oklch(0.9_0.02_230)] rounded mb-4 animate-pulse" />
           <ChartSkeleton variant="area" height={320} />
         </div>
 
         {/* Insights */}
-        <div className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)] rounded-xl p-6">
+        <div className="bg-white border border-[oklch(0.9_0.02_230)] rounded-xl p-4 shadow-sm">
           <div className="h-6 w-40 bg-[oklch(0.9_0.02_230)] rounded mb-4 animate-pulse" />
           <AnalyticsCardSkeleton showHeader={false} showStats={false} />
         </div>

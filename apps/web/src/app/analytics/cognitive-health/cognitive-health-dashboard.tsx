@@ -50,7 +50,7 @@ interface CognitiveHealthData {
 
 // Placeholder userId (auth deferred per Story 5.4 constraints)
 const PLACEHOLDER_USER_ID = 'user_demo_001'
-const REFRESH_INTERVAL_MS = 5 * 60 * 1000 // 5 minutes
+const REFRESH_INTERVAL_MS = 30 * 1000 // 30 seconds (Story 5.4 polish requirement)
 
 export function CognitiveHealthDashboard() {
   const [data, setData] = useState<CognitiveHealthData | null>(null)
@@ -161,8 +161,8 @@ export function CognitiveHealthDashboard() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
-          <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-sm text-muted-foreground">Loading cognitive health data...</p>
+          <div className="size-12 border-4 border-clinical border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-[13px] text-muted-foreground">Loading cognitive health data...</p>
         </div>
       </div>
     )
@@ -170,12 +170,12 @@ export function CognitiveHealthDashboard() {
 
   if (error || !data) {
     return (
-      <div className="bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl p-8">
+      <div className="bg-white border shadow-sm rounded-lg p-8">
         <div className="flex items-start gap-4 text-center justify-center">
           <AlertCircle className="size-6 text-destructive shrink-0 mt-1" />
           <div>
-            <h3 className="font-semibold text-foreground mb-2">Unable to Load Dashboard</h3>
-            <p className="text-sm text-muted-foreground mb-4">
+            <h3 className="text-[16px] font-semibold text-foreground mb-2">Unable to Load Dashboard</h3>
+            <p className="text-[13px] text-muted-foreground mb-4">
               {error || 'An unexpected error occurred while loading your cognitive health data.'}
             </p>
             <button
@@ -183,7 +183,7 @@ export function CognitiveHealthDashboard() {
                 setLoading(true)
                 fetchCognitiveHealthData()
               }}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+              className="h-9 px-4 bg-clinical text-clinical-foreground rounded-md text-[13px] font-medium hover:bg-clinical/90 transition-colors"
             >
               Retry
             </button>
@@ -194,10 +194,10 @@ export function CognitiveHealthDashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Top row: Load meter and timeline */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column: Load meter */}
+    <div className="space-y-4 md:space-y-6">
+      {/* Top row: Load meter (enlarged to 320px) and timeline */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        {/* Left column: Load meter - Focal point */}
         <div className="lg:col-span-1">
           <CognitiveLoadMeter
             currentLoad={data.currentLoad.loadScore}
@@ -220,7 +220,7 @@ export function CognitiveHealthDashboard() {
       </div>
 
       {/* Middle row: Burnout risk and stress profile */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <BurnoutRiskPanel
           riskLevel={data.burnoutRisk.riskLevel}
           riskScore={data.burnoutRisk.riskScore}

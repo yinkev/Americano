@@ -106,9 +106,9 @@ export function ActivePersonalizationsPanel() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
         <CardContent className="p-6 h-64 flex items-center justify-center">
-          <p className="text-sm text-muted-foreground">Loading personalizations...</p>
+          <p className="text-[13px] text-muted-foreground">Loading personalizations...</p>
         </CardContent>
       </Card>
     )
@@ -116,13 +116,13 @@ export function ActivePersonalizationsPanel() {
 
   if (!data) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
         <CardContent className="p-6 h-64 flex flex-col items-center justify-center">
           <Info className="size-12 text-muted-foreground mb-3" />
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-[13px] text-muted-foreground text-center">
             No personalization data available yet
           </p>
-          <p className="text-xs text-muted-foreground mt-2 text-center">
+          <p className="text-[11px] text-muted-foreground mt-2 text-center">
             Complete 6+ weeks of study to enable personalization
           </p>
         </CardContent>
@@ -140,15 +140,15 @@ export function ActivePersonalizationsPanel() {
   const activeCount = personalizations.filter((p) => p.config?.enabled).length
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <CardTitle className="font-heading text-lg flex items-center gap-2">
-              <Sparkles className="size-5 text-[oklch(0.7_0.15_230)]" />
+            <CardTitle className="font-heading font-semibold text-[18px] flex items-center gap-2">
+              <Sparkles className="size-5" style={{ color: 'oklch(0.7 0.15 230)' }} />
               Active Personalizations
             </CardTitle>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-[11px] text-muted-foreground mt-1">
               {activeCount} of 4 personalization features enabled
             </p>
           </div>

@@ -14,52 +14,66 @@
 import { Suspense } from 'react'
 import { Brain, TrendingUp, Activity } from 'lucide-react'
 import { CognitiveHealthDashboard } from './cognitive-health-dashboard'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
-// Loading skeleton components - Clean, flat cards
+// Loading skeleton components - Epic 5 design with glassmorphism
 function LoadMeterSkeleton() {
   return (
-    <div className="bg-white border shadow-sm rounded-lg p-4 animate-pulse">
-      <div className="h-6 w-32 bg-muted rounded mb-4" />
-      <div className="w-full aspect-square max-w-[320px] mx-auto bg-muted rounded-full mb-4" />
-      <div className="h-12 bg-muted rounded-lg mb-4" />
-      <div className="h-10 bg-muted rounded mb-4" />
-      <div className="h-4 bg-muted rounded" />
-    </div>
+    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <CardHeader className="p-4 pb-0">
+        <Skeleton className="h-6 w-32 rounded-lg" />
+      </CardHeader>
+      <CardContent className="p-4 pt-4">
+        <Skeleton className="w-full aspect-square max-w-[320px] mx-auto rounded-full mb-4" />
+        <Skeleton className="h-12 rounded-lg mb-4" />
+        <Skeleton className="h-10 rounded-lg mb-4" />
+        <Skeleton className="h-4 rounded-lg" />
+      </CardContent>
+    </Card>
   )
 }
 
 function TimelineSkeleton() {
   return (
-    <div className="bg-white border shadow-sm rounded-lg p-4 animate-pulse">
-      <div className="h-6 w-40 bg-muted rounded mb-4" />
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="h-16 bg-muted rounded-lg" />
-        <div className="h-16 bg-muted rounded-lg" />
-        <div className="h-16 bg-muted rounded-lg" />
-      </div>
-      <div className="h-[300px] bg-muted rounded-lg" />
-    </div>
+    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <CardHeader className="p-4 pb-0">
+        <Skeleton className="h-6 w-40 rounded-lg" />
+      </CardHeader>
+      <CardContent className="p-4 pt-4">
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          <Skeleton className="h-16 rounded-xl" />
+          <Skeleton className="h-16 rounded-xl" />
+          <Skeleton className="h-16 rounded-xl" />
+        </div>
+        <Skeleton className="h-[300px] rounded-xl" />
+      </CardContent>
+    </Card>
   )
 }
 
 function RiskPanelSkeleton() {
   return (
-    <div className="bg-white border shadow-sm rounded-lg p-4 animate-pulse">
-      <div className="h-6 w-32 bg-muted rounded mb-4" />
-      <div className="h-24 bg-muted rounded-lg mb-4" />
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="h-20 bg-muted rounded-lg" />
-        <div className="h-20 bg-muted rounded-lg" />
-      </div>
-      <div className="space-y-3 mb-4">
-        <div className="h-16 bg-muted rounded-lg" />
-        <div className="h-16 bg-muted rounded-lg" />
-      </div>
-      <div className="space-y-2">
-        <div className="h-12 bg-muted rounded-lg" />
-        <div className="h-12 bg-muted rounded-lg" />
-      </div>
-    </div>
+    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <CardHeader className="p-4 pb-0">
+        <Skeleton className="h-6 w-32 rounded-lg" />
+      </CardHeader>
+      <CardContent className="p-4 pt-4">
+        <Skeleton className="h-24 rounded-xl mb-4" />
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <Skeleton className="h-20 rounded-lg" />
+          <Skeleton className="h-20 rounded-lg" />
+        </div>
+        <div className="space-y-3 mb-4">
+          <Skeleton className="h-16 rounded-lg" />
+          <Skeleton className="h-16 rounded-lg" />
+        </div>
+        <div className="space-y-2">
+          <Skeleton className="h-12 rounded-lg" />
+          <Skeleton className="h-12 rounded-lg" />
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -70,8 +84,11 @@ export default function CognitiveHealthPage() {
       <div className="border-b bg-white/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8">
           <div className="flex items-start gap-4">
-            <div className="p-3 rounded-lg bg-[oklch(0.95_0.12_350)]/50 shrink-0">
-              <Brain className="size-8 text-[oklch(0.65_0.18_350)]" />
+            <div
+              className="p-3 rounded-xl shrink-0"
+              style={{ backgroundColor: 'oklch(0.95 0.12 350 / 0.5)' }}
+            >
+              <Brain className="size-8" style={{ color: 'oklch(0.65 0.18 350)' }} />
             </div>
             <div className="flex-1">
               <h1 className="text-[28px] md:text-[32px] font-heading font-bold tracking-tight text-foreground mb-2">
@@ -85,32 +102,32 @@ export default function CognitiveHealthPage() {
             </div>
           </div>
 
-          {/* Quick stats bar - Compact playful badges */}
+          {/* Quick stats bar - Epic 5 design with glassmorphism */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <div className="flex items-center gap-3 p-4 rounded-lg bg-white shadow-sm border">
-              <Activity className="size-5 text-success shrink-0" />
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-white/80 backdrop-blur-md shadow-sm border border-white/30">
+              <Activity className="size-5 shrink-0" style={{ color: 'oklch(0.7 0.15 145)' }} />
               <div className="flex-1 min-w-0">
-                <div className="text-[11px] text-muted-foreground">Current Session</div>
+                <div className="text-[11px] text-muted-foreground font-medium">Current Session</div>
                 <div className="text-[13px] font-semibold text-foreground truncate">
                   Real-time monitoring active
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-4 rounded-lg bg-white shadow-sm border">
-              <TrendingUp className="size-5 text-info shrink-0" />
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-white/80 backdrop-blur-md shadow-sm border border-white/30">
+              <TrendingUp className="size-5 shrink-0" style={{ color: 'oklch(0.65 0.18 240)' }} />
               <div className="flex-1 min-w-0">
-                <div className="text-[11px] text-muted-foreground">Analysis Period</div>
+                <div className="text-[11px] text-muted-foreground font-medium">Analysis Period</div>
                 <div className="text-[13px] font-semibold text-foreground truncate">
                   Last 30 days tracked
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-4 rounded-lg bg-white shadow-sm border">
-              <Brain className="size-5 text-[oklch(0.65_0.18_350)] shrink-0" />
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-white/80 backdrop-blur-md shadow-sm border border-white/30">
+              <Brain className="size-5 shrink-0" style={{ color: 'oklch(0.65 0.18 350)' }} />
               <div className="flex-1 min-w-0">
-                <div className="text-[11px] text-muted-foreground">Real-time Updates</div>
+                <div className="text-[11px] text-muted-foreground font-medium">Real-time Updates</div>
                 <div className="text-[13px] font-semibold text-foreground truncate">
                   Refreshes every 30 seconds
                 </div>
@@ -142,13 +159,22 @@ export default function CognitiveHealthPage() {
         </Suspense>
       </div>
 
-      {/* Footer info - OKLCH colors only */}
+      {/* Footer info - Epic 5 design with OKLCH colors */}
       <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl pb-8">
-        <div className="bg-info/10 border border-info/30 rounded-lg p-4">
-          <h3 className="text-[13px] font-semibold text-info mb-2">
+        <div
+          className="rounded-xl p-6 border"
+          style={{
+            backgroundColor: 'oklch(0.65 0.18 240 / 0.08)',
+            borderColor: 'oklch(0.65 0.18 240 / 0.2)',
+          }}
+        >
+          <h3
+            className="text-[13px] font-semibold mb-2"
+            style={{ color: 'oklch(0.65 0.18 240)' }}
+          >
             About Cognitive Load Monitoring
           </h3>
-          <p className="text-[13px] text-info/80 leading-relaxed">
+          <p className="text-[13px] text-muted-foreground leading-relaxed">
             This dashboard uses behavioral analytics to estimate your cognitive load in real-time.
             Cognitive load monitoring helps prevent burnout and optimizes your learning
             effectiveness by adapting content difficulty and recommending breaks when needed. You

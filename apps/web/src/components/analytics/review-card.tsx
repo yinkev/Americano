@@ -124,20 +124,20 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/20">
+    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <Calendar className="h-4 w-4 text-[oklch(0.6_0.15_250)]" />
-              <CardTitle className="text-lg">
+              <Calendar className="h-4 w-4" style={{ color: 'oklch(0.6 0.15 250)' }} />
+              <CardTitle className="text-[18px] font-heading font-semibold">
                 {review.period === 'WEEK' ? 'Weekly' : 'Monthly'} Review
               </CardTitle>
               <Badge variant="outline" className={successRating.color}>
                 {successRating.label}
               </Badge>
             </div>
-            <CardDescription>{dateRange}</CardDescription>
+            <CardDescription className="text-[11px]">{dateRange}</CardDescription>
           </div>
           <Button
             variant="ghost"

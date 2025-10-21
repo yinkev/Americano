@@ -14,8 +14,16 @@ import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-resp
 import { withCache, CACHE_TTL } from '@/lib/cache'
 import { ensureRedisInitialized } from '@/lib/init-redis'
 
-// Initialize Redis on first request
-ensureRedisInitialized().catch(console.error)
+// Ensure Redis initialization attempt (safe - will fallback to in-memory if fails)
+let redisInitPromise: Promise<void> | null = null
+function ensureRedis() {
+  if (!redisInitPromise) {
+    redisInitPromise = ensureRedisInitialized().catch((err) => {
+      console.warn('[Patterns API] Redis initialization failed, using in-memory cache:', err.message)
+    })
+  }
+  return redisInitPromise
+}
 
 // Zod validation schema for query parameters
 const PatternsQuerySchema = z.object({
@@ -66,6 +74,9 @@ function buildCacheKey(params: z.infer<typeof PatternsQuerySchema>): string {
  * With cache: ~10ms (L1 hit) or ~50ms (L2 Redis hit)
  */
 export const GET = withErrorHandler(async (request: NextRequest) => {
+  // Ensure Redis is initialized (non-blocking)
+  await ensureRedis()
+
   // Extract and validate query parameters
   const searchParams = request.nextUrl.searchParams
   const params = PatternsQuerySchema.parse({

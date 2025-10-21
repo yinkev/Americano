@@ -1,5 +1,13 @@
 /**
  * RecommendationsPanel Component
+ * Story 5.6: Behavioral Insights Dashboard - Task 5 (Recommendations)
+ *
+ * Epic 5 UI Transformation:
+ * - OKLCH colors for category badges (no gradients)
+ * - Design tokens from /lib/design-tokens.ts
+ * - Typography system (font-heading, precise text sizes)
+ * - Glassmorphism effects (bg-white/80 backdrop-blur-md)
+ * - Fast hover animations (150ms)
  *
  * Displays top 5 behavioral recommendations sorted by priority.
  * Features:
@@ -8,8 +16,6 @@
  * - Expandable evidence list
  * - "Apply This" action button
  * - Applied state tracking
- *
- * Story 5.6: Behavioral Insights Dashboard - Task 5 (Recommendations)
  */
 
 'use client'
@@ -19,6 +25,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { AlertCircle, Check, ChevronDown, ChevronUp, Lightbulb, Star } from 'lucide-react'
+import { typography, colors } from '@/lib/design-tokens'
 
 type RecommendationCategory = 'TIMING' | 'DURATION' | 'CONTENT' | 'DIFFICULTY' | 'STRATEGY'
 
@@ -272,11 +279,11 @@ export function RecommendationsPanel({
   // Empty state
   if (!isLoading && !isLoadingProp && recommendations.length === 0 && !error) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md">
+      <Card className="bg-white/80 backdrop-blur-md shadow-sm">
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <Lightbulb className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No Recommendations Yet</h3>
-          <p className="text-muted-foreground text-center max-w-md">
+          <Lightbulb className="size-12 text-muted-foreground mb-4" />
+          <h3 className={`${typography.heading.h3} mb-2`}>No Recommendations Yet</h3>
+          <p className={`${typography.body.base} text-muted-foreground text-center max-w-md`}>
             Keep studying to unlock personalized recommendations based on your learning patterns
           </p>
         </CardContent>
@@ -287,11 +294,14 @@ export function RecommendationsPanel({
   // Error state
   if (error) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-red-200">
+      <Card
+        className="bg-white/80 backdrop-blur-md shadow-sm border"
+        style={{ borderColor: colors.alert }}
+      >
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Error Loading Recommendations</h3>
-          <p className="text-muted-foreground text-center">{error}</p>
+          <AlertCircle className="size-12 mb-4" style={{ color: colors.alert }} />
+          <h3 className={`${typography.heading.h3} mb-2`}>Error Loading Recommendations</h3>
+          <p className={`${typography.body.base} text-muted-foreground text-center`}>{error}</p>
         </CardContent>
       </Card>
     )
@@ -300,14 +310,21 @@ export function RecommendationsPanel({
   // Loading state
   if (isLoading || isLoadingProp) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md animate-pulse">
+      <Card className="bg-white/80 backdrop-blur-md shadow-sm animate-pulse">
         <CardHeader>
-          <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-6 rounded w-1/3 mb-2" style={{ backgroundColor: 'oklch(0.9 0.02 230)' }} />
+          <div className="h-4 rounded w-1/2" style={{ backgroundColor: 'oklch(0.92 0.02 230)' }} />
         </CardHeader>
         <CardContent className="space-y-4">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-32 bg-gray-200 rounded"></div>
+            <div
+              key={i}
+              className="h-32 rounded"
+              style={{
+                backgroundColor: 'oklch(0.94 0.02 230)',
+                animationDelay: `${i * 0.1}s`,
+              }}
+            />
           ))}
         </CardContent>
       </Card>
@@ -315,10 +332,10 @@ export function RecommendationsPanel({
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md">
+    <Card className="bg-white/80 backdrop-blur-md shadow-sm">
       <CardHeader>
-        <CardTitle>Personalized Recommendations</CardTitle>
-        <CardDescription>
+        <CardTitle className={typography.heading.h2}>Personalized Recommendations</CardTitle>
+        <CardDescription className={`${typography.body.base} mt-1`}>
           Top {recommendations.length} evidence-based suggestions to optimize your learning
         </CardDescription>
       </CardHeader>

@@ -12,6 +12,7 @@ import {
   Calendar,
   Clock,
   Brain,
+  FlaskConical,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -74,6 +75,11 @@ const navItems = [
     title: 'Behavioral Insights',
     url: '/analytics/behavioral-insights',
     icon: Brain,
+  },
+  {
+    title: 'Experiments',
+    url: '/analytics/experiments',
+    icon: FlaskConical,
   },
   {
     title: 'Exams',

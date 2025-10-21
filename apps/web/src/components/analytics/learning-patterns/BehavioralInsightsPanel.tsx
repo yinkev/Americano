@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Clock, TrendingUp, BookOpen, Brain, CheckCircle2, X } from 'lucide-react'
+import { Card } from '@/components/ui/card'
 
 interface BehavioralInsight {
   id: string
@@ -103,20 +104,20 @@ export function BehavioralInsightsPanel() {
 
   if (error) {
     return (
-      <Alert className="bg-white/80 backdrop-blur-md">
-        <AlertDescription>{error}</AlertDescription>
+      <Alert className="bg-destructive/10 border-destructive/20">
+        <AlertDescription className="text-destructive">{error}</AlertDescription>
       </Alert>
     )
   }
 
   if (insufficientData) {
     return (
-      <Alert className="bg-white/80 backdrop-blur-md border border-[oklch(0.85_0.05_60)]">
+      <Alert className="bg-warning/10 border-warning/20">
         <AlertDescription>
-          <p className="font-medium mb-2" style={{ color: 'oklch(0.4 0.1 60)' }}>
+          <p className="font-medium mb-2 text-warning">
             No insights available yet
           </p>
-          <p className="text-sm" style={{ color: 'oklch(0.5 0.05 230)' }}>
+          <p className="text-[13px]" style={{ color: 'oklch(0.5 0.05 230)' }}>
             Complete {weeksNeeded} more weeks of study to enable pattern analysis and receive
             personalized insights.
           </p>
@@ -127,10 +128,10 @@ export function BehavioralInsightsPanel() {
 
   if (insights.length === 0) {
     return (
-      <Alert className="bg-white/80 backdrop-blur-md">
+      <Alert className="bg-success/10 border-success/20">
         <AlertDescription>
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5" style={{ color: 'oklch(0.5 0.15 145)' }} />
+            <CheckCircle2 className="h-5 w-5 text-success" />
             <span style={{ color: 'oklch(0.4 0.08 230)' }}>
               All caught up! No new insights at this time.
             </span>
@@ -152,12 +153,10 @@ export function BehavioralInsightsPanel() {
         const isProcessing = processingIds.has(insight.id)
 
         return (
-          <article
+          <Card
             key={insight.id}
-            className="rounded-lg border p-5 space-y-4 transition-all hover:shadow-md animate-in fade-in slide-in-from-bottom-4 duration-500"
+            className="p-4 space-y-4 shadow-sm hover:shadow-md transition-shadow animate-in fade-in slide-in-from-bottom-4 duration-500"
             style={{
-              backgroundColor: 'oklch(0.98 0.01 230)',
-              borderColor: 'oklch(0.9 0.02 230)',
               animationDelay: `${index * 100}ms`,
             }}
             aria-labelledby={`insight-title-${insight.id}`}
@@ -171,12 +170,12 @@ export function BehavioralInsightsPanel() {
                 role="img"
                 aria-label={`${insight.insightType.replace(/_/g, ' ').toLowerCase()} insight`}
               >
-                <Icon className="h-5 w-5" style={{ color: 'oklch(0.5 0.15 230)' }} aria-hidden="true" />
+                <Icon className="h-5 w-5 text-info" aria-hidden="true" />
               </div>
               <div className="flex-1 min-w-0">
                 <h4
                   id={`insight-title-${insight.id}`}
-                  className="font-semibold text-sm leading-tight"
+                  className="font-semibold text-[13px] leading-tight"
                   style={{ color: 'oklch(0.3 0.08 230)' }}
                 >
                   {insight.title}
@@ -187,7 +186,7 @@ export function BehavioralInsightsPanel() {
             {/* Description */}
             <p
               id={`insight-desc-${insight.id}`}
-              className="text-sm leading-relaxed"
+              className="text-[13px] leading-relaxed"
               style={{ color: 'oklch(0.5 0.05 230)' }}
             >
               {insight.description}
@@ -195,13 +194,12 @@ export function BehavioralInsightsPanel() {
 
             {/* Actionable Recommendation */}
             <div
-              className="p-3 rounded-md text-sm"
-              style={{ backgroundColor: 'oklch(0.95 0.05 145)' }}
+              className="p-3 rounded-md text-[13px] bg-success/10"
             >
-              <p className="font-medium text-xs mb-1" style={{ color: 'oklch(0.4 0.12 145)' }}>
+              <p className="font-medium text-xs mb-1 text-success">
                 Recommendation
               </p>
-              <p style={{ color: 'oklch(0.3 0.1 145)' }}>{insight.actionableRecommendation}</p>
+              <p className="text-success">{insight.actionableRecommendation}</p>
             </div>
 
             {/* Confidence Indicator */}
@@ -221,11 +219,7 @@ export function BehavioralInsightsPanel() {
                 size="sm"
                 onClick={() => handleAcknowledge(insight.id, true)}
                 disabled={isProcessing}
-                className="flex-1 min-h-[44px] transition-transform hover:scale-105 active:scale-95"
-                style={{
-                  backgroundColor: 'oklch(0.5 0.15 145)',
-                  color: 'oklch(0.98 0 0)',
-                }}
+                className="flex-1 min-h-[44px] transition-transform hover:scale-105 active:scale-95 bg-success hover:bg-success/90"
                 aria-label={`Apply recommendation: ${insight.actionableRecommendation}`}
               >
                 Apply Recommendation
@@ -241,7 +235,7 @@ export function BehavioralInsightsPanel() {
                 <X className="h-4 w-4" aria-hidden="true" />
               </Button>
             </div>
-          </article>
+          </Card>
         )
       })}
     </div>

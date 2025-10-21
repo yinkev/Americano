@@ -1,6 +1,6 @@
 /**
  * Dashboard Page
- * Story 2.6 - Task A: Priority 1 Frontend Integration
+ * Epic 5 UI Transformation
  *
  * Displays mission analytics dashboard with:
  * - Mission statistics (streak, completion rate, success score)
@@ -8,7 +8,7 @@
  * - Insights panel
  * - Recommendations panel
  *
- * Maps to Acceptance Criteria #1
+ * Design System: Epic 5 (OKLCH colors, glassmorphism, motion.dev animations)
  */
 
 'use client'
@@ -17,7 +17,10 @@ import { useState, useEffect } from 'react'
 import { MissionCompletionChart } from '@/components/analytics/mission-completion-chart'
 import { InsightsPanel } from '@/components/analytics/insights-panel'
 import { RecommendationsPanel } from '@/components/analytics/recommendations-panel'
-import { Trophy, Target, Flame, TrendingUp } from 'lucide-react'
+import { Trophy, Target, Flame, TrendingUp, Activity } from 'lucide-react'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import { typography } from '@/lib/design-tokens'
 
 interface MissionSummary {
   completionRate: number
@@ -70,17 +73,35 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[oklch(0.97_0_0)] p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-6">
-            <div className="h-12 bg-white/80 rounded-2xl w-1/3" />
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-32 bg-white/80 rounded-2xl" />
-              ))}
+      <div className="min-h-screen bg-background">
+        {/* Header Skeleton */}
+        <div className="border-b bg-white/50 backdrop-blur-sm">
+          <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8">
+            <div className="flex items-start gap-4">
+              <Skeleton className="size-14 rounded-xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-8 w-64 rounded-lg" />
+                <Skeleton className="h-4 w-96 rounded-lg" />
+              </div>
             </div>
-            <div className="h-96 bg-white/80 rounded-2xl" />
           </div>
+        </div>
+
+        {/* Content Skeleton */}
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {[1, 2, 3, 4].map((i) => (
+              <Card
+                key={i}
+                className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]"
+              >
+                <CardContent className="p-6">
+                  <Skeleton className="h-20 rounded-lg" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <Skeleton className="h-96 rounded-2xl mb-8" />
         </div>
       </div>
     )
@@ -88,126 +109,183 @@ export default function DashboardPage() {
 
   if (error || !summary) {
     return (
-      <div className="min-h-screen bg-[oklch(0.97_0_0)] p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-8 text-center">
-            <p className="text-[oklch(0.65_0.15_10)] mb-4">{error || 'Failed to load dashboard'}</p>
-            <button
-              onClick={fetchSummary}
-              className="px-4 py-2 bg-[oklch(0.7_0.15_230)] text-white rounded-xl hover:bg-[oklch(0.65_0.15_230)] transition-colors min-h-[44px]"
-            >
-              Try Again
-            </button>
-          </div>
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-16">
+          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+            <CardContent className="p-8 text-center">
+              <div
+                className="size-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: 'oklch(0.6 0.20 30 / 0.1)' }}
+              >
+                <Activity className="size-8" style={{ color: 'oklch(0.6 0.20 30)' }} />
+              </div>
+              <p className="text-[15px] mb-4" style={{ color: 'oklch(0.6 0.20 30)' }}>
+                {error || 'Failed to load dashboard'}
+              </p>
+              <button
+                onClick={fetchSummary}
+                className="px-6 py-3 rounded-xl font-semibold transition-all duration-150 hover:scale-102"
+                style={{
+                  backgroundColor: 'oklch(0.7 0.15 230)',
+                  color: 'white',
+                }}
+              >
+                Try Again
+              </button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[oklch(0.97_0_0)] p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-heading font-bold text-[oklch(0.145_0_0)] mb-2">
-            Mission Analytics
-          </h1>
-          <p className="text-[oklch(0.556_0_0)]">
-            Track your mission performance and get personalized insights
-          </p>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Current Streak */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="rounded-full bg-[oklch(0.7_0.15_50)]/10 p-3">
-                <Flame className="size-6 text-[oklch(0.7_0.15_50)]" />
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Best</p>
-                <p className="text-sm font-semibold text-[oklch(0.145_0_0)]">
-                  {summary.streak.longest} days
-                </p>
-              </div>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b bg-white/50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8">
+          <div className="flex items-start gap-4">
+            <div
+              className="p-3 rounded-xl shrink-0"
+              style={{ backgroundColor: 'oklch(0.7 0.15 230 / 0.1)' }}
+            >
+              <Activity className="size-8" style={{ color: 'oklch(0.7 0.15 230)' }} />
             </div>
-            <h3 className="text-sm font-medium text-[oklch(0.556_0_0)] mb-1">Current Streak</h3>
-            <p className="text-3xl font-heading font-bold text-[oklch(0.145_0_0)]">
-              {summary.streak.current}
-              <span className="text-lg text-[oklch(0.556_0_0)] ml-1">days</span>
-            </p>
+            <div className="flex-1">
+              <h1 className={`${typography.heading.h1} text-foreground mb-2`}>
+                Mission Analytics
+              </h1>
+              <p className={`${typography.body.base} text-muted-foreground max-w-2xl`}>
+                Track your mission performance and get personalized insights to optimize your
+                learning journey
+              </p>
+            </div>
           </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+          {/* Current Streak */}
+          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all duration-150">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div
+                  className="rounded-full p-3"
+                  style={{ backgroundColor: 'oklch(0.7 0.18 50 / 0.1)' }}
+                >
+                  <Flame className="size-6" style={{ color: 'oklch(0.7 0.18 50)' }} />
+                </div>
+                <div className="text-right">
+                  <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Best</p>
+                  <p className={`${typography.body.small} font-semibold text-foreground`}>
+                    {summary.streak.longest} days
+                  </p>
+                </div>
+              </div>
+              <h3 className={`${typography.body.small} font-medium text-muted-foreground mb-1`}>
+                Current Streak
+              </h3>
+              <p className="text-[32px] font-heading font-bold text-foreground">
+                {summary.streak.current}
+                <span className="text-[16px] text-muted-foreground ml-2">days</span>
+              </p>
+            </CardContent>
+          </Card>
 
           {/* Completion Rate */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-3">
-                <Target className="size-6 text-[oklch(0.7_0.15_230)]" />
+          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all duration-150">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div
+                  className="rounded-full p-3"
+                  style={{ backgroundColor: 'oklch(0.65 0.18 240 / 0.1)' }}
+                >
+                  <Target className="size-6" style={{ color: 'oklch(0.65 0.18 240)' }} />
+                </div>
+                <div className="text-right">
+                  <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Target</p>
+                  <p className={`${typography.body.small} font-semibold text-foreground`}>80%</p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Target</p>
-                <p className="text-sm font-semibold text-[oklch(0.145_0_0)]">80%</p>
-              </div>
-            </div>
-            <h3 className="text-sm font-medium text-[oklch(0.556_0_0)] mb-1">Completion Rate</h3>
-            <p className="text-3xl font-heading font-bold text-[oklch(0.145_0_0)]">
-              {(summary.completionRate * 100).toFixed(1)}
-              <span className="text-lg text-[oklch(0.556_0_0)] ml-1">%</span>
-            </p>
-            <p className="text-xs text-[oklch(0.556_0_0)] mt-2">
-              {summary.missions.completed}/{summary.missions.total} missions
-            </p>
-          </div>
+              <h3 className={`${typography.body.small} font-medium text-muted-foreground mb-1`}>
+                Completion Rate
+              </h3>
+              <p className="text-[32px] font-heading font-bold text-foreground">
+                {(summary.completionRate * 100).toFixed(1)}
+                <span className="text-[16px] text-muted-foreground ml-2">%</span>
+              </p>
+              <p className={`${typography.body.tiny} text-muted-foreground mt-2`}>
+                {summary.missions.completed}/{summary.missions.total} missions
+              </p>
+            </CardContent>
+          </Card>
 
           {/* Success Score */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="rounded-full bg-[oklch(0.75_0.15_160)]/10 p-3">
-                <Trophy className="size-6 text-[oklch(0.75_0.15_160)]" />
+          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all duration-150">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div
+                  className="rounded-full p-3"
+                  style={{ backgroundColor: 'oklch(0.7 0.15 145 / 0.1)' }}
+                >
+                  <Trophy className="size-6" style={{ color: 'oklch(0.7 0.15 145)' }} />
+                </div>
+                <div className="text-right">
+                  <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Max</p>
+                  <p className={`${typography.body.small} font-semibold text-foreground`}>1.00</p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Max</p>
-                <p className="text-sm font-semibold text-[oklch(0.145_0_0)]">1.00</p>
-              </div>
-            </div>
-            <h3 className="text-sm font-medium text-[oklch(0.556_0_0)] mb-1">Success Score</h3>
-            <p className="text-3xl font-heading font-bold text-[oklch(0.145_0_0)]">
-              {summary.successScore.toFixed(2)}
-            </p>
-            <p className="text-xs text-[oklch(0.556_0_0)] mt-2">Average across all missions</p>
-          </div>
+              <h3 className={`${typography.body.small} font-medium text-muted-foreground mb-1`}>
+                Success Score
+              </h3>
+              <p className="text-[32px] font-heading font-bold text-foreground">
+                {summary.successScore.toFixed(2)}
+              </p>
+              <p className={`${typography.body.tiny} text-muted-foreground mt-2`}>
+                Average across all missions
+              </p>
+            </CardContent>
+          </Card>
 
           {/* Missions Completed */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="rounded-full bg-[oklch(0.7_0.15_280)]/10 p-3">
-                <TrendingUp className="size-6 text-[oklch(0.7_0.15_280)]" />
+          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all duration-150">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div
+                  className="rounded-full p-3"
+                  style={{ backgroundColor: 'oklch(0.7 0.15 280 / 0.1)' }}
+                >
+                  <TrendingUp className="size-6" style={{ color: 'oklch(0.7 0.15 280)' }} />
+                </div>
+                <div className="text-right">
+                  <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Skipped</p>
+                  <p className={`${typography.body.small} font-semibold text-foreground`}>
+                    {summary.missions.skipped}
+                  </p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Skipped</p>
-                <p className="text-sm font-semibold text-[oklch(0.145_0_0)]">
-                  {summary.missions.skipped}
-                </p>
-              </div>
-            </div>
-            <h3 className="text-sm font-medium text-[oklch(0.556_0_0)] mb-1">Missions Completed</h3>
-            <p className="text-3xl font-heading font-bold text-[oklch(0.145_0_0)]">
-              {summary.missions.completed}
-            </p>
-            <p className="text-xs text-[oklch(0.556_0_0)] mt-2">Last 7 days</p>
-          </div>
+              <h3 className={`${typography.body.small} font-medium text-muted-foreground mb-1`}>
+                Missions Completed
+              </h3>
+              <p className="text-[32px] font-heading font-bold text-foreground">
+                {summary.missions.completed}
+              </p>
+              <p className={`${typography.body.tiny} text-muted-foreground mt-2`}>Last 7 days</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Completion Trends Chart */}
-        <MissionCompletionChart period="30d" chartType="line" />
+        <div className="mb-8">
+          <MissionCompletionChart period="30d" chartType="line" />
+        </div>
 
         {/* Two Column Layout: Insights + Recommendations */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Insights Panel */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           <InsightsPanel />
-
-          {/* Recommendations Panel */}
           <RecommendationsPanel />
         </div>
       </div>

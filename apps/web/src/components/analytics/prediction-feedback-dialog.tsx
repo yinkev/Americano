@@ -4,6 +4,7 @@
  *
  * Collects user feedback on prediction accuracy after completing predicted topics
  * Triggers: 24 hours after topic studied OR next session start
+ * Epic 5 UI Transformation: Already using shadcn/ui components
  */
 
 'use client'

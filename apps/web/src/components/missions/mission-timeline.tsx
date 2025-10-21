@@ -226,10 +226,10 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
           {dayStatus.missions.length > 0 && (
             <TooltipContent
               side="top"
-              className="max-w-xs bg-white/95 backdrop-blur-md border border-white/30 shadow-lg"
+              className="max-w-xs"
             >
               <div className="space-y-2">
-                <p className="font-semibold text-sm text-[oklch(0.145_0_0)]">
+                <p className="font-semibold text-[13px]">
                   {format(day, 'EEEE, MMMM d')}
                 </p>
                 {dayStatus.missions.map((mission, idx) => {
@@ -239,12 +239,12 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
                       : 0
 
                   return (
-                    <div key={mission.id} className="text-xs space-y-1">
+                    <div key={mission.id} className="text-[11px] space-y-1">
                       {dayStatus.missions.length > 1 && (
-                        <p className="font-medium text-[oklch(0.556_0_0)]">Mission {idx + 1}:</p>
+                        <p className="font-medium text-muted-foreground">Mission {idx + 1}:</p>
                       )}
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-[oklch(0.145_0_0)]">
+                        <span>
                           {mission.completedObjectivesCount} / {mission.objectives.length}{' '}
                           objectives
                         </span>
@@ -261,14 +261,14 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
                         </span>
                       </div>
                       {mission.successScore !== undefined && (
-                        <p className="text-[oklch(0.556_0_0)]">
+                        <p className="text-muted-foreground">
                           Success: {Math.round(mission.successScore * 100)}%
                         </p>
                       )}
                     </div>
                   )
                 })}
-                <p className="text-[10px] text-[oklch(0.556_0_0)] pt-1 border-t border-[oklch(0.922_0_0)]">
+                <p className="text-[10px] text-muted-foreground pt-1 border-t border-border">
                   Click to view details
                 </p>
               </div>
@@ -306,18 +306,18 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
   }, [missions, currentMonth])
 
   return (
-    <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
+    <div className="rounded-lg bg-white border shadow-sm p-4 hover:shadow-md transition-shadow duration-300">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-2">
-            <Calendar className="size-5 text-[oklch(0.7_0.15_230)]" />
+          <div className="rounded-full bg-clinical/10 p-2">
+            <Calendar className="size-5 text-clinical" />
           </div>
           <div>
-            <h3 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)]">
+            <h3 className="text-[16px] font-heading font-semibold">
               {format(currentMonth, 'MMMM yyyy')}
             </h3>
-            <p className="text-xs text-[oklch(0.556_0_0)]">
+            <p className="text-[11px] text-muted-foreground">
               {monthStats.completed} / {monthStats.total} missions completed (
               {monthStats.completionRate}%)
             </p>
@@ -330,7 +330,6 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
             variant="outline"
             size="sm"
             onClick={previousMonth}
-            className="border-white/30 hover:bg-white/60"
           >
             <ChevronLeft className="size-4" />
           </Button>
@@ -338,7 +337,7 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
             variant="outline"
             size="sm"
             onClick={() => setCurrentMonth(new Date())}
-            className="border-white/30 hover:bg-white/60 text-xs"
+            className="text-[11px]"
           >
             Today
           </Button>
@@ -346,7 +345,6 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
             variant="outline"
             size="sm"
             onClick={nextMonth}
-            className="border-white/30 hover:bg-white/60"
           >
             <ChevronRight className="size-4" />
           </Button>
@@ -358,7 +356,7 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
         {/* Day Headers */}
         <div className="grid grid-cols-7 gap-2 mb-2">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-            <div key={day} className="text-center text-xs font-medium text-[oklch(0.556_0_0)] py-2">
+            <div key={day} className="text-center text-[11px] font-medium text-muted-foreground py-2">
               {day}
             </div>
           ))}
@@ -369,32 +367,32 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
       </div>
 
       {/* Legend */}
-      <div className="mt-6 pt-4 border-t border-white/30">
-        <p className="text-xs font-medium text-[oklch(0.556_0_0)] mb-3">Legend:</p>
-        <div className="flex flex-wrap items-center gap-4 text-xs">
+      <div className="mt-6 pt-4 border-t border-border">
+        <p className="text-[11px] font-medium text-muted-foreground mb-3 uppercase tracking-wide">Legend:</p>
+        <div className="flex flex-wrap items-center gap-4 text-[11px]">
           <div className="flex items-center gap-2">
             <div className="size-4 rounded bg-[oklch(0.75_0.15_160)]" />
-            <span className="text-[oklch(0.556_0_0)]">Completed (90%+)</span>
+            <span className="text-muted-foreground">Completed (90%+)</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="size-4 rounded bg-[oklch(0.75_0.15_160)]/70" />
-            <span className="text-[oklch(0.556_0_0)]">Completed (70-89%)</span>
+            <span className="text-muted-foreground">Completed (70-89%)</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="size-4 rounded bg-[oklch(0.7_0.15_50)]/50" />
-            <span className="text-[oklch(0.556_0_0)]">Partial (50-69%)</span>
+            <span className="text-muted-foreground">Partial (50-69%)</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="size-4 rounded bg-[oklch(0.556_0_0)]/30" />
-            <span className="text-[oklch(0.556_0_0)]">Skipped</span>
+            <span className="text-muted-foreground">Skipped</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="size-4 rounded bg-[oklch(0.7_0.15_50)]" />
-            <span className="text-[oklch(0.556_0_0)]">In Progress</span>
+            <span className="text-muted-foreground">In Progress</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="size-4 rounded bg-[oklch(0.97_0_0)]" />
-            <span className="text-[oklch(0.556_0_0)]">No Mission</span>
+            <span className="text-muted-foreground">No Mission</span>
           </div>
         </div>
       </div>

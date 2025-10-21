@@ -119,21 +119,51 @@ export class ApiError extends Error {
 
 /**
  * Higher-order function to wrap route handlers with error handling
+ * Based on Next.js 15 App Router best practices (verified via context7 MCP)
  */
 export function withErrorHandler<T extends (...args: any[]) => Promise<Response>>(handler: T): T {
   return (async (...args: Parameters<T>) => {
     try {
       return await handler(...args)
     } catch (error: any) {
-      console.error('API Error:', error)
+      // Log full error with stack trace for debugging
+      console.error('========== API ERROR ==========')
+      console.error('Error:', error)
+      console.error('Error Name:', error?.name)
+      console.error('Error Message:', error?.message)
+      if (error?.stack) {
+        console.error('Stack Trace:', error.stack)
+      }
+      if (error?.cause) {
+        console.error('Cause:', error.cause)
+      }
+      console.error('==============================')
 
+      // Handle Zod validation errors
+      if (error?.name === 'ZodError' || error?.issues) {
+        return Response.json(
+          errorResponse(ErrorCodes.VALIDATION_ERROR, 'Validation failed', error.issues || error.errors),
+          { status: 400 },
+        )
+      }
+
+      // Handle custom ApiError instances
       if (error instanceof ApiError) {
         return Response.json(errorResponse(error.code, error.message), { status: error.statusCode })
       }
 
-      // Default to 500 for unexpected errors
+      // Handle Prisma errors
+      if (error?.code && typeof error.code === 'string' && error.code.startsWith('P')) {
+        return Response.json(
+          errorResponse(ErrorCodes.DATABASE_ERROR, `Database error: ${error.message || 'Unknown database error'}`),
+          { status: 500 },
+        )
+      }
+
+      // Default to 500 for unexpected errors with more detail
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
       return Response.json(
-        errorResponse(ErrorCodes.INTERNAL_ERROR, 'An unexpected error occurred'),
+        errorResponse(ErrorCodes.INTERNAL_ERROR, errorMessage),
         { status: 500 },
       )
     }

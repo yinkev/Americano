@@ -64,8 +64,8 @@ export function SessionPerformanceChart() {
 
   if (error || !data) {
     return (
-      <Alert className="bg-white/80 backdrop-blur-md">
-        <AlertDescription>{error || 'No session performance data available'}</AlertDescription>
+      <Alert className="bg-destructive/10 border-destructive/20">
+        <AlertDescription className="text-destructive">{error || 'No session performance data available'}</AlertDescription>
       </Alert>
     )
   }
@@ -83,13 +83,13 @@ export function SessionPerformanceChart() {
           className="px-3 py-2 rounded-lg shadow-lg backdrop-blur-sm"
           style={chartTheme.tooltip.contentStyle}
         >
-          <p className="text-sm font-medium mb-1" style={chartTheme.tooltip.labelStyle}>
+          <p className="text-[13px] font-medium mb-1" style={chartTheme.tooltip.labelStyle}>
             {data.timeOfDay.charAt(0).toUpperCase() + data.timeOfDay.slice(1)} Session
           </p>
-          <p className="text-xs" style={chartTheme.tooltip.itemStyle}>
+          <p className="text-[13px]" style={chartTheme.tooltip.itemStyle}>
             Duration: {data.duration} minutes
           </p>
-          <p className="text-xs" style={chartTheme.tooltip.itemStyle}>
+          <p className="text-[13px]" style={chartTheme.tooltip.itemStyle}>
             Performance: {Math.round(data.performance)}
           </p>
         </div>
@@ -204,18 +204,18 @@ export function SessionPerformanceChart() {
 
       {/* Insights */}
       <div
-        className="text-sm space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-300"
+        className="text-[13px] space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-300"
         role="status"
         aria-live="polite"
       >
         <p style={{ color: 'oklch(0.5 0.05 230)' }}>
-          <span className="font-medium" style={{ color: 'oklch(0.3 0.08 230)' }}>
+          <span className="font-medium text-info">
             Current Average:
           </span>{' '}
           {data.currentAverage.duration} min sessions with{' '}
           {Math.round(data.currentAverage.performance)} avg performance
         </p>
-        <p style={{ color: 'oklch(0.4 0.15 145)' }}>
+        <p className="text-success">
           <span className="font-medium">Recommended:</span> {data.recommended.duration} min sessions
           for optimal {Math.round(data.recommended.performance)} performance
         </p>

@@ -1,8 +1,12 @@
 /**
  * StrugglePredictionCard Component
  * Story 5.2 Task 10.2
+ * Wave 3: Enhanced with micro-interactions and design tokens
  *
  * Displays individual struggle predictions with probability, confidence, and feature breakdown
+ *
+ * Design: OKLCH colors, glassmorphism, NO gradients (per CLAUDE.md)
+ * Animations: Wave 3 micro-interactions with hover states
  */
 
 'use client'
@@ -22,6 +26,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { typography, colors } from '@/lib/design-tokens'
 
 interface PredictionFeatures {
   prerequisiteGap?: number
@@ -54,11 +59,11 @@ export function StrugglePredictionCard({ prediction }: Props) {
   const probability = prediction.predictedStruggleProbability * 100
   const confidence = prediction.confidence * 100
 
-  // Determine color based on probability
+  // Determine color based on probability (using design tokens)
   const getProbabilityColor = (prob: number) => {
-    if (prob < 40) return 'oklch(0.7 0.12 145)' // Green - Low
-    if (prob < 70) return 'oklch(0.8 0.15 85)' // Yellow - Medium
-    return 'oklch(0.6 0.15 25)' // Red - High
+    if (prob < 40) return colors.success // Green - Low
+    if (prob < 70) return colors.warning // Yellow - Medium
+    return colors.alert // Red - High
   }
 
   const getProbabilityLevel = (prob: number) => {
@@ -77,24 +82,24 @@ export function StrugglePredictionCard({ prediction }: Props) {
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] hover:scale-[1.01]">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3 flex-1 min-w-0">
             {/* Warning Icon for High Probability */}
             {probability > 70 && (
               <div
-                className="p-2 rounded-lg shrink-0 mt-0.5"
-                style={{ backgroundColor: `${probabilityColor}/0.1` }}
+                className="p-2 rounded-lg shrink-0 mt-0.5 transition-all duration-300 hover:scale-110"
+                style={{ backgroundColor: `color-mix(in oklch, ${probabilityColor}, transparent 90%)` }}
               >
                 <AlertTriangle className="size-5" style={{ color: probabilityColor }} />
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <h3 className="font-heading font-semibold text-foreground text-lg leading-tight">
+              <h3 className={`${typography.heading.h3} text-foreground leading-tight`}>
                 {prediction.topicName}
               </h3>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className={`${typography.body.small} text-muted-foreground mt-1`}>
                 Predicted for {format(new Date(prediction.predictedFor), 'MMM d, yyyy')}
               </p>
             </div>
@@ -103,9 +108,9 @@ export function StrugglePredictionCard({ prediction }: Props) {
           {/* Probability Badge */}
           <Badge
             variant="outline"
-            className="shrink-0 px-3 py-1 font-semibold"
+            className="shrink-0 px-3 py-1 font-semibold transition-all duration-200 hover:scale-105"
             style={{
-              backgroundColor: `${probabilityColor}/0.1`,
+              backgroundColor: `color-mix(in oklch, ${probabilityColor}, transparent 90%)`,
               borderColor: probabilityColor,
               color: probabilityColor,
             }}
@@ -119,14 +124,16 @@ export function StrugglePredictionCard({ prediction }: Props) {
         {/* Probability Progress Bar */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-foreground">Struggle Probability</span>
-            <span className="text-sm font-semibold" style={{ color: probabilityColor }}>
+            <span className={`${typography.body.small} font-medium text-foreground`}>
+              Struggle Probability
+            </span>
+            <span className={`${typography.body.small} font-semibold`} style={{ color: probabilityColor }}>
               {probability.toFixed(0)}%
             </span>
           </div>
           <Progress
             value={probability}
-            className="h-3 bg-muted"
+            className="h-3 bg-muted transition-all duration-500"
             style={
               {
                 '--progress-color': probabilityColor,
@@ -141,7 +148,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
         </div>
 
         {/* Confidence Indicator */}
-        <div className="flex items-center gap-2 text-sm">
+        <div className={`flex items-center gap-2 ${typography.body.small}`}>
           <Info className="size-4 text-muted-foreground" />
           <span className="text-muted-foreground">
             Confidence:{' '}
@@ -152,7 +159,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
         {/* Expandable Feature Breakdown */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-sm font-medium text-foreground"
+          className={`w-full flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-all duration-200 ${typography.body.small} font-medium text-foreground hover:scale-[1.01] active:scale-[0.99]`}
           aria-expanded={expanded}
           aria-label="Toggle feature breakdown"
         >
@@ -201,7 +208,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
           <Dialog>
             <DialogTrigger asChild>
               <Button
-                className="flex-1 min-h-11"
+                className="flex-1 min-h-11 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                 style={{
                   backgroundColor: probabilityColor,
                   color: 'white',
@@ -212,36 +219,51 @@ export function StrugglePredictionCard({ prediction }: Props) {
             </DialogTrigger>
             <DialogContent className="bg-white/95 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.15)]">
               <DialogHeader>
-                <DialogTitle className="font-heading text-xl">Recommended Intervention</DialogTitle>
-                <DialogDescription>
+                <DialogTitle className={`${typography.heading.h2} font-heading`}>
+                  Recommended Intervention
+                </DialogTitle>
+                <DialogDescription className={typography.body.small}>
                   Strategies to help you succeed with {prediction.topicName}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <h4 className="font-semibold text-foreground mb-2">Prerequisite Review</h4>
-                  <p className="text-sm text-muted-foreground">
+                <div className="p-4 rounded-lg bg-muted/50 transition-all duration-200 hover:bg-muted/70">
+                  <h4 className={`${typography.heading.h3} text-foreground mb-2`}>
+                    Prerequisite Review
+                  </h4>
+                  <p className={`${typography.body.small} text-muted-foreground`}>
                     Review foundational concepts before tackling this topic. We'll add preparatory
                     missions to your queue.
                   </p>
                 </div>
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <h4 className="font-semibold text-foreground mb-2">Spaced Repetition Boost</h4>
-                  <p className="text-sm text-muted-foreground">
+                <div className="p-4 rounded-lg bg-muted/50 transition-all duration-200 hover:bg-muted/70">
+                  <h4 className={`${typography.heading.h3} text-foreground mb-2`}>
+                    Spaced Repetition Boost
+                  </h4>
+                  <p className={`${typography.body.small} text-muted-foreground`}>
                     Increase review frequency for related concepts to strengthen retention.
                   </p>
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button className="flex-1" variant="outline">
+                <Button
+                  className="flex-1 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                  variant="outline"
+                >
                   Dismiss
                 </Button>
-                <Button className="flex-1">Apply to Missions</Button>
+                <Button className="flex-1 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
+                  Apply to Missions
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
 
-          <Button variant="outline" className="min-h-11 px-6" onClick={handleDismiss}>
+          <Button
+            variant="outline"
+            className="min-h-11 px-6 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            onClick={handleDismiss}
+          >
             Not Concerned
           </Button>
         </div>
@@ -253,6 +275,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
 /**
  * Feature Bar Component
  * Displays individual feature contribution with progress bar
+ * Enhanced with Wave 3 animations
  */
 function FeatureBar({
   label,
@@ -264,13 +287,18 @@ function FeatureBar({
   description: string
 }) {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 group">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-foreground">{label}</span>
-        <span className="text-xs font-semibold text-muted-foreground">{value.toFixed(0)}%</span>
+        <span className={`${typography.body.tiny} font-medium text-foreground`}>{label}</span>
+        <span className={`${typography.body.tiny} font-semibold text-muted-foreground`}>
+          {value.toFixed(0)}%
+        </span>
       </div>
-      <Progress value={value} className="h-2 bg-muted/30" />
-      <p className="text-xs text-muted-foreground">{description}</p>
+      <Progress
+        value={value}
+        className="h-2 bg-muted/30 transition-all duration-500 group-hover:h-2.5"
+      />
+      <p className={`${typography.body.tiny} text-muted-foreground`}>{description}</p>
     </div>
   )
 }

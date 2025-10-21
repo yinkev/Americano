@@ -108,11 +108,11 @@ export default function PersonalizationDashboardPage() {
       <div className="mb-8">
         <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
           <div>
-            <h1 className="text-3xl font-semibold text-gray-800 flex items-center gap-3 mb-2">
-              <Sparkles className="size-8 text-[oklch(0.7_0.15_230)]" />
+            <h1 className="text-[28px] md:text-[32px] font-heading font-bold tracking-tight text-foreground flex items-center gap-3 mb-2">
+              <Sparkles className="size-8" style={{ color: 'oklch(0.7 0.15 230)' }} />
               Personalization Dashboard
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-[15px] text-muted-foreground leading-relaxed">
               Track how personalization is adapting to your learning patterns and improving outcomes
             </p>
           </div>
@@ -134,10 +134,10 @@ export default function PersonalizationDashboardPage() {
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Personalization Level */}
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
-                <div className="p-2 rounded-lg" style={{ backgroundColor: `${levelColor}/0.15` }}>
+                <div className="p-2 rounded-xl" style={{ backgroundColor: `${levelColor}/0.15` }}>
                   <Sparkles className="size-5" style={{ color: levelColor }} />
                 </div>
                 <Badge
@@ -152,11 +152,11 @@ export default function PersonalizationDashboardPage() {
                   {preferences?.personalizationLevel}
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground mb-1">Personalization Level</p>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-[11px] text-muted-foreground font-medium mb-1">Personalization Level</p>
+              <p className="text-[24px] font-heading font-bold text-foreground">
                 {preferences?.personalizationLevel}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-[11px] text-muted-foreground mt-1">
                 {preferences?.personalizationLevel === 'NONE' && 'No personalization'}
                 {preferences?.personalizationLevel === 'LOW' && 'Basic adaptations'}
                 {preferences?.personalizationLevel === 'MEDIUM' && 'Standard personalization'}
@@ -166,20 +166,20 @@ export default function PersonalizationDashboardPage() {
           </Card>
 
           {/* Active Features */}
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
                 <div
-                  className="p-2 rounded-lg"
-                  style={{ backgroundColor: 'oklch(0.7 0.15 145)/0.15' }}
+                  className="p-2 rounded-xl"
+                  style={{ backgroundColor: 'oklch(0.7 0.15 145 / 0.15)' }}
                 >
-                  <Activity className="size-5 text-[oklch(0.7_0.15_145)]" />
+                  <Activity className="size-5" style={{ color: 'oklch(0.7 0.15 145)' }} />
                 </div>
                 <Badge
                   variant="outline"
                   className="px-2 py-1"
                   style={{
-                    backgroundColor: 'oklch(0.7 0.15 145)/0.1',
+                    backgroundColor: 'oklch(0.7 0.15 145 / 0.1)',
                     borderColor: 'oklch(0.7 0.15 145)',
                     color: 'oklch(0.7 0.15 145)',
                   }}
@@ -187,9 +187,9 @@ export default function PersonalizationDashboardPage() {
                   Active
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground mb-1">Active Features</p>
-              <p className="text-2xl font-bold text-foreground">{activeFeatures} of 4</p>
-              <p className="text-xs text-muted-foreground mt-1">Personalization features enabled</p>
+              <p className="text-[11px] text-muted-foreground font-medium mb-1">Active Features</p>
+              <p className="text-[24px] font-heading font-bold text-foreground">{activeFeatures} of 4</p>
+              <p className="text-[11px] text-muted-foreground mt-1">Personalization features enabled</p>
             </CardContent>
           </Card>
 

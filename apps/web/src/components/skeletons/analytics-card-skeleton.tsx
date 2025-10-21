@@ -3,11 +3,12 @@
  * Wave 2: Content-Aware Skeleton Loading States
  *
  * Design: Matches exact dimensions and visual hierarchy of real analytics cards
- * Uses OKLCH colors, glassmorphism effects, and subtle pulse animation
+ * Uses shadcn/ui Skeleton component with OKLCH colors, glassmorphism effects
  * Prevents layout shift by matching real content dimensions
  */
 
 import { cn } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface AnalyticsCardSkeletonProps {
   className?: string
@@ -35,14 +36,7 @@ export function AnalyticsCardSkeleton({
       {/* Header */}
       {showHeader && (
         <div className="mb-6">
-          <div
-            className={cn(
-              'h-6 rounded',
-              'bg-[oklch(0.9_0.02_230)]',
-              'animate-pulse',
-              variant === 'compact' ? 'w-24' : 'w-40',
-            )}
-          />
+          <Skeleton className={cn('h-6', variant === 'compact' ? 'w-24' : 'w-40')} />
         </div>
       )}
 
@@ -51,8 +45,8 @@ export function AnalyticsCardSkeleton({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="space-y-2">
-              <div className="h-4 w-32 bg-[oklch(0.92_0.02_230)] rounded animate-pulse" />
-              <div className="h-8 w-20 bg-[oklch(0.88_0.02_230)] rounded animate-pulse" />
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-8 w-20" />
             </div>
           ))}
         </div>
@@ -60,14 +54,13 @@ export function AnalyticsCardSkeleton({
 
       {/* Chart Placeholder */}
       {showChart && (
-        <div className="h-64 bg-[oklch(0.95_0.01_230)] rounded-lg animate-pulse flex items-end justify-around px-4 pb-4">
+        <div className="h-64 rounded-lg flex items-end justify-around px-4 pb-4 bg-muted/50">
           {[...Array(7)].map((_, i) => (
-            <div
+            <Skeleton
               key={i}
-              className="w-8 bg-[oklch(0.85_0.02_230)] rounded-t"
+              className="w-8 rounded-t"
               style={{
                 height: `${Math.random() * 80 + 20}%`,
-                animationDelay: `${i * 0.1}s`,
               }}
             />
           ))}
@@ -77,9 +70,9 @@ export function AnalyticsCardSkeleton({
       {/* Content Lines */}
       {!showChart && (
         <div className="space-y-3">
-          <div className="h-4 w-full bg-[oklch(0.9_0.02_230)] rounded animate-pulse" />
-          <div className="h-4 w-5/6 bg-[oklch(0.92_0.02_230)] rounded animate-pulse" />
-          <div className="h-4 w-4/6 bg-[oklch(0.94_0.02_230)] rounded animate-pulse" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-4 w-4/6" />
         </div>
       )}
     </div>

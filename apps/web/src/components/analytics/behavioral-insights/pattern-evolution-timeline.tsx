@@ -1,5 +1,14 @@
 /**
  * PatternEvolutionTimeline Component
+ * Story 5.6: Behavioral Insights Dashboard - Task 2 (Pattern Visualization)
+ *
+ * Epic 5 UI Transformation:
+ * - OKLCH colors for pattern markers (no gradients)
+ * - Design tokens from /lib/design-tokens.ts
+ * - Motion.dev animations from /lib/animation-variants.ts
+ * - Typography system (font-heading, precise text sizes)
+ * - Glassmorphism effects (bg-white/80 backdrop-blur-md)
+ * - Fast hover animations (150ms)
  *
  * Horizontal timeline visualization showing pattern evolution:
  * - Weeks on x-axis
@@ -7,8 +16,6 @@
  * - Markers for detection events (new/existing/disappeared)
  * - Interactive tooltips on hover
  * - Comparison mode available
- *
- * Story 5.6: Behavioral Insights Dashboard - Task 2 (Pattern Visualization)
  */
 
 'use client'
@@ -22,6 +29,7 @@ import { format } from 'date-fns'
 import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { chartVariants, getAnimationConfig } from '@/lib/animation-variants'
+import { typography, colors } from '@/lib/design-tokens'
 
 // Pattern type definitions
 type PatternType =
@@ -101,11 +109,11 @@ export function PatternEvolutionTimeline({
   // Empty state
   if (!isLoading && evolutionData.length === 0) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md">
+      <Card className="bg-white/80 backdrop-blur-md shadow-sm">
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No Evolution Data</h3>
-          <p className="text-muted-foreground text-center max-w-md">
+          <AlertCircle className="size-12 text-muted-foreground mb-4" />
+          <h3 className={`${typography.heading.h3} mb-2`}>No Evolution Data</h3>
+          <p className={`${typography.body.base} text-muted-foreground text-center max-w-md`}>
             Pattern evolution will appear as you continue studying
           </p>
         </CardContent>
@@ -116,13 +124,13 @@ export function PatternEvolutionTimeline({
   // Loading state
   if (isLoading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md animate-pulse">
+      <Card className="bg-white/80 backdrop-blur-md shadow-sm animate-pulse">
         <CardHeader>
-          <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-6 rounded w-1/3 mb-2" style={{ backgroundColor: 'oklch(0.9 0.02 230)' }} />
+          <div className="h-4 rounded w-1/2" style={{ backgroundColor: 'oklch(0.92 0.02 230)' }} />
         </CardHeader>
         <CardContent>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-64 rounded" style={{ backgroundColor: 'oklch(0.94 0.02 230)' }} />
         </CardContent>
       </Card>
     )
@@ -138,12 +146,16 @@ export function PatternEvolutionTimeline({
   ) as PatternType[]
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md animate-in fade-in duration-500" role="region" aria-label="Pattern Evolution Timeline">
+    <Card
+      className="bg-white/80 backdrop-blur-md shadow-sm animate-in fade-in duration-500"
+      role="region"
+      aria-label="Pattern Evolution Timeline"
+    >
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Pattern Evolution Timeline</CardTitle>
-            <CardDescription>
+            <CardTitle className={typography.heading.h2}>Pattern Evolution Timeline</CardTitle>
+            <CardDescription className={`${typography.body.base} mt-1`}>
               Track how your learning patterns change over {evolutionData.length} weeks
             </CardDescription>
           </div>
@@ -154,11 +166,13 @@ export function PatternEvolutionTimeline({
               onClick={() => setViewStart(Math.max(0, viewStart - 1))}
               disabled={!canScrollLeft}
               aria-label="View previous week"
+              className="transition-all duration-150 hover:scale-105"
             >
-              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+              <ChevronLeft className="size-4" aria-hidden="true" />
             </Button>
             <span className="sr-only">
-              Showing weeks {viewStart + 1} to {Math.min(viewStart + weeksToShow, evolutionData.length)} of {evolutionData.length}
+              Showing weeks {viewStart + 1} to{' '}
+              {Math.min(viewStart + weeksToShow, evolutionData.length)} of {evolutionData.length}
             </span>
             <Button
               variant="outline"
@@ -166,8 +180,9 @@ export function PatternEvolutionTimeline({
               onClick={() => setViewStart(viewStart + 1)}
               disabled={!canScrollRight}
               aria-label="View next week"
+              className="transition-all duration-150 hover:scale-105"
             >
-              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              <ChevronRight className="size-4" aria-hidden="true" />
             </Button>
           </nav>
         </div>

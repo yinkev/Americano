@@ -5,6 +5,9 @@
  * Provides contextual break recommendations based on performance trends,
  * fatigue levels, and schedule. Supports different break types with
  * postpone/skip options and effectiveness tracking.
+ *
+ * Design: "Linear Light × Maximum Flair" - 80% playful, 20% professional
+ * OKLCH colors, glassmorphism, spring animations, modal transitions
  */
 
 'use client'
@@ -23,6 +26,7 @@ import {
   Timer,
   Zap,
 } from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
 import {
   Dialog,
   DialogContent,
@@ -43,6 +47,8 @@ import {
 } from '@/services/realtime-orchestration'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { typography, colors, borderRadius } from '@/lib/design-tokens'
+import { modalVariants, buttonVariants, progressVariants } from '@/lib/animation-variants'
 
 interface IntelligentBreakNotificationProps {
   open: boolean
@@ -145,24 +151,33 @@ export function IntelligentBreakNotification({
   const getBreakIcon = (type: BreakRecommendation['type']) => {
     switch (type) {
       case 'performance_drop':
-        return <TrendingDown className="h-6 w-6 text-red-500" />
+        return <TrendingDown className="h-6 w-6" style={{ color: colors.alert }} />
       case 'fatigue_detected':
-        return <Battery className="h-6 w-6 text-orange-500" />
+        return <Battery className="h-6 w-6" style={{ color: colors.energy }} />
       case 'objectives_completed':
-        return <CheckCircle className="h-6 w-6 text-green-500" />
+        return <CheckCircle className="h-6 w-6" style={{ color: colors.success }} />
       default:
-        return <Coffee className="h-6 w-6 text-blue-500" />
+        return <Coffee className="h-6 w-6" style={{ color: colors.info }} />
     }
   }
 
-  const getUrgencyColor = (urgency: BreakRecommendation['urgency']) => {
+  const getUrgencyStyle = (urgency: BreakRecommendation['urgency']) => {
     switch (urgency) {
       case 'high':
-        return 'border-red-200 bg-red-50'
+        return {
+          borderColor: colors.alert,
+          backgroundColor: 'oklch(0.6 0.20 30 / 0.1)',
+        }
       case 'medium':
-        return 'border-orange-200 bg-orange-50'
+        return {
+          borderColor: colors.energy,
+          backgroundColor: 'oklch(0.7 0.18 50 / 0.1)',
+        }
       default:
-        return 'border-blue-200 bg-blue-50'
+        return {
+          borderColor: colors.info,
+          backgroundColor: 'oklch(0.65 0.18 240 / 0.1)',
+        }
     }
   }
 
@@ -181,254 +196,433 @@ export function IntelligentBreakNotification({
 
   if (!recommendation) return null
 
+  const urgencyStyle = getUrgencyStyle(recommendation.urgency)
+
   return (
     <>
-      <Dialog open={open} onOpenChange={() => {}}>
-        <DialogContent className="max-w-md rounded-2xl">
-          <DialogHeader className="space-y-3">
-            <div className="flex items-center gap-3">
-              {getBreakIcon(recommendation.type)}
-              <div className="flex-1">
-                <DialogTitle className="text-lg">{getBreakTitle(recommendation.type)}</DialogTitle>
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    'mt-1',
-                    recommendation.urgency === 'high'
-                      ? 'border-red-600 text-red-600 bg-red-50'
-                      : recommendation.urgency === 'medium'
-                        ? 'border-orange-600 text-orange-600 bg-orange-50'
-                        : 'border-blue-600 text-blue-600 bg-blue-50',
-                  )}
-                >
-                  {recommendation.urgency.toUpperCase()} PRIORITY
-                </Badge>
-              </div>
-            </div>
-            <DialogDescription className="text-base leading-relaxed">
-              {recommendation.message}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            {/* Break Details */}
-            <Card className={cn('border-2', getUrgencyColor(recommendation.urgency))}>
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Recommended Duration</span>
-                  <Badge variant="outline">
-                    <Clock className="h-3 w-3 mr-1" />
-                    {recommendation.estimatedBreakDuration} minutes
-                  </Badge>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Can Postpone</span>
-                  <span
-                    className={cn(
-                      'text-sm',
-                      recommendation.canPostpone ? 'text-green-600' : 'text-gray-400',
-                    )}
-                  >
-                    {recommendation.canPostpone ? 'Yes' : 'No'}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Can Skip</span>
-                  <span
-                    className={cn(
-                      'text-sm',
-                      recommendation.canSkip ? 'text-green-600' : 'text-gray-400',
-                    )}
-                  >
-                    {recommendation.canSkip ? 'Yes' : 'No'}
-                  </span>
-                </div>
-
-                <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-                  <strong>Reason:</strong> {recommendation.reason}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Session Progress Context */}
-            {sessionProgress && (
-              <Card className="border border-gray-200">
-                <CardContent className="p-4 space-y-2">
-                  <div className="text-sm font-medium">Session Progress</div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Objectives</span>
-                    <span>
-                      {sessionProgress.objectivesCompleted}/{sessionProgress.totalObjectives}
-                    </span>
-                  </div>
-                  <Progress
-                    value={
-                      (sessionProgress.objectivesCompleted / sessionProgress.totalObjectives) * 100
-                    }
-                    className="h-2"
-                  />
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Duration</span>
-                    <span>{sessionProgress.sessionDuration} minutes</span>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Break Duration Selection */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Break Duration</Label>
-              <div className="grid grid-cols-4 gap-2">
-                {[3, 5, 10, 15].map((duration) => (
-                  <Button
-                    key={duration}
-                    variant={selectedDuration === duration ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setSelectedDuration(duration)}
-                    className="h-8"
-                  >
-                    {duration}m
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* Postpone Options */}
-            {recommendation.canPostpone && (
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Postpone Break By</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[5, 10, 15].map((minutes) => (
-                    <Button
-                      key={minutes}
-                      variant={postponeMinutes === minutes ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setPostponeMinutes(minutes)}
-                      className="h-8"
+      <AnimatePresence>
+        {open && (
+          <Dialog open={open} onOpenChange={() => {}}>
+            <DialogContent className="max-w-md" style={{ borderRadius: borderRadius.xl }}>
+              <motion.div
+                variants={modalVariants.content}
+                initial="hidden"
+                animate="show"
+                exit="exit"
+              >
+                <DialogHeader className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ type: 'spring', stiffness: 200, damping: 15 }}
                     >
-                      {minutes}m
+                      {getBreakIcon(recommendation.type)}
+                    </motion.div>
+                    <div className="flex-1">
+                      <DialogTitle className={typography.heading.h2}>
+                        {getBreakTitle(recommendation.type)}
+                      </DialogTitle>
+                      <Badge
+                        variant="outline"
+                        className="mt-1"
+                        style={{
+                          ...urgencyStyle,
+                          borderRadius: borderRadius.md,
+                        }}
+                      >
+                        <span className={`${typography.body.tiny} font-semibold uppercase`}>
+                          {recommendation.urgency} PRIORITY
+                        </span>
+                      </Badge>
+                    </div>
+                  </div>
+                  <DialogDescription className={`${typography.body.base} leading-relaxed`}>
+                    {recommendation.message}
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-4">
+                  {/* Break Details */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <Card
+                      className="border-2"
+                      style={{
+                        ...urgencyStyle,
+                        borderRadius: borderRadius.lg,
+                      }}
+                    >
+                      <CardContent className="p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className={`${typography.body.small} font-medium`}>
+                            Recommended Duration
+                          </span>
+                          <Badge variant="outline" style={{ borderRadius: borderRadius.sm }}>
+                            <Clock className="h-3 w-3 mr-1" />
+                            {recommendation.estimatedBreakDuration} minutes
+                          </Badge>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className={`${typography.body.small} font-medium`}>
+                            Can Postpone
+                          </span>
+                          <span
+                            className={`${typography.body.small}`}
+                            style={{
+                              color: recommendation.canPostpone ? colors.success : colors.muted,
+                            }}
+                          >
+                            {recommendation.canPostpone ? 'Yes' : 'No'}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className={`${typography.body.small} font-medium`}>Can Skip</span>
+                          <span
+                            className={`${typography.body.small}`}
+                            style={{
+                              color: recommendation.canSkip ? colors.success : colors.muted,
+                            }}
+                          >
+                            {recommendation.canSkip ? 'Yes' : 'No'}
+                          </span>
+                        </div>
+
+                        <div
+                          className={`${typography.body.tiny} p-2`}
+                          style={{
+                            backgroundColor: colors.muted,
+                            borderRadius: borderRadius.sm,
+                          }}
+                        >
+                          <strong>Reason:</strong> {recommendation.reason}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+
+                  {/* Session Progress Context */}
+                  {sessionProgress && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15 }}
+                    >
+                      <Card style={{ borderRadius: borderRadius.lg }}>
+                        <CardContent className="p-4 space-y-2">
+                          <div className={`${typography.body.small} font-medium`}>
+                            Session Progress
+                          </div>
+                          <div className={`flex items-center justify-between ${typography.body.small}`}>
+                            <span>Objectives</span>
+                            <span>
+                              {sessionProgress.objectivesCompleted}/{sessionProgress.totalObjectives}
+                            </span>
+                          </div>
+                          <motion.div
+                            initial="initial"
+                            animate="animate"
+                            custom={
+                              (sessionProgress.objectivesCompleted / sessionProgress.totalObjectives) *
+                              100
+                            }
+                            variants={progressVariants}
+                          >
+                            <Progress
+                              value={
+                                (sessionProgress.objectivesCompleted /
+                                  sessionProgress.totalObjectives) *
+                                100
+                              }
+                              className="h-2"
+                            />
+                          </motion.div>
+                          <div className={`flex items-center justify-between ${typography.body.small}`}>
+                            <span>Duration</span>
+                            <span>{sessionProgress.sessionDuration} minutes</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )}
+
+                  {/* Break Duration Selection */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="space-y-2"
+                  >
+                    <Label className={`${typography.body.small} font-medium`}>Break Duration</Label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[3, 5, 10, 15].map((duration) => (
+                        <motion.div
+                          key={duration}
+                          whileHover="hover"
+                          whileTap="tap"
+                          variants={buttonVariants}
+                        >
+                          <Button
+                            variant={selectedDuration === duration ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setSelectedDuration(duration)}
+                            className="h-8"
+                            style={{ borderRadius: borderRadius.md }}
+                          >
+                            {duration}m
+                          </Button>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+
+                  {/* Postpone Options */}
+                  {recommendation.canPostpone && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.25 }}
+                      className="space-y-2"
+                    >
+                      <Label className={`${typography.body.small} font-medium`}>
+                        Postpone Break By
+                      </Label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {[5, 10, 15].map((minutes) => (
+                          <motion.div
+                            key={minutes}
+                            whileHover="hover"
+                            whileTap="tap"
+                            variants={buttonVariants}
+                          >
+                            <Button
+                              variant={postponeMinutes === minutes ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setPostponeMinutes(minutes)}
+                              className="h-8"
+                              style={{ borderRadius: borderRadius.md }}
+                            >
+                              {minutes}m
+                            </Button>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Auto-break Settings */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="flex items-center justify-between p-3"
+                    style={{
+                      backgroundColor: colors.muted,
+                      borderRadius: borderRadius.lg,
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-4 w-4" style={{ color: colors.warning }} />
+                      <Label
+                        htmlFor="auto-break"
+                        className={`${typography.body.small} font-medium`}
+                      >
+                        Auto-break for high urgency
+                      </Label>
+                    </div>
+                    <Switch
+                      id="auto-break"
+                      checked={autoBreakEnabled}
+                      onCheckedChange={setAutoBreakEnabled}
+                    />
+                  </motion.div>
+
+                  {/* Countdown for urgent breaks */}
+                  {recommendation.urgency === 'high' && countdown > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="text-center p-3 border-2"
+                      style={{
+                        backgroundColor: 'oklch(0.6 0.20 30 / 0.1)',
+                        borderColor: colors.alert,
+                        borderRadius: borderRadius.lg,
+                      }}
+                    >
+                      <div
+                        className={`${typography.body.small} font-medium mb-1`}
+                        style={{ color: colors.alert }}
+                      >
+                        Auto-break in {countdown} seconds
+                      </div>
+                      <Progress value={((30 - countdown) / 30) * 100} className="h-2" />
+                    </motion.div>
+                  )}
+
+                  {/* Previous Break Effectiveness */}
+                  {breakEffectiveness && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                    >
+                      <Card
+                        className="border"
+                        style={{
+                          backgroundColor: 'oklch(0.7 0.15 145 / 0.1)',
+                          borderColor: colors.success,
+                          borderRadius: borderRadius.lg,
+                        }}
+                      >
+                        <CardContent className="p-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Brain className="h-4 w-4" style={{ color: colors.success }} />
+                            <span className={`${typography.body.small} font-medium`}>
+                              Last Break Effectiveness
+                            </span>
+                          </div>
+                          <div className={`${typography.body.tiny} space-y-1`}>
+                            <div className="flex justify-between">
+                              <span>Performance Recovery:</span>
+                              <span
+                                className="font-medium"
+                                style={{ color: colors.success }}
+                              >
+                                +{Math.round(breakEffectiveness.recoveryScore)}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Break Duration:</span>
+                              <span>{breakEffectiveness.breakDuration} minutes</span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )}
+                </div>
+
+                <DialogFooter className="flex gap-2">
+                  {/* Skip Button */}
+                  {recommendation.canSkip && (
+                    <motion.div
+                      className="flex-1"
+                      whileHover="hover"
+                      whileTap="tap"
+                      variants={buttonVariants}
+                    >
+                      <Button
+                        variant="outline"
+                        onClick={handleSkipBreak}
+                        className="w-full"
+                        style={{ borderRadius: borderRadius.md }}
+                      >
+                        <SkipForward className="h-4 w-4 mr-2" />
+                        Skip Break
+                      </Button>
+                    </motion.div>
+                  )}
+
+                  {/* Postpone Button */}
+                  {recommendation.canPostpone && (
+                    <motion.div
+                      className="flex-1"
+                      whileHover="hover"
+                      whileTap="tap"
+                      variants={buttonVariants}
+                    >
+                      <Button
+                        variant="outline"
+                        onClick={handlePostponeBreak}
+                        className="w-full"
+                        style={{ borderRadius: borderRadius.md }}
+                      >
+                        <Timer className="h-4 w-4 mr-2" />
+                        Postpone {postponeMinutes}m
+                      </Button>
+                    </motion.div>
+                  )}
+
+                  {/* Take Break Button */}
+                  <motion.div
+                    className="flex-1"
+                    whileHover="hover"
+                    whileTap="tap"
+                    variants={buttonVariants}
+                  >
+                    <Button
+                      onClick={handleTakeBreak}
+                      className="w-full"
+                      style={{
+                        backgroundColor:
+                          recommendation.urgency === 'high'
+                            ? colors.alert
+                            : recommendation.urgency === 'medium'
+                              ? colors.energy
+                              : colors.info,
+                        borderRadius: borderRadius.md,
+                      }}
+                    >
+                      <Coffee className="h-4 w-4 mr-2" />
+                      Take {selectedDuration}m Break
                     </Button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Auto-break Settings */}
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-yellow-600" />
-                <Label htmlFor="auto-break" className="text-sm font-medium">
-                  Auto-break for high urgency
-                </Label>
-              </div>
-              <Switch
-                id="auto-break"
-                checked={autoBreakEnabled}
-                onCheckedChange={setAutoBreakEnabled}
-              />
-            </div>
-
-            {/* Countdown for urgent breaks */}
-            {recommendation.urgency === 'high' && countdown > 0 && (
-              <div className="text-center p-3 bg-red-50 rounded-lg border border-red-200">
-                <div className="text-sm font-medium text-red-700 mb-1">
-                  Auto-break in {countdown} seconds
-                </div>
-                <Progress value={((30 - countdown) / 30) * 100} className="h-2" />
-              </div>
-            )}
-
-            {/* Previous Break Effectiveness */}
-            {breakEffectiveness && (
-              <Card className="border border-green-200 bg-green-50">
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Brain className="h-4 w-4 text-green-600" />
-                    <span className="text-sm font-medium">Last Break Effectiveness</span>
-                  </div>
-                  <div className="text-xs space-y-1">
-                    <div className="flex justify-between">
-                      <span>Performance Recovery:</span>
-                      <span className="font-medium text-green-600">
-                        +{Math.round(breakEffectiveness.recoveryScore)}%
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Break Duration:</span>
-                      <span>{breakEffectiveness.breakDuration} minutes</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          <DialogFooter className="flex gap-2">
-            {/* Skip Button */}
-            {recommendation.canSkip && (
-              <Button variant="outline" onClick={handleSkipBreak} className="flex-1">
-                <SkipForward className="h-4 w-4 mr-2" />
-                Skip Break
-              </Button>
-            )}
-
-            {/* Postpone Button */}
-            {recommendation.canPostpone && (
-              <Button variant="outline" onClick={handlePostponeBreak} className="flex-1">
-                <Timer className="h-4 w-4 mr-2" />
-                Postpone {postponeMinutes}m
-              </Button>
-            )}
-
-            {/* Take Break Button */}
-            <Button
-              onClick={handleTakeBreak}
-              className={cn(
-                'flex-1',
-                recommendation.urgency === 'high'
-                  ? 'bg-red-600 hover:bg-red-700'
-                  : recommendation.urgency === 'medium'
-                    ? 'bg-orange-600 hover:bg-orange-700'
-                    : 'bg-blue-600 hover:bg-blue-700',
-              )}
-            >
-              <Coffee className="h-4 w-4 mr-2" />
-              Take {selectedDuration}m Break
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                  </motion.div>
+                </DialogFooter>
+              </motion.div>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
 
       {/* Auto-break countdown toast for urgent breaks */}
-      {recommendation.urgency === 'high' &&
-        countdown > 0 &&
-        countdown <= 10 &&
-        autoBreakEnabled && (
-          <div className="fixed top-4 right-4 z-50 bg-red-600 text-white p-4 rounded-lg shadow-lg max-w-sm">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="h-5 w-5" />
-              <div>
-                <div className="font-medium">Urgent Break Recommended</div>
-                <div className="text-sm opacity-90">Auto-break in {countdown} seconds</div>
+      <AnimatePresence>
+        {recommendation.urgency === 'high' &&
+          countdown > 0 &&
+          countdown <= 10 &&
+          autoBreakEnabled && (
+            <motion.div
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 100 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="fixed top-4 right-4 z-50 text-white p-4 shadow-lg max-w-sm"
+              style={{
+                backgroundColor: colors.alert,
+                borderRadius: borderRadius.lg,
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="h-5 w-5" />
+                <div>
+                  <div className={`${typography.body.base} font-medium`}>
+                    Urgent Break Recommended
+                  </div>
+                  <div className={`${typography.body.small} opacity-90`}>
+                    Auto-break in {countdown} seconds
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => setCountdown(0)}
+                  className="ml-auto"
+                  style={{ borderRadius: borderRadius.sm }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setCountdown(0)}
-                className="ml-auto"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+      </AnimatePresence>
     </>
   )
 }
 
-// Break effectiveness tracker utility
+// Break effectiveness tracker utility (unchanged)
 export class BreakEffectivenessTracker {
   private static instance: BreakEffectivenessTracker
   private breakHistory: Map<string, BreakEffectiveness[]> = new Map()

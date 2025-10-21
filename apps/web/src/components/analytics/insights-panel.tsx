@@ -3,6 +3,7 @@
  * Story 2.6 Task 11.3
  *
  * Displays mission insights on the dashboard with expandable details
+ * Epic 5 UI Transformation: Premium design with shadcn/ui components
  */
 
 'use client'
@@ -19,6 +20,10 @@ import {
   ChevronUp,
   Sparkles,
 } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 
 interface Insight {
   id: string
@@ -119,139 +124,135 @@ export function InsightsPanel() {
 
   if (loading) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-[oklch(0.922_0_0)] rounded w-1/3" />
-          <div className="h-4 bg-[oklch(0.922_0_0)] rounded w-full" />
-          <div className="h-4 bg-[oklch(0.922_0_0)] rounded w-2/3" />
-        </div>
-      </div>
+      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <CardContent className="p-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-6 bg-muted rounded w-1/3" />
+            <div className="h-4 bg-muted rounded w-full" />
+            <div className="h-4 bg-muted rounded w-2/3" />
+          </div>
+        </CardContent>
+      </Card>
     )
   }
 
   if (insights.length === 0) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-2">
-            <Sparkles className="size-5 text-[oklch(0.7_0.15_230)]" />
+      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-2">
+              <Sparkles className="size-5 text-[oklch(0.7_0.15_230)]" />
+            </div>
+            <div>
+              <CardTitle className="text-lg font-heading">Mission Insights</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Last updated: {lastRefresh.toLocaleTimeString()}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)]">
-              Mission Insights
-            </h3>
-            <p className="text-xs text-[oklch(0.556_0_0)]">
-              Last updated: {lastRefresh.toLocaleTimeString()}
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <p className="text-sm text-muted-foreground">No insights available yet</p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Complete more missions to unlock personalized insights!
             </p>
           </div>
-        </div>
-        <div className="text-center py-8">
-          <p className="text-sm text-[oklch(0.556_0_0)]">No insights available yet</p>
-          <p className="text-xs text-[oklch(0.556_0_0)] mt-2">
-            Complete more missions to unlock personalized insights!
-          </p>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     )
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-2">
-            <Sparkles className="size-5 text-[oklch(0.7_0.15_230)]" />
-          </div>
-          <div>
-            <h3 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)]">
-              Mission Insights
-            </h3>
-            <p className="text-xs text-[oklch(0.556_0_0)]">
-              Last updated: {lastRefresh.toLocaleTimeString()}
-            </p>
-          </div>
-        </div>
-        <button
-          onClick={fetchInsights}
-          className="text-sm text-[oklch(0.7_0.15_230)] hover:text-[oklch(0.65_0.15_230)] font-medium transition-colors"
-        >
-          Refresh
-        </button>
-      </div>
-
-      {/* Insights List */}
-      <div className="space-y-3">
-        {insights.map((insight) => {
-          const Icon = getIcon(insight.type)
-          const sentimentColor = getSentimentColor(insight.sentiment)
-          const sentimentBg = getSentimentBg(insight.sentiment)
-          const isExpanded = expandedId === insight.id
-
-          return (
-            <div
-              key={insight.id}
-              className="rounded-xl border border-white/50 transition-all overflow-hidden"
-              style={{
-                backgroundColor: sentimentBg,
-                borderColor: isExpanded ? sentimentColor : 'oklch(0.922 0 0)',
-              }}
-            >
-              {/* Main Content */}
-              <div className="p-4">
-                <div className="flex items-start gap-3">
-                  <div
-                    className="flex-shrink-0 p-2 rounded-lg"
-                    style={{
-                      backgroundColor: `${sentimentColor}/0.15`,
-                    }}
-                  >
-                    <Icon className="size-5" style={{ color: sentimentColor }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-[oklch(0.145_0_0)] mb-1">
-                      {insight.headline}
-                    </h4>
-                    {isExpanded && (
-                      <p className="text-sm text-[oklch(0.556_0_0)] leading-relaxed mb-3">
-                        {insight.detail}
-                      </p>
-                    )}
-                    {insight.action && isExpanded && (
-                      <a
-                        href={insight.actionUrl || '#'}
-                        className="inline-flex items-center gap-1 text-sm font-medium hover:underline transition-colors"
-                        style={{ color: sentimentColor }}
-                      >
-                        {insight.action} →
-                      </a>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => toggleExpand(insight.id)}
-                    className="flex-shrink-0 p-1 text-[oklch(0.556_0_0)] hover:text-[oklch(0.145_0_0)] transition-colors"
-                    aria-label={isExpanded ? 'Collapse' : 'Expand'}
-                  >
-                    {isExpanded ? (
-                      <ChevronUp className="size-4" />
-                    ) : (
-                      <ChevronDown className="size-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
+    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-2">
+              <Sparkles className="size-5 text-[oklch(0.7_0.15_230)]" />
             </div>
-          )
-        })}
-      </div>
+            <div>
+              <CardTitle className="text-lg font-heading">Mission Insights</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Last updated: {lastRefresh.toLocaleTimeString()}
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={fetchInsights}
+            className="text-[oklch(0.7_0.15_230)] hover:text-[oklch(0.65_0.15_230)]"
+          >
+            Refresh
+          </Button>
+        </div>
+      </CardHeader>
 
-      {/* Footer */}
-      <div className="mt-6 pt-6 border-t border-[oklch(0.922_0_0)]">
-        <p className="text-xs text-[oklch(0.556_0_0)] leading-relaxed">
-          Insights are generated daily based on your recent mission activity. Click any insight to
-          see more details and recommended actions.
-        </p>
-      </div>
-    </div>
+      <CardContent>
+        <Accordion type="single" collapsible className="space-y-3">
+          {insights.map((insight) => {
+            const Icon = getIcon(insight.type)
+            const sentimentColor = getSentimentColor(insight.sentiment)
+
+            return (
+              <AccordionItem
+                key={insight.id}
+                value={insight.id}
+                className="rounded-xl border border-border bg-card transition-all hover:border-[oklch(0.7_0.15_230)]/30"
+              >
+                <AccordionTrigger className="p-4 hover:no-underline">
+                  <div className="flex items-start gap-3 flex-1 text-left">
+                    <div
+                      className="flex-shrink-0 p-2 rounded-lg"
+                      style={{ backgroundColor: `${sentimentColor}/0.1` }}
+                    >
+                      <Icon className="size-5" style={{ color: sentimentColor }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="text-sm font-semibold text-foreground">{insight.headline}</h4>
+                        <Badge
+                          variant="secondary"
+                          className="text-xs"
+                          style={{
+                            backgroundColor: `${sentimentColor}/0.1`,
+                            color: sentimentColor,
+                          }}
+                        >
+                          {insight.priority}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-3 ml-14">
+                    {insight.detail}
+                  </p>
+                  {insight.action && (
+                    <a
+                      href={insight.actionUrl || '#'}
+                      className="inline-flex items-center gap-1 text-sm font-medium hover:underline transition-colors ml-14"
+                      style={{ color: sentimentColor }}
+                    >
+                      {insight.action} →
+                    </a>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+            )
+          })}
+        </Accordion>
+
+        <div className="mt-6 pt-6 border-t border-border">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Insights are generated daily based on your recent mission activity. Click any insight to
+            see more details and recommended actions.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

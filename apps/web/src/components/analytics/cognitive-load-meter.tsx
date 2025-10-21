@@ -98,12 +98,12 @@ export function CognitiveLoadMeter({
   const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus
 
   return (
-    <Card className={`shadow-sm hover:shadow-md transition-shadow ${className}`}>
+    <Card className={`bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all ${className}`}>
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
           <h3 className="font-heading font-semibold text-foreground text-[16px]">Cognitive Load</h3>
-          <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
-            <TrendIcon className="size-4 text-info" />
+          <div className="flex items-center gap-2 text-[13px] text-muted-foreground font-medium">
+            <TrendIcon className="size-4" style={{ color: 'oklch(0.65 0.18 240)' }} />
             <span className="capitalize">{trend}</span>
           </div>
         </div>

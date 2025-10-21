@@ -31,10 +31,9 @@ export function PriorityExplanationPanel({
   return (
     <Card
       className={cn(
-        'bg-white/80 backdrop-blur-md border-white/30',
-        'shadow-[0_8px_32px_rgba(31,38,135,0.1)]',
-        'rounded-2xl p-6',
-        'transition-all duration-200 ease-in-out',
+        'bg-background border shadow-sm',
+        'rounded-lg p-4',
+        'hover:shadow-md transition-shadow duration-300',
         className,
       )}
     >
@@ -45,19 +44,19 @@ export function PriorityExplanationPanel({
       >
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-3">
-            <Info className="w-5 h-5 text-gray-400" />
-            <h3 className="text-lg font-semibold text-gray-900">Why this priority?</h3>
+            <Info className="w-5 h-5 text-muted-foreground" />
+            <h3 className="text-[16px] font-heading font-semibold">Why this priority?</h3>
             <PriorityBadge score={explanation.priorityScore} showScore />
           </div>
 
-          <p className="text-sm text-gray-600 leading-relaxed">{explanation.reasoning}</p>
+          <p className="text-[13px] text-muted-foreground leading-relaxed">{explanation.reasoning}</p>
         </div>
 
         <div className="flex-shrink-0">
           {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            <ChevronUp className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors duration-150" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            <ChevronDown className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors duration-150" />
           )}
         </div>
       </button>
@@ -67,7 +66,7 @@ export function PriorityExplanationPanel({
         <div className="mt-6 space-y-6 animate-in slide-in-from-top-2 duration-200">
           {/* Factor Breakdown */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+            <h4 className="text-[11px] font-semibold text-foreground uppercase tracking-wide">
               Factor Contributions
             </h4>
 
@@ -77,18 +76,18 @@ export function PriorityExplanationPanel({
                 .map((factor, index) => (
                   <div
                     key={factor.name}
-                    className="space-y-2 p-4 rounded-xl bg-gray-50/50 border border-gray-100"
+                    className="space-y-2 p-4 rounded-lg bg-secondary/30 border border-border"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-gray-500">#{index + 1}</span>
-                        <span className="text-sm font-semibold text-gray-900">{factor.name}</span>
+                        <span className="text-[11px] font-medium text-muted-foreground">#{index + 1}</span>
+                        <span className="text-[13px] font-semibold">{factor.name}</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-sm text-gray-600">
+                        <span className="text-[13px] text-muted-foreground">
                           {(factor.contribution * 100).toFixed(0)}%
                         </span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-[11px] text-muted-foreground/60">
                           ({(factor.weight * 100).toFixed(0)}% weight ×{' '}
                           {(factor.value * 100).toFixed(0)}%)
                         </span>
@@ -97,7 +96,7 @@ export function PriorityExplanationPanel({
 
                     <Progress value={factor.contribution * 100} className="h-2" />
 
-                    <p className="text-xs text-gray-600 leading-relaxed">{factor.explanation}</p>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">{factor.explanation}</p>
                   </div>
                 ))}
             </div>
@@ -106,7 +105,7 @@ export function PriorityExplanationPanel({
           {/* Recommendations */}
           {explanation.recommendations.length > 0 && (
             <div className="space-y-3">
-              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              <h4 className="text-[11px] font-semibold text-foreground uppercase tracking-wide">
                 Recommendations
               </h4>
 
@@ -114,12 +113,12 @@ export function PriorityExplanationPanel({
                 {explanation.recommendations.map((rec, index) => (
                   <div
                     key={index}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-blue-50/50 border border-blue-100"
+                    className="flex items-start gap-3 p-3 rounded-lg bg-info/10 border border-info/30"
                   >
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold mt-0.5">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-info text-info-foreground flex items-center justify-center text-[11px] font-semibold mt-0.5">
                       {index + 1}
                     </div>
-                    <p className="text-sm text-gray-700 leading-relaxed flex-1">{rec}</p>
+                    <p className="text-[13px] leading-relaxed flex-1">{rec}</p>
                   </div>
                 ))}
               </div>
@@ -146,21 +145,21 @@ export function PriorityExplanationCompact({
   return (
     <div
       className={cn(
-        'space-y-2 p-4 rounded-xl',
-        'bg-white/60 backdrop-blur-sm border border-gray-100',
+        'space-y-2 p-4 rounded-lg',
+        'bg-secondary/30 border border-border',
         className,
       )}
     >
       <div className="flex items-center gap-2">
         <PriorityBadge score={explanation.priorityScore} />
-        <span className="text-xs text-gray-500">Top factors:</span>
+        <span className="text-[11px] text-muted-foreground">Top factors:</span>
       </div>
 
       <div className="space-y-1">
         {topFactors.map((factor) => (
-          <div key={factor.name} className="flex items-center gap-2 text-xs">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-            <span className="text-gray-700">
+          <div key={factor.name} className="flex items-center gap-2 text-[11px]">
+            <div className="w-1.5 h-1.5 rounded-full bg-clinical" />
+            <span className="text-foreground">
               {factor.name}: {(factor.contribution * 100).toFixed(0)}%
             </span>
           </div>

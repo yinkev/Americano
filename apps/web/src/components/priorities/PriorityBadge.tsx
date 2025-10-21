@@ -64,11 +64,11 @@ export function PriorityBadge({ score, showScore = false, className }: PriorityB
     <Badge
       variant="outline"
       className={cn(
-        'rounded-full px-3 py-1 text-sm font-medium',
-        'backdrop-blur-md border',
+        'rounded-full px-3 py-1 text-[13px] font-medium',
+        'border',
         config.bgColor,
         config.color,
-        'transition-all duration-200 ease-in-out',
+        'transition-all duration-150',
         'hover:scale-105',
         className,
       )}
@@ -76,7 +76,7 @@ export function PriorityBadge({ score, showScore = false, className }: PriorityB
     >
       {config.label}
       {showScore && (
-        <span className="ml-1.5 text-xs opacity-75">({(score * 100).toFixed(0)}%)</span>
+        <span className="ml-1.5 text-[11px] opacity-75">({(score * 100).toFixed(0)}%)</span>
       )}
     </Badge>
   )

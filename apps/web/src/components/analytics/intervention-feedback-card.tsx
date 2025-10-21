@@ -4,6 +4,7 @@
  *
  * Collects user feedback on intervention effectiveness
  * Displays after intervention is completed with 1-5 star rating
+ * Epic 5 UI Transformation: Already using shadcn/ui components
  */
 
 'use client'

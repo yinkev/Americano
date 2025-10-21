@@ -82,18 +82,18 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30">
-        <div className="text-sm text-[oklch(0.556_0_0)]">Loading completion data...</div>
+      <div className="flex items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30">
+        <div className="text-[13px] text-muted-foreground">Loading completion data...</div>
       </div>
     )
   }
 
   if (data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-        <Calendar className="size-12 text-[oklch(0.556_0_0)] mb-4" />
-        <div className="text-sm text-[oklch(0.556_0_0)]">No mission data available yet.</div>
-        <p className="text-xs text-[oklch(0.556_0_0)] mt-2">
+      <div className="flex flex-col items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
+        <Calendar className="size-12 text-muted-foreground mb-4" />
+        <div className="text-[13px] text-muted-foreground">No mission data available yet.</div>
+        <p className="text-[11px] text-muted-foreground mt-2">
           Complete some missions to see your progress!
         </p>
       </div>
@@ -101,14 +101,14 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
+    <div className="bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all border border-white/30 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)]">
+          <h3 className="text-[18px] font-heading font-semibold text-foreground">
             Mission Completion Trends
           </h3>
-          <p className="text-sm text-[oklch(0.556_0_0)] mt-1">
+          <p className="text-[13px] text-muted-foreground mt-1">
             Average: {avgCompletionRate}% completion rate
           </p>
         </div>

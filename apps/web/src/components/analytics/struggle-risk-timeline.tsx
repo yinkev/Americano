@@ -1,9 +1,13 @@
 /**
  * StruggleRiskTimeline Component
  * Story 5.2 Task 10 - UI Section 4
+ * Wave 3: Enhanced with animations and design tokens
  *
  * Displays predicted struggle periods on a horizontal timeline
  * Integrates with upcoming missions/exams with 7-day lookahead
+ *
+ * Design: OKLCH colors, glassmorphism, NO gradients (per CLAUDE.md)
+ * Animations: Stagger animations for timeline items
  */
 
 'use client'
@@ -12,6 +16,7 @@ import { format, addDays, isAfter, isBefore, isWithinInterval } from 'date-fns'
 import { AlertTriangle, Calendar, BookOpen, FileCheck2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { typography, colors } from '@/lib/design-tokens'
 
 interface TimelineEvent {
   id: string
@@ -86,12 +91,12 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
 
   const getEventColor = (event: TimelineEvent) => {
     if (event.type === 'prediction') {
-      if (event.status === 'high') return 'oklch(0.6 0.15 25)'
-      if (event.status === 'medium') return 'oklch(0.8 0.15 85)'
-      return 'oklch(0.7 0.12 145)'
+      if (event.status === 'high') return colors.alert
+      if (event.status === 'medium') return colors.warning
+      return colors.success
     }
-    if (event.type === 'exam') return 'oklch(0.646 0.222 41.116)'
-    return 'oklch(0.7 0.15 230)'
+    if (event.type === 'exam') return colors.energy
+    return colors.clinical
   }
 
   const getEventIcon = (event: TimelineEvent) => {
@@ -101,16 +106,21 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)]">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <CardTitle className="font-heading text-lg mb-2">Upcoming Challenges</CardTitle>
-            <p className="text-sm text-muted-foreground">
+            <CardTitle className={`${typography.heading.h3} font-heading mb-2`}>
+              Upcoming Challenges
+            </CardTitle>
+            <p className={`${typography.body.small} text-muted-foreground`}>
               {daysAhead}-day lookahead of predicted struggles and important dates
             </p>
           </div>
-          <Badge variant="secondary" className="shrink-0">
+          <Badge
+            variant="secondary"
+            className="shrink-0 transition-all duration-200 hover:scale-105"
+          >
             {events.filter((e) => e.type === 'prediction').length} Predictions
           </Badge>
         </div>
@@ -120,8 +130,10 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
         {events.length === 0 ? (
           <div className="py-12 text-center">
             <Calendar className="size-12 mx-auto text-muted-foreground mb-3 opacity-50" />
-            <p className="text-sm font-medium text-foreground">No upcoming challenges</p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className={`${typography.body.small} font-medium text-foreground`}>
+              No upcoming challenges
+            </p>
+            <p className={`${typography.body.tiny} text-muted-foreground mt-1`}>
               Your schedule is clear for the next {daysAhead} days!
             </p>
           </div>
@@ -146,19 +158,35 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
                       {/* Day Marker */}
                       <div
                         className={`
-                          relative z-10 flex flex-col items-center justify-center size-16 rounded-full border-2 transition-all
+                          relative z-10 flex flex-col items-center justify-center size-16 rounded-full border-2 transition-all duration-300 hover:scale-110
                           ${
                             isToday
-                              ? 'bg-[oklch(0.7_0.15_230)] border-[oklch(0.7_0.15_230)] text-white shadow-lg'
+                              ? 'text-white shadow-lg'
                               : hasHighRisk
-                                ? 'bg-[oklch(0.6_0.15_25)]/10 border-[oklch(0.6_0.15_25)] text-[oklch(0.6_0.15_25)]'
+                                ? 'text-foreground'
                                 : hasEvents
-                                  ? 'bg-white/80 border-[oklch(0.7_0.15_230)] text-foreground'
+                                  ? 'bg-white/80 text-foreground'
                                   : 'bg-muted/30 border-muted text-muted-foreground'
                           }
                         `}
+                        style={{
+                          backgroundColor: isToday
+                            ? colors.clinical
+                            : hasHighRisk
+                              ? `color-mix(in oklch, ${colors.alert}, transparent 90%)`
+                              : undefined,
+                          borderColor: isToday
+                            ? colors.clinical
+                            : hasHighRisk
+                              ? colors.alert
+                              : hasEvents
+                                ? colors.clinical
+                                : undefined,
+                        }}
                       >
-                        <span className="text-xs font-semibold">{format(day, 'EEE')}</span>
+                        <span className={`${typography.body.tiny} font-semibold`}>
+                          {format(day, 'EEE')}
+                        </span>
                         <span className={`text-lg font-bold ${isToday ? 'text-white' : ''}`}>
                           {format(day, 'd')}
                         </span>
@@ -177,19 +205,23 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
                                 className="group relative flex items-center justify-center"
                               >
                                 <div
-                                  className="p-1.5 rounded-md transition-transform hover:scale-110 cursor-pointer"
-                                  style={{ backgroundColor: `${color}/0.15` }}
+                                  className="p-1.5 rounded-md transition-all duration-200 hover:scale-110 cursor-pointer hover:shadow-md"
+                                  style={{
+                                    backgroundColor: `color-mix(in oklch, ${color}, transparent 85%)`,
+                                  }}
                                   title={event.title}
                                 >
                                   <Icon className="size-3 sm:size-4" style={{ color }} />
                                 </div>
 
                                 {/* Tooltip on hover - hidden on mobile */}
-                                <div className="hidden sm:block absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
-                                  <div className="px-3 py-2 rounded-lg bg-foreground/90 backdrop-blur-sm text-white text-xs whitespace-nowrap shadow-lg">
-                                    <p className="font-semibold">{event.title}</p>
+                                <div className="hidden sm:block absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20">
+                                  <div className="px-3 py-2 rounded-lg bg-foreground/90 backdrop-blur-sm text-white shadow-lg">
+                                    <p className={`${typography.body.tiny} font-semibold`}>
+                                      {event.title}
+                                    </p>
                                     {event.probability && (
-                                      <p className="text-white/80 mt-0.5">
+                                      <p className={`${typography.body.tiny} text-white/80 mt-0.5`}>
                                         {(event.probability * 100).toFixed(0)}% probability
                                       </p>
                                     )}
@@ -212,29 +244,42 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
 
             {/* Event Legend */}
             <div className="flex flex-wrap gap-4 pt-4 border-t border-border">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded bg-[oklch(0.6_0.15_25)]/15">
-                  <AlertTriangle className="size-4 text-[oklch(0.6_0.15_25)]" />
+              <div className="flex items-center gap-2 transition-all duration-200 hover:scale-105">
+                <div
+                  className="p-1.5 rounded"
+                  style={{ backgroundColor: `color-mix(in oklch, ${colors.alert}, transparent 85%)` }}
+                >
+                  <AlertTriangle className="size-4" style={{ color: colors.alert }} />
                 </div>
-                <span className="text-xs text-muted-foreground">High Risk Prediction</span>
+                <span className={`${typography.body.tiny} text-muted-foreground`}>
+                  High Risk Prediction
+                </span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded bg-[oklch(0.7_0.15_230)]/15">
-                  <BookOpen className="size-4 text-[oklch(0.7_0.15_230)]" />
+              <div className="flex items-center gap-2 transition-all duration-200 hover:scale-105">
+                <div
+                  className="p-1.5 rounded"
+                  style={{ backgroundColor: `color-mix(in oklch, ${colors.clinical}, transparent 85%)` }}
+                >
+                  <BookOpen className="size-4" style={{ color: colors.clinical }} />
                 </div>
-                <span className="text-xs text-muted-foreground">Scheduled Mission</span>
+                <span className={`${typography.body.tiny} text-muted-foreground`}>
+                  Scheduled Mission
+                </span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded bg-[oklch(0.646_0.222_41.116)]/15">
-                  <FileCheck2 className="size-4 text-[oklch(0.646_0.222_41.116)]" />
+              <div className="flex items-center gap-2 transition-all duration-200 hover:scale-105">
+                <div
+                  className="p-1.5 rounded"
+                  style={{ backgroundColor: `color-mix(in oklch, ${colors.energy}, transparent 85%)` }}
+                >
+                  <FileCheck2 className="size-4" style={{ color: colors.energy }} />
                 </div>
-                <span className="text-xs text-muted-foreground">Upcoming Exam</span>
+                <span className={`${typography.body.tiny} text-muted-foreground`}>Upcoming Exam</span>
               </div>
             </div>
 
             {/* Mobile Event List (visible on small screens) */}
             <div className="sm:hidden space-y-2 pt-4 border-t border-border">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              <p className={`${typography.body.tiny} font-semibold text-muted-foreground uppercase tracking-wide`}>
                 Event Details
               </p>
               {events.map((event) => {
@@ -244,14 +289,19 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
                 return (
                   <div
                     key={event.id}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-muted/30"
+                    className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 transition-all duration-200 hover:bg-muted/50 hover:scale-[1.01]"
                   >
-                    <div className="p-2 rounded-lg shrink-0" style={{ backgroundColor: `${color}/0.15` }}>
+                    <div
+                      className="p-2 rounded-lg shrink-0"
+                      style={{ backgroundColor: `color-mix(in oklch, ${color}, transparent 85%)` }}
+                    >
                       <Icon className="size-4" style={{ color }} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground">{event.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className={`${typography.body.small} font-semibold text-foreground`}>
+                        {event.title}
+                      </p>
+                      <p className={`${typography.body.tiny} text-muted-foreground mt-0.5`}>
                         {format(new Date(event.date), 'MMM d, yyyy')}
                         {event.probability &&
                           ` • ${(event.probability * 100).toFixed(0)}% probability`}

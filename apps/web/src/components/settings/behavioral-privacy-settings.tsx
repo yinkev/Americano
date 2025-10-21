@@ -148,24 +148,24 @@ export function BehavioralPrivacySettings() {
 
   return (
     <>
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold text-gray-800">
+      <Card className="bg-white border shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg">
+        <CardHeader className="p-4">
+          <CardTitle className="text-[20px] font-heading font-semibold tracking-tight">
             Behavioral Pattern Analysis
           </CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardDescription className="text-[13px] text-muted-foreground">
             Pattern analysis helps optimize your study experience by identifying what works best for
             you.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="p-4 space-y-6">
           {/* Toggle 1: Enable behavioral pattern analysis */}
-          <div className="flex items-center justify-between space-x-4">
+          <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
             <div className="flex-1 space-y-1">
-              <label htmlFor="behavioral-analysis" className="text-sm font-medium text-gray-800">
+              <label htmlFor="behavioral-analysis" className="text-[13px] font-medium cursor-pointer">
                 Enable behavioral pattern analysis
               </label>
-              <p className="text-sm text-gray-600">
+              <p className="text-[11px] text-muted-foreground">
                 Analyze your study patterns to provide personalized recommendations
               </p>
             </div>
@@ -176,17 +176,16 @@ export function BehavioralPrivacySettings() {
                 updatePrivacySetting('behavioralAnalysisEnabled', checked)
               }
               disabled={loading}
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center"
             />
           </div>
 
           {/* Toggle 2: Enable learning style profiling */}
-          <div className="flex items-center justify-between space-x-4">
+          <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
             <div className="flex-1 space-y-1">
-              <label htmlFor="learning-style" className="text-sm font-medium text-gray-800">
+              <label htmlFor="learning-style" className="text-[13px] font-medium cursor-pointer">
                 Enable learning style profiling
               </label>
-              <p className="text-sm text-gray-600">
+              <p className="text-[11px] text-muted-foreground">
                 Identify your VARK learning style (Visual, Auditory, Kinesthetic, Reading/Writing)
               </p>
             </div>
@@ -197,18 +196,17 @@ export function BehavioralPrivacySettings() {
                 updatePrivacySetting('learningStyleProfilingEnabled', checked)
               }
               disabled={loading}
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center"
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-4 border-t border-gray-200 space-y-3">
+          <div className="pt-4 border-t space-y-3">
             {/* Export Button */}
             <Button
               onClick={handleExportPatterns}
               disabled={exporting}
               variant="outline"
-              className="w-full border-gray-300 hover:bg-gray-50 rounded-lg transition-all duration-200 min-h-[44px]"
+              className="w-full text-[13px] hover:scale-[1.02] active:scale-[0.98] transition-transform duration-150"
             >
               {exporting ? 'Exporting...' : 'Export My Behavioral Patterns'}
             </Button>
@@ -218,7 +216,7 @@ export function BehavioralPrivacySettings() {
               onClick={() => setShowDeleteDialog(true)}
               disabled={deleting}
               variant="destructive"
-              className="w-full bg-rose-500 hover:bg-rose-600 shadow-md hover:shadow-lg rounded-lg transition-all duration-200 min-h-[44px]"
+              className="w-full text-[13px] hover:scale-[1.02] active:scale-[0.98] transition-transform duration-150"
             >
               Delete All Behavioral Patterns
             </Button>
@@ -228,27 +226,24 @@ export function BehavioralPrivacySettings() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="bg-white/95 backdrop-blur-md">
+        <AlertDialogContent className="bg-white border shadow-lg">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl font-semibold text-gray-800">
+            <AlertDialogTitle className="text-[16px] font-semibold">
               Delete All Behavioral Data?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-600">
+            <AlertDialogDescription className="text-[13px]">
               This will permanently delete all detected patterns, insights, and your learning
               profile. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              disabled={deleting}
-              className="border-gray-300 hover:bg-gray-50 rounded-lg transition-all duration-200 min-h-[44px]"
-            >
+            <AlertDialogCancel disabled={deleting} className="text-[13px]">
               Keep My Data
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAllPatterns}
               disabled={deleting}
-              className="bg-rose-500 hover:bg-rose-600 text-white shadow-md hover:shadow-lg rounded-lg transition-all duration-200 min-h-[44px]"
+              className="text-[13px]"
             >
               {deleting ? 'Deleting...' : 'Delete Everything'}
             </AlertDialogAction>

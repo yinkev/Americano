@@ -1,5 +1,12 @@
 /**
  * LearningArticleReader Component
+ * Story 5.6: Behavioral Insights Dashboard - Task 6 (Learning Science Education)
+ *
+ * Epic 5 UI Transformation:
+ * - OKLCH colors for category badges and reading indicators (no gradients)
+ * - Design tokens from /lib/design-tokens.ts
+ * - Typography system (font-heading, precise text sizes)
+ * - Glassmorphism effects (bg-white/80 backdrop-blur-md)
  *
  * Displays learning science articles with personalized content.
  * Features:
@@ -8,8 +15,6 @@
  * - Personalized markdown content rendering
  * - Expandable sources section
  * - Related patterns chips
- *
- * Story 5.6: Behavioral Insights Dashboard - Task 6 (Learning Science Education)
  */
 
 'use client'
@@ -25,6 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { AlertCircle, BookOpen, ChevronDown, ChevronUp, Clock } from 'lucide-react'
+import { typography, colors } from '@/lib/design-tokens'
 
 type ArticleCategory =
   | 'MEMORY'
@@ -156,11 +162,14 @@ export function LearningArticleReader({
   // Error state
   if (error) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-red-200">
+      <Card
+        className="bg-white/80 backdrop-blur-md shadow-sm border"
+        style={{ borderColor: colors.alert }}
+      >
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Error Loading Article</h3>
-          <p className="text-muted-foreground text-center">{error}</p>
+          <AlertCircle className="size-12 mb-4" style={{ color: colors.alert }} />
+          <h3 className={`${typography.heading.h3} mb-2`}>Error Loading Article</h3>
+          <p className={`${typography.body.base} text-muted-foreground text-center`}>{error}</p>
         </CardContent>
       </Card>
     )
@@ -169,17 +178,17 @@ export function LearningArticleReader({
   // Loading state
   if (isLoading || isLoadingProp) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md animate-pulse">
+      <Card className="bg-white/80 backdrop-blur-md shadow-sm animate-pulse">
         <CardHeader>
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-8 rounded w-1/4 mb-4" style={{ backgroundColor: 'oklch(0.9 0.02 230)' }} />
+          <div className="h-6 rounded w-1/3 mb-2" style={{ backgroundColor: 'oklch(0.91 0.02 230)' }} />
+          <div className="h-4 rounded w-1/2" style={{ backgroundColor: 'oklch(0.92 0.02 230)' }} />
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <div className="h-4 bg-gray-200 rounded w-full"></div>
-            <div className="h-4 bg-gray-200 rounded w-full"></div>
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 rounded w-full" style={{ backgroundColor: 'oklch(0.92 0.02 230)' }} />
+            <div className="h-4 rounded w-full" style={{ backgroundColor: 'oklch(0.93 0.02 230)' }} />
+            <div className="h-4 rounded w-3/4" style={{ backgroundColor: 'oklch(0.94 0.02 230)' }} />
           </div>
         </CardContent>
       </Card>
@@ -194,12 +203,12 @@ export function LearningArticleReader({
   const renderedContent = renderMarkdown(article.personalizedContent || article.content)
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md">
+    <Card className="bg-white/80 backdrop-blur-md shadow-sm">
       <CardHeader>
         <div className="space-y-4">
           {/* Article Selector */}
           <div className="flex items-center gap-4">
-            <BookOpen className="h-5 w-5 text-muted-foreground" />
+            <BookOpen className="size-5 text-muted-foreground" />
             <Select value={selectedArticleId} onValueChange={setSelectedArticleId}>
               <SelectTrigger className="w-full max-w-md">
                 <SelectValue />
@@ -217,11 +226,11 @@ export function LearningArticleReader({
           {/* Article Header */}
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <CardTitle className="text-2xl">{article.title}</CardTitle>
+              <CardTitle className={typography.heading.h2}>{article.title}</CardTitle>
               <Badge className={categoryConfig.color}>{categoryConfig.label}</Badge>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="h-4 w-4" />
+            <div className={`flex items-center gap-2 ${typography.body.small} text-muted-foreground`}>
+              <Clock className="size-4" />
               <span>{article.readingTime} min read</span>
             </div>
           </div>

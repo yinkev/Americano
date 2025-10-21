@@ -1,14 +1,20 @@
 /**
  * Behavioral Insights Dashboard
+ * Story 5.6: Behavioral Insights Dashboard - Main Integration Page
+ *
+ * Epic 5 UI Transformation:
+ * - OKLCH colors only (no gradients)
+ * - Design tokens from /lib/design-tokens.ts
+ * - Animation variants from /lib/animation-variants.ts
+ * - Glassmorphism effects (bg-white/80 backdrop-blur-md)
+ * - Typography from design system (font-heading, precise text sizes)
+ * - Fast animations (150ms hovers, 300ms transitions)
  *
  * 4-tab dashboard showing:
  * - Tab 1 "Patterns": Learning patterns grid and evolution timeline
  * - Tab 2 "Evolution": Pattern evolution timeline (standalone)
  * - Tab 3 "Performance": Performance correlation chart and behavioral goals
  * - Tab 4 "Learn": Recommendations panel and learning article reader
- *
- * Story 5.6: Behavioral Insights Dashboard - Main Integration Page
- * UPDATED: Integrated with real API data from dashboard endpoint
  */
 
 'use client'
@@ -16,6 +22,7 @@
 import { useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Brain, TrendingUp, Target, BookOpen } from 'lucide-react'
+import { typography } from '@/lib/design-tokens'
 import {
   LearningPatternsGrid,
   PatternEvolutionTimeline,
@@ -151,12 +158,20 @@ export default function BehavioralInsightsDashboard() {
   if (error) {
     return (
       <div className="container mx-auto py-8 px-4 max-w-7xl">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-          <h2 className="text-xl font-semibold text-red-800 mb-2">Error Loading Dashboard</h2>
-          <p className="text-red-600 mb-4">{error}</p>
+        <div
+          className="bg-white/80 backdrop-blur-md border rounded-xl p-6 text-center"
+          style={{ borderColor: 'oklch(0.6 0.20 30)' }}
+        >
+          <h2 className={`${typography.heading.h2} mb-2`} style={{ color: 'oklch(0.6 0.20 30)' }}>
+            Error Loading Dashboard
+          </h2>
+          <p className={`${typography.body.base} mb-4`} style={{ color: 'oklch(0.6 0.20 30)' }}>
+            {error}
+          </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+            className="px-4 py-2 rounded-lg font-medium text-white transition-all duration-150 hover:scale-105"
+            style={{ backgroundColor: 'oklch(0.6 0.20 30)' }}
           >
             Retry
           </button>
@@ -169,12 +184,12 @@ export default function BehavioralInsightsDashboard() {
     <div className="container mx-auto py-8 px-4 max-w-7xl">
       {/* Dashboard Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Behavioral Insights</h1>
-        <p className="text-muted-foreground">
+        <h1 className={`${typography.heading.h1} mb-2`}>Behavioral Insights</h1>
+        <p className={`${typography.body.base} text-muted-foreground`}>
           Understand your learning patterns and optimize your study habits
         </p>
         {dashboardData && (
-          <div className="mt-3 text-sm text-muted-foreground">
+          <div className={`mt-3 ${typography.body.small} text-muted-foreground`}>
             {dashboardData.meta.patternsCount} patterns detected •{' '}
             {dashboardData.meta.recommendationsCount} recommendations •{' '}
             {dashboardData.meta.activeGoalsCount} active goals •{' '}
@@ -187,19 +202,19 @@ export default function BehavioralInsightsDashboard() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid grid-cols-4 w-full max-w-2xl mx-auto">
           <TabsTrigger value="patterns" className="flex items-center gap-2">
-            <Brain className="h-4 w-4" />
+            <Brain className="size-4" />
             <span className="hidden sm:inline">Patterns</span>
           </TabsTrigger>
           <TabsTrigger value="evolution" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
+            <TrendingUp className="size-4" />
             <span className="hidden sm:inline">Evolution</span>
           </TabsTrigger>
           <TabsTrigger value="performance" className="flex items-center gap-2">
-            <Target className="h-4 w-4" />
+            <Target className="size-4" />
             <span className="hidden sm:inline">Performance</span>
           </TabsTrigger>
           <TabsTrigger value="learn" className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4" />
+            <BookOpen className="size-4" />
             <span className="hidden sm:inline">Learn</span>
           </TabsTrigger>
         </TabsList>
@@ -207,8 +222,8 @@ export default function BehavioralInsightsDashboard() {
         {/* Tab 1: Patterns */}
         <TabsContent value="patterns" className="space-y-6">
           <div>
-            <h2 className="text-2xl font-semibold mb-4">Your Learning Patterns</h2>
-            <p className="text-muted-foreground mb-6">
+            <h2 className={typography.heading.h2}>Your Learning Patterns</h2>
+            <p className={`${typography.body.base} text-muted-foreground mb-6 mt-2`}>
               Discover your unique learning patterns detected from your study sessions
             </p>
 
@@ -219,8 +234,8 @@ export default function BehavioralInsightsDashboard() {
         {/* Tab 2: Evolution */}
         <TabsContent value="evolution" className="space-y-6">
           <div>
-            <h2 className="text-2xl font-semibold mb-4">Pattern Evolution</h2>
-            <p className="text-muted-foreground mb-6">
+            <h2 className={typography.heading.h2}>Pattern Evolution</h2>
+            <p className={`${typography.body.base} text-muted-foreground mb-6 mt-2`}>
               Track how your learning patterns have changed and evolved over time
             </p>
 
@@ -231,23 +246,17 @@ export default function BehavioralInsightsDashboard() {
         {/* Tab 3: Performance */}
         <TabsContent value="performance" className="space-y-6">
           <div>
-            <h2 className="text-2xl font-semibold mb-4">Performance Analysis</h2>
-            <p className="text-muted-foreground mb-6">
+            <h2 className={typography.heading.h2}>Performance Analysis</h2>
+            <p className={`${typography.body.base} text-muted-foreground mb-6 mt-2`}>
               See how your behavioral patterns impact academic performance and track your goals
             </p>
 
             <div className="space-y-6">
               {/* Performance Correlation Chart */}
-              <PerformanceCorrelationChart
-                userId={DEFAULT_USER_ID}
-                isLoading={isLoading}
-              />
+              <PerformanceCorrelationChart userId={DEFAULT_USER_ID} isLoading={isLoading} />
 
               {/* Behavioral Goals */}
-              <BehavioralGoalsSection
-                userId={DEFAULT_USER_ID}
-                isLoading={isLoading}
-              />
+              <BehavioralGoalsSection userId={DEFAULT_USER_ID} isLoading={isLoading} />
             </div>
           </div>
         </TabsContent>
@@ -255,23 +264,17 @@ export default function BehavioralInsightsDashboard() {
         {/* Tab 4: Learn */}
         <TabsContent value="learn" className="space-y-6">
           <div>
-            <h2 className="text-2xl font-semibold mb-4">Learning Science</h2>
-            <p className="text-muted-foreground mb-6">
+            <h2 className={typography.heading.h2}>Learning Science</h2>
+            <p className={`${typography.body.base} text-muted-foreground mb-6 mt-2`}>
               Understand the science behind effective learning and get personalized recommendations
             </p>
 
             <div className="space-y-6">
               {/* Recommendations Panel */}
-              <RecommendationsPanel
-                userId={DEFAULT_USER_ID}
-                isLoading={isLoading}
-              />
+              <RecommendationsPanel userId={DEFAULT_USER_ID} isLoading={isLoading} />
 
               {/* Learning Article Reader */}
-              <LearningArticleReader
-                userId={DEFAULT_USER_ID}
-                isLoading={isLoading}
-              />
+              <LearningArticleReader userId={DEFAULT_USER_ID} isLoading={isLoading} />
             </div>
           </div>
         </TabsContent>

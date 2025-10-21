@@ -1,12 +1,23 @@
 'use client'
 
 import * as React from 'react'
-import { motion } from 'motion/react'
+import { motion, type HTMLMotionProps } from 'motion/react'
 
 import { cn } from '@/lib/utils'
 import { cardVariants as animationVariants, getAnimationConfig } from '@/lib/animation-variants'
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+type MotionDivProps = HTMLMotionProps<'div'>
+
+export interface CardProps
+  extends Omit<
+    React.HTMLAttributes<HTMLDivElement>,
+    | 'onAnimationStart'
+    | 'onDragStart'
+    | 'onDragEnd'
+    | 'onDrag'
+    | 'onDirectionLock'
+    | 'onDragTransitionEnd'
+  > {
   /**
    * Interactive cards have hover lift + scale effect (for clickable cards)
    * Static cards have subtle shadow-only effect (for info cards)
@@ -17,6 +28,15 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, interactive = false, onClick, ...props }, ref) => {
+    // Extract any potential conflicting props to ensure they don't get spread
+    const {
+      onAnimationStart: _onAnimationStart,
+      onDragStart: _onDragStart,
+      onDragEnd: _onDragEnd,
+      onDrag: _onDrag,
+      ...safeProps
+    } = props as any
+
     // Determine if card should be interactive
     const isInteractive = interactive !== false || !!onClick
 
@@ -34,9 +54,9 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       return (
         <div
           ref={ref}
-          className={cn('rounded-xl border bg-card text-card-foreground shadow', className)}
+          className={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
           onClick={onClick}
-          {...props}
+          {...safeProps}
         />
       )
     }
@@ -45,7 +65,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <motion.div
         ref={ref}
         className={cn(
-          'rounded-xl border bg-card text-card-foreground shadow',
+          'rounded-lg border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md',
           isInteractive && 'cursor-pointer',
           className
         )}
@@ -56,7 +76,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           rest: getAnimationConfig(variant.rest),
           hover: getAnimationConfig(variant.hover),
         }}
-        {...props}
+        {...safeProps}
       />
     )
   },
@@ -65,7 +85,7 @@ Card.displayName = 'Card'
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex flex-col space-y-1.5 p-6', className)} {...props} />
+    <div ref={ref} className={cn('flex flex-col space-y-1.5 p-4', className)} {...props} />
   ),
 )
 CardHeader.displayName = 'CardHeader'
@@ -90,14 +110,14 @@ CardDescription.displayName = 'CardDescription'
 
 const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
+    <div ref={ref} className={cn('p-4 pt-0', className)} {...props} />
   ),
 )
 CardContent.displayName = 'CardContent'
 
 const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex items-center p-6 pt-0', className)} {...props} />
+    <div ref={ref} className={cn('flex items-center p-4 pt-0', className)} {...props} />
   ),
 )
 CardFooter.displayName = 'CardFooter'

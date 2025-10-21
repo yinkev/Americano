@@ -46,9 +46,9 @@ export function MasteryDistribution() {
 
   if (loading || !summary) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
-        <h3 className="text-lg font-heading font-bold text-gray-900 mb-4">Mastery Distribution</h3>
-        <div className="text-sm text-gray-500">Loading...</div>
+      <div className="bg-white border shadow-sm rounded-lg p-4">
+        <h3 className="text-[16px] font-heading font-semibold mb-4">Mastery Distribution</h3>
+        <div className="text-[13px] text-muted-foreground">Loading...</div>
       </div>
     )
   }
@@ -87,18 +87,18 @@ export function MasteryDistribution() {
   ]
 
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
-      <h3 className="text-lg font-heading font-bold text-gray-900 mb-4">Mastery Distribution</h3>
+    <div className="bg-white border shadow-sm rounded-lg p-4 hover:shadow-md transition-shadow duration-300">
+      <h3 className="text-[16px] font-heading font-semibold mb-4">Mastery Distribution</h3>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-5 gap-2 mb-6">
         {chartData.map((item) => (
-          <div key={item.name} className="text-center p-3 bg-white/60 backdrop-blur-sm rounded-xl">
+          <div key={item.name} className="text-center p-3 bg-secondary/30 rounded-lg hover:bg-secondary/40 transition-colors duration-150">
             <div className="text-2xl font-bold mb-1" style={{ color: item.color }}>
               {item.value}
             </div>
-            <div className="text-xs text-gray-600 mb-1">{item.name}</div>
-            <div className="text-xs font-medium text-gray-500">{item.percentage.toFixed(1)}%</div>
+            <div className="text-[11px] text-muted-foreground mb-1">{item.name}</div>
+            <div className="text-[11px] font-medium text-muted-foreground">{item.percentage.toFixed(1)}%</div>
           </div>
         ))}
       </div>
@@ -134,8 +134,8 @@ export function MasteryDistribution() {
         </BarChart>
       </ResponsiveContainer>
 
-      <div className="mt-4 text-sm text-gray-600 text-center">
-        Total Objectives: <span className="font-bold">{summary.totalObjectives}</span>
+      <div className="mt-4 text-[13px] text-muted-foreground text-center">
+        Total Objectives: <span className="font-semibold">{summary.totalObjectives}</span>
       </div>
     </div>
   )

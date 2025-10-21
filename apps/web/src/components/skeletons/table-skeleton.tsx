@@ -3,11 +3,12 @@
  * Wave 2: Content-Aware Skeleton Loading States
  *
  * Design: Matches table structure with headers, rows, and columns
- * OKLCH colors, glassmorphism, subtle pulse animation
+ * Uses shadcn/ui Skeleton component with OKLCH colors, glassmorphism
  * Prevents layout shift by matching real table dimensions
  */
 
 import { cn } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface TableSkeletonProps {
   className?: string
@@ -27,7 +28,7 @@ export function TableSkeleton({
   return (
     <div
       className={cn(
-        'bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)] rounded-xl overflow-hidden',
+        'bg-white/80 backdrop-blur-md border border-border rounded-xl overflow-hidden',
         className,
       )}
     >
@@ -36,14 +37,13 @@ export function TableSkeleton({
           {/* Table Header */}
           {showHeader && (
             <thead>
-              <tr className="border-b border-[oklch(0.9_0.02_230)]">
+              <tr className="border-b border-border">
                 {[...Array(columns + (showActions ? 1 : 0))].map((_, i) => (
                   <th key={i} className="px-6 py-4 text-left">
-                    <div
-                      className="h-4 bg-[oklch(0.85_0.02_230)] rounded animate-pulse"
+                    <Skeleton
+                      className="h-4"
                       style={{
                         width: i === columns && showActions ? '60px' : '80%',
-                        animationDelay: `${i * 0.1}s`,
                       }}
                     />
                   </th>
@@ -58,17 +58,16 @@ export function TableSkeleton({
               <tr
                 key={rowIndex}
                 className={cn(
-                  'border-b border-[oklch(0.95_0.01_230)]',
-                  rowIndex % 2 === 0 && 'bg-[oklch(0.98_0.01_230)]',
+                  'border-b border-muted',
+                  rowIndex % 2 === 0 && 'bg-muted/30',
                 )}
               >
                 {[...Array(columns)].map((_, colIndex) => (
                   <td key={colIndex} className="px-6 py-4">
-                    <div
-                      className="h-4 bg-[oklch(0.9_0.02_230)] rounded animate-pulse"
+                    <Skeleton
+                      className="h-4"
                       style={{
                         width: `${60 + Math.random() * 30}%`,
-                        animationDelay: `${(rowIndex * columns + colIndex) * 0.05}s`,
                       }}
                     />
                   </td>
@@ -76,8 +75,8 @@ export function TableSkeleton({
                 {showActions && (
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 bg-[oklch(0.9_0.02_230)] rounded animate-pulse" />
-                      <div className="h-8 w-8 bg-[oklch(0.9_0.02_230)] rounded animate-pulse" />
+                      <Skeleton className="h-8 w-8 rounded" />
+                      <Skeleton className="h-8 w-8 rounded" />
                     </div>
                   </td>
                 )}

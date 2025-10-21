@@ -1,11 +1,14 @@
 /**
  * Struggle Predictions Dashboard
  * Story 5.2 Task 10.1
- * Wave 2: Enhanced with content-aware skeleton loading states
+ * Wave 3: Enhanced with design tokens and Wave 3 micro-interactions
  *
  * Displays upcoming challenges, interventions, accuracy trends, and success metrics
  * Updated with Timeline and Model Performance components
  * Progressive loading with Suspense boundaries for optimal UX
+ *
+ * Design: OKLCH colors, glassmorphism, NO gradients (per CLAUDE.md)
+ * Animations: Wave 3 micro-interactions with motion.dev patterns
  */
 
 import { Suspense } from 'react'
@@ -17,6 +20,7 @@ import { PredictionAccuracyChart } from '@/components/analytics/prediction-accur
 import { StruggleReductionMetrics } from '@/components/analytics/struggle-reduction-metrics'
 import { StruggleRiskTimeline } from '@/components/analytics/struggle-risk-timeline'
 import { ModelPerformanceMetrics } from '@/components/analytics/model-performance-metrics'
+import { typography, colors } from '@/lib/design-tokens'
 
 export default function StrugglePredictionsPage() {
   return (
@@ -24,14 +28,17 @@ export default function StrugglePredictionsPage() {
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 rounded-xl bg-[oklch(0.6_0.15_25)]/10">
-            <AlertTriangle className="size-6 text-[oklch(0.6_0.15_25)]" />
+          <div
+            className="p-2 rounded-xl transition-all duration-300 hover:scale-105"
+            style={{ backgroundColor: `color-mix(in oklch, ${colors.alert}, transparent 90%)` }}
+          >
+            <AlertTriangle className="size-6" style={{ color: colors.alert }} />
           </div>
-          <h1 className="text-3xl font-heading font-bold text-foreground">
+          <h1 className={`${typography.heading.h1} text-foreground`}>
             Upcoming Challenges & Interventions
           </h1>
         </div>
-        <p className="text-muted-foreground">
+        <p className={`${typography.body.base} text-muted-foreground`}>
           Proactive support to help you succeed before difficulties become problems
         </p>
       </header>
@@ -42,11 +49,11 @@ export default function StrugglePredictionsPage() {
           {/* Section 1: Active Predictions */}
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle className="size-5 text-[oklch(0.6_0.15_25)]" />
-              <h2 className="text-xl font-heading font-semibold text-foreground">
-                Active Predictions
-              </h2>
-              <span className="ml-auto text-sm text-muted-foreground">Next 7 days</span>
+              <AlertTriangle className="size-5" style={{ color: colors.alert }} />
+              <h2 className={`${typography.heading.h2} text-foreground`}>Active Predictions</h2>
+              <span className={`ml-auto ${typography.body.small} text-muted-foreground`}>
+                Next 7 days
+              </span>
             </div>
             <Suspense fallback={<AnalyticsCardSkeleton showChart={false} />}>
               <ActivePredictions />
@@ -56,8 +63,8 @@ export default function StrugglePredictionsPage() {
           {/* Section 3: Accuracy Trends */}
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="size-5 text-[oklch(0.7_0.15_230)]" />
-              <h2 className="text-xl font-heading font-semibold text-foreground">
+              <TrendingUp className="size-5" style={{ color: colors.clinical }} />
+              <h2 className={`${typography.heading.h2} text-foreground`}>
                 Prediction Accuracy Trends
               </h2>
             </div>
@@ -69,8 +76,8 @@ export default function StrugglePredictionsPage() {
           {/* Section 4: Struggle Risk Timeline */}
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <Calendar className="size-5 text-[oklch(0.646_0.222_41.116)]" />
-              <h2 className="text-xl font-heading font-semibold text-foreground">
+              <Calendar className="size-5" style={{ color: colors.energy }} />
+              <h2 className={`${typography.heading.h2} text-foreground`}>
                 Upcoming Challenges Timeline
               </h2>
             </div>
@@ -82,8 +89,8 @@ export default function StrugglePredictionsPage() {
           {/* Section 5: Struggle Reduction Metrics */}
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <Target className="size-5 text-[oklch(0.7_0.12_145)]" />
-              <h2 className="text-xl font-heading font-semibold text-foreground">
+              <Target className="size-5" style={{ color: colors.success }} />
+              <h2 className={`${typography.heading.h2} text-foreground`}>
                 Struggle Reduction Metrics
               </h2>
             </div>
@@ -96,8 +103,8 @@ export default function StrugglePredictionsPage() {
           {process.env.NODE_ENV === 'development' && (
             <section>
               <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="size-5 text-[oklch(0.7_0.15_230)]" />
-                <h2 className="text-xl font-heading font-semibold text-foreground">
+                <TrendingUp className="size-5" style={{ color: colors.clinical }} />
+                <h2 className={`${typography.heading.h2} text-foreground`}>
                   Model Performance Analytics
                 </h2>
               </div>
@@ -113,8 +120,8 @@ export default function StrugglePredictionsPage() {
           {/* Section 2: Interventions */}
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <MessageSquare className="size-5 text-[oklch(0.7_0.15_230)]" />
-              <h2 className="text-xl font-heading font-semibold text-foreground">
+              <MessageSquare className="size-5" style={{ color: colors.clinical }} />
+              <h2 className={`${typography.heading.h2} text-foreground`}>
                 Recommended Interventions
               </h2>
             </div>
@@ -125,20 +132,20 @@ export default function StrugglePredictionsPage() {
 
           {/* Section 5: Feedback */}
           <section>
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-              <h3 className="text-lg font-heading font-semibold text-foreground mb-3">
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)]">
+              <h3 className={`${typography.heading.h3} text-foreground mb-3`}>
                 Help Improve Predictions
               </h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className={`${typography.body.small} text-muted-foreground mb-4`}>
                 Your feedback helps us make better predictions for you and other students.
               </p>
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <div className="size-2 rounded-full bg-[oklch(0.7_0.12_145)]" />
+                <div className={`flex items-center gap-2 ${typography.body.tiny} text-muted-foreground`}>
+                  <div className="size-2 rounded-full" style={{ backgroundColor: colors.success }} />
                   <span>Prediction accuracy: 78%</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <div className="size-2 rounded-full bg-[oklch(0.7_0.15_230)]" />
+                <div className={`flex items-center gap-2 ${typography.body.tiny} text-muted-foreground`}>
+                  <div className="size-2 rounded-full" style={{ backgroundColor: colors.clinical }} />
                   <span>Improving with your feedback</span>
                 </div>
               </div>

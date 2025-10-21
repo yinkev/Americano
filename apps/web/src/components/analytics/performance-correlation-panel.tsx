@@ -3,6 +3,7 @@
  * Story 2.6 Task 3.3
  *
  * Visualizes correlation between mission completion and performance improvement
+ * Epic 5 UI Transformation: Premium design with shadcn/ui components
  */
 
 'use client'
@@ -19,6 +20,9 @@ import {
   ReferenceLine,
 } from 'recharts'
 import { TrendingUp, Info } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 interface CorrelationData {
   correlationCoefficient: number
@@ -64,23 +68,27 @@ export function PerformanceCorrelationPanel() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30">
-        <div className="text-sm text-[oklch(0.556_0_0)]">Loading correlation analysis...</div>
-      </div>
+      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <CardContent className="flex items-center justify-center h-96">
+          <div className="text-sm text-muted-foreground">Loading correlation analysis...</div>
+        </CardContent>
+      </Card>
     )
   }
 
   if (!data || data.sampleSize < 7) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-        <TrendingUp className="size-12 text-[oklch(0.556_0_0)] mb-4" />
-        <div className="text-sm text-[oklch(0.556_0_0)] text-center">
-          Not enough data for correlation analysis
-        </div>
-        <p className="text-xs text-[oklch(0.556_0_0)] mt-2 text-center">
-          Complete at least 7 missions to see performance insights
-        </p>
-      </div>
+      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <CardContent className="flex flex-col items-center justify-center h-96 p-6">
+          <TrendingUp className="size-12 text-muted-foreground mb-4" />
+          <div className="text-sm text-muted-foreground text-center">
+            Not enough data for correlation analysis
+          </div>
+          <p className="text-xs text-muted-foreground mt-2 text-center">
+            Complete at least 7 missions to see performance insights
+          </p>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -117,71 +125,77 @@ export function PerformanceCorrelationPanel() {
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex-1">
-          <h3 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)] mb-2">
-            Performance Correlation
-          </h3>
-          <p className="text-sm text-[oklch(0.556_0_0)]">
-            Mission completion vs. mastery improvement
-          </p>
-        </div>
-        <button
-          onClick={() => setShowExplanation(!showExplanation)}
-          className="p-2 rounded-lg bg-white/60 text-[oklch(0.556_0_0)] hover:bg-white/80 transition-colors"
-          aria-label="Show explanation"
-          title="Show explanation"
-        >
-          <Info className="size-4" />
-        </button>
-      </div>
-
-      {/* Explanation Panel */}
-      {showExplanation && (
-        <div className="mb-6 p-4 bg-[oklch(0.7_0.15_230)]/10 rounded-xl border border-[oklch(0.7_0.15_230)]/20">
-          <h4 className="text-sm font-semibold text-[oklch(0.145_0_0)] mb-2">
-            Understanding Correlation
-          </h4>
-          <p className="text-xs text-[oklch(0.556_0_0)] leading-relaxed">
-            This chart shows the relationship between how often you complete missions and how much
-            your mastery improves. Each dot represents a time period. A strong positive correlation
-            means completing more missions typically leads to better learning outcomes.
-          </p>
-          <p className="text-xs text-[oklch(0.556_0_0)] mt-2 leading-relaxed">
-            <strong>Note:</strong> Correlation does not imply causation. Statistical significance
-            (p-value) indicates confidence in the relationship.
-          </p>
-        </div>
-      )}
-
-      {/* Key Metrics */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="p-4 bg-white/60 rounded-xl">
-          <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Correlation</p>
-          <p className="text-2xl font-bold text-[oklch(0.145_0_0)]">
-            {data.correlationCoefficient.toFixed(2)}
-          </p>
-          <p className="text-xs text-[oklch(0.556_0_0)] mt-1">
-            {correlationStrength} {correlationDirection}
-          </p>
+    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <CardTitle className="text-lg font-heading mb-2">Performance Correlation</CardTitle>
+            <CardDescription>Mission completion vs. mastery improvement</CardDescription>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowExplanation(!showExplanation)}
+            aria-label="Show explanation"
+          >
+            <Info className="size-4" />
+          </Button>
         </div>
 
-        <div className="p-4 bg-white/60 rounded-xl">
-          <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Confidence</p>
-          <p className="text-2xl font-bold" style={{ color: getConfidenceColor(data.confidence) }}>
-            {data.confidence}
-          </p>
-          <p className="text-xs text-[oklch(0.556_0_0)] mt-1">p = {data.pValue.toFixed(3)}</p>
-        </div>
+        {/* Explanation Panel */}
+        {showExplanation && (
+          <div className="mt-4 p-4 bg-[oklch(0.7_0.15_230)]/10 rounded-xl border border-[oklch(0.7_0.15_230)]/20">
+            <h4 className="text-sm font-semibold text-foreground mb-2">
+              Understanding Correlation
+            </h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              This chart shows the relationship between how often you complete missions and how much
+              your mastery improves. Each dot represents a time period. A strong positive correlation
+              means completing more missions typically leads to better learning outcomes.
+            </p>
+            <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+              <strong>Note:</strong> Correlation does not imply causation. Statistical significance
+              (p-value) indicates confidence in the relationship.
+            </p>
+          </div>
+        )}
+      </CardHeader>
 
-        <div className="p-4 bg-white/60 rounded-xl">
-          <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Sample Size</p>
-          <p className="text-2xl font-bold text-[oklch(0.145_0_0)]">{data.sampleSize}</p>
-          <p className="text-xs text-[oklch(0.556_0_0)] mt-1">data points</p>
+      <CardContent>
+        {/* Key Metrics */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Correlation</p>
+              <p className="text-2xl font-bold text-foreground">
+                {data.correlationCoefficient.toFixed(2)}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {correlationStrength} {correlationDirection}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Confidence</p>
+              <p className="text-2xl font-bold" style={{ color: getConfidenceColor(data.confidence) }}>
+                {data.confidence}
+              </p>
+              <Badge variant="secondary" className="text-xs mt-1">
+                p = {data.pValue.toFixed(3)}
+              </Badge>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Sample Size</p>
+              <p className="text-2xl font-bold text-foreground">{data.sampleSize}</p>
+              <p className="text-xs text-muted-foreground mt-1">data points</p>
+            </CardContent>
+          </Card>
         </div>
-      </div>
 
       {/* Scatter Plot */}
       <ResponsiveContainer width="100%" height={300}>
@@ -260,29 +274,30 @@ export function PerformanceCorrelationPanel() {
         </ScatterChart>
       </ResponsiveContainer>
 
-      {/* Insight Card */}
-      <div className="mt-6 p-4 bg-[oklch(0.75_0.15_160)]/10 rounded-xl border border-[oklch(0.75_0.15_160)]/20">
-        <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 mt-1">
-            <TrendingUp className="size-5 text-[oklch(0.75_0.15_160)]" />
-          </div>
-          <div className="flex-1">
-            <h4 className="text-sm font-semibold text-[oklch(0.145_0_0)] mb-1">Key Insight</h4>
-            <p className="text-sm text-[oklch(0.556_0_0)] leading-relaxed">{data.insight}</p>
+        {/* Insight Card */}
+        <div className="mt-6 p-4 bg-[oklch(0.75_0.15_160)]/10 rounded-xl border border-[oklch(0.75_0.15_160)]/20">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 mt-1">
+              <TrendingUp className="size-5 text-[oklch(0.75_0.15_160)]" />
+            </div>
+            <div className="flex-1">
+              <h4 className="text-sm font-semibold text-foreground mb-1">Key Insight</h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">{data.insight}</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Statistical Note */}
-      <div className="mt-4 pt-4 border-t border-[oklch(0.922_0_0)]">
-        <p className="text-xs text-[oklch(0.556_0_0)] leading-relaxed">
-          <strong>Statistical Note:</strong> Pearson correlation coefficient (r ={' '}
-          {data.correlationCoefficient.toFixed(2)}) with{' '}
-          {data.pValue < 0.05 ? 'statistical significance' : 'low significance'} (p ={' '}
-          {data.pValue.toFixed(3)}). {data.confidence} confidence based on sample size of{' '}
-          {data.sampleSize}.
-        </p>
-      </div>
-    </div>
+        {/* Statistical Note */}
+        <div className="mt-4 pt-4 border-t border-border">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            <strong>Statistical Note:</strong> Pearson correlation coefficient (r ={' '}
+            {data.correlationCoefficient.toFixed(2)}) with{' '}
+            {data.pValue < 0.05 ? 'statistical significance' : 'low significance'} (p ={' '}
+            {data.pValue.toFixed(3)}). {data.confidence} confidence based on sample size of{' '}
+            {data.sampleSize}.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

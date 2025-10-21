@@ -42,9 +42,13 @@ export function getRedisStatus(): { healthy: boolean; initialized: boolean } {
   }
 }
 
-// Auto-initialize on import (for server components)
-if (typeof window === 'undefined') {
+// Auto-initialize on import ONLY if explicitly enabled
+// Next.js App Router best practice: Don't run side effects on module import
+if (typeof window === 'undefined' && process.env.REDIS_AUTO_INIT === 'true') {
+  console.log('[Init] Auto-initializing Redis (REDIS_AUTO_INIT=true)...')
   ensureRedisInitialized().catch((err) => {
     console.warn('[Init] Auto-initialization failed:', err)
   })
+} else if (typeof window === 'undefined') {
+  console.log('[Init] Redis will initialize on first request (set REDIS_AUTO_INIT=true to change)')
 }

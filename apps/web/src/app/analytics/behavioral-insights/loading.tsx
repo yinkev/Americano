@@ -1,21 +1,37 @@
 /**
  * Behavioral Insights Loading State
- * Wave 2: Progressive Loading
+ * Story 5.6: Epic 5 UI Transformation
  *
  * Route-level loading state using Next.js 15 loading.tsx convention
  * Shows immediately upon navigation while page data loads
+ *
+ * Design System:
+ * - OKLCH skeleton colors (no hex)
+ * - Staggered animations with design tokens
+ * - Typography from /lib/design-tokens.ts
+ * - Glassmorphism (bg-white/80 backdrop-blur-md)
  */
 
 import { Brain, TrendingUp, Target, BookOpen } from 'lucide-react'
+import { typography } from '@/lib/design-tokens'
 
 export default function Loading() {
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
       {/* Dashboard Header */}
       <div className="mb-8 space-y-3">
-        <div className="h-10 w-80 bg-[oklch(0.9_0.02_230)] rounded animate-pulse" />
-        <div className="h-5 w-[28rem] bg-[oklch(0.92_0.02_230)] rounded animate-pulse" />
-        <div className="h-4 w-96 bg-[oklch(0.94_0.02_230)] rounded animate-pulse mt-3" />
+        <div
+          className="h-10 w-80 rounded animate-pulse"
+          style={{ backgroundColor: 'oklch(0.9 0.02 230)' }}
+        />
+        <div
+          className="h-5 w-[28rem] rounded animate-pulse"
+          style={{ backgroundColor: 'oklch(0.92 0.02 230)', animationDelay: '0.1s' }}
+        />
+        <div
+          className="h-4 w-96 rounded animate-pulse mt-3"
+          style={{ backgroundColor: 'oklch(0.94 0.02 230)', animationDelay: '0.2s' }}
+        />
       </div>
 
       {/* Tab Navigation */}
@@ -24,11 +40,14 @@ export default function Loading() {
           {[Brain, TrendingUp, Target, BookOpen].map((Icon, i) => (
             <div
               key={i}
-              className="flex items-center justify-center gap-2 p-2 rounded bg-white/80 animate-pulse"
+              className="flex items-center justify-center gap-2 p-2 rounded bg-white/80 backdrop-blur-md animate-pulse"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
-              <Icon className="h-4 w-4 text-muted-foreground" />
-              <div className="h-4 w-16 bg-[oklch(0.9_0.02_230)] rounded hidden sm:block" />
+              <Icon className="size-4 text-muted-foreground" />
+              <div
+                className="h-4 w-16 rounded hidden sm:block"
+                style={{ backgroundColor: 'oklch(0.9 0.02 230)' }}
+              />
             </div>
           ))}
         </div>
@@ -37,8 +56,14 @@ export default function Loading() {
       {/* Content Area */}
       <div className="space-y-6">
         <div className="space-y-4">
-          <div className="h-8 w-64 bg-[oklch(0.9_0.02_230)] rounded animate-pulse" />
-          <div className="h-5 w-[32rem] bg-[oklch(0.92_0.02_230)] rounded animate-pulse" />
+          <div
+            className="h-8 w-64 rounded animate-pulse"
+            style={{ backgroundColor: 'oklch(0.9 0.02 230)' }}
+          />
+          <div
+            className="h-5 w-[32rem] rounded animate-pulse"
+            style={{ backgroundColor: 'oklch(0.92 0.02 230)', animationDelay: '0.1s' }}
+          />
         </div>
 
         {/* Grid of cards */}
@@ -46,18 +71,27 @@ export default function Loading() {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)] rounded-xl p-6 space-y-4 animate-pulse"
-              style={{ animationDelay: `${i * 0.1}s` }}
+              className="bg-white/80 backdrop-blur-md border rounded-xl p-6 space-y-4 animate-pulse"
+              style={{
+                borderColor: 'oklch(0.9 0.02 230)',
+                animationDelay: `${i * 0.1}s`,
+              }}
             >
               <div className="flex items-center justify-between">
-                <div className="h-6 w-32 bg-[oklch(0.9_0.02_230)] rounded" />
-                <div className="h-8 w-8 rounded-full bg-[oklch(0.92_0.02_230)]" />
+                <div className="h-6 w-32 rounded" style={{ backgroundColor: 'oklch(0.9 0.02 230)' }} />
+                <div
+                  className="size-8 rounded-full"
+                  style={{ backgroundColor: 'oklch(0.92 0.02 230)' }}
+                />
               </div>
               <div className="space-y-2">
-                <div className="h-4 w-full bg-[oklch(0.92_0.02_230)] rounded" />
-                <div className="h-4 w-5/6 bg-[oklch(0.94_0.02_230)] rounded" />
+                <div className="h-4 w-full rounded" style={{ backgroundColor: 'oklch(0.92 0.02 230)' }} />
+                <div
+                  className="h-4 w-5/6 rounded"
+                  style={{ backgroundColor: 'oklch(0.94 0.02 230)' }}
+                />
               </div>
-              <div className="h-10 w-24 bg-[oklch(0.9_0.02_230)] rounded" />
+              <div className="h-10 w-24 rounded" style={{ backgroundColor: 'oklch(0.9 0.02 230)' }} />
             </div>
           ))}
         </div>

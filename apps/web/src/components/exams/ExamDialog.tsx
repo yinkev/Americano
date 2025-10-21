@@ -148,18 +148,13 @@ export function ExamDialog({
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
 
       <DialogContent
-        className={cn(
-          'sm:max-w-[525px]',
-          'bg-white/95 backdrop-blur-xl border-white/30',
-          'shadow-[0_8px_32px_rgba(31,38,135,0.15)]',
-          'rounded-2xl',
-        )}
+        className="sm:max-w-[525px]"
       >
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-gray-900">
+          <DialogTitle className="text-[20px] font-heading font-semibold">
             {exam ? 'Edit Exam' : 'Add New Exam'}
           </DialogTitle>
-          <DialogDescription className="text-sm text-gray-600">
+          <DialogDescription className="text-[13px] text-muted-foreground">
             {exam
               ? 'Update exam details and coverage topics'
               : 'Schedule an upcoming exam and specify what topics it will cover'}
@@ -174,22 +169,18 @@ export function ExamDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">Exam Name</FormLabel>
+                  <FormLabel className="text-[11px] font-medium uppercase tracking-wide">Exam Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="e.g., Midterm Exam, Final Exam"
-                      className={cn(
-                        'bg-white/60 backdrop-blur-sm',
-                        'border-gray-200 focus:border-blue-400',
-                        'rounded-lg transition-all duration-200',
-                      )}
+                      className="rounded-lg"
                     />
                   </FormControl>
-                  <FormDescription className="text-xs text-gray-500">
+                  <FormDescription className="text-[11px] text-muted-foreground">
                     Give your exam a descriptive name
                   </FormDescription>
-                  <FormMessage className="text-xs" />
+                  <FormMessage className="text-[11px]" />
                 </FormItem>
               )}
             />
@@ -200,44 +191,33 @@ export function ExamDialog({
               name="courseId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">Course</FormLabel>
+                  <FormLabel className="text-[11px] font-medium uppercase tracking-wide">Course</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger
-                        className={cn(
-                          'bg-white/60 backdrop-blur-sm',
-                          'border-gray-200 focus:border-blue-400',
-                          'rounded-lg transition-all duration-200',
-                        )}
-                      >
+                      <SelectTrigger className="rounded-lg">
                         <SelectValue placeholder="Select a course" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent
-                      className={cn(
-                        'bg-white/95 backdrop-blur-xl border-white/30',
-                        'rounded-xl shadow-lg',
-                      )}
-                    >
+                    <SelectContent>
                       {courses.map((course) => (
                         <SelectItem
                           key={course.id}
                           value={course.id}
-                          className="cursor-pointer hover:bg-gray-50/80"
+                          className="cursor-pointer"
                         >
                           {course.code} - {course.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormDescription className="text-xs text-gray-500">
+                  <FormDescription className="text-[11px] text-muted-foreground">
                     Select the course this exam is for
                   </FormDescription>
-                  <FormMessage className="text-xs" />
+                  <FormMessage className="text-[11px]" />
                 </FormItem>
               )}
             />
@@ -248,17 +228,14 @@ export function ExamDialog({
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="text-sm font-medium text-gray-700">Exam Date</FormLabel>
+                  <FormLabel className="text-[11px] font-medium uppercase tracking-wide">Exam Date</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant="outline"
                           className={cn(
-                            'w-full justify-start text-left font-normal',
-                            'bg-white/60 backdrop-blur-sm',
-                            'border-gray-200 hover:border-blue-400',
-                            'rounded-lg transition-all duration-200',
+                            'w-full justify-start text-left font-normal rounded-lg',
                             !field.value && 'text-muted-foreground',
                           )}
                         >
@@ -268,11 +245,7 @@ export function ExamDialog({
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent
-                      className={cn(
-                        'w-auto p-0',
-                        'bg-white/95 backdrop-blur-xl border-white/30',
-                        'rounded-xl shadow-lg',
-                      )}
+                      className="w-auto p-0"
                       align="start"
                     >
                       <Calendar
@@ -281,14 +254,13 @@ export function ExamDialog({
                         onSelect={field.onChange}
                         disabled={(date) => date < new Date()}
                         initialFocus
-                        className="rounded-xl"
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormDescription className="text-xs text-gray-500">
+                  <FormDescription className="text-[11px] text-muted-foreground">
                     When is this exam scheduled?
                   </FormDescription>
-                  <FormMessage className="text-xs" />
+                  <FormMessage className="text-[11px]" />
                 </FormItem>
               )}
             />
@@ -299,7 +271,7 @@ export function ExamDialog({
               name="coverageTopics"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
+                  <FormLabel className="text-[11px] font-medium uppercase tracking-wide">
                     Coverage Topics
                   </FormLabel>
                   <FormControl>
@@ -308,13 +280,12 @@ export function ExamDialog({
                       onChange={field.onChange}
                       placeholder="Type topic and press Enter..."
                       maxTags={20}
-                      className={cn('bg-white/60 backdrop-blur-sm', 'transition-all duration-200')}
                     />
                   </FormControl>
-                  <FormDescription className="text-xs text-gray-500">
+                  <FormDescription className="text-[11px] text-muted-foreground">
                     Add topics that will be covered in this exam (press Enter to add)
                   </FormDescription>
-                  <FormMessage className="text-xs" />
+                  <FormMessage className="text-[11px]" />
                 </FormItem>
               )}
             />
@@ -325,24 +296,14 @@ export function ExamDialog({
                 variant="outline"
                 onClick={() => setOpen(false)}
                 disabled={isSubmitting}
-                className={cn(
-                  'rounded-lg',
-                  'border-gray-200 hover:bg-gray-50/80',
-                  'transition-all duration-200',
-                )}
+                className="rounded-lg"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className={cn(
-                  'rounded-lg',
-                  'bg-blue-500 hover:bg-blue-600',
-                  'text-white font-medium',
-                  'shadow-sm hover:shadow-md',
-                  'transition-all duration-200',
-                )}
+                className="rounded-lg bg-clinical text-clinical-foreground hover:bg-clinical/90 transition-all duration-150 hover:scale-[1.02] active:scale-[0.98]"
               >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {exam ? 'Update Exam' : 'Create Exam'}

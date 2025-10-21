@@ -56,10 +56,10 @@ export function LearningStyleProfile({ profile }: LearningStyleProfileProps) {
             border: '1px solid oklch(0.85 0.02 230)',
           }}
         >
-          <p className="text-sm font-medium" style={{ color: 'oklch(0.3 0.08 230)' }}>
+          <p className="text-[13px] font-medium" style={{ color: 'oklch(0.3 0.08 230)' }}>
             {data.axis}
           </p>
-          <p className="text-xs mt-1" style={{ color: 'oklch(0.5 0.05 230)' }}>
+          <p className="text-[13px] mt-1" style={{ color: 'oklch(0.5 0.05 230)' }}>
             {data.value}% preference
           </p>
         </div>
@@ -131,7 +131,7 @@ export function LearningStyleProfile({ profile }: LearningStyleProfileProps) {
       </ResponsiveContainer>
 
       {/* Percentages Display */}
-      <div className="grid grid-cols-2 gap-3 text-sm">
+      <div className="grid grid-cols-2 gap-3 text-[13px]">
         {chartData.map((item) => (
           <div
             key={item.axis}
@@ -147,11 +147,11 @@ export function LearningStyleProfile({ profile }: LearningStyleProfileProps) {
       </div>
 
       {/* Content Recommendations */}
-      <div className="p-4 rounded-md" style={{ backgroundColor: 'oklch(0.97 0.01 280)' }}>
-        <h4 className="text-sm font-semibold mb-2" style={{ color: 'oklch(0.4 0.15 280)' }}>
+      <div className="p-3 rounded-md" style={{ backgroundColor: 'oklch(0.97 0.01 280)' }}>
+        <h4 className="text-[13px] font-semibold mb-2" style={{ color: 'oklch(0.4 0.15 280)' }}>
           Personalized Recommendations
         </h4>
-        <ul className="space-y-2 text-sm" style={{ color: 'oklch(0.5 0.05 230)' }}>
+        <ul className="space-y-2 text-[13px]" style={{ color: 'oklch(0.5 0.05 230)' }}>
           {recommendations.map((rec, index) => (
             <li key={index} className="flex gap-2">
               <span style={{ color: 'oklch(0.5 0.15 280)' }}>•</span>

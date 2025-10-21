@@ -1,9 +1,12 @@
 /**
  * OptimalTimeSlotsPanel Component
- * Story 5.3 Task 7.2
+ * Story 5.4 - Orchestration Components Epic 5 Transformation
  *
  * Displays 3-5 recommended study time slots with confidence indicators,
- * availability status, and reasoning tooltips
+ * availability status, and reasoning tooltips.
+ *
+ * Epic 5 Design: Clean cards, OKLCH colors, NO gradients, star confidence indicators
+ * Accessibility: ARIA labels, semantic HTML, keyboard navigation
  */
 
 'use client'
@@ -11,12 +14,11 @@
 import { useState, useEffect } from 'react'
 import { Calendar, Clock, Star, AlertCircle, Info, CheckCircle } from 'lucide-react'
 import { format } from 'date-fns'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface TimeSlot {
   startTime: string
@@ -32,9 +34,10 @@ interface TimeSlot {
 interface Props {
   userId: string
   onSelectSlot: (slot: TimeSlot) => void
+  className?: string
 }
 
-export function OptimalTimeSlotsPanel({ userId, onSelectSlot }: Props) {
+export function OptimalTimeSlotsPanel({ userId, onSelectSlot, className = '' }: Props) {
   const [slots, setSlots] = useState<TimeSlot[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -64,11 +67,11 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot }: Props) {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-        <CardHeader>
-          <CardTitle className="font-heading text-xl">Optimal Study Times</CardTitle>
+      <Card className={`shadow-sm ${className}`}>
+        <CardHeader className="p-4 pb-0">
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">Optimal Study Times</h3>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="p-4 pt-4 space-y-3">
           {[1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-32 w-full" />
           ))}
@@ -79,12 +82,12 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot }: Props) {
 
   if (error || slots.length === 0) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-        <CardHeader>
-          <CardTitle className="font-heading text-xl">Optimal Study Times</CardTitle>
+      <Card className={`shadow-sm ${className}`}>
+        <CardHeader className="p-4 pb-0">
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">Optimal Study Times</h3>
         </CardHeader>
-        <CardContent>
-          <Alert className="bg-white/80 backdrop-blur-md">
+        <CardContent className="p-4 pt-4">
+          <Alert>
             <AlertCircle className="size-4" />
             <AlertDescription>
               {error ||
@@ -97,35 +100,17 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot }: Props) {
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-      <CardHeader>
+    <Card className={`shadow-sm ${className}`}>
+      <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
-          <CardTitle className="font-heading text-xl">Optimal Study Times</CardTitle>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="size-8">
-                  <Info className="size-4" style={{ color: 'oklch(0.6 0.05 230)' }} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent
-                className="max-w-xs"
-                style={{
-                  backgroundColor: 'oklch(0.95 0.01 230)',
-                  color: 'oklch(0.3 0.05 230)',
-                }}
-              >
-                <p className="text-sm">
-                  Recommendations based on your historical performance patterns and calendar
-                  availability. Higher confidence indicates more reliable predictions.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">Optimal Study Times</h3>
+          <button className="p-1 hover:bg-muted rounded-md transition-colors" aria-label="Time recommendations info">
+            <Info className="size-4 text-info" />
+          </button>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3">
+      <CardContent className="p-4 pt-4 space-y-3">
         {slots.map((slot, index) => (
           <TimeSlotCard
             key={`${slot.startTime}-${index}`}
@@ -158,12 +143,12 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
   // Determine availability color
   const getAvailabilityColor = () => {
     if (slot.calendarConflict) {
-      return 'oklch(0.6 0.15 25)' // Red - Busy
+      return 'oklch(0.6 0.20 30)' // Red - Busy
     }
     if (slot.score > 80) {
-      return 'oklch(0.7 0.12 145)' // Green - Available + Optimal
+      return 'oklch(0.7 0.15 145)' // Green - Available + Optimal
     }
-    return 'oklch(0.8 0.15 85)' // Yellow - Available but suboptimal
+    return 'oklch(0.8 0.15 85)' // Amber - Available but suboptimal
   }
 
   const getAvailabilityLabel = () => {
@@ -179,8 +164,8 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
     <div
       className="p-4 rounded-lg border transition-all hover:shadow-md"
       style={{
-        backgroundColor: 'oklch(0.98 0.01 230)',
-        borderColor: slot.calendarConflict ? availabilityColor : 'oklch(0.9 0.02 230)',
+        backgroundColor: 'oklch(0.98 0 0)',
+        borderColor: slot.calendarConflict ? availabilityColor : 'oklch(0.9 0 0)',
         borderWidth: slot.calendarConflict ? '2px' : '1px',
       }}
     >
@@ -189,10 +174,10 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
         <div className="flex items-start gap-3">
           {/* Rank Badge */}
           <div
-            className="flex items-center justify-center size-8 rounded-full font-semibold text-sm shrink-0"
+            className="flex items-center justify-center size-8 rounded-full font-semibold text-[13px] shrink-0"
             style={{
-              backgroundColor: rank === 1 ? 'oklch(0.7 0.12 145)/0.2' : 'oklch(0.5 0.05 230)/0.1',
-              color: rank === 1 ? 'oklch(0.5 0.2 145)' : 'oklch(0.5 0.05 230)',
+              backgroundColor: rank === 1 ? 'color-mix(in oklch, oklch(0.7 0.15 145), transparent 80%)' : 'color-mix(in oklch, oklch(0.5 0 0), transparent 90%)',
+              color: rank === 1 ? 'oklch(0.5 0.20 145)' : 'oklch(0.5 0 0)',
             }}
           >
             {rank}
@@ -201,14 +186,14 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
           <div className="flex-1 min-w-0">
             {/* Time Display */}
             <div className="flex items-center gap-2 mb-2">
-              <Clock className="size-4" style={{ color: 'oklch(0.6 0.05 230)' }} />
-              <span className="font-semibold text-foreground">
+              <Clock className="size-4 text-info" />
+              <span className="font-semibold text-foreground text-[15px]">
                 {format(startTime, 'h:mm a')} - {format(endTime, 'h:mm a')}
               </span>
             </div>
 
             {/* Date */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
               <Calendar className="size-4" />
               <span>{format(startTime, 'EEE, MMM d')}</span>
             </div>
@@ -221,11 +206,11 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
                   className="size-4"
                   fill={i < confidenceStars ? 'oklch(0.8 0.15 85)' : 'none'}
                   style={{
-                    color: i < confidenceStars ? 'oklch(0.8 0.15 85)' : 'oklch(0.85 0.05 230)',
+                    color: i < confidenceStars ? 'oklch(0.8 0.15 85)' : 'oklch(0.85 0 0)',
                   }}
                 />
               ))}
-              <span className="text-xs text-muted-foreground ml-1">
+              <span className="text-[11px] text-muted-foreground ml-1">
                 {(slot.confidence * 100).toFixed(0)}% confidence
               </span>
             </div>
@@ -239,7 +224,7 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
             variant="outline"
             className="px-3 py-1 font-semibold"
             style={{
-              backgroundColor: `${availabilityColor}/0.1`,
+              backgroundColor: `color-mix(in oklch, ${availabilityColor}, transparent 90%)`,
               borderColor: availabilityColor,
               color: availabilityColor,
             }}
@@ -253,12 +238,13 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
           <Button
             onClick={onSelect}
             disabled={slot.calendarConflict}
+            size="sm"
             className="min-w-24"
             style={{
               backgroundColor: slot.calendarConflict
-                ? 'oklch(0.9 0.02 230)'
-                : 'oklch(0.7 0.12 145)',
-              color: slot.calendarConflict ? 'oklch(0.6 0.05 230)' : 'white',
+                ? 'oklch(0.9 0 0)'
+                : 'oklch(0.7 0.15 145)',
+              color: slot.calendarConflict ? 'oklch(0.6 0 0)' : 'white',
             }}
           >
             Select
@@ -268,14 +254,14 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
 
       {/* Calendar Conflicts */}
       {slot.calendarConflict && slot.conflictingEvents && slot.conflictingEvents.length > 0 && (
-        <div className="mt-3 pt-3 border-t" style={{ borderColor: 'oklch(0.9 0.02 230)' }}>
-          <p className="text-xs font-medium text-muted-foreground mb-2">Calendar Conflicts:</p>
+        <div className="mt-3 pt-3 border-t" style={{ borderColor: 'oklch(0.9 0 0)' }}>
+          <p className="text-[11px] font-medium text-muted-foreground mb-2">Calendar Conflicts:</p>
           <div className="space-y-1">
             {slot.conflictingEvents.map((event, idx) => (
               <div
                 key={idx}
-                className="text-xs px-2 py-1 rounded"
-                style={{ backgroundColor: 'oklch(0.95 0.01 230)' }}
+                className="text-[11px] px-2 py-1 rounded"
+                style={{ backgroundColor: 'oklch(0.95 0 0)' }}
               >
                 <span className="font-medium">{event.summary}</span>
                 <span className="text-muted-foreground ml-2">
@@ -292,27 +278,27 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
       <div className="mt-3">
         <button
           onClick={() => setShowDetails(!showDetails)}
-          className="w-full flex items-center justify-between p-2 rounded hover:bg-muted/50 transition-colors text-sm"
+          className="w-full flex items-center justify-between p-2 rounded hover:bg-muted/50 transition-colors text-[13px]"
           aria-expanded={showDetails}
           aria-label="Toggle reasoning details"
         >
-          <span className="font-medium" style={{ color: 'oklch(0.5 0.05 230)' }}>
+          <span className="font-medium text-foreground">
             Why this recommendation?
           </span>
-          <Info className="size-4" style={{ color: 'oklch(0.6 0.05 230)' }} />
+          <Info className="size-4 text-info" />
         </button>
 
         {showDetails && (
-          <div className="mt-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
+          <div className="mt-2 space-y-1">
             {slot.reasoning.map((reason, idx) => (
               <div
                 key={idx}
-                className="flex items-start gap-2 text-xs px-3 py-2 rounded"
-                style={{ backgroundColor: 'oklch(0.95 0.01 230)' }}
+                className="flex items-start gap-2 text-[11px] px-3 py-2 rounded"
+                style={{ backgroundColor: 'oklch(0.95 0 0)' }}
               >
                 <CheckCircle
                   className="size-3 mt-0.5 shrink-0"
-                  style={{ color: 'oklch(0.7 0.12 145)' }}
+                  style={{ color: 'oklch(0.7 0.15 145)' }}
                 />
                 <span className="text-muted-foreground">{reason}</span>
               </div>

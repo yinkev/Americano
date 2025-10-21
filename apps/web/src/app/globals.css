@@ -47,6 +47,14 @@
   --info: oklch(0.65 0.18 240);
   --info-foreground: oklch(0.97 0.02 240);
 
+  /* Playful Gamification Colors - NEW */
+  --energy: oklch(0.7 0.18 50);
+  --energy-foreground: oklch(0.98 0.02 50);
+  --clinical: oklch(0.6 0.15 230);
+  --clinical-foreground: oklch(0.97 0.02 230);
+  --lab: oklch(0.65 0.12 160);
+  --lab-foreground: oklch(0.97 0.02 160);
+
   /* Borders & Inputs */
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
@@ -131,6 +139,14 @@
   --info: oklch(0.7 0.2 240);
   --info-foreground: oklch(0.25 0.12 240);
 
+  /* Playful Gamification Colors - NEW */
+  --energy: oklch(0.75 0.2 50);
+  --energy-foreground: oklch(0.25 0.12 50);
+  --clinical: oklch(0.65 0.18 230);
+  --clinical-foreground: oklch(0.25 0.12 230);
+  --lab: oklch(0.7 0.15 160);
+  --lab-foreground: oklch(0.25 0.1 160);
+
   /* Borders & Inputs */
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
@@ -211,6 +227,14 @@
   /* Info - NEW */
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
+
+  /* Playful Gamification Colors - NEW */
+  --color-energy: var(--energy);
+  --color-energy-foreground: var(--energy-foreground);
+  --color-clinical: var(--clinical);
+  --color-clinical-foreground: var(--clinical-foreground);
+  --color-lab: var(--lab);
+  --color-lab-foreground: var(--lab-foreground);
 
   /* Borders & Inputs */
   --color-border: var(--border);

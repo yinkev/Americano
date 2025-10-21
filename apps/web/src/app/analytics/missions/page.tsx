@@ -90,10 +90,10 @@ export default function MissionAnalyticsPage() {
         </Link>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-heading font-bold text-[oklch(0.145_0_0)] mb-2">
+            <h1 className="text-[28px] md:text-[32px] font-heading font-bold tracking-tight text-foreground mb-2">
               Mission Analytics
             </h1>
-            <p className="text-[oklch(0.556_0_0)]">
+            <p className="text-[15px] text-muted-foreground leading-relaxed">
               Track your mission completion and performance insights
             </p>
           </div>
@@ -103,10 +103,10 @@ export default function MissionAnalyticsPage() {
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl text-[13px] font-semibold transition-all hover:scale-[1.02] active:scale-[0.98] ${
                   period === p
-                    ? 'bg-[oklch(0.7_0.15_230)] text-white'
-                    : 'bg-white/80 text-[oklch(0.556_0_0)] hover:bg-white'
+                    ? 'bg-[oklch(0.7_0.15_230)] text-white shadow-sm'
+                    : 'bg-white/80 backdrop-blur-md text-[oklch(0.556_0_0)] hover:bg-white hover:shadow-sm border border-white/30'
                 }`}
               >
                 {p === '7d' ? '7 Days' : p === '30d' ? '30 Days' : '90 Days'}
