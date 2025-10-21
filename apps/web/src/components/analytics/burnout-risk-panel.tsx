@@ -23,6 +23,7 @@ import {
   TrendingDown,
 } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
 export type BurnoutRiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
 
@@ -88,155 +89,205 @@ export function BurnoutRiskPanel({
   const sortedFactors = [...contributingFactors].sort((a, b) => b.percentage - a.percentage)
 
   return (
-    <div
-      className={`bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl p-6 ${className}`}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-heading font-semibold text-foreground text-lg">Burnout Risk</h3>
-        <div className="text-xs text-muted-foreground">
-          Updated {format(lastAssessmentDate, 'MMM d, h:mm a')}
-        </div>
-      </div>
-
-      {/* Risk level indicator */}
-      <div
-        className="flex items-center gap-4 p-4 rounded-xl mb-6"
-        style={{
-          backgroundColor: `color-mix(in oklch, ${config.color}, transparent 90%)`,
-          borderLeft: `6px solid ${config.color}`,
-        }}
-      >
-        <div
-          className="p-3 rounded-full shrink-0"
-          style={{ backgroundColor: `color-mix(in oklch, ${config.color}, transparent 80%)` }}
-        >
-          <RiskIcon className="size-7" style={{ color: config.color }} />
-        </div>
-
-        <div className="flex-1">
-          <div className="flex items-baseline gap-3 mb-1">
-            <h4 className="text-2xl font-bold font-heading" style={{ color: config.color }}>
-              {config.label}
-            </h4>
-            <span className="text-lg font-semibold text-muted-foreground">
-              {Math.round(riskScore)}/100
-            </span>
+    <Card className={`shadow-sm hover:shadow-md transition-shadow ${className}`}>
+      <CardHeader className="p-4 pb-0">
+        <div className="flex items-center justify-between">
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">Burnout Risk</h3>
+          <div className="text-[11px] text-muted-foreground">
+            Updated {format(lastAssessmentDate, 'MMM d, h:mm a')}
           </div>
-          <p className="text-sm text-muted-foreground">{config.message}</p>
         </div>
-      </div>
+      </CardHeader>
 
-      {/* Days since last rest */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <CardContent className="p-4 pt-4 space-y-4">
+        {/* Risk level indicator */}
         <div
-          className={`p-4 rounded-lg ${
-            daysSinceLastRest > 7 ? 'bg-red-50 border border-red-200' : 'bg-muted/30'
-          }`}
+          className="flex items-center gap-4 p-4 rounded-xl"
+          style={{
+            backgroundColor: `color-mix(in oklch, ${config.color}, transparent 90%)`,
+            borderLeft: `6px solid ${config.color}`,
+          }}
         >
-          <div className="flex items-center gap-2 mb-2">
-            <Calendar
-              className={`size-4 ${daysSinceLastRest > 7 ? 'text-red-600' : 'text-muted-foreground'}`}
-            />
-            <span className="text-xs font-medium text-muted-foreground">Days Since Rest</span>
-          </div>
           <div
-            className={`text-2xl font-bold font-heading ${
-              daysSinceLastRest > 7 ? 'text-red-600' : 'text-foreground'
+            className="p-3 rounded-full shrink-0"
+            style={{ backgroundColor: `color-mix(in oklch, ${config.color}, transparent 80%)` }}
+          >
+            <RiskIcon className="size-7" style={{ color: config.color }} />
+          </div>
+
+          <div className="flex-1">
+            <div className="flex items-baseline gap-3 mb-1">
+              <h4 className="text-[24px] font-bold font-heading" style={{ color: config.color }}>
+                {config.label}
+              </h4>
+              <span className="text-[20px] font-semibold text-muted-foreground">
+                {Math.round(riskScore)}/100
+              </span>
+            </div>
+            <p className="text-[13px] text-muted-foreground">{config.message}</p>
+          </div>
+        </div>
+
+        {/* Days since last rest */}
+        <div className="grid grid-cols-2 gap-4">
+          <div
+            className={`p-4 rounded-lg ${
+              daysSinceLastRest > 7 ? 'bg-destructive/10 border border-destructive/30' : 'bg-muted/30'
             }`}
           >
-            {daysSinceLastRest}
-          </div>
-          {daysSinceLastRest > 7 && <p className="text-xs text-red-600 mt-1">Rest day overdue</p>}
-        </div>
-
-        {/* Recovery progress (if in recovery) */}
-        {recoveryProgress !== undefined && (
-          <div className="p-4 rounded-lg bg-green-50 border border-green-200">
             <div className="flex items-center gap-2 mb-2">
-              <TrendingDown className="size-4 text-green-600" />
-              <span className="text-xs font-medium text-muted-foreground">Recovery Progress</span>
+              <Calendar
+                className={`size-4 ${daysSinceLastRest > 7 ? 'text-destructive' : 'text-muted-foreground'}`}
+              />
+              <span className="text-[11px] font-medium text-muted-foreground">Days Since Rest</span>
             </div>
-            <div className="text-2xl font-bold font-heading text-green-600">
-              {Math.round(recoveryProgress)}%
-            </div>
-            <p className="text-xs text-green-600 mt-1">On track</p>
-          </div>
-        )}
-      </div>
-
-      {/* Contributing factors */}
-      <div className="mb-6">
-        <h4 className="text-sm font-semibold text-foreground mb-3">Contributing Factors</h4>
-        <div className="space-y-3">
-          {sortedFactors.map((factor, index) => (
-            <div key={index} className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-foreground">{factor.factor}</span>
-                <span className="text-xs font-semibold text-muted-foreground">
-                  {Math.round(factor.percentage)}%
-                </span>
-              </div>
-
-              {/* Progress bar */}
-              <div className="w-full h-2 bg-muted/30 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${factor.percentage}%`,
-                    backgroundColor: config.color,
-                  }}
-                />
-              </div>
-
-              <p className="text-xs text-muted-foreground">{factor.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Recommendations */}
-      <div>
-        <h4 className="text-sm font-semibold text-foreground mb-3">Recommendations</h4>
-        <div className="space-y-2">
-          {recommendations.map((recommendation, index) => (
             <div
-              key={index}
-              className="flex items-start gap-3 p-3 rounded-lg bg-muted/40 hover:bg-muted/60 transition-colors"
+              className={`text-[24px] font-bold font-heading ${
+                daysSinceLastRest > 7 ? 'text-destructive' : 'text-foreground'
+              }`}
             >
+              {daysSinceLastRest}
+            </div>
+            {daysSinceLastRest > 7 && <p className="text-[11px] text-destructive mt-1">Rest day overdue</p>}
+          </div>
+
+          {/* Recovery progress (if in recovery) */}
+          {recoveryProgress !== undefined && (
+            <div className="p-4 rounded-lg bg-success/10 border border-success/30">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingDown className="size-4 text-success" />
+                <span className="text-[11px] font-medium text-muted-foreground">Recovery Progress</span>
+              </div>
+              <div className="text-[24px] font-bold font-heading text-success">
+                {Math.round(recoveryProgress)}%
+              </div>
+              <p className="text-[11px] text-success mt-1">On track</p>
+            </div>
+          )}
+        </div>
+
+        {/* Contributing factors */}
+        <div>
+          <h4 className="text-[13px] font-semibold text-foreground mb-3">Contributing Factors</h4>
+          <div className="space-y-3">
+            {sortedFactors.map((factor, index) => (
+              <div key={index} className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-foreground">{factor.factor}</span>
+                  <span className="text-[11px] font-semibold text-muted-foreground">
+                    {Math.round(factor.percentage)}%
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="w-full h-2 bg-muted/30 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${factor.percentage}%`,
+                      backgroundColor: config.color,
+                    }}
+                  />
+                </div>
+
+                <p className="text-[11px] text-muted-foreground">{factor.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recommendations */}
+        <div>
+          <h4 className="text-[13px] font-semibold text-foreground mb-3">Recommendations</h4>
+          <div className="space-y-2">
+            {recommendations.map((recommendation, index) => (
               <div
-                className="shrink-0 size-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5"
+                key={index}
+                className="flex items-start gap-3 p-3 rounded-lg bg-muted/40 hover:bg-muted/60 transition-colors"
+              >
+                <div
+                  className="shrink-0 size-5 rounded-full flex items-center justify-center text-[11px] font-bold mt-0.5"
+                  style={{
+                    backgroundColor: `color-mix(in oklch, ${config.color}, transparent 80%)`,
+                    color: config.color,
+                  }}
+                >
+                  {index + 1}
+                </div>
+                <p className="text-[13px] text-foreground flex-1">{recommendation}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Action buttons - Prominent for HIGH/CRITICAL risk levels */}
+        {(riskLevel === 'HIGH' || riskLevel === 'CRITICAL') && (
+          <div className="pt-4 border-t border-muted space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => {
+                  // TODO: Integrate with session orchestration
+                  console.log('Take Break action triggered')
+                }}
+                className="py-3 px-4 rounded-lg font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                style={{ backgroundColor: config.color }}
+              >
+                <span>Take Break</span>
+              </button>
+              <button
+                onClick={() => {
+                  // TODO: Integrate with calendar sync
+                  console.log('Reschedule Session action triggered')
+                }}
+                className="py-3 px-4 rounded-lg font-semibold transition-all hover:scale-[1.02] active:scale-[0.98] border-2 flex items-center justify-center gap-2"
                 style={{
-                  backgroundColor: `color-mix(in oklch, ${config.color}, transparent 80%)`,
+                  borderColor: config.color,
                   color: config.color,
+                  backgroundColor: 'transparent',
                 }}
               >
-                {index + 1}
-              </div>
-              <p className="text-sm text-foreground flex-1">{recommendation}</p>
+                <span>Reschedule</span>
+              </button>
             </div>
-          ))}
-        </div>
-      </div>
+            {riskLevel === 'CRITICAL' && (
+              <div
+                className="p-3 rounded-lg flex items-start gap-3"
+                style={{
+                  backgroundColor: `color-mix(in oklch, ${config.color}, transparent 92%)`,
+                  border: `2px solid ${config.color}`,
+                }}
+              >
+                <AlertCircle className="size-5 shrink-0 mt-0.5" style={{ color: config.color }} />
+                <p className="text-[13px] font-medium" style={{ color: config.color }}>
+                  Continuing to study at this cognitive load may harm your long-term retention. Please prioritize rest.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
-      {/* Action buttons (optional - future enhancement) */}
-      {riskLevel === 'HIGH' || riskLevel === 'CRITICAL' ? (
-        <div className="mt-6 pt-6 border-t border-muted">
-          <button
-            className="w-full py-3 px-4 rounded-lg font-semibold text-white transition-colors hover:opacity-90"
-            style={{ backgroundColor: config.color }}
-          >
-            Schedule Rest Day
-          </button>
-        </div>
-      ) : null}
+        {/* Supportive action for LOW/MEDIUM risk */}
+        {(riskLevel === 'LOW' || riskLevel === 'MEDIUM') && (
+          <div className="pt-4 border-t border-muted">
+            <button
+              onClick={() => {
+                // TODO: Navigate to analytics dashboard
+                console.log('View detailed analytics')
+              }}
+              className="w-full py-2.5 px-4 rounded-lg font-medium text-[13px] transition-all hover:bg-muted/60 bg-muted/40 text-foreground"
+            >
+              View Detailed Analytics
+            </button>
+          </div>
+        )}
 
-      {/* ARIA live region for screen readers */}
-      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
-        Burnout risk is {config.label} with a score of {Math.round(riskScore)} out of 100.
-        {daysSinceLastRest > 7 && `It has been ${daysSinceLastRest} days since your last rest day.`}
-        {recommendations.length > 0 && `${recommendations.length} recommendations available.`}
-      </div>
-    </div>
+        {/* ARIA live region for screen readers */}
+        <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          Burnout risk is {config.label} with a score of {Math.round(riskScore)} out of 100.
+          {daysSinceLastRest > 7 && `It has been ${daysSinceLastRest} days since your last rest day.`}
+          {recommendations.length > 0 && `${recommendations.length} recommendations available.`}
+        </div>
+      </CardContent>
+    </Card>
   )
 }

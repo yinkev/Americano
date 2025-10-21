@@ -25,6 +25,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { format } from 'date-fns'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
 interface CognitiveLoadMeterProps {
   currentLoad: number // 0-100 scale
@@ -97,20 +98,20 @@ export function CognitiveLoadMeter({
   const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus
 
   return (
-    <div
-      className={`bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl p-6 ${className}`}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-heading font-semibold text-foreground text-lg">Cognitive Load</h3>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <TrendIcon className="size-4" />
-          <span className="capitalize">{trend}</span>
+    <Card className={`shadow-sm hover:shadow-md transition-shadow ${className}`}>
+      <CardHeader className="p-4 pb-0">
+        <div className="flex items-center justify-between">
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">Cognitive Load</h3>
+          <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
+            <TrendIcon className="size-4 text-info" />
+            <span className="capitalize">{trend}</span>
+          </div>
         </div>
-      </div>
+      </CardHeader>
 
-      {/* Circular Gauge */}
-      <div className="relative w-full aspect-square max-w-[280px] mx-auto mb-6">
+      <CardContent className="p-4 pt-4">
+        {/* Circular Gauge */}
+        <div className="relative w-full aspect-square max-w-[320px] mx-auto mb-4">
         <svg
           viewBox="0 0 200 200"
           className="w-full h-full transform -rotate-90"
@@ -167,10 +168,54 @@ export function CognitiveLoadMeter({
           >
             <ZoneIcon className="size-8" style={{ color: zone.color }} />
           </div>
-          <div className="text-4xl font-bold font-heading" style={{ color: zone.color }}>
+          <div className="text-[32px] font-bold font-heading" style={{ color: zone.color }}>
             {Math.round(loadPercentage)}
           </div>
-          <div className="text-sm text-muted-foreground font-medium">/ 100</div>
+          <div className="text-[13px] text-muted-foreground font-medium">/ 100</div>
+        </div>
+      </div>
+
+      {/* Animated linear progress bar with OKLCH gradient (zone-based colors, no CSS gradients) */}
+      <div className="mb-4">
+        <div className="w-full h-3 bg-muted/30 rounded-full overflow-hidden relative">
+          {/* Multi-segment progress bar using solid OKLCH colors */}
+          <div className="absolute inset-0 flex">
+            {Object.entries(LOAD_ZONES).map(([zoneName, zoneData]) => {
+              const [zoneMin, zoneMax] = zoneData.range
+              const zoneWidth = ((zoneMax - zoneMin) / 100) * 100
+
+              // Only fill up to current load percentage
+              const isActive = loadPercentage > zoneMin
+              const fillWidth = isActive
+                ? Math.min(loadPercentage - zoneMin, zoneMax - zoneMin)
+                : 0
+              const fillPercentage = (fillWidth / (zoneMax - zoneMin)) * 100
+
+              return (
+                <div
+                  key={zoneName}
+                  className="relative"
+                  style={{ width: `${zoneWidth}%` }}
+                >
+                  <div
+                    className="h-3 transition-all duration-500 ease-out"
+                    style={{
+                      width: `${fillPercentage}%`,
+                      backgroundColor: zoneData.color,
+                    }}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+        {/* Zone labels below progress bar */}
+        <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground font-medium">
+          <span>0</span>
+          <span>40</span>
+          <span>60</span>
+          <span>80</span>
+          <span>100</span>
         </div>
       </div>
 
@@ -187,19 +232,20 @@ export function CognitiveLoadMeter({
         </span>
       </div>
 
-      {/* Supportive message */}
-      <p className="text-sm text-center text-muted-foreground mb-4">{zone.message}</p>
+        {/* Supportive message */}
+        <p className="text-[13px] text-center text-muted-foreground mb-4">{zone.message}</p>
 
-      {/* Last updated */}
-      <div className="text-xs text-center text-muted-foreground">
-        Updated {format(lastUpdated, 'h:mm a')}
-      </div>
+        {/* Last updated */}
+        <div className="text-[11px] text-center text-muted-foreground">
+          Updated {format(lastUpdated, 'h:mm a')}
+        </div>
 
-      {/* ARIA live region for screen readers */}
-      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
-        Cognitive load is {zone.label} at {Math.round(loadPercentage)} percent. Load is trending{' '}
-        {trend}.{zone.message}
-      </div>
-    </div>
+        {/* ARIA live region for screen readers */}
+        <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          Cognitive load is {zone.label} at {Math.round(loadPercentage)} percent. Load is trending{' '}
+          {trend}.{zone.message}
+        </div>
+      </CardContent>
+    </Card>
   )
 }

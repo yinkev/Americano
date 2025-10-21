@@ -27,6 +27,8 @@ import {
   Area,
 } from 'recharts'
 import { Calendar, TrendingUp } from 'lucide-react'
+import { chartTheme, chartColors } from '@/lib/chart-theme'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
 export interface CognitiveLoadDataPoint {
   timestamp: Date
@@ -111,9 +113,9 @@ export function StressPatternsTimeline({
             : 'Critical'
 
     return (
-      <div className="bg-white/95 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.15)] rounded-lg p-4 max-w-xs">
-        <div className="text-sm font-semibold text-foreground mb-2">{data.formattedDate}</div>
-        <div className="space-y-1 text-xs">
+      <div className="bg-card border border-border shadow-sm rounded-lg p-4 max-w-xs">
+        <div className="text-[13px] font-semibold text-foreground mb-2">{data.formattedDate}</div>
+        <div className="space-y-1 text-[11px]">
           <div className="flex items-center justify-between gap-4">
             <span className="text-muted-foreground">Load Score:</span>
             <span className="font-semibold text-foreground">{Math.round(data.loadScore)}</span>
@@ -151,83 +153,84 @@ export function StressPatternsTimeline({
 
   if (filteredData.length === 0) {
     return (
-      <div
-        className={`bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl p-6 ${className}`}
-      >
-        <div className="flex items-center justify-center py-12 text-center">
-          <div>
-            <Calendar className="size-12 text-muted-foreground mx-auto mb-3 opacity-40" />
-            <p className="text-sm text-muted-foreground">
-              No cognitive load data available for this time range
-            </p>
+      <Card className={`shadow-sm ${className}`}>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-center py-12 text-center">
+            <div>
+              <Calendar className="size-12 text-muted-foreground mx-auto mb-3 opacity-40" />
+              <p className="text-[13px] text-muted-foreground">
+                No cognitive load data available for this time range
+              </p>
+            </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     )
   }
 
   return (
-    <div
-      className={`bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl p-6 ${className}`}
-    >
-      {/* Header with time range toggle */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="font-heading font-semibold text-foreground text-lg">Load Patterns</h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            {timeRange === '7day' ? 'Past 7 days' : 'Past 30 days'}
-          </p>
-        </div>
+    <Card className={`shadow-sm hover:shadow-md transition-shadow ${className}`}>
+      <CardHeader className="p-4 pb-0">
+        {/* Header with time range toggle */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-heading font-semibold text-foreground text-[16px]">Load Patterns</h3>
+            <p className="text-[13px] text-muted-foreground mt-1">
+              {timeRange === '7day' ? 'Past 7 days' : 'Past 30 days'}
+            </p>
+          </div>
 
-        {/* Time range toggle */}
-        <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
-          <button
-            onClick={() => setTimeRange('7day')}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-              timeRange === '7day'
-                ? 'bg-white shadow-sm text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            7 Days
-          </button>
-          <button
-            onClick={() => setTimeRange('30day')}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-              timeRange === '30day'
-                ? 'bg-white shadow-sm text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            30 Days
-          </button>
-        </div>
-      </div>
-
-      {/* Summary stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-muted/30 rounded-lg p-3">
-          <div className="text-xs text-muted-foreground mb-1">Average Load</div>
-          <div className="text-xl font-bold font-heading text-foreground">
-            {Math.round(stats.avgLoad)}
+          {/* Time range toggle with Wave 3 micro-interactions */}
+          <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+            <button
+              onClick={() => setTimeRange('7day')}
+              className={`px-3 py-1.5 text-[13px] font-medium rounded-md transition-all duration-200 ${
+                timeRange === '7day'
+                  ? 'bg-white shadow-sm text-foreground scale-100'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/50 active:scale-95'
+              }`}
+            >
+              7 Days
+            </button>
+            <button
+              onClick={() => setTimeRange('30day')}
+              className={`px-3 py-1.5 text-[13px] font-medium rounded-md transition-all duration-200 ${
+                timeRange === '30day'
+                  ? 'bg-white shadow-sm text-foreground scale-100'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/50 active:scale-95'
+              }`}
+            >
+              30 Days
+            </button>
           </div>
         </div>
-        <div className="bg-muted/30 rounded-lg p-3">
-          <div className="text-xs text-muted-foreground mb-1">Peak Load</div>
-          <div className="text-xl font-bold font-heading text-foreground">
-            {Math.round(stats.maxLoad)}
-          </div>
-        </div>
-        <div className="bg-muted/30 rounded-lg p-3">
-          <div className="text-xs text-muted-foreground mb-1">Overload Events</div>
-          <div className="text-xl font-bold font-heading text-foreground">
-            {stats.overloadCount}
-          </div>
-        </div>
-      </div>
+      </CardHeader>
 
-      {/* Line chart */}
-      <div className="w-full h-[300px]">
+      <CardContent className="p-4 pt-4 space-y-4">
+        {/* Summary stats with Wave 3 micro-interactions */}
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-muted/30 rounded-lg p-3 transition-all duration-200 hover:bg-muted/50 hover:scale-[1.02]">
+            <div className="text-[11px] text-muted-foreground mb-1">Average Load</div>
+            <div className="text-[20px] font-bold font-heading text-foreground">
+              {Math.round(stats.avgLoad)}
+            </div>
+          </div>
+          <div className="bg-muted/30 rounded-lg p-3 transition-all duration-200 hover:bg-muted/50 hover:scale-[1.02]">
+            <div className="text-[11px] text-muted-foreground mb-1">Peak Load</div>
+            <div className="text-[20px] font-bold font-heading text-foreground">
+              {Math.round(stats.maxLoad)}
+            </div>
+          </div>
+          <div className="bg-muted/30 rounded-lg p-3 transition-all duration-200 hover:bg-muted/50 hover:scale-[1.02]">
+            <div className="text-[11px] text-muted-foreground mb-1">Overload Events</div>
+            <div className="text-[20px] font-bold font-heading text-foreground">
+              {stats.overloadCount}
+            </div>
+          </div>
+        </div>
+
+        {/* Line chart with Wave 3 theme */}
+        <div className="w-full h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={filteredData}
@@ -236,52 +239,77 @@ export function StressPatternsTimeline({
                 onDataPointClick(e.activePayload[0].payload)
               }
             }}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" opacity={0.3} />
+            {/* Grid with Wave 3 theme */}
+            <CartesianGrid {...chartTheme.grid} />
 
+            {/* X-Axis with Wave 3 theme */}
             <XAxis
               dataKey="shortDate"
-              tick={{ fontSize: 12, fill: 'oklch(0.5 0 0)' }}
-              tickLine={false}
-              axisLine={{ stroke: 'oklch(0.85 0 0)' }}
+              {...chartTheme.axis}
+              tick={{ fontSize: 11, fill: chartColors.text }}
             />
 
+            {/* Y-Axis with Wave 3 theme */}
             <YAxis
               domain={[0, 100]}
-              tick={{ fontSize: 12, fill: 'oklch(0.5 0 0)' }}
-              tickLine={false}
-              axisLine={{ stroke: 'oklch(0.85 0 0)' }}
+              {...chartTheme.axis}
+              tick={{ fontSize: 11, fill: chartColors.text }}
               label={{
-                value: 'Load Score',
+                value: 'Cognitive Load',
                 angle: -90,
                 position: 'insideLeft',
-                style: { fontSize: 12, fill: 'oklch(0.5 0 0)' },
+                style: { fontSize: 11, fill: chartColors.text, fontWeight: 500 },
               }}
             />
 
-            {/* Reference lines for load zones */}
+            {/* Reference lines for load zones with enhanced styling */}
             <ReferenceLine
               y={40}
               stroke={LOAD_COLORS.moderate}
-              strokeDasharray="3 3"
-              opacity={0.3}
+              strokeDasharray="5 5"
+              strokeWidth={1.5}
+              opacity={0.4}
+              label={{
+                value: 'Moderate',
+                position: 'right',
+                style: { fontSize: 9, fill: LOAD_COLORS.moderate, fontWeight: 600 },
+              }}
             />
-            <ReferenceLine y={60} stroke={LOAD_COLORS.high} strokeDasharray="3 3" opacity={0.3} />
+            <ReferenceLine
+              y={60}
+              stroke={LOAD_COLORS.high}
+              strokeDasharray="5 5"
+              strokeWidth={1.5}
+              opacity={0.4}
+              label={{
+                value: 'High',
+                position: 'right',
+                style: { fontSize: 9, fill: LOAD_COLORS.high, fontWeight: 600 },
+              }}
+            />
             <ReferenceLine
               y={80}
               stroke={LOAD_COLORS.critical}
-              strokeDasharray="3 3"
-              opacity={0.3}
+              strokeDasharray="5 5"
+              strokeWidth={2}
+              opacity={0.5}
+              label={{
+                value: 'Critical',
+                position: 'right',
+                style: { fontSize: 9, fill: LOAD_COLORS.critical, fontWeight: 700 },
+              }}
             />
 
-            <Tooltip content={<CustomTooltip />} />
+            {/* Enhanced tooltip with Wave 3 theme */}
+            <Tooltip content={<CustomTooltip />} cursor={chartTheme.tooltip.cursor} />
 
-            {/* Main load line */}
+            {/* Main load line with smooth animation */}
             <Line
               type="monotone"
               dataKey="loadScore"
-              stroke="oklch(0.6 0.15 240)" // Blue
+              stroke={chartColors.primary}
               strokeWidth={3}
               dot={(props: any) => {
                 const { cx, cy, payload } = props
@@ -298,28 +326,38 @@ export function StressPatternsTimeline({
                   <circle
                     cx={cx}
                     cy={cy}
-                    r={payload.overloadDetected ? 6 : 4}
+                    r={payload.overloadDetected ? 7 : 5}
                     fill={color}
                     stroke="white"
-                    strokeWidth={2}
+                    strokeWidth={2.5}
+                    className="transition-all duration-200 hover:r-8"
                   />
                 )
               }}
-              activeDot={{ r: 6, strokeWidth: 2 }}
+              activeDot={{
+                r: 8,
+                strokeWidth: 3,
+                stroke: chartColors.primary,
+                fill: 'white',
+              }}
+              isAnimationActive={true}
+              animationDuration={800}
+              animationEasing="ease-out"
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Trend indicator */}
-      {stats.trend !== 'stable' && (
-        <div className="mt-4 flex items-center justify-center gap-2 text-sm">
-          <TrendingUp className={`size-4 ${stats.trend === 'down' ? 'rotate-180' : ''}`} />
-          <span className="text-muted-foreground">
-            Load is trending {stats.trend === 'up' ? 'upward' : 'downward'} over this period
-          </span>
-        </div>
-      )}
-    </div>
+        {/* Trend indicator */}
+        {stats.trend !== 'stable' && (
+          <div className="flex items-center justify-center gap-2 text-[13px]">
+            <TrendingUp className={`size-4 text-info ${stats.trend === 'down' ? 'rotate-180' : ''}`} />
+            <span className="text-muted-foreground">
+              Load is trending {stats.trend === 'up' ? 'upward' : 'downward'} over this period
+            </span>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

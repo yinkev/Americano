@@ -24,6 +24,7 @@ import {
   Tooltip,
 } from 'recharts'
 import { AlertTriangle, CheckCircle, Target } from 'lucide-react'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
 export interface StressTrigger {
   dimension: string // e.g., "Topic Difficulty", "Time Pressure"
@@ -68,9 +69,9 @@ export function StressProfileCard({
     const isAboveTolerance = data.score > data.tolerance
 
     return (
-      <div className="bg-white/95 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.15)] rounded-lg p-3">
-        <div className="text-sm font-semibold text-foreground mb-1">{data.dimension}</div>
-        <div className="space-y-1 text-xs">
+      <div className="bg-card border border-border shadow-sm rounded-lg p-3">
+        <div className="text-[13px] font-semibold text-foreground mb-1">{data.dimension}</div>
+        <div className="space-y-1 text-[11px]">
           <div className="flex items-center justify-between gap-4">
             <span className="text-muted-foreground">Stress Score:</span>
             <span
@@ -97,22 +98,23 @@ export function StressProfileCard({
   }
 
   return (
-    <div
-      className={`bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl p-6 ${className}`}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-heading font-semibold text-foreground text-lg">Stress Profile</h3>
-        <div className="flex items-center gap-2">
-          <Target className="size-4 text-primary" />
-          <span className="text-xs text-muted-foreground">
-            {Math.round(profileConfidence * 100)}% confidence
-          </span>
+    <Card className={`shadow-sm hover:shadow-md transition-shadow ${className}`}>
+      <CardHeader className="p-4 pb-0">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">Stress Profile</h3>
+          <div className="flex items-center gap-2">
+            <Target className="size-4 text-clinical" />
+            <span className="text-[11px] text-muted-foreground">
+              {Math.round(profileConfidence * 100)}% confidence
+            </span>
+          </div>
         </div>
-      </div>
+      </CardHeader>
 
-      {/* Radar chart */}
-      <div className="w-full h-[320px] mb-6">
+      <CardContent className="p-4 pt-4 space-y-4">
+        {/* Radar chart */}
+        <div className="w-full h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={radarData}>
             <PolarGrid stroke="oklch(0.85 0 0)" strokeDasharray="3 3" />
@@ -156,72 +158,73 @@ export function StressProfileCard({
         </ResponsiveContainer>
       </div>
 
-      {/* Primary stressors */}
-      {primaryStressors.length > 0 && (
-        <div className="mb-6">
-          <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-            <AlertTriangle className="size-4 text-orange-600" />
-            Primary Stressors
-          </h4>
-          <div className="flex flex-wrap gap-2">
-            {primaryStressors.map((stressor, index) => (
-              <div
-                key={index}
-                className="px-3 py-1.5 rounded-lg text-sm font-medium"
-                style={{
-                  backgroundColor: 'oklch(0.95 0.05 50)',
-                  color: 'oklch(0.5 0.15 50)',
-                  border: '1px solid oklch(0.9 0.1 50)',
-                }}
-              >
-                {stressor.dimension}
-              </div>
-            ))}
+        {/* Primary stressors */}
+        {primaryStressors.length > 0 && (
+          <div>
+            <h4 className="text-[13px] font-semibold text-foreground mb-3 flex items-center gap-2">
+              <AlertTriangle className="size-4 text-warning" />
+              Primary Stressors
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {primaryStressors.map((stressor, index) => (
+                <div
+                  key={index}
+                  className="px-3 py-1.5 rounded-lg text-[13px] font-medium"
+                  style={{
+                    backgroundColor: 'oklch(0.95 0.05 50)',
+                    color: 'oklch(0.5 0.15 50)',
+                    border: '1px solid oklch(0.9 0.1 50)',
+                  }}
+                >
+                  {stressor.dimension}
+                </div>
+              ))}
+            </div>
           </div>
+        )}
+
+        {/* Load tolerance indicator */}
+        <div className="p-3 rounded-lg bg-muted/30">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-medium text-muted-foreground">Your Load Tolerance</span>
+            <span className="text-[20px] font-bold font-heading text-foreground">
+              {Math.round(loadTolerance)}
+            </span>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            You typically experience stress when cognitive load exceeds this threshold
+          </p>
         </div>
-      )}
 
-      {/* Load tolerance indicator */}
-      <div className="mb-6 p-3 rounded-lg bg-muted/30">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-muted-foreground">Your Load Tolerance</span>
-          <span className="text-lg font-bold font-heading text-foreground">
-            {Math.round(loadTolerance)}
-          </span>
+        {/* Effective coping strategies */}
+        <div>
+          <h4 className="text-[13px] font-semibold text-foreground mb-3 flex items-center gap-2">
+            <CheckCircle className="size-4 text-success" />
+            Effective Coping Strategies
+          </h4>
+          <ul className="space-y-2">
+            {copingStrategies.map((strategy, index) => (
+              <li
+                key={index}
+                className="flex items-start gap-3 p-3 rounded-lg bg-success/10 border border-success/30 hover:bg-success/20 transition-colors"
+              >
+                <span className="shrink-0 size-5 rounded-full bg-success text-white flex items-center justify-center text-[11px] font-bold mt-0.5">
+                  {index + 1}
+                </span>
+                <p className="text-[13px] text-foreground flex-1">{strategy}</p>
+              </li>
+            ))}
+          </ul>
         </div>
-        <p className="text-xs text-muted-foreground">
-          You typically experience stress when cognitive load exceeds this threshold
-        </p>
-      </div>
 
-      {/* Effective coping strategies */}
-      <div>
-        <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-          <CheckCircle className="size-4 text-green-600" />
-          Effective Coping Strategies
-        </h4>
-        <ul className="space-y-2">
-          {copingStrategies.map((strategy, index) => (
-            <li
-              key={index}
-              className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200 hover:bg-green-100 transition-colors"
-            >
-              <span className="shrink-0 size-5 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-bold mt-0.5">
-                {index + 1}
-              </span>
-              <p className="text-sm text-foreground flex-1">{strategy}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* ARIA live region for screen readers */}
-      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
-        Stress profile shows {primaryStressors.length} primary stressor
-        {primaryStressors.length !== 1 ? 's' : ''}: {primaryStressors.map((s) => s.dimension).join(', ')}.
-        Your load tolerance is {Math.round(loadTolerance)}. You have {copingStrategies.length}{' '}
-        effective coping strategies.
-      </div>
-    </div>
+        {/* ARIA live region for screen readers */}
+        <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          Stress profile shows {primaryStressors.length} primary stressor
+          {primaryStressors.length !== 1 ? 's' : ''}: {primaryStressors.map((s) => s.dimension).join(', ')}.
+          Your load tolerance is {Math.round(loadTolerance)}. You have {copingStrategies.length}{' '}
+          effective coping strategies.
+        </div>
+      </CardContent>
+    </Card>
   )
 }

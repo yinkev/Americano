@@ -118,10 +118,10 @@ export function InterventionRecommendationPanel() {
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-      <CardHeader>
+    <Card className="shadow-sm hover:shadow-md transition-shadow">
+      <CardHeader className="p-4 pb-0">
         <div className="flex items-start justify-between gap-4">
-          <CardTitle className="font-heading text-lg">Recommended Actions</CardTitle>
+          <CardTitle className="font-heading text-[16px]">Recommended Actions</CardTitle>
           <Badge variant="secondary" className="shrink-0">
             {interventions.filter((i) => !i.applied).length} Available
           </Badge>
@@ -132,7 +132,7 @@ export function InterventionRecommendationPanel() {
           <button
             onClick={() => setAutoApply(!autoApply)}
             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-              autoApply ? 'bg-[oklch(0.7_0.15_230)]' : 'bg-[oklch(0.922_0_0)]'
+              autoApply ? 'bg-info' : 'bg-muted'
             }`}
             role="switch"
             aria-checked={autoApply}
@@ -145,20 +145,20 @@ export function InterventionRecommendationPanel() {
             />
           </button>
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">Auto-apply interventions</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[13px] font-medium text-foreground">Auto-apply interventions</p>
+            <p className="text-[11px] text-muted-foreground">
               Automatically add recommended actions to your missions
             </p>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3">
+      <CardContent className="p-4 pt-4 space-y-3">
         {interventions.length === 0 ? (
           <div className="py-8 text-center">
-            <CheckCircle2 className="size-12 mx-auto text-[oklch(0.7_0.12_145)] mb-3" />
-            <p className="text-sm font-medium text-foreground">All set!</p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <CheckCircle2 className="size-12 mx-auto text-success mb-3" />
+            <p className="text-[13px] font-medium text-foreground">All set!</p>
+            <p className="text-[11px] text-muted-foreground mt-1">
               No interventions needed at this time
             </p>
           </div>
@@ -196,62 +196,53 @@ function InterventionCard({
     <div
       className={`p-4 rounded-xl border transition-all ${
         intervention.applied
-          ? 'bg-[oklch(0.7_0.12_145)]/10 border-[oklch(0.7_0.12_145)]/30'
-          : 'bg-white/60 border-white/40 hover:bg-white/80 hover:shadow-sm'
+          ? 'bg-success/10 border-success/30'
+          : 'bg-card border-border hover:shadow-sm'
       }`}
     >
       <div className="flex items-start gap-3">
         {/* Icon */}
         <div
           className={`p-2 rounded-lg shrink-0 ${
-            intervention.applied ? 'bg-[oklch(0.7_0.12_145)]/20' : 'bg-[oklch(0.7_0.15_230)]/10'
+            intervention.applied ? 'bg-success/20' : 'bg-info/10'
           }`}
         >
           <Icon
             className={`size-5 ${
-              intervention.applied ? 'text-[oklch(0.7_0.12_145)]' : 'text-[oklch(0.7_0.15_230)]'
+              intervention.applied ? 'text-success' : 'text-info'
             }`}
           />
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-sm text-foreground mb-1">{intervention.title}</h4>
-          <p className="text-xs text-muted-foreground mb-2">{intervention.description}</p>
+          <h4 className="font-semibold text-[13px] text-foreground mb-1">{intervention.title}</h4>
+          <p className="text-[11px] text-muted-foreground mb-2">{intervention.description}</p>
 
           {/* Effectiveness Badge */}
           <div className="flex items-center gap-2 mb-3">
             <Badge
               variant="secondary"
-              className="text-xs px-2 py-0.5"
-              style={{
-                backgroundColor: 'oklch(0.7 0.12 145 / 0.15)',
-                color: 'oklch(0.7 0.12 145)',
-                borderColor: 'oklch(0.7 0.12 145 / 0.3)',
-              }}
+              className="text-[11px] px-2 py-0.5 bg-success/10 text-success border-success/30"
             >
               {effectiveness.toFixed(0)}% Effective
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground italic">{intervention.estimatedImpact}</p>
+          <p className="text-[11px] text-muted-foreground italic">{intervention.estimatedImpact}</p>
 
           {/* Action Button */}
           <div className="mt-3">
             {intervention.applied ? (
-              <div className="flex items-center gap-2 text-xs font-medium text-[oklch(0.7_0.12_145)]">
+              <div className="flex items-center gap-2 text-[11px] font-medium text-success">
                 <CheckCircle2 className="size-4" />
                 Applied to missions
               </div>
             ) : (
               <Button
                 size="sm"
-                className="w-full min-h-9"
+                className="w-full min-h-9 bg-info hover:bg-info/90 text-white"
                 onClick={() => onApply(intervention.id)}
                 disabled={isApplying}
-                style={{
-                  backgroundColor: 'oklch(0.7 0.15 230)',
-                  color: 'white',
-                }}
               >
                 {isApplying ? (
                   <>

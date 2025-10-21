@@ -15,12 +15,12 @@ import { Suspense } from 'react'
 import { Brain, TrendingUp, Activity } from 'lucide-react'
 import { CognitiveHealthDashboard } from './cognitive-health-dashboard'
 
-// Loading skeleton components
+// Loading skeleton components - Clean, flat cards
 function LoadMeterSkeleton() {
   return (
-    <div className="bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl p-6 animate-pulse">
-      <div className="h-6 w-32 bg-muted rounded mb-6" />
-      <div className="w-full aspect-square max-w-[280px] mx-auto bg-muted rounded-full mb-6" />
+    <div className="bg-white border shadow-sm rounded-lg p-4 animate-pulse">
+      <div className="h-6 w-32 bg-muted rounded mb-4" />
+      <div className="w-full aspect-square max-w-[320px] mx-auto bg-muted rounded-full mb-4" />
       <div className="h-12 bg-muted rounded-lg mb-4" />
       <div className="h-10 bg-muted rounded mb-4" />
       <div className="h-4 bg-muted rounded" />
@@ -30,9 +30,9 @@ function LoadMeterSkeleton() {
 
 function TimelineSkeleton() {
   return (
-    <div className="bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl p-6 animate-pulse">
-      <div className="h-6 w-40 bg-muted rounded mb-6" />
-      <div className="grid grid-cols-3 gap-4 mb-6">
+    <div className="bg-white border shadow-sm rounded-lg p-4 animate-pulse">
+      <div className="h-6 w-40 bg-muted rounded mb-4" />
+      <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="h-16 bg-muted rounded-lg" />
         <div className="h-16 bg-muted rounded-lg" />
         <div className="h-16 bg-muted rounded-lg" />
@@ -44,14 +44,14 @@ function TimelineSkeleton() {
 
 function RiskPanelSkeleton() {
   return (
-    <div className="bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl p-6 animate-pulse">
-      <div className="h-6 w-32 bg-muted rounded mb-6" />
-      <div className="h-24 bg-muted rounded-xl mb-6" />
-      <div className="grid grid-cols-2 gap-4 mb-6">
+    <div className="bg-white border shadow-sm rounded-lg p-4 animate-pulse">
+      <div className="h-6 w-32 bg-muted rounded mb-4" />
+      <div className="h-24 bg-muted rounded-lg mb-4" />
+      <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="h-20 bg-muted rounded-lg" />
         <div className="h-20 bg-muted rounded-lg" />
       </div>
-      <div className="space-y-3 mb-6">
+      <div className="space-y-3 mb-4">
         <div className="h-16 bg-muted rounded-lg" />
         <div className="h-16 bg-muted rounded-lg" />
       </div>
@@ -65,19 +65,19 @@ function RiskPanelSkeleton() {
 
 export default function CognitiveHealthPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <main className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b border-white/10 bg-white/40 backdrop-blur-sm">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="border-b bg-white/50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8">
           <div className="flex items-start gap-4">
-            <div className="p-3 rounded-xl bg-primary/10 shrink-0">
-              <Brain className="size-8 text-primary" />
+            <div className="p-3 rounded-lg bg-[oklch(0.95_0.12_350)]/50 shrink-0">
+              <Brain className="size-8 text-[oklch(0.65_0.18_350)]" />
             </div>
             <div className="flex-1">
-              <h1 className="font-heading font-bold text-3xl text-foreground mb-2">
+              <h1 className="text-[28px] md:text-[32px] font-heading font-bold tracking-tight text-foreground mb-2">
                 Cognitive Health Dashboard
               </h1>
-              <p className="text-muted-foreground max-w-2xl">
+              <p className="text-[15px] text-muted-foreground max-w-2xl leading-relaxed">
                 Monitor your cognitive load, identify stress patterns, and prevent burnout with
                 data-driven insights. Your learning effectiveness depends on maintaining a healthy
                 cognitive balance.
@@ -85,34 +85,34 @@ export default function CognitiveHealthPage() {
             </div>
           </div>
 
-          {/* Quick stats bar */}
+          {/* Quick stats bar - Compact playful badges */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <div className="flex items-center gap-3 p-4 rounded-lg bg-white/60 backdrop-blur-sm border border-white/30">
-              <Activity className="size-5 text-primary shrink-0" />
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-white shadow-sm border">
+              <Activity className="size-5 text-success shrink-0" />
               <div className="flex-1 min-w-0">
-                <div className="text-xs text-muted-foreground">Current Session</div>
-                <div className="text-sm font-semibold text-foreground truncate">
+                <div className="text-[11px] text-muted-foreground">Current Session</div>
+                <div className="text-[13px] font-semibold text-foreground truncate">
                   Real-time monitoring active
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-4 rounded-lg bg-white/60 backdrop-blur-sm border border-white/30">
-              <TrendingUp className="size-5 text-primary shrink-0" />
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-white shadow-sm border">
+              <TrendingUp className="size-5 text-info shrink-0" />
               <div className="flex-1 min-w-0">
-                <div className="text-xs text-muted-foreground">Analysis Period</div>
-                <div className="text-sm font-semibold text-foreground truncate">
+                <div className="text-[11px] text-muted-foreground">Analysis Period</div>
+                <div className="text-[13px] font-semibold text-foreground truncate">
                   Last 30 days tracked
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-4 rounded-lg bg-white/60 backdrop-blur-sm border border-white/30">
-              <Brain className="size-5 text-primary shrink-0" />
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-white shadow-sm border">
+              <Brain className="size-5 text-[oklch(0.65_0.18_350)] shrink-0" />
               <div className="flex-1 min-w-0">
-                <div className="text-xs text-muted-foreground">Next Update</div>
-                <div className="text-sm font-semibold text-foreground truncate">
-                  Refreshes every 5 minutes
+                <div className="text-[11px] text-muted-foreground">Real-time Updates</div>
+                <div className="text-[13px] font-semibold text-foreground truncate">
+                  Refreshes every 30 seconds
                 </div>
               </div>
             </div>
@@ -120,18 +120,18 @@ export default function CognitiveHealthPage() {
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main content - Adaptive responsive grid */}
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8">
         <Suspense
           fallback={
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
               {/* Load meter column */}
               <div className="lg:col-span-1">
                 <LoadMeterSkeleton />
               </div>
 
               {/* Timeline and risk panel column */}
-              <div className="lg:col-span-2 space-y-6">
+              <div className="lg:col-span-2 space-y-4 md:space-y-6">
                 <TimelineSkeleton />
                 <RiskPanelSkeleton />
               </div>
@@ -142,13 +142,13 @@ export default function CognitiveHealthPage() {
         </Suspense>
       </div>
 
-      {/* Footer info */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-blue-900 mb-2">
+      {/* Footer info - OKLCH colors only */}
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl pb-8">
+        <div className="bg-info/10 border border-info/30 rounded-lg p-4">
+          <h3 className="text-[13px] font-semibold text-info mb-2">
             About Cognitive Load Monitoring
           </h3>
-          <p className="text-xs text-blue-700">
+          <p className="text-[13px] text-info/80 leading-relaxed">
             This dashboard uses behavioral analytics to estimate your cognitive load in real-time.
             Cognitive load monitoring helps prevent burnout and optimizes your learning
             effectiveness by adapting content difficulty and recommending breaks when needed. You
