@@ -1,0 +1,267 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.3</storyId>
+    <title>First Aid Integration and Cross-Referencing</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-3.3.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a medical student</asA>
+    <iWant>my lecture content automatically linked to relevant First Aid sections</iWant>
+    <soThat>I can quickly access board-relevant information while studying</soThat>
+    <tasks>
+      <task id="1" name="First Aid Content Processing and Ingestion">
+        <subtasks>
+          - Create First Aid content import pipeline (PDF upload)
+          - Process First Aid structure preservation (sections, subsections, page numbers)
+          - Generate First Aid content embeddings using EmbeddingService
+          - Add FirstAidSection data model to Prisma schema
+        </subtasks>
+      </task>
+      <task id="2" name="Automatic Content Mapping Using Semantic Similarity">
+        <subtasks>
+          - Implement FirstAidMapper algorithm using semantic similarity
+          - Semantic similarity-based mapping (cosine distance >0.75)
+          - High-yield topic prioritization
+          - Mapping quality validation with user feedback
+        </subtasks>
+      </task>
+      <task id="3" name="Cross-Reference Display in Lecture View">
+        <subtasks>
+          - Create FirstAidCrossReference component
+          - Implement contextual reference triggering (scroll-based)
+          - Build First Aid section detail view
+          - Seamless navigation between content
+        </subtasks>
+      </task>
+      <task id="4" name="Search Integration with First Aid Content">
+        <subtasks>
+          - Extend SemanticSearchEngine to include First Aid
+          - Add First Aid filtering to search interface
+          - First Aid-specific search enhancements
+          - Search result formatting for First Aid
+        </subtasks>
+      </task>
+      <task id="5" name="Conflict Detection Between Sources">
+        <subtasks>
+          - Implement ContentConflictDetector algorithm
+          - Define conflict detection criteria
+          - Create ContentConflict data model
+          - Conflict visualization in UI
+        </subtasks>
+      </task>
+      <task id="6" name="Version Management and Update System">
+        <subtasks>
+          - First Aid edition tracking system
+          - Implement edition update workflow
+          - Content change detection between editions
+          - Create update notification system
+        </subtasks>
+      </task>
+      <task id="7" name="Copyright and Licensing Considerations">
+        <subtasks>
+          - Implement copyright compliance measures
+          - Content protection and access control
+          - Attribution and source indication
+        </subtasks>
+      </task>
+      <task id="8" name="Testing and Quality Assurance">
+        <subtasks>
+          - Test First Aid content processing
+          - Test automatic mapping accuracy
+          - Test cross-reference UI and navigation
+          - Test conflict detection
+          - Test edition update workflow
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">First Aid content processed and integrated into knowledge graph</criterion>
+    <criterion id="2">Automatic mapping between lecture topics and First Aid sections</criterion>
+    <criterion id="3">Cross-references displayed contextually during content viewing</criterion>
+    <criterion id="4">Search results include relevant First Aid passages</criterion>
+    <criterion id="5">Conflict detection when lecture content differs from First Aid</criterion>
+    <criterion id="6">User can navigate seamlessly between lecture content and First Aid references</criterion>
+    <criterion id="7">First Aid integration prioritized for high-yield board exam topics</criterion>
+    <criterion id="8">Update system for new First Aid editions and content changes</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/solution-architecture.md" title="Solution Architecture" section="Subsystem 3: Knowledge Graph & Semantic Search (lines 551-575)">
+        Defines the Knowledge Graph subsystem architecture including semantic search, concept relationships, vector embeddings with pgvector, and API endpoints. Specifies 1536-dimension embeddings with Gemini text-embedding-001.
+      </doc>
+      <doc path="docs/solution-architecture.md" title="Solution Architecture" section="Subsystem 1: Content Processing Pipeline (lines 494-520)">
+        Describes PDF processing pipeline with PaddleOCR, content chunking strategy (1000 tokens + 200 overlap), and embedding generation workflow that will be extended for First Aid content.
+      </doc>
+      <doc path="docs/solution-architecture.md" title="Solution Architecture" section="Database Schema - ContentChunk model (lines 810-824)">
+        ContentChunk table with embedding vector(1536) field, chunkIndex, pageNumber. This model pattern will be adapted for FirstAidSection with similar embedding structure.
+      </doc>
+      <doc path="docs/solution-architecture.md" title="Solution Architecture" section="API Architecture - Knowledge Graph endpoints (lines 1330-1350)">
+        Existing /api/graph/search endpoint for semantic search. Will be extended to search across both lecture content and First Aid sections simultaneously.
+      </doc>
+      <doc path="docs/PRD-Americano-2025-10-14.md" title="Product Requirements" section="FR3: Knowledge Graph Foundation">
+        Functional requirement for unified content linking and semantic search. First Aid integration directly supports this requirement by extending the knowledge graph with board-relevant content.
+      </doc>
+      <doc path="docs/stories/story-3.1.md" title="Story 3.1: Semantic Search" section="Implementation details">
+        Prerequisite story that implemented EmbeddingService, SemanticSearchService, and vector search infrastructure. First Aid integration will reuse this existing semantic search foundation.
+      </doc>
+      <doc path="docs/stories/story-3.2.md" title="Story 3.2: Knowledge Graph" section="Implementation details">
+        Prerequisite story that built knowledge graph with concept relationships. First Aid sections will be integrated as new concept nodes in the existing graph structure.
+      </doc>
+    </docs>
+    <code>
+      <artifact path="apps/web/src/lib/embedding-service.ts" kind="service" symbol="EmbeddingService" lines="90-380">
+        Wraps GeminiClient for embedding generation with rate limiting (100 RPM, 1000 RPD), retry logic, and batch processing. Will be reused for First Aid content embedding generation.
+      </artifact>
+      <artifact path="apps/web/src/lib/semantic-search-service.ts" kind="service" symbol="SemanticSearchService" lines="187-928">
+        Core semantic search engine with pgvector cosine distance, hybrid search (70% vector + 30% keyword), and pagination. Needs extension to include FirstAidSection table in vector search.
+      </artifact>
+      <artifact path="apps/web/src/subsystems/content-processing/pdf-processor.ts" kind="processor" symbol="PDFProcessor" reason="Existing PDF processing pipeline">
+        Handles lecture PDF upload and processing. Will be adapted for First Aid PDF import with different chunking strategy (section-based vs slide-based).
+      </artifact>
+      <artifact path="apps/web/prisma/schema.prisma" kind="schema" symbol="ContentChunk" lines="123-137">
+        Existing ContentChunk model with embedding vector(1536). Serves as template for FirstAidSection model structure.
+      </artifact>
+      <artifact path="apps/web/src/lib/ai/chatmock-client.ts" kind="ai-client" symbol="ChatMockClient" reason="GPT-5 integration for conflict detection">
+        ChatMock client for GPT-5 API calls. Will be used for semantic conflict detection between lecture content and First Aid statements.
+      </artifact>
+    </code>
+    <dependencies>
+      <node>
+        <package>@google/generative-ai</package>
+        <version>^0.24.1</version>
+        <purpose>Gemini text-embedding-001 for First Aid content vectorization</purpose>
+      </node>
+      <package>@prisma/client</package>
+      <version>^6.17.1</version>
+      <purpose>Database access for FirstAidSection, LectureFirstAidMapping, ContentConflict models</purpose>
+      </node>
+      <node>
+        <package>openai</package>
+        <version>^6.3.0</version>
+        <purpose>ChatMock GPT-5 for conflict detection analysis</purpose>
+      </node>
+      <node>
+        <package>zod</package>
+        <version>^4.1.12</version>
+        <purpose>API request/response validation for First Aid endpoints</purpose>
+      </node>
+      <node>
+        <package>next</package>
+        <version>^15.5.5</version>
+        <purpose>Next.js App Router for First Aid API routes and pages</purpose>
+      </node>
+      <node>
+        <package>react</package>
+        <version>^19.2.0</version>
+        <purpose>First Aid UI components (cross-reference panel, conflict indicator)</purpose>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint priority="critical">Reuse existing EmbeddingService from Story 3.1 - do NOT create new embedding generation logic</constraint>
+    <constraint priority="critical">Extend SemanticSearchService to search FirstAidSection table using same pgvector cosine distance pattern</constraint>
+    <constraint priority="critical">First Aid content is copyrighted - implement strict personal use only, no redistribution, user ownership verification</constraint>
+    <constraint priority="critical">Use ChatMock GPT-5 for conflict detection - leverage existing ChatMockClient from Story 2.1</constraint>
+    <constraint priority="high">Section-based chunking for First Aid (preserve semantic units) vs slide-based chunking for lectures</constraint>
+    <constraint priority="high">Similarity threshold: >0.75 for automatic mapping, 0.65-0.75 for suggestions, weighted boost +0.1 for high-yield content</constraint>
+    <constraint priority="high">Next.js 15 App Router patterns - use async params, POST /api/first-aid/* endpoints</constraint>
+    <constraint priority="high">Database schema: FirstAidSection with edition, system, section, pageNumber, embedding vector(1536), isHighYield, mnemonics[], clinicalCorrelations[]</constraint>
+    <constraint priority="medium">UI components use glassmorphism design (bg-white/95 backdrop-blur-xl) with NO gradients, OKLCH colors</constraint>
+    <constraint priority="medium">Performance target: <1 second for semantic mapping queries (same as Story 3.1 search)</constraint>
+    <constraint priority="medium">Copyright compliance: watermark content with user ID, encrypt at rest, rate limit access, audit logging</constraint>
+    <constraint priority="low">No automated tests required for MVP - manual testing with test cases documented</constraint>
+    <constraint priority="low">Auth deferred - use hardcoded kevy@americano.dev user ID for development</constraint>
+  </constraints>
+  <interfaces>
+    <interface name="POST /api/first-aid/upload" kind="REST endpoint">
+      <signature>
+        Request: FormData { file: File, edition: string, year: number }
+        Response: { firstAidId: string, processingStatus: 'PENDING' | 'PROCESSING' | 'COMPLETED', sectionsCount: number }
+      </signature>
+      <path>apps/web/src/app/api/first-aid/upload/route.ts</path>
+    </interface>
+    <interface name="GET /api/first-aid/sections" kind="REST endpoint">
+      <signature>
+        Query: { edition?: string, system?: string, isHighYield?: boolean, limit?: number, offset?: number }
+        Response: { sections: FirstAidSection[], total: number, pagination: PaginationInfo }
+      </signature>
+      <path>apps/web/src/app/api/first-aid/sections/route.ts</path>
+    </interface>
+    <interface name="GET /api/first-aid/mappings/[lectureId]" kind="REST endpoint">
+      <signature>
+        Params: { lectureId: string }
+        Response: { mappings: LectureFirstAidMapping[], confidence: 'high' | 'medium' | 'low', priority: 'high_yield' | 'standard' }
+      </signature>
+      <path>apps/web/src/app/api/first-aid/mappings/[lectureId]/route.ts</path>
+    </interface>
+    <interface name="POST /api/first-aid/conflicts/detect" kind="REST endpoint">
+      <signature>
+        Request: { lectureChunkId: string, firstAidSectionId: string }
+        Response: { hasConflict: boolean, severity: 'minor' | 'moderate' | 'critical', explanation: string, confidence: number }
+      </signature>
+      <path>apps/web/src/app/api/first-aid/conflicts/detect/route.ts</path>
+    </interface>
+    <interface name="FirstAidMapper" kind="class">
+      <signature>
+        class FirstAidMapper {
+          mapLectureToFirstAid(lectureId: string): Promise&lt;FirstAidMapping[]&gt;
+          findRelevantFirstAidSections(conceptName: string): Promise&lt;FirstAidSection[]&gt;
+          calculateMappingConfidence(lectureChunk, firstAidChunk): Promise&lt;number&gt;
+        }
+      </signature>
+      <path>apps/web/src/subsystems/knowledge-graph/first-aid-mapper.ts</path>
+    </interface>
+    <interface name="ContentConflictDetector" kind="class">
+      <signature>
+        class ContentConflictDetector {
+          detectConflicts(lectureId: string): Promise&lt;Conflict[]&gt;
+          compareStatements(lecture: string, firstAid: string): Promise&lt;ConflictAnalysis&gt;
+        }
+      </signature>
+      <path>apps/web/src/subsystems/knowledge-graph/conflict-detector.ts</path>
+    </interface>
+    <interface name="FirstAidCrossReference" kind="component">
+      <signature>
+        Component: FirstAidCrossReference({ lectureId, currentSection }: Props)
+        Display: Section title, page number, confidence, high-yield indicator, preview snippet
+      </signature>
+      <path>apps/web/src/components/library/first-aid-cross-reference.tsx</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>
+      No automated tests required for MVP per solution-architecture.md (Section 2, line 386). Manual testing focus with documented test cases. Testing framework (Jest + React Testing Library + Playwright) already configured in package.json for future test implementation. Test patterns from Stories 3.1 and 3.2 can be referenced for consistency.
+    </standards>
+    <locations>
+      - Unit tests: apps/web/src/subsystems/knowledge-graph/__tests__/
+      - Integration tests: apps/web/src/lib/__tests__/
+      - E2E tests: apps/web/e2e/ (Playwright)
+      - Performance tests: apps/web/src/lib/__tests__/*.benchmark.ts
+    </locations>
+    <ideas>
+      <test id="AC1" criterion="1">Upload sample First Aid PDF (10-20 pages), verify structure extraction (sections, subsections, page numbers), validate high-yield detection (stars, bold), confirm embeddings generated for all sections</test>
+      <test id="AC2" criterion="2">Manual validation of 50 lecture-to-First Aid mappings, measure precision (mapped sections actually relevant), measure recall (important sections not missed), target >80% precision and >70% recall</test>
+      <test id="AC2-b" criterion="2">Test high-yield prioritization - verify starred First Aid content ranked higher in mappings with +0.1 similarity boost applied correctly</test>
+      <test id="AC3" criterion="3">Verify First Aid cross-reference panel displays in lecture view, test contextual loading based on scroll position, validate bidirectional navigation (lecture → First Aid → back to lecture)</test>
+      <test id="AC3-b" criterion="3">Test keyboard shortcuts (Ctrl+F to toggle panel), verify mobile responsiveness (panel adapts to smaller screens with bottom drawer)</test>
+      <test id="AC4" criterion="4">Search query returns both lecture and First Aid results, verify source badges displayed ('Lecture' vs 'First Aid' vs 'Both'), test First Aid filter toggle functionality</test>
+      <test id="AC4-b" criterion="4">Test page number search ('First Aid page 123' direct navigation), test mnemonic search (find sections with specific mnemonics)</test>
+      <test id="AC5" criterion="5">Create known contradiction test case (lecture says 'Drug X increases HR', First Aid says 'Drug X decreases HR'), verify conflict detection triggers with >0.8 GPT-5 confidence</test>
+      <test id="AC5-b" criterion="5">Test false positive rate - ensure terminology differences ('heart attack' vs 'myocardial infarction') not flagged as conflicts</test>
+      <test id="AC6" criterion="6">Test seamless navigation flow: studying lecture → see related First Aid → open in sidebar → view in context → return to lecture section, verify browser back button support</test>
+      <test id="AC7" criterion="7">Verify high-yield mappings display star icon and highlight color, test board exam topic categorization (USMLE Step 1 alignment)</test>
+      <test id="AC8" criterion="8">Simulate First Aid edition update (use two different sample PDFs), verify change detection identifies modified sections, test re-mapping triggers, validate user notifications sent</test>
+      <test id="Performance" criterion="all">Test mapping performance with full First Aid book (500+ pages = 500+ sections), measure initial batch mapping time (should complete as async background job), test individual mapping query <1 second target</test>
+      <test id="Copyright" criterion="7">Verify copyright notice displayed during upload, test user ownership confirmation required, validate content encrypted at rest, test rate limiting prevents bulk export</test>
+    </ideas>
+  </tests>
+</story-context>

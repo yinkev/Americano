@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.3</storyId>
+    <title>Controlled Failure and Memory Anchoring</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-4.3.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>experience controlled failures that reveal my knowledge gaps</iWant>
+    <soThat>I can anchor corrective learning in memorable emotional moments and prevent future errors</soThat>
+    <tasks>
+      <task id="1">Database Schema Extensions (AC: #5, #6, #7)</task>
+      <task id="2">Challenge Identification Engine (AC: #1)</task>
+      <task id="3">Challenge Question Generator (AC: #1)</task>
+      <task id="4">Corrective Feedback Engine (AC: #3, #4)</task>
+      <task id="5">Retry Scheduling System (AC: #5)</task>
+      <task id="6">Failure Pattern Detector (AC: #6)</task>
+      <task id="7">Challenge Mode Component (AC: #2, #8)</task>
+      <task id="8">Confidence Recalibration Dashboard (AC: #7)</task>
+      <task id="9">Common Pitfalls Dashboard (AC: #6)</task>
+      <task id="10">Session Integration (AC: #8)</task>
+      <task id="11">API Endpoints (AC: All)</task>
+      <task id="12">Testing and Validation (AC: All)</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">
+      <name>Intentional Challenge Generation</name>
+      <description>System identifies concepts user thinks they know but likely misunderstands. Analyzes performance patterns (high confidence + low scores = overconfidence). Targets concepts with partial understanding (60-79% comprehension scores). Generates challenging questions designed to expose misconceptions. Uses "near-miss" distractors (plausible but incorrect)</description>
+    </criterion>
+    <criterion id="2">
+      <name>Safe Failure Environment</name>
+      <description>User experiences productive failure without penalty. Failures don't affect mastery level or mission completion negatively. Explicit framing: "Challenge Mode - designed to be difficult". Unlimited retry attempts encouraged. Growth mindset messaging ("This is where learning happens!")</description>
+    </criterion>
+    <criterion id="3">
+      <name>Immediate Corrective Feedback</name>
+      <description>System provides detailed explanation immediately after incorrect response. Highlights why user's answer was wrong (misconception explained). Explains correct answer with clinical context. Connects to related concepts user already understands. Provides memorable analogy or clinical pearl</description>
+    </criterion>
+    <criterion id="4">
+      <name>Emotional Anchoring</name>
+      <description>System creates memorable learning moments from failures. Tags failed attempt with emotion marker (surprise, confusion, frustration). Generates memorable mnemonic or visual analogy. Creates "story" around the concept (patient case narrative). User can add personal notes about what clicked</description>
+    </criterion>
+    <criterion id="5">
+      <name>Spaced Re-Testing</name>
+      <description>System re-tests previously failed concepts at strategic intervals. Schedule follow-up at 1 day, 3 days, 7 days, 14 days. Uses slightly different question format (prevent memorization). Tracks improvement: Initial failure to Eventual mastery. Celebrates success on retry ("You've conquered this!")</description>
+    </criterion>
+    <criterion id="6">
+      <name>Performance Pattern Analysis</name>
+      <description>System identifies common failure patterns and misconceptions. Groups failed concepts by category (e.g., "pharmacology drug classes"). Detects systematic errors (e.g., always confusing sympathetic vs parasympathetic). Recommends targeted review resources. Displays "Your Common Pitfalls" dashboard</description>
+    </criterion>
+    <criterion id="7">
+      <name>Confidence Recalibration</name>
+      <description>System helps user recognize and correct overconfidence. Shows discrepancy: "You felt Confident (4/5) but scored 45%". Tracks calibration improvement over time. Nudges toward realistic self-assessment. Displays calibration accuracy trend (improving/stable/worsening)</description>
+    </criterion>
+    <criterion id="8">
+      <name>Integration with Session Flow</name>
+      <description>Controlled failure challenges appear strategically during sessions. Frequency: 1 challenge per session (avoid fatigue). Timing: After warm-up, before peak focus (optimal for memory encoding). Optional: User can opt-out if not ready for challenge. Results included in Session Summary with growth mindset framing</description>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR5: Understanding Validation - Controlled Failure</section>
+        <snippet>Controlled failure feature leverages cognitive psychology principles (desirable difficulty, emotional encoding, testing effect) to create memorable learning moments. System intentionally presents challenging questions to expose knowledge gaps, provides immediate corrective feedback with emotional anchoring, and schedules spaced repetition retries to ensure mastery.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>Subsystem 4: Challenge Generation & Retry Scheduling</section>
+        <snippet>ControlledFailure model stores challenge attempts with emotion tags and retry schedules. FailurePattern model aggregates systematic errors for pattern detection. ChallengeIdentifier service scores vulnerability using performance metrics. RetryScheduler implements spaced repetition intervals [+1, +3, +7, +14, +30 days].</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic Breakdown</title>
+        <section>Epic 4, Story 4.3: Controlled Failure</section>
+        <snippet>Story 4.3 implements productive failure as a learning tool. Unique differentiator: transforms failure from negative experience to memorable learning opportunity through emotional anchoring and immediate corrective feedback. Builds on research from "Make It Stick" (Brown, Roediger, McDaniel) on desirable difficulty.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-4.1.md</path>
+        <title>Story 4.1: Comprehension Prompts</title>
+        <section>ValidationPrompt/ValidationResponse infrastructure</section>
+        <snippet>Story 4.1 provides ValidationPrompt and ValidationResponse models that Story 4.3 extends with promptType='CONTROLLED_FAILURE'. Comprehension scoring infrastructure (0-100 scale with rubric) used to identify vulnerability (partial understanding: 60-79% scores).</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-2.2.md</path>
+        <title>Story 2.2: Performance Tracking</title>
+        <section>Performance metrics and vulnerability identification</section>
+        <snippet>Story 2.2 provides performance tracking infrastructure (accuracy rates, confidence levels, recent mistakes) that Story 4.3 uses for vulnerability identification. VulnerabilityScore interface: conceptId, score, lastAttempted, failureCount, pattern.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-2.5.md</path>
+        <title>Story 2.5: Study Session Orchestration</title>
+        <section>Session flow integration point</section>
+        <snippet>Story 2.5 provides study session orchestration that Story 4.3 integrates with. Challenge Mode appears once per session after 2-3 objectives reviewed (optimal timing for memory encoding). Session Summary includes challenge results with growth mindset framing.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>apps/web/lib/chat-mock-client.ts</path>
+        <kind>service</kind>
+        <symbol>ChatMockClient</symbol>
+        <lines>1-150</lines>
+        <reason>Core chat client from Story 2.1. Challenge generation and corrective feedback use mockChatCompletion with prompts for: (1) generating near-miss distractors, (2) explaining misconceptions, (3) creating memory anchors (mnemonics, clinical pearls)</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/app/api/chat/route.ts</path>
+        <kind>controller</kind>
+        <symbol>POST</symbol>
+        <lines>1-50</lines>
+        <reason>Chat API endpoint from Story 2.1. Integration point for challenge injection during study sessions. Can trigger Challenge Mode based on vulnerability detection.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/lib/performance-tracker.ts</path>
+        <kind>service</kind>
+        <symbol>PerformanceTracker</symbol>
+        <lines>1-200</lines>
+        <reason>Performance tracking from Story 2.2. calculateVulnerabilities method provides foundation for Challenge Identifier. Tracks overconfidence (avg confidence - avg performance), partial understanding (60-79% scores), recent mistakes (failures in last 7 days)</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/app/api/performance/analytics/route.ts</path>
+        <kind>controller</kind>
+        <symbol>GET</symbol>
+        <lines>1-100</lines>
+        <reason>Analytics endpoint from Story 2.2. Can be extended to expose vulnerability patterns and failure metrics for Common Pitfalls dashboard and pattern analysis</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/lib/session-scheduler.ts</path>
+        <kind>service</kind>
+        <symbol>SessionScheduler</symbol>
+        <lines>1-250</lines>
+        <reason>Session scheduling from Story 2.5. Retry scheduler can leverage similar interval logic for spacing retries. scheduleNextSession pattern applies to scheduling challenge retries based on failure performance</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/app/api/sessions/schedule/route.ts</path>
+        <kind>controller</kind>
+        <symbol>POST</symbol>
+        <lines>1-75</lines>
+        <reason>Session scheduling API from Story 2.5. Integration point for scheduling retry challenges in future sessions based on detected vulnerabilities</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/app/api/sessions/active/route.ts</path>
+        <kind>controller</kind>
+        <symbol>GET</symbol>
+        <lines>1-100</lines>
+        <reason>Active session endpoint from Story 2.5. Tracks ongoing challenge attempts and failure states during study sessions. Challenge Mode integrates with active session tracking</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/app/components/study-session.tsx</path>
+        <kind>component</kind>
+        <symbol>StudySession</symbol>
+        <lines>1-400</lines>
+        <reason>Main study session UI from Story 2.5. Must inject ChallengeModeDialog after 2-3 objectives (optimal timing). Needs enhancement to: display challenge prompts, capture failure events, show retry schedules, growth mindset messaging</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/lib/types/study-session.ts</path>
+        <kind>interface</kind>
+        <symbol>StudySessionState</symbol>
+        <lines>1-100</lines>
+        <reason>Study session types from Story 2.5. Needs extension to include: challenge state, failure tracking, vulnerability metrics. Add challengeAttempted, challengeScore, emotionTag fields</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/lib/types/performance.ts</path>
+        <kind>interface</kind>
+        <symbol>PerformanceMetrics, VulnerabilityScore</symbol>
+        <lines>1-150</lines>
+        <reason>Performance metric types from Story 2.2. VulnerabilityScore interface provides foundation for modeling failure patterns and vulnerability scoring. Extend with failurePattern, retrySchedule fields</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>StudySession, ValidationPrompt, ValidationResponse</symbol>
+        <lines>50-150</lines>
+        <reason>Database schema from Stories 1.5, 2.5, 4.1. Must extend with: ControlledFailure model (id, objectiveId, userId, attemptNumber, isCorrect, emotionTag, retestSchedule), FailurePattern model (id, userId, patternType, affectedObjectives, remediation). Add indexes on userId+objectiveId, retestSchedule</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <package name="@ai-sdk/openai" version="^1.0.9">ChatMock (GPT-5) integration for challenge generation and feedback</package>
+        <package name="ai" version="^4.0.17">AI SDK for chat completions</package>
+        <package name="@prisma/client" version="^6.1.0">Database ORM for ControlledFailure and FailurePattern models</package>
+        <package name="prisma" version="^6.1.0">Schema migrations</package>
+        <package name="zod" version="^3.24.1">Validation schemas for API endpoints</package>
+        <package name="next" version="^15.0.3">Next.js App Router</package>
+        <package name="react" version="^19.0.0">React 19 for UI components</package>
+        <package name="date-fns" version="^4.1.0">Retry schedule date calculations (addDays helper)</package>
+        <package name="recharts" version="^3.2.1">Calibration dashboard charts (scatter plot: confidence vs score)</package>
+        <package name="zustand" version="^5.0.8">Challenge Mode dialog state management</package>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="1">Database: Extend Prisma schema with ControlledFailure model (emotionTag enum: SURPRISE/CONFUSION/FRUSTRATION/AHA_MOMENT, retestSchedule JSON array). Add FailurePattern model. Indexes on userId+objectiveId, retestSchedule for query performance</constraint>
+    <constraint id="2">Vulnerability Scoring Algorithm: score = (overconfidenceScore * 0.4) + (partialUnderstanding * 0.3) + (recentMistakes * 0.3). overconfidenceScore = avgConfidence - avgPerformance. partialUnderstanding = comprehensionScore 60-79% (Story 4.1). recentMistakes = failuresLast7Days count</constraint>
+    <constraint id="3">Challenge Generation: Use ChatMock with system prompt emphasizing "near-miss" distractors (plausible but subtly incorrect). For overconfidence: target subtle nuances. For misconceptions: expose common confusions. Temperature 0.7 for creative distractors, max tokens 1000</constraint>
+    <constraint id="4">Corrective Feedback: ChatMock rubric must include: (1) Explain misconception, (2) Clarify correct concept, (3) Provide clinical context, (4) Create memorable anchor (mnemonic/analogy/patient story). Parse response into structured feedback object</constraint>
+    <constraint id="5">Retry Schedule: Intervals [+1, +3, +7, +14, +30 days] from failure date. Store as JSON array in ControlledFailure.retestSchedule. Vary question format slightly on retry (prevent memorization). Track retry performance: Initial failure to mastery</constraint>
+    <constraint id="6">Pattern Detection: Simple frequency analysis for MVP. Group failed concepts by: (1) Category (course, topic, boardExamTag), (2) Systematic errors (e.g., "Confuses ACE inhibitors vs ARBs"). Store in FailurePattern model with remediation recommendations</constraint>
+    <constraint id="7">Session Integration: 1 challenge per session max (avoid fatigue). Optimal timing: After 2-3 objectives reviewed (before peak focus). User can opt-out (tracked as skipped). Results in Session Summary with growth mindset framing ("You're getting stronger!")</constraint>
+    <constraint id="8">UI Design: Challenge Mode uses orange OKLCH color (oklch(0.72 0.16 45)) to indicate difficulty. Growth mindset messaging: Failure uses orange not red. Mastery badge green (oklch(0.7 0.15 145)). Progress bars show failure to retry to mastery journey</constraint>
+    <constraint id="9">Emotion Tagging: After failure, prompt user to select emotion (Surprise/Confusion/Frustration/Aha!). Strengthen memory encoding. Optional personal notes textarea ("What clicked for me..."). Store in ControlledFailure.emotionTag, personalNotes fields</constraint>
+    <constraint id="10">Calibration Dashboard: Scatter plot (confidence vs score) using Recharts. Calculate Mean Absolute Error, correlation coefficient. Highlight overconfidence zone (high confidence, low score), underconfidence zone (low confidence, high score). Trend over time line chart</constraint>
+    <constraint id="11">Testing: Unit tests for vulnerability scoring algorithm (3+ scenarios). Integration tests for retry scheduling (verify intervals). Component tests for ChallengeModeDialog (emotion tag selection, personal notes). Mock ChatMock for deterministic testing</constraint>
+    <constraint id="12">Error Handling: ChatMock failures retry (max 3, exponential backoff). User sees friendly error. Challenge skipped if generation fails (track as system error, don't penalize user)</constraint>
+    <constraint id="13">Performance: Challenge generation less than 3 seconds, feedback generation less than 5 seconds. Pattern detection runs async (don't block session). Cache vulnerability scores within session</constraint>
+    <constraint id="14">Growth Mindset Language: Use positive framing throughout. "Challenge Mode - embrace the challenge!" not "Failure Mode". "This is where learning happens!" not "You got it wrong". "Conquered!" not "Fixed your mistake"</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/validation/challenges/next</name>
+      <kind>REST endpoint</kind>
+      <signature>{ userId: string, sessionId?: string } to { challenge: ValidationPrompt, vulnerabilityType: string, retryInfo?: { attemptNumber: number, previousScore: number } }</signature>
+      <path>apps/web/app/api/validation/challenges/next/route.ts</path>
+      <description>Get next challenge for user. Prioritizes: (1) Pending retries from retestSchedule, (2) New challenges from vulnerable concepts. Returns challenge prompt, vulnerability type (overconfidence/misconception/recent_mistakes), retry info if applicable</description>
+    </interface>
+    <interface>
+      <name>POST /api/validation/challenges/submit</name>
+      <kind>REST endpoint</kind>
+      <signature>{ challengeId: string, userAnswer: string, confidence: 1-5, emotionTag?: string, personalNotes?: string } to { isCorrect: boolean, feedback: { misconceptionExplained, correctConcept, clinicalContext, memoryAnchor }, retrySchedule: Date[], celebration?: string }</signature>
+      <path>apps/web/app/api/validation/challenges/submit/route.ts</path>
+      <description>Submit challenge response. Generates corrective feedback if incorrect, schedules retries (store in ControlledFailure.retestSchedule), saves with emotion tag and personal notes. Returns structured feedback, retry dates, celebration message if retry mastered</description>
+    </interface>
+    <interface>
+      <name>GET /api/validation/patterns</name>
+      <kind>REST endpoint</kind>
+      <signature>{ userId: string } to { patterns: FailurePattern[], remediations: string[] }</signature>
+      <path>apps/web/app/api/validation/patterns/route.ts</path>
+      <description>Fetch failure patterns for user. Returns top 5 patterns (category, affected objectives, systematic error description), remediation recommendations (targeted resources, practice areas). Powers Common Pitfalls dashboard</description>
+    </interface>
+    <interface>
+      <name>GET /api/validation/calibration</name>
+      <kind>REST endpoint</kind>
+      <signature>{ userId: string } to { calibrationScore: number, overconfidentExamples: [], underconfidentExamples: [], trend: string }</signature>
+      <path>apps/web/app/api/validation/calibration/route.ts</path>
+      <description>Fetch calibration metrics for user. Returns overall calibration accuracy (correlation coefficient), specific examples of overconfidence and underconfidence, trend (improving/stable/worsening). Powers Confidence Recalibration dashboard</description>
+    </interface>
+    <interface>
+      <name>ChallengeIdentifier</name>
+      <kind>TypeScript class</kind>
+      <signature>identifyVulnerableConcepts(userId: string): Promise({ conceptId, vulnerabilityScore, vulnerabilityType }[])</signature>
+      <path>apps/web/lib/challenge-identifier.ts</path>
+      <description>Identify top 5 vulnerable concepts using weighted scoring: overconfidence * 0.4 + partialUnderstanding * 0.3 + recentMistakes * 0.3. Returns ranked list with vulnerability type for targeted challenge generation</description>
+    </interface>
+    <interface>
+      <name>ChallengeQuestionGenerator</name>
+      <kind>TypeScript class</kind>
+      <signature>generateChallenge(objectiveId: string, vulnerabilityType: string): Promise(ValidationPrompt)</signature>
+      <path>apps/web/lib/challenge-question-generator.ts</path>
+      <description>Generate challenging question using ChatMock. System prompt emphasizes near-miss distractors (plausible but incorrect). For overconfidence: targets subtle nuances. For misconceptions: exposes common confusions. Stores with promptType='CONTROLLED_FAILURE'</description>
+    </interface>
+    <interface>
+      <name>CorrectiveFeedbackEngine</name>
+      <kind>TypeScript class</kind>
+      <signature>generateFeedback(challengeId: string, userAnswer: string, correctAnswer: string): Promise({ misconceptionExplained, correctConcept, clinicalContext, memoryAnchor })</signature>
+      <path>apps/web/lib/corrective-feedback-engine.ts</path>
+      <description>Generate detailed corrective feedback using ChatMock. Rubric: (1) Explain misconception, (2) Clarify correct concept with clinical context, (3) Create memorable anchor (mnemonic, analogy, patient story). Returns structured feedback object</description>
+    </interface>
+    <interface>
+      <name>RetryScheduler</name>
+      <kind>TypeScript class</kind>
+      <signature>scheduleRetries(failureId: string): Promise({ retryDates: Date[], reasoning: string })</signature>
+      <path>apps/web/lib/retry-scheduler.ts</path>
+      <description>Schedule spaced repetition retries using intervals [+1, +3, +7, +14, +30 days]. Stores in ControlledFailure.retestSchedule JSON. Returns array of retry dates with reasoning. Session trigger checks for pending retries</description>
+    </interface>
+    <interface>
+      <name>FailurePatternDetector</name>
+      <kind>TypeScript class</kind>
+      <signature>detectPatterns(userId: string): Promise(FailurePattern[])</signature>
+      <path>apps/web/lib/failure-pattern-detector.ts</path>
+      <description>Detect failure patterns by grouping: (1) Category (course, topic, boardExamTag), (2) Systematic errors (frequency analysis). Simple clustering for MVP. Returns top patterns with affected objectives and remediation recommendations. Stores in FailurePattern model</description>
+    </interface>
+    <interface>
+      <name>ChallengeModeDialog</name>
+      <kind>React component</kind>
+      <signature>ChallengeModeDialog challenge={ValidationPrompt} vulnerabilityType={string} onComplete={(response) => void} onSkip={() => void}</signature>
+      <path>apps/web/components/study/ChallengeModeDialog.tsx</path>
+      <description>Challenge Mode UI with growth mindset framing. Shows: (1) Challenge prompt with near-miss distractors, (2) Confidence slider (1-5), (3) On incorrect: corrective feedback panel (misconception, memory anchor), emotion tag selection (Surprise/Confusion/Frustration/Aha!), personal notes textarea, retry schedule display, (4) Retry Now button (optional immediate retry), (5) Orange theme for challenge, green for mastery. Glassmorphism design, min 44px targets</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Story 4.3 requires comprehensive testing of controlled failure system. Unit tests verify: vulnerability scoring algorithm (overconfidence/partial understanding/recent mistakes), challenge generation (near-miss distractors), corrective feedback quality, retry scheduling intervals. Integration tests validate complete failure-to-mastery flow including state transitions and persistence. Component tests verify ChallengeModeDialog UI (emotion tag selection, personal notes, growth mindset messaging). E2E tests confirm user journey from challenge to retry to mastery. Mock ChatMock for deterministic testing. Test one thing per test case with descriptive names explaining scenario</standards>
+
+    <locations>
+      <location>apps/web/src/__tests__/unit/challenge-identifier.test.ts</location>
+      <location>apps/web/src/__tests__/unit/challenge-question-generator.test.ts</location>
+      <location>apps/web/src/__tests__/unit/corrective-feedback-engine.test.ts</location>
+      <location>apps/web/src/__tests__/unit/retry-scheduler.test.ts</location>
+      <location>apps/web/src/__tests__/unit/failure-pattern-detector.test.ts</location>
+      <location>apps/web/src/__tests__/integration/challenge-flow.test.ts</location>
+      <location>apps/web/src/__tests__/components/ChallengeModeDialog.test.tsx</location>
+      <location>apps/web/src/__tests__/e2e/controlled-failure-journey.spec.ts</location>
+    </locations>
+
+    <ideas>
+      <idea acId="1">Test ChallengeIdentifier.identifyVulnerableConcepts: (a) Create user with high confidence (4-5) but low scores (40-59%) to verify overconfidence detected (score greater than 50), (b) Create user with partial understanding (comprehension scores 60-79%) to verify targeted (score ~30), (c) Create user with recent mistakes (3+ failures last 7 days) to verify prioritized (score ~30), (d) Verify top 5 vulnerable concepts returned ranked by weighted score</idea>
+      <idea acId="1">Test vulnerability scoring formula: Verify (overconfidence * 0.4) + (partialUnderstanding * 0.3) + (recentMistakes * 0.3) calculation exact match. Test boundary conditions (all zeros, all maximums, mixed). Verify overconfidence = avgConfidence - avgPerformance calculation</idea>
+      <idea acId="1">Test ChallengeQuestionGenerator.generateChallenge: (a) Generate challenge for overconfidence vulnerability to verify near-miss distractors (plausible but incorrect), targets subtle nuances, (b) Generate challenge for misconception vulnerability to verify exposes common confusions, (c) Verify promptType='CONTROLLED_FAILURE', (d) Mock ChatMock to test retry logic on failure</idea>
+      <idea acId="2">Test Challenge Mode framing: Verify UI displays "Challenge Mode - embrace the challenge!" not "Failure Mode". Verify growth mindset messaging throughout. Verify optional skip (tracked as skipped, not penalty). Verify unlimited retries encouraged</idea>
+      <idea acId="3">Test CorrectiveFeedbackEngine.generateFeedback: (a) Submit incorrect answer to verify feedback structure: misconceptionExplained, correctConcept, clinicalContext, memoryAnchor, (b) Verify misconception explanation targets user's specific error, (c) Verify clinical context relevant and accurate, (d) Verify memory anchor creative (mnemonic, analogy, patient story), (e) Mock ChatMock for deterministic testing</idea>
+      <idea acId="3">Test immediate feedback: After incorrect submission, verify feedback displays within 5 seconds. Verify highlights: "Why your answer was wrong" section, "Correct concept" section, "Clinical pearl" section, "Memory trick" section</idea>
+      <idea acId="4">Test emotion tagging: (a) After failure, verify UI prompts for emotion selection (Surprise/Confusion/Frustration/Aha!), (b) Verify emotion stored in ControlledFailure.emotionTag, (c) Test personal notes textarea (500 char limit), verify stored, (d) Verify optional (can skip emotion tag and notes)</idea>
+      <idea acId="4">Test memory anchor creation: Generate 5 different memory anchors (mnemonics, visual analogies, patient stories) to verify variety. Verify memorability (creative, vivid, relevant). Test ChatMock prompt emphasizes "memorable and vivid"</idea>
+      <idea acId="5">Test RetryScheduler.scheduleRetries: (a) Schedule retries for failure to verify intervals: [+1, +3, +7, +14, +30 days] from failure date, (b) Verify stored as JSON array in ControlledFailure.retestSchedule, (c) Test retry question format varies slightly (prevent memorization), (d) Track retry performance: attempt 1 (failed), attempt 2 (retry +1 day), attempt 3 (retry +3 day), verify stored correctly</idea>
+      <idea acId="5">Test spaced re-testing: Simulate user failing challenge, verify retry scheduled +1 day, answer correctly on retry to verify: (1) Status changes to mastery, (2) Celebration message displays ("You've conquered this!"), (3) Green mastery badge shown, (4) No further retries scheduled</idea>
+      <idea acId="6">Test FailurePatternDetector.detectPatterns: (a) Create 5 failures in "Pharmacology - ACE Inhibitors" category to verify pattern detected and grouped, (b) Create systematic error pattern (always confuses sympathetic vs parasympathetic) to verify detected as systematic error, (c) Verify top 5 patterns returned, (d) Verify remediation recommendations generated (targeted resources)</idea>
+      <idea acId="6">Test Common Pitfalls dashboard: Render with sample failure patterns to verify: (1) Bar chart shows top 5 patterns by frequency, (2) Each pattern displays affected concepts list, (3) Remediation recommendations displayed, (4) "Address This Gap" button functional, (5) Pattern resolution tracked (pattern detected to remediation to mastery)</idea>
+      <idea acId="7">Test confidence recalibration: (a) Submit overconfident challenge (confidence 5, score 40%) to verify discrepancy shown: "You felt Very Confident but scored 40%", (b) Submit underconfident challenge (confidence 1, score 90%) to verify: "You felt Uncertain but scored 90% - trust yourself!", (c) Track 5 challenges to verify calibration trend calculated (correlation coefficient), (d) Verify calibration accuracy improves over time (trend line)</idea>
+      <idea acId="7">Test Confidence Recalibration dashboard: Render with sample data to verify: (1) Scatter plot shows confidence (x-axis) vs score (y-axis), (2) Overconfidence zone highlighted (high confidence, low score), (3) Underconfidence zone highlighted (low confidence, high score), (4) Calibration trend line chart (improving/stable/worsening), (5) Specific examples displayed ("Confident but scored 45% on X")</idea>
+      <idea acId="8">Test session integration: (a) Start study session with 3 objectives completed to verify Challenge Mode appears after 2-3 objectives (optimal timing), (b) Verify frequency: 1 challenge max per session (avoid fatigue), (c) Test skip button to verify: response tracked as skipped, session continues, (d) Verify challenge time tracked in session duration, (e) Verify results in Session Summary with growth mindset framing ("You're getting stronger!")</idea>
+      <idea acId="8">Test session flow: Simulate complete session: Objective 1 review to Objective 2 review to Challenge Mode to Objective 3 review to Flashcards. Verify Challenge Mode appears at correct timing (after warm-up, before peak focus)</idea>
+      <idea acId="all">Test complete failure-to-mastery journey E2E: (1) User identified as vulnerable (high confidence, low score), (2) Challenge generated (near-miss distractors), (3) User fails challenge, (4) Corrective feedback displayed (misconception, memory anchor), (5) Emotion tag selected, personal notes added, (6) Retry scheduled +1 day, (7) Retry appears next session, (8) User answers correctly, (9) Mastery celebrated ("Conquered!"), (10) Green badge displayed. Verify all state transitions, persistence, UI updates</idea>
+      <idea acId="all">Test error handling: (a) ChatMock failure during challenge generation to verify: retry logic (max 3 attempts), user sees friendly error, challenge skipped (tracked as system error), (b) Database error to verify: transaction rollback, error message, (c) Malformed request to verify: Zod validation error, 400 response</idea>
+      <idea acId="all">Test growth mindset messaging: Verify all failure-related UI uses positive framing: "Challenge Mode" not "Failure Mode", "This is where learning happens!" not "Wrong answer", Orange color not red (indicates difficulty not error), "Conquered!" not "Fixed", "You're getting stronger!" in session summary</idea>
+      <idea acId="all">Test performance: Challenge generation less than 3 seconds (ChatMock call), Corrective feedback less than 5 seconds, Pattern detection async (doesn't block session), Vulnerability scores cached within session. Load test with 10 concurrent challenge generations</idea>
+    </ideas>
+  </tests>
+</story-context>

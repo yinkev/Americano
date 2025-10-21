@@ -8,15 +8,31 @@
  * Story 2.6 - Task 12.4: Test Feedback Loop
  */
 
+<<<<<<< HEAD
 import { prisma } from '@/lib/db'
 import { MissionAdaptationEngine } from '@/lib/mission-adaptation-engine'
 import { MissionStatus } from '@/generated/prisma'
+=======
+// DISABLED: Tests reference MissionAdaptationEngine not yet implemented for Story 4.1
+// TODO: Re-enable after Story 2.6 (Mission Analytics) is complete
+// These tests are for Mission-related features, not Epic 4 Understanding Validation
+
+/*
+import { prisma } from '@/lib/db';
+import { MissionAdaptationEngine } from '@/lib/mission-adaptation-engine';
+import { MissionStatus, PaceRating } from '@/generated/prisma';
+>>>>>>> origin/main
 
 // Mock Prisma client
 jest.mock('@/lib/db')
 
+<<<<<<< HEAD
 describe('Mission Feedback Loop Integration', () => {
   let adaptationEngine: MissionAdaptationEngine
+=======
+describe.skip('Mission Feedback Loop Integration', () => {
+  let adaptationEngine: MissionAdaptationEngine;
+>>>>>>> origin/main
 
   beforeEach(() => {
     adaptationEngine = new MissionAdaptationEngine()
@@ -30,7 +46,7 @@ describe('Mission Feedback Loop Integration', () => {
         userId: 'user1',
         helpfulnessRating: 5,
         relevanceScore: 4,
-        paceRating: 'JUST_RIGHT',
+        paceRating: PaceRating.JUST_RIGHT,
         improvementSuggestions: 'Great mission, maybe add more examples',
       }
 
@@ -56,8 +72,13 @@ describe('Mission Feedback Loop Integration', () => {
         userId: 'user1',
         helpfulnessRating: 6, // Invalid: out of range
         relevanceScore: 0, // Invalid: out of range
+<<<<<<< HEAD
         paceRating: 'JUST_RIGHT',
       }
+=======
+        paceRating: PaceRating.JUST_RIGHT,
+      };
+>>>>>>> origin/main
 
       // In production, this would be validated by Zod schema
       // Testing the validation logic
@@ -73,7 +94,7 @@ describe('Mission Feedback Loop Integration', () => {
         userId: 'user1',
         helpfulnessRating: 4,
         relevanceScore: 4,
-        paceRating: 'JUST_RIGHT',
+        paceRating: PaceRating.JUST_RIGHT,
         improvementSuggestions: null, // Optional field
       }
 
@@ -422,7 +443,7 @@ describe('Mission Feedback Loop Integration', () => {
           userId: 'user1',
           helpfulnessRating: 4,
           relevanceScore: 4,
-          paceRating: 'JUST_RIGHT',
+          paceRating: PaceRating.JUST_RIGHT,
         },
       })
 
@@ -531,6 +552,13 @@ describe('Mission Feedback Loop Integration', () => {
       expect(improvement).toBeGreaterThan(0)
       expect(improvement).toBeCloseTo(2.0, 1)
       // Demonstrates adaptation effectiveness
+<<<<<<< HEAD
     })
   })
 })
+=======
+    });
+  });
+});
+*/
+>>>>>>> origin/main

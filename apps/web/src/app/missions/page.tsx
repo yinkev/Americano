@@ -44,6 +44,7 @@ export default async function MissionsPage() {
   const totalMissions = missions.length
   const completedMissions = missions.filter((m) => m.status === 'COMPLETED').length
   const completionRate = totalMissions > 0 ? (completedMissions / totalMissions) * 100 : 0
+<<<<<<< HEAD
   const avgObjectives =
     missions.length > 0
       ? missions.reduce((sum, m) => {
@@ -55,6 +56,20 @@ export default async function MissionsPage() {
           }
         }, 0) / missions.length
       : 0
+=======
+  const avgObjectives = missions.length > 0
+    ? missions.reduce((sum, m) => {
+        try {
+          const objectivesStr = m.objectives as string
+          if (!objectivesStr) return sum
+          const objs = JSON.parse(objectivesStr) as Array<unknown>
+          return sum + (Array.isArray(objs) ? objs.length : 0)
+        } catch {
+          return sum
+        }
+      }, 0) / missions.length
+    : 0
+>>>>>>> origin/main
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -122,6 +137,7 @@ export default async function MissionsPage() {
               </div>
             ) : (
               <div className="space-y-3">
+<<<<<<< HEAD
                 {missions.map((mission) => {
                   let objectives: Array<{ objectiveId: string; completed: boolean }> = []
                   try {
@@ -134,6 +150,30 @@ export default async function MissionsPage() {
                   }
                   const completedCount =
                     mission.completedObjectivesCount || objectives.filter((o) => o.completed).length
+=======
+                {missions.map(mission => {
+                  let objectives: Array<{
+                    objectiveId: string
+                    completed: boolean
+                  }> = []
+
+                  try {
+                    const objectivesStr = mission.objectives as string
+                    if (objectivesStr) {
+                      objectives = JSON.parse(objectivesStr) as Array<{
+                        objectiveId: string
+                        completed: boolean
+                      }>
+                      if (!Array.isArray(objectives)) {
+                        objectives = []
+                      }
+                    }
+                  } catch {
+                    objectives = []
+                  }
+
+                  const completedCount = mission.completedObjectivesCount || objectives.filter(o => o.completed).length
+>>>>>>> origin/main
                   const totalCount = objectives.length
                   const rate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
 

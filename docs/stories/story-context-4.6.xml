@@ -1,0 +1,681 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.6</storyId>
+    <title>Comprehensive Understanding Analytics</title>
+    <status>Draft (Context Mismatch - Needs Regeneration)</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-4.6.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>a comprehensive dashboard consolidating all my understanding validation metrics and insights</iWant>
+    <soThat>I can see the complete picture of my comprehension strengths, weaknesses, and learning progress across all dimensions</soThat>
+    <tasks>
+      <task id="1" title="Database Schema Extensions">
+        Create UnderstandingPrediction, PeerBenchmark, and DailyInsight models with proper indexes
+      </task>
+      <task id="2" title="Multi-Dimensional Dashboard Component">
+        Create /progress/understanding page with 6 metric cards, filters, progressive rendering (< 2s load time)
+      </task>
+      <task id="3" title="Understanding vs. Memorization Analyzer">
+        Implement UnderstandingMemorizationAnalyzer class with gap detection, correlation analysis, recommendations
+      </task>
+      <task id="4" title="AI-Powered Pattern Analysis Engine">
+        Implement ComprehensionPatternAnalyzer with ChatMock (GPT-5) for strengths/weaknesses identification
+      </task>
+      <task id="5" title="Longitudinal Progress Tracker">
+        Create LongitudinalProgressTracker with milestone detection, regression alerts, PDF export
+      </task>
+      <task id="6" title="Predictive Analytics Engine">
+        Implement PredictiveAnalyticsEngine for exam success probability, forgetting risk, mastery date predictions
+      </task>
+      <task id="7" title="Cross-Objective Relationship Analyzer">
+        Create CrossObjectiveAnalyzer with correlation heatmap, network graph, study sequence recommendations
+      </task>
+      <task id="8" title="Peer Benchmarking System">
+        Implement PeerBenchmarkingEngine with privacy controls (opt-in, minimum 50 users for statistical validity)
+      </task>
+      <task id="9" title="AI-Powered Recommendation Engine">
+        Create RecommendationEngine with ChatMock for daily insights, weekly summaries, intervention suggestions
+      </task>
+      <task id="10" title="API Endpoints">
+        Create 8 GET endpoints for dashboard data, comparison, patterns, longitudinal, predictions, correlations, peer-benchmark, recommendations
+      </task>
+      <task id="11" title="Dashboard Layout and Navigation">
+        Implement tabbed interface with 8 tabs, global filters, export functionality, glassmorphism design
+      </task>
+      <task id="12" title="Performance Optimization">
+        Implement nightly data aggregation cron job, Redis caching (15-min TTL), React Query, progressive rendering
+      </task>
+      <task id="13" title="Testing and Validation">
+        Test with diverse data volumes (10/100/1000 objectives), verify calculations, performance testing, filter interactions
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC-1" title="Multi-Dimensional Comprehension Dashboard">
+      Central dashboard displays all validation metrics in unified view with comprehension score trends (Story 4.1), clinical reasoning performance (Story 4.2), controlled failure effectiveness (Story 4.3), confidence calibration accuracy (Story 4.4), adaptive assessment efficiency (Story 4.5), and mastery verification status. All metrics filterable by date range (7/30/90 days), course, topic. Dashboard loads in &lt; 2 seconds with progressive rendering.
+    </criterion>
+    <criterion id="AC-2" title="Understanding vs. Memorization Comparison">
+      Visual comparison between flashcard review performance (memorization proxy) and validation assessment scores (understanding measure). Side-by-side chart, correlation analysis, identification of topics with gap &gt; 20 points, "Illusion of Knowledge" alerts, recommendations for closing gaps.
+    </criterion>
+    <criterion id="AC-3" title="Comprehensive Strength/Weakness Analysis">
+      AI-powered identification using ChatMock (GPT-5) of strongest areas (top 10%), weakest areas (bottom 10%), inconsistent understanding (high variance), overconfident topics (delta &gt; 15), underconfident topics (delta &lt; -15), hidden strengths, dangerous gaps.
+    </criterion>
+    <criterion id="AC-4" title="Longitudinal Progress Tracking">
+      Progress line charts for each validation dimension, milestone markers (mastery verifications, improvements), regression detection (15+ point declines), growth trajectory predictions, cumulative mastery count, week-over-week and month-over-month rates, PDF export for advisors.
+    </criterion>
+    <criterion id="AC-5" title="Predictive Understanding Analytics">
+      ML predictions for exam success probability, forgetting risk identification, optimal review timing estimates, mastery date forecasts with confidence intervals, model accuracy tracking, dynamic updates as new data collected.
+    </criterion>
+    <criterion id="AC-6" title="Cross-Objective Understanding Relationships">
+      Heatmap showing correlation between objective comprehension scores, identification of foundational objectives (enable others) and bottleneck objectives (block others), network graph visualization, integration with Knowledge Graph (Story 3.2), strategic study sequencing recommendations.
+    </criterion>
+    <criterion id="AC-7" title="Comparative Benchmarking">
+      Anonymized peer performance distribution (box plots), user's percentile rank, comparison to medical education standards (NBME benchmarks), relative strengths/weaknesses vs peers, trend comparison (growth rate), opt-in with explicit privacy consent, minimum 50 peers required.
+    </criterion>
+    <criterion id="AC-8" title="Actionable Insights and Recommendations">
+      AI-generated using ChatMock (GPT-5) daily insights, weekly top 3 priority objectives, intervention suggestions based on patterns, study strategy recommendations, time investment estimates, success predictions, links to study missions (Story 2.4).
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR5: Understanding Validation Engine (Epic 4)</section>
+        <snippet>FR5: Understanding Validation Engine - "Illusion of Comprehension" Protection. Unlike competitors, validates genuine understanding vs pattern recognition through natural language prompts, clinical scenario assessments, controlled failure challenges, confidence calibration tracking, and adaptive mastery verification. Story 4.6 synthesizes all validation dimensions into comprehensive analytics dashboard.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic Breakdown Document</title>
+        <section>Epic 4: Understanding Validation Engine - Story 4.6</section>
+        <snippet>Story 4.6: Comprehensive Understanding Analytics (Epic 4 finale) - Multi-dimensional dashboard consolidating all validation metrics: comprehension trends, clinical reasoning, failure learning, calibration accuracy, adaptive efficiency, mastery status. Premium feature with predictive analytics (exam success probability, forgetting curves), AI-powered insights (ChatMock pattern analysis), peer benchmarking (privacy-first, opt-in), cross-objective correlations (network graphs, heatmaps), and actionable recommendations (daily insights, weekly priorities, intervention suggestions).</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>Subsystem 4: Understanding Validation Engine</section>
+        <snippet>Subsystem 4 validates genuine understanding through multi-dimensional assessment: natural language comprehension prompts (Story 4.1), clinical reasoning scenarios (4.2), controlled failure challenges (4.3), confidence calibration tracking (4.4), adaptive mastery verification (4.5), and comprehensive analytics dashboard (4.6). Database models: ValidationPrompt, ValidationResponse, ComprehensionMetric, UnderstandingPrediction, PeerBenchmark, DailyInsight. API endpoints for dashboard data aggregation, pattern analysis, longitudinal tracking, predictive analytics, peer comparison, AI-generated recommendations.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>Subsystem 5: Behavioral Analytics</section>
+        <snippet>Behavioral Analytics subsystem tracks performance patterns through BehavioralEvent (mission/card/validation/session events), LearningPattern (optimal study time, struggle topics, preferences, session length), PerformanceMetric (time-series retention scores, study time, review counts), PerformancePrediction (ML forecasts for struggle likelihood, optimal timing). Integration point for Story 4.6: Performance metrics correlate with understanding validation scores to identify learning effectiveness patterns.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-specification.md</path>
+        <title>UX Specification</title>
+        <section>Analytics Dashboard Patterns</section>
+        <snippet>Dashboard design patterns: Glassmorphism (bg-white/80 backdrop-blur-md), NO gradients, OKLCH color space, min 44px touch targets, responsive grid layouts (3 cols desktop → 2 tablet → 1 mobile), progressive rendering with skeleton loaders, Recharts for data visualization (line charts, scatter plots, heatmaps, box plots, network graphs), global filters (date range, course, topic) apply across all tabs, export functionality (PDF reports, CSV data).</snippet>
+      </doc>
+      <doc>
+        <path>docs/api-endpoints.md</path>
+        <title>API Endpoints Documentation</title>
+        <section>Analytics Endpoints (existing patterns)</section>
+        <snippet>Existing analytics API patterns from Story 2.6: GET /api/analytics/missions/summary (aggregated mission data), GET /api/analytics/missions/correlation (Pearson correlation with p-value), GET /api/analytics/missions/recommendations (AI-generated with ChatMock). Established conventions: X-User-Email header for MVP auth, standardized response format { success, data, error }, Zod validation schemas, proper error handling with ApiError class, Redis caching for expensive calculations (15-min TTL).</snippet>
+      </doc>
+      <doc>
+        <path>docs/AGENTS.MD</path>
+        <title>Agent Development Protocol</title>
+        <section>ChatMock Integration Patterns</section>
+        <snippet>ChatMock (GPT-5) integration from Story 2.1: System prompt for medical education context, temperature: 0.3-0.5 for consistency with creativity, max_tokens: 1500-16000 depending on task complexity, structured prompt engineering with data summary and specific analysis instructions, response parsing into structured objects. For Story 4.6 pattern analysis: temperature 0.5 for balanced insights, include metrics summary (comprehension, reasoning, calibration, mastery), identified patterns (strengths, weaknesses, calibration issues), generate 3-5 actionable insights in category-observation-action format.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-4.1.md</path>
+        <title>Story 4.1: Natural Language Comprehension Prompts</title>
+        <section>Database Models and API Patterns</section>
+        <snippet>Story 4.1 establishes ValidationPrompt, ValidationResponse, ComprehensionMetric models. ValidationResponse includes confidenceLevel (1-5), calibrationDelta (confidence - score), detailedFeedback JSON with subscores (terminology, relationships, application, clarity). ComprehensionMetric tracks per-user objective-level trends with avgScore, sampleSize, trend (improving/stable/declining). API pattern: POST /api/validation/responses for submission, GET /api/validation/metrics/:objectiveId for historical data.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-2.2.md</path>
+        <title>Story 2.2: Personal Performance and Weakness Tracking</title>
+        <section>PerformanceMetric Model and Weakness Scoring</section>
+        <snippet>Story 2.2 establishes PerformanceMetric time-series model (date, retentionScore, studyTimeMs, reviewCount, correctReviews, incorrectReviews) linked to LearningObjective. Weakness scoring algorithm: retention 40% + study time 30% + failures 20% + confidence 10%. LearningObjective extended with masteryLevel enum (NOT_STARTED, BEGINNER, INTERMEDIATE, ADVANCED, MASTERED), totalStudyTimeMs, lastStudiedAt, weaknessScore (0.0-1.0). API: GET /api/performance/weak-areas, GET /api/performance/mastery-summary.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-2.4.md</path>
+        <title>Story 2.4: Daily Mission Generation and Display</title>
+        <section>Mission Model and Integration Point</section>
+        <snippet>Story 2.4 establishes Mission model with objectives JSON array, status (PENDING/IN_PROGRESS/COMPLETED/SKIPPED), estimatedMinutes, actualMinutes, completedObjectivesCount. MissionGenerator class with getPrioritizedObjectives() method. Integration point for Story 4.6: Recommendations link to Mission generation via suggested objective IDs, time estimates, difficulty levels. API: POST /api/learning/mission/generate accepts objectiveIds[], estimatedMinutes, difficulty parameters.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>apps/web/src/components/analytics/performance-correlation-panel.tsx</path>
+        <kind>component</kind>
+        <symbol>PerformanceCorrelationPanel</symbol>
+        <lines>1-310</lines>
+        <reason>Story 2.6 established pattern for correlation analysis with Recharts ScatterChart, Pearson correlation display (r coefficient, p-value, confidence), statistical significance interpretation, OKLCH colors for confidence (HIGH=green, MEDIUM=orange, LOW=red), glassmorphism design, Info button for explanation panel. Reusable pattern for Story 4.6 cross-objective correlation analysis.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/progress/performance-trend-chart.tsx</path>
+        <kind>component</kind>
+        <symbol>PerformanceTrendChart</symbol>
+        <lines>1-267</lines>
+        <reason>Story 2.2 established pattern for time-series visualization with Recharts LineChart, time range selector (7d/30d/90d/all), metric type selector, 7-day moving average calculation, CSV export functionality, glassmorphism design, responsive layout. Reusable pattern for Story 4.6 longitudinal progress tracking charts.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/analytics/insights-panel.tsx</path>
+        <kind>component</kind>
+        <symbol>InsightsPanel</symbol>
+        <lines>existing</lines>
+        <reason>Story 2.6 component for displaying AI-generated insights with priority badges, actionable recommendations, dismissal functionality. Pattern reusable for Story 4.6 daily insights and weekly recommendations display with ChatMock integration.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/analytics/recommendations-panel.tsx</path>
+        <kind>component</kind>
+        <symbol>RecommendationsPanel</symbol>
+        <lines>existing</lines>
+        <reason>Story 2.6 component for displaying structured recommendations with action buttons, category badges, rationale explanations. Pattern reusable for Story 4.6 intervention suggestions, study strategy recommendations, time investment estimates.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/study/charts/time-per-objective-chart.tsx</path>
+        <kind>component</kind>
+        <symbol>TimePerObjectiveChart</symbol>
+        <lines>existing</lines>
+        <reason>Story 2.5 Recharts BarChart for objective-level time tracking. Pattern reusable for Story 4.6 mastery verification progress visualization, objective completion time analysis.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/analytics/missions/correlation/route.ts</path>
+        <kind>api_route</kind>
+        <symbol>GET handler</symbol>
+        <lines>existing</lines>
+        <reason>Story 2.6 established pattern for correlation calculation with Pearson coefficient, p-value statistical significance testing, confidence level determination (HIGH/MEDIUM/LOW based on sample size and p-value), minimum sample size validation (7 data points). Reusable algorithm for Story 4.6 cross-objective correlation matrix.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/analytics/missions/recommendations/route.ts</path>
+        <kind>api_route</kind>
+        <symbol>GET handler</symbol>
+        <lines>existing</lines>
+        <reason>Story 2.6 established pattern for AI-generated recommendations using ChatMock (GPT-5) with system prompt, data summary in user message, temperature 0.5, structured response parsing. Reusable pattern for Story 4.6 daily insights, weekly summaries, intervention suggestions with medical education context.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/chatmock-client.ts</path>
+        <kind>client</kind>
+        <symbol>ChatMockClient</symbol>
+        <lines>existing</lines>
+        <reason>Story 2.1 established ChatMockClient wrapper for OpenAI API (GPT-5 via ChatMock). Configured with API key from environment, methods for chat completions with system/user messages, temperature control, max_tokens configuration. Reusable for Story 4.6 AI-powered pattern analysis, insights generation, recommendations engine.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-utils.ts</path>
+        <kind>utility</kind>
+        <symbol>successResponse, errorResponse, ApiError</symbol>
+        <lines>existing</lines>
+        <reason>Story 1.5 standardized API response format: successResponse(data, message?), errorResponse(error, status), ApiError class with status codes. Ensures consistent error handling, proper HTTP status codes (200/400/404/500), Zod validation error formatting. Required for all Story 4.6 API endpoints.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/prisma-client.ts</path>
+        <kind>client</kind>
+        <symbol>prisma singleton</symbol>
+        <lines>existing</lines>
+        <reason>Story 1.5 enhanced Prisma client with query logging in development, connection pooling configuration, proper singleton pattern for Next.js hot reload. Required for all Story 4.6 database queries (ValidationResponse, ComprehensionMetric, PerformanceMetric, UnderstandingPrediction, PeerBenchmark, DailyInsight models).</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>ValidationPrompt, ValidationResponse, ComprehensionMetric, PerformanceMetric</symbol>
+        <lines>397-466, 542-562</lines>
+        <reason>Existing database models from Stories 4.1 (ValidationPrompt, ValidationResponse, ComprehensionMetric) and 2.2 (PerformanceMetric). Story 4.6 extends schema with UnderstandingPrediction (id, userId, objectiveId, predictionType enum, predictedValue, confidenceInterval, predictedAt, actualValue, accuracy), PeerBenchmark (id, cohortId, objectiveId, metric, percentile25/50/75, mean, stdDev, sampleSize, calculatedAt), DailyInsight (id, userId, date, insightType, message, recommendedActions[], priority, dismissed). Proper indexes on userId, date, objectiveId for query performance.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <category name="Runtime (Node.js)">
+        <dependency>@prisma/client (4.x) - Database ORM for all queries</dependency>
+        <dependency>zod (3.x) - API request/response validation schemas</dependency>
+        <dependency>date-fns (2.x) - Date manipulation for time range filters, milestone detection</dependency>
+        <dependency>openai (4.x) - ChatMock (GPT-5) integration for AI insights</dependency>
+        <dependency>recharts (2.x) - Data visualization library (LineChart, ScatterChart, BarChart, Heatmap, RadarChart)</dependency>
+      </category>
+      <category name="UI Components (React)">
+        <dependency>@radix-ui/react-tabs - Tabbed dashboard interface</dependency>
+        <dependency>@radix-ui/react-select - Filter dropdowns (course, topic, date range)</dependency>
+        <dependency>@radix-ui/react-dialog - Confirmation modals, detail views</dependency>
+        <dependency>@radix-ui/react-tooltip - Metric explanations, help text</dependency>
+        <dependency>lucide-react - Icons for metrics, trends, insights (TrendingUp, AlertTriangle, CheckCircle, Info)</dependency>
+      </category>
+      <category name="State Management">
+        <dependency>zustand (4.x) - Client-side filter state persistence</dependency>
+        <dependency>@tanstack/react-query (5.x) - API data caching, stale-while-revalidate</dependency>
+      </category>
+      <category name="PDF Generation">
+        <dependency>jspdf (2.x) - PDF export for advisor reports</dependency>
+        <dependency>html2canvas (1.x) - Capture chart visualizations for PDF</dependency>
+      </category>
+      <category name="All packages already installed from previous stories">
+        <dependency>next (15.x), react (19.x), typescript (5.x), tailwindcss (4.x)</dependency>
+      </category>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="C-1" type="database" critical="true">
+      Database schema extensions: Create UnderstandingPrediction model (predictionType enum: EXAM_SUCCESS, FORGETTING_RISK, MASTERY_DATE, fields: predictedValue, confidenceInterval, predictedAt, actualValue, accuracy), PeerBenchmark model (cohortId, objectiveId, metric, quartile stats, sampleSize, calculatedAt), DailyInsight model (userId, date, insightType, message, recommendedActions JSON array, priority 1-10, dismissed boolean). Indexes: (userId+date), (objectiveId), (predictedAt), (cohortId+objectiveId+metric).
+    </constraint>
+    <constraint id="C-2" type="ai_integration" critical="true">
+      ChatMock (GPT-5) integration for pattern analysis (AC#3) and recommendations (AC#8): System prompt: "You are a medical education advisor analyzing comprehensive understanding validation metrics." Temperature: 0.5 (balanced creativity/consistency). Max tokens: 1500 for insights. Include data summary: comprehension scores, clinical reasoning scores, calibration correlation, mastery count, identified patterns (strengths top 10%, weaknesses bottom 10%, overconfident delta > 15, dangerous gaps). Generate 3-5 insights in format: [Category]: [Observation] → [Action]. Parse response into structured InsightData objects.
+    </constraint>
+    <constraint id="C-3" type="performance" critical="true">
+      Performance targets: Dashboard load < 2 seconds (AC#1), tab switch < 500ms, API response < 200ms for cached data, < 2s for uncached aggregations. Implement nightly cron job (Task 12.1) to pre-calculate dashboard metrics and store in Redis cache with 24-hour TTL. Use React Query with stale-while-revalidate (staleTime: 5min, cacheTime: 15min). Progressive rendering with skeleton loaders for each metric card. Virtual scrolling for long lists (>100 objectives). Lazy load chart components with code splitting.
+    </constraint>
+    <constraint id="C-4" type="calculations" critical="true">
+      Mathematical formulas: (1) Memorization-Understanding Gap = flashcardAvgScore - validationAvgScore, severity: HIGH if gap > 30, MEDIUM if > 20, LOW otherwise. (2) Pearson correlation: r = (n*ΣXY - ΣX*ΣY) / sqrt((n*ΣX² - (ΣX)²)(n*ΣY² - (ΣY)²)), statistical significance: p-value < 0.05, confidence: HIGH if n > 30 and p < 0.01, MEDIUM if n > 15 and p < 0.05, LOW otherwise. (3) Exam success probability: logistic regression on features (avgComprehension 30%, avgReasoning 35%, masteryCount 20%, calibrationAccuracy 15%). (4) Forgetting curve: R = e^(-t/S) where t=days since review, S=strength (initialScore * ln(reviewCount+1) / difficulty).
+    </constraint>
+    <constraint id="C-5" type="privacy" critical="true">
+      Peer benchmarking privacy (AC#7): Explicit opt-in required (User.includeInAnalytics boolean, default: true but with consent dialog on first analytics page visit). Minimum cohort size: 50 users for statistical validity (prevent identification). Only aggregated statistics shared (quartiles, mean, stdDev, no individual records). Anonymized: no names, emails, demographics. User can opt-out anytime (removes from future aggregations, does not delete historical benchmarks). Clear privacy notice: "Your data helps peers anonymously; you remain unidentifiable. Sample size: X users." FERPA compliance for educational records.
+    </constraint>
+    <constraint id="C-6" type="architecture" critical="true">
+      Next.js 15 App Router patterns: All API routes use async params (const params = await props.params), proper TypeScript typing (NextRequest, NextResponse), Zod validation schemas for all endpoints, standardized response format via successResponse/errorResponse utilities, proper error handling with ApiError class and withErrorHandler wrapper. Dashboard page: Server Component for initial data fetch, Client Components for interactive charts/filters with 'use client' directive. No tRPC (use standard REST API routes).
+    </constraint>
+    <constraint id="C-7" type="ui_design" critical="true">
+      Glassmorphism design system (NO gradients): bg-white/80 backdrop-blur-md for metric cards, bg-white/95 backdrop-blur-xl for header/footer, shadow-[0_8px_32px_rgba(31,38,135,0.1)] for depth, rounded-2xl corners. OKLCH colors: Strength=oklch(0.7 0.15 145) green, Weakness=oklch(0.65 0.20 25) red, Warning=oklch(0.75 0.12 85) yellow, Info=oklch(0.6 0.18 230) blue, Neutral=oklch(0.6 0.05 240) gray. Typography: Inter (body), DM Sans (headings). Min 44px touch targets for all interactive elements. Responsive breakpoints: 3 cols desktop (1024px+), 2 cols tablet (768px-1023px), 1 col mobile (<768px).
+    </constraint>
+    <constraint id="C-8" type="authentication" priority="medium">
+      Authentication deferred for MVP: Hardcoded X-User-Email: kevy@americano.dev header for all API requests. No JWT tokens, no session cookies, no auth middleware. All queries filter by hardcoded user email. Document migration path in inline comments: "// TODO: Replace hardcoded email with session.user.email from NextAuth when auth implemented (Story 1.1)". Rate limiting deferred (no abuse risk for single-user local MVP).
+    </constraint>
+    <constraint id="C-9" type="data_aggregation" priority="high">
+      Nightly aggregation cron job (Task 12.1): Run at 2 AM daily to pre-calculate expensive metrics. Calculate per-user dashboard data: comprehension trends (last 90 days), clinical reasoning performance, failure learning effectiveness, calibration accuracy, adaptive efficiency, mastery count. Store in Redis with 24-hour TTL (key: understanding:dashboard:{userId}). Also aggregate peer benchmarks: quartile calculations (25th, 50th, 75th percentiles), mean, stdDev per metric per objective, minimum 50 opted-in users. Store in PeerBenchmark table. Cron job implementation: Vercel Cron or Node.js node-cron package.
+    </constraint>
+    <constraint id="C-10" type="validation" priority="high">
+      Zod validation schemas: DashboardQuerySchema (userId: z.string().email(), dateRange: z.enum(['7d', '30d', '90d']), courseId: z.string().optional(), topic: z.string().optional()), PredictionQuerySchema (userId, objectiveId, predictionType enum), PeerBenchmarkQuerySchema (userId, objectiveId, metric string). All API endpoints validate request with schema.parse() and return 400 with validation errors on failure. Response validation: CorrelationDataSchema, PredictionDataSchema, BenchmarkDataSchema ensure type safety.
+    </constraint>
+    <constraint id="C-11" type="error_handling" priority="high">
+      Error handling patterns: All API routes wrapped in try-catch with ApiError for known errors (404 for not found, 400 for validation, 500 for unexpected). Standardized error responses via errorResponse() utility. Client-side: React Error Boundaries for chart components, fallback UI for loading states (skeleton loaders), error states (retry buttons), empty states (helpful messages with action suggestions). Console.error() for debugging, no sensitive data in error messages.
+    </constraint>
+    <constraint id="C-12" type="dependencies" priority="high">
+      Story dependencies: Story 4.6 consolidates data from Stories 4.1 (ComprehensionMetric, ValidationResponse), 4.2 (clinical reasoning scores in ValidationResponse), 4.3 (failure challenge completion data), 4.4 (CalibrationMetric, confidence calibration delta), 4.5 (MasteryVerification, adaptive assessment efficiency). Also depends on Story 2.2 (PerformanceMetric, weakness scoring), Story 2.4 (Mission model for recommendation linking). Ensure all prerequisite models and APIs are implemented before Story 4.6 dashboard integration.
+    </constraint>
+    <constraint id="C-13" type="chart_libraries" priority="high">
+      Recharts configuration: LineChart for longitudinal trends (multiple lines for each validation dimension, reference lines for milestones), ScatterChart for correlation analysis (with regression trend line), BarChart for mastery distribution (stacked bars by mastery level), Heatmap (custom implementation with Recharts or third-party library like react-calendar-heatmap) for cross-objective correlation matrix, Network graph (use react-force-graph or vis-network for dependency visualization). All charts: responsive container, OKLCH colors, glassmorphism tooltips, proper ARIA labels, export to PNG/SVG via html2canvas or recharts built-in export.
+    </constraint>
+    <constraint id="C-14" type="pdf_export" priority="medium">
+      PDF export functionality (Task 5.18): Use jsPDF library to generate advisor report. Include: (1) Summary statistics (comprehension avg, mastery count, calibration correlation), (2) Charts as PNG images (captured via html2canvas from DOM), (3) Top 3 strengths and weaknesses with explanations, (4) Recommendations list, (5) Longitudinal progress table. Format: Letter size (8.5x11), margins 0.5in, Inter font, Americano branding header/footer. Download filename: understanding-report-{userId}-{date}.pdf. Implement in separate /api/analytics/understanding/export-report endpoint.
+    </constraint>
+    <constraint id="C-15" type="accessibility" priority="medium">
+      Accessibility compliance: ARIA labels for all charts (role="img", aria-label describing data), keyboard navigation for tabs (arrow keys to switch), screen reader support for metric values (aria-live regions for dynamic updates), color + patterns (not color alone) for data visualization (use shapes/patterns in addition to color for strengths/weaknesses), focus indicators on interactive elements (outline-offset: 2px), skip links for navigation, semantic HTML (nav, main, section, article tags), alt text for chart images in PDF export.
+    </constraint>
+    <constraint id="C-16" type="testing" priority="medium">
+      Testing requirements: Vitest unit tests for calculation engines (MemorizationAnalyzer, PatternAnalyzer, PredictiveEngine, CorrelationAnalyzer) with mock data covering edge cases (empty data, single data point, insufficient sample size), React Testing Library component tests for dashboard layout (filter interactions, tab switching, loading states, error states), performance tests with large datasets (100 objectives, 1000 validation responses, measure load time with Performance API), integration tests for API endpoints (validate response schemas, error handling, caching behavior). Target: 70%+ coverage for critical paths.
+    </constraint>
+    <constraint id="C-17" type="localization" priority="low">
+      Localization deferred for MVP: All text in English. Date formatting via date-fns with US locale. Number formatting via toFixed() and Intl.NumberFormat with en-US locale. Percentages with % suffix. Document i18n migration path: use next-intl library when multi-language support needed, extract all UI strings to translation files, use useTranslations() hook for dynamic text.
+    </constraint>
+    <constraint id="C-18" type="mobile_optimization" priority="high">
+      Mobile-first responsive design: Dashboard tabs as horizontal scrollable list on mobile (< 768px), metric cards stack vertically (1 col), charts maintain aspect ratio (use ResponsiveContainer from Recharts), global filters collapse into expandable panel, touch-friendly controls (min 44px targets), swipe gestures for tab navigation (use react-swipeable or native touch events), reduced data density for small screens (show top 5 strengths/weaknesses instead of 10), conditional rendering for complex visualizations (network graph hidden on mobile, replaced with simpler list view).
+    </constraint>
+    <constraint id="C-19" type="data_retention" priority="low">
+      Data retention policies: ComprehensionMetric, PerformanceMetric, UnderstandingPrediction historical data retained indefinitely for longitudinal analysis (users can export and delete via GDPR compliance tools in future). PeerBenchmark aggregations recalculated nightly, historical snapshots not retained (reduces storage). DailyInsight expires after 90 days (soft delete with deletedAt timestamp, hard delete after 1 year). Document cleanup cron jobs in inline comments for future implementation.
+    </constraint>
+    <constraint id="C-20" type="feature_flags" priority="low">
+      Feature flags for gradual rollout: Peer benchmarking opt-in flag (User.includeInAnalytics), predictive analytics enable flag (default: true for MVP, can disable if model accuracy insufficient), AI insights enable flag (default: true, can disable if ChatMock costs exceed budget). Implement as environment variables (FEATURE_PEER_BENCHMARK=true, FEATURE_PREDICTIONS=true, FEATURE_AI_INSIGHTS=true) checked in API routes. UI conditionally renders features based on flags. Document flag management in .env.example.
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface id="I-1" type="api_endpoint">
+      <name>GET /api/analytics/understanding/dashboard</name>
+      <kind>REST API</kind>
+      <signature>
+        Query params: { userId: string (email), dateRange: '7d' | '30d' | '90d', courseId?: string, topic?: string }
+        Response: { success: true, data: { comprehension: { current: number, trend: 'up'|'down'|'stable', sparkline: number[] }, reasoning: {...}, failure: {...}, calibration: {...}, adaptive: {...}, mastery: { count: number, total: number, percentage: number } } }
+      </signature>
+      <path>apps/web/src/app/api/analytics/understanding/dashboard/route.ts</path>
+    </interface>
+    <interface id="I-2" type="api_endpoint">
+      <name>GET /api/analytics/understanding/comparison</name>
+      <kind>REST API</kind>
+      <signature>
+        Query params: { userId: string, dateRange: '7d' | '30d' | '90d' }
+        Response: { success: true, data: { memorization: Array&lt;{objectiveId, score}&gt;, understanding: Array&lt;{objectiveId, score}&gt;, gaps: Array&lt;{objectiveId, gap, severity}&gt;, correlation: number } }
+      </signature>
+      <path>apps/web/src/app/api/analytics/understanding/comparison/route.ts</path>
+    </interface>
+    <interface id="I-3" type="api_endpoint">
+      <name>GET /api/analytics/understanding/patterns</name>
+      <kind>REST API</kind>
+      <signature>
+        Query params: { userId: string }
+        Response: { success: true, data: { strengths: Array&lt;{objectiveId, name, score, percentile}&gt;, weaknesses: Array&lt;{...}&gt;, inconsistencies: Array&lt;{objectiveId, variance}&gt;, insights: Array&lt;{category, observation, action}&gt; } }
+      </signature>
+      <path>apps/web/src/app/api/analytics/understanding/patterns/route.ts</path>
+    </interface>
+    <interface id="I-4" type="api_endpoint">
+      <name>GET /api/analytics/understanding/longitudinal</name>
+      <kind>REST API</kind>
+      <signature>
+        Query params: { userId: string, dimensions: string[] (comprehension,reasoning,etc), dateRange: '7d'|'30d'|'90d' }
+        Response: { success: true, data: { metrics: Array&lt;{date, comprehension, reasoning, ...}&gt;, milestones: Array&lt;{date, type, description}&gt;, regressions: Array&lt;{objectiveId, decline, date}&gt;, growthRate: { weekly: number, monthly: number } } }
+      </signature>
+      <path>apps/web/src/app/api/analytics/understanding/longitudinal/route.ts</path>
+    </interface>
+    <interface id="I-5" type="api_endpoint">
+      <name>GET /api/analytics/understanding/predictions</name>
+      <kind>REST API</kind>
+      <signature>
+        Query params: { userId: string, examType?: string }
+        Response: { success: true, data: { examSuccess: { probability: number, confidenceInterval: [number, number], factors: {...} }, forgettingRisks: Array&lt;{objectiveId, probability, recommendedDate}&gt;, masteryDates: Array&lt;{objectiveId, estimatedDate, confidence}&gt;, modelAccuracy: { MAE: number, sampleSize: number } } }
+      </signature>
+      <path>apps/web/src/app/api/analytics/understanding/predictions/route.ts</path>
+    </interface>
+    <interface id="I-6" type="api_endpoint">
+      <name>GET /api/analytics/understanding/correlations</name>
+      <kind>REST API</kind>
+      <signature>
+        Query params: { userId: string }
+        Response: { success: true, data: { correlationMatrix: number[][], objectiveIds: string[], foundational: Array&lt;{objectiveId, correlationSum}&gt;, bottlenecks: Array&lt;{objectiveId, negativeCorrelations}&gt;, sequence: string[] } }
+      </signature>
+      <path>apps/web/src/app/api/analytics/understanding/correlations/route.ts</path>
+    </interface>
+    <interface id="I-7" type="api_endpoint">
+      <name>GET /api/analytics/understanding/peer-benchmark</name>
+      <kind>REST API</kind>
+      <signature>
+        Query params: { userId: string, objectiveId?: string }
+        Response: { success: true, data: { peerDistribution: { p25: number, p50: number, p75: number, mean: number, stdDev: number }, userPercentile: number, relativeStrengths: Array&lt;{objectiveId, percentile}&gt;, relativeWeaknesses: Array&lt;{...}&gt;, sampleSize: number } }
+      </signature>
+      <path>apps/web/src/app/api/analytics/understanding/peer-benchmark/route.ts</path>
+    </interface>
+    <interface id="I-8" type="api_endpoint">
+      <name>GET /api/analytics/understanding/recommendations</name>
+      <kind>REST API</kind>
+      <signature>
+        Query params: { userId: string }
+        Response: { success: true, data: { dailyInsight: { message: string, priority: number, recommendedActions: string[] }, weeklyTop3: Array&lt;{objectiveId, reason}&gt;, interventions: Array&lt;{pattern, suggestion, rationale}&gt;, timeEstimates: Map&lt;string,number&gt;, successProbs: Map&lt;string,number&gt; } }
+      </signature>
+      <path>apps/web/src/app/api/analytics/understanding/recommendations/route.ts</path>
+    </interface>
+    <interface id="I-9" type="typescript_class">
+      <name>UnderstandingMemorizationAnalyzer</name>
+      <kind>Class</kind>
+      <signature>
+        class UnderstandingMemorizationAnalyzer {
+          async fetchMemorizationMetrics(userId: string, dateRange: string): Promise&lt;Map&lt;string, number&gt;&gt;
+          async fetchUnderstandingMetrics(userId: string, dateRange: string): Promise&lt;Map&lt;string, number&gt;&gt;
+          calculateMemorizationUnderstandingGap(objectiveId: string): { gap: number, severity: 'HIGH'|'MEDIUM'|'LOW', recommendation: string }
+          calculateCorrelation(memScores: number[], undScores: number[]): number
+          generateRecommendations(gaps: GapData[]): RecommendationData[]
+        }
+      </signature>
+      <path>apps/web/src/lib/understanding-memorization-analyzer.ts</path>
+    </interface>
+    <interface id="I-10" type="typescript_class">
+      <name>ComprehensionPatternAnalyzer</name>
+      <kind>Class</kind>
+      <signature>
+        class ComprehensionPatternAnalyzer {
+          async analyzeStrengthsWeaknesses(userId: string): Promise&lt;{ strengths: ObjectiveData[], weaknesses: ObjectiveData[], inconsistencies: ObjectiveData[] }&gt;
+          async generateAIInsights(patterns: PatternData): Promise&lt;InsightData[]&gt; // Uses ChatMock GPT-5
+          categorizeTopics(calibrationData: CalibrationData[]): { overconfident: string[], underconfident: string[], hiddenStrengths: string[], dangerousGaps: string[] }
+        }
+      </signature>
+      <path>apps/web/src/lib/comprehension-pattern-analyzer.ts</path>
+    </interface>
+    <interface id="I-11" type="typescript_class">
+      <name>LongitudinalProgressTracker</name>
+      <kind>Class</kind>
+      <signature>
+        class LongitudinalProgressTracker {
+          async fetchHistoricalMetrics(userId: string, dimensions: string[], dateRange: string): Promise&lt;MetricData[]&gt;
+          detectMilestones(metrics: MetricData[]): MilestoneData[]
+          detectRegressions(metrics: MetricData[]): RegressionData[]
+          predictGrowthTrajectory(objectiveId: string, historicalScores: number[]): { estimatedDays: number, confidence: number }
+          async generateProgressReport(userId: string): Promise&lt;Buffer&gt; // PDF via jsPDF
+        }
+      </signature>
+      <path>apps/web/src/lib/longitudinal-tracker.ts</path>
+    </interface>
+    <interface id="I-12" type="typescript_class">
+      <name>PredictiveAnalyticsEngine</name>
+      <kind>Class</kind>
+      <signature>
+        class PredictiveAnalyticsEngine {
+          async predictExamSuccess(userId: string, examType: string): Promise&lt;{ probability: number, confidenceInterval: [number,number], factors: FactorData }&gt;
+          predictForgettingRisk(objectiveId: string, lastReviewDate: Date): Promise&lt;{ probability: number, recommendedReviewDate: Date, reasoning: string }&gt;
+          predictMasteryDate(objectiveId: string, currentScore: number, trend: number): Promise&lt;{ estimatedDate: Date, confidenceInterval: number }&gt;
+          async trackPredictionAccuracy(): Promise&lt;{ MAE: number, sampleSize: number }&gt;
+        }
+      </signature>
+      <path>apps/web/src/lib/predictive-analytics.ts</path>
+    </interface>
+    <interface id="I-13" type="typescript_class">
+      <name>CrossObjectiveAnalyzer</name>
+      <kind>Class</kind>
+      <signature>
+        class CrossObjectiveAnalyzer {
+          async calculateObjectiveCorrelations(userId: string): Promise&lt;number[][]&gt;
+          identifyFoundationalObjectives(correlationMatrix: number[][]): FoundationalData[]
+          identifyBottleneckObjectives(correlationMatrix: number[][], weakPerformance: Map&lt;string,number&gt;): BottleneckData[]
+          generateStudySequence(objectives: string[], correlations: number[][]): string[]
+        }
+      </signature>
+      <path>apps/web/src/lib/cross-objective-analyzer.ts</path>
+    </interface>
+    <interface id="I-14" type="typescript_class">
+      <name>PeerBenchmarkingEngine</name>
+      <kind>Class</kind>
+      <signature>
+        class PeerBenchmarkingEngine {
+          async aggregatePeerData(cohortId: string, objectiveId: string): Promise&lt;PeerBenchmarkData&gt;
+          calculateUserPercentile(userId: string, objectiveId: string, metric: string): Promise&lt;number&gt;
+          async identifyRelativeStrengthsWeaknesses(userId: string): Promise&lt;{ relativeStrengths: string[], relativeWeaknesses: string[] }&gt;
+        }
+      </signature>
+      <path>apps/web/src/lib/peer-benchmarking.ts</path>
+    </interface>
+    <interface id="I-15" type="typescript_class">
+      <name>RecommendationEngine</name>
+      <kind>Class</kind>
+      <signature>
+        class RecommendationEngine {
+          async generateDailyInsight(userId: string): Promise&lt;{ message: string, priority: number, recommendedActions: string[] }&gt;
+          async generateWeeklySummary(userId: string): Promise&lt;{ top3: ObjectiveRecommendation[], interventions: InterventionData[] }&gt; // Uses ChatMock GPT-5
+          generateInterventionSuggestions(patterns: PatternData): InterventionData[]
+          estimateTimeToMastery(objectiveId: string, currentScore: number, trend: number): number
+        }
+      </signature>
+      <path>apps/web/src/lib/recommendation-engine.ts</path>
+    </interface>
+    <interface id="I-16" type="react_component">
+      <name>UnderstandingDashboard</name>
+      <kind>React Component (Client)</kind>
+      <signature>
+        'use client'
+        export function UnderstandingDashboard() {
+          // Grid layout with 6 metric cards, date range filter, course/topic filters
+          // Each card: current score, trend arrow, sparkline chart
+          // Progressive rendering with skeleton loaders
+          // Target load time < 2s
+        }
+      </signature>
+      <path>apps/web/src/components/analytics/UnderstandingDashboard.tsx</path>
+    </interface>
+    <interface id="I-17" type="react_component">
+      <name>UnderstandingVsMemorizationChart</name>
+      <kind>React Component (Client)</kind>
+      <signature>
+        'use client'
+        export function UnderstandingVsMemorizationChart({ userId, dateRange }: Props) {
+          // Dual-axis LineChart (blue=memorization, orange=understanding)
+          // Highlight gap areas with annotation overlays
+          // Display correlation coefficient with interpretation
+        }
+      </signature>
+      <path>apps/web/src/components/analytics/UnderstandingVsMemorizationChart.tsx</path>
+    </interface>
+    <interface id="I-18" type="react_component">
+      <name>StrengthWeaknessPanel</name>
+      <kind>React Component (Client)</kind>
+      <signature>
+        'use client'
+        export function StrengthWeaknessPanel({ userId }: Props) {
+          // Display strengths/weaknesses with visual badges (green/red)
+          // Show AI-generated insights in card format
+          // Link each topic to relevant study resources
+        }
+      </signature>
+      <path>apps/web/src/components/analytics/StrengthWeaknessPanel.tsx</path>
+    </interface>
+    <interface id="I-19" type="react_component">
+      <name>LongitudinalProgressChart</name>
+      <kind>React Component (Client)</kind>
+      <signature>
+        'use client'
+        export function LongitudinalProgressChart({ userId, dimensions, dateRange }: Props) {
+          // Multi-line chart showing all validation dimensions over time
+          // Milestone markers on timeline (icons for mastery, improvements)
+          // Regression warnings displayed prominently
+        }
+      </signature>
+      <path>apps/web/src/components/analytics/LongitudinalProgressChart.tsx</path>
+    </interface>
+    <interface id="I-20" type="react_component">
+      <name>PredictiveInsightsPanel</name>
+      <kind>React Component (Client)</kind>
+      <signature>
+        'use client'
+        export function PredictiveInsightsPanel({ userId }: Props) {
+          // Display exam success prediction with confidence interval
+          // List objectives at forgetting risk (sorted by probability)
+          // Show mastery date predictions for in-progress objectives
+          // Display model accuracy metrics (transparency)
+        }
+      </signature>
+      <path>apps/web/src/components/analytics/PredictiveInsightsPanel.tsx</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing framework: Vitest for unit tests, React Testing Library for component tests, Playwright for E2E tests (when needed). Target coverage: 70%+ for critical paths (calculation engines, API endpoints, core dashboard components). Test conventions: Test files co-located with source (*.test.ts, *.test.tsx), mock data in __mocks__ subdirectories, use describe/it/expect syntax, setup/teardown with beforeEach/afterEach. Run tests: npm run test (Vitest), npm run test:coverage for coverage report. CI integration: GitHub Actions workflow runs tests on PR, blocks merge if coverage drops below threshold.
+    </standards>
+    <locations>
+      Unit tests: apps/web/src/lib/*.test.ts (calculation engines)
+      Component tests: apps/web/src/components/analytics/*.test.tsx (dashboard components)
+      API tests: apps/web/src/app/api/analytics/understanding/**/route.test.ts (endpoints)
+      Integration tests: apps/web/__tests__/understanding-dashboard.integration.test.tsx (full flow)
+    </locations>
+    <ideas>
+      <idea ac="AC-1">
+        Test: Multi-dimensional dashboard data aggregation
+        - Mock ValidationResponse, ComprehensionMetric, PerformanceMetric data
+        - Call GET /api/analytics/understanding/dashboard with different date ranges (7d/30d/90d)
+        - Verify response contains all 6 metrics (comprehension, reasoning, failure, calibration, adaptive, mastery)
+        - Verify each metric has current score, trend ('up'|'down'|'stable'), sparkline array
+        - Test filter combinations (courseId, topic) correctly filter data
+        - Performance: Measure response time < 2s with 1000 validation records
+      </idea>
+      <idea ac="AC-2">
+        Test: Memorization vs understanding gap calculation
+        - Mock flashcard review data (memorization proxy) and validation scores (understanding measure)
+        - Test calculateMemorizationUnderstandingGap() with various scenarios:
+          * gap > 30 → severity HIGH
+          * gap 20-30 → severity MEDIUM
+          * gap < 20 → severity LOW
+        - Test correlation calculation with known datasets (r = 0.8, r = 0.3, r = -0.2)
+        - Verify recommendations generated for HIGH severity gaps
+        - Test chart component renders dual-axis LineChart correctly
+      </idea>
+      <idea ac="AC-3">
+        Test: AI-powered pattern analysis
+        - Mock ChatMockClient.chat.completions.create() to return structured insights
+        - Test analyzeStrengthsWeaknesses() identifies top 10% (strengths) and bottom 10% (weaknesses)
+        - Test categorizeTopics() correctly labels overconfident (delta > 15), underconfident (delta < -15)
+        - Verify generateAIInsights() parses ChatMock response into InsightData[] format
+        - Test prompt engineering: Verify system prompt, temperature 0.5, data summary included
+        - Mock error: Test fallback when ChatMock API fails (graceful degradation)
+      </idea>
+      <idea ac="AC-4">
+        Test: Longitudinal progress tracking
+        - Mock historical PerformanceMetric, ComprehensionMetric data spanning 90 days
+        - Test detectMilestones() identifies mastery verifications (score reaches 80%), major improvements (20+ point jump)
+        - Test detectRegressions() flags score declines > 15 points in previously mastered topics
+        - Test predictGrowthTrajectory() linear regression extrapolation to mastery threshold
+        - Test week-over-week and month-over-month rate calculations
+        - Test PDF export via jsPDF: Verify Buffer returned, contains charts (html2canvas snapshots), summary statistics
+      </idea>
+      <idea ac="AC-5">
+        Test: Predictive analytics engine
+        - Test predictExamSuccess() logistic regression with mock feature data (avgComprehension, avgReasoning, masteryCount, calibrationAccuracy)
+        - Verify output: probability 0-1, confidenceInterval [lower, upper], factors object with weights
+        - Test predictForgettingRisk() forgetting curve model: R = e^(-t/S), verify probability and recommendedReviewDate
+        - Test predictMasteryDate() trend extrapolation: Verify estimatedDate, confidenceInterval
+        - Test trackPredictionAccuracy(): Mock actualValue updates, calculate MAE (Mean Absolute Error)
+        - Edge case: Insufficient data (< 3 data points) → return null with error message
+      </idea>
+      <idea ac="AC-6">
+        Test: Cross-objective correlation analysis
+        - Mock ValidationResponse data for 10 objectives with 20 assessments each
+        - Test calculateObjectiveCorrelations() Pearson coefficient calculation: Verify matrix is symmetric (r_ij = r_ji), diagonal is 1.0
+        - Test identifyFoundationalObjectives() identifies high positive correlation (>0.5) with many other objectives
+        - Test identifyBottleneckObjectives() identifies low score + negative correlation pattern
+        - Test generateStudySequence() prioritizes foundational objectives first
+        - Edge case: Single objective → matrix 1x1, no correlations
+      </idea>
+      <idea ac="AC-7">
+        Test: Peer benchmarking system
+        - Mock 50+ opted-in users with varied performance data
+        - Test aggregatePeerData() calculates quartiles (p25, p50, p75), mean, stdDev correctly
+        - Test minimum sample size validation: < 50 users → return error "Insufficient data"
+        - Test calculateUserPercentile() ranks user correctly (e.g., 75th percentile if score > 75% of peers)
+        - Test privacy: Verify no individual user data exposed, only aggregated statistics
+        - Test opt-out: User.includeInAnalytics = false → excluded from future aggregations
+      </idea>
+      <idea ac="AC-8">
+        Test: AI-powered recommendation engine
+        - Mock ChatMockClient for weekly summary generation
+        - Test generateDailyInsight() priority scoring: dangerous gaps (highest) > bottlenecks > weaknesses > optimization
+        - Test generateWeeklySummary() top 3 objectives with rationale
+        - Test generateInterventionSuggestions(): Overconfidence → more controlled failures, weak reasoning → more clinical scenarios
+        - Test estimateTimeToMastery() calculation based on improvement rate and current score
+        - Verify recommendations link to Mission generation (objectiveIds, estimatedMinutes, difficulty)
+      </idea>
+      <idea ac="All">
+        Test: Dashboard component rendering
+        - Mount UnderstandingDashboard with React Testing Library
+        - Verify 6 metric cards render with skeleton loaders initially
+        - Mock API responses, verify data populates cards (current score, trend, sparkline)
+        - Test filter interactions: Change date range → API refetch with new params
+        - Test tab navigation: Click "Patterns" tab → loads StrengthWeaknessPanel
+        - Test export button: Click → triggers PDF download
+      </idea>
+      <idea ac="All">
+        Test: API endpoint error handling
+        - Test validation errors: Invalid userId (non-email) → 400 with Zod error
+        - Test not found: userId with no data → 404 with helpful message
+        - Test server errors: Database connection failure → 500 with generic error (no sensitive data)
+        - Test authentication: Missing X-User-Email header → 401 Unauthorized (when auth implemented)
+      </idea>
+      <idea ac="All">
+        Test: Performance with large datasets
+        - Seed database with 1000 ValidationResponse records, 100 objectives, 90 days of PerformanceMetric
+        - Measure GET /api/analytics/understanding/dashboard response time → verify < 2s
+        - Measure tab switch time (frontend state change) → verify < 500ms
+        - Test Redis caching: First request (cache miss) vs second request (cache hit) → second request < 100ms
+        - Test progressive rendering: Verify skeleton loaders display before data loads
+      </idea>
+      <idea ac="All">
+        Test: Filter interactions
+        - Test date range filter: 7d → returns data from last 7 days, 30d → last 30 days, 90d → last 90 days
+        - Test course filter: Select "Gross Anatomy" → filters all metrics to only that course's objectives
+        - Test topic filter: Select "cardiology" → filters to objectives with tag "cardiology"
+        - Test filter combinations: Course + Topic + Date range → correctly combines all filters
+        - Test filter persistence: Reload page → filters persist via URL params or localStorage
+      </idea>
+      <idea ac="All">
+        Test: Caching behavior
+        - Test Redis cache hit/miss: First request → cache miss (slow), second request within TTL → cache hit (fast)
+        - Test React Query stale-while-revalidate: Display cached data immediately, refetch in background
+        - Test cache invalidation: New ValidationResponse submitted → invalidate understanding:dashboard:{userId} cache
+        - Test nightly aggregation: Mock cron job execution → verify Redis cache updated, PeerBenchmark table updated
+      </idea>
+    </ideas>
+  </tests>
+</story-context>

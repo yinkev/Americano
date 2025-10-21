@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.4</storyId>
+    <title>Confidence Calibration and Metacognitive Assessment</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-4.4.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>accurately assess my own understanding and confidence levels</iWant>
+    <soThat>I can identify overconfidence, recognize genuine mastery, and develop better metacognitive awareness of my learning process</soThat>
+    <tasks>
+      <task id="1">Database Schema Extensions (AC: #1, #2, #3, #5)</task>
+      <task id="2">Confidence Capture Components (AC: #1, #2)</task>
+      <task id="3">Calibration Calculation Engine (AC: #3, #4)</task>
+      <task id="4">API Endpoints (AC: #1, #2, #3, #6, #8)</task>
+      <task id="5">Calibration Feedback Component (AC: #4)</task>
+      <task id="6">Metacognitive Reflection System (AC: #5)</task>
+      <task id="7">Calibration Trends Dashboard (AC: #6)</task>
+      <task id="8">Metacognitive Intervention Engine (AC: #7)</task>
+      <task id="9">Peer Calibration Comparison (AC: #8)</task>
+      <task id="10">Session Integration and Workflow (AC: #1, #2, #4, #5)</task>
+      <task id="11">Testing and Validation (AC: All)</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">
+      <name>Pre-Assessment Confidence Capture</name>
+      <description>User indicates confidence level before each validation assessment. 5-point confidence scale: Very Uncertain (1) to Very Confident (5). Visual confidence slider with descriptive labels. Confidence captured BEFORE user sees assessment prompt details. Optional confidence rationale text box ("Why this confidence level?"). Confidence data stored with ValidationResponse for analysis</description>
+    </criterion>
+    <criterion id="2">
+      <name>Post-Assessment Confidence Update</name>
+      <description>User can update confidence after seeing assessment but before response submission. Post-assessment confidence slider (separate from pre-assessment). Visual comparison showing pre vs. post confidence shift. Confidence shift tracked as metacognitive signal. Rationale field for confidence change explanation</description>
+    </criterion>
+    <criterion id="3">
+      <name>Confidence vs. Performance Tracking</name>
+      <description>System calculates calibration accuracy across all assessments. Confidence normalized to 0-100 scale (matches AI score scale). Calibration delta = confidence - actual score. Categorization: Overconfident (delta greater than 15), Underconfident (delta less than -15), Calibrated (-15 to +15). Historical calibration accuracy tracked per user, per concept, per time period. Calibration correlation coefficient calculated (Pearson's r between confidence and performance)</description>
+    </criterion>
+    <criterion id="4">
+      <name>Calibration Feedback Display</name>
+      <description>User receives immediate calibration insights after each assessment. Visual calibration indicator (gauge, color-coded). Specific feedback message based on calibration category. Overconfident: "You felt [X]% confident but scored [Y]% - review areas where certainty exceeded accuracy". Underconfident: "You felt [X]% confident but scored [Y]% - trust your understanding more!". Calibrated: "Your confidence matches your performance - well calibrated!". Trend note: "Your calibration accuracy is [improving/stable/declining] over last 7 days"</description>
+    </criterion>
+    <criterion id="5">
+      <name>Metacognitive Reflection Prompts</name>
+      <description>System prompts user to reflect on learning process. Post-assessment reflection questions (randomized selection): "What strategies helped you understand this concept?", "What surprised you about your performance?", "How would you approach studying this differently?", "What prerequisite knowledge did you need?". Optional text response (saved to ValidationResponse.reflectionNotes). Reflection completion tracked (contributes to metacognitive engagement score). Historical reflection archive accessible for user review</description>
+    </criterion>
+    <criterion id="6">
+      <name>Calibration Trends Dashboard</name>
+      <description>User can view confidence calibration patterns over time. Line chart: Confidence vs. Actual Score over last 30/90 days. Scatter plot: Each assessment plotted (x=confidence, y=score) with ideal calibration line (y=x). Calibration correlation coefficient displayed with interpretation. Trend analysis: Improving (r increasing toward 1.0), Stable, Declining. Filter by course, topic, assessment type (comprehension, reasoning, clinical). Identify consistently overconfident topics (delta greater than 15 across 3+ assessments). Identify consistently underconfident topics (delta less than -15 across 3+ assessments)</description>
+    </criterion>
+    <criterion id="7">
+      <name>Metacognitive Intervention System</name>
+      <description>System provides targeted interventions for poor calibration. Overconfidence intervention: Suggest reviewing weak areas before mission completion. Underconfidence intervention: Highlight strong performance patterns to build confidence. Calibration improvement resources: Educational content about metacognition. Guided self-assessment exercises for calibration practice. Interventions triggered when calibration accuracy less than 0.5 correlation over 10+ assessments. User can dismiss interventions but dismissals tracked</description>
+    </criterion>
+    <criterion id="8">
+      <name>Peer Calibration Comparison</name>
+      <description>User can compare calibration patterns with anonymized peers. Anonymized peer calibration distribution (box plot). User's position within peer distribution highlighted. Calibration percentile (e.g., "Your calibration accuracy is better than 68% of peers"). Peer insights: Common overconfidence topics, average calibration correlation. Privacy: No individual peer data visible, only aggregated statistics. Opt-in feature with clear privacy notice</description>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR5: Understanding Validation Engine, Epic 4: Understanding Validation</section>
+        <snippet>Epic 4 (Understanding Validation Engine): Validates genuine comprehension vs pattern recognition/superficial memorization through multi-dimensional assessment. Story 4.4 adds metacognitive layer enabling students to develop accurate self-assessment skills critical for clinical practice. Addresses dangerous overconfidence patterns common in medical education by tracking confidence vs. performance correlation (Pearson's r), detecting overconfidence/underconfidence patterns, providing calibration feedback and interventions.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture</title>
+        <section>Subsystem 4: Understanding Validation Engine, Database Schema, Calibration Tracking</section>
+        <snippet>Subsystem 4 extends ValidationResponse model with calibration fields (preAssessmentConfidence, postAssessmentConfidence, confidenceShift, calibrationDelta, calibrationCategory, reflectionNotes). CalibrationMetric model tracks historical patterns (userId, date, avgDelta, correlationCoeff, sampleSize, trend). Supports metacognitive intervention system with statistical analysis (Pearson correlation) and peer comparison features with privacy protection (opt-in, anonymized aggregation).</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic Breakdown Document</title>
+        <section>Epic 4: Understanding Validation Engine, Story 4.4 Details</section>
+        <snippet>Story 4.4 (Confidence Calibration and Metacognitive Assessment): Foundation for metacognitive awareness in medical education. Captures pre and post-assessment confidence (5-point scale), calculates calibration accuracy (confidence-performance correlation), provides immediate calibration feedback (overconfident/underconfident/calibrated categories with 15-point delta threshold). Includes reflection prompts (10+ questions randomized), calibration trends dashboard (line charts, scatter plots, correlation coefficient), intervention system (triggered at r less than 0.5 over 10+ assessments), and privacy-protected peer comparison (opt-in, anonymized statistics).</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-specification.md</path>
+        <title>UX/UI Specification</title>
+        <section>Design System: Colors, Glassmorphism, Typography, Touch Targets, Accessibility</section>
+        <snippet>Design System: OKLCH color space (NO gradients). Colors: Success oklch(0.7 0.15 145) green for calibrated, Warning oklch(0.75 0.12 85) yellow for alerts, Error oklch(0.65 0.20 25) red for overconfident, Primary oklch(0.6 0.18 230) blue for underconfident. Glassmorphism: bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]. Typography: Inter (body), DM Sans (headings). Touch Targets: Minimum 44px for sliders, buttons. Accessibility: ARIA labels for confidence levels, keyboard navigation for sliders (arrow keys), screen reader support for calibration feedback, color + text indicators (not color alone).</snippet>
+      </doc>
+      <doc>
+        <path>docs/api-endpoints.md</path>
+        <title>API Endpoints Documentation</title>
+        <section>RESTful API Architecture, Error Handling, Zod Validation Schemas</section>
+        <snippet>RESTful Next.js API Routes with consistent error handling (errorResponse helper), Zod validation schemas for all endpoints (confidence fields 1-5 range validation, correlation coefficient -1 to 1 range), standardized response format with successResponse/errorResponse utilities. All endpoints follow Next.js 15 async params pattern, proper error codes/messages, user-aware isolation (hardcoded kevy@americano.dev for MVP). Statistical calculations (Pearson correlation) performed server-side for accuracy.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-4.1.md</path>
+        <title>Story 4.1: Natural Language Comprehension Prompts</title>
+        <section>ValidationResponse Model, Confidence Tracking Integration</section>
+        <snippet>Story 4.1 prerequisite provides ValidationResponse model with base confidence tracking (confidenceLevel 1-5, calibrationDelta). Story 4.4 extends with pre/post-assessment confidence split, confidence shift tracking, reflection notes, and calibration category. ComprehensionPromptDialog from Story 4.1 must integrate with ConfidenceSlider components (pre-assessment before prompt, post-assessment after viewing prompt). Calibration feedback appears after AI evaluation results.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-4.2.md</path>
+        <title>Story 4.2: Clinical Reasoning Scenarios</title>
+        <section>Multi-Modal Validation, Confidence Calibration Integration</section>
+        <snippet>Story 4.2 clinical reasoning assessments also use confidence calibration system. Same 5-point scale, same calibration calculation (delta, category, correlation). Calibration metrics aggregate across all validation types (comprehension, clinical reasoning, controlled failure). Calibration trends dashboard filters by assessment type to identify confidence patterns specific to clinical reasoning vs. comprehension.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-4.3.md</path>
+        <title>Story 4.3: Controlled Failure and Memory Anchoring</title>
+        <section>Productive Failure, Pre-Failure Confidence Tracking</section>
+        <snippet>Story 4.3 controlled failure scenarios capture pre-failure confidence (before attempt), post-failure confidence (after feedback), and post-correction confidence (after learning correct answer). Confidence shift analysis detects overconfidence in areas requiring productive failure. Calibration system helps identify when students need controlled failure intervention (high confidence + low performance = overconfidence pattern).</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-2.2.md</path>
+        <title>Story 2.2: Historical Performance Tracking and Analytics</title>
+        <section>Performance Metrics, Correlation with Calibration</section>
+        <snippet>Story 2.2 prerequisite provides PerformanceMetric model tracking flashcard accuracy, response times, retention rates. Calibration metrics correlate with performance metrics to identify mismatches (high calibration accuracy + low performance = need more study, low calibration accuracy + high performance = confidence building needed). Analytics dashboard integrates both performance and calibration trends for comprehensive learning insights.</snippet>
+      </doc>
+      <doc>
+        <path>apps/web/prisma/schema.prisma</path>
+        <title>Prisma Database Schema</title>
+        <section>ValidationResponse, CalibrationMetric, UserPreference Models</section>
+        <snippet>Prisma schema includes ValidationResponse model extended with preAssessmentConfidence Int (1-5), postAssessmentConfidence Int (1-5), confidenceShift Int (calculated post-pre), confidenceRationale String (optional text), reflectionNotes String (optional metacognitive reflection), calibrationDelta Float (confidence normalized - score), calibrationCategory enum (OVERCONFIDENT, UNDERCONFIDENT, CALIBRATED). CalibrationMetric model (id String, userId String FK, conceptName String, date DateTime, avgDelta Float, correlationCoeff Float, sampleSize Int, trend enum). UserPreference model extended with sharePeerCalibrationData Boolean (default false, opt-in for peer comparison).</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>apps/web/src/lib/confidence-calibrator.ts</path>
+        <kind>library</kind>
+        <symbol>ConfidenceCalibrator</symbol>
+        <lines>1-150</lines>
+        <reason>NEW class for calibration calculation logic. Implements calculateCalibration(confidence, score) normalizing confidence to 0-100 scale ((confidence-1)*25), calculating calibration delta, categorizing as OVERCONFIDENT/UNDERCONFIDENT/CALIBRATED with 15-point threshold. Implements calculateCorrelation(confidenceArray, scoreArray) using Pearson's r formula. Generates calibration feedback messages based on category.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/metacognitive-interventions.ts</path>
+        <kind>library</kind>
+        <symbol>MetacognitiveInterventionEngine</symbol>
+        <lines>1-200</lines>
+        <reason>NEW class for intervention logic. Implements checkCalibrationHealth(userId) querying recent ValidationResponses (last 10+ assessments), calculating correlation coefficient, triggering intervention when r less than 0.5. Determines intervention type (overconfidence pattern vs. underconfidence pattern). Generates intervention recommendations (review weak areas, build confidence, calibration practice exercises). Tracks intervention dismissals and effectiveness.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/peer-calibration.ts</path>
+        <kind>library</kind>
+        <symbol>PeerCalibrationAnalyzer</symbol>
+        <lines>1-150</lines>
+        <reason>NEW class for peer comparison analytics. Aggregates anonymized calibration data from opted-in users (sharePeerCalibrationData=true). Calculates peer distribution statistics (quartiles, median, mean correlation coefficients). Implements calculateUserPercentile(userCorrelation, peerDistribution) for percentile ranking. Enforces minimum peer pool size (20 users) for privacy protection. Identifies common overconfidence topics across peer group.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/study/ConfidenceSlider.tsx</path>
+        <kind>component</kind>
+        <symbol>ConfidenceSlider</symbol>
+        <lines>1-120</lines>
+        <reason>NEW component for 5-point confidence scale input. Implements slider with descriptive labels (Very Uncertain, Uncertain, Neutral, Confident, Very Confident). Min 44px touch target. Keyboard navigation (arrow keys). Optional rationale textarea below slider. State management for confidence value (1-5). OKLCH color coding (red to green gradient for visual feedback). Glassmorphism design. Accessibility: ARIA labels, role="slider".</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/study/PreAssessmentConfidenceDialog.tsx</path>
+        <kind>component</kind>
+        <symbol>PreAssessmentConfidenceDialog</symbol>
+        <lines>1-150</lines>
+        <reason>NEW component for pre-assessment confidence capture. Wraps ConfidenceSlider with dialog UI. Displays BEFORE assessment prompt details shown. Explains purpose ("Help us understand your confidence before seeing the question"). Optional rationale field. Next button advances to prompt display. Stores pre-assessment confidence in component state for later submission with response. Glassmorphism design, OKLCH colors.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/study/PostAssessmentConfidenceDialog.tsx</path>
+        <kind>component</kind>
+        <symbol>PostAssessmentConfidenceDialog</symbol>
+        <lines>1-180</lines>
+        <reason>NEW component for post-assessment confidence update. Shows pre-assessment confidence value with option to update. Second ConfidenceSlider for post-assessment confidence. Visual diff indicator (arrow up/down, color-coded) showing confidence shift. Rationale field for confidence change explanation. Displays prompt details while capturing post-assessment confidence. Calculates and displays confidence shift (post - pre). Glassmorphism design, OKLCH colors.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/study/CalibrationFeedbackPanel.tsx</path>
+        <kind>component</kind>
+        <symbol>CalibrationFeedbackPanel</symbol>
+        <lines>1-200</lines>
+        <reason>NEW component for calibration feedback display. Visual calibration gauge (radial progress showing delta). Color-coded: Red (overconfident), Blue (underconfident), Green (calibrated) using OKLCH colors. Displays specific feedback message from ConfidenceCalibrator. Shows pre-assessment confidence, post-assessment confidence, actual score comparison. Confidence shift indicator if confidence changed. Trend note from recent calibration history (improving/stable/declining). Integrates with ComprehensionPromptDialog results. Glassmorphism design.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/study/ReflectionPromptDialog.tsx</path>
+        <kind>component</kind>
+        <symbol>ReflectionPromptDialog</symbol>
+        <lines>1-150</lines>
+        <reason>NEW component for metacognitive reflection prompts. Displays 1 randomly selected question from reflection prompt bank (10+ questions). Optional textarea response (min-height 100px, auto-expand). Skip button (tracks skip rate for engagement metrics). Submit button saves reflection to ValidationResponse.reflectionNotes. Shows reflection completion progress (X reflections completed this week). Glassmorphism design, OKLCH colors. Accessibility: semantic HTML, ARIA labels.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/study/InterventionDialog.tsx</path>
+        <kind>component</kind>
+        <symbol>InterventionDialog</symbol>
+        <lines>1-200</lines>
+        <reason>NEW component for metacognitive intervention display. Triggered when calibration health check fails (correlation less than 0.5). Displays intervention message with specific recommendations based on pattern (overconfidence vs. underconfidence). Shows past assessment examples highlighting calibration issues. Includes educational content about metacognition and calibration. Provides guided self-assessment exercise (calibration practice). Dismiss button (tracks dismissals). Learn More link to calibration resources. Glassmorphism design, OKLCH colors.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/progress/calibration/page.tsx</path>
+        <kind>page</kind>
+        <symbol>CalibrationDashboardPage</symbol>
+        <lines>1-400</lines>
+        <reason>NEW page for calibration trends dashboard. Fetches CalibrationMetric and ValidationResponse history via API. Displays line chart (Recharts): Confidence vs. Actual Score over time (dual lines, last 30/90 days). Displays scatter plot: Confidence (x-axis) vs. Score (y-axis) with ideal calibration line (y=x diagonal). Shows correlation coefficient with interpretation label (Strong/Moderate/Weak). Calibration category breakdown (pie chart or bar chart). Lists overconfident topics (delta greater than 15 consistently). Lists underconfident topics (delta less than -15 consistently). Filters: date range, course, topic, assessment type. Trend indicator (improving/stable/declining). Glassmorphism design, OKLCH colors. Responsive layout.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-response.ts</path>
+        <kind>library</kind>
+        <symbol>successResponse, errorResponse, ApiError</symbol>
+        <lines>1-80</lines>
+        <reason>Existing standardized API response utilities from Story 1.5. Must use for all calibration endpoints to maintain consistent error handling and response format. Validation errors via Zod schemas (confidence 1-5 range, correlation -1 to 1 range).</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/db.ts</path>
+        <kind>library</kind>
+        <symbol>prisma</symbol>
+        <lines>1-50</lines>
+        <reason>Existing Prisma client singleton from Story 1.5. Must use for all database queries related to ValidationResponse (extended with confidence fields), CalibrationMetric (new model), UserPreference (extended with sharePeerCalibrationData). Supports migrations for schema extensions.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/study/ComprehensionPromptDialog.tsx</path>
+        <kind>component</kind>
+        <symbol>ComprehensionPromptDialog</symbol>
+        <lines>1-300</lines>
+        <reason>Existing component from Story 4.1. Must integrate with new confidence capture workflow. PreAssessmentConfidenceDialog appears BEFORE prompt display. PostAssessmentConfidenceDialog appears AFTER viewing prompt but BEFORE response submission. CalibrationFeedbackPanel appears AFTER AI evaluation results. ReflectionPromptDialog appears AFTER calibration feedback. Component state manages confidence values for submission.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/study/page.tsx</path>
+        <kind>page</kind>
+        <symbol>StudyPage</symbol>
+        <lines>1-400</lines>
+        <reason>Existing study page from Story 2.5. Must orchestrate confidence capture workflow: Pre-assessment confidence → Prompt display → Post-assessment confidence → Response submission → Evaluation → Calibration feedback → Reflection prompt → Continue session. State management for confidence values. Tracks total time spent on calibration workflow. Includes calibration metrics in Session Summary.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <package name="@prisma/client" version="^6.17.1">Prisma ORM client for database operations (ValidationResponse extended, CalibrationMetric new model, UserPreference extended)</package>
+        <package name="zod" version="^4.1.12">Schema validation for API endpoints (confidence 1-5 range, correlation -1 to 1 range, calibration category enum)</package>
+        <package name="zustand" version="^5.0.8">State management for confidence capture workflow (pre-assessment, post-assessment, confidence shift tracking)</package>
+        <package name="date-fns" version="^4.1.0">Date formatting and manipulation for calibration trends (30/90 day ranges, time series data)</package>
+        <package name="recharts" version="^3.2.1">Chart library for calibration dashboard (line chart: confidence vs score over time, scatter plot: calibration accuracy, pie chart: category breakdown)</package>
+        <package name="react" version="^19.2.0">React framework (v19 with latest features) for UI components</package>
+        <package name="react-hook-form" version="^7.65.0">Form management for confidence capture and reflection dialogs (validation, state management)</package>
+        <package name="@radix-ui/*" version="^1.x">Component primitives (Dialog for confidence/reflection/intervention, Slider for confidence scale, Progress for calibration gauge)</package>
+        <package name="lucide-react" version="^0.545.0">Icons for UI components (arrow up/down for confidence shift, gauge for calibration, brain for metacognition)</package>
+        <package name="next" version="^15.5.5">Next.js App Router with async params for API routes</package>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="1">Database schema changes for ValidationResponse (add confidence fields), CalibrationMetric (new model), UserPreference (add sharePeerCalibrationData) must be implemented via Prisma migrations. Existing Prisma schema at apps/web/prisma/schema.prisma must be extended with new fields and models. Migration must preserve Story 4.1 ValidationResponse data (additive changes only, no destructive operations).</constraint>
+    <constraint id="2">Confidence scale must be exactly 1-5 integer range with descriptive labels (Very Uncertain, Uncertain, Neutral, Confident, Very Confident). Normalization to 0-100 scale uses formula: (confidence - 1) * 25. This ensures 1→0, 2→25, 3→50, 4→75, 5→100 for consistency with AI score scale (0-100).</constraint>
+    <constraint id="3">Calibration delta calculation: confidenceNormalized - score. Categorization thresholds: Overconfident (delta greater than 15), Underconfident (delta less than -15), Calibrated (-15 to +15). 15-point threshold based on research showing meaningful confidence-performance gaps. Must use exact threshold values (not 10, not 20).</constraint>
+    <constraint id="4">Pearson correlation coefficient calculation must use standard formula: r = [n*Σ(xy) - Σx*Σy] / sqrt([n*Σx² - (Σx)²] * [n*Σy² - (Σy)²]). Interpretation: r greater than 0.7 (Strong calibration), 0.4-0.7 (Moderate), less than 0.4 (Weak). Minimum sample size: 5 assessments for correlation calculation (insufficient data message if less than 5).</constraint>
+    <constraint id="5">Pre-assessment confidence must be captured BEFORE user sees assessment prompt details (question text hidden). Post-assessment confidence optional but captured AFTER prompt displayed, BEFORE response submission. This sequencing critical for measuring confidence change based on prompt exposure.</constraint>
+    <constraint id="6">Reflection prompts must be randomized (1 question selected per assessment from bank of 10+ questions). Questions stored in config constant (not database). Optional response (user can skip). Reflection completion rate tracked for metacognitive engagement score. Reflection notes saved to ValidationResponse.reflectionNotes (text field, no character limit).</constraint>
+    <constraint id="7">Calibration feedback must be immediate (displayed after AI evaluation, before session continues). Feedback includes: visual gauge (radial progress), color-coded category (red/blue/green OKLCH), specific message based on category, confidence vs. score comparison, trend note from recent history (last 7 days). Feedback must be encouraging (growth mindset language, not punitive).</constraint>
+    <constraint id="8">Metacognitive intervention system triggers when calibration health check fails: correlation coefficient less than 0.5 over last 10+ assessments. Intervention type determined by pattern (consistently high delta = overconfidence, consistently low delta = underconfidence). User can dismiss intervention (dismissals tracked for effectiveness analysis). Re-check calibration health 7 days after intervention.</constraint>
+    <constraint id="9">Peer comparison feature must be opt-in only (explicit user consent via UserPreference.sharePeerCalibrationData boolean, default false). All peer data anonymized (no individual identification possible). Minimum peer pool size: 20 users (prevents identification in small cohorts). User can opt-out anytime (removes from future aggregations, historical contributions remain anonymized). Privacy notice displayed before opt-in.</constraint>
+    <constraint id="10">All API endpoints must follow Next.js 15 async params pattern. Use consistent error handling (ApiError, withErrorHandler wrapper from Story 1.5). Zod validation schemas required for all request bodies (confidence 1-5 range, optional rationale text, correlation -1 to 1 range). Statistical calculations (Pearson correlation, percentiles) performed server-side for accuracy and security.</constraint>
+    <constraint id="11">UI components must use glassmorphism design (NO gradients per design system). OKLCH colors: Overconfident red oklch(0.65 0.20 25), Underconfident blue oklch(0.60 0.18 230), Calibrated green oklch(0.7 0.15 145), Neutral gray oklch(0.6 0.05 240). Minimum 44px touch targets for slider thumb, buttons. Accessibility: ARIA labels for confidence levels, keyboard navigation for slider (arrow keys, +10/-10 for page up/down), screen reader support for calibration feedback, color + text indicators (not color alone).</constraint>
+    <constraint id="12">Session integration: Confidence capture workflow adds 30-60 seconds per assessment (pre-confidence 10s, post-confidence optional 10s, reflection optional 30s). Track time separately from response time. Include calibration metrics in Session Summary (calibration category, trend, reflection completion). Mission completion logic unchanged (calibration optional metric, not required for completion).</constraint>
+    <constraint id="13">Performance targets: Confidence capture (instant, local state), Calibration calculation (less than 100ms, server-side), Correlation coefficient calculation (less than 200ms for 100+ assessments), Dashboard render (less than 1s for 90 days data with charts). Cache CalibrationMetric aggregates (updated daily via cron job, not per-assessment).</constraint>
+    <constraint id="14">Authentication: Hardcoded kevy@americano.dev for MVP (auth deferred per architecture). ValidationResponse and CalibrationMetric records must include userId for future multi-user support. Peer comparison aggregates only opted-in users (filter by sharePeerCalibrationData=true).</constraint>
+    <constraint id="15">Testing: Jest for unit tests, React Testing Library for component tests. Test coverage targets: 80%+ for calibration calculations (exact formula verification), correlation coefficient (edge cases: all same, perfect correlation, no correlation), intervention triggers (10+ scenarios), peer comparison privacy (opt-in enforcement, minimum pool size, anonymization). Mock data generators for calibration patterns (overconfident, underconfident, calibrated distributions).</constraint>
+    <constraint id="16">Error handling: Statistical calculations must handle edge cases (divide by zero in correlation, insufficient data for percentiles, empty peer pool). User-friendly error messages for insufficient data ("Complete at least 5 assessments to see calibration trends"). Validation errors via Zod schemas with specific messages ("Confidence must be between 1 and 5").</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/validation/responses</name>
+      <kind>REST endpoint</kind>
+      <signature>{ promptId: string, sessionId?: string, userAnswer: string, preAssessmentConfidence: 1-5, postAssessmentConfidence?: 1-5, confidenceRationale?: string, reflectionNotes?: string } to { evaluation: JSON, score: 0-100, calibration: { delta: number, category: string, feedback: string, trend: string } }</signature>
+      <path>apps/web/src/app/api/validation/responses/route.ts</path>
+      <description>EXTENDED from Story 4.1 to accept confidence data. Calls ResponseEvaluator (Story 4.1) for AI evaluation, then ConfidenceCalibrator to calculate calibration delta and category. Stores ValidationResponse with all confidence fields. Updates CalibrationMetric aggregates (daily rollup). Returns evaluation results plus calibration feedback (delta, category, specific message, trend note from last 7 days).</description>
+    </interface>
+    <interface>
+      <name>GET /api/calibration/metrics</name>
+      <kind>REST endpoint</kind>
+      <signature>{ userId?: string, dateRange?: '7d'|'30d'|'90d', courseId?: string, assessmentType?: string } to { metrics: CalibrationMetric[], correlationCoeff: number, trend: string, overconfidentTopics: string[], underconfidentTopics: string[] }</signature>
+      <path>apps/web/src/app/api/calibration/metrics/route.ts</path>
+      <description>Fetch user's calibration history with filters. Queries CalibrationMetric (aggregated daily data) and ValidationResponse (individual assessments) for date range. Calculates overall correlation coefficient from raw confidence/score pairs (not from aggregates). Identifies consistently overconfident topics (delta greater than 15 across 3+ assessments) and underconfident topics (delta less than -15 across 3+ assessments). Returns trend analysis (improving/stable/declining based on correlation over time).</description>
+    </interface>
+    <interface>
+      <name>GET /api/calibration/peer-comparison</name>
+      <kind>REST endpoint</kind>
+      <signature>{ userId: string } to { userCorrelation: number, userPercentile: number, peerDistribution: { quartiles: number[], median: number, mean: number }, commonOverconfidentTopics: string[], peerAvgCorrelation: number, peerPoolSize: number }</signature>
+      <path>apps/web/src/app/api/calibration/peer-comparison/route.ts</path>
+      <description>Fetch peer calibration comparison data for opted-in users. Aggregates CalibrationMetric data from users with sharePeerCalibrationData=true. Enforces minimum peer pool size (20 users, returns error if insufficient). Calculates peer distribution statistics (quartiles, median, mean correlation coefficients). Computes user's percentile ranking. Identifies common overconfident topics across peer group (topics where 50%+ of peers show overconfidence pattern). All data anonymized (no individual identification).</description>
+    </interface>
+    <interface>
+      <name>POST /api/calibration/intervention-check</name>
+      <kind>REST endpoint</kind>
+      <signature>{ userId: string } to { interventionNeeded: boolean, interventionType?: 'OVERCONFIDENCE'|'UNDERCONFIDENCE', correlation: number, recentAssessments: number, recommendations: string[] }</signature>
+      <path>apps/web/src/app/api/calibration/intervention-check/route.ts</path>
+      <description>Check if user needs metacognitive intervention. Queries last 10+ ValidationResponses with confidence data. Calculates correlation coefficient from recent assessments. Returns interventionNeeded=true if correlation less than 0.5. Determines intervention type by analyzing delta pattern (consistently positive = overconfidence, consistently negative = underconfidence). Provides specific recommendations based on type (review weak areas, build confidence, calibration practice). Tracks intervention history to avoid repeated triggers within 7 days.</description>
+    </interface>
+    <interface>
+      <name>PATCH /api/user/preferences</name>
+      <kind>REST endpoint</kind>
+      <signature>{ sharePeerCalibrationData: boolean } to { success: boolean, preferences: UserPreference }</signature>
+      <path>apps/web/src/app/api/user/preferences/route.ts</path>
+      <description>Update user preference for peer calibration data sharing. Sets UserPreference.sharePeerCalibrationData boolean (opt-in/opt-out). When opting in, displays privacy notice explaining data usage (anonymized aggregation only, no individual identification, can opt-out anytime). When opting out, removes user from future peer aggregations (historical contributions remain in anonymized pool). Returns updated preferences object.</description>
+    </interface>
+    <interface>
+      <name>ConfidenceCalibrator</name>
+      <kind>TypeScript class</kind>
+      <signature>calculateCalibration(confidence: 1-5, score: 0-100): { confidenceNormalized: number, calibrationDelta: number, category: 'OVERCONFIDENT'|'UNDERCONFIDENT'|'CALIBRATED', feedbackMessage: string }, calculateCorrelation(confidenceArray: number[], scoreArray: number[]): number, interpretCorrelation(r: number): string</signature>
+      <path>apps/web/src/lib/confidence-calibrator.ts</path>
+      <description>Core calibration calculation engine. calculateCalibration normalizes confidence to 0-100 scale using (confidence-1)*25, calculates delta (confidenceNormalized - score), categorizes with 15-point threshold, generates category-specific feedback message. calculateCorrelation implements Pearson's r formula for confidence-score arrays. interpretCorrelation maps r value to interpretation (Strong/Moderate/Weak with thresholds 0.7 and 0.4). Handles edge cases (divide by zero, insufficient data).</description>
+    </interface>
+    <interface>
+      <name>MetacognitiveInterventionEngine</name>
+      <kind>TypeScript class</kind>
+      <signature>checkCalibrationHealth(userId: string): Promise({ needsIntervention: boolean, interventionType: string, correlation: number }), generateInterventionRecommendations(interventionType: string, recentAssessments: ValidationResponse[]): string[], trackInterventionDismissal(userId: string, interventionType: string): Promise(void)</signature>
+      <path>apps/web/src/lib/metacognitive-interventions.ts</path>
+      <description>Metacognitive intervention logic. checkCalibrationHealth queries last 10+ ValidationResponses, calculates correlation, returns needsIntervention=true if r less than 0.5. generateInterventionRecommendations analyzes pattern (overconfidence vs. underconfidence) and returns specific action items (review weak areas, calibration exercises, confidence building strategies). trackInterventionDismissal records when user dismisses intervention for effectiveness tracking and 7-day cooldown period enforcement.</description>
+    </interface>
+    <interface>
+      <name>PeerCalibrationAnalyzer</name>
+      <kind>TypeScript class</kind>
+      <signature>aggregatePeerData(courseId?: string): Promise({ distribution: number[], quartiles: number[], median: number, mean: number, poolSize: number }), calculateUserPercentile(userCorrelation: number, peerDistribution: number[]): number, identifyCommonOverconfidentTopics(minPrevalence: number): Promise(string[])</signature>
+      <path>apps/web/src/lib/peer-calibration.ts</path>
+      <description>Peer comparison analytics. aggregatePeerData queries CalibrationMetric for opted-in users (sharePeerCalibrationData=true), enforces minimum pool size (20 users), calculates distribution statistics (quartiles, median, mean). calculateUserPercentile ranks user's correlation within peer distribution (0-100 percentile). identifyCommonOverconfidentTopics finds topics where 50%+ of peers show overconfidence pattern (delta greater than 15 consistently). All operations preserve privacy (no individual data exposed).</description>
+    </interface>
+    <interface>
+      <name>ConfidenceSlider</name>
+      <kind>React component</kind>
+      <signature>ConfidenceSlider({ value: 1-5, onChange: (value: number) => void, showRationale?: boolean, disabled?: boolean })</signature>
+      <path>apps/web/src/components/study/ConfidenceSlider.tsx</path>
+      <description>Reusable 5-point confidence scale slider. Displays descriptive labels (Very Uncertain to Very Confident). Min 44px touch target for thumb. Keyboard navigation (arrow keys for ±1, page up/down for ±2). Optional rationale textarea below slider (controlled by showRationale prop). Color gradient from red (1) to green (5) using OKLCH colors. Glassmorphism design. Accessibility: role="slider", aria-valuemin/max/now, aria-label for each confidence level.</description>
+    </interface>
+    <interface>
+      <name>CalibrationFeedbackPanel</name>
+      <kind>React component</kind>
+      <signature>CalibrationFeedbackPanel({ calibrationData: { delta: number, category: string, preConfidence: number, postConfidence?: number, score: number, trend: string }, onContinue: () => void })</signature>
+      <path>apps/web/src/components/study/CalibrationFeedbackPanel.tsx</path>
+      <description>Displays calibration feedback after assessment evaluation. Radial progress gauge showing calibration delta (color-coded by category: red overconfident, blue underconfident, green calibrated). Shows pre-assessment confidence, post-assessment confidence (if provided), actual score comparison. Confidence shift indicator (arrow up/down with delta) if confidence changed between pre/post. Category-specific feedback message from ConfidenceCalibrator. Trend note from last 7 days (improving/stable/declining calibration accuracy). Continue button advances session. Glassmorphism design, OKLCH colors.</description>
+    </interface>
+    <interface>
+      <name>Prisma Schema Models</name>
+      <kind>Database models</kind>
+      <signature>ValidationResponse { ..., preAssessmentConfidence Int, postAssessmentConfidence Int?, confidenceShift Int?, confidenceRationale String?, reflectionNotes String?, calibrationDelta Float, calibrationCategory enum }, CalibrationMetric { id String, userId String FK, conceptName String, date DateTime, avgDelta Float, correlationCoeff Float, sampleSize Int, trend enum }, UserPreference { ..., sharePeerCalibrationData Boolean }</signature>
+      <path>apps/web/prisma/schema.prisma</path>
+      <description>Database models for confidence calibration system. ValidationResponse EXTENDED from Story 4.1 with confidence fields (pre/post assessment confidence 1-5, confidence shift calculated post-pre, optional rationale text, optional reflection notes, calibration delta float, calibration category enum OVERCONFIDENT/UNDERCONFIDENT/CALIBRATED). CalibrationMetric NEW model aggregates daily calibration data per user per concept (avgDelta, correlationCoeff calculated from day's assessments, sampleSize for statistical validity, trend enum IMPROVING/STABLE/DECLINING). UserPreference EXTENDED with sharePeerCalibrationData boolean for opt-in consent (default false).</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Jest for unit tests, React Testing Library for component tests (from project configuration in package.json). Test command: npm test. All tests in apps/web/src/__tests__/ directory organized by domain (components/study/, lib/, api/). Coverage targets: 80%+ for calibration calculations (exact formula verification critical), correlation coefficient (edge cases must pass), intervention logic (all trigger conditions), peer comparison (privacy enforcement). Mock data generators for calibration patterns (overconfident, underconfident, calibrated distributions). Component tests use user-centric queries (screen.getByRole, screen.getByLabelText) following RTL best practices. Accessibility tests verify ARIA labels, keyboard navigation, screen reader support.</standards>
+
+    <locations>
+      <location>apps/web/src/__tests__/lib/confidence-calibrator.test.ts</location>
+      <location>apps/web/src/__tests__/lib/metacognitive-interventions.test.ts</location>
+      <location>apps/web/src/__tests__/lib/peer-calibration.test.ts</location>
+      <location>apps/web/src/__tests__/components/study/ConfidenceSlider.test.tsx</location>
+      <location>apps/web/src/__tests__/components/study/CalibrationFeedbackPanel.test.tsx</location>
+      <location>apps/web/src/__tests__/api/calibration/metrics.test.ts</location>
+      <location>apps/web/src/__tests__/api/calibration/intervention-check.test.ts</location>
+    </locations>
+
+    <ideas>
+      <idea acId="1">Test pre-assessment confidence capture: (a) Render PreAssessmentConfidenceDialog, verify prompt details HIDDEN initially, (b) Interact with ConfidenceSlider, verify all 5 confidence levels selectable (Very Uncertain to Very Confident), (c) Type in optional rationale field, verify text captured, (d) Click Next, verify confidence value stored in component state, (e) Test keyboard navigation (arrow keys change slider value, Enter submits)</idea>
+      <idea acId="1">Test confidence slider accessibility: (a) Verify slider has role="slider", aria-valuemin="1", aria-valuemax="5", aria-valuenow matches current value, (b) Verify each confidence level has ARIA label ("Very Uncertain", "Uncertain", "Neutral", "Confident", "Very Confident"), (c) Test screen reader support (announces value changes), (d) Verify 44px minimum touch target for thumb</idea>
+      <idea acId="2">Test post-assessment confidence update: (a) Render PostAssessmentConfidenceDialog with pre-assessment confidence=2, verify pre-confidence displayed, (b) Show prompt details, verify visible to user, (c) Update post-assessment confidence to 4, verify confidence shift calculated (4-2=+2), (d) Verify visual diff indicator shows arrow UP with +2, color-coded appropriately, (e) Test rationale field for confidence change explanation, (f) Verify both pre and post confidence submitted with response</idea>
+      <idea acId="2">Test confidence shift indicator: (a) Confidence increased (pre=2, post=4): verify arrow UP, green color, "+2" label, (b) Confidence decreased (pre=4, post=2): verify arrow DOWN, red color, "-2" label, (c) Confidence unchanged (pre=3, post=3): verify "No change" message, neutral color, (d) No post-confidence provided: verify shift indicator hidden</idea>
+      <idea acId="3">Test calibration calculation accuracy: (a) Confidence=1 (normalized=0), Score=0: verify calibrationDelta=0, category=CALIBRATED, (b) Confidence=5 (normalized=100), Score=60: verify calibrationDelta=40, category=OVERCONFIDENT, (c) Confidence=2 (normalized=25), Score=70: verify calibrationDelta=-45, category=UNDERCONFIDENT, (d) Confidence=3 (normalized=50), Score=55: verify calibrationDelta=-5, category=CALIBRATED (within ±15 threshold), (e) Test exact threshold boundaries (delta=15, delta=-15): verify correct categorization</idea>
+      <idea acId="3">Test normalization formula: Verify (confidence-1)*25 for all values: (a) 1→0, (b) 2→25, (c) 3→50, (d) 4→75, (e) 5→100. Test inverse calculation if needed (normalizedToConfidence).</idea>
+      <idea acId="3">Test correlation coefficient calculation: (a) Perfect positive correlation: confidence=[1,2,3,4,5], score=[0,25,50,75,100], verify r=1.0, (b) Perfect negative correlation: confidence=[1,2,3,4,5], score=[100,75,50,25,0], verify r=-1.0, (c) No correlation: confidence=[1,1,1,1,1], score=[0,25,50,75,100], verify r=0, (d) Moderate correlation: confidence=[2,3,4,3,4], score=[30,40,70,50,65], verify 0.4 less than r less than 0.7, (e) Edge case: All same confidence and score: verify r=0 (no variance), (f) Edge case: Sample size less than 5: verify insufficient data message</idea>
+      <idea acId="3">Test correlation interpretation: (a) r=0.8: verify "Strong calibration accuracy", (b) r=0.5: verify "Moderate calibration accuracy", (c) r=0.3: verify "Weak calibration accuracy - consider reviewing", (d) Test threshold boundaries (r=0.7, r=0.4) for correct interpretation</idea>
+      <idea acId="4">Test calibration feedback display: (a) OVERCONFIDENT scenario (delta=30, confidence=75, score=45): verify radial gauge shows delta, red color oklch(0.65 0.20 25), specific message "You felt 75% confident but scored 45% - review areas where certainty exceeded accuracy", (b) UNDERCONFIDENT scenario (delta=-35, confidence=25, score=60): verify blue color oklch(0.60 0.18 230), message "You felt 25% confident but scored 60% - trust your understanding more!", (c) CALIBRATED scenario (delta=5, confidence=55, score=50): verify green color oklch(0.7 0.15 145), message "Your confidence matches your performance - well calibrated!"</idea>
+      <idea acId="4">Test calibration trend note: (a) Improving trend (correlation increasing): verify "Your calibration accuracy is improving over last 7 days", (b) Stable trend: verify "Your calibration remains stable", (c) Declining trend (correlation decreasing): verify "Your calibration accuracy is declining - review recent assessments". Test trend calculation from last 7 days of CalibrationMetric data.</idea>
+      <idea acId="5">Test reflection prompt system: (a) Render ReflectionPromptDialog, verify 1 question displayed (randomly selected from bank of 10+), (b) Test randomization: render 20 times, verify all questions appear at least once, no single question dominates (chi-square test for uniform distribution), (c) Type reflection response, verify text captured in textarea, (d) Click Submit, verify reflection saved to ValidationResponse.reflectionNotes, (e) Click Skip, verify skip tracked (reflection not saved but skip event recorded), (f) Verify reflection completion rate calculation (submitted / total prompts shown)</idea>
+      <idea acId="5">Test reflection prompt bank: Verify all 10+ questions defined in config: "What strategies helped you understand this concept?", "What surprised you about your performance?", "How would you approach studying this differently?", "What prerequisite knowledge did you need?", "How confident do you feel about applying this in a clinical scenario?", "What would you tell a peer studying this same concept?", "What parts of the explanation were most challenging to articulate?", "How does this concept connect to what you already know?", "What would you need to review to improve your explanation?", "How would you verify your understanding of this concept?"</idea>
+      <idea acId="6">Test calibration trends dashboard: (a) Render page with 30 days of mock data (15 assessments), verify line chart displays confidence and score as dual lines over time, (b) Verify scatter plot displays each assessment as point (x=confidence, y=score) with ideal calibration line (y=x diagonal), (c) Verify correlation coefficient displayed with interpretation ("Strong: 0.82" in green), (d) Test date range filters (7/30/90 days): verify chart data updates correctly, (e) Test course filter: verify only selected course assessments shown, (f) Test assessment type filter: verify filtering by comprehension/reasoning/clinical works</idea>
+      <idea acId="6">Test overconfident/underconfident topic identification: (a) Create mock data with Cardiology having consistently high delta (20, 25, 18 across 3 assessments): verify appears in "Overconfident Topics" list, (b) Create mock data with Pharmacology having consistently low delta (-20, -18, -22 across 3 assessments): verify appears in "Underconfident Topics" list, (c) Verify topics require 3+ assessments minimum (2 assessments not flagged), (d) Verify exact thresholds (delta greater than 15 for overconfident, delta less than -15 for underconfident)</idea>
+      <idea acId="6">Test trend indicator: (a) Mock data showing improving calibration (correlation 0.4 → 0.5 → 0.65 over 30 days): verify "Improving" badge, upward arrow, green color, (b) Mock data showing stable calibration (correlation 0.6 → 0.62 → 0.58 over 30 days): verify "Stable" badge, neutral color, (c) Mock data showing declining calibration (correlation 0.7 → 0.55 → 0.45 over 30 days): verify "Declining" badge, downward arrow, warning color</idea>
+      <idea acId="7">Test metacognitive intervention trigger: (a) Mock user with 10 assessments, correlation=0.3 (less than 0.5 threshold): verify checkCalibrationHealth returns needsIntervention=true, (b) Mock user with 10 assessments, correlation=0.7 (greater than 0.5): verify needsIntervention=false, (c) Mock user with only 8 assessments: verify needsIntervention=false (insufficient data, require 10+), (d) Test intervention cooldown: user dismissed intervention 5 days ago, verify intervention not triggered again (7-day cooldown), (e) Test intervention cooldown expiry: user dismissed 8 days ago, verify intervention can trigger again</idea>
+      <idea acId="7">Test intervention type determination: (a) Mock overconfidence pattern (deltas: [25, 30, 20, 28, 22, 26, 24, 21, 27, 23], all positive): verify interventionType="OVERCONFIDENCE", (b) Mock underconfidence pattern (deltas: [-22, -18, -25, -20, -24, -19, -23, -21, -26, -22], all negative): verify interventionType="UNDERCONFIDENCE", (c) Mock mixed pattern (deltas: [10, -5, 15, -10, 8, -3, 12, -8, 5, -2]): verify interventionType based on mean delta (positive=overconfidence, negative=underconfidence)</idea>
+      <idea acId="7">Test intervention recommendations: (a) OVERCONFIDENCE: verify recommendations include "Review weak areas before marking objectives complete", "Focus on concepts where you felt certain but performed weaker", "Practice calibration exercises", (b) UNDERCONFIDENCE: verify recommendations include "Build confidence by reviewing past successful assessments", "Trust your understanding more", "Recognize your strengths", (c) Verify educational content about metacognition included (Dunning-Kruger effect explanation, calibration importance)</idea>
+      <idea acId="7">Test intervention dismissal tracking: (a) User dismisses intervention, verify dismissal recorded with timestamp and intervention type, (b) Query dismissal history, verify count and types tracked, (c) Test effectiveness analysis: intervention dismissed, 7 days later correlation improved from 0.4 to 0.65, verify intervention marked as "effective"</idea>
+      <idea acId="8">Test peer comparison opt-in flow: (a) User not opted-in (sharePeerCalibrationData=false): verify peer comparison section hidden, "Enable peer comparison" button shown, (b) Click enable button, verify privacy notice displayed explaining data usage ("anonymized aggregation only, no individual identification, can opt-out anytime"), (c) Accept privacy notice, verify UserPreference.sharePeerCalibrationData updated to true, (d) Verify peer comparison section now visible with data, (e) Test opt-out: click "Disable peer comparison", verify preference updated to false, section hidden</idea>
+      <idea acId="8">Test peer data aggregation privacy: (a) Mock peer pool with 25 users (greater than 20 minimum): verify aggregation proceeds, (b) Mock peer pool with 15 users (less than 20 minimum): verify error returned ("Insufficient peer data for comparison - need 20+ participants"), (c) Verify only opted-in users included (sharePeerCalibrationData=true filter applied), (d) Verify no individual peer data exposed (only aggregated statistics: quartiles, median, mean, distribution), (e) Test user opts-out: verify removed from future aggregations, historical contributions remain in anonymized pool</idea>
+      <idea acId="8">Test peer percentile calculation: (a) Mock peer distribution [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], user correlation=0.65: verify percentile approximately 71% (5 out of 7 peers below user), (b) User correlation=0.95 (above all peers): verify percentile=100%, (c) User correlation=0.2 (below all peers): verify percentile=0%, (d) Verify percentile displayed with interpretation ("Your calibration accuracy is better than 71% of peers")</idea>
+      <idea acId="8">Test common overconfident topics: (a) Mock peer data with 15 users showing overconfidence in "Cardiology" (60% prevalence, greater than 50% threshold): verify "Cardiology" appears in commonOverconfidentTopics, (b) Mock peer data with 8 users showing overconfidence in "Pharmacology" (40% prevalence, less than 50%): verify "Pharmacology" NOT in list (below 50% threshold), (c) Verify list sorted by prevalence (most common first)</idea>
+      <idea acId="all">Test session integration workflow: (a) Start study session, complete objective content review, verify PreAssessmentConfidenceDialog appears BEFORE prompt shown, (b) Capture pre-assessment confidence, verify prompt then displayed, (c) Verify PostAssessmentConfidenceDialog appears AFTER prompt visible, BEFORE response submission, (d) Submit response with pre/post confidence, verify AI evaluation triggered, (e) Verify CalibrationFeedbackPanel appears AFTER evaluation results, showing calibration data, (f) Verify ReflectionPromptDialog appears AFTER calibration feedback, (g) Complete or skip reflection, verify session continues to next objective, (h) Verify session summary includes calibration metrics (category, trend, reflection completion)</idea>
+      <idea acId="all">Test time tracking: (a) Measure time spent on pre-assessment confidence capture (should be ~10 seconds), (b) Measure time spent on post-assessment confidence (should be ~10 seconds if used), (c) Measure time spent on reflection (should be ~30 seconds if completed), (d) Verify total calibration workflow time tracked separately from response time, (e) Verify session duration includes calibration time, (f) Verify session summary shows breakdown (content review time, response time, calibration time)</idea>
+      <idea acId="all">Test API endpoint validation: (a) POST /api/validation/responses with invalid confidence (confidence=0 or 6): verify Zod validation error "Confidence must be between 1 and 5", (b) POST with missing required field (preAssessmentConfidence): verify validation error, (c) POST with valid data: verify 200 response with calibration object, (d) GET /api/calibration/metrics with invalid dateRange: verify validation error, (e) GET /api/calibration/peer-comparison for user not opted-in: verify 403 Forbidden "Please enable peer comparison in settings"</idea>
+      <idea acId="all">Test error handling edge cases: (a) Calculate correlation with insufficient data (n less than 5): verify returns null with message "Complete at least 5 assessments to see calibration correlation", (b) Divide by zero in correlation formula (all same values): verify returns 0 (no variance), (c) Peer comparison with insufficient peer pool (less than 20): verify error "Insufficient peer data for comparison", (d) CalibrationMetric query timeout: verify user-friendly error message, retry logic attempted</idea>
+      <idea acId="all">Test database indexes performance: (a) Query ValidationResponse by (userId, respondedAt DESC) for last 100 records: verify query time less than 50ms, (b) Query CalibrationMetric by (userId, date) for 90 days: verify query time less than 30ms, (c) Aggregate peer data (sharePeerCalibrationData=true filter) for 500 users: verify query time less than 200ms, (d) Verify indexes exist: ValidationResponse (userId, respondedAt), CalibrationMetric (userId, date), UserPreference (userId, sharePeerCalibrationData)</idea>
+      <idea acId="all">Test glassmorphism design compliance: (a) Verify all dialog components use bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)], (b) Verify NO gradients used anywhere (only solid OKLCH colors), (c) Verify color palette: Overconfident red oklch(0.65 0.20 25), Underconfident blue oklch(0.60 0.18 230), Calibrated green oklch(0.7 0.15 145), Neutral gray oklch(0.6 0.05 240), (d) Verify typography: Inter font for body text, DM Sans for headings, (e) Verify touch targets: all interactive elements (slider thumb, buttons) minimum 44px</idea>
+      <idea acId="all">Test accessibility compliance: (a) Verify all confidence sliders have role="slider", aria-valuemin/max/now, aria-label, (b) Test keyboard navigation: arrow keys change slider value, page up/down change by 2, home/end go to min/max, (c) Verify screen reader announces value changes ("Confidence level: 3 out of 5, Neutral"), (d) Verify color + text indicators (not color alone): calibration feedback uses both color gauge AND text message, (e) Test with screen reader (VoiceOver/NVDA): verify all content accessible, logical reading order, form labels present</idea>
+    </ideas>
+  </tests>
+</story-context>

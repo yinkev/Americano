@@ -162,6 +162,85 @@ export type LectureListQuery = z.infer<typeof lectureListQuerySchema>
 export type CourseListQuery = z.infer<typeof courseListQuerySchema>
 
 // ============================================
+// CLINICAL SCENARIO SCHEMAS (Story 4.2)
+// ============================================
+
+export const generateScenarioSchema = z.object({
+  objectiveId: z.string().cuid('Invalid objective ID'),
+  difficulty: z.enum(['BASIC', 'INTERMEDIATE', 'ADVANCED']).optional(),
+})
+
+export const submitScenarioSchema = z.object({
+  scenarioId: z.string().cuid('Invalid scenario ID'),
+  sessionId: z.string().cuid('Invalid session ID').optional(),
+  userChoices: z.object({
+    // Multi-stage user selections
+    historyChoices: z.array(z.string()).optional(),
+    examChoices: z.array(z.string()).optional(),
+    labChoices: z.array(z.string()).optional(),
+    diagnosis: z.string().optional(),
+    managementPlan: z.string().optional(),
+    // Additional info requested (costs time/points)
+    additionalInfo: z.array(z.string()).optional(),
+  }),
+  userReasoning: z.string().min(10, 'Please provide detailed reasoning').max(2000, 'Reasoning must be 2000 characters or less'),
+})
+
+export const scenarioMetricsQuerySchema = z.object({
+  dateRange: z.enum(['7days', '30days', '90days']).default('30days'),
+  scenarioType: z.enum(['DIAGNOSIS', 'MANAGEMENT', 'DIFFERENTIAL', 'COMPLICATIONS']).optional(),
+})
+
+// Case structure validation for generated scenarios
+export const caseTextSchema = z.object({
+  chiefComplaint: z.string().min(1, 'Chief complaint is required'),
+  demographics: z.object({
+    age: z.number().int().min(1).max(120),
+    sex: z.enum(['M', 'F', 'Other']),
+    occupation: z.string().optional(),
+  }),
+  history: z.object({
+    presenting: z.string().min(1, 'Presenting history is required'),
+    past: z.string().optional(),
+    medications: z.array(z.string()).optional(),
+    socialHistory: z.string().optional(),
+  }),
+  physicalExam: z.object({
+    vitals: z.record(z.string(), z.string()).optional(),
+    general: z.string().optional(),
+    cardiovascular: z.string().optional(),
+    respiratory: z.string().optional(),
+    other: z.string().optional(),
+  }),
+  labs: z.object({
+    available: z.boolean(),
+    options: z.array(z.string()),
+    ordered: z.array(z.string()).optional(),
+  }),
+  questions: z.array(z.object({
+    stage: z.string(),
+    prompt: z.string(),
+    options: z.array(z.string()),
+    correctAnswer: z.string(),
+    reasoning: z.string(),
+  })),
+})
+
+// Competency scores validation
+export const competencyScoresSchema = z.object({
+  dataGathering: z.number().int().min(0).max(100),
+  diagnosis: z.number().int().min(0).max(100),
+  management: z.number().int().min(0).max(100),
+  clinicalReasoning: z.number().int().min(0).max(100),
+})
+
+export type GenerateScenarioInput = z.infer<typeof generateScenarioSchema>
+export type SubmitScenarioInput = z.infer<typeof submitScenarioSchema>
+export type ScenarioMetricsQuery = z.infer<typeof scenarioMetricsQuerySchema>
+export type CaseText = z.infer<typeof caseTextSchema>
+export type CompetencyScores = z.infer<typeof competencyScoresSchema>
+
+// ============================================
 // UPLOAD SCHEMAS
 // ============================================
 
@@ -176,6 +255,73 @@ export const uploadMetadataSchema = z.object({
 })
 
 export type UploadMetadata = z.infer<typeof uploadMetadataSchema>
+
+// ============================================
+// CONTROLLED FAILURE SCHEMAS (Story 4.3)
+// ============================================
+
+export const getNextChallengeQuerySchema = z.object({
+  sessionId: z.string().cuid('Invalid session ID').optional(),
+})
+
+export const submitChallengeSchema = z.object({
+  challengeId: z.string().cuid('Invalid challenge ID'),
+  userAnswer: z.string().min(1, 'Answer is required').max(5000, 'Answer must be 5000 characters or less'),
+  confidence: z.number().int().min(1).max(5, 'Confidence must be between 1 and 5'),
+  emotionTag: z.enum(['SURPRISE', 'CONFUSION', 'FRUSTRATION', 'AHA_MOMENT']).optional(),
+  personalNotes: z.string().max(500, 'Personal notes must be 500 characters or less').optional(),
+})
+
+export const patternsQuerySchema = z.object({
+  limit: z.string().default('5').transform(Number).pipe(z.number().int().min(1).max(20)),
+})
+
+export const calibrationQuerySchema = z.object({
+  dateRange: z.enum(['7days', '30days', '90days']).default('30days'),
+})
+
+export type GetNextChallengeQuery = z.infer<typeof getNextChallengeQuerySchema>
+export type SubmitChallengeInput = z.infer<typeof submitChallengeSchema>
+export type PatternsQuery = z.infer<typeof patternsQuerySchema>
+export type CalibrationQuery = z.infer<typeof calibrationQuerySchema>
+
+// ============================================
+// ADAPTIVE QUESTIONING SCHEMAS (Story 4.5)
+// ============================================
+
+export const nextQuestionSchema = z.object({
+  sessionId: z.string().cuid('Invalid session ID').optional(),
+  objectiveId: z.string().cuid('Invalid objective ID'),
+  lastResponseId: z.string().cuid('Invalid response ID').optional(),
+  lastScore: z.number().min(0).max(100).optional(),
+  lastConfidence: z.number().int().min(1).max(5).optional(),
+})
+
+export const submitResponseSchema = z.object({
+  promptId: z.string().cuid('Invalid prompt ID'),
+  sessionId: z.string().cuid('Invalid session ID').optional(),
+  objectiveId: z.string().cuid('Invalid objective ID'),
+  userAnswer: z.string().min(1, 'Answer is required').max(5000, 'Answer must be 5000 characters or less'),
+  confidence: z.number().int().min(1).max(5, 'Confidence must be between 1 and 5'),
+  timeToRespond: z.number().int().min(0).optional(), // milliseconds
+  currentDifficulty: z.number().int().min(0).max(100),
+})
+
+export const masteryStatusQuerySchema = z.object({
+  objectiveId: z.string().cuid('Invalid objective ID'),
+})
+
+export const followUpQuestionsSchema = z.object({
+  objectiveId: z.string().cuid('Invalid objective ID'),
+  responseId: z.string().cuid('Invalid response ID'),
+  score: z.number().min(0).max(100),
+  currentDifficulty: z.number().int().min(0).max(100),
+})
+
+export type NextQuestionInput = z.infer<typeof nextQuestionSchema>
+export type SubmitResponseInput = z.infer<typeof submitResponseSchema>
+export type MasteryStatusQuery = z.infer<typeof masteryStatusQuerySchema>
+export type FollowUpQuestionsInput = z.infer<typeof followUpQuestionsSchema>
 
 // ============================================
 // HELPER UTILITIES
@@ -211,3 +357,226 @@ export function validateSort(sortBy: string, sortOrder: string, validFields: str
     throw ApiError.validation('Sort order must be asc or desc')
   }
 }
+
+// ============================================
+// STORY 4.6: UNDERSTANDING ANALYTICS SCHEMAS
+// ============================================
+
+// Query parameter schemas for dashboard
+export const analyticsQuerySchema = z.object({
+  dateRange: z.enum(['7d', '30d', '90d']).default('30d'),
+  courseId: z.string().cuid('Invalid course ID').optional(),
+  topic: z.string().optional(),
+})
+
+// Dashboard overview metrics response
+export const metricSchema = z.object({
+  currentScore: z.number().min(0).max(100),
+  trend: z.enum(['up', 'down', 'stable']),
+  sparkline: z.array(z.number()).optional(),
+  change: z.number().optional(), // % change
+})
+
+export const dashboardResponseSchema = z.object({
+  comprehension: metricSchema,
+  reasoning: metricSchema,
+  failure: metricSchema,
+  calibration: metricSchema,
+  adaptive: metricSchema,
+  mastery: z.object({
+    count: z.number().int().min(0),
+    total: z.number().int().min(0),
+    percentage: z.number().min(0).max(100),
+  }),
+})
+
+// Comparison tab response schema
+export const comparisonDataSchema = z.object({
+  memorization: z.array(z.object({
+    date: z.string(), // ISO date
+    score: z.number().min(0).max(100),
+  })),
+  understanding: z.array(z.object({
+    date: z.string(),
+    score: z.number().min(0).max(100),
+  })),
+  gaps: z.array(z.object({
+    objectiveId: z.string(),
+    objectiveName: z.string(),
+    memorizationScore: z.number(),
+    understandingScore: z.number(),
+    gap: z.number(),
+  })),
+  correlation: z.number().min(-1).max(1),
+})
+
+// Patterns tab response schema
+export const patternsResponseSchema = z.object({
+  strengths: z.array(z.object({
+    topic: z.string(),
+    score: z.number().min(0).max(100),
+    objectiveIds: z.array(z.string()),
+  })),
+  weaknesses: z.array(z.object({
+    topic: z.string(),
+    score: z.number().min(0).max(100),
+    objectiveIds: z.array(z.string()),
+    recommendedActions: z.array(z.string()),
+  })),
+  inconsistencies: z.array(z.object({
+    description: z.string(),
+    affectedObjectives: z.array(z.string()),
+    patternType: z.string(),
+  })),
+  insights: z.array(z.object({
+    message: z.string(),
+    confidence: z.number().min(0).max(1),
+    actionable: z.boolean(),
+  })),
+})
+
+// Longitudinal progress response schema
+export const longitudinalResponseSchema = z.object({
+  metrics: z.array(z.object({
+    date: z.string(),
+    comprehension: z.number(),
+    reasoning: z.number(),
+    calibration: z.number(),
+  })),
+  milestones: z.array(z.object({
+    date: z.string(),
+    type: z.enum(['mastery', 'improvement', 'breakthrough']),
+    description: z.string(),
+    objectiveId: z.string().optional(),
+  })),
+  regressions: z.array(z.object({
+    date: z.string(),
+    metric: z.string(),
+    dropPercentage: z.number(),
+    objectiveId: z.string().optional(),
+  })),
+  growthRate: z.number(), // % per month
+})
+
+// Predictions response schema
+export const predictionsResponseSchema = z.object({
+  examSuccess: z.object({
+    probability: z.number().min(0).max(1),
+    confidenceInterval: z.object({
+      lower: z.number(),
+      upper: z.number(),
+    }),
+    factors: z.array(z.string()),
+  }),
+  forgettingRisks: z.array(z.object({
+    objectiveId: z.string(),
+    objectiveName: z.string(),
+    riskLevel: z.enum(['low', 'medium', 'high']),
+    daysUntilForgetting: z.number().int(),
+    lastStudied: z.string(), // ISO date
+  })),
+  masteryDates: z.array(z.object({
+    objectiveId: z.string(),
+    objectiveName: z.string(),
+    estimatedDate: z.string(), // ISO date
+    currentProgress: z.number().min(0).max(100),
+    hoursNeeded: z.number(),
+  })),
+  modelAccuracy: z.object({
+    mae: z.number(), // Mean absolute error
+    sampleSize: z.number().int(),
+  }),
+})
+
+// Correlations response schema
+export const correlationsResponseSchema = z.object({
+  correlationMatrix: z.array(z.array(z.number())), // 2D matrix
+  objectiveNames: z.array(z.string()), // Labels for matrix axes
+  foundational: z.array(z.object({
+    objectiveId: z.string(),
+    objectiveName: z.string(),
+    outgoingCorrelations: z.number().int(),
+  })),
+  bottlenecks: z.array(z.object({
+    objectiveId: z.string(),
+    objectiveName: z.string(),
+    blockingCount: z.number().int(),
+  })),
+  sequence: z.array(z.object({
+    objectiveId: z.string(),
+    objectiveName: z.string(),
+    position: z.number().int(),
+    reasoning: z.string(),
+  })),
+})
+
+// Peer benchmark response schema
+export const peerBenchmarkResponseSchema = z.object({
+  peerDistribution: z.array(z.object({
+    metric: z.string(),
+    percentile25: z.number(),
+    percentile50: z.number(),
+    percentile75: z.number(),
+    mean: z.number(),
+    userValue: z.number(),
+  })),
+  userPercentile: z.record(z.string(), z.number()), // metric -> percentile
+  relativeStrengths: z.array(z.object({
+    metric: z.string(),
+    userPercentile: z.number(),
+    gap: z.number(), // How much above average
+  })),
+  relativeWeaknesses: z.array(z.object({
+    metric: z.string(),
+    userPercentile: z.number(),
+    gap: z.number(), // How much below average
+  })),
+  sampleSize: z.number().int(),
+})
+
+// Recommendations response schema
+export const recommendationsResponseSchema = z.object({
+  dailyInsight: z.object({
+    message: z.string(),
+    priority: z.number().int().min(1).max(10),
+    actions: z.array(z.string()),
+  }),
+  weeklyTop3: z.array(z.object({
+    objectiveId: z.string(),
+    objectiveName: z.string(),
+    reason: z.string(),
+    estimatedTime: z.number().int(), // minutes
+    priority: z.number().int().min(1).max(10),
+  })),
+  interventions: z.array(z.object({
+    type: z.enum(['overconfidence', 'underconfidence', 'failure_pattern', 'knowledge_gap']),
+    description: z.string(),
+    recommendedAction: z.string(),
+    affectedObjectives: z.array(z.string()),
+  })),
+  timeEstimates: z.object({
+    dailyRecommended: z.number().int(), // minutes
+    weeklyRecommended: z.number().int(),
+  }),
+  successProbs: z.object({
+    nextWeek: z.number().min(0).max(1),
+    nextMonth: z.number().min(0).max(1),
+  }),
+})
+
+// Export request schema
+export const exportReportSchema = z.object({
+  dateRange: z.enum(['7d', '30d', '90d']).default('30d'),
+  includeCharts: z.boolean().default(true),
+})
+
+export type AnalyticsQuery = z.infer<typeof analyticsQuerySchema>
+export type DashboardResponse = z.infer<typeof dashboardResponseSchema>
+export type ComparisonData = z.infer<typeof comparisonDataSchema>
+export type PatternsResponse = z.infer<typeof patternsResponseSchema>
+export type LongitudinalResponse = z.infer<typeof longitudinalResponseSchema>
+export type PredictionsResponse = z.infer<typeof predictionsResponseSchema>
+export type CorrelationsResponse = z.infer<typeof correlationsResponseSchema>
+export type PeerBenchmarkResponse = z.infer<typeof peerBenchmarkResponseSchema>
+export type RecommendationsResponse = z.infer<typeof recommendationsResponseSchema>
+export type ExportReportInput = z.infer<typeof exportReportSchema>

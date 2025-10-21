@@ -1,0 +1,301 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.5</storyId>
+    <title>Context-Aware Content Recommendations</title>
+    <status>Ready</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-3.5.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a medical student</asA>
+    <iWant>relevant content suggested while I'm studying specific topics</iWant>
+    <soThat>I can discover related material without manual searching</soThat>
+    <tasks>13 major tasks with 80+ subtasks covering: recommendation engine architecture (AC: All), semantic content-based recommendations (AC: #1, #3, #4), user performance-aware recommendations (AC: #2), collaborative filtering for user behavior patterns (AC: #2, #6), integration with study session context (AC: #1, #7), multi-source content recommendations (AC: #3), recommendation feedback and improvement (AC: #5, #8), adaptive recommendation personalization (AC: #6, #8), recommendation dashboard UI (AC: #1, #4, #5), integration with daily missions (AC: #7), recommendation caching and performance (AC: #1), recommendation analytics backend (AC: #8), testing and validation (AC: All)</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. Related content recommendations based on current study session
+2. Recommendations consider user's knowledge level and previous performance
+3. Suggestions include content from different sources (lectures, First Aid, external)
+4. Recommendation explanations provided showing relationship reasoning
+5. User can dismiss or rate recommendations to improve future suggestions
+6. Recommendations adapt based on user interaction patterns
+7. Integration with daily missions to suggest complementary content
+8. Personalization improves over time through machine learning
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Subsystem 3: Knowledge Graph &amp; Semantic Search</title>
+        <section>RecommendationEngine (lines 549-575)</section>
+        <snippet>Content recommendation engine combining collaborative filtering and content-based approaches. Uses semantic similarity, knowledge graph relationships, and user performance data to suggest relevant learning materials during study sessions.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>PRD - FR15: Search &amp; Discovery Engine</title>
+        <section>Recommendation engine for related content (lines 159-162)</section>
+        <snippet>Recommendation engine for related content and study materials. AI recommendations include clear explanations of reasoning, helping students understand and trust the platform's guidance while maintaining agency over their learning.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic 3 - Story 3.5 Details</title>
+        <section>Context-Aware Content Recommendations (lines 470-491)</section>
+        <snippet>Hybrid recommendation engine using collaborative filtering and content-based approaches. Machine learning model for recommendation accuracy improvement over time. Prerequisites: Semantic search (Story 3.1), Knowledge graph (Story 3.2), Performance tracking (Story 2.2).</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-3.5.md</path>
+        <title>Story 3.5 - Full Story Document</title>
+        <section>Complete story with all tasks and dev notes</section>
+        <snippet>Comprehensive hybrid recommendation engine with 13 major tasks covering semantic filtering, collaborative filtering, performance-aware adjustments, multi-source recommendations, feedback loops, and adaptive personalization.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>apps/web/src/lib/semantic-search-service.ts</path>
+        <kind>service</kind>
+        <symbol>SemanticSearchService</symbol>
+        <lines>1-929</lines>
+        <reason>Reuse semantic similarity logic for content-based recommendations. Provides pgvector cosine distance queries, embedding generation, and hybrid search combining vector + keyword matching. Essential for Task 2 semantic recommendations.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/performance-calculator.ts</path>
+        <kind>service</kind>
+        <symbol>PerformanceCalculator</symbol>
+        <lines>1-757</lines>
+        <reason>Provides user mastery levels, weakness scores, and performance metrics for Task 3 performance-aware recommendations. Calculates retention scores, mastery thresholds, and identifies weak areas for personalized content boosting.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>LearningObjective, ContentChunk, Concept, ConceptRelationship</symbol>
+        <lines>139-394</lines>
+        <reason>Database models for recommendation sources. LearningObjective has masteryLevel/weaknessScore fields, ContentChunk has embeddings for semantic similarity, Concept/ConceptRelationship for knowledge graph traversal. Foundation for all recommendation queries.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/subsystems/knowledge-graph/semantic-search.ts</path>
+        <kind>service</kind>
+        <symbol>Knowledge Graph Semantic Search Integration</symbol>
+        <lines>N/A</lines>
+        <reason>Integration point for knowledge graph traversal in recommendations (Task 2.2). Provides concept relationships for prerequisite-based recommendations.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/db.ts</path>
+        <kind>utility</kind>
+        <symbol>Prisma Client Singleton</symbol>
+        <lines>N/A</lines>
+        <reason>Database client for all recommendation queries. Required for querying ContentChunk, LearningObjective, PerformanceMetric, BehavioralEvent tables.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/graph/search/route.ts</path>
+        <kind>api-route</kind>
+        <symbol>Semantic Search API Endpoint</symbol>
+        <lines>N/A</lines>
+        <reason>Reference for semantic search API patterns. Recommendation API (Task 2.4) will follow similar structure with filters, pagination, and response format.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <nodejs>
+        <package name="@prisma/client" version="^6.2.0" reason="Database ORM for querying recommendations, performance metrics, and behavioral events" />
+        <package name="@google/generative-ai" version="^0.21.0" reason="Gemini embeddings for semantic similarity (already used in Story 3.1)" />
+        <package name="zod" version="^3.24.1" reason="Request/response validation for recommendation APIs" />
+        <package name="date-fns" version="^4.1.0" reason="Date calculations for recency factor in scoring algorithm" />
+      </nodejs>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint priority="high">Database Schema: Add ContentRecommendation, RecommendationFeedback, RecommendationAnalytics models to Prisma schema. Run migrations before implementation.</constraint>
+    <constraint priority="high">Hybrid Algorithm MVP: 70% content-based (semantic similarity) + 30% collaborative filtering (user interactions) for initial release. Adjust weights based on analytics.</constraint>
+    <constraint priority="high">Scoring Formula: Multi-factor weighted sum: semanticSimilarity*0.4 + prerequisiteRelation*0.2 + masteryAlignment*0.2 + recency*0.1 + userFeedback*0.1. Minimum threshold 0.6 to filter low-quality recommendations.</constraint>
+    <constraint priority="high">Performance Target: <500ms for recommendation queries (semantic search + graph traversal + scoring). Use caching (Redis or in-memory) with 15-min TTL per session-objective pair.</constraint>
+    <constraint priority="high">Integration with Story 2.2: Query PerformanceMetric and LearningObjective.weaknessScore/masteryLevel for performance-aware adjustments. Boost weak area content +20-30%, reduce mastered content -10-20%.</constraint>
+    <constraint priority="high">Integration with Story 2.4: Mission-aware recommendations via missionId context. Filter by mission objective scope, prioritize complementary content for upcoming objectives.</constraint>
+    <constraint priority="high">Integration with Story 2.5: In-session recommendation widget on study page. Trigger recommendation fetch when objective changes, cache for current session.</constraint>
+    <constraint priority="high">Integration with Story 3.1: Reuse SemanticSearchService for pgvector similarity queries. Use same embedding generation (Gemini text-embedding-001, 1536 dims) and cosine distance calculations.</constraint>
+    <constraint priority="high">Integration with Story 3.2: Knowledge graph traversal for related concepts via ConceptRelationship table. Traverse 2-3 hops, weight by relationship strength and type (PREREQUISITE > RELATED > INTEGRATED).</constraint>
+    <constraint priority="medium">Collaborative Filtering MVP: Single-user approach for MVP. Track user interactions (viewed, clicked, dismissed, rated) in BehavioralEvent. Calculate preference vector from liked content embeddings. Multi-user collaborative filtering deferred to post-MVP.</constraint>
+    <constraint priority="medium">Feedback Loop: Real-time score adjustments based on user ratings. Positive feedback (4-5 stars) → boost similar content +15-20%. Negative feedback (1-2 stars) → reduce similar content -20-30%. Learn content type preferences (lectures vs First Aid).</constraint>
+    <constraint priority="medium">Privacy Compliance: User interaction data (recommendations, feedback) must be user-specific. No cross-user data exposure in MVP. Implement GDPR/CCPA anonymization for future multi-user phase.</constraint>
+    <constraint priority="medium">Caching Strategy: Cache recommendations per session-objective pair (key: userId:sessionId:objectiveId). TTL 15 minutes. Invalidate on user feedback (re-ranking needed). Use Redis for production or in-memory Map for MVP.</constraint>
+    <constraint priority="medium">Recommendation Diversity: Top-K recommendations should include mix of content types (lectures, First Aid, concepts). Avoid homogeneous recommendations (all from same lecture).</constraint>
+    <constraint priority="low">Machine Learning Pipeline: Rule-based + simple collaborative for MVP. Document ML training pipeline architecture for post-MVP (gradient boosting, neural collaborative filtering, A/B testing framework).</constraint>
+    <constraint priority="low">A/B Testing Framework: Design experiment framework for recommendation strategies (different weight combinations, algorithms). Track effectiveness metrics (CTR, engagement, performance improvement). Implementation deferred to Story 3.5.1.</constraint>
+    <constraint priority="low">Auto-Tests Deferred: Comprehensive unit/integration tests deferred per AGENTS.MD MVP guidance. Manual testing focus for Story 3.5. Document test cases in story file for future Story 3.5.1.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/recommendations</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+        Query params: contextType ('session' | 'objective' | 'mission'), contextId (string), limit (number, default 10, max 50), sourceTypes (string[], optional), excludeRecent (boolean, default true)
+        Response: { recommendations: RecommendationResponse[], total: number }
+      </signature>
+      <path>apps/web/src/app/api/recommendations/route.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/recommendations/:id/feedback</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+        Body: { rating: 1-5, feedbackText?: string, helpful?: boolean }
+        Response: { success: true, updatedScore: number }
+      </signature>
+      <path>apps/web/src/app/api/recommendations/[id]/feedback/route.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/recommendations/:id/dismiss</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+        Response: { success: true }
+      </signature>
+      <path>apps/web/src/app/api/recommendations/[id]/dismiss/route.ts</path>
+    </interface>
+    <interface>
+      <name>POST /api/recommendations/:id/view</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+        Response: { success: true }
+      </signature>
+      <path>apps/web/src/app/api/recommendations/[id]/view/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/recommendations/mission-preview</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+        Query params: missionId (string)
+        Response: { objectives: Array<{ objectiveId, recommendations: [] }> }
+      </signature>
+      <path>apps/web/src/app/api/recommendations/mission-preview/route.ts</path>
+    </interface>
+    <interface>
+      <name>GET /api/analytics/recommendations</name>
+      <kind>REST API Endpoint</kind>
+      <signature>
+        Query params: period ('7d' | '30d' | '90d')
+        Response: { ctr: number, avgRating: number, avgEngagementTimeMs: number, topSources: Array<{ type, count }>, improvementCorrelation: number }
+      </signature>
+      <path>apps/web/src/app/api/analytics/recommendations/route.ts</path>
+    </interface>
+    <interface>
+      <name>RecommendationEngine</name>
+      <kind>TypeScript Class</kind>
+      <signature>
+        class RecommendationEngine {
+          async generate(params: { userId, contextType, contextId, currentEmbedding, userMastery, limit }): Promise<RecommendationResponse[]>
+          private async semanticSearch(embedding: number[], filters): Promise<CandidateRecommendation[]>
+          private async graphTraversal(conceptId: string, depth: number): Promise<RelatedConcept[]>
+          private async performanceFilter(candidates, userId, userMastery): Promise<FilteredRecommendation[]>
+          private calculateFinalScore(scores: RecommendationScore): number
+          private async reRankWithFeedback(recommendations, userId): Promise<RecommendationResponse[]>
+        }
+      </signature>
+      <path>apps/web/src/lib/recommendation-engine.ts</path>
+    </interface>
+    <interface>
+      <name>RecommendationPanel Component</name>
+      <kind>React Component</kind>
+      <signature>
+        interface RecommendationPanelProps {
+          sessionId?: string
+          objectiveId?: string
+          missionId?: string
+          limit?: number
+          onRecommendationClick?: (recommendation: RecommendationResponse) => void
+        }
+        Displays: collapsible sidebar with 3-5 recommendations, card UI with source badge/score/reasoning, View/Dismiss/Rate actions
+      </signature>
+      <path>apps/web/src/components/recommendations/recommendation-panel.tsx</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Per AGENTS.MD and architecture guidelines: Comprehensive automated tests (unit, integration, E2E) deferred for MVP. Focus on manual testing and TypeScript compilation verification. Test ideas documented below serve as future test implementation guide for Story 3.5.1.
+
+      Testing Focus for MVP:
+      1. TypeScript Compilation: Run `pnpm tsc` to verify 0 errors
+      2. Manual Testing: Verify recommendations appear correctly, scoring algorithm works, feedback updates scores
+      3. Performance Testing: Measure query latency (target <500ms), cache hit rate (target >70%)
+      4. Edge Case Validation: No related content, new user cold start, all recommendations dismissed
+
+      Testing Tools (future Story 3.5.1):
+      - Jest for unit tests (scoring algorithm, semantic similarity calculations)
+      - React Testing Library for component tests
+      - Playwright for E2E tests (recommendation flow, feedback submission)
+      - Vitest for integration tests (API endpoints, database queries)
+    </standards>
+    <locations>
+      apps/web/src/__tests__/ - Unit tests for recommendation engine and scoring algorithms
+      apps/web/src/lib/__tests__/ - Service tests for recommendation services
+      apps/web/src/components/__tests__/ - Component tests for RecommendationPanel, RecommendationCard
+      apps/web/src/app/api/__tests__/ - API route tests for recommendation endpoints
+    </locations>
+    <ideas>
+      <test ac="1" priority="high">
+        Test: Related content recommendations appear based on current study session
+        Approach: Start study session with specific objective, verify recommendations API returns related content from semantic search and knowledge graph traversal. Check that recommendations include lectures, concepts, and First Aid references.
+      </test>
+      <test ac="2" priority="high">
+        Test: Recommendations consider user's knowledge level and performance
+        Approach: Query PerformanceMetric for user with specific masteryLevel (BEGINNER vs MASTERED), verify recommendations adjust difficulty appropriately. Check weak area boosting (+20-30%) and mastered area reduction (-10-20%).
+      </test>
+      <test ac="3" priority="high">
+        Test: Multi-source recommendations (lectures, First Aid, external)
+        Approach: Verify recommendation results include mix of content types. Check ContentRecommendation.sourceType field properly distinguishes LECTURE, FIRST_AID, CONCEPT, EXTERNAL. Ensure source badges display correctly in UI.
+      </test>
+      <test ac="4" priority="high">
+        Test: Recommendation explanations show relationship reasoning
+        Approach: Verify ContentRecommendation.reasoning field contains human-readable explanations (e.g., "Prerequisite for understanding cardiac conduction", "Similar topic from Physiology lecture 5"). Check similarity score and confidence level included.
+      </test>
+      <test ac="5" priority="high">
+        Test: User can dismiss and rate recommendations
+        Approach: Test dismiss action (POST /api/recommendations/:id/dismiss) removes from view and records dismissal. Test rating action (POST /api/recommendations/:id/feedback) with 1-5 stars updates RecommendationFeedback table and triggers re-ranking.
+      </test>
+      <test ac="6" priority="high">
+        Test: Recommendations adapt based on user interaction patterns
+        Approach: Simulate user interactions (viewed, clicked, rated). Verify preference vector calculation from liked content embeddings. Check that subsequent recommendations reflect learned preferences (boost similar content types).
+      </test>
+      <test ac="7" priority="high">
+        Test: Integration with daily missions
+        Approach: Create mission with specific objectives, verify recommendations API with missionId context filters to mission scope. Check "Mission related" badge appears, complementary content for upcoming objectives prioritized.
+      </test>
+      <test ac="8" priority="high">
+        Test: Personalization improves over time through machine learning
+        Approach: Track recommendation effectiveness metrics (CTR, engagement time, performance correlation). Verify RecommendationAnalytics table accumulates data. Check adaptive scoring weights adjust based on user feedback patterns.
+      </test>
+      <test priority="medium">
+        Test: Scoring algorithm correctness
+        Unit test: Verify multi-factor weighted scoring formula calculates correctly. Test inputs: semanticSimilarity=0.85, prerequisiteRelation=0.7, masteryAlignment=0.6, recency=0.8, userFeedback=0.9. Expected output: (0.85*0.4) + (0.7*0.2) + (0.6*0.2) + (0.8*0.1) + (0.9*0.1) = 0.75
+      </test>
+      <test priority="medium">
+        Test: Recommendation caching and performance
+        Approach: Make identical recommendation request twice, verify second request uses cached result (check cache hit logs). Measure query latency for both requests. Target: First request <500ms, second request <50ms. Cache invalidation on feedback verified.
+      </test>
+      <test priority="medium">
+        Test: Zone of proximal development targeting
+        Approach: User with masteryLevel=0.6 on objective A. Verify recommendations include content with complexity in range 0.7-0.9 (masteryLevel + 0.1 to +0.3). Content outside range (too easy <0.5 or too hard >1.0) excluded.
+      </test>
+      <test priority="medium">
+        Test: Knowledge graph traversal for related concepts
+        Approach: Query ConceptRelationship for objective with known prerequisite chain. Verify recommendations include content from 2-3 hops away. Check relationship type weighting (PREREQUISITE=1.0 > RELATED=0.7 > INTEGRATED=0.5).
+      </test>
+      <test priority="low">
+        Test: Cold start problem (new user with no history)
+        Approach: New user with no reviews, no feedback, no study sessions. Verify recommendations default to high-yield content and popular objectives. Check graceful handling when no preference vector available.
+      </test>
+      <test priority="low">
+        Test: All recommendations dismissed (refresh suggestions)
+        Approach: Dismiss all current recommendations, request new recommendations. Verify API returns different recommendations (lower similarity threshold, different time window). Check empty state UI when truly no recommendations available.
+      </test>
+      <test priority="low">
+        Test: Recommendation diversity (avoid homogeneous results)
+        Approach: Verify top-10 recommendations include at least 2 different content types (lectures, concepts, First Aid). Check that not all recommendations from same source (course/lecture diversity).
+      </test>
+    </ideas>
+  </tests>
+</story-context>

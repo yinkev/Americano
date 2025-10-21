@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/4.5" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.5</storyId>
+    <title>Adaptive Questioning and Progressive Assessment</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-4.5.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>assessment questions that adapt to my responses and knowledge level in real-time</iWant>
+    <soThat>I'm optimally challenged, efficiently assessed, and can demonstrate mastery without unnecessary repetition</soThat>
+    <primaryLanguage>TypeScript + Python (optional for IRT algorithms)</primaryLanguage>
+    <architectureGuidance>Per CLAUDE.md: Story 4.5 can use Python for ML-based pattern detection in adaptive algorithms, but TypeScript primary for UI/API integration. IRT calculations could benefit from scipy/numpy but can be implemented in TypeScript for MVP</architectureGuidance>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC#1">
+      <title>Initial Difficulty Calibration</title>
+      <description>System determines starting difficulty based on user's historical performance</description>
+      <details>Analyze last 10 assessments for concept and related concepts. Calculate baseline difficulty score (0-100 scale). Consider confidence calibration accuracy (Story 4.4). Start at baseline difficulty ± 10 points. Store initial difficulty selection rationale.</details>
+    </criterion>
+    <criterion id="AC#2">
+      <title>Real-Time Difficulty Adjustment</title>
+      <description>Question difficulty adapts based on user's response quality</description>
+      <details>Calculate performance indicator after each response. Score > 85%: Increase difficulty by 15 points (max 100). Score 60-85%: Maintain ± 5 points variation. Score &lt; 60%: Decrease difficulty by 15 points (min 0). Log adjustments for transparency. Maximum 3 adjustments per session.</details>
+    </criterion>
+    <criterion id="AC#3">
+      <title>Knowledge Graph-Based Follow-Up Questions</title>
+      <description>System generates follow-up questions exploring related concepts</description>
+      <details>Query Knowledge Graph for related concepts. Identify prerequisite concepts if score &lt; 60%. Identify advanced applications if score > 85%. Generate follow-up targeting identified concept. Adapt question type (prerequisite/lateral/advanced). Maximum 2 follow-ups per original prompt. Allow users to skip if time-constrained.</details>
+    </criterion>
+    <criterion id="AC#4">
+      <title>Mastery Verification Protocol</title>
+      <description>System verifies mastery through multi-dimensional assessment</description>
+      <details>Require 3 consecutive assessments scoring > 80%. Demonstrate competence across types (Comprehension, Reasoning, Application). Difficulty must match or exceed user's complexity level. Confidence calibration within ±15 points of score. Time-spaced: 3 assessments spread across ≥ 2 days. Status: VERIFIED, IN_PROGRESS, NOT_STARTED. Display mastery badge (gold star) with date.</details>
+    </criterion>
+    <criterion id="AC#5">
+      <title>Adaptive Question Bank Management</title>
+      <description>System maintains personalized question bank for each user</description>
+      <details>Track questions already answered. Minimum 2-week cooldown before repeating. Prioritize unused questions. Generate new questions via ChatMock when depleted. Track question effectiveness (discrimination index). Remove ineffective questions (discrimination &lt; 0.2 after 20+ responses).</details>
+    </criterion>
+    <criterion id="AC#6">
+      <title>Progressive Complexity Revelation</title>
+      <description>System gradually reveals concept complexity as user demonstrates readiness</description>
+      <details>Tag objectives with BASIC, INTERMEDIATE, ADVANCED. Initially present BASIC complexity. Reveal next level after mastery verification. Display complexity progression visualization. Unlock notifications for motivation. Cannot skip levels (prerequisite mastery required). Allow review of lower complexity anytime.</details>
+    </criterion>
+    <criterion id="AC#7">
+      <title>Assessment Efficiency Optimization (IRT-based)</title>
+      <description>System minimizes time to accurate knowledge assessment using Item Response Theory</description>
+      <details>Target: Assess within 3-5 questions (not 20+). Implement simplified Rasch model (1PL IRT). Calculate knowledge estimate confidence interval (±X at 95%). Stop early if confidence interval &lt; 10 points and ≥ 3 questions. Display efficiency metrics. Compare to non-adaptive baseline.</details>
+    </criterion>
+    <criterion id="AC#8">
+      <title>Adaptive Session Orchestration</title>
+      <description>Assessment sessions adapt structure based on real-time performance</description>
+      <details>Adapt session length based on performance. Recommend breaks on performance decline detection. Re-calibrate difficulty mid-session if trend changes. Mix assessment types based on weak areas. End on confidence-building success. Session summary shows adaptation decisions.</details>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>PRD - FR5: Understanding Validation</title>
+        <section>Functional Requirements - FR5</section>
+        <snippet>Understanding Validation and Comprehension Testing: "Explain to a patient" style prompts beyond traditional multiple choice. Clinical reasoning questions that test comprehension vs. memorization. Confidence calibration scoring and controlled failure detection. Performance analytics to distinguish pattern recognition from true understanding.</snippet>
+      </doc>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Solution Architecture - Subsystem 4</title>
+        <section>Subsystem 4: Understanding Validation Engine</section>
+        <snippet>Subsystem 4: ValidationPromptGenerator (create questions), ResponseEvaluator (GPT-5 scoring), ConfidenceCalibrator (detect over/underconfidence), ControlledFailureDetector (identify gaps). Data: ValidationPrompt, ValidationResponse, ComprehensionMetric.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic 4 - Story 4.5 Details</title>
+        <section>Story 4.5: Adaptive Questioning and Progressive Assessment</section>
+        <snippet>Adaptive Questioning and Progressive Assessment: Item Response Theory (IRT)-based adaptive testing minimizes questions needed (3-5 vs 20+). Knowledge graph follow-up questions explore related concepts. Mastery verification protocol requires multi-dimensional evidence. Progressive complexity revelation (BASIC → INTERMEDIATE → ADVANCED). Assessment efficiency optimization with IRT algorithms.</snippet>
+      </doc>
+      <doc>
+        <path>CLAUDE.md</path>
+        <title>Python vs TypeScript Strategy - Story 4.5</title>
+        <section>Epic-Specific Guidance - Epic 4</section>
+        <snippet>Story 4.5: TypeScript (challenge generation) + Python option for pattern detection. ML-based metacognitive analysis optional with Python (scipy for IRT calculations), but TypeScript primary for UI/API integration.</snippet>
+      </doc>
+      <doc>
+        <path>Context7: FastAPI Documentation</path>
+        <title>FastAPI Async Patterns, Dependency Injection</title>
+        <snippet>FastAPI provides async/await patterns for high-performance APIs. Dependency injection via Depends(). Pydantic V2 for request/response validation. Background tasks with BackgroundTasks. WebSocket support for real-time updates.</snippet>
+      </doc>
+      <doc>
+        <path>Context7: Pydantic Documentation</path>
+        <title>Pydantic V2 Data Validation</title>
+        <snippet>Pydantic BaseModel for data structures with automatic validation. Field() for field configuration. Validators (@field_validator, @model_validator). Type safety with Python type hints. JSON schema generation.</snippet>
+      </doc>
+      <doc>
+        <path>Context7: Instructor Documentation</path>
+        <title>Structured LLM Outputs with Pydantic</title>
+        <snippet>Instructor provides structured JSON outputs from LLMs using Pydantic for validation. instructor.from_anthropic() for Claude integration. Automatic retries on validation failures. Type-safe LLM responses with IDE support.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-4.1.md</path>
+        <title>Story 4.1 - Foundation (Prerequisite)</title>
+        <section>Natural Language Comprehension Prompts</section>
+        <snippet>Story 4.1 establishes ValidationPrompt, ValidationResponse, ComprehensionMetric models. ChatMock (GPT-5) integration for AI evaluation. 4-dimensional scoring rubric. Session integration patterns. Provides base models for Story 4.5 extensions.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-4.4.md</path>
+        <title>Story 4.4 - Confidence Calibration (Dependency)</title>
+        <section>Confidence Calibration and Metacognitive Assessment</section>
+        <snippet>Story 4.4: Confidence calibration tracking with Pearson correlation. Metacognitive reflection prompts. Provides calibration accuracy data for Story 4.5 difficulty adjustment algorithms.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>database-schema</kind>
+        <symbol>ValidationPrompt, ValidationResponse, ComprehensionMetric</symbol>
+        <lines>N/A (extend models)</lines>
+        <reason>Base models from Story 4.1 need extensions: difficultyLevel (0-100), discriminationIndex, timesUsed, lastUsedAt, initialDifficulty, adjustedDifficulty, difficultyChangeReason, isFollowUpQuestion, parentPromptId, timeToRespond, complexityLevel enum (BASIC, INTERMEDIATE, ADVANCED)</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/ai/chatmock-client.ts</path>
+        <kind>service-client</kind>
+        <symbol>ChatMockClient</symbol>
+        <lines>1-150</lines>
+        <reason>Existing ChatMock (GPT-5) client for AI question generation. Use for adaptive question generation at specified difficulty levels and follow-up generation based on Knowledge Graph concepts</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/db.ts</path>
+        <kind>utility</kind>
+        <symbol>prisma</symbol>
+        <lines>1-50</lines>
+        <reason>Prisma client singleton for database operations. Query performance history, store adaptive session data, manage mastery verification records</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/api-response.ts</path>
+        <kind>utility</kind>
+        <symbol>successResponse, errorResponse, ApiError</symbol>
+        <lines>1-80</lines>
+        <reason>Standardized API response helpers from Story 1.5. Use for all adaptive assessment endpoints with consistent error handling</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/validation.ts</path>
+        <kind>utility</kind>
+        <symbol>Zod validation schemas</symbol>
+        <lines>1-200</lines>
+        <reason>Existing Zod patterns for request/response validation. Create schemas for adaptive session requests, difficulty adjustments, mastery verification</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/store/use-session-store.ts</path>
+        <kind>state-management</kind>
+        <symbol>useSessionStore (Zustand)</symbol>
+        <lines>1-150</lines>
+        <reason>Study session state management from Story 2.5. Extend for adaptive session tracking: currentDifficulty, adjustmentCount, efficiencyMetrics, knowledgeEstimate</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/study</path>
+        <kind>directory</kind>
+        <symbol>Study UI components</symbol>
+        <lines>N/A</lines>
+        <reason>Existing study components: ComprehensionPromptDialog, ObjectiveCompletionDialog (Stories 4.1, 2.5). Reference for UI patterns. Create adaptive variants: AdaptiveAssessmentInterface, DifficultyIndicator, MasteryProgressTracker, ComplexitySkillTree</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/subsystems/knowledge-graph</path>
+        <kind>directory</kind>
+        <symbol>Knowledge Graph (Story 3.2 - not yet implemented)</symbol>
+        <lines>N/A (future dependency)</lines>
+        <reason>Not yet implemented. Will provide concept relationships for follow-up questions. For MVP: Use ObjectivePrerequisite join table from Story 2.1 for prerequisite identification</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <python>
+        <package name="numpy" version="latest">Optional for IRT calculations if Python implementation chosen. Numerical arrays for theta/beta parameters</package>
+        <package name="scipy" version="latest">Optional for statistical functions (Newton-Raphson optimization for IRT parameter estimation)</package>
+        <package name="fastapi" version="latest">Optional if implementing IRT service as Python microservice. Async API framework</package>
+        <package name="pydantic" version="latest">Optional for Python service. Data validation with BaseModel if FastAPI used</package>
+        <package name="uvicorn" version="latest">Optional ASGI server if Python FastAPI service implemented</package>
+      </python>
+      <typescript>
+        <package name="@prisma/client" version="latest">Database ORM (already installed). Store adaptive session data, mastery verification</package>
+        <package name="zod" version="latest">Runtime validation (already installed). Validate adaptive API requests/responses</package>
+        <package name="zustand" version="latest">State management (already installed). Track adaptive session state</package>
+        <package name="date-fns" version="latest">Date utilities (already installed). Calculate time-spacing for mastery verification</package>
+        <package name="recharts" version="latest">Charts (already installed). Visualize efficiency metrics, mastery progress</package>
+      </typescript>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint id="language-choice">CLAUDE.md: Story 4.5 primary language is TypeScript for UI/API integration. Python optional for IRT algorithms (scipy/numpy for statistical calculations). MVP recommendation: Implement simplified Rasch model (1PL IRT) in TypeScript first. Defer full Python IRT service to post-MVP if statistical complexity increases (2PL/3PL models)</constraint>
+    <constraint id="database-extensions">Extend ValidationPrompt model: difficultyLevel INT (0-100), discriminationIndex FLOAT, timesUsed INT, lastUsedAt DATETIME, complexityLevel ENUM(BASIC, INTERMEDIATE, ADVANCED). Extend ValidationResponse: initialDifficulty INT, adjustedDifficulty INT, difficultyChangeReason TEXT, isFollowUpQuestion BOOLEAN, parentPromptId FK, timeToRespond INT (milliseconds). Create MasteryVerification model: userId FK, objectiveId FK, status ENUM(VERIFIED, IN_PROGRESS, NOT_STARTED), verifiedAt DATETIME, verificationCriteria JSON. Create AdaptiveSession: userId FK, sessionId FK, initialDifficulty INT, finalDifficulty INT, adjustmentCount INT, efficiencyScore FLOAT, questionsAsked INT, knowledgeEstimate FLOAT, confidenceInterval FLOAT</constraint>
+    <constraint id="irt-algorithm">Implement simplified Rasch model (1-parameter logistic IRT) for MVP. Person ability parameter (theta). Item difficulty parameter (beta). Probability formula: P(correct) = exp(theta - beta) / (1 + exp(theta - beta)). Newton-Raphson iteration for theta estimation. Maximum likelihood estimation with convergence tolerance 0.01. Maximum 10 iterations to prevent infinite loops. Full 2PL/3PL models (discrimination, guessing parameters) deferred to post-MVP</constraint>
+    <constraint id="knowledge-graph">Story 3.2 (Knowledge Graph) not yet implemented. For MVP follow-up questions: Use ObjectivePrerequisite join table from Story 2.1 for prerequisite identification (score &lt; 60% triggers prerequisite). For advanced follow-ups (score > 85%): Query LearningObjective table for same course/higher complexity. Future enhancement: Full Knowledge Graph traversal for related concepts across courses</constraint>
+    <constraint id="question-generation">ChatMock (GPT-5) for adaptive question generation. Prompt template: "Generate {difficulty_level} question for {objective} at complexity {BASIC/INTERMEDIATE/ADVANCED}". Temperature 0.7 for variety. Max tokens 500. Cost optimization: Batch generate 10 questions per difficulty level when bank &lt; 5 questions. Cache generated questions in database with metadata (difficulty, complexity, discrimination index)</constraint>
+    <constraint id="mastery-verification">Mastery verification requires: (1) 3 consecutive assessments > 80%, (2) Multiple assessment types (comprehension, reasoning, application from Stories 4.1-4.3), (3) Difficulty matches user complexity level, (4) Confidence calibration within ±15 points (from Story 4.4), (5) Time-spaced ≥ 2 days. MVP constraint: Manual testing with backdated timestamps for demo. Production: Enforce 2-day minimum via database constraint</constraint>
+    <constraint id="discrimination-index">Discrimination index calculation: D = (% correct top 27%) - (% correct bottom 27%). Requires ≥ 20 responses for statistical validity. MVP phase: Accept lower samples (5-10) with confidence warnings. Flag questions for review (discrimination &lt; 0.2) rather than auto-removal until sufficient data. Background job (future): Recalculate discrimination indices weekly</constraint>
+    <constraint id="performance">Initial difficulty calculation &lt; 200ms (query last 10 assessments with indexes). Difficulty adjustment &lt; 50ms (in-memory calculation). Question selection &lt; 100ms (indexed query on difficultyLevel, complexityLevel, lastUsedAt). IRT calculation &lt; 500ms (Newton-Raphson typically converges in 3-5 iterations). Session efficiency calculation &lt; 100ms. Total adaptive assessment latency &lt; 1 second per question</constraint>
+    <constraint id="authentication">MVP: Hardcoded user (kevy@americano.dev) as in previous stories. All adaptive data tied to single user. getUserId() helper returns hardcoded userId. Multi-user support deferred with proper authentication (Clerk/Auth.js)</constraint>
+    <constraint id="next-js-15">All API routes use Next.js 15 async params pattern: async (request, { params }) => { const { id } = await params }. Verified from Story 2.x implementations. Server Components for data fetching, Client Components for interactivity</constraint>
+    <constraint id="error-handling">Use ApiError class from Story 1.5. Zod validation on all API inputs. Catch and log errors with meaningful messages. Return standardized error responses via errorResponse() helper. Python service errors (if implemented): Map to ApiError codes for consistency</constraint>
+    <constraint id="ui-design">Glassmorphism: bg-white/95 backdrop-blur-xl. OKLCH colors (NO gradients). Difficulty indicators: Low oklch(0.7 0.15 145) green, Medium oklch(0.75 0.12 85) yellow, High oklch(0.65 0.20 25) red, Mastery oklch(0.8 0.15 60) gold. Inter/DM Sans fonts. Min 44px touch targets. ARIA labels for accessibility. Keyboard navigation support</constraint>
+    <constraint id="testing">TypeScript: Vitest for unit tests (IRT calculations, difficulty adjustment logic). React Testing Library for components. Manual integration testing for adaptive session flow. Python (if used): pytest + pytest-asyncio for IRT algorithms. Coverage targets: TypeScript 70%+, Python 80%+. E2E tests with Playwright deferred to Story 4.5.1</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/adaptive/session/start</name>
+      <kind>REST endpoint (Next.js)</kind>
+      <signature>Request: { userId, sessionId, objectiveIds[] } Response: { adaptiveSessionId, initialDifficulty, firstPrompt }</signature>
+      <path>apps/web/src/app/api/adaptive/session/start/route.ts</path>
+      <description>Starts adaptive assessment session. Calculates initial difficulty from user history (last 10 assessments). Selects first question at baseline difficulty. Returns adaptive session metadata and first prompt</description>
+    </interface>
+    <interface>
+      <name>POST /api/adaptive/question/next</name>
+      <kind>REST endpoint (Next.js)</kind>
+      <signature>Request: { sessionId, lastResponseId?, lastScore?, lastConfidence? } Response: { prompt, difficulty, isFollowUp, canStopEarly, efficiencyMetrics }</signature>
+      <path>apps/web/src/app/api/adaptive/question/next/route.ts</path>
+      <description>Gets next adaptive question. Adjusts difficulty based on last response (+15 if score > 85%, -15 if &lt; 60%). Checks IRT early stopping criteria. Generates follow-up if needed (score &lt; 60% → prerequisite, > 85% → advanced). Returns next prompt with metadata</description>
+    </interface>
+    <interface>
+      <name>GET /api/mastery/:objectiveId</name>
+      <kind>REST endpoint (Next.js)</kind>
+      <signature>Response: { masteryStatus, progress, criteria, verifiedAt, nextSteps[] }</signature>
+      <path>apps/web/src/app/api/mastery/[objectiveId]/route.ts</path>
+      <description>Fetches mastery verification status for objective. Checks 5 mastery criteria (consecutive scores, assessment types, difficulty match, calibration, time-spacing). Returns current progress and next steps to achieve verification</description>
+    </interface>
+    <interface>
+      <name>GET /api/adaptive/efficiency</name>
+      <kind>REST endpoint (Next.js)</kind>
+      <signature>Response: { questionsAsked, timeSaved, efficiencyScore, comparisonBaseline, knowledgeEstimate, confidenceInterval }</signature>
+      <path>apps/web/src/app/api/adaptive/efficiency/route.ts</path>
+      <description>Calculates assessment efficiency metrics. Compares adaptive assessment (3-5 questions) to baseline (15 questions). Shows time saved, IRT knowledge estimate (theta), confidence interval. Displays efficiency score percentage</description>
+    </interface>
+    <interface>
+      <name>AdaptiveDifficultyEngine</name>
+      <kind>TypeScript class</kind>
+      <signature>calculateInitialDifficulty(userId, objectiveId): Promise&lt;number&gt;, adjustDifficulty(currentDifficulty, score, confidence): { newDifficulty, adjustment, reason }</signature>
+      <path>apps/web/src/lib/adaptive/difficulty-engine.ts</path>
+      <description>TypeScript class managing difficulty calculations. Queries last 10 assessments for baseline. Applies adjustment rules (score > 85% → +15, &lt; 60% → -15). Enforces max 3 adjustments per session. Logs adjustment rationale</description>
+    </interface>
+    <interface>
+      <name>FollowUpQuestionGenerator</name>
+      <kind>TypeScript class</kind>
+      <signature>identifyFollowUpConcepts(objectiveId, score): Promise&lt;Concept[]&gt;, generateFollowUpPrompt(conceptId, followUpType): Promise&lt;ValidationPrompt&gt;</signature>
+      <path>apps/web/src/lib/adaptive/followup-generator.ts</path>
+      <description>Generates follow-up questions. Low score (&lt; 60%): Queries ObjectivePrerequisite for prerequisites. High score (> 85%): Finds advanced concepts. Calls ChatMock to generate follow-up prompt. Max 2 follow-ups per original question</description>
+    </interface>
+    <interface>
+      <name>MasteryVerificationEngine</name>
+      <kind>TypeScript class</kind>
+      <signature>checkMasteryProgress(userId, objectiveId): Promise&lt;MasteryStatus&gt;, verifyMastery(criteria): Promise&lt;boolean&gt;</signature>
+      <path>apps/web/src/lib/adaptive/mastery-engine.ts</path>
+      <description>Manages mastery verification. Checks 5 criteria: consecutive high scores, multiple assessment types, difficulty match, calibration accuracy, time-spacing. Returns VERIFIED/IN_PROGRESS/NOT_STARTED status with next steps</description>
+    </interface>
+    <interface>
+      <name>QuestionBankManager</name>
+      <kind>TypeScript class</kind>
+      <signature>selectQuestion(userId, objectiveId, targetDifficulty, complexity): Promise&lt;ValidationPrompt&gt;, generateNewQuestion(objectiveId, difficulty, complexity): Promise&lt;ValidationPrompt&gt;, updateDiscriminationIndex(promptId, correct): Promise&lt;void&gt;</signature>
+      <path>apps/web/src/lib/adaptive/question-bank.ts</path>
+      <description>Manages adaptive question bank. Selects unused questions with 2-week cooldown. Generates new questions via ChatMock when depleted (batch 10). Tracks discrimination index, removes ineffective questions (D &lt; 0.2 after 20 responses)</description>
+    </interface>
+    <interface>
+      <name>IRTAssessmentEngine (Optional Python service)</name>
+      <kind>Python class (if implemented)</kind>
+      <signature>estimateKnowledgeLevel(responses[]): { theta, standardError, confidenceInterval, shouldStop, iterations }</signature>
+      <path>apps/python-services/irt-engine/main.py (optional)</path>
+      <description>Optional Python service for IRT calculations using scipy. Implements Rasch model (1PL). Newton-Raphson theta estimation. Early stopping when CI &lt; 10 points. Returns knowledge estimate with confidence interval. MVP: Can be TypeScript implementation first</description>
+    </interface>
+    <interface>
+      <name>AdaptiveSessionOrchestrator</name>
+      <kind>TypeScript class</kind>
+      <signature>startSession(userId, objectiveIds): Promise&lt;Session&gt;, conductAssessment(sessionId): Promise&lt;AssessmentResult&gt;, detectPerformanceDecline(scores[]): boolean, recommendBreak(): boolean, endStrategically(): Promise&lt;SessionSummary&gt;</signature>
+      <path>apps/web/src/lib/adaptive/session-orchestrator.ts</path>
+      <description>Orchestrates adaptive sessions. Manages session flow, difficulty adjustments, break recommendations. Detects performance decline (2+ consecutive drops > 15 points). Ends on confidence-building success (easy final question after struggles). Generates session summary with adaptation decisions</description>
+    </interface>
+    <interface>
+      <name>AdaptiveAssessmentInterface.tsx</name>
+      <kind>React component</kind>
+      <signature>Props: { sessionId, objectiveId, onComplete }. Displays current question, difficulty gauge, adjustment notifications, follow-up context, mastery progress, efficiency metrics, early stop option</signature>
+      <path>apps/web/src/components/study/AdaptiveAssessmentInterface.tsx</path>
+      <description>Main UI for adaptive assessment. Shows question with difficulty indicator. Real-time notifications on difficulty changes. Follow-up context explanation. Mastery progress tracker. Efficiency metrics (questions saved). Early stop button when IRT converges. Glassmorphism design, OKLCH colors</description>
+    </interface>
+    <interface>
+      <name>ComplexitySkillTree.tsx</name>
+      <kind>React component</kind>
+      <signature>Props: { userId, conceptId }. Visualizes BASIC → INTERMEDIATE → ADVANCED progression. Shows mastery badges, unlock animations, current level highlight, next level requirements</signature>
+      <path>apps/web/src/components/study/ComplexitySkillTree.tsx</path>
+      <description>Skill tree visualization for complexity progression. Nodes for each level (BASIC/INTERMEDIATE/ADVANCED). Mastery badges (gold stars) on completed levels. Unlock animations. Current level highlighted. Lock icons on unavailable levels with unlock requirements tooltip</description>
+    </interface>
+    <interface>
+      <name>MasteryBadge.tsx</name>
+      <kind>React component</kind>
+      <signature>Props: { verifiedAt, complexityLevel }. Displays gold star badge, verification date tooltip, complexity level label</signature>
+      <path>apps/web/src/components/study/MasteryBadge.tsx</path>
+      <description>Mastery verification badge. Gold star icon (oklch(0.8 0.15 60)). Tooltip shows verification date and criteria met. Complexity level label (BASIC/INTERMEDIATE/ADVANCED). Celebratory animation on first display. Accessible with ARIA labels</description>
+    </interface>
+    <interface>
+      <name>DifficultyIndicator.tsx</name>
+      <kind>React component</kind>
+      <signature>Props: { currentDifficulty: 0-100 }. Visual gauge: Low (0-40 green), Medium (41-70 yellow), High (71-100 red). Shows numeric value, color-coded background</signature>
+      <path>apps/web/src/components/study/DifficultyIndicator.tsx</path>
+      <description>Real-time difficulty gauge. Horizontal bar indicator with OKLCH colors (green/yellow/red). Numeric difficulty value (0-100). Smooth transitions on difficulty changes. Tooltip explains difficulty ranges. Accessible with ARIA live region for updates</description>
+    </interface>
+    <interface>
+      <name>EfficiencyMetricsPanel.tsx</name>
+      <kind>React component</kind>
+      <signature>Props: { questionsAsked, timeSaved, efficiencyScore, knowledgeEstimate, confidenceInterval }. Displays "Assessed in X questions - Y% faster!" with IRT estimate and CI visualization</signature>
+      <path>apps/web/src/components/study/EfficiencyMetricsPanel.tsx</path>
+      <description>Efficiency metrics display. Questions asked vs baseline comparison. Time saved percentage. Efficiency score visualization. IRT knowledge estimate (theta) with confidence interval chart. Celebratory message on high efficiency. Glassmorphism card design</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      TypeScript Testing (Vitest, 70%+ coverage for critical paths):
+      - Unit tests for adaptive algorithms (difficulty adjustment, IRT calculations, mastery verification)
+      - Integration tests for API routes (mock Prisma, mock ChatMock)
+      - Component tests with React Testing Library (AdaptiveAssessmentInterface, ComplexitySkillTree)
+      - Zustand store testing with act() wrapper
+      - Mock database queries, AI generation
+
+      Python Testing (pytest + pytest-asyncio, 80%+ coverage if IRT service implemented):
+      - IRT algorithm tests with known theta/beta values
+      - Newton-Raphson convergence tests
+      - Edge case handling (non-convergence, boundary conditions)
+      - FastAPI endpoint tests with TestClient (if service implemented)
+    </standards>
+    <locations>
+      - TypeScript unit: apps/web/src/__tests__/lib/adaptive/
+      - Component tests: apps/web/src/__tests__/components/study/
+      - API tests: apps/web/src/__tests__/api/adaptive/
+      - Python (optional): apps/python-services/irt-engine/tests/
+    </locations>
+    <ideas>
+      <idea ac="AC#1">Test initial difficulty calculation: (a) User with 0 prior assessments → default 50, (b) User with 10 high scores (> 80) → baseline 75-85, (c) User with mixed scores → weighted average, (d) Related concepts considered (5 weights from Story 4.4), (e) Calibration accuracy factor (+/- adjustment)</idea>
+      <idea ac="AC#2">Test real-time difficulty adjustment: (a) Score 90% → expect +15 (max 100), (b) Score 75% → expect ±5, (c) Score 45% → expect -15 (min 0), (d) Max 3 adjustments enforced (4th ignored), (e) Adjustment rationale logged</idea>
+      <idea ac="AC#3">Test follow-up generation: (a) Score &lt; 60% → prerequisite identified from ObjectivePrerequisite, (b) Score > 85% → advanced concept from same course, (c) Follow-up question generated via ChatMock, (d) Max 2 follow-ups enforced, (e) Skip option available</idea>
+      <idea ac="AC#4">Test mastery verification: (a) 3 consecutive > 80% scores → check passes, (b) Multiple assessment types verified (comprehension + reasoning + application), (c) Difficulty matches complexity level, (d) Calibration within ±15 points, (e) Time-spaced ≥ 2 days checked, (f) VERIFIED status only when all 5 criteria met</idea>
+      <idea ac="AC#5">Test question bank: (a) Select unused question → verify correct difficulty/complexity, (b) All questions answered → trigger ChatMock generation (batch 10), (c) 2-week cooldown enforced (question answered 13 days ago rejected), (d) Discrimination index &lt; 0.2 after 20 responses → question flagged for review</idea>
+      <idea ac="AC#6">Test complexity progression: (a) Initially show BASIC questions only, (b) Achieve mastery at BASIC → INTERMEDIATE unlocked, (c) Cannot skip to ADVANCED without INTERMEDIATE mastery, (d) Can review BASIC anytime after unlock, (e) Unlock notification displayed on level reveal</idea>
+      <idea ac="AC#7">Test IRT early stopping: (a) Rasch model theta estimation converges in 3-5 iterations, (b) Confidence interval &lt; 10 points after ≥ 3 questions → stop signal, (c) Display efficiency metrics (3 questions vs 15 baseline = 80% faster), (d) Knowledge estimate with CI chart shown</idea>
+      <idea ac="AC#8">Test session orchestration: (a) Performance decline detected (2 consecutive drops > 15 points) → break recommended, (b) Mid-session re-calibration (trend change from high to low), (c) Mix assessment types based on weak areas, (d) End on easy success (struggled → final easy question), (e) Session summary shows all adaptation decisions</idea>
+      <idea>Test database indexes: Query performance &lt; 100ms for question selection (indexed on difficultyLevel, complexityLevel, lastUsedAt), mastery status check (indexed on userId, objectiveId), performance history (indexed on userId, reviewedAt)</idea>
+      <idea>Test edge cases: (a) User with no history → default difficulty 50, (b) All questions at target difficulty answered → generate new questions, (c) IRT non-convergence (max 10 iterations) → return current estimate with warning, (d) Difficulty boundary (adjustment would exceed 0 or 100) → clamp to bounds</idea>
+      <idea>Test concurrent sessions: Multiple adaptive sessions for same user, session state isolation, race conditions on question selection (two sessions selecting same question simultaneously)</idea>
+      <idea>Test error handling: (a) ChatMock API failure → retry 3 times then fallback, (b) Database query timeout → return error with retry option, (c) Invalid input (negative difficulty) → Zod validation error, (d) Missing prerequisite data → graceful degradation (skip follow-up generation)</idea>
+      <idea>E2E Playwright: (a) Start adaptive session, (b) Answer 3 questions with varying scores, (c) Observe difficulty adjustments in UI, (d) Trigger early stop when IRT converges, (e) View efficiency metrics panel, (f) Check mastery progress, (g) Complete session and verify summary shows adaptations</idea>
+    </ideas>
+  </tests>
+</story-context>

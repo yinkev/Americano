@@ -33,11 +33,11 @@ export interface MissionProgress {
   total: number
 }
 
-// Advanced pause/resume state snapshot (Story 2.5 Task 9)
+// Advanced pause/resume state snapshot (Story 2.5 Task 9 + Story 4.1 Task 6)
 export interface SessionSnapshot {
   pausedAt: number
   currentObjectiveIndex: number
-  studyPhase: 'content' | 'cards' | 'assessment'
+  studyPhase: 'content' | 'comprehension' | 'cards' | 'assessment'
   contentScrollPosition: number
   cardQueuePosition: number
   objectiveTimerState: {
@@ -124,8 +124,19 @@ interface SessionStore {
   // Session settings (Story 2.5 Task 10)
   settings: SessionSettings
 
+<<<<<<< HEAD
   // Real-time orchestration state (Story 5.3)
   orchestration: OrchestrationState
+=======
+  // Clinical scenario tracking (Story 4.2 Task 7)
+  objectivesCompletedSinceScenario: number
+
+  // Adaptive assessment tracking (Story 4.5 Task 12.7)
+  adaptiveSessionId: string | null
+  adaptiveScore: number | null
+  adaptiveQuestionsAsked: number
+  adaptiveEfficiency: number | null
+>>>>>>> origin/main
 
   // Actions
   startSession: (sessionId: string, userEmail: string, missionId?: string) => void
@@ -151,6 +162,7 @@ interface SessionStore {
   updateSettings: (settings: Partial<SessionSettings>) => void
   resetSettings: () => void
 
+<<<<<<< HEAD
   // Real-time orchestration actions (Story 5.3)
   initializeOrchestration: (currentPhase?: 'content' | 'cards' | 'assessment') => void
   recordSessionEvent: (event: Omit<SessionEvent, 'timestamp'>) => void
@@ -163,6 +175,16 @@ interface SessionStore {
   handleSessionRecommendation: (accepted: boolean) => void
   updatePerformanceMetrics: (metrics: Partial<OrchestrationState['performanceMetrics']>) => void
   cleanupOrchestration: () => void
+=======
+  // Clinical scenario tracking (Story 4.2 Task 7)
+  incrementObjectivesCompleted: () => void
+  resetScenarioCounter: () => void
+
+  // Adaptive assessment tracking (Story 4.5 Task 12.7)
+  setAdaptiveSessionId: (adaptiveSessionId: string | null) => void
+  setAdaptiveMetrics: (score: number, questionsAsked: number, efficiency: number) => void
+  clearAdaptiveMetrics: () => void
+>>>>>>> origin/main
 
   // Computed values
   getElapsedTime: () => number
@@ -251,8 +273,19 @@ export const useSessionStore = create<SessionStore>()(
       // Session settings (Story 2.5 Task 10) - use defaults
       settings: DEFAULT_SETTINGS,
 
+<<<<<<< HEAD
       // Real-time orchestration state (Story 5.3)
       orchestration: DEFAULT_ORCHESTRATION_STATE,
+=======
+      // Clinical scenario tracking (Story 4.2 Task 7)
+      objectivesCompletedSinceScenario: 0,
+
+      // Adaptive assessment tracking (Story 4.5 Task 12.7)
+      adaptiveSessionId: null,
+      adaptiveScore: null,
+      adaptiveQuestionsAsked: 0,
+      adaptiveEfficiency: null,
+>>>>>>> origin/main
 
       startSession: (sessionId: string, userEmail: string, missionId?: string) => {
         set({
@@ -460,6 +493,7 @@ export const useSessionStore = create<SessionStore>()(
         set({ settings: DEFAULT_SETTINGS })
       },
 
+<<<<<<< HEAD
       // Real-time orchestration actions (Story 5.3)
       initializeOrchestration: (currentPhase = 'content') => {
         const { sessionId, missionId, settings } = get()
@@ -656,6 +690,37 @@ export const useSessionStore = create<SessionStore>()(
 
         set({
           orchestration: DEFAULT_ORCHESTRATION_STATE,
+=======
+      // Clinical scenario tracking (Story 4.2 Task 7)
+      incrementObjectivesCompleted: () => {
+        const { objectivesCompletedSinceScenario } = get()
+        set({ objectivesCompletedSinceScenario: objectivesCompletedSinceScenario + 1 })
+      },
+
+      resetScenarioCounter: () => {
+        set({ objectivesCompletedSinceScenario: 0 })
+      },
+
+      // Adaptive assessment tracking (Story 4.5 Task 12.7)
+      setAdaptiveSessionId: (adaptiveSessionId: string | null) => {
+        set({ adaptiveSessionId })
+      },
+
+      setAdaptiveMetrics: (score: number, questionsAsked: number, efficiency: number) => {
+        set({
+          adaptiveScore: score,
+          adaptiveQuestionsAsked: questionsAsked,
+          adaptiveEfficiency: efficiency,
+        })
+      },
+
+      clearAdaptiveMetrics: () => {
+        set({
+          adaptiveSessionId: null,
+          adaptiveScore: null,
+          adaptiveQuestionsAsked: 0,
+          adaptiveEfficiency: null,
+>>>>>>> origin/main
         })
       },
     }),

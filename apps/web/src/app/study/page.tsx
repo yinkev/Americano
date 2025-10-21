@@ -1,5 +1,6 @@
 'use client'
 
+<<<<<<< HEAD
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useSessionStore } from '@/store/use-session-store'
@@ -25,6 +26,33 @@ import { Badge } from '@/components/ui/badge'
 import { Play, Pause, Square, CheckCircle, Settings, ChevronLeft, Menu } from 'lucide-react'
 import { toast } from 'sonner'
 import { useStudyOrchestration } from '@/hooks/use-study-orchestration'
+=======
+import { useState, useEffect, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useSessionStore } from '@/store/use-session-store';
+import { useUserStore } from '@/store/use-user-store';
+import { SessionTimer } from '@/components/study/session-timer';
+import { ObjectiveContentPanel } from '@/components/study/objective-content-panel';
+import { ObjectiveTimer } from '@/components/study/objective-timer';
+import { MissionProgressHeader } from '@/components/study/mission-progress-header';
+import { FlashcardReview, FlashCard } from '@/components/study/flashcard-review';
+import { ObjectiveCompletionDialog } from '@/components/study/objective-completion-dialog';
+import { ObjectiveTransition } from '@/components/study/objective-transition';
+import { SessionResumeDialog } from '@/components/study/session-resume-dialog';
+import { SessionSettingsPanel } from '@/components/study/session-settings-panel';
+import { PomodoroTimer } from '@/components/study/pomodoro-timer';
+import { BreakReminderDialog } from '@/components/study/break-reminder-dialog';
+import { ComprehensionPromptDialog } from '@/components/study/ComprehensionPromptDialog';
+import { ClinicalCaseDialog } from '@/components/study/ClinicalCaseDialog';
+import { ClinicalFeedbackPanel } from '@/components/study/ClinicalFeedbackPanel';
+import { ChallengeModeDialog } from '@/components/study/ChallengeModeDialog';
+import { AdaptiveAssessmentInterface } from '@/components/study/AdaptiveAssessmentInterface';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Play, Pause, Square, CheckCircle, Settings, ChevronLeft, Menu } from 'lucide-react';
+import { toast } from 'sonner';
+import type { ValidationPromptData, ResponseEvaluationResponse } from '@/types/validation';
+>>>>>>> origin/main
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +65,7 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 
 interface LearningObjective {
+<<<<<<< HEAD
   id: string
   objective: string
   complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
@@ -44,6 +73,16 @@ interface LearningObjective {
   pageEnd?: number
   isHighYield: boolean
   boardExamTags: string[]
+=======
+  id: string;
+  objective: string;
+  complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
+  masteryLevel?: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
+  pageStart?: number;
+  pageEnd?: number;
+  isHighYield: boolean;
+  boardExamTags: string[];
+>>>>>>> origin/main
   lecture: {
     id: string
     title: string
@@ -69,7 +108,11 @@ interface Mission {
   estimatedMinutes: number
 }
 
+<<<<<<< HEAD
 type StudyPhase = 'content' | 'cards' | 'assessment'
+=======
+type StudyPhase = 'content' | 'comprehension' | 'cards' | 'assessment' | 'adaptive';
+>>>>>>> origin/main
 
 export default function StudyPage() {
   const router = useRouter()
@@ -99,6 +142,7 @@ export default function StudyPage() {
     settings,
     updateSettings,
     resetSettings,
+<<<<<<< HEAD
     // Real-time orchestration (Story 5.3)
     orchestration,
     initializeOrchestration,
@@ -114,6 +158,16 @@ export default function StudyPage() {
     cleanupOrchestration,
   } = useSessionStore()
   const { userEmail } = useUserStore()
+=======
+    objectivesCompletedSinceScenario: storeObjectivesCompletedSinceScenario,
+    incrementObjectivesCompleted,
+    resetScenarioCounter,
+    setAdaptiveSessionId: storeSetAdaptiveSessionId,
+    setAdaptiveMetrics: storeSetAdaptiveMetrics,
+    clearAdaptiveMetrics: storeClearAdaptiveMetrics,
+  } = useSessionStore();
+  const { userEmail } = useUserStore();
+>>>>>>> origin/main
 
   // Real-time orchestration (Story 5.3)
   const studyOrchestration = useStudyOrchestration({
@@ -152,6 +206,45 @@ export default function StudyPage() {
 
   // Cognitive load monitoring (Story 5.4)
   const [showCognitiveLoad, setShowCognitiveLoad] = useState(true)
+
+  // Use Zustand store for objectives completed since scenario (Story 4.2 Task 7)
+  const objectivesCompletedSinceScenario = storeObjectivesCompletedSinceScenario;
+
+  // Story 4.1 Task 6: Comprehension prompt state
+  const [showComprehensionPrompt, setShowComprehensionPrompt] = useState(false);
+  const [comprehensionPrompt, setComprehensionPrompt] = useState<ValidationPromptData | null>(null);
+  const [loadingComprehensionPrompt, setLoadingComprehensionPrompt] = useState(false);
+  const [comprehensionStartTime, setComprehensionStartTime] = useState<number | null>(null);
+  const [comprehensionScore, setComprehensionScore] = useState<number | null>(null);
+
+  // Story 4.4 Task 10: Confidence calibration workflow time tracking
+  // Note: ComprehensionPromptDialog manages full workflow internally (pre-confidence, prompt, post-confidence, evaluation, reflection)
+  const [calibrationWorkflowStartTime, setCalibrationWorkflowStartTime] = useState<number | null>(null);
+
+  // Story 4.2 Task 7: Clinical scenario state
+  const [showClinicalScenario, setShowClinicalScenario] = useState(false);
+  const [clinicalScenario, setClinicalScenario] = useState<any>(null);
+  const [clinicalEvaluation, setClinicalEvaluation] = useState<any>(null);
+  const [loadingClinicalScenario, setLoadingClinicalScenario] = useState(false);
+  const [clinicalStartTime, setClinicalStartTime] = useState<number>(0);
+  const [clinicalScenarioScore, setClinicalScenarioScore] = useState<number | null>(null);
+  const [clinicalScenarioTimeSpent, setClinicalScenarioTimeSpent] = useState<number | null>(null);
+
+  // Story 4.3 Task 10: Challenge Mode state
+  const [showChallengeMode, setShowChallengeMode] = useState(false);
+  const [challengeData, setChallengeData] = useState<any>(null);
+  const [loadingChallenge, setLoadingChallenge] = useState(false);
+  const [challengeScore, setChallengeScore] = useState<number | null>(null);
+  const [challengeType, setChallengeType] = useState<string | null>(null);
+
+  // Story 4.5 Task 12: Adaptive Assessment state
+  const [showAdaptiveAssessment, setShowAdaptiveAssessment] = useState(false);
+  const [adaptiveSessionId, setAdaptiveSessionId] = useState<string | null>(null);
+  const [adaptiveStartTime, setAdaptiveStartTime] = useState<number | null>(null);
+  const [adaptiveScore, setAdaptiveScore] = useState<number | null>(null);
+  const [adaptiveQuestionsAsked, setAdaptiveQuestionsAsked] = useState<number>(0);
+  const [adaptiveEfficiency, setAdaptiveEfficiency] = useState<number | null>(null);
+  const [comprehensionFailureCount, setComprehensionFailureCount] = useState<number>(0);
 
   // Check for paused session on mount (Story 2.5 Task 9)
   useEffect(() => {
@@ -407,10 +500,102 @@ export default function StudyPage() {
   }
 
   const handleContentPhaseComplete = async () => {
+<<<<<<< HEAD
     // Record phase completion with orchestration (Story 5.3)
     studyOrchestration.recordInteraction('content_phase_completed')
 
     // Move to cards phase
+=======
+    // Story 4.1 Task 6.2: Check if comprehension validation is needed
+    if (!currentObjective) return;
+
+    try {
+      // Check 7-day validation cache (Story 4.1 Task 6.3)
+      const checkResponse = await fetch(
+        `/api/validation/prompts/check?objectiveId=${currentObjective.objectiveId}&userId=${userEmail}`
+      );
+
+      if (checkResponse.ok) {
+        const checkData = await checkResponse.json();
+
+        if (checkData.data.needsValidation) {
+          // Generate and show comprehension prompt (Story 4.1 Task 6.4)
+          setLoadingComprehensionPrompt(true);
+
+          const promptResponse = await fetch('/api/validation/prompts/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              objectiveId: currentObjective.objectiveId,
+              sessionId,
+            }),
+          });
+
+          if (promptResponse.ok) {
+            const promptData = await promptResponse.json();
+            setComprehensionPrompt(promptData.data.prompt);
+            setComprehensionStartTime(Date.now()); // Story 4.1 Task 6.5: Start time tracking
+
+            // Story 4.4 Task 10.1: Start calibration workflow time tracking
+            setCalibrationWorkflowStartTime(Date.now());
+
+            // Story 4.4 Task 10.2: ComprehensionPromptDialog now handles full workflow internally
+            // (pre-confidence, prompt, post-confidence, evaluation, reflection)
+            setStudyPhase('comprehension');
+            setShowComprehensionPrompt(true);
+            setLoadingComprehensionPrompt(false);
+            return; // Exit early, ComprehensionPromptDialog manages workflow
+          } else {
+            console.error('Failed to generate comprehension prompt');
+            setLoadingComprehensionPrompt(false);
+          }
+        } else {
+          // Recent validation exists, skip comprehension prompt
+          toast.info('Comprehension validated recently - skipping prompt');
+        }
+      }
+    } catch (error) {
+      console.error('Error checking/generating comprehension prompt:', error);
+      setLoadingComprehensionPrompt(false);
+    }
+
+    // Story 4.2 Task 7: Check if clinical scenario should be triggered
+    if (currentObjective.objective) {
+      const masteryLevel = currentObjective.objective.masteryLevel || 'BASIC';
+
+      // Only trigger for INTERMEDIATE+ mastery level (AC#6)
+      if (masteryLevel === 'INTERMEDIATE' || masteryLevel === 'ADVANCED') {
+        // Check if we've completed 3-4 objectives since last scenario (Story 4.2 Task 7.3)
+        if (objectivesCompletedSinceScenario >= 3) {
+          try {
+            // Check last scenario attempt date (14-day cooldown) (Story 4.2 Task 7.4)
+            const checkRecentResponse = await fetch(
+              `/api/validation/scenarios/check-recent?objectiveId=${currentObjective.objectiveId}`
+            );
+
+            if (checkRecentResponse.ok) {
+              const checkRecentData = await checkRecentResponse.json();
+              const hasRecent = checkRecentData.data?.hasRecent || false;
+
+              // Trigger scenario if NO recent attempt (14-day cooldown) (Story 4.2 Task 7.5)
+              if (!hasRecent) {
+                await handleGenerateClinicalScenario(currentObjective.objectiveId);
+                return; // Pause session for scenario
+              } else {
+                toast.info('Clinical scenario attempted recently - skipping to avoid fatigue');
+              }
+            }
+          } catch (error) {
+            console.error('Error checking last scenario attempt:', error);
+          }
+        }
+      }
+    }
+
+    // Move to cards phase or assessment (existing logic)
+>>>>>>> origin/main
     if (cards.length > 0) {
       setStudyPhase('cards')
       studyOrchestration.recordPhaseChange('cards')
@@ -445,12 +630,361 @@ export default function StudyPage() {
     setShowCompletionDialog(true)
   }
 
+  // Story 4.1 Task 6: Comprehension prompt handlers
+  const handleComprehensionComplete = async (response: ResponseEvaluationResponse) => {
+    // Story 4.1 Task 6.5: Track time spent on comprehension prompt
+    if (comprehensionStartTime) {
+      const timeSpentMs = Date.now() - comprehensionStartTime;
+      console.log('Comprehension prompt time spent:', timeSpentMs, 'ms');
+      // TODO: Add to session duration via API
+    }
+
+    // Story 4.4 Task 10.6: Track total calibration workflow time
+    if (calibrationWorkflowStartTime) {
+      const workflowTimeMs = Date.now() - calibrationWorkflowStartTime;
+      console.log('Calibration workflow time:', workflowTimeMs, 'ms');
+      // TODO: Add calibration workflow metrics to session summary
+    }
+
+    // Store score for mission completion check (Story 4.1 Task 6.6)
+    setComprehensionScore(response.score);
+    setShowComprehensionPrompt(false);
+
+    // Story 4.5 Task 12.1: Detect if adaptive assessment should trigger
+    // Trigger: 3+ failed comprehension attempts (score < 60%)
+    if (response.score < 60) {
+      const newFailureCount = comprehensionFailureCount + 1;
+      setComprehensionFailureCount(newFailureCount);
+
+      if (newFailureCount >= 3) {
+        // Trigger adaptive assessment (AC#1: initial difficulty calibration)
+        toast.info('Adaptive assessment recommended to identify knowledge gaps');
+        await handleStartAdaptiveAssessment();
+        return; // Adaptive assessment takes over the flow
+      } else {
+        toast.warning(`Comprehension score below 60% (${newFailureCount}/3 attempts) - consider reviewing material`);
+      }
+    } else {
+      // Success - reset failure counter
+      setComprehensionFailureCount(0);
+    }
+
+    // Story 4.4 Task 10: ComprehensionPromptDialog now handles full workflow internally
+    // (pre-confidence, prompt, post-confidence, evaluation, reflection)
+    // When onComplete is called, all workflow steps are complete
+    // Move to next phase
+    if (cards.length > 0) {
+      setStudyPhase('cards');
+    } else {
+      setStudyPhase('assessment');
+      setShowCompletionDialog(true);
+    }
+  };
+
+  const handleComprehensionSkip = async () => {
+    // Story 4.1 Task 6.5: Track time spent on comprehension prompt (even if skipped)
+    if (comprehensionStartTime) {
+      const timeSpentMs = Date.now() - comprehensionStartTime;
+      console.log('Comprehension prompt skipped after:', timeSpentMs, 'ms');
+    }
+
+    // Record skip (score = null for skipped)
+    setComprehensionScore(null);
+    setShowComprehensionPrompt(false);
+    toast.info('Comprehension prompt skipped - marked for future review');
+
+    // Move to next phase
+    if (cards.length > 0) {
+      setStudyPhase('cards');
+    } else {
+      setStudyPhase('assessment');
+      setShowCompletionDialog(true);
+    }
+  };
+
+  // Story 4.2 Task 7: Clinical scenario generation handler
+  const handleGenerateClinicalScenario = async (objectiveId: string) => {
+    setLoadingClinicalScenario(true);
+    try {
+      const response = await fetch('/api/validation/scenarios/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ objectiveId }),
+      });
+
+      if (!response.ok) throw new Error('Failed to generate scenario');
+
+      const data = await response.json();
+      setClinicalScenario(data.data.scenario);
+      setClinicalStartTime(Date.now());
+      setShowClinicalScenario(true);
+    } catch (error) {
+      console.error('Failed to generate clinical scenario:', error);
+      toast.error('Failed to generate clinical scenario');
+    } finally {
+      setLoadingClinicalScenario(false);
+    }
+  };
+
+  // Story 4.2 Task 7: Clinical scenario submission handler
+  const handleClinicalScenarioSubmit = async (choices: Record<string, any>, reasoning: string) => {
+    if (!clinicalScenario) return;
+
+    const timeSpent = Math.floor((Date.now() - clinicalStartTime) / 1000);
+
+    try {
+      const response = await fetch('/api/validation/scenarios/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scenarioId: clinicalScenario.id,
+          sessionId: sessionId || undefined,
+          userChoices: choices,
+          userReasoning: reasoning,
+          timeSpent,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to submit scenario');
+
+      const data = await response.json();
+      const evaluation = data.data.evaluation;
+      setClinicalEvaluation(evaluation);
+
+      // Store score and time for session summary (Story 4.2 Task 7.6, 7.7)
+      setClinicalScenarioScore(evaluation.score || evaluation.overallScore || 0);
+      setClinicalScenarioTimeSpent(timeSpent);
+
+      // Reset counter after scenario completion (Story 4.2 Task 7.6)
+      resetScenarioCounter();
+      toast.success('Clinical scenario completed! 🏥');
+    } catch (error) {
+      console.error('Failed to evaluate scenario:', error);
+      toast.error('Failed to evaluate scenario');
+    }
+  };
+
+  // Story 4.3 Task 10: Check if challenge mode should be triggered
+  // Timing: After 2-3 objectives completed (optimal for memory encoding) (AC#8)
+  // Frequency: Max 1 challenge per session (avoid fatigue)
+  const checkForChallengeMode = async () => {
+    // Check if challenge already shown this session
+    if (challengeData || showChallengeMode) {
+      return false; // Already shown, skip
+    }
+
+    // Check if 2-3 objectives have been completed
+    const objectivesCompleted = storeMissionProgress?.completed || 0;
+    if (objectivesCompleted < 2 || objectivesCompleted > 3) {
+      return false; // Not optimal timing
+    }
+
+    // Fetch next challenge from API
+    try {
+      setLoadingChallenge(true);
+      const response = await fetch(`/api/validation/challenges/next?userId=${userEmail}`);
+
+      if (!response.ok) {
+        console.error('Failed to fetch challenge');
+        return false;
+      }
+
+      const result = await response.json();
+
+      if (result.data && result.data.challenge) {
+        setChallengeData({
+          challenge: result.data.challenge,
+          vulnerabilityType: result.data.vulnerabilityType,
+          retryInfo: result.data.retryInfo,
+        });
+        setChallengeType(result.data.vulnerabilityType);
+        setShowChallengeMode(true);
+        return true; // Challenge shown
+      }
+
+      return false; // No challenge available
+    } catch (error) {
+      console.error('Error checking for challenge mode:', error);
+      return false;
+    } finally {
+      setLoadingChallenge(false);
+    }
+  };
+
+  // Story 4.3 Task 10: Handle challenge mode completion
+  const handleChallengeComplete = async (response: {
+    userAnswer: string;
+    confidenceLevel: number;
+    emotionTag?: string;
+    personalNotes?: string;
+    isCorrect: boolean;
+  }) => {
+    // Store score for session summary (Task 10.6)
+    // In full implementation, this would call /api/validation/challenges/submit
+    // For now, we'll track basic completion
+    const score = response.isCorrect ? 85 : 45; // Simulated score
+    setChallengeScore(score);
+
+    // Growth mindset messaging (AC#8)
+    if (response.isCorrect && challengeType === 'RETRY') {
+      toast.success('🎉 You mastered a concept you previously struggled with! Growth mindset in action!');
+    } else if (response.isCorrect) {
+      toast.success('✨ Challenge conquered! You\'re getting stronger!');
+    } else {
+      toast.info('💪 This is where learning happens! You\'ll see this concept again to reinforce it.');
+    }
+
+    setShowChallengeMode(false);
+  };
+
+  // Story 4.3 Task 10: Handle challenge mode skip
+  const handleChallengeSkip = () => {
+    // Track as skipped (not penalty) (AC#2)
+    toast.info('Challenge skipped - no penalty! You can tackle it when you\'re ready.');
+    setChallengeType(null);
+    setShowChallengeMode(false);
+  };
+
+  // Story 4.5 Task 12: Adaptive Assessment Handlers
+
+  /**
+   * Start adaptive assessment session
+   *
+   * AC#1: Initial Difficulty Calibration
+   * - Calculates initial difficulty from last 10 assessments
+   * - Considers confidence calibration accuracy
+   * - Starts at baseline ± 10 points
+   *
+   * Task 12.2: Initialize AdaptiveSession with initial difficulty
+   */
+  const handleStartAdaptiveAssessment = async () => {
+    if (!currentObjective || !sessionId) return;
+
+    try {
+      setAdaptiveStartTime(Date.now());
+      setAdaptiveQuestionsAsked(0);
+
+      // Get first question (API calculates initial difficulty automatically)
+      const response = await fetch('/api/adaptive/next-question', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          objectiveId: currentObjective.objectiveId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to start adaptive assessment');
+      }
+
+      const data = await response.json();
+
+      // Store adaptive session ID (Task 12.2 + 12.7)
+      const adaptiveId = data.data.adaptiveSessionId;
+      setAdaptiveSessionId(adaptiveId); // Local state
+      storeSetAdaptiveSessionId(adaptiveId); // Zustand store for persistence
+
+      // Transition to adaptive phase (Task 12.3)
+      setStudyPhase('adaptive');
+      setShowAdaptiveAssessment(true);
+
+      toast.success('🎯 Adaptive assessment started - questions will adjust to your level');
+    } catch (error) {
+      console.error('Failed to start adaptive assessment:', error);
+      toast.error('Failed to start adaptive assessment');
+    }
+  };
+
+  /**
+   * Handle adaptive assessment completion
+   *
+   * AC#4: Mastery Verification Protocol
+   * - Checks if mastery criteria met (3 consecutive > 80%, multiple types, etc.)
+   *
+   * AC#7: Assessment Efficiency Optimization
+   * - Records questions asked (target: 3-5 vs baseline 15+)
+   * - Calculates time saved
+   *
+   * Task 12.5: Include efficiency metrics in session summary
+   * Task 12.6: Track time separately (adaptive time vs content time)
+   */
+  const handleAdaptiveAssessmentComplete = async (result: {
+    score: number;
+    responseId: string;
+    difficultyAdjustment?: number;
+    questionsAsked?: number;
+    efficiencyScore?: number;
+    masteryStatus?: 'VERIFIED' | 'IN_PROGRESS' | 'NOT_STARTED';
+  }) => {
+    // Task 12.6: Calculate time spent on adaptive assessment
+    const adaptiveTimeMs = adaptiveStartTime ? Date.now() - adaptiveStartTime : 0;
+
+    // Store results (Task 12.5 + 12.7)
+    const score = result.score;
+    const questionsAsked = result.questionsAsked || 0;
+    const efficiency = result.efficiencyScore || null;
+
+    setAdaptiveScore(score); // Local state
+    setAdaptiveQuestionsAsked(questionsAsked);
+    setAdaptiveEfficiency(efficiency);
+
+    // Store in Zustand for persistence (Task 12.7)
+    storeSetAdaptiveMetrics(score, questionsAsked, efficiency || 0);
+
+    setShowAdaptiveAssessment(false);
+
+    // Log efficiency metrics (Task 12.5)
+    if (result.efficiencyScore) {
+      console.log('Adaptive Assessment Efficiency:', {
+        questionsAsked: result.questionsAsked,
+        efficiencyScore: result.efficiencyScore,
+        timeSpentMs: adaptiveTimeMs,
+      });
+
+      const savedQuestions = 15 - (result.questionsAsked || 0); // Baseline 15 questions
+      toast.success(`✨ Assessment complete! Saved ${savedQuestions} questions (${result.efficiencyScore}% efficiency)`);
+    }
+
+    // Check mastery status (AC#4)
+    if (result.masteryStatus === 'VERIFIED') {
+      toast.success('🎓 Mastery verified! You\'ve demonstrated consistent high performance across multiple dimensions.');
+    } else if (result.masteryStatus === 'IN_PROGRESS') {
+      toast.info('📈 Making progress toward mastery - keep practicing!');
+    }
+
+    // Move to next phase (cards or completion)
+    if (cards.length > 0) {
+      setStudyPhase('cards');
+    } else {
+      setStudyPhase('assessment');
+      setShowCompletionDialog(true);
+    }
+  };
+
   const handleObjectiveComplete = async (data: {
     selfAssessment: number
     confidenceRating: number
     notes?: string
   }) => {
     if (!sessionId || !currentObjective) return
+
+    // Story 4.1 Task 6.6: Check comprehension score requirement
+    if (comprehensionScore !== null && comprehensionScore < 60) {
+      toast.error('Comprehension score below 60% - please retry the explanation or review the material');
+      setShowCompletionDialog(false);
+      // Reset to comprehension phase for retry
+      setStudyPhase('comprehension');
+      setShowComprehensionPrompt(true);
+      return;
+    }
+
+    // Story 4.2 Task 7.8: Check clinical scenario score requirement (threshold: 60%)
+    if (clinicalScenarioScore !== null && clinicalScenarioScore < 60) {
+      toast.error('Clinical scenario score below 60% - objective not completed');
+      setShowCompletionDialog(false);
+      return;
+    }
 
     try {
       const timeSpentMs = getObjectiveElapsed()
@@ -465,6 +999,14 @@ export default function StudyPage() {
           body: JSON.stringify({
             ...data,
             timeSpentMs,
+            comprehensionScore, // Story 4.1 Task 6.7: Include comprehension score
+            clinicalScenarioScore, // Story 4.2 Task 7.7: Include clinical scenario score
+            clinicalScenarioTime: clinicalScenarioTimeSpent, // Story 4.2 Task 7.6: Include clinical scenario time
+            // Story 4.5 Task 12.5: Include adaptive assessment metrics
+            adaptiveScore, // Final adaptive score
+            adaptiveQuestionsAsked, // Questions asked (efficiency metric)
+            adaptiveEfficiency, // Efficiency score (% vs baseline)
+            adaptiveTimeSpent: adaptiveStartTime ? Date.now() - adaptiveStartTime : null, // Task 12.6: Separate time tracking
           }),
         },
       )
@@ -480,10 +1022,22 @@ export default function StudyPage() {
       // Record objective completion with orchestration (Story 5.3)
       studyOrchestration.recordInteraction('objective_completed')
 
+      // Story 4.2 Task 7: Increment objectives completed since scenario (Story 4.2 Task 7.7)
+      incrementObjectivesCompleted();
+
       // Check if there's a next objective
       if (result.data.nextObjective) {
         const nextObjIndex = currentObjectiveIndex + 1
         setObjectivesCompletedCount((prev) => prev + 1)
+
+        // Story 4.3 Task 10: Check if challenge mode should be triggered (AC#8)
+        // Timing: After 2-3 objectives (optimal for memory encoding)
+        const shouldShowChallenge = await checkForChallengeMode();
+
+        if (shouldShowChallenge) {
+          // Challenge mode shown, pause session flow
+          return; // Challenge dialog will handle continuation
+        }
 
         // Check if break is needed (Story 2.5 Task 10 - Pomodoro mode)
         if (settings.enableBreaks || settings.pomodoroMode) {
@@ -1064,6 +1618,7 @@ export default function StudyPage() {
                     <Button
                       size="lg"
                       onClick={handleContentPhaseComplete}
+                      disabled={loadingComprehensionPrompt}
                       className="min-h-[44px] px-8"
                       style={{
                         background: 'oklch(0.65 0.2 140)',
@@ -1071,10 +1626,30 @@ export default function StudyPage() {
                       }}
                     >
                       <CheckCircle className="mr-2 h-5 w-5" />
-                      Continue to Review Cards
+                      {loadingComprehensionPrompt ? 'Loading...' : 'Continue to Review Cards'}
                     </Button>
                   </div>
                 </>
+              )}
+
+              {studyPhase === 'comprehension' && (
+                <div className="flex justify-center items-center py-12">
+                  <div className="text-center">
+                    <p className="text-lg text-muted-foreground">
+                      {loadingComprehensionPrompt ? 'Generating comprehension prompt...' : 'Opening comprehension prompt...'}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {loadingClinicalScenario && (
+                <div className="flex justify-center items-center py-12">
+                  <div className="text-center">
+                    <p className="text-lg text-muted-foreground">
+                      Generating clinical case scenario...
+                    </p>
+                  </div>
+                </div>
               )}
 
               {studyPhase === 'cards' && (
@@ -1083,6 +1658,34 @@ export default function StudyPage() {
                   onReview={handleCardReview}
                   onComplete={handleCardsComplete}
                 />
+              )}
+
+              {/* Story 4.5 Task 12.3: Adaptive Assessment Phase */}
+              {studyPhase === 'adaptive' && adaptiveSessionId && (
+                <div className="space-y-4">
+                  <div
+                    className="p-4 rounded-lg border"
+                    style={{
+                      backgroundColor: 'oklch(0.95 0.05 230)',
+                      borderColor: 'oklch(0.85 0.08 230)',
+                    }}
+                  >
+                    <h3 className="font-semibold text-base mb-2" style={{ color: 'oklch(0.3 0.15 230)' }}>
+                      🎯 Adaptive Assessment Active
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Questions will adapt to your performance in real-time. Target: 3-5 questions for accurate assessment
+                      (vs 15+ traditional questions). Time spent here is tracked separately from content review.
+                    </p>
+                  </div>
+
+                  {/* Task 12.4: Render AdaptiveAssessmentInterface component */}
+                  <AdaptiveAssessmentInterface
+                    sessionId={sessionId}
+                    objectiveId={currentObjective.objectiveId}
+                    onComplete={handleAdaptiveAssessmentComplete}
+                  />
+                </div>
               )}
             </>
           ) : null}
@@ -1128,6 +1731,7 @@ export default function StudyPage() {
           onSkipBreak={handleSkipBreak}
         />
 
+<<<<<<< HEAD
         {/* Real-time Orchestration Dialogs (Story 5.3) */}
         <IntelligentBreakNotification
           open={showIntelligentBreak}
@@ -1187,6 +1791,80 @@ export default function StudyPage() {
             })) || []
           }
         />
+=======
+        {/* Comprehension Prompt Dialog (Story 4.1 Task 6) */}
+        {comprehensionPrompt && currentObjective && (
+          <ComprehensionPromptDialog
+            open={showComprehensionPrompt}
+            onOpenChange={setShowComprehensionPrompt}
+            prompt={comprehensionPrompt}
+            objectiveId={currentObjective.objectiveId}
+            sessionId={sessionId || undefined}
+            onComplete={handleComprehensionComplete}
+            onSkip={handleComprehensionSkip}
+          />
+        )}
+
+        {/* Clinical Scenario Dialog (Story 4.2 Task 7) */}
+        {clinicalScenario && (
+          <>
+            <ClinicalCaseDialog
+              scenario={clinicalScenario}
+              open={showClinicalScenario && !clinicalEvaluation}
+              onClose={() => setShowClinicalScenario(false)}
+              onSubmit={handleClinicalScenarioSubmit}
+            />
+
+            {clinicalEvaluation && (
+              <ClinicalFeedbackPanel
+                evaluation={clinicalEvaluation}
+                scenario={clinicalScenario}
+                onReview={() => {
+                  setClinicalEvaluation(null);
+                  setShowClinicalScenario(true);
+                }}
+                onNext={() => {
+                  setClinicalEvaluation(null);
+                  setShowClinicalScenario(false);
+                  setClinicalScenario(null);
+                  // Continue to cards or assessment phase
+                  if (cards.length > 0) {
+                    setStudyPhase('cards');
+                  } else {
+                    setStudyPhase('assessment');
+                    setShowCompletionDialog(true);
+                  }
+                }}
+              />
+            )}
+          </>
+        )}
+
+        {/* Challenge Mode Dialog (Story 4.3 Task 10) */}
+        {challengeData && (
+          <ChallengeModeDialog
+            open={showChallengeMode}
+            onOpenChange={setShowChallengeMode}
+            challenge={challengeData.challenge}
+            metadata={{
+              vulnerabilityType: challengeData.vulnerabilityType,
+              attemptNumber: challengeData.retryInfo?.attemptNumber,
+              previousScore: challengeData.retryInfo?.previousScore,
+            }}
+            onComplete={handleChallengeComplete}
+            onSkip={handleChallengeSkip}
+          />
+        )}
+
+        {/* Story 4.4 Task 10: Confidence Calibration Workflow
+             Note: ComprehensionPromptDialog manages full workflow internally:
+             - PreAssessmentConfidenceDialog (before prompt shown)
+             - PostAssessmentConfidenceDialog (after prompt, before submission)
+             - Evaluation results with calibration feedback
+             - ReflectionPromptDialog (after evaluation)
+             When onComplete is called, all workflow steps are complete.
+        */}
+>>>>>>> origin/main
       </div>
     </div>
   )

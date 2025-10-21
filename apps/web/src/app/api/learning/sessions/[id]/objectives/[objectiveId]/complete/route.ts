@@ -11,7 +11,14 @@ const completeObjectiveSchema = z.object({
   confidenceRating: z.number().min(1).max(5),
   notes: z.string().optional(),
   timeSpentMs: z.number().min(0),
+<<<<<<< HEAD
 })
+=======
+  comprehensionScore: z.number().min(0).max(100).optional(), // Story 4.1 Task 6.7
+  clinicalScenarioScore: z.number().min(0).max(100).optional(), // Story 4.2 Task 7.7
+  clinicalScenarioTime: z.number().min(0).optional(), // Story 4.2 Task 7.6 (seconds)
+});
+>>>>>>> origin/main
 
 // POST /api/learning/sessions/:id/objectives/:objectiveId/complete (Story 2.5 Task 6.2)
 export async function POST(
@@ -53,7 +60,7 @@ export async function POST(
     const missionObjectives = getSessionMissionObjectives(session.missionObjectives)
     const objectiveCompletions = getObjectiveCompletions(session.objectiveCompletions)
 
-    // Add completion record
+    // Add completion record (Story 2.5 + Story 4.1 Task 6.7 + Story 4.2 Task 7.7)
     objectiveCompletions.push({
       objectiveId: resolvedParams.objectiveId,
       completedAt: new Date().toISOString(),
@@ -61,7 +68,14 @@ export async function POST(
       selfAssessment: validatedData.selfAssessment,
       confidenceRating: validatedData.confidenceRating,
       notes: validatedData.notes,
+<<<<<<< HEAD
     })
+=======
+      comprehensionScore: validatedData.comprehensionScore, // Story 4.1 Task 6.7
+      clinicalScenarioScore: validatedData.clinicalScenarioScore, // Story 4.2 Task 7.7
+      clinicalScenarioTime: validatedData.clinicalScenarioTime, // Story 4.2 Task 7.6
+    });
+>>>>>>> origin/main
 
     // Increment objective index
     const newIndex = session.currentObjectiveIndex + 1
