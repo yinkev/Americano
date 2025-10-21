@@ -1,6 +1,9 @@
 'use client'
 
 import { Clock, Circle } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 const upcomingCards = [
   {
@@ -37,79 +40,72 @@ const priorityColors: Record<string, string> = {
 
 export function UpcomingReviews() {
   return (
-    <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
-      {/* Card Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-heading font-semibold text-[oklch(0.145_0_0)]">
-          Upcoming Reviews
-        </h2>
-        <div className="flex items-center gap-1.5 text-sm text-[oklch(0.556_0_0)]">
-          <Clock className="size-4" />
-          <span>Today</span>
+    <Card interactive="static" className="bg-white/80 backdrop-blur-md border-white/30">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl font-heading font-semibold">Upcoming Reviews</CardTitle>
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Clock className="size-4" />
+            <span>Today</span>
+          </div>
         </div>
-      </div>
+      </CardHeader>
 
-      {/* Reviews List */}
-      <div className="space-y-3">
+      <CardContent className="space-y-3">
+        {/* Reviews List */}
         {upcomingCards.map((card) => (
-          <button
+          <Button
             key={card.id}
-            className="w-full text-left rounded-xl bg-white/60 backdrop-blur-sm border border-white/40 p-4
-                       hover:bg-white/80 hover:scale-[1.01] transition-all duration-200
-                       focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[oklch(0.7_0.15_230)]
-                       min-h-[44px]"
-            type="button"
+            variant="outline"
+            className="w-full h-auto text-left p-4 justify-start hover:scale-[1.01]"
+            asChild
           >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  {/* Priority Indicator */}
-                  <Circle
-                    className="size-2 flex-shrink-0"
+            <button type="button">
+              <div className="flex items-start justify-between gap-3 w-full">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    {/* Priority Indicator */}
+                    <Circle
+                      className="size-2 flex-shrink-0"
+                      style={{
+                        fill: priorityColors[card.priority],
+                        color: priorityColors[card.priority],
+                      }}
+                      aria-label={`${card.priority} priority`}
+                    />
+                    <h3 className="text-sm font-medium text-foreground leading-tight truncate">
+                      {card.title}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {card.course} • {card.count} cards
+                  </p>
+                </div>
+
+                {/* Due Time */}
+                <div className="flex-shrink-0 text-right">
+                  <span
+                    className="text-xs font-medium px-2 py-1 rounded-md"
                     style={{
-                      fill: priorityColors[card.priority],
+                      backgroundColor: `color-mix(in oklch, ${priorityColors[card.priority]} 10%, transparent)`,
                       color: priorityColors[card.priority],
                     }}
-                    aria-label={`${card.priority} priority`}
-                  />
-                  <h3 className="text-sm font-medium text-[oklch(0.145_0_0)] leading-tight truncate">
-                    {card.title}
-                  </h3>
+                  >
+                    {card.dueIn}
+                  </span>
                 </div>
-                <p className="text-xs text-[oklch(0.556_0_0)]">
-                  {card.course} • {card.count} cards
-                </p>
               </div>
-
-              {/* Due Time */}
-              <div className="flex-shrink-0 text-right">
-                <span
-                  className="text-xs font-medium px-2 py-1 rounded-md"
-                  style={{
-                    backgroundColor: `color-mix(in oklch, ${priorityColors[card.priority]} 10%, transparent)`,
-                    color: priorityColors[card.priority],
-                  }}
-                >
-                  {card.dueIn}
-                </span>
-              </div>
-            </div>
-          </button>
+            </button>
+          </Button>
         ))}
-      </div>
 
-      {/* View All Link */}
-      <div className="mt-4 pt-4 border-t border-[oklch(0.922_0_0)]">
-        <a
-          href="/study"
-          className="block text-center text-sm font-medium text-[oklch(0.7_0.15_230)]
-                     hover:text-[oklch(0.65_0.15_230)] transition-colors duration-200
-                     focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[oklch(0.7_0.15_230)]
-                     rounded px-2 py-1"
-        >
-          View all reviews →
-        </a>
-      </div>
-    </div>
+        {/* View All Link */}
+        <div className="pt-4 border-t border-border">
+          <Button asChild variant="link" className="w-full">
+            <Link href="/study">View all reviews →</Link>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

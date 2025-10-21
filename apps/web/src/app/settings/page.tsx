@@ -1,42 +1,45 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MissionPreferences } from '@/components/settings/mission-preferences';
-import { MissionAdaptation } from '@/components/settings/mission-adaptation';
-import { PerformancePrivacySettings } from '@/components/settings/performance-privacy-settings';
+import * as React from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { MissionPreferences } from '@/components/settings/mission-preferences'
+import { MissionAdaptation } from '@/components/settings/mission-adaptation'
+import { PerformancePrivacySettings } from '@/components/settings/performance-privacy-settings'
+import { BehavioralPrivacySettings } from '@/components/settings/behavioral-privacy-settings'
+import { CalendarIntegrationSettings } from '@/components/settings/calendar-integration-settings'
+import { PersonalizationSettings } from '@/components/settings/PersonalizationSettings'
 
 export default function SettingsPage() {
-  const router = useRouter();
-  const [deleting, setDeleting] = React.useState(false);
-  const [showConfirmation, setShowConfirmation] = React.useState(false);
+  const router = useRouter()
+  const [deleting, setDeleting] = React.useState(false)
+  const [showConfirmation, setShowConfirmation] = React.useState(false)
 
   const handleDeleteDemoUser = async () => {
-    setDeleting(true);
+    setDeleting(true)
 
     try {
       const response = await fetch('/api/demo/delete', {
         method: 'DELETE',
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to delete demo user');
+        throw new Error(data.error?.message || 'Failed to delete demo user')
       }
 
       // Success - redirect to home
-      alert('Dumpling demo user deleted successfully! All demo data has been removed.');
-      router.push('/');
-      router.refresh();
+      alert('Dumpling demo user deleted successfully! All demo data has been removed.')
+      router.push('/')
+      router.refresh()
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to delete demo user');
-      setDeleting(false);
-      setShowConfirmation(false);
+      alert(err instanceof Error ? err.message : 'Failed to delete demo user')
+      setDeleting(false)
+      setShowConfirmation(false)
     }
-  };
+  }
 
   return (
     <div className="container mx-auto py-8 max-w-4xl">
@@ -55,8 +58,9 @@ export default function SettingsPage() {
             <div className="space-y-4">
               <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
                 <p className="text-sm text-amber-800">
-                  <strong>Dumpling 🥟</strong> is a demo user with 6 PNWU-COM OMS 1 courses (Gross Anatomy, SciFOM, Pharmacology, OPP, Clinical Skills, Community Doctoring).
-                  Delete Dumpling to remove all demo data and start fresh with your own content.
+                  <strong>Dumpling 🥟</strong> is a demo user with 6 PNWU-COM OMS 1 courses (Gross
+                  Anatomy, SciFOM, Pharmacology, OPP, Clinical Skills, Community Doctoring). Delete
+                  Dumpling to remove all demo data and start fresh with your own content.
                 </p>
               </div>
 
@@ -71,9 +75,7 @@ export default function SettingsPage() {
               ) : (
                 <div className="space-y-4">
                   <div className="p-4 bg-rose-50 border border-rose-200 rounded-lg">
-                    <p className="text-sm text-rose-800 font-semibold mb-2">
-                      ⚠️ Are you sure?
-                    </p>
+                    <p className="text-sm text-rose-800 font-semibold mb-2">⚠️ Are you sure?</p>
                     <p className="text-sm text-rose-700">
                       This will permanently delete Dumpling and ALL associated data:
                     </p>
@@ -121,6 +123,15 @@ export default function SettingsPage() {
         {/* Performance Privacy Settings */}
         <PerformancePrivacySettings />
 
+        {/* Behavioral Privacy Settings - Story 5.1 Task 11 */}
+        <BehavioralPrivacySettings />
+
+        {/* Calendar Integration Settings - Story 5.3 Task 6.4 */}
+        <CalendarIntegrationSettings />
+
+        {/* Personalization Settings - Story 5.5 Task 12 */}
+        <PersonalizationSettings />
+
         {/* Future Settings Sections */}
         <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
           <CardHeader>
@@ -130,10 +141,12 @@ export default function SettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-500">Profile settings will be available after authentication is implemented.</p>
+            <p className="text-sm text-gray-500">
+              Profile settings will be available after authentication is implemented.
+            </p>
           </CardContent>
         </Card>
       </div>
     </div>
-  );
+  )
 }

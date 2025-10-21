@@ -5,9 +5,9 @@
  * Post-mission feedback collection dialog
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -15,41 +15,36 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Star, ThumbsUp, Clock } from 'lucide-react';
-import { toast } from 'sonner';
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Star, ThumbsUp, Clock } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface Props {
-  missionId: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit?: () => void;
+  missionId: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSubmit?: () => void
 }
 
-type PaceRating = 'TOO_SLOW' | 'JUST_RIGHT' | 'TOO_FAST';
+type PaceRating = 'TOO_SLOW' | 'JUST_RIGHT' | 'TOO_FAST'
 
-export function MissionFeedbackDialog({
-  missionId,
-  open,
-  onOpenChange,
-  onSubmit,
-}: Props) {
-  const [helpfulnessRating, setHelpfulnessRating] = useState<number>(0);
-  const [relevanceScore, setRelevanceScore] = useState<number>(0);
-  const [paceRating, setPaceRating] = useState<PaceRating | null>(null);
-  const [improvementSuggestions, setImprovementSuggestions] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+export function MissionFeedbackDialog({ missionId, open, onOpenChange, onSubmit }: Props) {
+  const [helpfulnessRating, setHelpfulnessRating] = useState<number>(0)
+  const [relevanceScore, setRelevanceScore] = useState<number>(0)
+  const [paceRating, setPaceRating] = useState<PaceRating | null>(null)
+  const [improvementSuggestions, setImprovementSuggestions] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = async () => {
     if (helpfulnessRating === 0 || relevanceScore === 0 || !paceRating) {
-      toast.error('Please complete all required ratings');
-      return;
+      toast.error('Please complete all required ratings')
+      return
     }
 
     try {
-      setSubmitting(true);
+      setSubmitting(true)
 
       const response = await fetch(`/api/missions/${missionId}/feedback`, {
         method: 'POST',
@@ -63,39 +58,39 @@ export function MissionFeedbackDialog({
           paceRating,
           improvementSuggestions: improvementSuggestions || undefined,
         }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to submit feedback');
+        throw new Error('Failed to submit feedback')
       }
 
-      const result = await response.json();
+      const result = await response.json()
 
       toast.success('Feedback submitted successfully!', {
         description: 'Your input helps us improve mission quality.',
-      });
+      })
 
       // Reset form
-      setHelpfulnessRating(0);
-      setRelevanceScore(0);
-      setPaceRating(null);
-      setImprovementSuggestions('');
+      setHelpfulnessRating(0)
+      setRelevanceScore(0)
+      setPaceRating(null)
+      setImprovementSuggestions('')
 
-      onOpenChange(false);
-      onSubmit?.();
+      onOpenChange(false)
+      onSubmit?.()
     } catch (error) {
-      console.error('Error submitting feedback:', error);
+      console.error('Error submitting feedback:', error)
       toast.error('Failed to submit feedback', {
         description: 'Please try again later.',
-      });
+      })
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   const handleSkip = () => {
-    onOpenChange(false);
-  };
+    onOpenChange(false)
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -105,8 +100,7 @@ export function MissionFeedbackDialog({
             How was this mission?
           </DialogTitle>
           <DialogDescription>
-            Your feedback helps us create better missions. This will take less
-            than 30 seconds.
+            Your feedback helps us create better missions. This will take less than 30 seconds.
           </DialogDescription>
         </DialogHeader>
 
@@ -137,9 +131,7 @@ export function MissionFeedbackDialog({
                         : 'text-[oklch(0.556_0_0)]'
                     }`}
                   />
-                  <span className="text-xs text-[oklch(0.556_0_0)] mt-1 block">
-                    {rating}
-                  </span>
+                  <span className="text-xs text-[oklch(0.556_0_0)] mt-1 block">{rating}</span>
                 </button>
               ))}
             </div>
@@ -174,9 +166,7 @@ export function MissionFeedbackDialog({
                         : 'text-[oklch(0.556_0_0)]'
                     }`}
                   />
-                  <span className="text-xs text-[oklch(0.556_0_0)] mt-1 block">
-                    {rating}
-                  </span>
+                  <span className="text-xs text-[oklch(0.556_0_0)] mt-1 block">{rating}</span>
                 </button>
               ))}
             </div>
@@ -254,18 +244,14 @@ export function MissionFeedbackDialog({
           >
             Skip for now
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={submitting}
-            className="w-full sm:w-auto"
-          >
+          <Button onClick={handleSubmit} disabled={submitting} className="w-full sm:w-auto">
             {submitting ? 'Submitting...' : 'Submit Feedback'}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
 // Import Target icon (missing from imports)
-import { Target } from 'lucide-react';
+import { Target } from 'lucide-react'

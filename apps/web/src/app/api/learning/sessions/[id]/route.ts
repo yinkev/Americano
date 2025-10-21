@@ -1,12 +1,13 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { withErrorHandler, ApiError } from '@/lib/api-error';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { successResponse, errorResponse } from '@/lib/api-response'
+import { withErrorHandler, ApiError } from '@/lib/api-error'
+import { getMissionObjectives } from '@/types/mission-helpers'
 
 // GET /api/learning/sessions/:id - Get a specific session
 export const GET = withErrorHandler(
   async (request: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
-    const { id } = await params;
+    const { id } = await params
 
     const session = await prisma.studySession.findUnique({
       where: { id },
@@ -44,17 +45,17 @@ export const GET = withErrorHandler(
           },
         },
       },
-    });
+    })
 
     if (!session) {
-      throw new ApiError(404, 'SESSION_NOT_FOUND', 'Session not found');
+      throw new ApiError(404, 'SESSION_NOT_FOUND', 'Session not found')
     }
 
     // Parse mission objectives and fetch learning objective details
-    let enrichedMission = null;
+    let enrichedMission = null
     if (session.mission) {
-      const missionObjectives = session.mission.objectives as any[];
-      const objectiveIds = missionObjectives.map((obj: any) => obj.objectiveId);
+      const missionObjectives = getMissionObjectives(session.mission)
+      const objectiveIds = missionObjectives.map((obj) => obj.id)
 
       // Fetch learning objectives
       const learningObjectives = await prisma.learningObjective.findMany({
@@ -68,23 +69,21 @@ export const GET = withErrorHandler(
           objective: true,
           complexity: true,
         },
-      });
+      })
 
       // Create a map for quick lookup
-      const objectiveMap = new Map(
-        learningObjectives.map((obj) => [obj.id, obj])
-      );
+      const objectiveMap = new Map(learningObjectives.map((obj) => [obj.id, obj]))
 
       // Enrich mission objectives with learning objective details
-      const enrichedObjectives = missionObjectives.map((missionObj: any) => ({
+      const enrichedObjectives = missionObjectives.map((missionObj) => ({
         ...missionObj,
-        objective: objectiveMap.get(missionObj.objectiveId) || null,
-      }));
+        objective: objectiveMap.get(missionObj.id) || null,
+      }))
 
       enrichedMission = {
         ...session.mission,
         objectives: enrichedObjectives,
-      };
+      }
     }
 
     // Story 4.1 Task 6.7: Fetch comprehension validation responses for this session
@@ -199,6 +198,6 @@ export const GET = withErrorHandler(
       calibrationMetrics, // Story 4.4 Task 10.6
     };
 
-    return Response.json(successResponse({ session: responseData }));
-  }
-);
+    return Response.json(successResponse({ session: responseData }))
+  },
+)

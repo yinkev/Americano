@@ -1,0 +1,18 @@
+# Americano ML Package Requirements
+# Python 3.9+
+
+# Core ML Libraries
+scikit-learn>=1.3.0        # Machine learning algorithms
+numpy>=1.24.0              # Numerical computing
+pandas>=2.0.0              # Data manipulation
+
+# Optional: Enhanced Features
+# joblib>=1.3.0            # Model persistence (included with sklearn)
+# scipy>=1.11.0            # Scientific computing (included with sklearn)
+
+# Development Dependencies
+# pytest>=7.4.0            # Testing framework
+# pytest-asyncio>=0.21.0   # Async test support
+# black>=23.0.0            # Code formatting
+# mypy>=1.5.0              # Type checking
+# flake8>=6.1.0            # Code linting

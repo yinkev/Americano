@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { successResponse } from '@/lib/api-response'
 import { withErrorHandler, ApiError } from '@/lib/api-error'
+import { getMissionObjectives } from '@/types/mission-helpers'
 
 const querySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).optional().default(50),
@@ -43,11 +44,11 @@ async function handleGET(request: NextRequest) {
 
   // Expand objectives from JSON to include objective details
   const missionsWithObjectives = await Promise.all(
-    missions.map(async (mission: any) => {
-      const objectives = mission.objectives as any[]
+    missions.map(async (mission) => {
+      const objectives = getMissionObjectives(mission)
 
       // Fetch objective details
-      const objectiveIds = objectives.map((obj) => obj.objectiveId)
+      const objectiveIds = objectives.map((obj) => obj.id)
       const objectiveDetails = await prisma.learningObjective.findMany({
         where: {
           id: { in: objectiveIds },
@@ -61,14 +62,12 @@ async function handleGET(request: NextRequest) {
       })
 
       // Create a map for quick lookup
-      const objectiveMap = new Map(
-        objectiveDetails.map((obj: any) => [obj.id, obj])
-      )
+      const objectiveMap = new Map(objectiveDetails.map((obj) => [obj.id, obj]))
 
       // Merge objective details with mission objectives
       const enrichedObjectives = objectives.map((obj) => ({
         ...obj,
-        objective: objectiveMap.get(obj.objectiveId),
+        objective: objectiveMap.get(obj.id),
       }))
 
       return {
@@ -82,7 +81,7 @@ async function handleGET(request: NextRequest) {
         successScore: mission.successScore,
         difficultyRating: mission.difficultyRating,
       }
-    })
+    }),
   )
 
   // Get total count for pagination
@@ -92,15 +91,17 @@ async function handleGET(request: NextRequest) {
     },
   })
 
-  return Response.json(successResponse({
-    missions: missionsWithObjectives,
-    pagination: {
-      total: totalCount,
-      limit: params.limit,
-      offset: params.offset,
-      hasMore: params.offset + params.limit < totalCount,
-    },
-  }))
+  return Response.json(
+    successResponse({
+      missions: missionsWithObjectives,
+      pagination: {
+        total: totalCount,
+        limit: params.limit,
+        offset: params.offset,
+        hasMore: params.offset + params.limit < totalCount,
+      },
+    }),
+  )
 }
 
 export const GET = withErrorHandler(handleGET)

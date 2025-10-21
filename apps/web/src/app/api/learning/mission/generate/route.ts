@@ -6,10 +6,12 @@
 
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { Prisma } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
 import { MissionGenerator } from '@/lib/mission-generator'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { withErrorHandler } from '@/lib/api-error'
+import { getMissionObjectives } from '@/types/mission-helpers'
 
 const generateMissionSchema = z.object({
   date: z.string().datetime().optional(), // ISO 8601 date
@@ -25,29 +27,21 @@ async function handler(request: NextRequest) {
 
   if (!validation.success) {
     return Response.json(
-      errorResponse(
-        'VALIDATION_ERROR',
-        'Invalid request body',
-        validation.error.flatten()
-      ),
-      { status: 400 }
+      errorResponse('VALIDATION_ERROR', 'Invalid request body', validation.error.flatten()),
+      { status: 400 },
     )
   }
 
   const { date, targetMinutes, regenerate, prioritizeWeakAreas } = validation.data
 
   // Get user from header (MVP: hardcoded to kevy@americano.dev)
-  const userEmail =
-    request.headers.get('X-User-Email') || 'kevy@americano.dev'
+  const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev'
   const user = await prisma.user.findUnique({
     where: { email: userEmail },
   })
 
   if (!user) {
-    return Response.json(
-      errorResponse('USER_NOT_FOUND', 'User not found'),
-      { status: 404 }
-    )
+    return Response.json(errorResponse('USER_NOT_FOUND', 'User not found'), { status: 404 })
   }
 
   // Parse target date (default to today)
@@ -67,14 +61,14 @@ async function handler(request: NextRequest) {
 
   if (existingMission && !regenerate) {
     // Return existing mission
-    const objectives = existingMission.objectives as any[]
+    const objectives = getMissionObjectives(existingMission)
 
     return Response.json(
       successResponse({
         mission: existingMission,
         objectives,
         message: 'Mission already exists for this date',
-      })
+      }),
     )
   }
 
@@ -95,11 +89,7 @@ async function handler(request: NextRequest) {
       includeWeakAreas: true,
     })
   }
-  const generatedMission = await generator.generateDailyMission(
-    user.id,
-    targetDate,
-    constraints
-  )
+  const generatedMission = await generator.generateDailyMission(user.id, targetDate, constraints)
 
   // Create mission record
   const mission = await prisma.mission.create({
@@ -108,7 +98,7 @@ async function handler(request: NextRequest) {
       date: targetDate,
       status: 'PENDING',
       estimatedMinutes: generatedMission.estimatedMinutes,
-      objectives: generatedMission.objectives as any, // JSON
+      objectives: generatedMission.objectives as unknown as Prisma.InputJsonValue,
       reviewCardCount: generatedMission.reviewCardCount,
       newContentCount: generatedMission.newContentCount,
       completedObjectivesCount: 0,
@@ -120,7 +110,7 @@ async function handler(request: NextRequest) {
       mission,
       objectives: generatedMission.objectives,
       estimatedMinutes: generatedMission.estimatedMinutes,
-    })
+    }),
   )
 }
 

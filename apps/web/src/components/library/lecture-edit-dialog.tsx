@@ -1,16 +1,16 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog'
 import {
   Form,
   FormControl,
@@ -19,49 +19,52 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from '@/components/ui/form';
+} from '@/components/ui/form'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { TagInput } from './tag-input';
-import { Sparkles, Loader2 } from 'lucide-react';
+} from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
+import { TagInput } from './tag-input'
+import { Sparkles, Loader2 } from 'lucide-react'
 
 const formSchema = z.object({
-  title: z.string().min(1, 'Lecture title is required').max(200, 'Title must be 200 characters or less'),
+  title: z
+    .string()
+    .min(1, 'Lecture title is required')
+    .max(200, 'Title must be 200 characters or less'),
   courseId: z.string().min(1, 'Course is required'),
   weekNumber: z.string().optional(),
   topicTags: z.array(z.string()).max(10, 'Maximum 10 tags allowed'),
-});
+})
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof formSchema>
 
 interface Course {
-  id: string;
-  name: string;
-  code: string | null;
-  color: string | null;
+  id: string
+  name: string
+  code: string | null
+  color: string | null
 }
 
 interface Lecture {
-  id: string;
-  title: string;
-  course: Course;
-  weekNumber: number | null;
-  topicTags: string[];
+  id: string
+  title: string
+  course: Course
+  weekNumber: number | null
+  topicTags: string[]
 }
 
 interface LectureEditDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  lecture: Lecture;
-  onSuccess: () => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  lecture: Lecture
+  onSuccess: () => void
 }
 
 export function LectureEditDialog({
@@ -70,8 +73,8 @@ export function LectureEditDialog({
   lecture,
   onSuccess,
 }: LectureEditDialogProps) {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [generatingTags, setGeneratingTags] = useState(false);
+  const [courses, setCourses] = useState<Course[]>([])
+  const [generatingTags, setGeneratingTags] = useState(false)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -81,11 +84,11 @@ export function LectureEditDialog({
       weekNumber: lecture.weekNumber?.toString() || '',
       topicTags: lecture.topicTags,
     },
-  });
+  })
 
   useEffect(() => {
-    fetchCourses();
-  }, []);
+    fetchCourses()
+  }, [])
 
   useEffect(() => {
     if (open) {
@@ -94,46 +97,46 @@ export function LectureEditDialog({
         courseId: lecture.course.id,
         weekNumber: lecture.weekNumber?.toString() || '',
         topicTags: lecture.topicTags,
-      });
+      })
     }
-  }, [open, lecture, form]);
+  }, [open, lecture, form])
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch('/api/content/courses');
-      const result = await response.json();
+      const response = await fetch('/api/content/courses')
+      const result = await response.json()
       if (result.success) {
-        setCourses(result.data.courses);
+        setCourses(result.data.courses)
       }
     } catch (error) {
-      toast.error('Failed to load courses');
+      toast.error('Failed to load courses')
     }
-  };
+  }
 
   const handleAutoGenerateTags = async () => {
-    setGeneratingTags(true);
+    setGeneratingTags(true)
     try {
       const response = await fetch('/api/ai/generate-tags', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lectureId: lecture.id }),
-      });
+      })
 
-      const result = await response.json();
+      const result = await response.json()
 
       if (result.success) {
-        const newTags = result.data.tags;
-        form.setValue('topicTags', newTags);
-        toast.success(`Generated ${newTags.length} tags`);
+        const newTags = result.data.tags
+        form.setValue('topicTags', newTags)
+        toast.success(`Generated ${newTags.length} tags`)
       } else {
-        toast.error(result.error?.message || 'Failed to generate tags');
+        toast.error(result.error?.message || 'Failed to generate tags')
       }
     } catch (error) {
-      toast.error('Failed to generate tags');
+      toast.error('Failed to generate tags')
     } finally {
-      setGeneratingTags(false);
+      setGeneratingTags(false)
     }
-  };
+  }
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -146,29 +149,27 @@ export function LectureEditDialog({
           weekNumber: values.weekNumber ? parseInt(values.weekNumber, 10) : null,
           topicTags: values.topicTags,
         }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (data.success) {
-        toast.success('Lecture updated successfully');
-        onSuccess();
+        toast.success('Lecture updated successfully')
+        onSuccess()
       } else {
-        toast.error(data.error?.message || 'Failed to update lecture');
+        toast.error(data.error?.message || 'Failed to update lecture')
       }
     } catch (error) {
-      toast.error('Failed to update lecture');
+      toast.error('Failed to update lecture')
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>Edit Lecture</DialogTitle>
-          <DialogDescription>
-            Update lecture metadata and organization
-          </DialogDescription>
+          <DialogDescription>Update lecture metadata and organization</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -219,13 +220,7 @@ export function LectureEditDialog({
                 <FormItem>
                   <FormLabel>Week Number</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      min="1"
-                      max="52"
-                      placeholder="1"
-                      {...field}
-                    />
+                    <Input type="number" min="1" max="52" placeholder="1" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -261,11 +256,7 @@ export function LectureEditDialog({
                     </Button>
                   </div>
                   <FormControl>
-                    <TagInput
-                      value={field.value}
-                      onChange={field.onChange}
-                      maxTags={10}
-                    />
+                    <TagInput value={field.value} onChange={field.onChange} maxTags={10} />
                   </FormControl>
                   <FormDescription>
                     Add up to 10 topic tags, or use AI to generate them automatically
@@ -276,20 +267,14 @@ export function LectureEditDialog({
             />
 
             <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit">
-                Update
-              </Button>
+              <Button type="submit">Update</Button>
             </div>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

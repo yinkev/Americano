@@ -3,7 +3,14 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { ChevronDown, ChevronUp, Settings, Clock, Target } from 'lucide-react'
@@ -104,7 +111,9 @@ export function MissionPreview() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600">No objectives available for tomorrow yet. Check back later!</p>
+          <p className="text-sm text-gray-600">
+            No objectives available for tomorrow yet. Check back later!
+          </p>
         </CardContent>
       </Card>
     )
@@ -122,8 +131,7 @@ export function MissionPreview() {
         <CardHeader>
           <CardTitle className="text-lg flex items-center justify-between">
             <span className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary" />
-              🔮 Tomorrow's Mission Preview
+              <Target className="w-5 h-5 text-primary" />🔮 Tomorrow's Mission Preview
             </span>
             <Button
               variant="ghost"
@@ -140,7 +148,8 @@ export function MissionPreview() {
           {/* Summary */}
           <div className="flex items-center gap-3 text-sm">
             <span className="font-medium text-gray-900">
-              {preview.objectives.length} {preview.objectives.length === 1 ? 'objective' : 'objectives'}
+              {preview.objectives.length}{' '}
+              {preview.objectives.length === 1 ? 'objective' : 'objectives'}
             </span>
             <span className="text-gray-400">•</span>
             <span className="flex items-center gap-1.5 text-gray-600">
@@ -184,10 +193,15 @@ export function MissionPreview() {
                           {obj.objective.isHighYield && <span className="text-xs">⭐</span>}
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className={`text-xs py-0 ${complexityColors[obj.objective.complexity]}`}>
+                          <Badge
+                            variant="outline"
+                            className={`text-xs py-0 ${complexityColors[obj.objective.complexity]}`}
+                          >
                             {obj.objective.complexity}
                           </Badge>
-                          <span className="text-gray-500 text-xs">{obj.estimatedMinutes} minutes</span>
+                          <span className="text-gray-500 text-xs">
+                            {obj.estimatedMinutes} minutes
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -236,9 +250,7 @@ export function MissionPreview() {
         <DialogContent className="sm:max-w-md bg-white/95 backdrop-blur-xl">
           <DialogHeader>
             <DialogTitle>Adjust Tomorrow's Mission</DialogTitle>
-            <DialogDescription>
-              Customize your mission duration and preferences
-            </DialogDescription>
+            <DialogDescription>Customize your mission duration and preferences</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -266,9 +278,7 @@ export function MissionPreview() {
             <Button variant="outline" onClick={() => setIsCustomizing(false)}>
               Cancel
             </Button>
-            <Button onClick={handleCustomize}>
-              Apply Changes
-            </Button>
+            <Button onClick={handleCustomize}>Apply Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

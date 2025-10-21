@@ -1,14 +1,22 @@
-'use client';
+'use client'
 
-import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip } from 'recharts';
+import {
+  ResponsiveContainer,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  Tooltip,
+} from 'recharts'
 
 interface SelfAssessmentData {
-  objective: string;
-  score: number; // 1-5
+  objective: string
+  score: number // 1-5
 }
 
 interface SelfAssessmentRadarChartProps {
-  data: SelfAssessmentData[];
+  data: SelfAssessmentData[]
 }
 
 export function SelfAssessmentRadarChart({ data }: SelfAssessmentRadarChartProps) {
@@ -21,11 +29,7 @@ export function SelfAssessmentRadarChart({ data }: SelfAssessmentRadarChartProps
           tick={{ fill: 'oklch(0.5 0.1 250)', fontSize: 11 }}
           style={{ maxWidth: '100px' }}
         />
-        <PolarRadiusAxis
-          angle={90}
-          domain={[0, 5]}
-          tick={{ fill: 'oklch(0.5 0.1 250)' }}
-        />
+        <PolarRadiusAxis angle={90} domain={[0, 5]} tick={{ fill: 'oklch(0.5 0.1 250)' }} />
         <Radar
           name="Self-Assessment"
           dataKey="score"
@@ -46,5 +50,5 @@ export function SelfAssessmentRadarChart({ data }: SelfAssessmentRadarChartProps
         />
       </RadarChart>
     </ResponsiveContainer>
-  );
+  )
 }

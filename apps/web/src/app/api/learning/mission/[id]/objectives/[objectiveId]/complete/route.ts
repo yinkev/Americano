@@ -23,18 +23,22 @@ async function handler(request: NextRequest, { params }: RouteParams) {
   const body = await request.json()
   const validation = completeObjectiveSchema.safeParse(body)
   if (!validation.success) {
-    return Response.json(errorResponse('VALIDATION_ERROR', validation.error.message, 400), { status: 400 })
+    return Response.json(errorResponse('VALIDATION_ERROR', validation.error.message, 400), {
+      status: 400,
+    })
   }
 
   const { notes } = validation.data
 
   // Fetch mission
   const mission = await prisma.mission.findUnique({
-    where: { id: missionId }
+    where: { id: missionId },
   })
 
   if (!mission) {
-    return Response.json(errorResponse('MISSION_NOT_FOUND', 'Mission not found', 404), { status: 404 })
+    return Response.json(errorResponse('MISSION_NOT_FOUND', 'Mission not found', 404), {
+      status: 404,
+    })
   }
 
   // Parse objectives
@@ -47,9 +51,12 @@ async function handler(request: NextRequest, { params }: RouteParams) {
   }>
 
   // Find and update objective
-  const objectiveIndex = objectives.findIndex(obj => obj.objectiveId === objectiveId)
+  const objectiveIndex = objectives.findIndex((obj) => obj.objectiveId === objectiveId)
   if (objectiveIndex === -1) {
-    return Response.json(errorResponse('OBJECTIVE_NOT_FOUND', 'Objective not found in mission', 404), { status: 404 })
+    return Response.json(
+      errorResponse('OBJECTIVE_NOT_FOUND', 'Objective not found in mission', 404),
+      { status: 404 },
+    )
   }
 
   // Mark objective as completed
@@ -57,11 +64,11 @@ async function handler(request: NextRequest, { params }: RouteParams) {
     ...objectives[objectiveIndex],
     completed: true,
     completedAt: new Date().toISOString(),
-    notes: notes || objectives[objectiveIndex].notes
+    notes: notes || objectives[objectiveIndex].notes,
   }
 
   // Calculate completed count
-  const completedCount = objectives.filter(obj => obj.completed).length
+  const completedCount = objectives.filter((obj) => obj.completed).length
   const allCompleted = completedCount === objectives.length
 
   // Update mission
@@ -70,30 +77,38 @@ async function handler(request: NextRequest, { params }: RouteParams) {
     data: {
       objectives: JSON.stringify(objectives),
       completedObjectivesCount: completedCount,
-      status: allCompleted ? 'COMPLETED' : mission.status === 'PENDING' ? 'IN_PROGRESS' : mission.status
-    }
+      status: allCompleted
+        ? 'COMPLETED'
+        : mission.status === 'PENDING'
+          ? 'IN_PROGRESS'
+          : mission.status,
+    },
   })
 
   // Find next uncompleted objective
-  const nextObjective = objectives.find(obj => !obj.completed)
+  const nextObjective = objectives.find((obj) => !obj.completed)
 
   // Calculate progress
   const progress = {
     completed: completedCount,
     total: objectives.length,
     percentage: (completedCount / objectives.length) * 100,
-    allComplete: allCompleted
+    allComplete: allCompleted,
   }
 
-  return Response.json(successResponse({
-    objective: objectives[objectiveIndex],
-    mission: updatedMission,
-    progress,
-    nextObjective: nextObjective ? {
-      objectiveId: nextObjective.objectiveId,
-      estimatedMinutes: nextObjective.estimatedMinutes
-    } : null
-  }))
+  return Response.json(
+    successResponse({
+      objective: objectives[objectiveIndex],
+      mission: updatedMission,
+      progress,
+      nextObjective: nextObjective
+        ? {
+            objectiveId: nextObjective.objectiveId,
+            estimatedMinutes: nextObjective.estimatedMinutes,
+          }
+        : null,
+    }),
+  )
 }
 
 export const PATCH = withErrorHandler(handler)

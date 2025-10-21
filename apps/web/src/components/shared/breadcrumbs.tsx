@@ -49,9 +49,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
             ) : (
               <span
                 className={`truncate max-w-[200px] ${
-                  isLast
-                    ? 'text-[oklch(0.145_0_0)] font-medium'
-                    : 'text-[oklch(0.556_0_0)]'
+                  isLast ? 'text-[oklch(0.145_0_0)] font-medium' : 'text-[oklch(0.556_0_0)]'
                 }`}
                 aria-current={isLast ? 'page' : undefined}
               >

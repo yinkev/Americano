@@ -54,10 +54,12 @@ async function POST(request: NextRequest) {
   // This will adjust user's priority factor weights based on feedback patterns
   const adjustmentApplied = false
 
-  return Response.json(successResponse({
-    feedback,
-    adjustmentApplied,
-  }))
+  return Response.json(
+    successResponse({
+      feedback,
+      adjustmentApplied,
+    }),
+  )
 }
 
 const POSTHandler = withErrorHandler(POST)

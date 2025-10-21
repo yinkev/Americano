@@ -1,0 +1,303 @@
+{
+  "test_metadata": {
+    "test_date": "2025-10-20",
+    "test_duration_minutes": 60,
+    "environment": "development",
+    "server_version": "Next.js 15.5.5",
+    "database": "PostgreSQL",
+    "tester": "Performance Engineering Agent"
+  },
+
+  "api_response_times_ms": {
+    "story_5_1_pattern_analysis": {
+      "behavioral_patterns": 6094,
+      "all_patterns": 1354,
+      "learning_insights": 242,
+      "learning_profile": 217,
+      "stress_patterns": 246,
+      "study_time_heatmap": 162
+    },
+    "story_5_2_predictions": {
+      "get_predictions": 135,
+      "interventions": 168,
+      "model_performance": 151,
+      "struggle_reduction": 145
+    },
+    "story_5_3_orchestration": {
+      "cognitive_load": 325,
+      "cognitive_load_history": 961,
+      "orchestration_recommendations": 256,
+      "session_plan": 225
+    },
+    "story_5_4_missions": {
+      "mission_summary": 393,
+      "mission_trends": 328,
+      "mission_correlation": 290
+    },
+    "story_5_5_personalization": {
+      "personalization_config": 271,
+      "personalization_effectiveness": 21179,
+      "personalization_preferences": 1095
+    },
+    "story_5_6_insights_dashboard": {
+      "dashboard_data": 567,
+      "goals_list": 483,
+      "recommendations": 1840,
+      "pattern_evolution": 2780,
+      "performance_correlation": 535
+    }
+  },
+
+  "performance_targets_ms": {
+    "pattern_analysis": 2000,
+    "prediction_generation": 1000,
+    "dashboard_load": 3000,
+    "individual_queries": 200
+  },
+
+  "http_status_codes": {
+    "behavioral_patterns": 500,
+    "all_patterns": 405,
+    "learning_insights": 500,
+    "learning_profile": 500,
+    "stress_patterns": 500,
+    "study_time_heatmap": 200,
+    "get_predictions": 503,
+    "interventions": 503,
+    "model_performance": 503,
+    "struggle_reduction": 503,
+    "cognitive_load": 500,
+    "cognitive_load_history": 500,
+    "orchestration_recommendations": 405,
+    "session_plan": 405,
+    "mission_summary": 500,
+    "mission_trends": 500,
+    "mission_correlation": 500,
+    "personalization_config": 500,
+    "personalization_effectiveness": 500,
+    "personalization_preferences": 500,
+    "dashboard_data": 500,
+    "goals_list": 405,
+    "recommendations": 500,
+    "pattern_evolution": 500,
+    "performance_correlation": 400
+  },
+
+  "database_metrics": {
+    "total_queries_per_request": "unknown",
+    "n_plus_one_detected": true,
+    "n_plus_one_evidence": [
+      "personalization_effectiveness: 21179ms",
+      "pattern_evolution: 2780ms",
+      "recommendations: 1840ms"
+    ],
+    "index_coverage": "good",
+    "indexes_found": [
+      "behavioral_patterns_userId_idx",
+      "behavioral_patterns_patternType_idx",
+      "behavioral_patterns_confidence_idx"
+    ],
+    "index_usage_pct": "unknown",
+    "slowest_query_ms": 21179,
+    "slowest_endpoint": "personalization_effectiveness",
+    "prisma_errors": [
+      "TypeError: (0 , _tslib.__assign) is not a function",
+      "PrismaClientKnownRequestError"
+    ]
+  },
+
+  "frontend_metrics": {
+    "lighthouse_performance": null,
+    "lighthouse_accessibility": null,
+    "lighthouse_best_practices": null,
+    "first_contentful_paint_ms": null,
+    "time_to_interactive_ms": null,
+    "largest_contentful_paint_ms": null,
+    "cumulative_layout_shift": null,
+    "total_bundle_size_mb": 30.2,
+    "target_bundle_size_kb": 500,
+    "bundle_size_overrun_factor": 60.4,
+    "largest_bundles_mb": {
+      "recharts": 11.0,
+      "react_refresh_utils": 10.0,
+      "lucide_react": 9.2,
+      "radix_ui_components": 3.5
+    }
+  },
+
+  "summary_statistics": {
+    "total_endpoints_tested": 25,
+    "endpoints_passed": 1,
+    "endpoints_failed": 24,
+    "success_rate_pct": 4.0,
+    "failure_rate_pct": 96.0,
+    "average_response_time_ms": 1618,
+    "median_response_time_ms": 328,
+    "target_response_time_ms": 500,
+    "p95_response_time_ms": 6094,
+    "p99_response_time_ms": 21179,
+    "slowest_response_time_ms": 21179,
+    "fastest_response_time_ms": 135
+  },
+
+  "failure_analysis": {
+    "http_500_internal_error": 16,
+    "http_503_service_unavailable": 4,
+    "http_405_method_not_allowed": 4,
+    "http_400_bad_request": 1,
+    "ml_service_failures": 4,
+    "prisma_client_errors": 16,
+    "route_configuration_errors": 4
+  },
+
+  "critical_issues": {
+    "severity_p0": [
+      {
+        "issue": "ML Service Not Running",
+        "impact": "All prediction endpoints non-functional",
+        "affected_endpoints": 4,
+        "stories_affected": ["5.2"],
+        "estimated_fix_time_hours": 0.1
+      },
+      {
+        "issue": "Prisma Client Error: _tslib.__assign not a function",
+        "impact": "16 endpoints returning 500 errors",
+        "affected_endpoints": 16,
+        "stories_affected": ["5.1", "5.3", "5.4", "5.5", "5.6"],
+        "estimated_fix_time_hours": 4
+      },
+      {
+        "issue": "Personalization Effectiveness: 21s response time",
+        "impact": "Endpoint completely unusable",
+        "affected_endpoints": 1,
+        "stories_affected": ["5.5"],
+        "estimated_fix_time_hours": 8
+      },
+      {
+        "issue": "Bundle Size: 30MB JavaScript",
+        "impact": "30+ second load times, failed Core Web Vitals",
+        "affected_endpoints": "all_frontend",
+        "stories_affected": ["all"],
+        "estimated_fix_time_hours": 16
+      }
+    ],
+    "severity_p1": [
+      {
+        "issue": "HTTP 405 Method Not Allowed",
+        "impact": "4 endpoints non-functional",
+        "affected_endpoints": 4,
+        "stories_affected": ["5.1", "5.3", "5.6"],
+        "estimated_fix_time_hours": 2
+      },
+      {
+        "issue": "Multiple endpoints 2-14x over targets",
+        "impact": "Poor user experience, likely timeouts",
+        "affected_endpoints": 6,
+        "stories_affected": ["5.1", "5.3", "5.4", "5.5", "5.6"],
+        "estimated_fix_time_hours": 24
+      }
+    ]
+  },
+
+  "optimization_priorities": [
+    {
+      "priority": 1,
+      "action": "Start ML Service",
+      "estimated_hours": 0.1,
+      "impact": "Restore 4 endpoints",
+      "command": "cd apps/ml-service && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    },
+    {
+      "priority": 2,
+      "action": "Fix Prisma Client Error",
+      "estimated_hours": 4,
+      "impact": "Restore 16 endpoints",
+      "steps": ["Regenerate Prisma client", "Check tslib version", "Verify Next.js compatibility"]
+    },
+    {
+      "priority": 3,
+      "action": "Fix HTTP 405 Errors",
+      "estimated_hours": 2,
+      "impact": "Restore 4 endpoints",
+      "steps": ["Review route handlers", "Verify HTTP method exports"]
+    },
+    {
+      "priority": 4,
+      "action": "Optimize Personalization Effectiveness",
+      "estimated_hours": 8,
+      "impact": "Fix 21s catastrophic response time",
+      "steps": ["Enable query logging", "Identify N+1", "Add Prisma includes", "Implement caching"]
+    },
+    {
+      "priority": 5,
+      "action": "Optimize Slow Endpoints",
+      "estimated_hours": 24,
+      "impact": "Bring 6 endpoints under target",
+      "steps": ["Profile queries", "Add indexes", "Implement caching", "Consider materialized views"]
+    },
+    {
+      "priority": 6,
+      "action": "Bundle Optimization",
+      "estimated_hours": 16,
+      "impact": "Reduce bundle from 30MB to <500KB",
+      "steps": ["Configure tree-shaking", "Remove dev deps", "Implement code splitting", "Lazy load components"]
+    }
+  ],
+
+  "estimated_remediation": {
+    "minimum_basic_functionality_hours": 60,
+    "production_ready_hours": 150,
+    "research_grade_excellence_hours": 350,
+    "total_critical_blockers": 4,
+    "total_high_priority_issues": 2
+  },
+
+  "production_readiness": {
+    "overall_status": "FAILED",
+    "overall_score": 4,
+    "target_score": 95,
+    "api_functionality": {
+      "status": "CRITICAL_FAILURE",
+      "score": 4,
+      "working_endpoints": 1,
+      "total_endpoints": 25
+    },
+    "api_performance": {
+      "status": "FAILED",
+      "score": 15,
+      "endpoints_meeting_targets": 1,
+      "endpoints_over_targets": 24
+    },
+    "frontend_performance": {
+      "status": "CRITICAL_FAILURE",
+      "score": 2,
+      "bundle_size_overrun_factor": 60.4
+    },
+    "database_performance": {
+      "status": "WARNING",
+      "score": 60,
+      "n_plus_one_detected": true,
+      "index_coverage": "good"
+    },
+    "research_grade_quality": false,
+    "recommended_action": "DO_NOT_DEPLOY",
+    "blocking_issues": 6,
+    "must_fix_before_deployment": [
+      "Start ML Service",
+      "Fix Prisma client errors",
+      "Optimize catastrophic endpoints",
+      "Reduce bundle size to <2MB",
+      "Fix HTTP 405 errors",
+      "Implement basic performance monitoring"
+    ]
+  },
+
+  "next_steps": [
+    "Start ML Service (5 minutes)",
+    "Fix Prisma client errors (2-4 hours)",
+    "Optimize catastrophic endpoints (8-16 hours)",
+    "Implement bundle optimization (8-16 hours)",
+    "Add performance monitoring (4-8 hours)",
+    "Re-run comprehensive performance tests (2 hours)"
+  ]
+}

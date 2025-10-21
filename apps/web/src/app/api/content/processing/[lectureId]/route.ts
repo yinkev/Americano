@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/db'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ lectureId: string }> }
+  { params }: { params: Promise<{ lectureId: string }> },
 ) {
   try {
-    const resolvedParams = await params;
-    const { lectureId } = resolvedParams;
+    const resolvedParams = await params
+    const { lectureId } = resolvedParams
 
     // Get lecture with processing status
     const lecture = await prisma.lecture.findUnique({
@@ -24,7 +24,7 @@ export async function GET(
           },
         },
       },
-    });
+    })
 
     if (!lecture) {
       return NextResponse.json(
@@ -32,25 +32,25 @@ export async function GET(
           success: false,
           error: 'Lecture not found',
         },
-        { status: 404 }
-      );
+        { status: 404 },
+      )
     }
 
     // Calculate progress percentage
-    let progress = 0;
+    let progress = 0
     switch (lecture.processingStatus) {
       case 'PENDING':
-        progress = 10;
-        break;
+        progress = 10
+        break
       case 'PROCESSING':
-        progress = 50;
-        break;
+        progress = 50
+        break
       case 'COMPLETED':
-        progress = 100;
-        break;
+        progress = 100
+        break
       case 'FAILED':
-        progress = 0;
-        break;
+        progress = 0
+        break
     }
 
     return NextResponse.json({
@@ -64,15 +64,15 @@ export async function GET(
         chunksCount: lecture._count.contentChunks,
         objectivesCount: lecture._count.learningObjectives,
       },
-    });
+    })
   } catch (error) {
-    console.error('Processing status error:', error);
+    console.error('Processing status error:', error)
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to get processing status',
       },
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

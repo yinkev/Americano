@@ -5,9 +5,9 @@
  * Visualizes mission completion trends with multiple chart types
  */
 
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import {
   LineChart,
   Line,
@@ -19,54 +19,51 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-} from 'recharts';
-import { format } from 'date-fns';
-import { Calendar, TrendingUp, BarChart3 } from 'lucide-react';
+} from 'recharts'
+import { format } from 'date-fns'
+import { Calendar, TrendingUp, BarChart3 } from 'lucide-react'
 
 interface TrendData {
-  date: string;
-  value: number;
+  date: string
+  value: number
 }
 
 interface Props {
-  period?: '7d' | '30d' | '90d';
-  chartType?: 'line' | 'bar' | 'heatmap';
+  period?: '7d' | '30d' | '90d'
+  chartType?: 'line' | 'bar' | 'heatmap'
 }
 
-export function MissionCompletionChart({
-  period = '30d',
-  chartType = 'line',
-}: Props) {
-  const [data, setData] = useState<TrendData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedPeriod, setSelectedPeriod] = useState(period);
-  const [selectedChartType, setSelectedChartType] = useState(chartType);
+export function MissionCompletionChart({ period = '30d', chartType = 'line' }: Props) {
+  const [data, setData] = useState<TrendData[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedPeriod, setSelectedPeriod] = useState(period)
+  const [selectedChartType, setSelectedChartType] = useState(chartType)
 
   useEffect(() => {
-    fetchData();
-  }, [selectedPeriod]);
+    fetchData()
+  }, [selectedPeriod])
 
   async function fetchData() {
     try {
-      setLoading(true);
+      setLoading(true)
       const response = await fetch(
         `/api/analytics/missions/trends?metric=completion_rate&granularity=daily&period=${selectedPeriod}`,
         {
           headers: {
             'X-User-Email': 'kevy@americano.dev',
           },
-        }
-      );
+        },
+      )
 
-      if (!response.ok) throw new Error('Failed to fetch trend data');
+      if (!response.ok) throw new Error('Failed to fetch trend data')
 
-      const result = await response.json();
-      setData(result.data.data || []);
+      const result = await response.json()
+      setData(result.data.data || [])
     } catch (error) {
-      console.error('Error fetching completion trends:', error);
-      setData([]);
+      console.error('Error fetching completion trends:', error)
+      setData([])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -75,49 +72,43 @@ export function MissionCompletionChart({
     date: format(new Date(item.date), 'MMM dd'),
     completionRate: (item.value * 100).toFixed(1),
     displayValue: item.value * 100,
-  }));
+  }))
 
   // Calculate average completion rate
   const avgCompletionRate =
     data.length > 0
-      ? (
-          data.reduce((sum, item) => sum + item.value, 0) / data.length
-        ).toFixed(1)
-      : '0.0';
+      ? (data.reduce((sum, item) => sum + item.value, 0) / data.length).toFixed(1)
+      : '0.0'
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30">
-        <div className="text-sm text-[oklch(0.556_0_0)]">
-          Loading completion data...
-        </div>
+      <div className="flex items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30">
+        <div className="text-[13px] text-muted-foreground">Loading completion data...</div>
       </div>
-    );
+    )
   }
 
   if (data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
-        <Calendar className="size-12 text-[oklch(0.556_0_0)] mb-4" />
-        <div className="text-sm text-[oklch(0.556_0_0)]">
-          No mission data available yet.
-        </div>
-        <p className="text-xs text-[oklch(0.556_0_0)] mt-2">
+      <div className="flex flex-col items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
+        <Calendar className="size-12 text-muted-foreground mb-4" />
+        <div className="text-[13px] text-muted-foreground">No mission data available yet.</div>
+        <p className="text-[11px] text-muted-foreground mt-2">
           Complete some missions to see your progress!
         </p>
       </div>
-    );
+    )
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
+    <div className="bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all border border-white/30 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)]">
+          <h3 className="text-[18px] font-heading font-semibold text-foreground">
             Mission Completion Trends
           </h3>
-          <p className="text-sm text-[oklch(0.556_0_0)] mt-1">
+          <p className="text-[13px] text-muted-foreground mt-1">
             Average: {avgCompletionRate}% completion rate
           </p>
         </div>
@@ -172,11 +163,7 @@ export function MissionCompletionChart({
       <ResponsiveContainer width="100%" height={300}>
         {selectedChartType === 'line' ? (
           <LineChart data={chartData}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="oklch(0.9 0 0)"
-              vertical={false}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" vertical={false} />
             <XAxis
               dataKey="date"
               stroke="oklch(0.556 0 0)"
@@ -239,11 +226,7 @@ export function MissionCompletionChart({
           </LineChart>
         ) : (
           <BarChart data={chartData}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="oklch(0.9 0 0)"
-              vertical={false}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" vertical={false} />
             <XAxis
               dataKey="date"
               stroke="oklch(0.556 0 0)"
@@ -299,9 +282,7 @@ export function MissionCompletionChart({
         </div>
         <div>
           <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Average</p>
-          <p className="text-lg font-semibold text-[oklch(0.145_0_0)]">
-            {avgCompletionRate}%
-          </p>
+          <p className="text-lg font-semibold text-[oklch(0.145_0_0)]">{avgCompletionRate}%</p>
         </div>
         <div>
           <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Trend</p>
@@ -311,24 +292,24 @@ export function MissionCompletionChart({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function calculateTrend(data: any[]): string {
-  if (data.length < 2) return '--';
+  if (data.length < 2) return '--'
 
   const firstHalf = data
     .slice(0, Math.floor(data.length / 2))
-    .reduce((sum, d) => sum + d.displayValue, 0);
+    .reduce((sum, d) => sum + d.displayValue, 0)
   const secondHalf = data
     .slice(Math.floor(data.length / 2))
-    .reduce((sum, d) => sum + d.displayValue, 0);
+    .reduce((sum, d) => sum + d.displayValue, 0)
 
-  const firstAvg = firstHalf / Math.floor(data.length / 2);
-  const secondAvg = secondHalf / (data.length - Math.floor(data.length / 2));
+  const firstAvg = firstHalf / Math.floor(data.length / 2)
+  const secondAvg = secondHalf / (data.length - Math.floor(data.length / 2))
 
-  const change = ((secondAvg - firstAvg) / firstAvg) * 100;
+  const change = ((secondAvg - firstAvg) / firstAvg) * 100
 
-  if (Math.abs(change) < 5) return 'Stable';
-  return change > 0 ? `+${change.toFixed(0)}%` : `${change.toFixed(0)}%`;
+  if (Math.abs(change) < 5) return 'Stable'
+  return change > 0 ? `+${change.toFixed(0)}%` : `${change.toFixed(0)}%`
 }

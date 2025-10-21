@@ -13,10 +13,7 @@ import { getCurrentUserId } from '@/lib/auth'
 /**
  * POST /api/courses/:id/priority - Set course priority
  */
-async function POST(
-  request: NextRequest,
-  props: { params: Promise<{ id: string }> }
-) {
+async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const userId = await getCurrentUserId()
   const params = await props.params
   const { id: courseId } = params

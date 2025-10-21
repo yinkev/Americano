@@ -16,8 +16,13 @@ DATABASE_URL="postgresql://kyin@localhost:5432/americano"
 ```
 
 **Worktrees:**
+<<<<<<< HEAD
+- **Epic 3:** `/Users/kyin/Projects/Americano-epic3` (branch: `feature/epic-3-knowledge-graph`)
+- **Epic 5:** `/Users/kyin/Projects/Americano-epic5` (branch: `feature/epic-5-behavioral-twin`)
+=======
 - Epic 3: `/Users/kyin/Projects/Americano-epic3` (branch: `feature/epic-3-knowledge-graph`)
 - Epic 5: TBD (branch: TBD)
+>>>>>>> origin/main
 
 ---
 
@@ -43,12 +48,21 @@ git merge origin/main
 
 ### When Applying Migrations:
 
+<<<<<<< HEAD
+**Epic 3:**
+=======
 **Epic 3 (Current):**
+>>>>>>> origin/main
 ```bash
 cd /Users/kyin/Projects/Americano-epic3/apps/web
 npx prisma migrate dev --name add_vector_search_and_analytics
 ```
 
+<<<<<<< HEAD
+**Epic 5:**
+```bash
+cd /Users/kyin/Projects/Americano-epic5/apps/web
+=======
 **Epic 5 (Later, when switching worktrees):**
 ```bash
 cd /path/to/epic5/worktree/apps/web
@@ -57,6 +71,7 @@ cd /path/to/epic5/worktree/apps/web
 npx prisma migrate deploy  # Applies Epic 3's migration
 
 # Then create Epic 5's migration
+>>>>>>> origin/main
 npx prisma migrate dev --name add_epic5_features
 ```
 
@@ -93,6 +108,10 @@ npx prisma generate          # Regenerate Prisma Client
 
 **Solution (BEST PRACTICE):**
 ```bash
+<<<<<<< HEAD
+# FROM EPIC 3 WORKTREE:
+=======
+>>>>>>> origin/main
 # Step 1: Mark Epic 5's migration as resolved (tells Prisma it's okay)
 cd /Users/kyin/Projects/Americano-epic3/apps/web
 npx prisma migrate resolve --applied 20251016231054_add_story_5_1_behavioral_pattern_models
@@ -102,6 +121,17 @@ npx prisma migrate deploy
 
 # Step 3: Verify everything is synced
 npx prisma migrate status
+<<<<<<< HEAD
+
+# FROM EPIC 5 WORKTREE (reciprocal):
+# Step 1: Mark Epic 3's migration as resolved
+cd /Users/kyin/Projects/Americano-epic5/apps/web
+npx prisma migrate resolve --applied 20251016000000_create_vector_indexes
+
+# Step 2: Verify
+npx prisma migrate status
+=======
+>>>>>>> origin/main
 ```
 
 **Why this is the best way:**
@@ -178,6 +208,12 @@ npx prisma migrate dev --name <migration_name>
 # Regenerate Prisma Client
 npx prisma generate
 
+<<<<<<< HEAD
+# Mark migration as resolved (when it exists in DB but not locally)
+npx prisma migrate resolve --applied <migration_name>
+
+=======
+>>>>>>> origin/main
 # Reset database (DESTRUCTIVE - dev only)
 npx prisma migrate reset
 
@@ -189,6 +225,75 @@ npx prisma studio
 
 ## 🎯 Current State (Updated 2025-10-16)
 
+<<<<<<< HEAD
+### Epic 3 Status:
+- ✅ Worktree: `/Users/kyin/Projects/Americano-epic3`
+- ✅ Branch: `feature/epic-3-knowledge-graph`
+- ✅ Story 3.1 implementation complete (all 7 tasks, 31 subtasks)
+- ✅ Migration conflict resolved using `prisma migrate resolve`
+- ✅ Migration applied: `20251016000000_create_vector_indexes`
+
+### Epic 5 Status:
+- ✅ Worktree: `/Users/kyin/Projects/Americano-epic5`
+- ✅ Branch: `feature/epic-5-behavioral-twin`
+- ✅ Story 5.1 complete (12/12 tasks, 8/8 ACs, ~4,000 lines)
+- ✅ Migration applied: `20251016231054_add_story_5_1_behavioral_pattern_models`
+- ✅ Committed: `29a284b`
+- ⏳ Needs to resolve Epic 3's migration: `20251016000000_create_vector_indexes`
+- ⏳ Ready to continue with Story 5.2 (Predictive Analytics)
+
+### Database State:
+- ✅ Last common migration: `20251015231031_story_2_5_mission_orchestration_fields`
+- ✅ Epic 5 migration applied: `20251016231054_add_story_5_1_behavioral_pattern_models`
+- ✅ Epic 3 migration applied: `20251016000000_create_vector_indexes`
+- ✅ Database contains models from BOTH epics
+
+### Table Ownership:
+**Epic 3 Tables:**
+- `Concept` - Extracted concepts from lectures
+- `ConceptRelationship` - Links between concepts
+- Vector indexes on `ContentChunk.embedding`, `Concept.embedding`
+
+**Epic 5 Tables:**
+- `BehavioralPattern` - Detected user patterns
+- `BehavioralInsight` - Actionable recommendations
+- `UserLearningProfile` - Persistent user preferences
+- `InsightPattern` - Join table for many-to-many
+
+**Shared Tables (No Conflicts):**
+- ✅ Both epics extend different fields
+- ✅ Epic 3 uses: `Lecture`, `LearningObjective`, `ContentChunk`
+- ✅ Epic 5 uses: `User`, `StudySession`, `Review`, `Mission`, `BehavioralEvent`
+
+### Next Steps:
+
+**Epic 5 (This Worktree):**
+1. ✅ Resolve Epic 3's migration when ready:
+   ```bash
+   cd /Users/kyin/Projects/Americano-epic5/apps/web
+   npx prisma migrate resolve --applied 20251016000000_create_vector_indexes
+   ```
+2. Continue with Story 5.2 (Predictive Analytics)
+3. Story 5.3-5.6 implementation
+
+**Epic 3 (Parallel Worktree):**
+1. ✅ Migration conflict resolved
+2. Continue with Story 3.2-3.6 implementation
+
+---
+
+## 📝 Key Learnings
+
+1. **Migration conflicts are normal** in parallel development with shared DB
+2. **`prisma migrate resolve --applied`** is the correct tool for this scenario
+3. **Don't copy migration files** between worktrees - let git handle merges
+4. **Each worktree maintains its own migration history** - this is by design
+5. **The database is the single source of truth** - worktrees mark migrations as resolved
+
+---
+
+**Last Updated:** 2025-10-16 by Amelia (DEV Agent) - Epic 5 Worktree
+=======
 **Epic 3 Status:**
 - ✅ Story 3.1 implementation complete (all 7 tasks, 31 subtasks)
 - ⏳ Migration conflict detected: Epic 5 migration already in database
@@ -214,3 +319,4 @@ npx prisma studio
 ---
 
 **Last Updated:** 2025-10-16 by Amelia (DEV Agent)
+>>>>>>> origin/main

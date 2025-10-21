@@ -1,0 +1,1284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context>
+  <metadata>
+    <story-id>5.3</story-id>
+    <story-title>Optimal Study Timing and Session Orchestration</story-title>
+    <epic>Epic 5: Behavioral Learning Twin</epic>
+    <status>READY_FOR_IMPLEMENTATION</status>
+    <priority>MEDIUM</priority>
+    <dependencies>
+      <dependency story-id="5.1" status="COMPLETE">Learning Pattern Recognition and Analysis</dependency>
+      <dependency story-id="5.2" status="COMPLETE">Predictive Analytics for Learning Struggles</dependency>
+      <dependency story-id="2.4" status="COMPLETE">Mission Generation</dependency>
+      <dependency story-id="2.5" status="COMPLETE">Study Session Management</dependency>
+    </dependencies>
+    <generated-date>2025-10-16</generated-date>
+    <generated-by>Claude Sonnet 4.5 (Story Context Workflow)</generated-by>
+  </metadata>
+
+  <story-definition>
+    <user-story>
+      As a medical student,
+      I want the platform to recommend when and how long I should study,
+      So that I maximize my learning efficiency based on my personal patterns.
+    </user-story>
+
+    <acceptance-criteria>
+      <criterion id="AC1">
+        <description>Personalized recommendations for optimal study times based on performance patterns</description>
+        <validation>System identifies top 3 study time windows with confidence scores based on historical performance</validation>
+      </criterion>
+      <criterion id="AC2">
+        <description>Session duration suggestions adapted to user's attention span and capacity</description>
+        <validation>Duration recommendations adjust based on mission complexity, time-of-day, and recent study load</validation>
+      </criterion>
+      <criterion id="AC3">
+        <description>Break timing recommendations to maintain cognitive performance</description>
+        <validation>Personalized break schedules generated based on attention cycle patterns (Pomodoro-inspired)</validation>
+      </criterion>
+      <criterion id="AC4">
+        <description>Content sequencing optimized for user's learning progression preferences</description>
+        <validation>Sessions follow warm-up → peak → wind-down flow with VARK-based content type balancing</validation>
+      </criterion>
+      <criterion id="AC5">
+        <description>Study intensity modulation based on cognitive load and stress indicators</description>
+        <validation>Intensity levels (LOW/MEDIUM/HIGH) calculated from recent study volume and performance trends</validation>
+      </criterion>
+      <criterion id="AC6">
+        <description>Integration with calendar systems for realistic scheduling</description>
+        <validation>Google Calendar OAuth integration reads availability and avoids conflicts</validation>
+      </criterion>
+      <criterion id="AC7">
+        <description>Adaptation to changing schedules and life circumstances</description>
+        <validation>Schedule adaptations detected and recommendations updated automatically</validation>
+      </criterion>
+      <criterion id="AC8">
+        <description>Effectiveness measured through improved study session outcomes</description>
+        <validation>Orchestrated sessions show 20%+ better performance vs. self-scheduled (tracked via analytics)</validation>
+      </criterion>
+    </acceptance-criteria>
+  </story-definition>
+
+  <tasks>
+    <task id="T1" priority="HIGH" estimated-hours="8">
+      <title>Design and Implement Study Timing Models</title>
+      <acceptance-criteria>AC1, AC6</acceptance-criteria>
+      <subtasks>
+        <subtask id="T1.1">Create StudyScheduleRecommendation model with reasoning factors</subtask>
+        <subtask id="T1.2">Create SessionOrchestrationPlan model for tracking planned vs. actual</subtask>
+        <subtask id="T1.3">Create CalendarIntegration model for OAuth tokens and sync</subtask>
+        <subtask id="T1.4">Create ScheduleAdaptation model for evolution tracking</subtask>
+        <subtask id="T1.5">Run Prisma migration for scheduling models</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>4 new Prisma models with proper indexes and relations</deliverable>
+        <deliverable>Migration file: add_story_5_3_scheduling_models</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T2" priority="HIGH" estimated-hours="12">
+      <title>Implement Optimal Study Time Recommender</title>
+      <acceptance-criteria>AC1, AC7</acceptance-criteria>
+      <subtasks>
+        <subtask id="T2.1">Create StudyTimeRecommender class with 4 methods</subtask>
+        <subtask id="T2.2">Implement optimal time slot detection (hourly buckets, weighted scoring)</subtask>
+        <subtask id="T2.3">Implement calendar availability integration with conflict detection</subtask>
+        <subtask id="T2.4">Implement confidence scoring (4 factors, weighted formula)</subtask>
+        <subtask id="T2.5">Implement schedule adaptation logic for exam shifts and conflicts</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>apps/web/src/subsystems/behavioral-analytics/study-time-recommender.ts</deliverable>
+        <deliverable>Top 3-5 time slots with confidence scores (0.0-1.0)</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T3" priority="HIGH" estimated-hours="10">
+      <title>Implement Session Duration Optimizer</title>
+      <acceptance-criteria>AC2, AC3</acceptance-criteria>
+      <subtasks>
+        <subtask id="T3.1">Create SessionDurationOptimizer class with 4 methods</subtask>
+        <subtask id="T3.2">Implement personalized duration recommendation (baseline + adjustments)</subtask>
+        <subtask id="T3.3">Implement break timing algorithm (Pomodoro-inspired, personalized)</subtask>
+        <subtask id="T3.4">Implement fatigue detection for duration adjustment</subtask>
+        <subtask id="T3.5">Implement dynamic duration adjustment during sessions</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>apps/web/src/subsystems/behavioral-analytics/session-duration-optimizer.ts</deliverable>
+        <deliverable>Duration recommendations with min/max/optimal values</deliverable>
+        <deliverable>Break schedules with intervals and durations</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T4" priority="HIGH" estimated-hours="12">
+      <title>Implement Content Sequencing Engine</title>
+      <acceptance-criteria>AC4</acceptance-criteria>
+      <subtasks>
+        <subtask id="T4.1">Create ContentSequencer class with 4 methods</subtask>
+        <subtask id="T4.2">Implement learning progression-based sequencing (3 phases)</subtask>
+        <subtask id="T4.3">Implement content type balancing (VARK-based)</subtask>
+        <subtask id="T4.4">Implement spaced repetition integration in sequencing</subtask>
+        <subtask id="T4.5">Implement in-session sequence adaptation</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>apps/web/src/subsystems/behavioral-analytics/content-sequencer.ts</deliverable>
+        <deliverable>Sequenced content array with phases, types, durations</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T5" priority="MEDIUM" estimated-hours="10">
+      <title>Implement Study Intensity Modulator</title>
+      <acceptance-criteria>AC5</acceptance-criteria>
+      <subtasks>
+        <subtask id="T5.1">Create StudyIntensityModulator class with 4 methods</subtask>
+        <subtask id="T5.2">Implement cognitive load assessment (0-100 scale, 4 factors)</subtask>
+        <subtask id="T5.3">Implement intensity level calculation (LOW/MEDIUM/HIGH thresholds)</subtask>
+        <subtask id="T5.4">Implement session plan modulation based on intensity</subtask>
+        <subtask id="T5.5">Implement recovery period recommendations (burnout protection)</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>apps/web/src/subsystems/behavioral-analytics/study-intensity-modulator.ts</deliverable>
+        <deliverable>Intensity recommendations with reasoning</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T6" priority="MEDIUM" estimated-hours="14">
+      <title>Implement Calendar Integration System</title>
+      <acceptance-criteria>AC6</acceptance-criteria>
+      <subtasks>
+        <subtask id="T6.1">Create calendar provider abstraction layer (interface)</subtask>
+        <subtask id="T6.2">Implement Google Calendar integration (OAuth 2.0, API calls)</subtask>
+        <subtask id="T6.3">Document Outlook Calendar integration pattern (future)</subtask>
+        <subtask id="T6.4">Create Settings UI for calendar integration</subtask>
+        <subtask id="T6.5">Implement calendar sync service (scheduled job)</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>apps/web/src/lib/calendar/calendar-provider.ts (interface)</deliverable>
+        <deliverable>apps/web/src/lib/calendar/google-calendar-provider.ts</deliverable>
+        <deliverable>Settings UI section with connect/disconnect</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T7" priority="HIGH" estimated-hours="16">
+      <title>Build Session Orchestration Dashboard</title>
+      <acceptance-criteria>AC1, AC2, AC3, AC4, AC5</acceptance-criteria>
+      <subtasks>
+        <subtask id="T7.1">Create /study/orchestration page with 4 sections</subtask>
+        <subtask id="T7.2">Design OptimalTimeSlotsPanel component (time slots with confidence)</subtask>
+        <subtask id="T7.3">Create SessionPlanPreview component (timeline visualization)</subtask>
+        <subtask id="T7.4">Build CognitiveLoadIndicator component (gauge 0-100)</subtask>
+        <subtask id="T7.5">Design CalendarStatusWidget component</subtask>
+        <subtask id="T7.6">Implement session plan customization UI (modal with controls)</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>apps/web/src/app/study/orchestration/page.tsx</deliverable>
+        <deliverable>5 UI components (~1,200 lines total)</deliverable>
+        <deliverable>Responsive layouts with glassmorphism design</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T8" priority="HIGH" estimated-hours="10">
+      <title>Build Orchestration APIs</title>
+      <acceptance-criteria>AC1, AC2, AC3, AC4, AC5, AC6</acceptance-criteria>
+      <subtasks>
+        <subtask id="T8.1">Create POST /api/orchestration/recommendations endpoint</subtask>
+        <subtask id="T8.2">Create POST /api/orchestration/session-plan endpoint</subtask>
+        <subtask id="T8.3">Create GET /api/orchestration/cognitive-load endpoint</subtask>
+        <subtask id="T8.4">Create POST /api/orchestration/adapt-schedule endpoint</subtask>
+        <subtask id="T8.5">Create GET /api/orchestration/effectiveness endpoint</subtask>
+        <subtask id="T8.6">Create calendar integration endpoints (5 routes)</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>10 API routes under apps/web/src/app/api/orchestration/</deliverable>
+        <deliverable>Calendar endpoints under apps/web/src/app/api/calendar/</deliverable>
+        <deliverable>Zod validation schemas for all request bodies</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T9" priority="HIGH" estimated-hours="8">
+      <title>Integrate Orchestration with Mission Generation</title>
+      <acceptance-criteria>AC1, AC2, AC4</acceptance-criteria>
+      <subtasks>
+        <subtask id="T9.1">Update MissionGenerator to use orchestration recommendations</subtask>
+        <subtask id="T9.2">Extend Mission model with orchestration fields (4 new fields)</subtask>
+        <subtask id="T9.3">Update mission briefing UI to show orchestration details</subtask>
+        <subtask id="T9.4">Implement flexible mission scheduling (override options)</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>Updated apps/web/src/lib/mission-generator.ts</deliverable>
+        <deliverable>Prisma migration for Mission model extensions</deliverable>
+        <deliverable>Mission briefing UI updates</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T10" priority="MEDIUM" estimated-hours="12">
+      <title>Implement Adaptive Orchestration</title>
+      <acceptance-criteria>AC7, AC8</acceptance-criteria>
+      <subtasks>
+        <subtask id="T10.1">Create OrchestrationAdaptationEngine class with 4 methods</subtask>
+        <subtask id="T10.2">Implement schedule change detection (calendar, exams, user input)</subtask>
+        <subtask id="T10.3">Implement impact assessment algorithm (severity classification)</subtask>
+        <subtask id="T10.4">Implement adaptation plan generation (alternative recommendations)</subtask>
+        <subtask id="T10.5">Implement effectiveness measurement (comparison metrics)</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>apps/web/src/subsystems/behavioral-analytics/orchestration-adaptation-engine.ts</deliverable>
+        <deliverable>Adaptation plans with impact analysis</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T11" priority="MEDIUM" estimated-hours="14">
+      <title>Build Effectiveness Analytics Dashboard</title>
+      <acceptance-criteria>AC8</acceptance-criteria>
+      <subtasks>
+        <subtask id="T11.1">Create /analytics/orchestration-effectiveness page with 5 sections</subtask>
+        <subtask id="T11.2">Design AdherenceMetricsPanel component</subtask>
+        <subtask id="T11.3">Create PerformanceComparisonChart component (bar chart)</subtask>
+        <subtask id="T11.4">Build OptimalTimeValidationPanel component (heatmap)</subtask>
+        <subtask id="T11.5">Design DurationOptimizationResults component (scatter plot)</subtask>
+        <subtask id="T11.6">Create AdaptationImpactAnalysis component</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>apps/web/src/app/analytics/orchestration-effectiveness/page.tsx</deliverable>
+        <deliverable>5 analytics visualization components (~1,400 lines total)</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T12" priority="HIGH" estimated-hours="10">
+      <title>Implement Real-Time Session Orchestration</title>
+      <acceptance-criteria>AC3, AC4, AC5</acceptance-criteria>
+      <subtasks>
+        <subtask id="T12.1">Extend Study Session component with real-time orchestration</subtask>
+        <subtask id="T12.2">Implement in-session performance monitoring (5-min intervals)</subtask>
+        <subtask id="T12.3">Implement intelligent break prompts (scheduled + performance-triggered)</subtask>
+        <subtask id="T12.4">Implement content sequence adaptation during session</subtask>
+        <subtask id="T12.5">Implement session extension/early completion logic</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>Updated study session UI with orchestration overlay</deliverable>
+        <deliverable>Real-time performance monitoring hooks</deliverable>
+        <deliverable>Break notification system</deliverable>
+      </deliverables>
+    </task>
+
+    <task id="T13" priority="MEDIUM" estimated-hours="12">
+      <title>Testing and Validation</title>
+      <acceptance-criteria>ALL</acceptance-criteria>
+      <subtasks>
+        <subtask id="T13.1">Manual testing with real scheduling scenarios</subtask>
+        <subtask id="T13.2">Verify session orchestration quality (natural flow)</subtask>
+        <subtask id="T13.3">Test adaptive features (conflicts, life events)</subtask>
+        <subtask id="T13.4">Test real-time orchestration (break prompts, content switching)</subtask>
+        <subtask id="T13.5">Integration testing (Mission, UserProfile, BehavioralEvent)</subtask>
+        <subtask id="T13.6">Edge case testing (no calendar, irregular schedule, high load)</subtask>
+      </subtasks>
+      <deliverables>
+        <deliverable>Test scenarios documentation</deliverable>
+        <deliverable>Edge case handling verification</deliverable>
+        <deliverable>Integration test results</deliverable>
+      </deliverables>
+    </task>
+  </tasks>
+
+  <technical-context>
+    <architecture>
+      <subsystem name="Behavioral Analytics" path="apps/web/src/subsystems/behavioral-analytics/">
+        <description>Story 5.3 extends this subsystem with 5 new orchestration classes</description>
+        <existing-components>
+          <component>study-time-analyzer.ts (Story 5.1, 476 lines)</component>
+          <component>session-duration-analyzer.ts (Story 5.1, 485 lines)</component>
+          <component>content-preference-analyzer.ts (Story 5.1, 392 lines)</component>
+          <component>intervention-engine.ts (Story 5.2, 483 lines)</component>
+        </existing-components>
+        <new-components>
+          <component>study-time-recommender.ts (Task 2)</component>
+          <component>session-duration-optimizer.ts (Task 3)</component>
+          <component>content-sequencer.ts (Task 4)</component>
+          <component>study-intensity-modulator.ts (Task 5)</component>
+          <component>orchestration-adaptation-engine.ts (Task 10)</component>
+        </new-components>
+      </subsystem>
+
+      <database-schema>
+        <model name="Mission" existing="true">
+          <extensions>
+            <field name="recommendedStartTime" type="DateTime?" description="Optimal time from orchestration"/>
+            <field name="recommendedDuration" type="Int?" description="Minutes, from duration optimizer"/>
+            <field name="intensityLevel" type="IntensityLevel?" default="MEDIUM" description="LOW/MEDIUM/HIGH"/>
+            <field name="contentSequence" type="Json?" description="Array of {type, id, duration}"/>
+            <field name="orchestrationPlanId" type="String?" description="FK to SessionOrchestrationPlan"/>
+          </extensions>
+        </model>
+
+        <model name="StudyScheduleRecommendation" new="true">
+          <fields>
+            <field name="id" type="String" primary-key="true"/>
+            <field name="userId" type="String" indexed="true"/>
+            <field name="recommendedStartTime" type="DateTime" indexed="true"/>
+            <field name="recommendedDuration" type="Int" description="Minutes"/>
+            <field name="confidence" type="Float" description="0.0-1.0"/>
+            <field name="reasoningFactors" type="Json" description="optimalTimeScore, calendarAvailable, etc."/>
+            <field name="calendarIntegration" type="Boolean" default="false"/>
+            <field name="createdAt" type="DateTime"/>
+            <field name="appliedAt" type="DateTime?"/>
+          </fields>
+        </model>
+
+        <model name="SessionOrchestrationPlan" new="true">
+          <fields>
+            <field name="id" type="String" primary-key="true"/>
+            <field name="missionId" type="String?"/>
+            <field name="userId" type="String" indexed="true"/>
+            <field name="plannedStartTime" type="DateTime" indexed="true"/>
+            <field name="plannedEndTime" type="DateTime"/>
+            <field name="actualStartTime" type="DateTime?"/>
+            <field name="actualEndTime" type="DateTime?"/>
+            <field name="plannedBreaks" type="Json" description="Array of {time, duration}"/>
+            <field name="actualBreaks" type="Json?" description="Array of {startedAt, endedAt}"/>
+            <field name="intensityModulation" type="IntensityLevel" default="MEDIUM"/>
+            <field name="contentSequence" type="Json" description="Array of {type, id, duration, phase}"/>
+            <field name="createdAt" type="DateTime"/>
+          </fields>
+          <relations>
+            <relation name="missions" type="Mission[]" description="One-to-many"/>
+          </relations>
+        </model>
+
+        <model name="CalendarIntegration" new="true">
+          <fields>
+            <field name="id" type="String" primary-key="true"/>
+            <field name="userId" type="String" unique="true" indexed="true"/>
+            <field name="calendarProvider" type="CalendarProvider" description="GOOGLE/OUTLOOK/ICAL"/>
+            <field name="accessToken" type="String" description="Encrypted OAuth token"/>
+            <field name="refreshToken" type="String?" description="Encrypted OAuth refresh"/>
+            <field name="calendarId" type="String"/>
+            <field name="syncEnabled" type="Boolean" default="true"/>
+            <field name="lastSyncAt" type="DateTime?"/>
+            <field name="createdAt" type="DateTime"/>
+          </fields>
+        </model>
+
+        <model name="ScheduleAdaptation" new="true">
+          <fields>
+            <field name="id" type="String" primary-key="true"/>
+            <field name="userId" type="String" indexed="true"/>
+            <field name="adaptationType" type="AdaptationType" description="TIME_SHIFT/DURATION_CHANGE/etc."/>
+            <field name="reason" type="String" db-text="true"/>
+            <field name="oldValue" type="String?"/>
+            <field name="newValue" type="String?"/>
+            <field name="appliedAt" type="DateTime" indexed="true"/>
+            <field name="effectivenessScore" type="Int?" description="0-100, measured post-adaptation"/>
+          </fields>
+        </model>
+
+        <enums>
+          <enum name="IntensityLevel" values="LOW, MEDIUM, HIGH"/>
+          <enum name="CalendarProvider" values="GOOGLE, OUTLOOK, ICAL"/>
+          <enum name="AdaptationType" values="TIME_SHIFT, DURATION_CHANGE, INTENSITY_ADJUSTMENT, FREQUENCY_CHANGE"/>
+        </enums>
+      </database-schema>
+
+      <api-routes>
+        <route method="POST" path="/api/orchestration/recommendations">
+          <purpose>Generate study time recommendations for user</purpose>
+          <request-body>{ userId: string, date?: Date, missionId?: string }</request-body>
+          <response>{ recommendations: TimeSlot[], cognitiveLoad: number }</response>
+        </route>
+
+        <route method="POST" path="/api/orchestration/session-plan">
+          <purpose>Generate complete session orchestration plan</purpose>
+          <request-body>{ userId: string, missionId: string, startTime: DateTime, duration?: number, intensity?: string }</request-body>
+          <response>{ plan: SessionOrchestrationPlan, confidence: number }</response>
+        </route>
+
+        <route method="GET" path="/api/orchestration/cognitive-load">
+          <purpose>Calculate current cognitive load for user</purpose>
+          <query-params>userId: string, includeTrend?: boolean</query-params>
+          <response>{ load: number (0-100), level: string, trend: number[], recommendation: string }</response>
+        </route>
+
+        <route method="POST" path="/api/orchestration/adapt-schedule">
+          <purpose>Record schedule adaptation and regenerate recommendations</purpose>
+          <request-body>{ userId: string, adaptationType: string, reason: string, oldValue?: string, newValue?: string }</request-body>
+          <response>{ updatedRecommendations: TimeSlot[], adaptationId: string }</response>
+        </route>
+
+        <route method="GET" path="/api/orchestration/effectiveness">
+          <purpose>Measure orchestration effectiveness vs. self-scheduled</purpose>
+          <query-params>userId: string, dateRange?: string</query-params>
+          <response>{ adherenceRate: number, performanceImprovement: number, avgConfidence: number, insights: string[] }</response>
+        </route>
+
+        <route method="POST" path="/api/calendar/connect">
+          <purpose>Initiate OAuth flow for calendar provider</purpose>
+          <request-body>{ provider: "GOOGLE" | "OUTLOOK" }</request-body>
+          <response>{ authorizationUrl: string, state: string }</response>
+        </route>
+
+        <route method="GET" path="/api/calendar/callback">
+          <purpose>Handle OAuth callback and store tokens</purpose>
+          <query-params>code: string, state: string</query-params>
+          <response>{ success: boolean, calendarId: string }</response>
+        </route>
+
+        <route method="GET" path="/api/calendar/status">
+          <purpose>Check calendar integration status</purpose>
+          <query-params>userId: string</query-params>
+          <response>{ connected: boolean, provider?: string, lastSyncAt?: DateTime }</response>
+        </route>
+
+        <route method="POST" path="/api/calendar/sync">
+          <purpose>Trigger manual calendar sync</purpose>
+          <request-body>{ userId: string }</request-body>
+          <response>{ syncedEvents: number, conflicts: CalendarEvent[] }</response>
+        </route>
+
+        <route method="DELETE" path="/api/calendar/disconnect">
+          <purpose>Revoke calendar integration tokens</purpose>
+          <request-body>{ userId: string }</request-body>
+          <response>{ success: boolean }</response>
+        </route>
+      </api-routes>
+
+      <integration-points>
+        <integration story="5.1" component="UserLearningProfile">
+          <usage>preferredStudyTimes for optimal time recommendations</usage>
+          <usage>optimalSessionDuration for duration suggestions</usage>
+          <usage>learningStyleProfile for content sequencing (VARK)</usage>
+          <usage>Attention cycle patterns for break timing</usage>
+        </integration>
+
+        <integration story="5.2" component="StrugglePrediction">
+          <usage>Predicted struggle areas to modulate session intensity</usage>
+          <usage>Adjust content difficulty based on struggle likelihood</usage>
+          <usage>Sequence content to avoid compounding difficulties</usage>
+        </integration>
+
+        <integration story="2.4" component="MissionGenerator">
+          <usage>Consumes orchestration recommendations for scheduling</usage>
+          <usage>Sets Mission.recommendedStartTime, recommendedDuration</usage>
+          <usage>Applies contentSequence from ContentSequencer</usage>
+        </integration>
+
+        <integration story="2.5" component="StudySession">
+          <usage>Session execution follows SessionOrchestrationPlan</usage>
+          <usage>Real-time monitoring adapts sequence and breaks</usage>
+          <usage>Performance feeds back into effectiveness tracking</usage>
+        </integration>
+      </integration-points>
+    </architecture>
+
+    <algorithms>
+      <algorithm name="Optimal Time Slot Detection">
+        <description>Scores each hour-of-day (0-23) based on historical performance</description>
+        <pseudocode><![CDATA[
+For each hour-of-day bucket (0-23):
+  sessions = getSessionsAtHour(userId, hour)
+  if sessions.length < 5: skip (insufficient data)
+
+  performanceScore = mean(sessions.map(s => s.sessionPerformanceScore)) * 0.4
+  availabilityScore = isAvailable(hour, calendarEvents) ? 100 : 0 * 0.3
+  preferenceScore = matchesPreferredTime(hour, userProfile) ? 100 : 50 * 0.2
+  recencyScore = getRecentSuccessScore(userId, hour) * 0.1
+
+  timeOfDayScore = performanceScore + availabilityScore + preferenceScore + recencyScore
+
+Return top 3-5 hours with highest timeOfDayScore
+Confidence = min(1.0, totalSessions / 50)
+        ]]></pseudocode>
+        <implementation-file>apps/web/src/subsystems/behavioral-analytics/study-time-recommender.ts</implementation-file>
+      </algorithm>
+
+      <algorithm name="Session Duration Optimization">
+        <description>Recommends optimal session length based on user patterns and context</description>
+        <pseudocode><![CDATA[
+baseDuration = userProfile.optimalSessionDuration (e.g., 45 min)
+
+// Adjust for mission complexity
+complexityAdjustment = { easy: -10, medium: 0, hard: +15 }
+baseDuration += complexityAdjustment[missionComplexity]
+
+// Adjust for time of day
+isPeakHour = isPeakPerformanceTime(userId, timeOfDay)
+baseDuration *= isPeakHour ? 1.2 : 0.9
+
+// Adjust for recent study load
+recentLoad = getRecentStudyLoad(userId, 7 days)
+if recentLoad > 20 hours: baseDuration *= 0.85
+
+// Calculate break schedule
+breakSchedule = calculateBreakSchedule(userId, baseDuration)
+
+Return {
+  recommendedDuration: round(baseDuration),
+  minDuration: round(baseDuration * 0.8),
+  maxDuration: round(baseDuration * 1.2),
+  breaks: breakSchedule,
+  confidence: 0.85
+}
+        ]]></pseudocode>
+        <implementation-file>apps/web/src/subsystems/behavioral-analytics/session-duration-optimizer.ts</implementation-file>
+      </algorithm>
+
+      <algorithm name="Content Sequencing for Learning Progression">
+        <description>Sequences content in warm-up → peak → wind-down phases with VARK adaptation</description>
+        <pseudocode><![CDATA[
+profile = getUserLearningProfile(userId)
+learningStyle = profile.learningStyleProfile // { visual, auditory, kinesthetic, reading }
+
+// Divide session into phases
+warmUpDuration = min(15, sessionDuration * 0.2)
+peakDuration = sessionDuration * 0.6
+windDownDuration = sessionDuration * 0.2
+
+// WARM-UP: Familiar review content, build confidence
+warmUpCards = reviewCards.filter(c => c.difficulty < 5).slice(0, 5)
+
+// PEAK: New challenging content + validation
+peakContent = []
+if learningStyle.kinesthetic > 0.5:
+  peakContent.push(...clinicalScenarios.slice(0, 2)) // Kinesthetic first
+peakContent.push(...newContent.slice(0, 3))
+peakContent.push(...validationPrompts.slice(0, 2))
+peakContent = interleaveContent(peakContent) // Avoid monotony
+
+// WIND-DOWN: Lighter review, consolidation
+windDownCards = reviewCards.filter(c => c.difficulty >= 5 && c.difficulty < 8).slice(0, 4)
+
+sequence = [...warmUpCards, ...peakContent, ...windDownCards]
+
+Return {
+  sequence,
+  totalDuration: sum(sequence.map(item => item.duration)),
+  phases: { warmUp: warmUpDuration, peak: peakDuration, windDown: windDownDuration }
+}
+        ]]></pseudocode>
+        <implementation-file>apps/web/src/subsystems/behavioral-analytics/content-sequencer.ts</implementation-file>
+      </algorithm>
+
+      <algorithm name="Cognitive Load Assessment">
+        <description>Calculates 0-100 cognitive load score from 4 factors</description>
+        <pseudocode><![CDATA[
+// 1. Recent study volume (last 7 days)
+recentHours = getStudyHours(userId, 7)
+baselineHours = getBaselineStudyHours(userId)
+volumeLoad = min(100, (recentHours / baselineHours) * 50)
+
+// 2. Performance trend (last 5 sessions)
+recentSessions = getRecentSessions(userId, 5)
+avgPerformance = mean(recentSessions.map(s => s.performanceScore))
+performanceLoad = 100 - avgPerformance
+
+// 3. Validation scores (comprehension depth)
+validationScores = getRecentValidationScores(userId, 7)
+avgValidation = mean(validationScores)
+comprehensionLoad = 100 - avgValidation
+
+// 4. Stress indicators
+abandonmentRate = getAbandonmentRate(userId, 7)
+pauseFrequency = getPauseFrequency(userId, 7)
+stressLoad = (abandonmentRate * 50) + (pauseFrequency * 50)
+
+// Weighted cognitive load score
+cognitiveLoad = (
+  volumeLoad * 0.3 +
+  performanceLoad * 0.3 +
+  comprehensionLoad * 0.2 +
+  stressLoad * 0.2
+)
+
+Return round(cognitiveLoad) // 0-100
+        ]]></pseudocode>
+        <implementation-file>apps/web/src/subsystems/behavioral-analytics/study-intensity-modulator.ts</implementation-file>
+      </algorithm>
+    </algorithms>
+
+    <dependencies>
+      <technology name="Google Calendar API" version="v3">
+        <purpose>OAuth 2.0 integration for calendar availability</purpose>
+        <endpoints>
+          <endpoint>/calendars/primary/events (GET) - Fetch events</endpoint>
+          <endpoint>/calendars/primary/events (POST) - Create study session events</endpoint>
+        </endpoints>
+        <authentication>OAuth 2.0 with refresh tokens</authentication>
+        <rate-limits>1,000,000 queries/day (sufficient for MVP)</rate-limits>
+      </technology>
+
+      <library name="@react-oauth/google" version="latest">
+        <purpose>Google OAuth client for Next.js</purpose>
+        <usage>Handle OAuth flow, token management</usage>
+      </library>
+
+      <library name="date-fns" version="latest" existing="true">
+        <purpose>Date manipulation for scheduling calculations</purpose>
+      </library>
+
+      <library name="recharts" version="latest" existing="true">
+        <purpose>Analytics dashboard visualizations</purpose>
+      </library>
+    </dependencies>
+
+    <constraints>
+      <constraint type="privacy">
+        <description>Calendar tokens encrypted at rest (AES-256)</description>
+        <implementation>Use encryption library before storing in CalendarIntegration model</implementation>
+      </constraint>
+
+      <constraint type="performance">
+        <description>In-session monitoring &lt;1s latency for break prompts</description>
+        <implementation>Use client-side performance tracking with 5-min aggregation</implementation>
+      </constraint>
+
+      <constraint type="data-quality">
+        <description>Recommendation freshness: Regenerate daily or on schedule changes</description>
+        <implementation>Scheduled job at 2 AM + manual trigger on calendar conflicts</implementation>
+      </constraint>
+
+      <constraint type="offline-fallback">
+        <description>Orchestration works without calendar integration (behavioral patterns only)</description>
+        <implementation>Graceful degradation when calendarIntegration = false</implementation>
+      </constraint>
+
+      <constraint type="calendar-api-limits">
+        <description>Google Calendar API: 1,000,000 queries/day</description>
+        <implementation>Cache events for 1 hour, sync max once per hour</implementation>
+      </constraint>
+    </constraints>
+  </technical-context>
+
+  <code-artifacts>
+    <existing-code>
+      <file path="apps/web/prisma/schema.prisma" lines="1-1041">
+        <description>Complete database schema with Mission model at lines 211-241</description>
+        <relevant-models>
+          <model name="Mission" lines="211-241" status="EXTEND">Add 5 orchestration fields</model>
+          <model name="UserLearningProfile" lines="575-589" status="USE">Read preferredStudyTimes, optimalSessionDuration</model>
+          <model name="BehavioralEvent" lines="455-475" status="USE">Track orchestration activities</model>
+        </relevant-models>
+      </file>
+
+      <file path="apps/web/src/lib/mission-generator.ts" estimated-lines="1100">
+        <description>Mission generation logic (Story 2.4, extended in Story 5.2)</description>
+        <modifications>
+          <modification>Query orchestration recommendations before generation (Task 9.1)</modification>
+          <modification>Set Mission.recommendedStartTime, recommendedDuration (Task 9.2)</modification>
+          <modification>Apply contentSequence from ContentSequencer (Task 9.2)</modification>
+        </modifications>
+      </file>
+
+      <file path="apps/web/src/subsystems/behavioral-analytics/study-time-analyzer.ts" lines="476">
+        <description>Story 5.1 component - provides historical time-of-day analysis</description>
+        <usage>StudyTimeRecommender consumes analyzeOptimalStudyTimes() output</usage>
+      </file>
+
+      <file path="apps/web/src/subsystems/behavioral-analytics/session-duration-analyzer.ts" lines="485">
+        <description>Story 5.1 component - provides duration pattern analysis</description>
+        <usage>SessionDurationOptimizer uses calculateOptimalDuration() as baseline</usage>
+      </file>
+
+      <file path="apps/web/src/subsystems/behavioral-analytics/content-preference-analyzer.ts" lines="392">
+        <description>Story 5.1 component - provides VARK learning style profile</description>
+        <usage>ContentSequencer uses identifyLearningStyle() for content type balancing</usage>
+      </file>
+
+      <file path="apps/web/src/subsystems/behavioral-analytics/intervention-engine.ts" lines="483">
+        <description>Story 5.2 component - generates interventions based on predictions</description>
+        <usage>StudyIntensityModulator considers intervention recommendations</usage>
+      </file>
+    </existing-code>
+
+    <interfaces>
+      <interface name="TimeSlot">
+        <description>Represents a recommended study time window</description>
+        <definition><![CDATA[
+interface TimeSlot {
+  startTime: DateTime;
+  endTime: DateTime;
+  duration: number; // minutes
+  score: number; // 0-100, weighted performance score
+  confidence: number; // 0.0-1.0
+  reasoning: string[];
+  calendarConflict: boolean;
+  conflictingEvents?: CalendarEvent[];
+}
+        ]]></definition>
+      </interface>
+
+      <interface name="DurationRecommendation">
+        <description>Session duration recommendation with min/max bounds</description>
+        <definition><![CDATA[
+interface DurationRecommendation {
+  recommendedDuration: number; // minutes
+  minDuration: number;
+  maxDuration: number;
+  breaks: BreakSchedule;
+  confidence: number; // 0.0-1.0
+  reasoning: string[];
+}
+        ]]></definition>
+      </interface>
+
+      <interface name="BreakSchedule">
+        <description>Personalized break timing within session</description>
+        <definition><![CDATA[
+interface BreakSchedule {
+  breakIntervals: number[]; // Minutes into session [25, 50, 75]
+  breakDurations: number[]; // Duration in minutes [5, 5, 10]
+  totalBreakTime: number; // Sum of all breaks
+  reasoning: string; // "Based on your 25-min attention cycle"
+}
+        ]]></definition>
+      </interface>
+
+      <interface name="ContentSequence">
+        <description>Ordered sequence of content items for a session</description>
+        <definition><![CDATA[
+interface ContentSequence {
+  sequence: ContentItem[];
+  totalDuration: number; // minutes
+  phases: {
+    warmUp: number; // duration in minutes
+    peak: number;
+    windDown: number;
+  };
+}
+
+interface ContentItem {
+  type: 'flashcard' | 'new_flashcard' | 'validation' | 'clinical' | 'lecture' | 'break';
+  id: string | null; // null for breaks
+  duration: number; // minutes
+  phase: 'warmup' | 'peak' | 'winddown';
+  difficulty?: number; // 0-10 for flashcards
+}
+        ]]></definition>
+      </interface>
+
+      <interface name="IntensityRecommendation">
+        <description>Study intensity level with reasoning</description>
+        <definition><![CDATA[
+interface IntensityRecommendation {
+  intensity: 'LOW' | 'MEDIUM' | 'HIGH';
+  cognitiveLoad: number; // 0-100
+  confidence: number; // 0.0-1.0
+  reasoning: string[];
+  sessionModulation: {
+    durationAdjustment: number; // percentage (e.g., -30 for HIGH intensity)
+    breakFrequencyIncrease: number; // additional breaks
+    contentComplexityReduction: boolean;
+  };
+  recoveryRecommendation?: string; // If burnout risk detected
+}
+        ]]></definition>
+      </interface>
+
+      <interface name="OrchestrationPlan">
+        <description>Complete session orchestration plan (output from Task 8.2)</description>
+        <definition><![CDATA[
+interface OrchestrationPlan {
+  id: string;
+  missionId: string;
+  userId: string;
+  startTime: DateTime;
+  endTime: DateTime;
+  duration: number; // minutes
+  intensity: 'LOW' | 'MEDIUM' | 'HIGH';
+  contentSequence: ContentSequence;
+  breaks: BreakSchedule;
+  confidence: number; // 0.0-1.0
+  reasoning: {
+    timeSelection: string[];
+    durationLogic: string[];
+    contentSequencing: string[];
+    intensityFactors: string[];
+  };
+}
+        ]]></definition>
+      </interface>
+
+      <interface name="CalendarEvent">
+        <description>Calendar event from Google Calendar API</description>
+        <definition><![CDATA[
+interface CalendarEvent {
+  id: string;
+  summary: string; // Event title
+  start: DateTime;
+  end: DateTime;
+  status: 'confirmed' | 'tentative' | 'cancelled';
+  transparency: 'opaque' | 'transparent'; // busy vs free
+}
+        ]]></definition>
+      </interface>
+    </interfaces>
+  </code-artifacts>
+
+  <documentation>
+    <reference type="prd" path="docs/prd.md" lines="122-128">
+      <title>FR9: Smart Study Session Orchestration</title>
+      <content>
+        - Intelligent session composition: warm-up, peak, wind-down phases
+        - Optimal timing recommendations based on performance patterns
+        - Break scheduling to maintain focus
+        - Content mixing to prevent monotony and maximize retention
+        - Session length optimization (ideal: 45-90 minutes)
+      </content>
+    </reference>
+
+    <reference type="architecture" path="docs/solution-architecture.md" lines="524-548">
+      <title>Subsystem 2: Learning Engine - Session Orchestration</title>
+      <content>
+        - SessionOrchestrator class for session composition
+        - Content mixing: new content + reviews (60% reviews, 40% new)
+        - Prerequisite ordering and difficulty progression
+        - Time-of-day mission recommendations
+      </content>
+    </reference>
+
+    <reference type="architecture" path="docs/solution-architecture.md" lines="604-648">
+      <title>Subsystem 5: Behavioral Analytics - Adaptive Difficulty</title>
+      <content>
+        - CognitiveLoadMonitor for detecting stress/burnout signals
+        - DifficultyAdapter for dynamic content complexity adjustment
+        - Burnout protection: cognitiveLoad >80 for 3+ days → rest day
+        - Performance prediction for optimal timing
+      </content>
+    </reference>
+
+    <reference type="story" path="docs/stories/story-5.1.md" lines="1-777">
+      <title>Story 5.1: Learning Pattern Recognition and Analysis (COMPLETE)</title>
+      <content>
+        - UserLearningProfile model with preferredStudyTimes, optimalSessionDuration
+        - VARK learning style profile (visual, auditory, kinesthetic, reading)
+        - Attention cycle patterns for break timing
+        - Forgetting curve analysis for retention prediction
+      </content>
+    </reference>
+
+    <reference type="story" path="docs/stories/story-5.2.md" lines="1-1209">
+      <title>Story 5.2: Predictive Analytics for Learning Struggles (COMPLETE)</title>
+      <content>
+        - StrugglePrediction model with feature vectors
+        - InterventionEngine for proactive support
+        - Cognitive load indicators for intensity modulation
+        - Integration with mission generation for prerequisite insertion
+      </content>
+    </reference>
+
+    <reference type="api-docs" path="docs/API-STORY-5.2-INTERVENTIONS.md" lines="1-1009">
+      <title>Story 5.2 API Documentation</title>
+      <content>
+        - 7 endpoints for predictions, interventions, feedback
+        - Integration pattern with MissionGenerator (lines 798-886)
+        - Prediction context structure for mission display
+        - Post-mission outcome capture workflow
+      </content>
+    </reference>
+
+    <reference type="external" url="https://developers.google.com/calendar/api/v3/reference">
+      <title>Google Calendar API v3 Documentation</title>
+      <content>
+        - OAuth 2.0 authentication flow
+        - Events endpoint for fetching/creating calendar events
+        - Free/busy query for availability checking
+      </content>
+    </reference>
+
+    <reference type="external" url="https://en.wikipedia.org/wiki/Pomodoro_Technique">
+      <title>Pomodoro Technique (Francesco Cirillo, 1980s)</title>
+      <content>
+        - 25-minute focused work intervals with 5-minute breaks
+        - Longer 15-30 minute break after 4 pomodoros
+        - Story 5.3 personalizes intervals based on attention cycle
+      </content>
+    </reference>
+  </documentation>
+
+  <testing-guidance>
+    <test-scenario id="TS1" priority="HIGH">
+      <title>Optimal Time Recommendations with Calendar Integration</title>
+      <preconditions>
+        <precondition>User with 6+ weeks of study history</precondition>
+        <precondition>Google Calendar connected with 3 events (9-11 AM busy, 2-3 PM busy, 7 PM meeting)</precondition>
+        <precondition>Historical pattern: 85% performance at 7-9 AM, 70% at 2-4 PM</precondition>
+      </preconditions>
+      <steps>
+        <step>Call POST /api/orchestration/recommendations with userId</step>
+        <step>Verify top recommendation is 7-9 AM (high performance + available)</step>
+        <step>Verify 9-11 AM NOT recommended (calendar conflict)</step>
+        <step>Verify 2-4 PM recommended as alternative (good performance, 2-3 PM conflict acknowledged)</step>
+        <step>Check confidence scores reflect calendar integration (>0.7 for 7-9 AM)</step>
+      </steps>
+      <expected-results>
+        <result>3-5 time slots returned, sorted by score</result>
+        <result>7-9 AM is #1 recommendation (score >85, confidence >0.8)</result>
+        <result>Calendar conflicts properly avoided in recommendations</result>
+        <result>Reasoning includes "Available + 85% historical performance"</result>
+      </expected-results>
+    </test-scenario>
+
+    <test-scenario id="TS2" priority="HIGH">
+      <title>Session Duration Optimization with Mission Complexity</title>
+      <preconditions>
+        <precondition>User's optimal session duration: 45 minutes (from Story 5.1)</precondition>
+        <precondition>Mission complexity: ADVANCED (cardiac electrophysiology)</precondition>
+        <precondition>Time of day: 7 AM (user's peak hour)</precondition>
+        <precondition>Recent study load: 18 hours last 7 days (normal)</precondition>
+      </preconditions>
+      <steps>
+        <step>Call POST /api/orchestration/session-plan with missionId, startTime=7 AM</step>
+        <step>Verify duration recommendation adjusts for complexity: 45 + 15 = 60 minutes</step>
+        <step>Verify peak hour bonus: 60 * 1.2 = 72 minutes</step>
+        <step>Check break schedule: 25 min, 50 min marks (based on attention cycle)</step>
+        <step>Verify confidence score >0.8 (sufficient data)</step>
+      </steps>
+      <expected-results>
+        <result>Recommended duration: 72 minutes (adjusted for complexity + peak hour)</result>
+        <result>Break schedule: [25, 50] minutes with 5-min durations</result>
+        <result>Min duration: 58 min, max duration: 86 min (±20% bounds)</result>
+        <result>Reasoning includes "Advanced content + peak performance hour"</result>
+      </expected-results>
+    </test-scenario>
+
+    <test-scenario id="TS3" priority="HIGH">
+      <title>Content Sequencing with VARK Learning Style</title>
+      <preconditions>
+        <precondition>User's learning style: Kinesthetic 60%, Visual 25%, Reading 15% (from Story 5.1)</precondition>
+        <precondition>Mission has 5 flashcards, 2 clinical scenarios, 2 validations</precondition>
+        <precondition>Session duration: 45 minutes</precondition>
+      </preconditions>
+      <steps>
+        <step>Call POST /api/orchestration/session-plan with missionId</step>
+        <step>Verify warm-up phase (first 10 min): Easy flashcards for confidence</step>
+        <step>Verify peak phase (next 25 min): Clinical scenarios first (kinesthetic 60%)</step>
+        <step>Verify content interleaving: No 5 flashcards in a row</step>
+        <step>Verify wind-down phase (last 10 min): Lighter reviews</step>
+      </steps>
+      <expected-results>
+        <result>Warm-up: 3-5 easy flashcards (difficulty <5)</result>
+        <result>Peak: Clinical scenarios appear early in sequence (kinesthetic priority)</result>
+        <result>No more than 3 consecutive items of same type</result>
+        <result>Wind-down: Medium difficulty flashcards (difficulty 5-8)</result>
+        <result>Total sequence duration ≈ 45 minutes</result>
+      </expected-results>
+    </test-scenario>
+
+    <test-scenario id="TS4" priority="MEDIUM">
+      <title>Cognitive Load Assessment and Intensity Modulation</title>
+      <preconditions>
+        <precondition>User studied 25 hours last 7 days (baseline: 15 hours = high volume)</precondition>
+        <precondition>Recent session performance: 55% average (down from 75% baseline)</precondition>
+        <precondition>Validation scores: 50% (low comprehension)</precondition>
+        <precondition>2 abandoned sessions last week (stress indicator)</precondition>
+      </preconditions>
+      <steps>
+        <step>Call GET /api/orchestration/cognitive-load with userId</step>
+        <step>Verify cognitive load calculation: volumeLoad=83, performanceLoad=45, comprehensionLoad=50, stressLoad=50</step>
+        <step>Weighted average: (83*0.3 + 45*0.3 + 50*0.2 + 50*0.2) = 58 (MEDIUM-HIGH)</step>
+        <step>Verify intensity recommendation: HIGH (reduce workload)</step>
+        <step>Check session modulation: -40% duration, more breaks, easier content</step>
+      </steps>
+      <expected-results>
+        <result>Cognitive load: 58 (MEDIUM-HIGH)</result>
+        <result>Intensity: HIGH (reduce workload)</result>
+        <result>Session duration reduced by 40%: 45 min → 27 min</result>
+        <result>Recommendation: "Cognitive load detected. Consider lighter session or rest day."</result>
+      </expected-results>
+    </test-scenario>
+
+    <test-scenario id="TS5" priority="MEDIUM">
+      <title>Schedule Adaptation with Calendar Conflict</title>
+      <preconditions>
+        <precondition>User's optimal time: 7-9 AM (established pattern)</precondition>
+        <precondition>NEW calendar event added: 7-8:30 AM recurring meeting (starting next week)</precondition>
+        <precondition>Calendar sync detects conflict</precondition>
+      </preconditions>
+      <steps>
+        <step>Calendar sync runs, detects new conflict at optimal time</step>
+        <step>Call POST /api/orchestration/adapt-schedule with adaptationType=TIME_SHIFT</step>
+        <step>Verify impact assessment: MAJOR (optimal time now unavailable)</step>
+        <step>Verify alternative recommendations: 8:30-10:30 AM (next best) or 6-7 AM (earlier)</step>
+        <step>Check ScheduleAdaptation record created with reason</step>
+      </steps>
+      <expected-results>
+        <result>Impact: MAJOR - "Your optimal 7 AM slot now conflicts with clinic"</result>
+        <result>Alternative recommendations: 8:30 AM (73% performance) or 6 AM (68% performance)</result>
+        <result>ScheduleAdaptation record: adaptationType=TIME_SHIFT, reason="Recurring meeting conflict"</result>
+        <result>User notification: "Schedule change detected. Updated recommendations available."</result>
+      </expected-results>
+    </test-scenario>
+
+    <test-scenario id="TS6" priority="HIGH">
+      <title>Real-Time Session Orchestration with Break Prompts</title>
+      <preconditions>
+        <precondition>User starts 60-min orchestrated session at 7 AM</precondition>
+        <precondition>Planned breaks: 25 min, 50 min (5-min durations)</precondition>
+        <precondition>User's attention cycle: 25 minutes (from Story 5.1)</precondition>
+      </preconditions>
+      <steps>
+        <step>Start study session, begin monitoring performance every 5 minutes</step>
+        <step>At 23 minutes: Display "Break in 2 minutes. Current performance: 88%"</step>
+        <step>At 25 minutes: Trigger break prompt "Time for a 5-minute break"</step>
+        <step>User takes break (5 min), session resumes at 30 min mark</step>
+        <step>At 42 minutes: Performance drops to 62% (down 26% from start)</step>
+        <step>Trigger performance-based break: "Performance dropping. Consider taking a break now?"</step>
+      </steps>
+      <expected-results>
+        <result>Scheduled break prompt at 25 min mark (on time)</result>
+        <result>Performance-triggered break at 42 min (20%+ drop detected)</result>
+        <result>User can skip, postpone (5 min), or take break immediately</result>
+        <result>actualBreaks recorded: [{ startedAt: 25 min, endedAt: 30 min }, ...]</result>
+        <result>Session timeline UI shows current phase and upcoming breaks</result>
+      </expected-results>
+    </test-scenario>
+
+    <test-scenario id="TS7" priority="MEDIUM">
+      <title>Effectiveness Analytics: Orchestrated vs. Self-Scheduled</title>
+      <preconditions>
+        <precondition>User has 20 orchestrated sessions (followed recommendations)</precondition>
+        <precondition>User has 10 self-scheduled sessions (ignored recommendations)</precondition>
+        <precondition>Orchestrated: avg performance 82%, completion 90%</precondition>
+        <precondition>Self-scheduled: avg performance 68%, completion 75%</precondition>
+      </preconditions>
+      <steps>
+        <step>Call GET /api/orchestration/effectiveness with userId</step>
+        <step>Verify adherence rate: 20 / 30 = 67% (followed recommendations 2/3 of time)</step>
+        <step>Calculate performance improvement: (82 - 68) / 68 = 20.6% better</step>
+        <step>Verify statistical significance if sufficient data (p-value <0.05)</step>
+        <step>Check insights generated: "Following orchestration improves outcomes by 21%"</step>
+      </steps>
+      <expected-results>
+        <result>Adherence rate: 67%</result>
+        <result>Performance improvement: 20.6% with orchestration</result>
+        <result>Recommendation: "Following orchestration improves outcomes by 21%"</result>
+        <result>Dashboard displays comparison chart and trend over time</result>
+      </expected-results>
+    </test-scenario>
+
+    <edge-cases>
+      <edge-case id="EC1">
+        <scenario>User with no calendar integration</scenario>
+        <expected-behavior>Orchestration works using behavioral patterns only, calendar availability not factored</expected-behavior>
+        <validation>Recommendations generated with confidence scores <0.8 (calendar confidence=0)</validation>
+      </edge-case>
+
+      <edge-case id="EC2">
+        <scenario>User with chaotic/irregular schedule (no clear patterns)</scenario>
+        <expected-behavior>System provides default recommendations with low confidence, graceful degradation message</expected-behavior>
+        <validation>"Insufficient data for personalized recommendations. Using general best practices."</validation>
+      </edge-case>
+
+      <edge-case id="EC3">
+        <scenario>User always studies at suboptimal times (performance is better at times they don't use)</scenario>
+        <expected-behavior>System learns actual performance at chosen times, adapts "optimal" based on reality</expected-behavior>
+        <validation>After 4 weeks, optimal times recalculated based on actual usage patterns</validation>
+      </edge-case>
+
+      <edge-case id="EC4">
+        <scenario>Calendar API is down (service unavailable)</scenario>
+        <expected-behavior>Graceful fallback, notify user sync failed, use cached availability (up to 24 hours old)</expected-behavior>
+        <validation>Error message: "Calendar sync failed. Using cached availability. Try manual sync."</validation>
+      </edge-case>
+
+      <edge-case id="EC5">
+        <scenario>User has cognitive load >80 for 5+ consecutive days (burnout risk)</scenario>
+        <expected-behavior>System triggers burnout protection: recommend full rest day or light 30-min review</expected-behavior>
+        <validation>Mission generation skipped, notification: "You're showing burnout signs. Consider a rest day."</validation>
+      </edge-case>
+
+      <edge-case id="EC6">
+        <scenario>User starts session at non-recommended time (ignores optimal time)</scenario>
+        <expected-behavior>Track adherence (not followed), still provide orchestration plan, measure performance delta</expected-behavior>
+        <validation>Post-session analytics: "Sessions at recommended times perform 30% better on average"</validation>
+      </edge-case>
+    </edge-cases>
+  </testing-guidance>
+
+  <design-system>
+    <ui-components>
+      <component name="OptimalTimeSlotsPanel">
+        <description>Displays 3-5 recommended time slots with confidence indicators</description>
+        <design-tokens>
+          <token>Glassmorphism: bg-white/80 backdrop-blur-md</token>
+          <token>Confidence stars: ★★★★☆ (filled based on confidence 0-1)</token>
+          <token>Availability colors: Green (available + optimal), Yellow (available but suboptimal), Red (busy)</token>
+          <token>OKLCH colors: oklch(0.7 0.12 145) green, oklch(0.8 0.15 85) yellow, oklch(0.6 0.15 25) red</token>
+        </design-tokens>
+        <interactions>
+          <interaction>Hover: Show reasoning tooltip</interaction>
+          <interaction>Click "Select": Load session plan for this time slot</interaction>
+          <interaction>Calendar conflict badge: "Busy: Anatomy Lab 2-4 PM"</interaction>
+        </interactions>
+        <accessibility>
+          <a11y>ARIA label: "Optimal study time slot at 7 AM with 85% confidence"</a11y>
+          <a11y>Keyboard navigation: Tab through slots, Enter to select</a11y>
+          <a11y>Screen reader: Announce confidence level and availability status</a11y>
+        </accessibility>
+      </component>
+
+      <component name="SessionPlanPreview">
+        <description>Timeline visualization of 60-min session with phases and breaks</description>
+        <design-tokens>
+          <token>Timeline: Horizontal bar with phase sections</token>
+          <token>Phases: Warm-up (oklch(0.8 0.1 180) blue), Peak (oklch(0.75 0.12 25) orange), Wind-down (oklch(0.8 0.08 145) green)</token>
+          <token>Break indicators: Small gray rectangles at 25 min, 50 min marks</token>
+          <token>Content items: Icons for flashcard, validation, clinical scenarios</token>
+        </design-tokens>
+        <interactions>
+          <interaction>Hover over phase: Show content items in that phase</interaction>
+          <interaction>Click "Customize": Open session plan editor modal</interaction>
+          <interaction>Intensity badge: "MEDIUM intensity - Balanced challenge"</interaction>
+        </interactions>
+        <responsive-design>
+          <breakpoint size="desktop">Full timeline with all details</breakpoint>
+          <breakpoint size="tablet">Simplified timeline, phases only</breakpoint>
+          <breakpoint size="mobile">Stacked phases with durations</breakpoint>
+        </responsive-design>
+      </component>
+
+      <component name="CognitiveLoadIndicator">
+        <description>Gauge visualization 0-100 with color zones</description>
+        <design-tokens>
+          <token>Gauge: Semi-circle arc, 180° span</token>
+          <token>Color zones: Green 0-30, Yellow 30-70, Red 70-100</token>
+          <token>OKLCH green: oklch(0.7 0.12 145), yellow: oklch(0.8 0.15 85), red: oklch(0.6 0.15 25)</token>
+          <token>Needle: Solid black line pointing to current load value</token>
+        </design-tokens>
+        <data-display>
+          <display>Current load: 45 (MEDIUM)</display>
+          <display>Trend: Line chart last 7 days (mini sparkline)</display>
+          <display>Recommendation: "Your cognitive load is moderate. Standard intensity recommended."</display>
+          <display>Warning if high (>70): "You're showing fatigue signs. Consider a lighter session or rest day."</display>
+        </data-display>
+      </component>
+
+      <component name="CalendarStatusWidget">
+        <description>Compact widget showing calendar integration status</description>
+        <design-tokens>
+          <token>Connected icon: ✓ Google Calendar (green checkmark)</token>
+          <token>Not connected: "Connect calendar for smarter scheduling" + button</token>
+          <token>Sync status: "Last sync: 10 min ago" or "Syncing..." spinner</token>
+        </design-tokens>
+        <interactions>
+          <interaction>Click "Connect": Redirect to OAuth flow</interaction>
+          <interaction>Click "Disconnect": Show confirmation dialog, revoke tokens</interaction>
+          <interaction>Click "Sync Now": Trigger manual calendar sync</interaction>
+          <interaction>Settings link: Navigate to full calendar settings page</interaction>
+        </interactions>
+      </component>
+    </ui-components>
+
+    <design-principles>
+      <principle>Glassmorphism for all cards and panels (bg-white/80 backdrop-blur-md)</principle>
+      <principle>OKLCH colors only (NO gradients per design system)</principle>
+      <principle>Responsive: Desktop (full details), Tablet (charts prioritized), Mobile (simplified cards)</principle>
+      <principle>Accessibility: WCAG 2.1 AA compliance, keyboard navigation, screen reader support</principle>
+      <principle>Keyboard shortcuts: Space to start session, B to take break, Esc to pause</principle>
+    </design-principles>
+  </design-system>
+
+  <success-metrics>
+    <metric id="M1" type="user-behavior">
+      <name>Orchestration Adherence Rate</name>
+      <target>60%+ of sessions follow recommendations</target>
+      <measurement>Count of sessions started at recommended time / total sessions</measurement>
+    </metric>
+
+    <metric id="M2" type="performance">
+      <name>Performance Improvement with Orchestration</name>
+      <target>20%+ better performance vs. self-scheduled</target>
+      <measurement>Compare avg session performance: orchestrated vs. non-orchestrated</measurement>
+    </metric>
+
+    <metric id="M3" type="accuracy">
+      <name>Optimal Time Recommendation Accuracy</name>
+      <target>75%+ of recommended times correlate with high performance</target>
+      <measurement>Pearson correlation between recommended times and actual session performance</measurement>
+    </metric>
+
+    <metric id="M4" type="user-satisfaction">
+      <name>User Satisfaction with Orchestration</name>
+      <target>80%+ positive feedback on recommendations</target>
+      <measurement>User feedback: "Helpful" + "Very helpful" / total feedback</measurement>
+    </metric>
+
+    <metric id="M5" type="calendar-integration">
+      <name>Calendar Integration Adoption</name>
+      <target>40%+ of users connect calendar</target>
+      <measurement>Count of users with CalendarIntegration.syncEnabled = true</measurement>
+    </metric>
+
+    <metric id="M6" type="real-time">
+      <name>In-Session Monitoring Latency</name>
+      <target>&lt;1s response time for break prompts</target>
+      <measurement>Client-side timestamp: Performance check → UI notification display</measurement>
+    </metric>
+
+    <metric id="M7" type="cognitive-load">
+      <name>Burnout Prevention Effectiveness</name>
+      <target>50%+ reduction in session abandonment for high-load users</target>
+      <measurement>Compare abandonment rate: before vs. after intensity modulation applied</measurement>
+    </metric>
+  </success-metrics>
+
+  <implementation-notes>
+    <note priority="CRITICAL">
+      <title>Extend Mission Model BEFORE Task 9</title>
+      <description>Create Prisma migration to add 5 orchestration fields to Mission model (Task 9.2) before updating MissionGenerator code (Task 9.1). This ensures type safety during development.</description>
+    </note>
+
+    <note priority="HIGH">
+      <title>Google Calendar OAuth Setup</title>
+      <description>Requires Google Cloud Console project setup: Create OAuth 2.0 client ID, add authorized redirect URIs (http://localhost:3000/api/calendar/callback for dev, production URL for deploy). Store credentials in .env.local: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET.</description>
+    </note>
+
+    <note priority="HIGH">
+      <title>Calendar Token Encryption</title>
+      <description>Use AES-256 encryption for storing OAuth tokens in CalendarIntegration model. Install crypto library, create encryption utility in apps/web/src/lib/crypto/token-encryption.ts. Never store plaintext tokens.</description>
+    </note>
+
+    <note priority="MEDIUM">
+      <title>Real-Time Session Monitoring Performance</title>
+      <description>To achieve &lt;1s latency for break prompts, use client-side performance tracking with Zustand store. Update every 5 minutes (not per-action). Server-side aggregation would be too slow for real-time UX.</description>
+    </note>
+
+    <note priority="MEDIUM">
+      <title>Content Sequencing with Existing Story 5.1 Data</title>
+      <description>ContentSequencer consumes UserLearningProfile.learningStyleProfile (VARK) from Story 5.1. Ensure Story 5.1 is fully operational and profile data exists before implementing Task 4.</description>
+    </note>
+
+    <note priority="LOW">
+      <title>Outlook Calendar Integration (Future)</title>
+      <description>Task 6.3 documents Outlook integration pattern but does not implement. For MVP, focus on Google Calendar only. Outlook can be added post-MVP with similar OAuth 2.0 flow via Microsoft Graph API.</description>
+    </note>
+
+    <note priority="LOW">
+      <title>Performance Optimization Opportunities</title>
+      <description>Cache orchestration recommendations for 24 hours (invalidate on schedule changes). Cache UserLearningProfile for 1 hour. Use Redis for high-traffic scenarios (not needed for MVP single-user).</description>
+    </note>
+  </implementation-notes>
+
+  <risks-and-mitigations>
+    <risk severity="HIGH">
+      <description>Calendar API rate limits exceeded (1M queries/day)</description>
+      <mitigation>Cache events for 1 hour. Sync max once per hour. Use exponential backoff on API errors. Monitor usage via Google Cloud Console.</mitigation>
+    </risk>
+
+    <risk severity="MEDIUM">
+      <description>User privacy concerns with calendar access</description>
+      <mitigation>Clear privacy notice in Settings UI: "We only read availability for scheduling. You can disconnect anytime." Encrypt tokens at rest. Provide easy disconnect button.</mitigation>
+    </risk>
+
+    <risk severity="MEDIUM">
+      <description>Orchestration recommendations feel restrictive (loss of autonomy)</description>
+      <mitigation>Always provide override options: "Start Now" vs. "Schedule for Later". Display reasoning: "Why this recommendation?" to build trust. Allow customization of session plans.</mitigation>
+    </risk>
+
+    <risk severity="LOW">
+      <description>Insufficient data for accurate recommendations (new users)</description>
+      <mitigation>Graceful degradation: Use default recommendations with low confidence scores. Message: "Complete 6 more weeks to unlock personalized timing." Show progress bar.</mitigation>
+    </risk>
+
+    <risk severity="LOW">
+      <description>Break prompts interrupt flow state (negative UX)</description>
+      <mitigation>Make breaks optional: User can skip, postpone (5 min), or take now. Use non-intrusive notifications (toast, not modal). Learn from user behavior (if always skips → adjust frequency).</mitigation>
+    </risk>
+  </risks-and-mitigations>
+</story-context>

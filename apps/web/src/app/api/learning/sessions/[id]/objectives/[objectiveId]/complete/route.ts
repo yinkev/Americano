@@ -1,8 +1,10 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { withErrorHandler } from '@/lib/api-error';
-import { z } from 'zod';
+import { NextRequest } from 'next/server'
+import { Prisma } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
+import { successResponse, errorResponse } from '@/lib/api-response'
+import { withErrorHandler } from '@/lib/api-error'
+import { getSessionMissionObjectives, getObjectiveCompletions, getMissionObjectives } from '@/types/mission-helpers'
+import { z } from 'zod'
 
 const completeObjectiveSchema = z.object({
   selfAssessment: z.number().min(1).max(5),
@@ -17,40 +19,42 @@ const completeObjectiveSchema = z.object({
 // POST /api/learning/sessions/:id/objectives/:objectiveId/complete (Story 2.5 Task 6.2)
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; objectiveId: string }> }
+  { params }: { params: Promise<{ id: string; objectiveId: string }> },
 ) {
   return withErrorHandler(async () => {
-    const resolvedParams = await params;
-    const body = await request.json();
-    const validatedData = completeObjectiveSchema.parse(body);
+    const resolvedParams = await params
+    const body = await request.json()
+    const validatedData = completeObjectiveSchema.parse(body)
 
     // Get user from header (MVP: no auth)
-    const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev';
+    const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev'
     const user = await prisma.user.findUnique({
       where: { email: userEmail },
-    });
+    })
 
     if (!user) {
-      throw new Error(`User not found: ${userEmail}`);
+      throw new Error(`User not found: ${userEmail}`)
     }
 
     // Load session
     const session = await prisma.studySession.findUnique({
       where: { id: resolvedParams.id },
       include: { mission: true },
-    });
+    })
 
     if (!session) {
-      throw new Error(`Session not found: ${resolvedParams.id}`);
+      throw new Error(`Session not found: ${resolvedParams.id}`)
     }
 
     if (session.userId !== user.id) {
-      throw new Error(`Unauthorized: User ${user.id} does not own session ${resolvedParams.id} (owned by ${session.userId})`);
+      throw new Error(
+        `Unauthorized: User ${user.id} does not own session ${resolvedParams.id} (owned by ${session.userId})`,
+      )
     }
 
     // Get current mission objectives snapshot
-    const missionObjectives = (session.missionObjectives || []) as any[];
-    const objectiveCompletions = (session.objectiveCompletions || []) as any[];
+    const missionObjectives = getSessionMissionObjectives(session.missionObjectives)
+    const objectiveCompletions = getObjectiveCompletions(session.objectiveCompletions)
 
     // Add completion record (Story 2.5 + Story 4.1 Task 6.7 + Story 4.2 Task 7.7)
     objectiveCompletions.push({
@@ -66,48 +70,46 @@ export async function POST(
     });
 
     // Increment objective index
-    const newIndex = session.currentObjectiveIndex + 1;
-    const nextObjective =
-      newIndex < missionObjectives.length ? missionObjectives[newIndex] : null;
+    const newIndex = session.currentObjectiveIndex + 1
+    const nextObjective = newIndex < missionObjectives.length ? missionObjectives[newIndex] : null
 
     // Update session
     const updatedSession = await prisma.studySession.update({
       where: { id: resolvedParams.id },
       data: {
         currentObjectiveIndex: newIndex,
-        objectiveCompletions: objectiveCompletions,
+        objectiveCompletions: objectiveCompletions as unknown as Prisma.InputJsonValue,
       },
-    });
+    })
 
     // Update mission objective completion status if mission exists
     if (session.missionId && session.mission) {
-      const missionObjectivesData = (session.mission.objectives || []) as any[];
-      const updatedMissionObjectives = missionObjectivesData.map((obj: any) => {
-        if (obj.objectiveId === resolvedParams.objectiveId) {
+      const missionObjectivesData = getMissionObjectives(session.mission)
+      const updatedMissionObjectives = missionObjectivesData.map((obj) => {
+        if (obj.id === resolvedParams.objectiveId) {
           return {
             ...obj,
             completed: true,
             completedAt: new Date().toISOString(),
-          };
+          }
         }
-        return obj;
-      });
+        return obj
+      })
 
       await prisma.mission.update({
         where: { id: session.missionId },
         data: {
-          objectives: updatedMissionObjectives,
-          completedObjectivesCount: updatedMissionObjectives.filter((o: any) => o.completed)
-            .length,
+          objectives: updatedMissionObjectives as unknown as Prisma.InputJsonValue,
+          completedObjectivesCount: updatedMissionObjectives.filter((o) => o.completed).length,
         },
-      });
+      })
     }
 
     // Calculate mission progress
     const missionProgress = {
       completed: objectiveCompletions.length,
       total: missionObjectives.length,
-    };
+    }
 
     return Response.json(
       successResponse({
@@ -117,7 +119,7 @@ export async function POST(
           completedObjectives: objectiveCompletions.length,
           totalObjectives: missionObjectives.length,
         },
-      })
-    );
-  })();
+      }),
+    )
+  })()
 }

@@ -100,10 +100,7 @@ async function POST(request: NextRequest) {
   })
 
   if (!course) {
-    throw new ApiError(
-      `Course ${courseId} not found or does not belong to user`,
-      404
-    )
+    throw new ApiError(`Course ${courseId} not found or does not belong to user`, 404)
   }
 
   // Create exam

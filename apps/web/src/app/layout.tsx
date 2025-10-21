@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
   formatDetection: {
     telephone: false,
-  }
+  },
 }
 
 export const viewport: Viewport = {
@@ -30,11 +30,7 @@ export const viewport: Viewport = {
   themeColor: '#0066cc',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased">

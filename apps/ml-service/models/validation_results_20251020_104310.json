@@ -1,0 +1,72 @@
+{
+  "validation_date": "2025-10-20T10:43:10.128187",
+  "dataset": {
+    "source": "synthetic",
+    "n_samples": 200,
+    "n_features": 15,
+    "class_distribution": {
+      "not_struggled": 140,
+      "struggled": 60
+    }
+  },
+  "cross_validation": {
+    "cv_accuracy_mean": 0.9949999999999999,
+    "cv_accuracy_std": 0.010000000000000009,
+    "cv_accuracy_min": 0.975,
+    "cv_accuracy_max": 1.0,
+    "cv_precision_mean": 1.0,
+    "cv_precision_std": 0.0,
+    "cv_recall_mean": 0.9833333333333332,
+    "cv_recall_std": 0.03333333333333335,
+    "cv_f1_mean": 0.9913043478260869,
+    "cv_f1_std": 0.017391304347826077,
+    "cv_roc_auc_mean": 1.0,
+    "cv_roc_auc_std": 0.0
+  },
+  "test_set_performance": {
+    "test_accuracy": 0.9666666666666667,
+    "test_precision": 1.0,
+    "test_recall": 0.8888888888888888,
+    "test_f1": 0.9411764705882353,
+    "test_roc_auc": 0.9973544973544974,
+    "confusion_matrix": {
+      "tn": 42,
+      "fp": 0,
+      "fn": 2,
+      "tp": 16
+    },
+    "n_test_samples": 60,
+    "n_correct": 58
+  },
+  "statistical_significance": {
+    "p_value": 1.5881393422567669e-15,
+    "alpha": 0.05,
+    "is_significant": true,
+    "observed_accuracy": 0.9666666666666667,
+    "null_accuracy": 0.5
+  },
+  "feature_importance": {
+    "retention_score": 0.07442532479763031,
+    "retention_decline_rate": 0.05636972934007645,
+    "review_lapse_rate": 0.18689779937267303,
+    "session_performance_score": 0.20643937587738037,
+    "validation_score": 0.17365756630897522,
+    "prerequisite_gap_count": 0.07744275033473969,
+    "prerequisite_mastery_gap": 0.0,
+    "content_complexity": 0.0,
+    "complexity_mismatch": 0.0,
+    "historical_struggle_score": 0.10182994604110718,
+    "content_type_mismatch": 0.0,
+    "cognitive_load_indicator": 0.0,
+    "days_until_exam": 0.12293751537799835,
+    "days_since_last_study": 0.0,
+    "workload_level": 0.0
+  },
+  "model_config": {
+    "algorithm": "XGBoost",
+    "max_depth": 5,
+    "learning_rate": 0.05,
+    "n_estimators": 200,
+    "random_seed": 42
+  }
+}

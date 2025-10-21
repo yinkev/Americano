@@ -5,27 +5,27 @@
  * Allows users to input self-assessment confidence levels
  */
 
-import { NextRequest } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response';
-import { PerformanceCalculator } from '@/lib/performance-calculator';
+import { NextRequest } from 'next/server'
+import { z } from 'zod'
+import { prisma } from '@/lib/db'
+import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
+import { PerformanceCalculator } from '@/lib/performance-calculator'
 
 const BodySchema = z.object({
   objectiveId: z.string().cuid(),
   confidenceLevel: z.number().int().min(1).max(5),
   notes: z.string().optional(),
-});
+})
 
 export async function POST(request: NextRequest) {
   try {
     // Hardcoded user for MVP
-    const userId = 'kevy@americano.dev';
+    const userId = 'kevy@americano.dev'
 
     // Parse request body
-    const body = await request.json();
-    const validated = BodySchema.parse(body);
-    const { objectiveId, confidenceLevel, notes } = validated;
+    const body = await request.json()
+    const validated = BodySchema.parse(body)
+    const { objectiveId, confidenceLevel, notes } = validated
 
     // Verify objective exists and user owns it
     const objective = await prisma.learningObjective.findUnique({
@@ -38,20 +38,19 @@ export async function POST(request: NextRequest) {
         },
         cards: true,
       },
-    });
+    })
 
     if (!objective) {
-      return Response.json(
-        errorResponse(ErrorCodes.NOT_FOUND, 'Learning objective not found'),
-        { status: 404 }
-      );
+      return Response.json(errorResponse(ErrorCodes.NOT_FOUND, 'Learning objective not found'), {
+        status: 404,
+      })
     }
 
     if (objective.lecture.userId !== userId) {
       return Response.json(
         errorResponse(ErrorCodes.UNAUTHORIZED, 'Unauthorized to assess this objective'),
-        { status: 403 }
-      );
+        { status: 403 },
+      )
     }
 
     // Fetch reviews for weakness calculation
@@ -62,14 +61,14 @@ export async function POST(request: NextRequest) {
           objectiveId,
         },
       },
-    });
+    })
 
     // Recalculate weakness score with user confidence
     const weaknessScore = PerformanceCalculator.calculateWeaknessScore(
       objective,
       reviews,
-      confidenceLevel
-    );
+      confidenceLevel,
+    )
 
     // Update objective with new weakness score
     await prisma.learningObjective.update({
@@ -77,7 +76,7 @@ export async function POST(request: NextRequest) {
       data: {
         weaknessScore,
       },
-    });
+    })
 
     // Log self-assessment as behavioral event (optional)
     // Could be used for future analytics
@@ -93,7 +92,7 @@ export async function POST(request: NextRequest) {
             weaknessScore,
           },
         },
-      });
+      })
     }
 
     return Response.json(
@@ -101,20 +100,19 @@ export async function POST(request: NextRequest) {
         success: true,
         weaknessScore,
         message: `Confidence recorded: ${confidenceLevel}/5`,
-      })
-    );
+      }),
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return Response.json(
-        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Invalid request body'),
-        { status: 400 }
-      );
+      return Response.json(errorResponse(ErrorCodes.VALIDATION_ERROR, 'Invalid request body'), {
+        status: 400,
+      })
     }
 
-    console.error('Error recording self-assessment:', error);
+    console.error('Error recording self-assessment:', error)
     return Response.json(
       errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to record self-assessment'),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

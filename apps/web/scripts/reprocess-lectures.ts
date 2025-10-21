@@ -4,11 +4,11 @@
  * Run with: npx tsx scripts/reprocess-lectures.ts
  */
 
-import { prisma } from '../src/lib/db';
-import { ProcessingOrchestrator } from '../src/subsystems/content-processing/processing-orchestrator';
+import { prisma } from '../src/lib/db'
+import { ProcessingOrchestrator } from '../src/subsystems/content-processing/processing-orchestrator'
 
 async function reprocessLectures() {
-  console.log('🔄 Starting lecture reprocessing...\n');
+  console.log('🔄 Starting lecture reprocessing...\n')
 
   // Get all completed lectures without learning objectives
   const lectures = await prisma.lecture.findMany({
@@ -22,39 +22,37 @@ async function reprocessLectures() {
         },
       },
     },
-  });
+  })
 
-  const lecturesNeedingReprocess = lectures.filter(
-    (l) => l._count.learningObjectives === 0
-  );
+  const lecturesNeedingReprocess = lectures.filter((l) => l._count.learningObjectives === 0)
 
-  console.log(`Found ${lecturesNeedingReprocess.length} lectures needing reprocessing:\n`);
+  console.log(`Found ${lecturesNeedingReprocess.length} lectures needing reprocessing:\n`)
 
   for (const lecture of lecturesNeedingReprocess) {
-    console.log(`📄 ${lecture.title}`);
+    console.log(`📄 ${lecture.title}`)
   }
 
-  console.log('\n🚀 Starting reprocessing...\n');
+  console.log('\n🚀 Starting reprocessing...\n')
 
-  const orchestrator = new ProcessingOrchestrator();
+  const orchestrator = new ProcessingOrchestrator()
 
   for (const lecture of lecturesNeedingReprocess) {
-    console.log(`\n⏳ Processing: ${lecture.title}`);
+    console.log(`\n⏳ Processing: ${lecture.title}`)
 
     try {
-      const result = await orchestrator.processLecture(lecture.id);
+      const result = await orchestrator.processLecture(lecture.id)
 
       if (result.success) {
-        console.log(`✅ Success: ${lecture.title}`);
+        console.log(`✅ Success: ${lecture.title}`)
       } else {
-        console.log(`❌ Failed: ${lecture.title} - ${result.error}`);
+        console.log(`❌ Failed: ${lecture.title} - ${result.error}`)
       }
     } catch (error) {
-      console.error(`❌ Error processing ${lecture.title}:`, error);
+      console.error(`❌ Error processing ${lecture.title}:`, error)
     }
   }
 
-  console.log('\n✨ Reprocessing complete!\n');
+  console.log('\n✨ Reprocessing complete!\n')
 
   // Show results
   const updatedLectures = await prisma.lecture.findMany({
@@ -65,19 +63,17 @@ async function reprocessLectures() {
         },
       },
     },
-  });
+  })
 
-  console.log('📊 Final results:');
+  console.log('📊 Final results:')
   for (const lecture of updatedLectures) {
-    console.log(
-      `  - ${lecture.title}: ${lecture._count.learningObjectives} objectives`
-    );
+    console.log(`  - ${lecture.title}: ${lecture._count.learningObjectives} objectives`)
   }
 
-  await prisma.$disconnect();
+  await prisma.$disconnect()
 }
 
 reprocessLectures().catch((error) => {
-  console.error('Fatal error:', error);
-  process.exit(1);
-});
+  console.error('Fatal error:', error)
+  process.exit(1)
+})

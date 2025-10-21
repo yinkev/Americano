@@ -8,13 +8,31 @@
       ],
       "env": {
         "DEFAULT_MINIMUM_TOKENS": ""
-      }
+      },
+      "alwaysAllow": [
+        "get-library-docs",
+        "resolve-library-id"
+      ],
+      "timeout": 60,
+      "disabled": false,
+      "disabledTools": []
     },
     "memory": {
       "command": "npx",
       "args": [
         "-y",
         "@modelcontextprotocol/server-memory"
+      ],
+      "alwaysAllow": [
+        "create_entities",
+        "create_relations",
+        "add_observations",
+        "delete_entities",
+        "open_nodes",
+        "search_nodes",
+        "delete_observations",
+        "read_graph",
+        "delete_relations"
       ]
     }
   }

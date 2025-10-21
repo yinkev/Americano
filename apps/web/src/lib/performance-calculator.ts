@@ -9,6 +9,7 @@
 import type { Card, LearningObjective, Review } from '@/generated/prisma'
 import { MasteryLevel, ReviewRating } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
+import { getObjectiveCompletions, getSessionMissionObjectives } from '@/types/mission-helpers'
 
 // Mastery thresholds (Story 2.2 spec)
 const MASTERY_THRESHOLDS = {
@@ -370,12 +371,12 @@ export class PerformanceCalculator {
       throw new Error(`Session ${sessionId} not found`)
     }
 
-    const objectiveCompletions = (session.objectiveCompletions || []) as any[]
-    const missionObjectives = (session.missionObjectives || []) as any[]
+    const objectiveCompletions = getObjectiveCompletions(session.objectiveCompletions)
+    const missionObjectives = getSessionMissionObjectives(session.missionObjectives)
 
     // Calculate objective-level metrics
     const objectiveMetrics = await Promise.all(
-      objectiveCompletions.map(async (completion: any) => {
+      objectiveCompletions.map(async (completion) => {
         const objective = await prisma.learningObjective.findUnique({
           where: { id: completion.objectiveId },
         })
@@ -386,7 +387,7 @@ export class PerformanceCalculator {
 
         // Get estimated time from mission objectives
         const missionObjective = missionObjectives.find(
-          (mo: any) => mo.objectiveId === completion.objectiveId,
+          (mo) => mo.id === completion.objectiveId,
         )
         const estimatedTimeMs = (missionObjective?.estimatedMinutes || 20) * 60 * 1000
         const timeSpentMs = completion.timeSpentMs || 0
@@ -555,7 +556,7 @@ export class PerformanceCalculator {
       throw new Error(`Session ${sessionId} not found`)
     }
 
-    const objectiveCompletions = (session.objectiveCompletions || []) as any[]
+    const objectiveCompletions = getObjectiveCompletions(session.objectiveCompletions)
 
     // Update each objective's performance based on session data
     for (const completion of objectiveCompletions) {
@@ -693,8 +694,8 @@ export class PerformanceCalculator {
     }
 
     for (const session of sessions) {
-      const objectiveCompletions = (session.objectiveCompletions || []) as any[]
-      const missionObjectives = (session.missionObjectives || []) as any[]
+      const objectiveCompletions = getObjectiveCompletions(session.objectiveCompletions)
+      const missionObjectives = getSessionMissionObjectives(session.missionObjectives)
 
       for (const completion of objectiveCompletions) {
         const objective = await prisma.learningObjective.findUnique({
@@ -704,7 +705,7 @@ export class PerformanceCalculator {
         if (!objective) continue
 
         const missionObjective = missionObjectives.find(
-          (mo: any) => mo.objectiveId === completion.objectiveId,
+          (mo) => mo.id === completion.objectiveId,
         )
         const estimatedTimeMs = (missionObjective?.estimatedMinutes || 20) * 60 * 1000
         const actualTimeMs = completion.timeSpentMs || 0

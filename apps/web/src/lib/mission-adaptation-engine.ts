@@ -19,11 +19,7 @@ const ADAPTATION_COOLDOWN_DAYS = 7 // Max 1 adaptation per week
 /**
  * Pattern types detected in user mission behavior
  */
-type PatternType =
-  | 'LOW_COMPLETION'
-  | 'HIGH_COMPLETION'
-  | 'TIME_INACCURACY'
-  | 'SKIPPED_TYPES'
+type PatternType = 'LOW_COMPLETION' | 'HIGH_COMPLETION' | 'TIME_INACCURACY' | 'SKIPPED_TYPES'
 
 /**
  * Detected behavior pattern
@@ -102,10 +98,9 @@ export class MissionAdaptationEngine {
     })
 
     const avgCompletionRate =
-      completionRates.reduce((sum, rate) => sum + rate, 0) /
-      completionRates.length
+      completionRates.reduce((sum, rate) => sum + rate, 0) / completionRates.length
     const lowCompletionCount = completionRates.filter(
-      (rate) => rate < LOW_COMPLETION_THRESHOLD
+      (rate) => rate < LOW_COMPLETION_THRESHOLD,
     ).length
 
     if (
@@ -125,7 +120,7 @@ export class MissionAdaptationEngine {
 
     // Pattern 2: High completion rate
     const highCompletionCount = completionRates.filter(
-      (rate) => rate > HIGH_COMPLETION_THRESHOLD
+      (rate) => rate > HIGH_COMPLETION_THRESHOLD,
     ).length
 
     if (
@@ -157,11 +152,9 @@ export class MissionAdaptationEngine {
 
     if (timeAccuracies.length >= PATTERN_CONFIDENCE_THRESHOLD) {
       const avgAccuracy =
-        timeAccuracies.reduce((sum, t) => sum + t.accuracy, 0) /
-        timeAccuracies.length
+        timeAccuracies.reduce((sum, t) => sum + t.accuracy, 0) / timeAccuracies.length
       const avgDifference =
-        timeAccuracies.reduce((sum, t) => sum + t.difference, 0) /
-        timeAccuracies.length
+        timeAccuracies.reduce((sum, t) => sum + t.difference, 0) / timeAccuracies.length
 
       if (avgAccuracy < 0.7) {
         patterns.push({
@@ -228,9 +221,9 @@ export class MissionAdaptationEngine {
    * @param patterns - Detected behavioral patterns
    * @returns Actionable recommendations
    */
-  generateAdaptationRecommendations(
-    patterns: BehaviorPattern[]
-  ): { recommendations: AdaptationRecommendation[] } {
+  generateAdaptationRecommendations(patterns: BehaviorPattern[]): {
+    recommendations: AdaptationRecommendation[]
+  } {
     const recommendations: AdaptationRecommendation[] = []
 
     for (const pattern of patterns) {
@@ -240,10 +233,8 @@ export class MissionAdaptationEngine {
           recommendations.push({
             action: 'REDUCE_DURATION',
             value: 0.85, // Reduce by 15%
-            reason: `Completion rate ${(
-              pattern.details.avgCompletionRate * 100
-            ).toFixed(
-              1
+            reason: `Completion rate ${(pattern.details.avgCompletionRate * 100).toFixed(
+              1,
             )}% is below optimal 70% threshold. Shorter missions may improve completion.`,
             priority: 'HIGH',
           })
@@ -260,10 +251,8 @@ export class MissionAdaptationEngine {
           recommendations.push({
             action: 'INCREASE_COMPLEXITY',
             value: 1, // Add 1 more objective
-            reason: `Completion rate ${(
-              pattern.details.avgCompletionRate * 100
-            ).toFixed(
-              1
+            reason: `Completion rate ${(pattern.details.avgCompletionRate * 100).toFixed(
+              1,
             )}% is above optimal 90% threshold. Increase challenge for better engagement.`,
             priority: 'MEDIUM',
           })
@@ -278,7 +267,7 @@ export class MissionAdaptationEngine {
               action: 'REDUCE_DURATION',
               value: 0.9, // Reduce by 10%
               reason: `Consistently taking ${Math.abs(avgDiff).toFixed(
-                0
+                0,
               )} minutes longer than estimated. Adjusting mission duration.`,
               priority: 'MEDIUM',
             })
@@ -288,7 +277,7 @@ export class MissionAdaptationEngine {
               action: 'INCREASE_COMPLEXITY',
               value: 1,
               reason: `Consistently finishing ${Math.abs(avgDiff).toFixed(
-                0
+                0,
               )} minutes early. Adding objectives to better utilize study time.`,
               priority: 'LOW',
             })
@@ -302,7 +291,7 @@ export class MissionAdaptationEngine {
             value: {
               remove: [pattern.details.objectiveType],
               reason: `Skipping ${(pattern.details.skipRate * 100).toFixed(
-                0
+                0,
               )}% of ${pattern.details.objectiveType} objectives`,
             },
             reason: `Consistently skipping ${
@@ -316,9 +305,7 @@ export class MissionAdaptationEngine {
 
     // Sort by priority (HIGH > MEDIUM > LOW)
     const priorityOrder = { HIGH: 3, MEDIUM: 2, LOW: 1 }
-    recommendations.sort(
-      (a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]
-    )
+    recommendations.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority])
 
     return { recommendations }
   }
@@ -334,7 +321,7 @@ export class MissionAdaptationEngine {
    */
   async applyAdaptations(
     userId: string,
-    recommendations: AdaptationRecommendation[]
+    recommendations: AdaptationRecommendation[],
   ): Promise<void> {
     // Check adaptation cooldown
     const user = await prisma.user.findUnique({
@@ -349,24 +336,21 @@ export class MissionAdaptationEngine {
     // Enforce 7-day cooldown
     if (user.lastMissionAdaptation) {
       const daysSinceLastAdaptation = Math.floor(
-        (Date.now() - user.lastMissionAdaptation.getTime()) /
-          (1000 * 60 * 60 * 24)
+        (Date.now() - user.lastMissionAdaptation.getTime()) / (1000 * 60 * 60 * 24),
       )
 
       if (daysSinceLastAdaptation < ADAPTATION_COOLDOWN_DAYS) {
         console.log(
           `Adaptation cooldown active. ${
             ADAPTATION_COOLDOWN_DAYS - daysSinceLastAdaptation
-          } days remaining.`
+          } days remaining.`,
         )
         return
       }
     }
 
     // Apply high-priority recommendations only
-    const highPriorityRecs = recommendations.filter(
-      (r) => r.priority === 'HIGH'
-    )
+    const highPriorityRecs = recommendations.filter((r) => r.priority === 'HIGH')
 
     if (highPriorityRecs.length === 0) {
       console.log('No high-priority adaptations to apply.')
@@ -409,8 +393,6 @@ export class MissionAdaptationEngine {
       data: updates,
     })
 
-    console.log(
-      `Applied ${highPriorityRecs.length} adaptations for user ${userId}`
-    )
+    console.log(`Applied ${highPriorityRecs.length} adaptations for user ${userId}`)
   }
 }

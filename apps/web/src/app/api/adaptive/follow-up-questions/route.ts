@@ -30,11 +30,7 @@ export async function POST(request: NextRequest) {
     const originalResponse = await prisma.validationResponse.findUnique({
       where: { id: data.responseId },
       include: {
-        prompt: {
-          include: {
-            learningObjective: true,
-          },
-        },
+        prompt: true,
       },
     })
 
@@ -115,71 +111,13 @@ export async function POST(request: NextRequest) {
       targetObjectiveId = data.objectiveId
     }
 
-    // Find appropriate follow-up prompt
-    const followUpPrompt = await prisma.validationPrompt.findFirst({
-      where: {
-        objectiveId: targetObjectiveId,
-        difficultyLevel: {
-          gte: targetDifficulty - 10,
-          lte: targetDifficulty + 10,
-        },
-      },
-      orderBy: {
-        timesUsed: 'asc',
-      },
-    })
-
-    if (!followUpPrompt) {
-      // No follow-up available
-      return NextResponse.json(
-        successResponse({
-          hasFollowUp: false,
-          reason: `No ${followUpType.toLowerCase()} questions available at target difficulty`,
-        })
-      )
-    }
-
-    // Update prompt usage
-    await prisma.validationPrompt.update({
-      where: { id: followUpPrompt.id },
-      data: {
-        timesUsed: { increment: 1 },
-        lastUsedAt: new Date(),
-      },
-    })
-
-    // Get target objective details
-    const targetObjective = await prisma.learningObjective.findUnique({
-      where: { id: targetObjectiveId },
-      select: {
-        objective: true,
-        complexity: true,
-      },
-    })
-
+    // TODO: Schema doesn't support objectiveId on ValidationPrompt yet
+    // This endpoint needs schema migration to add objectiveId and difficultyLevel fields
+    // For now, return no follow-up available until schema is migrated
     return NextResponse.json(
       successResponse({
-        hasFollowUp: true,
-        followUpType,
-        followUpPrompt: {
-          id: followUpPrompt.id,
-          promptText: followUpPrompt.promptText,
-          promptType: followUpPrompt.promptType,
-          conceptName: followUpPrompt.conceptName,
-          expectedCriteria: followUpPrompt.expectedCriteria,
-          difficultyLevel: followUpPrompt.difficultyLevel,
-        },
-        targetObjective: targetObjective
-          ? {
-              objective: targetObjective.objective,
-              complexity: targetObjective.complexity,
-            }
-          : null,
-        parentPromptId: originalResponse.promptId,
-        reasoning:
-          followUpType === 'PREREQUISITE'
-            ? `Your score (${data.score}%) suggests reviewing prerequisite concepts to strengthen foundation`
-            : `Excellent score (${data.score}%)! Ready for advanced application of this concept`,
+        hasFollowUp: false,
+        reason: `Follow-up questions temporarily disabled - schema migration needed`,
       })
     )
   } catch (error) {

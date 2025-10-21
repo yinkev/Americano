@@ -45,7 +45,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   })
 
   if (!user) {
-    return Response.json(errorResponse('USER_NOT_FOUND', `User ${userEmail} not found`), { status: 404 })
+    return Response.json(errorResponse('USER_NOT_FOUND', `User ${userEmail} not found`), {
+      status: 404,
+    })
   }
 
   // Initialize analytics engine
@@ -53,10 +55,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const insightsEngine = new MissionInsightsEngine()
 
   // Calculate completion rate for period
-  const completionRate = await analyticsEngine.calculateCompletionRate(
-    user.id,
-    params.period
-  )
+  const completionRate = await analyticsEngine.calculateCompletionRate(user.id, params.period)
 
   // Get streak data
   const missionStreak = await prisma.missionStreak.findUnique({
@@ -81,14 +80,11 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     },
   })
 
-  const successScores = missions
-    .filter((m) => m.successScore !== null)
-    .map((m) => m.successScore!)
+  const successScores = missions.filter((m) => m.successScore !== null).map((m) => m.successScore!)
 
   const avgSuccessScore =
     successScores.length > 0
-      ? successScores.reduce((sum, score) => sum + score, 0) /
-        successScores.length
+      ? successScores.reduce((sum, score) => sum + score, 0) / successScores.length
       : 0
 
   // Get mission counts
@@ -103,40 +99,41 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   // Calculate mission-guided vs. free-form study comparison
   // Default to '90d' if 'all' is selected
   const comparisonPeriod = params.period === 'all' ? '90d' : params.period
-  const comparison = await analyticsEngine.compareMissionVsFreeStudy(
-    user.id,
-    comparisonPeriod
-  )
+  const comparison = await analyticsEngine.compareMissionVsFreeStudy(user.id, comparisonPeriod)
 
-  return Response.json(successResponse({
-    completionRate: Number(completionRate.toFixed(3)),
-    streak,
-    successScore: Number(avgSuccessScore.toFixed(3)),
-    missions: {
-      completed: completedMissions,
-      skipped: skippedMissions,
-      total: totalMissions,
-    },
-    insights: insightTexts,
-    comparison: {
-      missionGuided: {
-        sessions: comparison.missionGuidedStats.sessionCount,
-        masteryImprovement: Number(comparison.missionGuidedStats.avgMasteryImprovement.toFixed(3)),
-        completionRate: Number(comparison.missionGuidedStats.completionRate.toFixed(3)),
-        efficiency: Number(comparison.missionGuidedStats.studyEfficiency.toFixed(2)),
+  return Response.json(
+    successResponse({
+      completionRate: Number(completionRate.toFixed(3)),
+      streak,
+      successScore: Number(avgSuccessScore.toFixed(3)),
+      missions: {
+        completed: completedMissions,
+        skipped: skippedMissions,
+        total: totalMissions,
       },
-      freeStudy: {
-        sessions: comparison.freeStudyStats.sessionCount,
-        masteryImprovement: Number(comparison.freeStudyStats.avgMasteryImprovement.toFixed(3)),
-        completionRate: Number(comparison.freeStudyStats.completionRate.toFixed(3)),
-        efficiency: Number(comparison.freeStudyStats.studyEfficiency.toFixed(2)),
+      insights: insightTexts,
+      comparison: {
+        missionGuided: {
+          sessions: comparison.missionGuidedStats.sessionCount,
+          masteryImprovement: Number(
+            comparison.missionGuidedStats.avgMasteryImprovement.toFixed(3),
+          ),
+          completionRate: Number(comparison.missionGuidedStats.completionRate.toFixed(3)),
+          efficiency: Number(comparison.missionGuidedStats.studyEfficiency.toFixed(2)),
+        },
+        freeStudy: {
+          sessions: comparison.freeStudyStats.sessionCount,
+          masteryImprovement: Number(comparison.freeStudyStats.avgMasteryImprovement.toFixed(3)),
+          completionRate: Number(comparison.freeStudyStats.completionRate.toFixed(3)),
+          efficiency: Number(comparison.freeStudyStats.studyEfficiency.toFixed(2)),
+        },
+        improvementPercentage: Number(comparison.improvementPercentage.toFixed(1)),
+        confidence: comparison.confidence,
+        pValue: Number(comparison.pValue.toFixed(3)),
+        insight: comparison.insight,
       },
-      improvementPercentage: Number(comparison.improvementPercentage.toFixed(1)),
-      confidence: comparison.confidence,
-      pValue: Number(comparison.pValue.toFixed(3)),
-      insight: comparison.insight,
-    },
-  }))
+    }),
+  )
 })
 
 /**

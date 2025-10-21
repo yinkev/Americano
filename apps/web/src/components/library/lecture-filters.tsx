@@ -1,30 +1,30 @@
-"use client"
+'use client'
 
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
+} from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 
 interface Course {
-  id: string;
-  name: string;
-  code: string | null;
+  id: string
+  name: string
+  code: string | null
 }
 
 interface LectureFiltersProps {
-  courses: Course[];
-  selectedCourse: string;
-  selectedStatus: string;
-  sortBy: string;
-  sortOrder: 'asc' | 'desc';
-  onCourseChange: (courseId: string) => void;
-  onStatusChange: (status: string) => void;
-  onSortChange: (field: string, order: 'asc' | 'desc') => void;
+  courses: Course[]
+  selectedCourse: string
+  selectedStatus: string
+  sortBy: string
+  sortOrder: 'asc' | 'desc'
+  onCourseChange: (courseId: string) => void
+  onStatusChange: (status: string) => void
+  onSortChange: (field: string, order: 'asc' | 'desc') => void
 }
 
 export function LectureFilters({
@@ -38,8 +38,8 @@ export function LectureFilters({
   onSortChange,
 }: LectureFiltersProps) {
   const toggleSortOrder = () => {
-    onSortChange(sortBy, sortOrder === 'asc' ? 'desc' : 'asc');
-  };
+    onSortChange(sortBy, sortOrder === 'asc' ? 'desc' : 'asc')
+  }
 
   return (
     <div className="flex flex-wrap gap-4 mb-6 p-4 bg-muted/30 rounded-md">
@@ -97,5 +97,5 @@ export function LectureFilters({
         {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
       </Button>
     </div>
-  );
+  )
 }

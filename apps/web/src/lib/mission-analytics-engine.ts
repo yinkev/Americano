@@ -100,7 +100,7 @@ export class MissionAnalyticsEngine {
    */
   async calculateDailyAnalytics(
     userId: string,
-    date: Date = this.yesterday()
+    date: Date = this.yesterday(),
   ): Promise<{
     userId: string
     date: Date
@@ -133,12 +133,8 @@ export class MissionAnalyticsEngine {
     })
 
     const missionsGenerated = missions.length
-    const missionsCompleted = missions.filter(
-      (m) => m.status === MissionStatus.COMPLETED
-    ).length
-    const missionsSkipped = missions.filter(
-      (m) => m.status === MissionStatus.SKIPPED
-    ).length
+    const missionsCompleted = missions.filter((m) => m.status === MissionStatus.COMPLETED).length
+    const missionsSkipped = missions.filter((m) => m.status === MissionStatus.SKIPPED).length
 
     // Calculate average completion rate (objectives completed / total objectives)
     const completionRates = missions
@@ -152,8 +148,7 @@ export class MissionAnalyticsEngine {
 
     const avgCompletionRate =
       completionRates.length > 0
-        ? completionRates.reduce((sum, rate) => sum + rate, 0) /
-          completionRates.length
+        ? completionRates.reduce((sum, rate) => sum + rate, 0) / completionRates.length
         : 0
 
     // Calculate average time accuracy (1.0 - abs(actual - estimated) / estimated)
@@ -167,8 +162,7 @@ export class MissionAnalyticsEngine {
 
     const avgTimeAccuracy =
       timeAccuracies.length > 0
-        ? timeAccuracies.reduce((sum, acc) => sum + acc, 0) /
-          timeAccuracies.length
+        ? timeAccuracies.reduce((sum, acc) => sum + acc, 0) / timeAccuracies.length
         : 0
 
     // Calculate average difficulty rating from feedback
@@ -178,8 +172,7 @@ export class MissionAnalyticsEngine {
 
     const avgDifficultyRating =
       difficultyRatings.length > 0
-        ? difficultyRatings.reduce((sum, rating) => sum + rating, 0) /
-          difficultyRatings.length
+        ? difficultyRatings.reduce((sum, rating) => sum + rating, 0) / difficultyRatings.length
         : 0
 
     // Calculate average success score
@@ -189,8 +182,7 @@ export class MissionAnalyticsEngine {
 
     const avgSuccessScore =
       successScores.length > 0
-        ? successScores.reduce((sum, score) => sum + score, 0) /
-          successScores.length
+        ? successScores.reduce((sum, score) => sum + score, 0) / successScores.length
         : 0
 
     return {
@@ -217,10 +209,7 @@ export class MissionAnalyticsEngine {
    * @param period - Time period ('7d', '30d', '90d', 'all')
    * @returns Completion rate (0.0-1.0)
    */
-  async calculateCompletionRate(
-    userId: string,
-    period: AnalyticsPeriod
-  ): Promise<number> {
+  async calculateCompletionRate(userId: string, period: AnalyticsPeriod): Promise<number> {
     const startDate = this.getStartDateForPeriod(period)
 
     const missions = await prisma.mission.findMany({
@@ -235,9 +224,7 @@ export class MissionAnalyticsEngine {
     })
 
     const totalMissions = missions.length
-    const completedMissions = missions.filter(
-      (m) => m.status === MissionStatus.COMPLETED
-    ).length
+    const completedMissions = missions.filter((m) => m.status === MissionStatus.COMPLETED).length
 
     return totalMissions > 0 ? completedMissions / totalMissions : 0
   }
@@ -254,9 +241,7 @@ export class MissionAnalyticsEngine {
    * @param userId - User ID
    * @returns Performance correlation data
    */
-  async detectPerformanceCorrelation(
-    userId: string
-  ): Promise<PerformanceCorrelation> {
+  async detectPerformanceCorrelation(userId: string): Promise<PerformanceCorrelation> {
     // Get missions with completion data
     const missions = await prisma.mission.findMany({
       where: {
@@ -300,15 +285,14 @@ export class MissionAnalyticsEngine {
       const objectives = mission.objectives as Array<{ completed?: boolean }>
       const totalObjectives = objectives.length
       const completedObjectives = objectives.filter((o) => o.completed).length
-      const completionRate =
-        totalObjectives > 0 ? completedObjectives / totalObjectives : 0
+      const completionRate = totalObjectives > 0 ? completedObjectives / totalObjectives : 0
 
       // Calculate mastery improvement from session reviews
       // This is a simplified metric - in production, integrate with Story 2.2's PerformanceCalculator
       let masteryImprovement = 0
       for (const session of mission.studySessions) {
         const correctReviews = session.reviews.filter(
-          (r) => r.rating === 'GOOD' || r.rating === 'EASY'
+          (r) => r.rating === 'GOOD' || r.rating === 'EASY',
         ).length
         const totalReviews = session.reviews.length
         if (totalReviews > 0) {
@@ -318,9 +302,7 @@ export class MissionAnalyticsEngine {
 
       // Normalize improvement to 0.0-1.0 range
       masteryImprovement =
-        mission.studySessions.length > 0
-          ? masteryImprovement / mission.studySessions.length
-          : 0
+        mission.studySessions.length > 0 ? masteryImprovement / mission.studySessions.length : 0
 
       dataPoints.push({
         completionRate,
@@ -345,19 +327,19 @@ export class MissionAnalyticsEngine {
     let insight = ''
     if (r > 0.7 && pValue < 0.01) {
       insight = `Mission completion rate shows strong positive correlation (r=${r.toFixed(
-        2
+        2,
       )}, p<0.01) with mastery improvement. Users with 85%+ completion improve 23% faster.`
     } else if (r > 0.5 && pValue < 0.05) {
       insight = `Mission completion rate shows moderate positive correlation (r=${r.toFixed(
-        2
+        2,
       )}, p<0.05) with mastery improvement. Completing missions consistently improves learning outcomes.`
     } else if (r > 0.3) {
       insight = `Mission completion rate shows weak positive correlation (r=${r.toFixed(
-        2
+        2,
       )}) with mastery improvement. More data needed for conclusive analysis.`
     } else {
       insight = `No significant correlation detected between mission completion and mastery improvement (r=${r.toFixed(
-        2
+        2,
       )}). Consider reviewing mission relevance and difficulty.`
     }
 
@@ -381,9 +363,7 @@ export class MissionAnalyticsEngine {
    * @param userId - User ID
    * @returns Mission adjustment recommendations
    */
-  async recommendMissionAdjustments(
-    userId: string
-  ): Promise<MissionAdjustments> {
+  async recommendMissionAdjustments(userId: string): Promise<MissionAdjustments> {
     // Get last 14 missions for pattern detection
     const missions = await prisma.mission.findMany({
       where: { userId },
@@ -408,14 +388,12 @@ export class MissionAnalyticsEngine {
     // Check for consistent low completion (<70%)
     if (completionRate < OPTIMAL_COMPLETION_RATE_MIN) {
       // Recommend reducing duration
-      const avgDuration =
-        missions.reduce((sum, m) => sum + m.estimatedMinutes, 0) /
-        missions.length
+      const avgDuration = missions.reduce((sum, m) => sum + m.estimatedMinutes, 0) / missions.length
       adjustments.duration = {
         current: Math.round(avgDuration),
         recommended: Math.round(avgDuration * 0.85), // Reduce by 15%
         reason: `Completion rate ${(completionRate * 100).toFixed(
-          1
+          1,
         )}% is below optimal 70-90% range. Shorter missions may improve completion.`,
       }
       confidence += 0.3
@@ -428,7 +406,7 @@ export class MissionAnalyticsEngine {
         current: 'MODERATE',
         recommended: 'CHALLENGING',
         reason: `Completion rate ${(completionRate * 100).toFixed(
-          1
+          1,
         )}% is above optimal 70-90% range. Increase challenge for better engagement.`,
       }
       confidence += 0.3
@@ -445,8 +423,7 @@ export class MissionAnalyticsEngine {
 
     const avgTimeAccuracy =
       timeAccuracies.length > 0
-        ? timeAccuracies.reduce((sum, acc) => sum + acc, 0) /
-          timeAccuracies.length
+        ? timeAccuracies.reduce((sum, acc) => sum + acc, 0) / timeAccuracies.length
         : 1.0
 
     // If consistently finishing early, can add more objectives
@@ -485,7 +462,7 @@ export class MissionAnalyticsEngine {
    */
   async compareMissionVsFreeStudy(
     userId: string,
-    period: '7d' | '30d' | '90d'
+    period: '7d' | '30d' | '90d',
   ): Promise<StudyComparison> {
     const startDate = this.getStartDateForPeriod(period)
 
@@ -541,22 +518,15 @@ export class MissionAnalyticsEngine {
     }
 
     // Calculate stats for mission-guided sessions
-    const missionGuidedStats = await this.calculateSessionGroupStats(
-      missionGuidedSessions,
-      userId
-    )
+    const missionGuidedStats = await this.calculateSessionGroupStats(missionGuidedSessions, userId)
 
     // Calculate stats for free-form sessions
-    const freeStudyStats = await this.calculateSessionGroupStats(
-      freeStudySessions,
-      userId
-    )
+    const freeStudyStats = await this.calculateSessionGroupStats(freeStudySessions, userId)
 
     // Calculate improvement percentage (mission-guided vs. free-form)
     const improvementPercentage =
       freeStudyStats.avgMasteryImprovement > 0
-        ? ((missionGuidedStats.avgMasteryImprovement -
-            freeStudyStats.avgMasteryImprovement) /
+        ? ((missionGuidedStats.avgMasteryImprovement - freeStudyStats.avgMasteryImprovement) /
             freeStudyStats.avgMasteryImprovement) *
           100
         : 0
@@ -566,7 +536,7 @@ export class MissionAnalyticsEngine {
       missionGuidedSessions,
       freeStudySessions,
       missionGuidedStats.avgMasteryImprovement,
-      freeStudyStats.avgMasteryImprovement
+      freeStudyStats.avgMasteryImprovement,
     )
 
     // Generate insight
@@ -624,9 +594,7 @@ export class MissionAnalyticsEngine {
   private calculateCompletionRateFromMissions(missions: any[]): number {
     if (missions.length === 0) return 0
 
-    const completed = missions.filter(
-      (m) => m.status === MissionStatus.COMPLETED
-    ).length
+    const completed = missions.filter((m) => m.status === MissionStatus.COMPLETED).length
     return completed / missions.length
   }
 
@@ -641,16 +609,14 @@ export class MissionAnalyticsEngine {
    * @returns Correlation coefficient (r) and p-value
    */
   private calculatePearsonCorrelation(
-    dataPoints: Array<{ completionRate: number; masteryImprovement: number }>
+    dataPoints: Array<{ completionRate: number; masteryImprovement: number }>,
   ): { r: number; pValue: number } {
     const n = dataPoints.length
     if (n < 2) return { r: 0, pValue: 1.0 }
 
     // Calculate means
-    const meanX =
-      dataPoints.reduce((sum, p) => sum + p.completionRate, 0) / n
-    const meanY =
-      dataPoints.reduce((sum, p) => sum + p.masteryImprovement, 0) / n
+    const meanX = dataPoints.reduce((sum, p) => sum + p.completionRate, 0) / n
+    const meanY = dataPoints.reduce((sum, p) => sum + p.masteryImprovement, 0) / n
 
     // Calculate correlation coefficient
     let numerator = 0
@@ -689,7 +655,7 @@ export class MissionAnalyticsEngine {
    */
   private async calculateSessionGroupStats(
     sessions: any[],
-    userId: string
+    userId: string,
   ): Promise<{
     sessionCount: number
     avgMasteryImprovement: number
@@ -715,7 +681,7 @@ export class MissionAnalyticsEngine {
       // Calculate mastery improvement from reviews
       // Using GOOD/EASY ratings as proxy for mastery
       const correctReviews = session.reviews.filter(
-        (r: any) => r.rating === 'GOOD' || r.rating === 'EASY'
+        (r: any) => r.rating === 'GOOD' || r.rating === 'EASY',
       ).length
       const totalReviews = session.reviews.length
 
@@ -729,7 +695,7 @@ export class MissionAnalyticsEngine {
       if (objectiveCompletions.length > 0) {
         // Count objectives with self-assessment >= 4 as "mastered"
         const masteredObjectives = objectiveCompletions.filter(
-          (o: any) => o.selfAssessment && o.selfAssessment >= 4
+          (o: any) => o.selfAssessment && o.selfAssessment >= 4,
         ).length
         totalObjectivesMastered += masteredObjectives
 
@@ -745,8 +711,7 @@ export class MissionAnalyticsEngine {
     // Calculate averages
     const avgMasteryImprovement =
       masteryImprovements.length > 0
-        ? masteryImprovements.reduce((sum, v) => sum + v, 0) /
-          masteryImprovements.length
+        ? masteryImprovements.reduce((sum, v) => sum + v, 0) / masteryImprovements.length
         : 0
 
     const avgCompletionRate =
@@ -755,8 +720,7 @@ export class MissionAnalyticsEngine {
         : 0
 
     // Study efficiency: objectives mastered per hour
-    const studyEfficiency =
-      totalStudyHours > 0 ? totalObjectivesMastered / totalStudyHours : 0
+    const studyEfficiency = totalStudyHours > 0 ? totalObjectivesMastered / totalStudyHours : 0
 
     return {
       sessionCount: sessions.length,
@@ -782,7 +746,7 @@ export class MissionAnalyticsEngine {
     group1Sessions: any[],
     group2Sessions: any[],
     mean1: number,
-    mean2: number
+    mean2: number,
   ): { pValue: number; confidence: 'LOW' | 'MEDIUM' | 'HIGH' } {
     const n1 = group1Sessions.length
     const n2 = group2Sessions.length
@@ -795,21 +759,21 @@ export class MissionAnalyticsEngine {
     const variance1 = this.calculateVariance(
       group1Sessions.map((s) => {
         const correctReviews = s.reviews.filter(
-          (r: any) => r.rating === 'GOOD' || r.rating === 'EASY'
+          (r: any) => r.rating === 'GOOD' || r.rating === 'EASY',
         ).length
         return s.reviews.length > 0 ? correctReviews / s.reviews.length : 0
       }),
-      mean1
+      mean1,
     )
 
     const variance2 = this.calculateVariance(
       group2Sessions.map((s) => {
         const correctReviews = s.reviews.filter(
-          (r: any) => r.rating === 'GOOD' || r.rating === 'EASY'
+          (r: any) => r.rating === 'GOOD' || r.rating === 'EASY',
         ).length
         return s.reviews.length > 0 ? correctReviews / s.reviews.length : 0
       }),
-      mean2
+      mean2,
     )
 
     // Welch's t-statistic
@@ -819,8 +783,7 @@ export class MissionAnalyticsEngine {
     // Degrees of freedom (Welch-Satterthwaite equation)
     const df =
       Math.pow(variance1 / n1 + variance2 / n2, 2) /
-      (Math.pow(variance1 / n1, 2) / (n1 - 1) +
-        Math.pow(variance2 / n2, 2) / (n2 - 1))
+      (Math.pow(variance1 / n1, 2) / (n1 - 1) + Math.pow(variance2 / n2, 2) / (n2 - 1))
 
     // Simplified p-value approximation (two-tailed)
     // For more accurate results, use a statistical library

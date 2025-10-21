@@ -56,7 +56,7 @@ async function GET(request: NextRequest) {
         priorityScore: item.priorityScore,
         priorityExplanation: explanation,
       }
-    })
+    }),
   )
 
   return Response.json(successResponse(objectivesWithExplanations))

@@ -36,7 +36,12 @@ interface UploadDialogProps {
   courses?: Course[]
 }
 
-export function UploadDialog({ open, onOpenChange, onUploadComplete, courses = [] }: UploadDialogProps) {
+export function UploadDialog({
+  open,
+  onOpenChange,
+  onUploadComplete,
+  courses = [],
+}: UploadDialogProps) {
   const [uploading, setUploading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [selectedCourseId, setSelectedCourseId] = useState<string>('')
@@ -107,7 +112,8 @@ export function UploadDialog({ open, onOpenChange, onUploadComplete, courses = [
         <DialogHeader>
           <DialogTitle>Upload Lecture</DialogTitle>
           <DialogDescription>
-            Upload a PDF lecture file. It will be automatically processed to extract learning objectives and create flashcards.
+            Upload a PDF lecture file. It will be automatically processed to extract learning
+            objectives and create flashcards.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -115,7 +121,11 @@ export function UploadDialog({ open, onOpenChange, onUploadComplete, courses = [
             <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800">
               <p className="font-medium mb-1">No courses available</p>
               <p className="text-xs">
-                Please <a href="/library?action=create-course" className="underline font-medium">create a course</a> first before uploading lectures.
+                Please{' '}
+                <a href="/library?action=create-course" className="underline font-medium">
+                  create a course
+                </a>{' '}
+                first before uploading lectures.
               </p>
             </div>
           )}
@@ -128,7 +138,9 @@ export function UploadDialog({ open, onOpenChange, onUploadComplete, courses = [
               disabled={uploading || courses.length === 0}
             >
               <SelectTrigger id="course">
-                <SelectValue placeholder={courses.length === 0 ? "No courses available" : "Select a course"} />
+                <SelectValue
+                  placeholder={courses.length === 0 ? 'No courses available' : 'Select a course'}
+                />
               </SelectTrigger>
               <SelectContent>
                 {courses.length === 0 ? (
@@ -159,9 +171,7 @@ export function UploadDialog({ open, onOpenChange, onUploadComplete, courses = [
                 className="cursor-pointer"
               />
             </div>
-            <p className="text-xs text-muted-foreground">
-              Max file size: 50MB
-            </p>
+            <p className="text-xs text-muted-foreground">Max file size: 50MB</p>
           </div>
 
           {selectedFile && (

@@ -64,7 +64,7 @@ export function TagInput({
         'focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500',
         'transition-all duration-200',
         disabled && 'opacity-50 cursor-not-allowed bg-gray-50',
-        className
+        className,
       )}
     >
       {value.map((tag, index) => (
@@ -76,7 +76,7 @@ export function TagInput({
             'bg-blue-100/80 text-blue-700 border border-blue-200',
             'backdrop-blur-sm rounded-full',
             'flex items-center gap-1',
-            'transition-all duration-200 hover:bg-blue-200/80'
+            'transition-all duration-200 hover:bg-blue-200/80',
           )}
         >
           {tag}
@@ -99,7 +99,7 @@ export function TagInput({
         className={cn(
           'flex-1 min-w-[120px] border-0 bg-transparent px-0 py-0',
           'focus-visible:ring-0 focus-visible:ring-offset-0',
-          'placeholder:text-gray-400'
+          'placeholder:text-gray-400',
         )}
       />
     </div>

@@ -5,14 +5,14 @@
  * Export all performance data for a user (FERPA compliance)
  */
 
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { errorResponse, ErrorCodes } from '@/lib/api-response';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { errorResponse, ErrorCodes } from '@/lib/api-response'
 
 export async function GET(request: NextRequest) {
   try {
     // Hardcoded user for MVP
-    const userId = 'kevy@americano.dev';
+    const userId = 'kevy@americano.dev'
 
     // Fetch all performance metrics
     const performanceMetrics = await prisma.performanceMetric.findMany({
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       orderBy: {
         date: 'desc',
       },
-    });
+    })
 
     // Fetch learning objectives with performance fields
     const objectives = await prisma.learningObjective.findMany({
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-    });
+    })
 
     const exportData = {
       exportDate: new Date().toISOString(),
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
         lectureTitle: pm.learningObjective.lecture.title,
         courseName: pm.learningObjective.lecture.course.name,
       })),
-    };
+    }
 
     // Return as JSON download
     return new Response(JSON.stringify(exportData, null, 2), {
@@ -92,12 +92,12 @@ export async function GET(request: NextRequest) {
         'Content-Type': 'application/json',
         'Content-Disposition': `attachment; filename="performance-data-${userId}-${Date.now()}.json"`,
       },
-    });
+    })
   } catch (error) {
-    console.error('Error exporting performance data:', error);
+    console.error('Error exporting performance data:', error)
     return Response.json(
       errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to export performance data'),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

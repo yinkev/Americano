@@ -1,0 +1,23 @@
+
+> @americano/web@0.1.0 build /Users/kyin/Projects/Americano-epic5/apps/web
+> next build
+
+   ▲ Next.js 15.5.5
+   - Environments: .env
+   - Experiments (use with caution):
+     · serverActions
+
+   Creating an optimized production build ...
+   Disabled SWC as replacement for Babel because of custom Babel configuration "babel.config.js" https://nextjs.org/docs/messages/swc-disabled
+   `compiler` options in `next.config.js` will be ignored while using Babel https://nextjs.org/docs/messages/ignored-compiler-options
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker with: /Users/kyin/Projects/Americano-epic5/apps/web/node_modules/next-pwa/register.js
+> [PWA] Service worker: /Users/kyin/Projects/Americano-epic5/apps/web/public/sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+   Using external babel configuration from /Users/kyin/Projects/Americano-epic5/apps/web/babel.config.js
+ ✓ Compiled successfully in 9.9s
+   Linting and checking validity of types ...
+ ELIFECYCLE  Command failed with exit code 1.

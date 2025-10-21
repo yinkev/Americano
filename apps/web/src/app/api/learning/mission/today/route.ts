@@ -10,20 +10,18 @@ import { MissionGenerator } from '@/lib/mission-generator'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { withErrorHandler } from '@/lib/api-error'
 import type { MissionProgress } from '@/types/mission'
+import { getMissionObjectives } from '@/types/mission-helpers'
+import { Prisma } from '@/generated/prisma'
 
 async function handler(request: NextRequest) {
   // Get user from header (MVP: hardcoded to kevy@americano.dev)
-  const userEmail =
-    request.headers.get('X-User-Email') || 'kevy@americano.dev'
+  const userEmail = request.headers.get('X-User-Email') || 'kevy@americano.dev'
   const user = await prisma.user.findUnique({
     where: { email: userEmail },
   })
 
   if (!user) {
-    return Response.json(
-      errorResponse('USER_NOT_FOUND', 'User not found'),
-      { status: 404 }
-    )
+    return Response.json(errorResponse('USER_NOT_FOUND', 'User not found'), { status: 404 })
   }
 
   // Get today's date (normalized to midnight)
@@ -44,10 +42,7 @@ async function handler(request: NextRequest) {
   // Auto-generate if doesn't exist
   if (!mission) {
     const generator = new MissionGenerator()
-    const generatedMission = await generator.generateDailyMission(
-      user.id,
-      today
-    )
+    const generatedMission = await generator.generateDailyMission(user.id, today)
 
     mission = await prisma.mission.create({
       data: {
@@ -55,7 +50,7 @@ async function handler(request: NextRequest) {
         date: today,
         status: 'PENDING',
         estimatedMinutes: generatedMission.estimatedMinutes,
-        objectives: generatedMission.objectives as any, // JSON
+        objectives: generatedMission.objectives as unknown as Prisma.InputJsonValue,
         reviewCardCount: generatedMission.reviewCardCount,
         newContentCount: generatedMission.newContentCount,
         completedObjectivesCount: 0,
@@ -64,17 +59,14 @@ async function handler(request: NextRequest) {
   }
 
   // Parse objectives from JSON
-  const objectives = mission.objectives as any[]
+  const objectives = getMissionObjectives(mission)
 
   // Calculate progress
   const completedCount = objectives.filter((obj) => obj.completed).length
   const progress: MissionProgress = {
     total: objectives.length,
     completed: completedCount,
-    percentage:
-      objectives.length > 0
-        ? Math.round((completedCount / objectives.length) * 100)
-        : 0,
+    percentage: objectives.length > 0 ? Math.round((completedCount / objectives.length) * 100) : 0,
     estimatedMinutesRemaining: objectives
       .filter((obj) => !obj.completed)
       .reduce((sum, obj) => sum + obj.estimatedMinutes, 0),
@@ -86,7 +78,7 @@ async function handler(request: NextRequest) {
       mission,
       objectives,
       progress,
-    })
+    }),
   )
 }
 

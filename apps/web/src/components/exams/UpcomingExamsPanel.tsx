@@ -95,7 +95,7 @@ export function UpcomingExamsPanel({
 
   // Sort exams by date (soonest first)
   const sortedExams = [...exams].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   )
 
   const handleEdit = (exam: Exam) => {
@@ -119,23 +119,21 @@ export function UpcomingExamsPanel({
   return (
     <Card
       className={cn(
-        'bg-white/80 backdrop-blur-md border-white/30',
-        'shadow-[0_8px_32px_rgba(31,38,135,0.1)]',
-        'rounded-2xl p-6',
-        className
+        'bg-background border shadow-sm',
+        'rounded-lg p-4',
+        'hover:shadow-md transition-shadow duration-300',
+        className,
       )}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Calendar className="w-6 h-6 text-blue-500" />
-          <h2 className="text-xl font-semibold text-gray-900">
-            Upcoming Exams
-          </h2>
+          <Calendar className="w-6 h-6 text-clinical" />
+          <h2 className="text-[20px] font-heading font-semibold">Upcoming Exams</h2>
           {exams.length > 0 && (
             <Badge
               variant="secondary"
-              className="rounded-full bg-blue-100/80 text-blue-700 border-blue-200"
+              className="rounded-full"
             >
               {exams.length}
             </Badge>
@@ -147,10 +145,9 @@ export function UpcomingExamsPanel({
             <Button
               size="sm"
               className={cn(
-                'rounded-full gap-2',
-                'bg-blue-500 hover:bg-blue-600 text-white',
-                'shadow-sm hover:shadow-md',
-                'transition-all duration-200'
+                'rounded-lg gap-2',
+                'bg-clinical text-clinical-foreground hover:bg-clinical/90',
+                'transition-all duration-150 hover:scale-[1.02] active:scale-[0.98]',
               )}
             >
               <Plus className="w-4 h-4" />
@@ -165,11 +162,9 @@ export function UpcomingExamsPanel({
       {/* Exams List */}
       {sortedExams.length === 0 ? (
         <div className="text-center py-12">
-          <Calendar className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500 text-sm">
-            No upcoming exams scheduled
-          </p>
-          <p className="text-gray-400 text-xs mt-1">
+          <Calendar className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+          <p className="text-muted-foreground text-[13px]">No upcoming exams scheduled</p>
+          <p className="text-muted-foreground/60 text-[11px] mt-1">
             Add your first exam to start prioritizing your study content
           </p>
         </div>
@@ -183,10 +178,10 @@ export function UpcomingExamsPanel({
               <Card
                 key={exam.id}
                 className={cn(
-                  'p-4 border-2 transition-all duration-200',
-                  'hover:shadow-md hover:scale-[1.01]',
+                  'p-4 border-2 transition-all duration-300',
+                  'hover:shadow-md hover:scale-[1.005]',
                   urgency.bgColor,
-                  urgency.borderColor
+                  urgency.borderColor,
                 )}
               >
                 <div className="flex items-start justify-between gap-4">
@@ -195,12 +190,10 @@ export function UpcomingExamsPanel({
                     {/* Header */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 text-lg">
-                          {exam.name}
-                        </h3>
+                        <h3 className="font-heading font-semibold text-[16px]">{exam.name}</h3>
                         <div className="flex items-center gap-2 mt-1">
-                          <BookOpen className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm text-gray-600">
+                          <BookOpen className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-[13px] text-muted-foreground">
                             {exam.course.code} - {exam.course.name}
                           </span>
                         </div>
@@ -208,11 +201,10 @@ export function UpcomingExamsPanel({
 
                       <Badge
                         className={cn(
-                          'rounded-full px-3 py-1 text-xs font-semibold',
+                          'rounded-full px-3 py-1 text-[11px] font-semibold',
                           'border',
                           urgency.color,
                           urgency.borderColor.replace('border-', 'bg-'),
-                          'backdrop-blur-sm'
                         )}
                       >
                         {urgency.label}
@@ -220,15 +212,15 @@ export function UpcomingExamsPanel({
                     </div>
 
                     {/* Date & Countdown */}
-                    <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-4 text-[13px]">
                       <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-700 font-medium">
+                        <Calendar className="w-4 h-4 text-muted-foreground" />
+                        <span className="font-medium">
                           {format(new Date(exam.date), 'PPP')}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-gray-400" />
+                        <Clock className="w-4 h-4 text-muted-foreground" />
                         <span className={cn('font-medium', urgency.color)}>
                           {formatDistanceToNow(new Date(exam.date), {
                             addSuffix: true,
@@ -244,11 +236,7 @@ export function UpcomingExamsPanel({
                           <Badge
                             key={index}
                             variant="outline"
-                            className={cn(
-                              'text-xs rounded-full px-2 py-0.5',
-                              'bg-white/60 backdrop-blur-sm',
-                              'border-gray-200 text-gray-700'
-                            )}
+                            className="text-[11px] rounded-full px-2 py-0.5"
                           >
                             {topic}
                           </Badge>
@@ -256,11 +244,7 @@ export function UpcomingExamsPanel({
                         {exam.coverageTopics.length > 5 && (
                           <Badge
                             variant="outline"
-                            className={cn(
-                              'text-xs rounded-full px-2 py-0.5',
-                              'bg-white/60 backdrop-blur-sm',
-                              'border-gray-200 text-gray-500'
-                            )}
+                            className="text-[11px] rounded-full px-2 py-0.5 text-muted-foreground"
                           >
                             +{exam.coverageTopics.length - 5} more
                           </Badge>
@@ -275,11 +259,7 @@ export function UpcomingExamsPanel({
                       size="sm"
                       variant="ghost"
                       onClick={() => handleEdit(exam)}
-                      className={cn(
-                        'h-8 w-8 p-0 rounded-lg',
-                        'hover:bg-white/80',
-                        'transition-all duration-200'
-                      )}
+                      className="h-8 w-8 p-0 rounded-lg hover:bg-secondary transition-all duration-150"
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
@@ -287,11 +267,7 @@ export function UpcomingExamsPanel({
                       size="sm"
                       variant="ghost"
                       onClick={() => onDeleteExam(exam.id)}
-                      className={cn(
-                        'h-8 w-8 p-0 rounded-lg',
-                        'hover:bg-rose-50 hover:text-rose-600',
-                        'transition-all duration-200'
-                      )}
+                      className="h-8 w-8 p-0 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all duration-150"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -328,13 +304,7 @@ export function UpcomingExamsPanel({
 /**
  * Compact version for dashboard/overview
  */
-export function UpcomingExamsCompact({
-  exams,
-  className,
-}: {
-  exams: Exam[]
-  className?: string
-}) {
+export function UpcomingExamsCompact({ exams, className }: { exams: Exam[]; className?: string }) {
   const nextThreeExams = [...exams]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 3)
@@ -349,30 +319,22 @@ export function UpcomingExamsCompact({
           <div
             key={exam.id}
             className={cn(
-              'p-3 rounded-xl border',
-              'bg-white/60 backdrop-blur-sm',
+              'p-3 rounded-lg border',
+              'bg-background',
               urgency.borderColor,
-              'transition-all duration-200 hover:shadow-sm'
+              'transition-all duration-150 hover:shadow-sm',
             )}
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm text-gray-900 truncate">
-                  {exam.name}
-                </p>
-                <p className="text-xs text-gray-600 truncate mt-0.5">
-                  {exam.course.code}
-                </p>
+                <p className="font-medium text-[13px] truncate">{exam.name}</p>
+                <p className="text-[11px] text-muted-foreground truncate mt-0.5">{exam.course.code}</p>
               </div>
               <div className="text-right flex-shrink-0">
-                <p className={cn('text-xs font-medium', urgency.color)}>
-                  {daysUntil === 0
-                    ? 'Today'
-                    : daysUntil === 1
-                      ? 'Tomorrow'
-                      : `${daysUntil}d`}
+                <p className={cn('text-[11px] font-medium', urgency.color)}>
+                  {daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `${daysUntil}d`}
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-[11px] text-muted-foreground mt-0.5">
                   {format(new Date(exam.date), 'MMM dd')}
                 </p>
               </div>
@@ -382,9 +344,7 @@ export function UpcomingExamsCompact({
       })}
 
       {nextThreeExams.length === 0 && (
-        <p className="text-xs text-gray-400 text-center py-4">
-          No upcoming exams
-        </p>
+        <p className="text-[11px] text-muted-foreground/60 text-center py-4">No upcoming exams</p>
       )}
     </div>
   )

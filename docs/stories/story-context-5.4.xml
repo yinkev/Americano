@@ -1,0 +1,1075 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context>
+  <metadata>
+    <story-id>5.4</story-id>
+    <story-title>Cognitive Load Monitoring and Stress Detection</story-title>
+    <epic>Epic 5: Behavioral Learning Twin</epic>
+    <status>Ready for Implementation</status>
+    <priority>Medium</priority>
+    <estimated-effort>Large (11 tasks)</estimated-effort>
+    <generated-date>2025-10-16</generated-date>
+  </metadata>
+
+  <acceptance-criteria>
+    <criterion id="AC1">
+      <description>Cognitive load estimation based on user behavior during study sessions</description>
+      <tasks>1, 2, 9</tasks>
+    </criterion>
+    <criterion id="AC2">
+      <description>Stress indicators identified through interaction patterns and performance changes</description>
+      <tasks>1, 2, 9</tasks>
+    </criterion>
+    <criterion id="AC3">
+      <description>Automatic difficulty adjustment when cognitive overload detected</description>
+      <tasks>3, 6, 9</tasks>
+    </criterion>
+    <criterion id="AC4">
+      <description>Burnout prevention through workload modulation and break recommendations</description>
+      <tasks>4, 6</tasks>
+    </criterion>
+    <criterion id="AC5">
+      <description>Stress response patterns tracked over time for personalization</description>
+      <tasks>5</tasks>
+    </criterion>
+    <criterion id="AC6">
+      <description>Integration with understanding assessment to balance challenge and support</description>
+      <tasks>3</tasks>
+    </criterion>
+    <criterion id="AC7">
+      <description>User awareness of cognitive state through dashboard indicators</description>
+      <tasks>7</tasks>
+    </criterion>
+    <criterion id="AC8">
+      <description>Correlation between cognitive load management and academic performance</description>
+      <tasks>10</tasks>
+    </criterion>
+  </acceptance-criteria>
+
+  <architecture-docs>
+    <doc>
+      <path>docs/solution-architecture.md</path>
+      <section>Subsystem 5: Behavioral Analytics &amp; Personalization (lines 604-648)</section>
+      <relevance>Defines cognitive load monitoring components within behavioral analytics subsystem, including CognitiveLoadMonitor and BurnoutPreventionEngine classes mentioned in Story 5.4</relevance>
+    </doc>
+    <doc>
+      <path>docs/solution-architecture.md</path>
+      <section>Database Schema: Behavioral Analytics Models (lines 1073-1134)</section>
+      <relevance>Shows existing BehavioralEvent, LearningPattern, and PerformancePrediction models that will be extended with cognitive load markers</relevance>
+    </doc>
+    <doc>
+      <path>docs/solution-architecture.md</path>
+      <section>API Architecture: /api/analytics/* endpoints (lines 1399-1433)</section>
+      <relevance>Existing analytics API patterns that Story 5.4 will extend with cognitive load endpoints</relevance>
+    </doc>
+    <doc>
+      <path>docs/stories/story-5.4.md</path>
+      <section>Complete story file (lines 1-710)</section>
+      <relevance>Full story specification with 11 tasks, database schemas, algorithms, integration points, UI/UX considerations</relevance>
+    </doc>
+    <doc>
+      <path>docs/stories/story-5.1.md</path>
+      <section>Story 5.1: Learning Pattern Recognition (lines 1-799)</section>
+      <relevance>Prerequisite story that created BehavioralEvent extensions, BehavioralPattern model, and pattern analysis framework that Story 5.4 builds upon</relevance>
+    </doc>
+    <doc>
+      <path>docs/stories/story-5.2.md</path>
+      <section>Story 5.2: Predictive Analytics for Learning Struggles (lines 1-847)</section>
+      <relevance>Created struggle prediction infrastructure (StrugglePrediction, StruggleIndicator models) that cognitive load monitoring integrates with for COGNITIVE_OVERLOAD detection</relevance>
+    </doc>
+  </architecture-docs>
+
+  <existing-code>
+    <artifact>
+      <path>apps/web/src/subsystems/behavioral-analytics/struggle-detection-engine.ts</path>
+      <description>Story 5.2 engine that includes COGNITIVE_OVERLOAD as an IndicatorType - Story 5.4 will create dedicated cognitive load monitoring to feed this indicator</description>
+      <lines>1-801</lines>
+    </artifact>
+    <artifact>
+      <path>apps/web/src/lib/mission-generator.ts</path>
+      <description>Mission generation with UserLearningProfile integration (Story 5.1) and struggle prediction integration (Story 5.2) - Story 5.4 will extend with cognitive load-aware mission composition</description>
+      <lines>1-1172</lines>
+    </artifact>
+    <artifact>
+      <path>apps/web/prisma/schema.prisma</path>
+      <description>Existing schema with BehavioralEvent (lines 455-475), BehavioralPattern (503-521), UserLearningProfile (575-589) models - Story 5.4 will add CognitiveLoadMetric, StressResponsePattern, BurnoutRiskAssessment models</description>
+      <lines>455-589</lines>
+    </artifact>
+    <artifact>
+      <path>apps/web/src/subsystems/behavioral-analytics/behavioral-pattern-engine.ts</path>
+      <description>Story 5.1 pattern engine orchestrator that runs weekly analysis - Story 5.4 cognitive load analysis can integrate into this workflow</description>
+      <lines>1-573</lines>
+    </artifact>
+    <artifact>
+      <path>apps/web/src/app/api/analytics</path>
+      <description>Existing analytics API directory with 24 endpoints - Story 5.4 will add 7 new cognitive load endpoints (calculate, current, history, burnout-risk, stress-patterns, stress-profile, interventions/apply)</description>
+      <pattern>**/*.ts</pattern>
+    </artifact>
+    <artifact>
+      <path>apps/web/src/subsystems/behavioral-analytics</path>
+      <description>Behavioral analytics subsystem with 5 existing files (study-time-analyzer, session-duration-analyzer, content-preference-analyzer, forgetting-curve-analyzer, behavioral-pattern-engine) - Story 5.4 will add 3 new files</description>
+      <pattern>*.ts</pattern>
+    </artifact>
+  </existing-code>
+
+  <dependencies>
+    <package>
+      <name>@prisma/client</name>
+      <version>latest</version>
+      <purpose>Database ORM for cognitive load models</purpose>
+      <status>installed</status>
+    </package>
+    <package>
+      <name>zod</name>
+      <version>latest</version>
+      <purpose>Request validation for cognitive load APIs</purpose>
+      <status>installed</status>
+    </package>
+    <package>
+      <name>date-fns</name>
+      <version>latest</version>
+      <purpose>Date calculations for time-series cognitive load analysis</purpose>
+      <status>installed</status>
+    </package>
+    <package>
+      <name>recharts</name>
+      <version>latest</version>
+      <purpose>Cognitive load timeline, burnout risk panel visualizations</purpose>
+      <status>installed</status>
+    </package>
+  </dependencies>
+
+  <constraints>
+    <constraint>
+      <type>Database Schema</type>
+      <description>Must create 3 new Prisma models: CognitiveLoadMetric (realtime load tracking), StressResponsePattern (longitudinal stress patterns), BurnoutRiskAssessment (proactive intervention). Must extend BehavioralEvent with cognitiveLoadScore, stressIndicators, overloadDetected fields.</description>
+    </constraint>
+    <constraint>
+      <type>Real-Time Monitoring</type>
+      <description>Cognitive load calculated every 5 minutes during active session. Computation must complete in &lt;100ms to avoid blocking user experience. Use incremental calculation not full recalculation.</description>
+    </constraint>
+    <constraint>
+      <type>Threshold Calibration</type>
+      <description>Default thresholds: Moderate load 40-60, High load 60-80, Critical overload &gt;80. Allow personalization after 4+ weeks data collection. Use conservative thresholds until sufficient data.</description>
+    </constraint>
+    <constraint>
+      <type>Intervention Timing</type>
+      <description>Avoid interrupting flow state. Only trigger interventions during natural breaks (between cards, end of section). No mid-card interruptions. Use non-intrusive notifications.</description>
+    </constraint>
+    <constraint>
+      <type>Privacy and Stress Meta-Cognition</type>
+      <description>Cognitive load monitoring may induce meta-cognitive stress ("Am I too stressed?"). Provide opt-out in User.behavioralAnalysisEnabled setting. Use supportive not judgmental language in UI.</description>
+    </constraint>
+    <constraint>
+      <type>Statistical Validity</type>
+      <description>Correlation analysis requires minimum 30 data points (sessions). Show "insufficient data" message if below threshold. Report p-value and confidence intervals for meaningful correlations.</description>
+    </constraint>
+    <constraint>
+      <type>Burnout Assessment Frequency</type>
+      <description>Run full burnout assessment once per week (Sunday night 11 PM via cron). Allow on-demand assessment but rate-limit to 1/day. Cache assessment results for 24 hours.</description>
+    </constraint>
+    <constraint>
+      <type>Python ML Service Integration</type>
+      <description>This story is TypeScript-only. Do NOT create Python ML service. Use rule-based algorithms for cognitive load calculation. Future Story 5.x may add Python ML models.</description>
+    </constraint>
+    <constraint>
+      <type>Authentication</type>
+      <description>Auth deferred for MVP. Use placeholder userId in API endpoints. No Clerk/Auth.js integration in this story. Future story will add proper auth.</description>
+    </constraint>
+    <constraint>
+      <type>Next.js 15 Patterns</type>
+      <description>Use async/await for route params (const {id} = await params). API routes return Response.json(). Server components are async by default. Use "use client" for interactive components.</description>
+    </constraint>
+    <constraint>
+      <type>Error Handling</type>
+      <description>All API routes must use try-catch with proper error responses. Log errors to console (Sentry integration deferred). Return user-friendly error messages. Use ApiError utility for consistent error format.</description>
+    </constraint>
+    <constraint>
+      <type>Zod Validation</type>
+      <description>Validate all API request bodies with Zod schemas. Use z.object() for request validation. Return 400 Bad Request with validation errors. Nullable query params use z.string().optional().</description>
+    </constraint>
+    <constraint>
+      <type>UI Design System</type>
+      <description>Use glassmorphism (bg-white/80 backdrop-blur-md) for dashboard cards. OKLCH colors for cognitive load meter: Green oklch(0.7 0.15 145), Yellow oklch(0.8 0.15 90), Orange oklch(0.7 0.15 50), Red oklch(0.6 0.20 30). NO gradients. Solid color zones with transitions.</description>
+    </constraint>
+    <constraint>
+      <type>Story 5.1 Integration</type>
+      <description>Cognitive load patterns integrated into BehavioralPatternEngine weekly analysis. Attention cycle patterns from Story 5.1 inform break frequency recommendations. Load tolerance threshold stored in UserLearningProfile.</description>
+    </constraint>
+    <constraint>
+      <type>Story 5.2 Integration</type>
+      <description>Cognitive load monitoring feeds COGNITIVE_OVERLOAD IndicatorType to StruggleDetectionEngine. Real-time load detection creates StruggleIndicator records. InterventionType.COGNITIVE_LOAD_REDUCE uses load data for intervention effectiveness measurement.</description>
+    </constraint>
+    <constraint>
+      <type>Story 2.4 Mission Generation Integration</type>
+      <description>MissionGenerator (apps/web/src/lib/mission-generator.ts) queries recent cognitive load before generating mission. High load (&gt;70) triggers recovery mission generation (review-only, familiar topics). Burnout risk (medium/high) overrides mission with mandatory rest.</description>
+    </constraint>
+    <constraint>
+      <type>Story 2.6 Mission Analytics Integration</type>
+      <description>Mission performance correlated with cognitive load during execution. Adaptation effectiveness measured through load-performance changes before/after intervention. Weekly insights include optimal load zones for mission completion.</description>
+    </constraint>
+    <constraint>
+      <type>Database Indexes</type>
+      <description>Add indexes on CognitiveLoadMetric (userId, sessionId, timestamp), StressResponsePattern (userId, patternType), BurnoutRiskAssessment (userId, assessmentDate). Ensure query performance for time-series load history queries.</description>
+    </constraint>
+    <constraint>
+      <type>Performance Optimization</type>
+      <description>Incremental load calculation (every 5 min, not every interaction). Cache burnout risk for 24 hours. Background analysis for stress patterns (weekly job). Lazy load cognitive load history when user opens dashboard. Cache personalized thresholds in UserLearningProfile.</description>
+    </constraint>
+    <constraint>
+      <type>Accessibility</type>
+      <description>Load meter includes text labels and ARIA live region for screen readers. Color zones supplemented with icons (✓ low, ⚠ moderate, ⚡ high, 🚨 critical). Keyboard navigation for intervention cards. High-contrast mode support.</description>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <type>Prisma Model</type>
+      <name>CognitiveLoadMetric</name>
+      <location>apps/web/prisma/schema.prisma</location>
+      <definition><![CDATA[
+model CognitiveLoadMetric {
+  id               String   @id @default(cuid())
+  userId           String
+  sessionId        String?
+  timestamp        DateTime @default(now())
+  loadScore        Float    // 0-100 scale
+  stressIndicators Json     // Array of detected stress signals
+  confidenceLevel  Float    // 0.0-1.0 based on data quality
+
+  // Relations
+  session          StudySession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([timestamp])
+  @@map("cognitive_load_metrics")
+}
+]]></definition>
+    </interface>
+    <interface>
+      <type>Prisma Model</type>
+      <name>StressResponsePattern</name>
+      <location>apps/web/prisma/schema.prisma</location>
+      <definition><![CDATA[
+model StressResponsePattern {
+  id                String   @id @default(cuid())
+  userId            String
+  patternType       StressPatternType
+  triggerConditions Json     // Conditions triggering stress (topic, time, difficulty)
+  responseProfile   Json     // How user responds (recoveryTime, impactSeverity)
+  detectedAt        DateTime @default(now())
+  lastOccurrence    DateTime @default(now())
+  frequency         Int      @default(1)
+  confidence        Float    @default(0.5) // 0.0-1.0
+
+  @@index([userId])
+  @@index([patternType])
+  @@map("stress_response_patterns")
+}
+
+enum StressPatternType {
+  DIFFICULTY_INDUCED    // Triggered by challenging content
+  TIME_PRESSURE         // Triggered by deadline proximity
+  FATIGUE_BASED         // Triggered by prolonged study
+  EXAM_PROXIMITY        // Triggered by upcoming exam
+  TOPIC_SPECIFIC        // Triggered by specific subject matter
+}
+]]></definition>
+    </interface>
+    <interface>
+      <type>Prisma Model</type>
+      <name>BurnoutRiskAssessment</name>
+      <location>apps/web/prisma/schema.prisma</location>
+      <definition><![CDATA[
+model BurnoutRiskAssessment {
+  id                  String   @id @default(cuid())
+  userId              String
+  assessmentDate      DateTime @default(now())
+  riskScore           Float    // 0-100 scale
+  riskLevel           BurnoutRiskLevel
+  contributingFactors Json     // Array of factors with scores
+  recommendations     Json     // Array of intervention recommendations
+
+  @@index([userId])
+  @@index([assessmentDate])
+  @@map("burnout_risk_assessments")
+}
+
+enum BurnoutRiskLevel {
+  LOW       // <25
+  MEDIUM    // 25-50
+  HIGH      // 50-75
+  CRITICAL  // >75
+}
+]]></definition>
+    </interface>
+    <interface>
+      <type>Prisma Model Extension</type>
+      <name>BehavioralEvent (Cognitive Load Fields)</name>
+      <location>apps/web/prisma/schema.prisma</location>
+      <definition><![CDATA[
+// Add to existing BehavioralEvent model (line 455):
+model BehavioralEvent {
+  // ... existing fields ...
+
+  // Story 5.4: Cognitive load markers (NEW)
+  cognitiveLoadScore  Float?   // 0-100 scale
+  stressIndicators    Json?    // Array of stress signals
+  overloadDetected    Boolean? @default(false)
+}
+]]></definition>
+    </interface>
+    <interface>
+      <type>API Endpoint</type>
+      <name>POST /api/analytics/cognitive-load/calculate</name>
+      <location>apps/web/src/app/api/analytics/cognitive-load/calculate/route.ts</location>
+      <definition><![CDATA[
+Request Body: { userId, sessionId, behavioralData }
+Response: { loadScore, stressIndicators, overloadDetected, recommendations }
+
+Runs CognitiveLoadMonitor.calculateCurrentLoad() for session.
+Returns load score (0-100), detected stress indicators, and recommendations.
+]]></definition>
+    </interface>
+    <interface>
+      <type>API Endpoint</type>
+      <name>GET /api/analytics/cognitive-load/current</name>
+      <location>apps/web/src/app/api/analytics/cognitive-load/current/route.ts</location>
+      <definition><![CDATA[
+Query Params: userId (from auth context in future)
+Response: { loadScore, loadLevel, stressIndicators, timestamp, trend }
+
+Returns user's current cognitive load state from most recent active session.
+]]></definition>
+    </interface>
+    <interface>
+      <type>API Endpoint</type>
+      <name>GET /api/analytics/cognitive-load/history</name>
+      <location>apps/web/src/app/api/analytics/cognitive-load/history/route.ts</location>
+      <definition><![CDATA[
+Query Params: userId, startDate, endDate, granularity (hour/day/week)
+Response: { dataPoints: [{ timestamp, loadScore, sessionId, stressIndicators }] }
+
+Returns time-series cognitive load data for timeline visualization.
+]]></definition>
+    </interface>
+    <interface>
+      <type>API Endpoint</type>
+      <name>GET /api/analytics/burnout-risk</name>
+      <location>apps/web/src/app/api/analytics/burnout-risk/route.ts</location>
+      <definition><![CDATA[
+Query Params: userId
+Response: { riskScore, riskLevel, contributingFactors, warningSignals, recommendations, lastAssessmentDate }
+
+Returns current burnout risk assessment from BurnoutPreventionEngine.
+]]></definition>
+    </interface>
+    <interface>
+      <type>API Endpoint</type>
+      <name>GET /api/analytics/stress-patterns</name>
+      <location>apps/web/src/app/api/analytics/stress-patterns/route.ts</location>
+      <definition><![CDATA[
+Query Params: minConfidence (default 0.6), patternType?
+Response: { patterns: [{ patternType, triggerConditions, responseProfile, frequency, confidence }] }
+
+Returns identified stress response patterns from StressPatternAnalyzer.
+]]></definition>
+    </interface>
+    <interface>
+      <type>API Endpoint</type>
+      <name>GET /api/analytics/stress-profile</name>
+      <location>apps/web/src/app/api/analytics/stress-profile/route.ts</location>
+      <definition><![CDATA[
+Query Params: userId
+Response: { primaryStressors, loadTolerance, avgRecoveryTime, effectiveCopingStrategies, profileConfidence }
+
+Returns personalized stress profile built from StressPatternAnalyzer.
+]]></definition>
+    </interface>
+    <interface>
+      <type>API Endpoint</type>
+      <name>POST /api/analytics/interventions/apply</name>
+      <location>apps/web/src/app/api/analytics/interventions/apply/route.ts</location>
+      <definition><![CDATA[
+Request Body: { interventionId, accepted: boolean }
+Response: { success, updatedMission?, recoveryPlan? }
+
+Applies recommended intervention (workload reduction, break schedule, content adjustment).
+Tracks user response to interventions for effectiveness measurement.
+]]></definition>
+    </interface>
+    <interface>
+      <type>TypeScript Class</type>
+      <name>CognitiveLoadMonitor</name>
+      <location>apps/web/src/subsystems/behavioral-analytics/cognitive-load-monitor.ts</location>
+      <definition><![CDATA[
+export class CognitiveLoadMonitor {
+  calculateCurrentLoad(userId: string, sessionId: string): Promise<CognitiveLoadScore>
+  detectStressIndicators(sessionData: SessionData): StressIndicator[]
+  assessOverloadRisk(loadScore: number, indicators: StressIndicator[]): OverloadRisk
+  recordLoadMetric(userId: string, sessionId: string, loadData: LoadData): Promise<void>
+}
+
+// Cognitive load calculation algorithm (Story 5.4 lines 424-454):
+// loadScore = (responseLatency * 0.3) + (errorRate * 0.25) + (engagementDrop * 0.2)
+//           + (performanceDecline * 0.15) + (durationStress * 0.1)
+]]></definition>
+    </interface>
+    <interface>
+      <type>TypeScript Class</type>
+      <name>BurnoutPreventionEngine</name>
+      <location>apps/web/src/subsystems/behavioral-analytics/burnout-prevention-engine.ts</location>
+      <definition><![CDATA[
+export class BurnoutPreventionEngine {
+  assessBurnoutRisk(userId: string): Promise<BurnoutRiskAssessment>
+  detectWarningSignals(userId: string, timeWindow: number): Promise<WarningSignal[]>
+  recommendIntervention(riskAssessment: BurnoutRiskAssessment): InterventionPlan
+  trackRecoveryProgress(userId: string, interventionId: string): Promise<RecoveryMetrics>
+}
+
+// Burnout risk formula (Story 5.4 lines 457-482):
+// riskScore = (intensity * 0.2) + (performanceDecline * 0.25) + (chronicLoad * 0.25)
+//           + (irregularity * 0.15) + (engagementDecay * 0.1) + (recoveryDeficit * 0.05)
+]]></definition>
+    </interface>
+    <interface>
+      <type>TypeScript Class</type>
+      <name>DifficultyAdapter</name>
+      <location>apps/web/src/subsystems/behavioral-analytics/difficulty-adapter.ts</location>
+      <definition><![CDATA[
+export class DifficultyAdapter {
+  adjustDifficulty(userId: string, currentLoad: number): DifficultyAdjustment
+  recommendContentModification(sessionContext: SessionContext): ContentRecommendation
+  calculateOptimalChallenge(userProfile: UserProfile, loadState: LoadState): ChallengeLevel
+  applyAdaptation(sessionId: string, adjustment: DifficultyAdjustment): Promise<void>
+}
+
+// Difficulty adjustment logic (Story 5.4 lines 485-525):
+// Moderate (40-60): Maintain difficulty, add scaffolding
+// High (60-80): Reduce difficulty 1 level, simplify prompts, 80% review
+// Critical (>80): Emergency adaptation, easiest content, 100% review, suggest break
+// Low (<30): Increase challenge, harder prompts
+]]></definition>
+    </interface>
+    <interface>
+      <type>React Component</type>
+      <name>CognitiveLoadMeter</name>
+      <location>apps/web/src/components/analytics/cognitive-load-meter.tsx</location>
+      <definition><![CDATA[
+interface CognitiveLoadMeterProps {
+  currentLoad: number // 0-100
+  trend: 'up' | 'down' | 'stable'
+  lastUpdated: Date
+}
+
+// Circular gauge with color zones:
+// Green (<40), Yellow (40-60), Orange (60-80), Red (>80)
+// Real-time updates every 5 minutes during active session
+// Contextual message based on load level
+]]></definition>
+    </interface>
+    <interface>
+      <type>React Component</type>
+      <name>StressPatternsTimeline</name>
+      <location>apps/web/src/components/analytics/stress-patterns-timeline.tsx</location>
+      <definition><![CDATA[
+interface StressPatternsTimelineProps {
+  dataPoints: CognitiveLoadDataPoint[]
+  timeRange: '7day' | '30day'
+  onDataPointClick: (dataPoint: CognitiveLoadDataPoint) => void
+}
+
+// Line chart: Time (x-axis) vs Load score (y-axis)
+// Color-coded sessions by load level
+// Annotations for overload episodes, interventions, recovery periods
+// Recharts library, toggle 7-day (detailed) / 30-day (trend) views
+]]></definition>
+    </interface>
+    <interface>
+      <type>React Component</type>
+      <name>BurnoutRiskPanel</name>
+      <location>apps/web/src/components/analytics/burnout-risk-panel.tsx</location>
+      <definition><![CDATA[
+interface BurnoutRiskPanelProps {
+  riskLevel: BurnoutRiskLevel
+  riskScore: number
+  contributingFactors: { factor: string; percentage: number }[]
+  recommendations: string[]
+  daysSinceLastRest: number
+  recoveryProgress?: number
+}
+
+// Risk level indicator with icon/color (Low/Medium/High/Critical)
+// Breakdown of contributing factors with percentages (stacked bar/pie chart)
+// Actionable recommendations based on risk level
+// "Days since last rest" counter and recovery progress bar
+]]></definition>
+    </interface>
+  </interfaces>
+
+  <testing-guidance>
+    <test-strategy>
+      <approach>Manual Testing (MVP Approach)</approach>
+      <rationale>Single user, local development. Add automated tests when deploying to production (Story deferred).</rationale>
+    </test-strategy>
+    <test-scenarios>
+      <scenario ac="AC1, AC2" task="2">
+        <name>Overload Scenario Testing</name>
+        <steps>
+          1. Rapid-fire difficult questions to trigger high error rate (&gt;40%)
+          2. Verify load score increases to &gt;70 (high load detected)
+          3. Extend session beyond 90 minutes to trigger duration stress
+          4. Confirm stress indicators detected: response latency, error clustering
+          5. Check BehavioralEvent records have cognitiveLoadScore populated
+        </steps>
+        <expected-result>Load score &gt;70, stress indicators array populated, overloadDetected=true</expected-result>
+      </scenario>
+      <scenario ac="AC3" task="3, 9">
+        <name>Automatic Difficulty Adjustment</name>
+        <steps>
+          1. Simulate cognitive overload (load &gt;80) during study session
+          2. Verify automatic difficulty reduction triggered
+          3. Confirm content switches to easier cards (complexity downgrade)
+          4. Check review-heavy ratio applied (80% review, 20% new)
+          5. Validate user notification displays: "High cognitive load detected - adjusting session"
+        </steps>
+        <expected-result>Difficulty reduced by 1-2 levels, review ratio increased, user notified</expected-result>
+      </scenario>
+      <scenario ac="AC4" task="4">
+        <name>Burnout Prevention System</name>
+        <steps>
+          1. Simulate 2-week intensive period: daily high load (&gt;60 avg) for 14 days
+          2. Verify burnout risk assessment increases to HIGH or CRITICAL
+          3. Confirm warning signals detected: performance decline, engagement drop
+          4. Test intervention recommendations are appropriate (mandatory rest, workload reduction)
+          5. Validate mandatory rest mission generated when risk is CRITICAL
+        </steps>
+        <expected-result>Risk level HIGH/CRITICAL, interventions recommended, rest mission generated</expected-result>
+      </scenario>
+      <scenario ac="AC5" task="5">
+        <name>Stress Pattern Detection</name>
+        <steps>
+          1. Create known stress patterns: always study physiology at night (high load), struggle on Mondays
+          2. Wait for pattern analysis (or trigger manually after 3+ weeks data)
+          3. Verify patterns correctly identified with accurate trigger conditions
+          4. Check stress profile reflects detected patterns (primaryStressors includes "physiology")
+          5. Validate pattern confidence scores reasonable (&gt;0.6 for 3+ occurrences)
+        </steps>
+        <expected-result>Patterns identified, stress profile updated, confidence &gt;0.6</expected-result>
+      </scenario>
+      <scenario ac="AC7" task="7">
+        <name>Dashboard Visualizations</name>
+        <steps>
+          1. Navigate to /analytics/cognitive-health page
+          2. Verify load meter displays accurate current state (color zones, load value, trend arrow)
+          3. Check timeline shows historical load trends correctly (7-day and 30-day views)
+          4. Confirm burnout risk panel reflects current assessment (risk level, factors, recommendations)
+          5. Test stress profile visualization matches detected patterns (radar chart dimensions)
+        </steps>
+        <expected-result>All visualizations accurate, interactive, responsive, accessible</expected-result>
+      </scenario>
+      <scenario ac="AC6" task="3">
+        <name>Integration with Mission Generation</name>
+        <steps>
+          1. Set user's cognitive load to NORMAL (&lt;50) - verify standard mission generated
+          2. Set load to ELEVATED (50-70) - verify mission complexity reduced by 20%, review-heavy
+          3. Set load to HIGH (&gt;70) - verify recovery mission generated (review-only, familiar topics)
+          4. Set burnout risk to MEDIUM/HIGH - verify mandatory rest mission or skip generation
+          5. Check mission briefing includes cognitive state indicator and break recommendations
+        </steps>
+        <expected-result>Mission generation adapts to cognitive load state, appropriate content/duration</expected-result>
+      </scenario>
+      <scenario ac="AC8" task="10">
+        <name>Performance Correlation Analysis</name>
+        <steps>
+          1. Generate diverse load-performance data (4+ weeks, 40+ sessions across load ranges)
+          2. Run correlation analysis API endpoint
+          3. Verify statistical calculations (Pearson correlation, p-value, confidence intervals)
+          4. Check optimal load zone identification makes sense (typically 40-60 range)
+          5. Validate before/after comparison shows meaningful improvement (retention, completion rate)
+        </steps>
+        <expected-result>Correlation coefficient calculated, p&lt;0.05, optimal zone 40-60, improvement metrics positive</expected-result>
+      </scenario>
+      <scenario task="9">
+        <name>In-Session Adaptive Break Suggestions</name>
+        <steps>
+          1. Simulate load &gt;70 for 10+ continuous minutes during session
+          2. Verify break suggestion triggered (non-intrusive notification)
+          3. Display timer-based break with optional mindfulness prompts
+          4. Track break acceptance (user clicks "Take Break")
+          5. Measure load reduction after 5-minute break (should decrease by 10-20 points)
+        </steps>
+        <expected-result>Break suggested appropriately, timer displayed, load reduced post-break</expected-result>
+      </scenario>
+      <scenario task="11">
+        <name>Privacy Controls Testing</name>
+        <steps>
+          1. Toggle User.behavioralAnalysisEnabled to FALSE in settings
+          2. Verify cognitive load monitoring stops (no new CognitiveLoadMetric records created)
+          3. Test "Delete all patterns" button with confirmation dialog
+          4. Verify cascading deletion of CognitiveLoadMetric, StressResponsePattern, BurnoutRiskAssessment
+          5. Export cognitive load data (JSON format), check completeness
+        </steps>
+        <expected-result>Monitoring respects opt-out, deletion cascades correctly, export complete</expected-result>
+      </scenario>
+      <scenario task="2, 9">
+        <name>Real-Time Load Detection During Study Session</name>
+        <steps>
+          1. Start study session, complete 5 cards with AGAIN ratings (high lapse rate &gt;30%)
+          2. Verify COGNITIVE_OVERLOAD indicator created in StruggleIndicator table
+          3. Check load calculation runs every 5 minutes (not every card review)
+          4. Confirm session performance drop &gt;20% from average detected
+          5. Validate load score updates reflected in UI within 5 minutes
+        </steps>
+        <expected-result>Load detected accurately, StruggleIndicator created, UI updates within 5 min</expected-result>
+      </scenario>
+    </test-scenarios>
+    <edge-cases>
+      <case>User with consistently low load (&lt;30) - no overload prevention needed, focus on increasing challenge to maintain engagement</case>
+      <case>User with chronic high load (&gt;70 for 14+ days) - critical burnout risk, emergency intervention (mandatory 2-3 day break)</case>
+      <case>User opts out of cognitive monitoring - disable load calculation, use default difficulty progression without personalization</case>
+      <case>Insufficient data (&lt;3 weeks, &lt;20 sessions) - display "Still learning your patterns" message, use conservative thresholds (50/70/85)</case>
+      <case>Session &lt;10 minutes - skip load calculation (insufficient data for meaningful assessment)</case>
+      <case>No active session - /api/analytics/cognitive-load/current returns null or most recent historical load</case>
+    </edge-cases>
+  </testing-guidance>
+
+  <implementation-notes>
+    <note priority="critical">
+      <title>Cognitive Load Calculation Algorithm</title>
+      <content>
+Weighted formula (Story 5.4 lines 424-454):
+loadScore = (responseLatency * 0.30) + (errorRate * 0.25) + (engagementDrop * 0.20)
+          + (performanceDecline * 0.15) + (durationStress * 0.10)
+
+Component calculations:
+- responseLatency: Rolling average of last 5 responses vs. first 5 (baseline)
+  - &gt;50% increase = 100 score, &gt;30% = 75, &gt;15% = 50, &gt;5% = 25, else 0
+- errorRate: (errors / totalAttempts) * 100 over last 10 interactions
+- engagementDrop: Pause duration/frequency analysis (+10 per disengagement event)
+- performanceDecline: Current vs. baseline performance (20%+ drop = +20 points)
+- durationStress: Time-in-session fatigue (&gt;60 min = +10, &gt;90 min = +25)
+
+Thresholds: Moderate 40-60, High 60-80, Critical &gt;80
+      </content>
+    </note>
+    <note priority="critical">
+      <title>Burnout Risk Assessment Algorithm</title>
+      <content>
+Risk formula (Story 5.4 lines 457-482):
+riskScore = (intensity * 0.2) + (performanceDecline * 0.25) + (chronicLoad * 0.25)
+          + (irregularity * 0.15) + (engagementDecay * 0.1) + (recoveryDeficit * 0.05)
+
+Factors:
+- intensity: Study hours/week normalized (&gt;40 hrs = 100%)
+- performanceDecline: 2-week rolling average, &gt;20% drop detected
+- chronicLoad: Days with avgLoad &gt;60 in 14 days (&gt;7 days = high risk)
+- irregularity: Missed scheduled sessions count (&gt;3 = risk factor)
+- engagementDecay: Motivation signals (skipped missions, incomplete sessions, low ratings)
+- recoveryDeficit: Days since last low-load day (&lt;40 load), flag if &gt;7 days
+
+Risk levels: LOW (&lt;25), MEDIUM (25-50), HIGH (50-75), CRITICAL (&gt;75)
+
+Interventions by risk level:
+- LOW: Continue current routine, maintain awareness
+- MEDIUM: Suggest rest day, reduce mission complexity, increase breaks
+- HIGH: Mandatory rest day, reduce study hours by 30%, lighter content only
+- CRITICAL: Emergency 2-3 day mandatory break, disable new content, focus on review/consolidation
+      </content>
+    </note>
+    <note priority="high">
+      <title>Automatic Difficulty Adjustment Decision Logic</title>
+      <content>
+Adjustment strategy (Story 5.4 lines 485-525):
+
+Moderate load (40-60):
+- Maintain current difficulty
+- Add minor scaffolding (hints, examples)
+- Review ratio: 60/40
+
+High load (60-80):
+- Reduce difficulty by 1 level
+- Simplify validation prompts (skip "explain to patient")
+- Review ratio: 80/20
+- Suggest breaks every 30 min
+
+Critical overload (&gt;80):
+- Emergency adaptation: Reduce difficulty by 2 levels
+- Switch to easiest content available
+- Pure review mode (100% review, 0% new)
+- Immediate break suggestion
+- Display: "Cognitive overload - switching to easy review mode. Consider taking a break."
+
+Low load (&lt;30):
+- Gradually increase challenge
+- Introduce harder validation prompts
+- Full validation suite enabled
+- Review ratio: 50/50
+
+Constraints:
+- Max 2-level difficulty shift per session (avoid jarring transitions)
+- Intervention timing: Only during natural breaks (between cards, end of section)
+- Integration with Understanding Validation Engine (Story 4.x): promptComplexity = baseComplexity * (1 - loadScore/100)
+      </content>
+    </note>
+    <note priority="high">
+      <title>Stress Pattern Identification Logic</title>
+      <content>
+Pattern detection (Story 5.4 lines 528-577):
+
+Topic-specific stress:
+- Group load history by topicStudied
+- Calculate avgLoad per topic
+- Save pattern if avgLoad &gt;65 AND &gt;=3 sessions
+- Confidence: min(0.95, sessions / 10)
+
+Time-of-day stress:
+- Group by hourOfDay (0-23)
+- Calculate avgLoad per hour
+- Save pattern if avgLoad &gt;60 AND &gt;=5 sessions
+- Confidence: min(0.90, sessions / 15)
+
+Exam proximity stress:
+- Filter sessions where daysToExam &lt;= 7
+- Calculate avgLoad for exam proximity sessions
+- Save pattern if avgLoad &gt;70 AND &gt;=3 sessions
+- Confidence: min(0.85, sessions / 10)
+
+Personalized stress profile:
+{
+  primaryStressors: ["physiology", "time-pressure"],
+  avgRecoveryTime: 24, // hours
+  loadTolerance: 65,
+  effectiveCopingStrategies: ["shorter-sessions", "visual-aids"]
+}
+
+Update profile monthly with new pattern data.
+Minimum pattern confidence: 0.6 to save, 0.7 to display to user.
+      </content>
+    </note>
+    <note priority="medium">
+      <title>Mission Generation Integration (Story 2.4)</title>
+      <content>
+MissionGenerator.generateDailyMission() extension (lines 119-213):
+
+Before generating mission:
+1. Query recent cognitive load history (last 7 days) via CognitiveLoadMonitor
+2. Check current burnout risk level from BurnoutPreventionEngine
+3. Query personalized stress profile (UserLearningProfile.loadTolerance)
+
+Load-aware mission generation:
+- Normal load (&lt;50): Standard mission, follow normal prioritization
+- Elevated load (50-70): Reduce mission complexity by 20%, favor easier objectives, 80% review
+- High load (&gt;70): Generate recovery mission (review-only, familiar topics, no new concepts)
+- Burnout risk MEDIUM/HIGH: Override with mandatory rest mission (minimal expectations, optional light review)
+- Burnout risk CRITICAL: Skip mission generation, display: "Take a break day - your learning will be better for it"
+
+Workload modulation:
+- Adjust estimatedMinutes: Normal 45-60 min → High load 30 min → Recovery 15 min
+- Content distribution: Normal 60/40 → High load 80/20 → Recovery 100/0
+- Difficulty ceiling: Use loadTolerance from stress profile to cap mission difficulty
+
+Mission briefing additions:
+- Display cognitive state: "You're operating at high cognitive load - this mission includes extra breaks"
+- Suggest pre-mission break if previous session ended with high load
+- Include in-mission break timers if load elevated during generation
+      </content>
+    </note>
+    <note priority="medium">
+      <title>UI/UX Design System Compliance</title>
+      <content>
+Cognitive load meter (CognitiveLoadMeter component):
+- Circular gauge: 0-100 scale
+- Color zones (OKLCH, NO gradients):
+  - Green: oklch(0.7 0.15 145) for &lt;40
+  - Yellow: oklch(0.8 0.15 90) for 40-60
+  - Orange: oklch(0.7 0.15 50) for 60-80
+  - Red: oklch(0.6 0.20 30) for &gt;80
+- Text labels + ARIA live region for screen readers
+- Icons: ✓ low, ⚠ moderate, ⚡ high, 🚨 critical
+- Trend arrow (↑/↓/→) with animation (motion.dev)
+- Update frequency: Every 5 minutes during active session
+
+Dashboard cards (glassmorphism):
+- bg-white/80 backdrop-blur-md
+- Solid color transitions (no gradients)
+- Line chart thickness/opacity to convey load intensity
+- Recharts library for all visualizations
+
+User messaging (supportive, not judgmental):
+- "You're working hard - let's adjust to support you" (NOT "You're too stressed")
+- "Try 15-minute sessions instead of 60-minute sessions" (actionable, specific)
+- "Your cognitive load management improved retention by 15%" (celebrate progress)
+- "Cognitive load monitoring helps prevent burnout. You can disable this in Settings." (opt-out transparency)
+      </content>
+    </note>
+    <note priority="medium">
+      <title>Performance Correlation Analysis (Task 10)</title>
+      <content>
+CognitivePerformanceAnalyzer implementation:
+
+Data collection:
+- Paired data: (cognitiveLoad, performanceScore) for all sessions
+- Minimum 30 sessions for statistical validity
+
+Correlation analysis:
+- Calculate Pearson correlation coefficient between load and performance
+- Statistical significance testing: p-value &lt; 0.05 for meaningful correlation
+- Typical hypothesis: Inverted-U curve (moderate load = peak performance)
+
+Optimal load zone calculation:
+- Analyze performance scores across ranges: &lt;30, 30-50, 50-70, &gt;70
+- Identify "peak performance zone" (typically 40-60 for most users)
+- Personalize based on user's actual data
+- Example result: "Your optimal load zone is 45-65. Performance drops 20% above 70."
+
+Before/after comparison:
+- Identify periods before cognitive load monitoring (unmanaged baseline)
+- Compare metrics: retention rate, completion rate, mission success rate
+- Calculate improvement: "Since cognitive load monitoring, your retention improved 15%"
+- Track long-term trends: sustained performance, reduced burnout incidents
+
+Report visualization:
+- Scatter plot: load (x-axis) vs performance (y-axis)
+- Bar chart: performance by zone comparison
+- Export JSON for academic discussions/self-reflection
+      </content>
+    </note>
+    <note priority="low">
+      <title>Database Migration Strategy</title>
+      <content>
+Migration steps:
+1. Create Prisma migration: npx prisma migrate dev --name add_cognitive_load_models
+2. Verify schema includes 3 new models + BehavioralEvent extensions
+3. Run migration on local PostgreSQL
+4. Test CRUD operations for all new models
+5. Add indexes: userId, sessionId, timestamp for CognitiveLoadMetric
+6. Performance test time-series queries with mock data (1000+ records)
+
+Schema changes:
+- Add CognitiveLoadMetric model (Task 1.1)
+- Add StressResponsePattern model with StressPatternType enum (Task 1.2)
+- Add BurnoutRiskAssessment model with BurnoutRiskLevel enum (Task 1.3)
+- Extend BehavioralEvent with 3 cognitive load fields (Task 1.4)
+
+Future migration path:
+- Story 5.5+ may add Python ML models for advanced load prediction
+- Keep rule-based algorithms for backward compatibility
+      </content>
+    </note>
+  </implementation-notes>
+
+  <integration-points>
+    <integration>
+      <story>Story 5.1: Learning Pattern Recognition</story>
+      <description>Cognitive load patterns integrated into BehavioralPatternEngine weekly analysis. Attention cycle patterns from Story 5.1 inform break frequency recommendations (Task 2.4). Load tolerance threshold stored in UserLearningProfile.loadTolerance field (new field to add).</description>
+    </integration>
+    <integration>
+      <story>Story 5.2: Predictive Analytics for Learning Struggles</story>
+      <description>Cognitive load monitoring feeds COGNITIVE_OVERLOAD IndicatorType to StruggleDetectionEngine.analyzeCurrentStruggles() (lines 167-266). Real-time load detection creates StruggleIndicator records. InterventionType.COGNITIVE_LOAD_REDUCE uses load data for effectiveness measurement.</description>
+    </integration>
+    <integration>
+      <story>Story 2.4: Daily Mission Generation</story>
+      <description>MissionGenerator.generateDailyMission() (lines 119-213) extended to query recent cognitive load before generating mission. High load (&gt;70) triggers recovery mission. Burnout risk (medium/high) overrides with mandatory rest mission or skips generation entirely.</description>
+    </integration>
+    <integration>
+      <story>Story 2.6: Mission Performance Analytics</story>
+      <description>Mission performance correlated with cognitive load during execution. MissionAnalyticsEngine tracks load-performance correlations. Adaptation effectiveness measured through load-performance changes before/after intervention. Weekly insights include optimal load zones.</description>
+    </integration>
+    <integration>
+      <story>Story 1.6: Study Session Management</story>
+      <description>StudySession lifecycle hooks trigger cognitive load calculation every 5 minutes. Session start establishes baseline cognitive state. BehavioralEvent records emitted with cognitiveLoadScore on each calculation. Session end triggers final load assessment.</description>
+    </integration>
+  </integration-points>
+
+  <file-structure>
+    <directory path="apps/web/prisma">
+      <file>schema.prisma</file>
+      <description>Add 3 new models (CognitiveLoadMetric, StressResponsePattern, BurnoutRiskAssessment) and extend BehavioralEvent</description>
+    </directory>
+    <directory path="apps/web/src/subsystems/behavioral-analytics">
+      <file>cognitive-load-monitor.ts</file>
+      <description>Task 2: CognitiveLoadMonitor class with calculateCurrentLoad(), detectStressIndicators(), assessOverloadRisk()</description>
+    </directory>
+    <directory path="apps/web/src/subsystems/behavioral-analytics">
+      <file>difficulty-adapter.ts</file>
+      <description>Task 3: DifficultyAdapter class with adjustDifficulty(), recommendContentModification(), calculateOptimalChallenge()</description>
+    </directory>
+    <directory path="apps/web/src/subsystems/behavioral-analytics">
+      <file>burnout-prevention-engine.ts</file>
+      <description>Task 4: BurnoutPreventionEngine class with assessBurnoutRisk(), detectWarningSignals(), recommendIntervention()</description>
+    </directory>
+    <directory path="apps/web/src/subsystems/behavioral-analytics">
+      <file>stress-pattern-analyzer.ts</file>
+      <description>Task 5: StressPatternAnalyzer class with identifyRecurringPatterns(), analyzeStressTriggers(), buildPersonalizedStressProfile()</description>
+    </directory>
+    <directory path="apps/web/src/subsystems/behavioral-analytics">
+      <file>cognitive-performance-analyzer.ts</file>
+      <description>Task 10: CognitivePerformanceAnalyzer class with analyzeLoadPerformanceCorrelation(), calculateOptimalLoadZone()</description>
+    </directory>
+    <directory path="apps/web/src/app/api/analytics/cognitive-load/calculate">
+      <file>route.ts</file>
+      <description>Task 8.1: POST endpoint to calculate cognitive load for session</description>
+    </directory>
+    <directory path="apps/web/src/app/api/analytics/cognitive-load/current">
+      <file>route.ts</file>
+      <description>Task 8.2: GET endpoint for user's current cognitive load state</description>
+    </directory>
+    <directory path="apps/web/src/app/api/analytics/cognitive-load/history">
+      <file>route.ts</file>
+      <description>Task 8.3: GET endpoint for time-series cognitive load data</description>
+    </directory>
+    <directory path="apps/web/src/app/api/analytics/burnout-risk">
+      <file>route.ts</file>
+      <description>Task 8.4: GET endpoint for current burnout risk assessment</description>
+    </directory>
+    <directory path="apps/web/src/app/api/analytics/stress-patterns">
+      <file>route.ts</file>
+      <description>Task 8.5: GET endpoint for identified stress response patterns</description>
+    </directory>
+    <directory path="apps/web/src/app/api/analytics/stress-profile">
+      <file>route.ts</file>
+      <description>Task 8.6: GET endpoint for personalized stress profile</description>
+    </directory>
+    <directory path="apps/web/src/app/api/analytics/interventions/apply">
+      <file>route.ts</file>
+      <description>Task 8.7: POST endpoint to apply recommended intervention</description>
+    </directory>
+    <directory path="apps/web/src/app/analytics/cognitive-health">
+      <file>page.tsx</file>
+      <description>Task 7.1: Cognitive health dashboard page with 5 visualization sections</description>
+    </directory>
+    <directory path="apps/web/src/components/analytics">
+      <file>cognitive-load-meter.tsx</file>
+      <description>Task 7.2: Circular gauge with color zones (Green/Yellow/Orange/Red)</description>
+    </directory>
+    <directory path="apps/web/src/components/analytics">
+      <file>stress-patterns-timeline.tsx</file>
+      <description>Task 7.3: Line chart for cognitive load history with annotations</description>
+    </directory>
+    <directory path="apps/web/src/components/analytics">
+      <file>burnout-risk-panel.tsx</file>
+      <description>Task 7.4: Risk level indicator with contributing factors breakdown</description>
+    </directory>
+    <directory path="apps/web/src/components/analytics">
+      <file>stress-profile-card.tsx</file>
+      <description>Task 7.5: Radar chart for stress trigger dimensions</description>
+    </directory>
+    <directory path="apps/web/src/components/analytics">
+      <file>intervention-recommendations.tsx</file>
+      <description>Task 7.6: Card-based layout for intervention recommendations</description>
+    </directory>
+  </file-structure>
+
+  <risks-and-mitigations>
+    <risk>
+      <title>Meta-Cognitive Stress Induction</title>
+      <description>Showing cognitive load metrics may cause users to become anxious about their stress levels, creating a feedback loop.</description>
+      <mitigation>Use supportive language ("You're in the learning zone" not "You're stressed"). Provide opt-out in settings (User.behavioralAnalysisEnabled). Focus on actionable recommendations not just metrics.</mitigation>
+    </risk>
+    <risk>
+      <title>False Positives in Overload Detection</title>
+      <description>Brief periods of difficulty may be incorrectly flagged as cognitive overload, disrupting productive study sessions.</description>
+      <mitigation>Require 2 consecutive high-load measurements OR 1 critical measurement to trigger intervention. Use confidence scoring. Allow user feedback to calibrate thresholds.</mitigation>
+    </risk>
+    <risk>
+      <title>Insufficient Data for Personalization</title>
+      <description>Users with &lt;3 weeks data may get inaccurate stress profiles and poor recommendations.</description>
+      <mitigation>Display "Still learning your patterns" message. Use conservative default thresholds (50/70/85). Require minimum 20 sessions, 50 reviews for pattern detection.</mitigation>
+    </risk>
+    <risk>
+      <title>Performance Impact of Real-Time Monitoring</title>
+      <description>Calculating cognitive load every 5 minutes during sessions may slow down the UI or block user interactions.</description>
+      <mitigation>Run load calculation asynchronously (background job). Set 100ms timeout for calculation. Use incremental updates not full recalculation. Cache recent calculations.</mitigation>
+    </risk>
+    <risk>
+      <title>Intervention Fatigue</title>
+      <description>Excessive break suggestions or difficulty adjustments may annoy users and reduce trust in the system.</description>
+      <mitigation>Limit interventions to natural breaks (between cards). Rate-limit break suggestions to max 1 per 30 minutes. Track user dismissals and reduce frequency if &gt;50% dismissed.</mitigation>
+    </risk>
+  </risks-and-mitigations>
+
+  <dependencies-between-tasks>
+    <dependency>
+      <from-task>1</from-task>
+      <to-task>2, 3, 4, 5</to-task>
+      <reason>Database models must exist before subsystem classes can write to them</reason>
+    </dependency>
+    <dependency>
+      <from-task>2</from-task>
+      <to-task>8, 9</to-task>
+      <reason>CognitiveLoadMonitor class must exist before API endpoints and session integration can use it</reason>
+    </dependency>
+    <dependency>
+      <from-task>4</from-task>
+      <to-task>6, 8</to-task>
+      <reason>BurnoutPreventionEngine must exist before mission generation integration and API endpoints</reason>
+    </dependency>
+    <dependency>
+      <from-task>5</from-task>
+      <to-task>8</to-task>
+      <reason>StressPatternAnalyzer must exist before stress-patterns and stress-profile API endpoints</reason>
+    </dependency>
+    <dependency>
+      <from-task>2, 4, 5</from-task>
+      <to-task>7</to-task>
+      <reason>Dashboard UI components require subsystem classes to fetch data</reason>
+    </dependency>
+    <dependency>
+      <from-task>2, 3</from-task>
+      <to-task>9</to-task>
+      <reason>Session-level load monitoring requires CognitiveLoadMonitor and DifficultyAdapter</reason>
+    </dependency>
+    <dependency>
+      <from-task>1, 2, 4</from-task>
+      <to-task>10</to-task>
+      <reason>Performance correlation analysis requires CognitiveLoadMetric data and BurnoutPreventionEngine</reason>
+    </dependency>
+  </dependencies-between-tasks>
+
+  <success-metrics>
+    <metric>
+      <name>Cognitive Load Detection Accuracy</name>
+      <target>80%+ correlation between detected high load (&gt;70) and user-reported stress in post-session feedback</target>
+      <measurement>Compare CognitiveLoadMetric.loadScore with MissionFeedback.paceRating and user stress self-reports</measurement>
+    </metric>
+    <metric>
+      <name>Burnout Prevention Effectiveness</name>
+      <target>50%+ reduction in study sessions with load &gt;80 after 4 weeks of monitoring</target>
+      <measurement>Count sessions with loadScore &gt;80 in weeks 1-4 vs weeks 5-8, track trend</measurement>
+    </metric>
+    <metric>
+      <name>Intervention Acceptance Rate</name>
+      <target>60%+ of break suggestions accepted, 70%+ of difficulty adjustments accepted</target>
+      <measurement>Track user responses to interventions via /api/analytics/interventions/apply endpoint</measurement>
+    </metric>
+    <metric>
+      <name>Performance Improvement Post-Monitoring</name>
+      <target>10%+ improvement in retention rate and mission success rate after cognitive load management enabled</target>
+      <measurement>Compare PerformanceMetric.retentionScore and Mission.successScore before/after 4 weeks of monitoring</measurement>
+    </metric>
+    <metric>
+      <name>User Engagement with Dashboard</name>
+      <target>40%+ of users visit /analytics/cognitive-health at least once per week</target>
+      <measurement>Track BehavioralEvent records with eventType=ANALYTICS_VIEWED and page=/analytics/cognitive-health</measurement>
+    </metric>
+  </success-metrics>
+
+  <deferred-items>
+    <item reason="MVP Scope - Add in production deployment story">
+      <description>Automated testing (Vitest unit tests, Playwright e2e tests) for cognitive load subsystems and APIs</description>
+    </item>
+    <item reason="Python ML service not in scope for Story 5.4">
+      <description>Machine learning models for advanced cognitive load prediction (linear regression, neural networks)</description>
+    </item>
+    <item reason="Future enhancement beyond cognitive load monitoring">
+      <description>Email/SMS notifications for critical burnout risk (requires notification service integration)</description>
+    </item>
+    <item reason="Future enhancement - focus on core monitoring first">
+      <description>Pomodoro timer integration with cognitive load-based break scheduling</description>
+    </item>
+    <item reason="Future enhancement - requires user research">
+      <description>Mindfulness prompts during breaks (meditation guidance, breathing exercises)</description>
+    </item>
+  </deferred-items>
+</story-context>

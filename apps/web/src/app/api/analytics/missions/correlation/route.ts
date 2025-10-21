@@ -25,7 +25,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   })
 
   if (!user) {
-    return Response.json(errorResponse('USER_NOT_FOUND', `User ${userEmail} not found`), { status: 404 })
+    return Response.json(errorResponse('USER_NOT_FOUND', `User ${userEmail} not found`), {
+      status: 404,
+    })
   }
 
   // Initialize analytics engine

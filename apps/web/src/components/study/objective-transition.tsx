@@ -1,41 +1,41 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { CheckCircle2, ArrowRight } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react'
+import { CheckCircle2, ArrowRight } from 'lucide-react'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 interface LearningObjective {
-  id: string;
-  objective: string;
-  complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
-  isHighYield: boolean;
-  pageStart?: number;
-  pageEnd?: number;
-  boardExamTags: string[];
+  id: string
+  objective: string
+  complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
+  isHighYield: boolean
+  pageStart?: number
+  pageEnd?: number
+  boardExamTags: string[]
   lecture: {
-    id: string;
-    title: string;
-    courseId: string;
+    id: string
+    title: string
+    courseId: string
     course: {
-      name: string;
-    };
-  };
+      name: string
+    }
+  }
 }
 
 interface MissionObjective {
-  objectiveId: string;
-  objective?: LearningObjective;
-  estimatedMinutes: number;
-  completed: boolean;
+  objectiveId: string
+  objective?: LearningObjective
+  estimatedMinutes: number
+  completed: boolean
 }
 
 interface ObjectiveTransitionProps {
-  completedObjective: LearningObjective;
-  nextObjective: MissionObjective;
-  delayMs: number;
-  onTransitionComplete: () => void;
+  completedObjective: LearningObjective
+  nextObjective: MissionObjective
+  delayMs: number
+  onTransitionComplete: () => void
 }
 
 export function ObjectiveTransition({
@@ -44,46 +44,49 @@ export function ObjectiveTransition({
   delayMs,
   onTransitionComplete,
 }: ObjectiveTransitionProps) {
-  const [countdown, setCountdown] = useState(Math.ceil(delayMs / 1000));
+  const [countdown, setCountdown] = useState(Math.ceil(delayMs / 1000))
 
   useEffect(() => {
     // Countdown timer
     const countdownInterval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          clearInterval(countdownInterval);
-          return 0;
+          clearInterval(countdownInterval)
+          return 0
         }
-        return prev - 1;
-      });
-    }, 1000);
+        return prev - 1
+      })
+    }, 1000)
 
     // Transition timer
     const transitionTimeout = setTimeout(() => {
-      onTransitionComplete();
-    }, delayMs);
+      onTransitionComplete()
+    }, delayMs)
 
     return () => {
-      clearInterval(countdownInterval);
-      clearTimeout(transitionTimeout);
-    };
-  }, [delayMs, onTransitionComplete]);
+      clearInterval(countdownInterval)
+      clearTimeout(transitionTimeout)
+    }
+  }, [delayMs, onTransitionComplete])
 
   const getComplexityColor = (complexity: string) => {
     switch (complexity) {
       case 'BASIC':
-        return 'oklch(0.65 0.2 140)'; // Green
+        return 'oklch(0.65 0.2 140)' // Green
       case 'INTERMEDIATE':
-        return 'oklch(0.65 0.15 80)'; // Yellow
+        return 'oklch(0.65 0.15 80)' // Yellow
       case 'ADVANCED':
-        return 'oklch(0.5 0.2 0)'; // Red
+        return 'oklch(0.5 0.2 0)' // Red
       default:
-        return 'oklch(0.55 0.2 250)'; // Blue
+        return 'oklch(0.55 0.2 250)' // Blue
     }
-  };
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ background: 'oklch(0.2 0.05 250 / 0.8)' }}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
+      style={{ background: 'oklch(0.2 0.05 250 / 0.8)' }}
+    >
       <Card
         className="max-w-2xl w-full mx-4 p-8 backdrop-blur-xl border-0 animate-in fade-in zoom-in duration-300"
         style={{
@@ -99,10 +102,7 @@ export function ObjectiveTransition({
                 className="p-4 rounded-full"
                 style={{ background: 'oklch(0.65 0.2 140 / 0.15)' }}
               >
-                <CheckCircle2
-                  className="w-12 h-12"
-                  style={{ color: 'oklch(0.65 0.2 140)' }}
-                />
+                <CheckCircle2 className="w-12 h-12" style={{ color: 'oklch(0.65 0.2 140)' }} />
               </div>
             </div>
             <h2 className="text-2xl font-bold" style={{ color: 'oklch(0.3 0.15 250)' }}>
@@ -196,5 +196,5 @@ export function ObjectiveTransition({
         </div>
       </Card>
     </div>
-  );
+  )
 }

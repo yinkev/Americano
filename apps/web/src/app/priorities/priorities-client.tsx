@@ -90,10 +90,7 @@ export function PrioritiesClient({ priorities }: PrioritiesClientProps) {
                   </CardDescription>
                 </div>
                 <div className="flex flex-col items-end gap-2">
-                  <Badge
-                    variant="secondary"
-                    className="bg-white/60 text-gray-700 border-gray-200"
-                  >
+                  <Badge variant="secondary" className="bg-white/60 text-gray-700 border-gray-200">
                     {item.priorityExplanation.visualIndicator}
                   </Badge>
                   <div className="text-right">
@@ -150,10 +147,7 @@ export function PrioritiesClient({ priorities }: PrioritiesClientProps) {
                               {Math.round(factor.contribution * 100)}%
                             </span>
                           </div>
-                          <Progress
-                            value={factor.contribution * 100}
-                            className="h-1.5"
-                          />
+                          <Progress value={factor.contribution * 100} className="h-1.5" />
                           <p className="text-xs text-gray-600 mt-1">{factor.explanation}</p>
                         </div>
                       ))}
@@ -163,9 +157,7 @@ export function PrioritiesClient({ priorities }: PrioritiesClientProps) {
                   {/* Recommendations */}
                   {item.priorityExplanation.recommendations.length > 0 && (
                     <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/30">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-2">
-                        Recommendations
-                      </h4>
+                      <h4 className="text-sm font-semibold text-gray-900 mb-2">Recommendations</h4>
                       <ul className="space-y-1">
                         {item.priorityExplanation.recommendations.map((rec, idx) => (
                           <li key={idx} className="text-xs text-gray-700 flex items-start gap-2">

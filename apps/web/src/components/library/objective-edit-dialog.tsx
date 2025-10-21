@@ -1,35 +1,49 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import type { ObjectiveComplexity } from '@/lib/ai/chatmock-client';
+import { useState } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import type { ObjectiveComplexity } from '@/lib/ai/chatmock-client'
 
 interface ObjectiveEditDialogProps {
   objective: {
-    id: string;
-    objective: string;
-    complexity: ObjectiveComplexity;
-    pageStart: number | null;
-    pageEnd: number | null;
-    isHighYield: boolean;
-    boardExamTags: string[];
-  };
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSave: (updated: Partial<{
-    objective: string;
-    complexity: ObjectiveComplexity;
-    pageStart: number | null;
-    isHighYield: boolean;
-    boardExamTags: string[];
-  }>) => Promise<void>;
-  onDelete: () => Promise<void>;
+    id: string
+    objective: string
+    complexity: ObjectiveComplexity
+    pageStart: number | null
+    pageEnd: number | null
+    isHighYield: boolean
+    boardExamTags: string[]
+  }
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSave: (
+    updated: Partial<{
+      objective: string
+      complexity: ObjectiveComplexity
+      pageStart: number | null
+      isHighYield: boolean
+      boardExamTags: string[]
+    }>,
+  ) => Promise<void>
+  onDelete: () => Promise<void>
 }
 
 export function ObjectiveEditDialog({
@@ -45,12 +59,12 @@ export function ObjectiveEditDialog({
     pageStart: objective.pageStart?.toString() || '',
     isHighYield: objective.isHighYield,
     boardExamTags: objective.boardExamTags.join(', '),
-  });
-  const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  })
+  const [isSaving, setIsSaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const handleSave = async () => {
-    setIsSaving(true);
+    setIsSaving(true)
     try {
       await onSave({
         objective: formData.objective,
@@ -61,28 +75,28 @@ export function ObjectiveEditDialog({
           .split(',')
           .map((c) => c.trim())
           .filter(Boolean),
-      });
-      onOpenChange(false);
+      })
+      onOpenChange(false)
     } catch (error) {
-      console.error('Failed to save objective:', error);
+      console.error('Failed to save objective:', error)
     } finally {
-      setIsSaving(false);
+      setIsSaving(false)
     }
-  };
+  }
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this objective?')) return;
+    if (!confirm('Are you sure you want to delete this objective?')) return
 
-    setIsDeleting(true);
+    setIsDeleting(true)
     try {
-      await onDelete();
-      onOpenChange(false);
+      await onDelete()
+      onOpenChange(false)
     } catch (error) {
-      console.error('Failed to delete objective:', error);
+      console.error('Failed to delete objective:', error)
     } finally {
-      setIsDeleting(false);
+      setIsDeleting(false)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -162,11 +176,7 @@ export function ObjectiveEditDialog({
         </div>
 
         <DialogFooter className="flex justify-between">
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={isDeleting || isSaving}
-          >
+          <Button variant="destructive" onClick={handleDelete} disabled={isDeleting || isSaving}>
             {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>
           <div className="flex space-x-2">
@@ -180,5 +190,5 @@ export function ObjectiveEditDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

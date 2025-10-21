@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>5.5</storyId>
+    <title>Adaptive Personalization Engine</title>
+    <status>Draft</status>
+    <generatedAt>2025-10-16</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-5.5.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>medical student</asA>
+    <iWant>all platform features to adapt to my individual learning characteristics</iWant>
+    <soThat>my study experience becomes increasingly personalized and effective over time</soThat>
+    <tasks>
+      - Task 1: Design Adaptive Personalization Framework
+      - Task 2: Integrate Learning Pattern Insights (Story 5.1)
+      - Task 3: Integrate Predictive Analytics (Story 5.2)
+      - Task 4: Integrate Session Orchestration Patterns (Story 5.3)
+      - Task 5: Integrate Cognitive Load Management (Story 5.4)
+      - Task 6: Personalize Daily Mission Generation
+      - Task 7: Personalize Content Recommendations
+      - Task 8: Personalize Assessment Strategy
+      - Task 9: Multi-Armed Bandit Optimization
+      - Task 10: A/B Testing Framework
+      - Task 11: Track Personalization Effectiveness
+      - Task 12: User Control Over Personalization
+      - Task 13: Build Personalization Dashboard UI
+      - Task 14: Build Personalization APIs
+      - Task 15: Implement Continuous Improvement Loop
+      - Task 16: Integration with Mission, Content, and Assessment Systems
+      - Task 17: Testing and Validation
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1">Personalization engine integrates insights from all behavioral analysis components (Stories 5.1-5.4)</ac>
+    <ac id="2">Daily missions adapted based on individual learning patterns and predictions</ac>
+    <ac id="3">Content recommendations personalized to learning style and performance history</ac>
+    <ac id="4">Assessment difficulty and frequency optimized for individual learning progression</ac>
+    <ac id="5">Study session structure adapted to personal attention patterns and preferences</ac>
+    <ac id="6">Personalization effectiveness tracked through improved learning outcomes</ac>
+    <ac id="7">User control over personalization levels and feature adaptation</ac>
+    <ac id="8">Continuous improvement through feedback and performance correlation</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/solution-architecture.md</path>
+        <title>Americano Solution Architecture</title>
+        <section>Subsystem 5: Behavioral Analytics &amp; Personalization (lines 604-648)</section>
+        <snippet>Behavioral Analytics subsystem includes BehavioralAnalyzer, PredictiveModel, CognitiveLoadMonitor, DifficultyAdapter, with Story 2.6 extensions for MissionAnalyticsEngine, MissionAdaptationEngine, MissionInsightsEngine, and MissionSuccessCalculator. Handles learning pattern analysis, predictive modeling, cognitive load monitoring, adaptive difficulty adjustment, mission performance analytics, and automatic difficulty adaptation.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements Document</title>
+        <section>Epic 5: Behavioral Learning Twin (lines 450-468)</section>
+        <snippet>Goal: Develop sophisticated behavioral modeling system that learns individual patterns, predicts struggles, and optimizes learning experiences. Success criteria: 80%+ accuracy in predicting struggles, improving personalization effectiveness, demonstrating correlation between behavioral insights and academic performance.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-Americano-2025-10-14.md</path>
+        <title>Product Requirements Document</title>
+        <section>NFR3: Security and Privacy (lines 179-183)</section>
+        <snippet>Privacy-first behavioral data collection with explicit user consent. FERPA compliance for educational data handling and privacy.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics-Americano-2025-10-14.md</path>
+        <title>Epic Breakdown</title>
+        <section>Story 5.5: Adaptive Personalization Engine (lines 786-807)</section>
+        <snippet>Prerequisites: All behavioral analysis components (Stories 5.1-5.4). Acceptance Criteria: Personalization engine integrates all insights, daily missions adapted, content personalized, assessment optimized, session structure adapted, effectiveness tracked, user control provided, continuous improvement. Technical: Comprehensive personalization framework, multi-armed bandit algorithms, A/B testing framework.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-5.1.md</path>
+        <title>Story 5.1: Learning Pattern Recognition</title>
+        <section>Complete Implementation</section>
+        <snippet>Story 5.1 is COMPLETE. Provides UserLearningProfile, BehavioralPattern, BehavioralInsight models. Key outputs: optimal study times, session duration preferences, learning style profile (VARK), forgetting curves. PersonalizationEngine should aggregate these patterns.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-5.2.md</path>
+        <title>Story 5.2: Predictive Analytics</title>
+        <section>Implementation Status</section>
+        <snippet>Story 5.2 provides StrugglePrediction, StruggleIndicator, InterventionRecommendation models. Struggle detection engine, prediction accuracy tracking, intervention system, feedback collection. PersonalizationEngine should use predictions for proactive interventions.</snippet>
+      </doc>
+      <doc>
+        <path>docs/CLAUDE.md</path>
+        <title>Project Standards</title>
+        <section>Analytics Implementation Standards</section>
+        <snippet>World-class excellence - Research-grade quality standards. Technology Stack: Python for all analytics features, subsystems, and components. Application scope: Behavioral analytics subsystems, machine learning models, data analysis pipelines, prediction engines, statistical analysis components.</snippet>
+      </doc>
+    </docs>
+
+    <code>
+      <artifact>
+        <path>apps/web/src/lib/mission-generator.ts</path>
+        <kind>service</kind>
+        <symbol>MissionGenerator</symbol>
+        <lines>1-650</lines>
+        <reason>Mission generation logic that will need personalization integration (Task 6). Currently has basic personalization but needs full PersonalizationEngine integration.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/app/api/user/privacy/route.ts</path>
+        <kind>api</kind>
+        <symbol>GET, PATCH /api/user/privacy</symbol>
+        <lines>1-127</lines>
+        <reason>Existing privacy controls API for behavioral analysis. Pattern for Task 12 (User Control Over Personalization) - similar toggles and deletion logic needed.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/components/settings/behavioral-privacy-settings.tsx</path>
+        <kind>component</kind>
+        <symbol>BehavioralPrivacySettings</symbol>
+        <lines>1-253</lines>
+        <reason>Existing privacy UI component with toggles, export, and delete functionality. Reference for Task 12 personalization settings UI.</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/prisma/schema.prisma</path>
+        <kind>schema</kind>
+        <symbol>User, BehavioralPattern, BehavioralInsight, UserLearningProfile</symbol>
+        <lines>19-589</lines>
+        <reason>Database schema with existing behavioral models from Story 5.1 and privacy controls. Will need PersonalizationConfig, PersonalizationPreferences, PersonalizationStrategy models (Tasks 1, 9, 10).</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/struggle-prediction-model.ts</path>
+        <kind>subsystem</kind>
+        <symbol>StrugglePredictionModel</symbol>
+        <lines>unknown</lines>
+        <reason>Story 5.2 predictive model that PersonalizationEngine should integrate (Task 3).</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/subsystems/behavioral-analytics/intervention-engine.ts</path>
+        <kind>subsystem</kind>
+        <symbol>InterventionEngine</symbol>
+        <lines>unknown</lines>
+        <reason>Story 5.2 intervention system that PersonalizationEngine should use for proactive support (Task 3).</reason>
+      </artifact>
+      <artifact>
+        <path>apps/web/src/lib/mission-analytics-engine.ts</path>
+        <kind>service</kind>
+        <symbol>MissionAnalyticsEngine</symbol>
+        <lines>1-398</lines>
+        <reason>Story 2.6 analytics engine calculating completion rates, performance correlations. Provides data for Task 11 (effectiveness tracking).</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <node>
+        <package>@prisma/client</package>
+        <version>latest</version>
+        <usage>Database ORM for PersonalizationConfig, PersonalizationPreferences models</usage>
+      </node>
+      <node>
+        <package>next</package>
+        <version>15.x</version>
+        <usage>Next.js App Router for personalization API routes</usage>
+      </node>
+      <node>
+        <package>react</package>
+        <version>19.x</version>
+        <usage>UI components for personalization dashboard and settings</usage>
+      </node>
+      <node>
+        <package>@radix-ui/react-*</package>
+        <version>latest</version>
+        <usage>shadcn/ui components for personalization UI (sliders, toggles, dialogs)</usage>
+      </node>
+      <node>
+        <package>recharts</package>
+        <version>latest</version>
+        <usage>Personalization effectiveness charts and visualizations</usage>
+      </node>
+      <node>
+        <package>sonner</package>
+        <version>latest</version>
+        <usage>Toast notifications for personalization changes</usage>
+      </node>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Quality Standard: Python for analytics (CLAUDE.md), but Story 5.5 is TypeScript-based personalization orchestration. Python requirement applies to ML models in Stories 5.2-5.4, not orchestration layer.</constraint>
+    <constraint>Data Requirements: Personalization requires Stories 5.1-5.4 data. Story 5.1 COMPLETE, Stories 5.2-5.4 status unknown. Engine must gracefully degrade if data unavailable.</constraint>
+    <constraint>Privacy: User control MANDATORY (AC #7). Must provide personalization level toggles (NONE/LOW/MEDIUM/HIGH), feature-level disables, data export, complete deletion (following existing privacy pattern).</constraint>
+    <constraint>Performance: Personalization calculations run asynchronously. Mission generation should not be blocked (use cached config if needed, max 1hr cache).</constraint>
+    <constraint>Confidence Thresholds: Only use patterns/predictions with confidence ≥ 0.7. Lower confidence = less aggressive personalization.</constraint>
+    <constraint>Feedback Loop: Every personalization decision must be trackable to outcome for continuous improvement (AC #8).</constraint>
+    <constraint>A/B Testing: Requires minimum 20 users per variant + 2 weeks duration. Statistical significance (p < 0.05) required before rollout.</constraint>
+    <constraint>Multi-Armed Bandit: 4 strategy variants (Pattern-heavy, Prediction-heavy, Balanced, Conservative). 90% exploit / 10% explore (epsilon-greedy).</constraint>
+    <constraint>Integration: Must integrate with MissionGenerator, ContentRecommendationEngine, ValidationPromptGenerator, SessionOrchestrator without breaking existing functionality.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>PersonalizationEngine.applyPersonalization</name>
+      <kind>function</kind>
+      <signature>applyPersonalization(userId: string, context: 'mission' | 'content' | 'assessment' | 'session'): Promise&lt;PersonalizationConfig&gt;</signature>
+      <path>apps/web/src/subsystems/personalization-engine/personalization-engine.ts</path>
+      <description>Main personalization orchestrator. Aggregates insights from Stories 5.1-5.4 and returns context-specific personalization configuration.</description>
+    </interface>
+    <interface>
+      <name>PersonalizationEngine.aggregateInsights</name>
+      <kind>function</kind>
+      <signature>aggregateInsights(userId: string): Promise&lt;AggregatedInsights&gt;</signature>
+      <path>apps/web/src/subsystems/personalization-engine/personalization-engine.ts</path>
+      <description>Aggregates all behavioral insights: patterns from 5.1, predictions from 5.2, session insights from 5.3, cognitive load from 5.4.</description>
+    </interface>
+    <interface>
+      <name>PersonalizationEngine.calculatePersonalizationScore</name>
+      <kind>function</kind>
+      <signature>calculatePersonalizationScore(userId: string): Promise&lt;EffectivenessScore&gt;</signature>
+      <path>apps/web/src/subsystems/personalization-engine/personalization-engine.ts</path>
+      <description>Calculates composite effectiveness score for personalization (0-100) based on retention improvement, performance improvement, completion rate change.</description>
+    </interface>
+    <interface>
+      <name>PersonalizationEngine.updatePersonalizationSettings</name>
+      <kind>function</kind>
+      <signature>updatePersonalizationSettings(userId: string, preferences: PersonalizationPreferences): Promise&lt;void&gt;</signature>
+      <path>apps/web/src/subsystems/personalization-engine/personalization-engine.ts</path>
+      <description>Updates user personalization preferences (level, enabled features, disabled features, autoAdapt).</description>
+    </interface>
+    <interface>
+      <name>GET /api/personalization/config</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/personalization/config → PersonalizationConfig</signature>
+      <path>apps/web/src/app/api/personalization/config/route.ts</path>
+      <description>Returns active PersonalizationConfig for user (missionPersonalization, contentPersonalization, assessmentPersonalization, sessionPersonalization).</description>
+    </interface>
+    <interface>
+      <name>GET /api/personalization/insights</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/personalization/insights → AggregatedInsights</signature>
+      <path>apps/web/src/app/api/personalization/insights/route.ts</path>
+      <description>Returns aggregated insights from all behavioral analysis components (patterns[], predictions[], sessionInsights, cognitiveLoadInsights).</description>
+    </interface>
+    <interface>
+      <name>POST /api/personalization/apply</name>
+      <kind>REST endpoint</kind>
+      <signature>POST /api/personalization/apply { context, params } → PersonalizationConfig</signature>
+      <path>apps/web/src/app/api/personalization/apply/route.ts</path>
+      <description>Triggers personalization engine for specific context (mission/content/assessment/session) with custom parameters.</description>
+    </interface>
+    <interface>
+      <name>GET /api/personalization/effectiveness</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/personalization/effectiveness?startDate&amp;endDate&amp;metric → EffectivenessMetrics</signature>
+      <path>apps/web/src/app/api/personalization/effectiveness/route.ts</path>
+      <description>Returns effectiveness metrics over time period (retention/performance/completion improvements, correlation, pValue).</description>
+    </interface>
+    <interface>
+      <name>PATCH /api/personalization/preferences</name>
+      <kind>REST endpoint</kind>
+      <signature>PATCH /api/personalization/preferences { personalizationLevel?, enabledFeatures[]?, disabledFeatures[]?, autoAdaptEnabled? } → PersonalizationPreferences</signature>
+      <path>apps/web/src/app/api/personalization/preferences/route.ts</path>
+      <description>Updates user personalization preferences with granular control.</description>
+    </interface>
+    <interface>
+      <name>MissionGenerator Integration</name>
+      <kind>integration</kind>
+      <signature>MissionGenerator calls PersonalizationEngine.applyPersonalization(userId, 'mission') before generation</signature>
+      <path>apps/web/src/lib/mission-generator.ts</path>
+      <description>Mission generator integrates personalization for timing, duration, objectives, difficulty based on PersonalizationConfig.</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Manual testing approach (CLAUDE.md specifies Python for analytics, but Story 5.5 orchestration is TypeScript). Unit tests deferred to production. Focus on integration testing with real behavioral data (6+ weeks post-Stories 5.1-5.4). Test personalization engine with various user profiles, verify settings respect user preferences, validate effectiveness tracking calculations, test A/B experiment assignment and statistics.</standards>
+
+    <locations>
+      - apps/web/__tests__/ (if created for production)
+      - Manual testing with real user data (6+ weeks)
+    </locations>
+
+    <ideas>
+      <idea ac="1">Integration test: Verify PersonalizationEngine aggregates insights from UserLearningProfile (5.1), StrugglePrediction (5.2), session patterns (5.3), cognitive load (5.4). Test with complete data and missing data (graceful degradation).</idea>
+      <idea ac="2">Mission personalization test: Generate mission with HIGH personalization level, verify timing matches preferredStudyTimes, duration matches optimalSessionDuration, objectives include predicted struggle areas.</idea>
+      <idea ac="3">Content recommendation test: Request content for visual learner (VARK: visual 40%+), verify recommendations prioritize knowledge graph, diagrams, visual cards over text.</idea>
+      <idea ac="4">Assessment personalization test: User with steep forgetting curve should get more frequent assessments. User with overconfidence pattern should get harder questions.</idea>
+      <idea ac="5">Session orchestration test: Apply personalizeSessionStructure(), verify break timing uses attention cycle patterns, content mixing uses learning style profile.</idea>
+      <idea ac="6">Effectiveness tracking test: Apply personalization for 2 weeks, calculate improvement metrics, verify correlation analysis (Pearson r, p-value), check statistical significance.</idea>
+      <idea ac="7">User control test: Set personalizationLevel to NONE → verify all personalization disabled. Disable specific feature → verify only that feature disabled. Reset → verify clean slate.</idea>
+      <idea ac="8">MAB optimization test: Run multiple sessions with different strategies, verify epsilon-greedy selection (90% exploit, 10% explore), check outcome tracking updates strategy weights, validate best strategy emerges.</idea>
+      <idea ac="1,8">A/B experiment test: Create experiment with 2 variants, assign 40 users (20 per variant), collect metrics for 2 weeks, run statistical significance test (t-test, p < 0.05), verify winning variant recommendation.</idea>
+      <idea ac="2,6,7">End-to-end test: Enable HIGH personalization → Generate personalized mission → Complete mission → Track effectiveness → User disables feature → Verify feature stops adapting → User re-enables → Verify feature resumes.</idea>
+    </ideas>
+  </tests>
+</story-context>

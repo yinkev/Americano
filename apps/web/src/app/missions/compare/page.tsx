@@ -65,13 +65,11 @@ function ComparisonContent() {
           headers: {
             'X-User-Email': 'kevy@americano.dev',
           },
-        }).then((res) => res.json())
+        }).then((res) => res.json()),
       )
 
       const results = await Promise.all(fetchPromises)
-      const validMissions = results
-        .filter((r) => r.success)
-        .map((r) => r.data.mission)
+      const validMissions = results.filter((r) => r.success).map((r) => r.data.mission)
 
       setMissions(validMissions)
     } catch (error) {
@@ -96,17 +94,13 @@ function ComparisonContent() {
     const m1TimeAccuracy = mission1.actualMinutes
       ? 100 -
         Math.abs(
-          ((mission1.actualMinutes - mission1.estimatedMinutes) /
-            mission1.estimatedMinutes) *
-            100
+          ((mission1.actualMinutes - mission1.estimatedMinutes) / mission1.estimatedMinutes) * 100,
         )
       : 0
     const m2TimeAccuracy = mission2.actualMinutes
       ? 100 -
         Math.abs(
-          ((mission2.actualMinutes - mission2.estimatedMinutes) /
-            mission2.estimatedMinutes) *
-            100
+          ((mission2.actualMinutes - mission2.estimatedMinutes) / mission2.estimatedMinutes) * 100,
         )
       : 0
 
@@ -114,9 +108,10 @@ function ComparisonContent() {
 
     const successDiff = ((mission2.successScore ?? 0) - (mission1.successScore ?? 0)) * 100
 
-    const timeDiff = mission2.actualMinutes && mission1.actualMinutes
-      ? mission2.actualMinutes - mission1.actualMinutes
-      : 0
+    const timeDiff =
+      mission2.actualMinutes && mission1.actualMinutes
+        ? mission2.actualMinutes - mission1.actualMinutes
+        : 0
 
     return {
       completionDiff,
@@ -147,11 +142,7 @@ function ComparisonContent() {
           isPositive ? 'text-[oklch(0.75_0.15_160)]' : 'text-[oklch(0.65_0.15_10)]'
         }`}
       >
-        {isPositive ? (
-          <TrendingUp className="size-4" />
-        ) : (
-          <TrendingDown className="size-4" />
-        )}
+        {isPositive ? <TrendingUp className="size-4" /> : <TrendingDown className="size-4" />}
         <span className="text-sm font-medium">
           {isPositive ? '+' : ''}
           {diff.toFixed(1)}
@@ -196,9 +187,7 @@ function ComparisonContent() {
         </Link>
         <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-12 text-center">
           <Target className="size-12 mx-auto mb-4 text-[oklch(0.556_0_0)]" />
-          <p className="text-lg font-medium text-[oklch(0.145_0_0)] mb-2">
-            No missions to compare
-          </p>
+          <p className="text-lg font-medium text-[oklch(0.145_0_0)] mb-2">No missions to compare</p>
           <p className="text-sm text-[oklch(0.556_0_0)]">
             Select at least 2 missions from your history to compare.
           </p>
@@ -320,8 +309,7 @@ function ComparisonContent() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[oklch(0.556_0_0)]">Completion</span>
                     <span className="font-medium text-[oklch(0.145_0_0)]">
-                      {mission.completedObjectivesCount} / {mission.objectives.length}{' '}
-                      objectives
+                      {mission.completedObjectivesCount} / {mission.objectives.length} objectives
                     </span>
                   </div>
                   <Progress value={completionRate} className="h-2" />
@@ -378,9 +366,7 @@ function ComparisonContent() {
                     <div key={obj.objectiveId} className="flex items-start gap-2 text-sm">
                       <span
                         className={`flex-shrink-0 mt-0.5 ${
-                          obj.completed
-                            ? 'text-[oklch(0.75_0.15_160)]'
-                            : 'text-[oklch(0.556_0_0)]'
+                          obj.completed ? 'text-[oklch(0.75_0.15_160)]' : 'text-[oklch(0.556_0_0)]'
                         }`}
                       >
                         {obj.completed ? (
@@ -411,10 +397,7 @@ function ComparisonContent() {
                               High-Yield
                             </Badge>
                           )}
-                          <Badge
-                            variant="outline"
-                            className="text-[10px] px-1 py-0 h-4"
-                          >
+                          <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
                             {obj.objective.complexity}
                           </Badge>
                         </div>

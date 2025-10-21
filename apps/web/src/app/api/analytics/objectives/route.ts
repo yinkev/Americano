@@ -166,7 +166,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       lastReviewedAt:
         cards
           .filter((c) => c.lastReviewedAt)
-          .sort((a, b) => (b.lastReviewedAt?.getTime() ?? 0) - (a.lastReviewedAt?.getTime() ?? 0))[0]
+          .sort(
+            (a, b) => (b.lastReviewedAt?.getTime() ?? 0) - (a.lastReviewedAt?.getTime() ?? 0),
+          )[0]
           ?.lastReviewedAt?.toISOString() || null,
     }
 

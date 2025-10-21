@@ -1,28 +1,22 @@
-'use client';
+'use client'
 
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 
 interface TimePerObjectiveData {
-  objective: string;
-  timeSpentMinutes: number;
-  estimatedMinutes: number;
+  objective: string
+  timeSpentMinutes: number
+  estimatedMinutes: number
 }
 
 interface TimePerObjectiveChartProps {
-  data: TimePerObjectiveData[];
+  data: TimePerObjectiveData[]
 }
 
 export function TimePerObjectiveChart({ data }: TimePerObjectiveChartProps) {
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart
-        data={data}
-        margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-      >
-        <CartesianGrid
-          strokeDasharray="5 5"
-          stroke="oklch(0.9 0.01 250)"
-        />
+      <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+        <CartesianGrid strokeDasharray="5 5" stroke="oklch(0.9 0.01 250)" />
         <XAxis
           dataKey="objective"
           angle={-45}
@@ -63,5 +57,5 @@ export function TimePerObjectiveChart({ data }: TimePerObjectiveChartProps) {
         />
       </BarChart>
     </ResponsiveContainer>
-  );
+  )
 }

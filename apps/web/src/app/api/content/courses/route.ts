@@ -2,11 +2,11 @@
 // GET: List all courses for current user
 // POST: Create new course
 
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse } from '@/lib/api-response';
-import { ApiError, withErrorHandler } from '@/lib/api-error';
-import { validateRequest, createCourseSchema } from '@/lib/validation';
+import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
+import { successResponse } from '@/lib/api-response'
+import { ApiError, withErrorHandler } from '@/lib/api-error'
+import { validateRequest, createCourseSchema } from '@/lib/validation'
 
 /**
  * GET /api/content/courses
@@ -17,10 +17,10 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   // Get Kevy user (auth deferred for MVP)
   const user = await prisma.user.findFirst({
     where: { email: 'kevy@americano.dev' },
-  });
+  })
 
   if (!user) {
-    throw ApiError.notFound('User not found. Run: npx prisma db seed');
+    throw ApiError.notFound('User not found. Run: npx prisma db seed')
   }
 
   // Fetch all courses for this user with lecture counts
@@ -38,7 +38,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
         select: { lectures: true },
       },
     },
-  });
+  })
 
   return Response.json(
     successResponse({
@@ -46,9 +46,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
         ...course,
         lectureCount: course._count.lectures,
       })),
-    })
-  );
-});
+    }),
+  )
+})
 
 /**
  * POST /api/content/courses
@@ -59,14 +59,14 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   // Get Kevy user (auth deferred for MVP)
   const user = await prisma.user.findFirst({
     where: { email: 'kevy@americano.dev' },
-  });
+  })
 
   if (!user) {
-    throw ApiError.notFound('User not found. Run: npx prisma db seed');
+    throw ApiError.notFound('User not found. Run: npx prisma db seed')
   }
 
   // Validate request body
-  const data = await validateRequest(request, createCourseSchema);
+  const data = await validateRequest(request, createCourseSchema)
 
   // Create course
   const course = await prisma.course.create({
@@ -77,7 +77,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       term: data.term?.trim() || null,
       color: data.color || null,
     },
-  });
+  })
 
-  return Response.json(successResponse({ course }), { status: 201 });
-});
+  return Response.json(successResponse({ course }), { status: 201 })
+})

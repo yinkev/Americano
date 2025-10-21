@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "americano-ml-service"
+version = "1.0.0"
+description = "FastAPI microservice for predictive analytics in medical education"
+authors = ["Americano Team"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.13"
+uvicorn = {extras = ["standard"], version = "^0.32.1"}
+pydantic = "^2.10.4"
+pydantic-settings = "^2.7.0"
+prisma = "^0.15.0"
+numpy = "^2.2.1"
+pandas = "^2.2.3"
+scikit-learn = "^1.6.1"
+python-dotenv = "^1.0.1"
+httpx = "^0.28.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pytest-asyncio = "^0.25.2"
+black = "^24.10.0"
+mypy = "^1.14.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]

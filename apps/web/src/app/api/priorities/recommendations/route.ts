@@ -37,10 +37,12 @@ async function GET(request: NextRequest) {
     return sum + baseTime
   }, 0)
 
-  return Response.json(successResponse({
-    recommendations: objectives,
-    estimatedMinutes,
-  }))
+  return Response.json(
+    successResponse({
+      recommendations: objectives,
+      estimatedMinutes,
+    }),
+  )
 }
 
 const GETHandler = withErrorHandler(GET)

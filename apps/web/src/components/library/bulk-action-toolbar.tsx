@@ -1,30 +1,30 @@
-"use client"
+'use client'
 
-import { useState } from 'react';
-import { Trash2, FolderInput, Tag, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react'
+import { Trash2, FolderInput, Tag, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { toast } from 'sonner';
-import { DeleteConfirmation } from './delete-confirmation';
+} from '@/components/ui/select'
+import { toast } from 'sonner'
+import { DeleteConfirmation } from './delete-confirmation'
 
 interface Course {
-  id: string;
-  name: string;
-  code: string | null;
+  id: string
+  name: string
+  code: string | null
 }
 
 interface BulkActionToolbarProps {
-  selectedCount: number;
-  selectedLectureIds: string[];
-  courses: Course[];
-  onComplete: () => void;
-  onCancel: () => void;
+  selectedCount: number
+  selectedLectureIds: string[]
+  courses: Course[]
+  onComplete: () => void
+  onCancel: () => void
 }
 
 export function BulkActionToolbar({
@@ -34,14 +34,14 @@ export function BulkActionToolbar({
   onComplete,
   onCancel,
 }: BulkActionToolbarProps) {
-  const [selectedAction, setSelectedAction] = useState<string>('');
-  const [selectedCourse, setSelectedCourse] = useState<string>('');
-  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [selectedAction, setSelectedAction] = useState<string>('')
+  const [selectedCourse, setSelectedCourse] = useState<string>('')
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   const handleMoveToCourse = async () => {
     if (!selectedCourse) {
-      toast.error('Please select a course');
-      return;
+      toast.error('Please select a course')
+      return
     }
 
     try {
@@ -53,22 +53,22 @@ export function BulkActionToolbar({
           action: 'move',
           data: { courseId: selectedCourse },
         }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (data.success) {
-        toast.success(data.message);
-        onComplete();
-        setSelectedAction('');
-        setSelectedCourse('');
+        toast.success(data.message)
+        onComplete()
+        setSelectedAction('')
+        setSelectedCourse('')
       } else {
-        toast.error(data.error?.message || 'Failed to move lectures');
+        toast.error(data.error?.message || 'Failed to move lectures')
       }
     } catch (error) {
-      toast.error('Failed to move lectures');
+      toast.error('Failed to move lectures')
     }
-  };
+  }
 
   const handleDeleteConfirm = async () => {
     try {
@@ -79,22 +79,22 @@ export function BulkActionToolbar({
           lectureIds: selectedLectureIds,
           action: 'delete',
         }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (data.success) {
-        toast.success(data.message);
-        onComplete();
-        setDeleteOpen(false);
-        setSelectedAction('');
+        toast.success(data.message)
+        onComplete()
+        setDeleteOpen(false)
+        setSelectedAction('')
       } else {
-        toast.error(data.error?.message || 'Failed to delete lectures');
+        toast.error(data.error?.message || 'Failed to delete lectures')
       }
     } catch (error) {
-      toast.error('Failed to delete lectures');
+      toast.error('Failed to delete lectures')
     }
-  };
+  }
 
   return (
     <>
@@ -120,18 +120,13 @@ export function BulkActionToolbar({
                     ))}
                   </SelectContent>
                 </Select>
-                <Button onClick={handleMoveToCourse}>
-                  Move
-                </Button>
+                <Button onClick={handleMoveToCourse}>Move</Button>
                 <Button variant="outline" onClick={() => setSelectedAction('')}>
                   Cancel
                 </Button>
               </div>
             ) : (
-              <Button
-                variant="outline"
-                onClick={() => setSelectedAction('move')}
-              >
+              <Button variant="outline" onClick={() => setSelectedAction('move')}>
                 <FolderInput className="mr-2 h-4 w-4" />
                 Move to Course
               </Button>
@@ -141,8 +136,8 @@ export function BulkActionToolbar({
             <Button
               variant="outline"
               onClick={() => {
-                setSelectedAction('delete');
-                setDeleteOpen(true);
+                setSelectedAction('delete')
+                setDeleteOpen(true)
               }}
             >
               <Trash2 className="mr-2 h-4 w-4" />
@@ -166,5 +161,5 @@ export function BulkActionToolbar({
         }? This action cannot be undone and will permanently delete all content, objectives, and cards associated with these lectures.`}
       />
     </>
-  );
+  )
 }

@@ -182,13 +182,12 @@ export class MissionInsightsEngine {
     })
 
     const avgCompletionRate =
-      completionRates.reduce((sum, rate) => sum + rate, 0) /
-      completionRates.length
+      completionRates.reduce((sum, rate) => sum + rate, 0) / completionRates.length
 
     const stdDev = Math.sqrt(
       completionRates
         .map((rate) => Math.pow(rate - avgCompletionRate, 2))
-        .reduce((sum, val) => sum + val, 0) / completionRates.length
+        .reduce((sum, val) => sum + val, 0) / completionRates.length,
     )
 
     // Detect sudden drops
@@ -202,11 +201,9 @@ export class MissionInsightsEngine {
       ) {
         anomalies.push({
           type: 'SUDDEN_DROP',
-          description: `Completion rate dropped from ${(
-            previousRate * 100
-          ).toFixed(0)}% to ${(currentRate * 100).toFixed(
-            0
-          )}% on ${missions[i].date.toLocaleDateString()}`,
+          description: `Completion rate dropped from ${(previousRate * 100).toFixed(0)}% to ${(
+            currentRate * 100
+          ).toFixed(0)}% on ${missions[i].date.toLocaleDateString()}`,
           severity: 'MEDIUM',
           date: missions[i].date,
           metrics: {
@@ -241,16 +238,14 @@ export class MissionInsightsEngine {
     const strengths: Strength[] = []
 
     // Strength 1: High completion rate
-    const completedMissions = missions.filter(
-      (m) => m.status === MissionStatus.COMPLETED
-    ).length
+    const completedMissions = missions.filter((m) => m.status === MissionStatus.COMPLETED).length
     const completionRate = completedMissions / missions.length
 
     if (completionRate >= 0.85) {
       strengths.push({
         area: 'Mission Completion',
         evidence: `${(completionRate * 100).toFixed(
-          0
+          0,
         )}% completion rate over ${missions.length} missions`,
         score: completionRate,
       })
@@ -313,9 +308,7 @@ export class MissionInsightsEngine {
       })
 
     if (timeAccuracies.length > 0) {
-      const avgAccuracy =
-        timeAccuracies.reduce((sum, acc) => sum + acc, 0) /
-        timeAccuracies.length
+      const avgAccuracy = timeAccuracies.reduce((sum, acc) => sum + acc, 0) / timeAccuracies.length
 
       if (avgAccuracy < 0.7) {
         improvements.push({
@@ -330,8 +323,7 @@ export class MissionInsightsEngine {
 
     // Improvement 2: Completion rate
     const completionRate =
-      missions.filter((m) => m.status === MissionStatus.COMPLETED).length /
-      missions.length
+      missions.filter((m) => m.status === MissionStatus.COMPLETED).length / missions.length
 
     if (completionRate < 0.7) {
       improvements.push({
@@ -358,11 +350,9 @@ export class MissionInsightsEngine {
     const secondHalf = missions.slice(midpoint)
 
     const firstHalfRate =
-      firstHalf.filter((m) => m.status === MissionStatus.COMPLETED).length /
-      firstHalf.length
+      firstHalf.filter((m) => m.status === MissionStatus.COMPLETED).length / firstHalf.length
     const secondHalfRate =
-      secondHalf.filter((m) => m.status === MissionStatus.COMPLETED).length /
-      secondHalf.length
+      secondHalf.filter((m) => m.status === MissionStatus.COMPLETED).length / secondHalf.length
 
     const improvement = secondHalfRate - firstHalfRate
 
@@ -372,23 +362,19 @@ export class MissionInsightsEngine {
       return {
         type: 'PERFORMANCE_TREND',
         headline: `Mastery improved ${(improvement * 100).toFixed(0)}% this week`,
-        detail: `Your completion rate increased from ${(
-          firstHalfRate * 100
-        ).toFixed(0)}% to ${(secondHalfRate * 100).toFixed(0)}%. Keep it up!`,
+        detail: `Your completion rate increased from ${(firstHalfRate * 100).toFixed(
+          0,
+        )}% to ${(secondHalfRate * 100).toFixed(0)}%. Keep it up!`,
         confidence: Math.min(Math.abs(improvement) * 5, 1.0),
         actionable: true,
       }
     } else {
       return {
         type: 'PERFORMANCE_TREND',
-        headline: `Completion rate declined ${Math.abs(improvement * 100).toFixed(
-          0
-        )}%`,
-        detail: `Your completion rate dropped from ${(
-          firstHalfRate * 100
-        ).toFixed(0)}% to ${(secondHalfRate * 100).toFixed(
-          0
-        )}%. Consider adjusting difficulty.`,
+        headline: `Completion rate declined ${Math.abs(improvement * 100).toFixed(0)}%`,
+        detail: `Your completion rate dropped from ${(firstHalfRate * 100).toFixed(0)}% to ${(
+          secondHalfRate * 100
+        ).toFixed(0)}%. Consider adjusting difficulty.`,
         confidence: Math.min(Math.abs(improvement) * 5, 1.0),
         actionable: true,
       }
@@ -437,14 +423,9 @@ export class MissionInsightsEngine {
     if (bestPeriod && bestRate >= 0.8) {
       return {
         type: 'COMPLETION_PATTERN',
-        headline: `You complete ${(bestRate * 100).toFixed(
-          0
-        )}% of ${bestPeriod} missions`,
+        headline: `You complete ${(bestRate * 100).toFixed(0)}% of ${bestPeriod} missions`,
         detail: `Your peak performance time is ${bestPeriod}. Try scheduling important study sessions then.`,
-        confidence: Math.min(
-          bestRate * (byTimeOfDay[bestPeriod].total / 10),
-          1.0
-        ),
+        confidence: Math.min(bestRate * (byTimeOfDay[bestPeriod].total / 10), 1.0),
         actionable: true,
       }
     }
@@ -456,9 +437,7 @@ export class MissionInsightsEngine {
    * Analyze time optimization opportunities
    */
   private analyzeTimeOptimization(missions: any[]): Insight | null {
-    const withTime = missions.filter(
-      (m) => m.actualMinutes && m.estimatedMinutes
-    )
+    const withTime = missions.filter((m) => m.actualMinutes && m.estimatedMinutes)
     if (withTime.length < 5) return null
 
     const avgDifference =
@@ -471,10 +450,10 @@ export class MissionInsightsEngine {
       return {
         type: 'TIME_OPTIMIZATION',
         headline: `Your optimal mission length is ${Math.round(
-          withTime[0].estimatedMinutes - avgDifference
+          withTime[0].estimatedMinutes - avgDifference,
         )} minutes`,
         detail: `You typically take ${Math.abs(avgDifference).toFixed(
-          0
+          0,
         )} minutes longer than planned. Adjusting estimates can improve completion rates.`,
         confidence: Math.min(Math.abs(avgDifference) / 15, 1.0),
         actionable: true,
@@ -482,10 +461,9 @@ export class MissionInsightsEngine {
     } else {
       return {
         type: 'TIME_OPTIMIZATION',
-        headline: `You finish ${Math.abs(avgDifference).toFixed(
-          0
-        )} minutes early on average`,
-        detail: 'Consider adding review objectives or increasing mission complexity to better utilize your study time.',
+        headline: `You finish ${Math.abs(avgDifference).toFixed(0)} minutes early on average`,
+        detail:
+          'Consider adding review objectives or increasing mission complexity to better utilize your study time.',
         confidence: Math.min(Math.abs(avgDifference) / 15, 1.0),
         actionable: true,
       }
@@ -501,8 +479,7 @@ export class MissionInsightsEngine {
     return {
       type: 'OBJECTIVE_PREFERENCE',
       headline: 'Track objective performance for personalized insights',
-      detail:
-        'Complete more missions with varied objective types to unlock preference analysis.',
+      detail: 'Complete more missions with varied objective types to unlock preference analysis.',
       confidence: 0.5,
       actionable: false,
     }

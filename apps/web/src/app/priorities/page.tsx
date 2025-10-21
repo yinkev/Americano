@@ -72,8 +72,8 @@ export default async function PrioritiesPage() {
             <h1 className="text-3xl font-bold text-gray-900">Priority Learning</h1>
           </div>
           <p className="text-gray-600 mt-2">
-            Focus on what matters most. These learning objectives are prioritized based on exam urgency,
-            your weak areas, high-yield content, prerequisites, and study recency.
+            Focus on what matters most. These learning objectives are prioritized based on exam
+            urgency, your weak areas, high-yield content, prerequisites, and study recency.
           </p>
         </div>
 

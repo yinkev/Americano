@@ -1,134 +1,134 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import * as React from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function UploadPage() {
-  const router = useRouter();
-  const [courses, setCourses] = React.useState<Array<{ id: string; name: string }>>([]);
-  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
-  const [uploading, setUploading] = React.useState(false);
-  const [error, setError] = React.useState<string>('');
-  const [processingStatus, setProcessingStatus] = React.useState<string>('');
-  const [lectureId, setLectureId] = React.useState<string>('');
+  const router = useRouter()
+  const [courses, setCourses] = React.useState<Array<{ id: string; name: string }>>([])
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null)
+  const [uploading, setUploading] = React.useState(false)
+  const [error, setError] = React.useState<string>('')
+  const [processingStatus, setProcessingStatus] = React.useState<string>('')
+  const [lectureId, setLectureId] = React.useState<string>('')
 
   // Fetch courses on mount
   React.useEffect(() => {
     async function loadCourses() {
       try {
-        const response = await fetch('/api/courses');
+        const response = await fetch('/api/courses')
         if (response.ok) {
-          const data = await response.json();
-          setCourses(data.courses || []);
+          const data = await response.json()
+          setCourses(data.courses || [])
         }
       } catch (err) {
-        console.error('Failed to load courses:', err);
+        console.error('Failed to load courses:', err)
       }
     }
-    loadCourses();
-  }, []);
+    loadCourses()
+  }, [])
 
   // Poll processing status
   React.useEffect(() => {
-    if (!lectureId) return;
+    if (!lectureId) return
 
     const pollInterval = setInterval(async () => {
       try {
-        const response = await fetch(`/api/content/processing/${lectureId}`);
+        const response = await fetch(`/api/content/processing/${lectureId}`)
         if (response.ok) {
-          const data = await response.json();
-          setProcessingStatus(data.status);
+          const data = await response.json()
+          setProcessingStatus(data.status)
 
           if (data.status === 'COMPLETED' || data.status === 'FAILED') {
-            clearInterval(pollInterval);
+            clearInterval(pollInterval)
             if (data.status === 'COMPLETED') {
-              router.push(`/library/lectures/${lectureId}`);
+              router.push(`/library/lectures/${lectureId}`)
             } else {
-              setError(data.error || 'Processing failed');
+              setError(data.error || 'Processing failed')
             }
           }
         }
       } catch (err) {
-        console.error('Failed to check processing status:', err);
+        console.error('Failed to check processing status:', err)
       }
-    }, 2000); // Poll every 2 seconds
+    }, 2000) // Poll every 2 seconds
 
-    return () => clearInterval(pollInterval);
-  }, [lectureId, router]);
+    return () => clearInterval(pollInterval)
+  }, [lectureId, router])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const file = e.target.files?.[0]
+    if (!file) return
 
     // Validate file type
     if (file.type !== 'application/pdf') {
-      setError('Only PDF files are supported');
-      return;
+      setError('Only PDF files are supported')
+      return
     }
 
     // Validate file size (50MB max)
-    const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+    const maxSize = 50 * 1024 * 1024 // 50MB in bytes
     if (file.size > maxSize) {
-      setError('File size must be less than 50MB');
-      return;
+      setError('File size must be less than 50MB')
+      return
     }
 
-    setSelectedFile(file);
-    setError('');
-  };
+    setSelectedFile(file)
+    setError('')
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    setError('')
 
     if (!selectedFile) {
-      setError('Please select a PDF file');
-      return;
+      setError('Please select a PDF file')
+      return
     }
 
-    const formData = new FormData(e.currentTarget);
-    formData.append('file', selectedFile);
+    const formData = new FormData(e.currentTarget)
+    formData.append('file', selectedFile)
 
-    setUploading(true);
+    setUploading(true)
 
     try {
       const response = await fetch('/api/content/upload', {
         method: 'POST',
         body: formData,
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Upload failed');
+        throw new Error(data.error || 'Upload failed')
       }
 
       // Start processing
-      setLectureId(data.lectureId);
-      setProcessingStatus('PENDING');
+      setLectureId(data.lectureId)
+      setProcessingStatus('PENDING')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed');
-      setUploading(false);
+      setError(err instanceof Error ? err.message : 'Upload failed')
+      setUploading(false)
     }
-  };
+  }
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
+    e.preventDefault()
+  }
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
     if (file && file.type === 'application/pdf') {
-      setSelectedFile(file);
-      setError('');
+      setSelectedFile(file)
+      setError('')
     } else {
-      setError('Only PDF files are supported');
+      setError('Only PDF files are supported')
     }
-  };
+  }
 
   return (
     <div className="container mx-auto py-8 max-w-2xl">
@@ -262,7 +262,10 @@ export default function UploadPage() {
                 {processingStatus === 'PROCESSING' && (
                   <div className="space-y-2">
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-blue-400 h-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(96,165,250,0.4)]" style={{ width: '60%' }} />
+                      <div
+                        className="bg-blue-400 h-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(96,165,250,0.4)]"
+                        style={{ width: '60%' }}
+                      />
                     </div>
                     <p className="text-xs text-gray-500">
                       Extracting text, analyzing content, and generating embeddings...
@@ -280,5 +283,5 @@ export default function UploadPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

@@ -1,5 +1,12 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import {
+  realtimeOrchestrationService,
+  type SessionEvent,
+  type BreakRecommendation,
+  type ContentAdaptation,
+  type SessionRecommendation,
+} from '@/services/realtime-orchestration'
 
 // Mission objective interface for session orchestration (Story 2.5)
 export interface MissionObjective {
@@ -64,6 +71,37 @@ export interface SessionSettings {
   focusMode: boolean
   minimizeMode: boolean
   disableNotifications: boolean
+
+  // Real-time orchestration (Story 5.3)
+  enableRealtimeOrchestration: boolean
+  orchestrationSensitivity: 'low' | 'medium' | 'high' // How sensitive to performance changes
+  autoBreaksEnabled: boolean
+  autoContentAdaptationEnabled: boolean
+  sessionRecommendationsEnabled: boolean
+}
+
+// Real-time orchestration state (Story 5.3)
+export interface OrchestrationState {
+  isActive: boolean
+  currentPhase: 'content' | 'cards' | 'assessment' | 'break'
+  lastEvent: SessionEvent | null
+  currentRecommendation: {
+    break: BreakRecommendation | null
+    content: ContentAdaptation | null
+    session: SessionRecommendation | null
+  }
+  orchestrationHistory: {
+    breaksTaken: number
+    contentAdaptationsAccepted: number
+    sessionRecommendationsAccepted: number
+    totalInteractions: number
+  }
+  performanceMetrics: {
+    currentScore: number
+    trend: 'improving' | 'stable' | 'declining'
+    fatigueLevel: number
+    engagementScore: number
+  }
 }
 
 // Session store state interface
@@ -161,6 +199,37 @@ const DEFAULT_SETTINGS: SessionSettings = {
   focusMode: false,
   minimizeMode: false,
   disableNotifications: false,
+
+  // Real-time orchestration (Story 5.3)
+  enableRealtimeOrchestration: true,
+  orchestrationSensitivity: 'medium',
+  autoBreaksEnabled: true,
+  autoContentAdaptationEnabled: true,
+  sessionRecommendationsEnabled: true,
+}
+
+// Default orchestration state
+const DEFAULT_ORCHESTRATION_STATE: OrchestrationState = {
+  isActive: false,
+  currentPhase: 'content',
+  lastEvent: null,
+  currentRecommendation: {
+    break: null,
+    content: null,
+    session: null,
+  },
+  orchestrationHistory: {
+    breaksTaken: 0,
+    contentAdaptationsAccepted: 0,
+    sessionRecommendationsAccepted: 0,
+    totalInteractions: 0,
+  },
+  performanceMetrics: {
+    currentScore: 0,
+    trend: 'stable',
+    fatigueLevel: 0,
+    engagementScore: 100,
+  },
 }
 
 export const useSessionStore = create<SessionStore>()(
