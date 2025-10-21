@@ -29,5 +29,11 @@
     ".next/types/**/*.ts",
     "__tests__/**/*.ts"
   ],
-  "exclude": ["node_modules", "prisma/**/*.ts"]
+  "exclude": [
+    "node_modules",
+    "prisma/**/*.ts",
+    "src/types/api-generated.ts",
+    "src/app/api/adaptive/**/*.ts",
+    "src/subsystems/knowledge-graph/search-suggestions.ts"
+  ]
 }

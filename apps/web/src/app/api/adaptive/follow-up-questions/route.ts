@@ -113,53 +113,11 @@ export async function POST(request: NextRequest) {
 
     // TODO: Schema doesn't support objectiveId on ValidationPrompt yet
     // This endpoint needs schema migration to add objectiveId and difficultyLevel fields
-    // For now, return no follow-up available
-    const followUpPrompt = null
-
-    if (!followUpPrompt) {
-      // No follow-up available
-      return NextResponse.json(
-        successResponse({
-          hasFollowUp: false,
-          reason: `No ${followUpType.toLowerCase()} questions available at target difficulty`,
-        })
-      )
-    }
-
-    // Note: timesUsed tracking not available in current schema
-
-    // Get target objective details
-    const targetObjective = await prisma.learningObjective.findUnique({
-      where: { id: targetObjectiveId },
-      select: {
-        objective: true,
-        complexity: true,
-      },
-    })
-
+    // For now, return no follow-up available until schema is migrated
     return NextResponse.json(
       successResponse({
-        hasFollowUp: true,
-        followUpType,
-        followUpPrompt: {
-          id: followUpPrompt.id,
-          promptText: followUpPrompt.promptText,
-          promptType: followUpPrompt.promptType,
-          conceptName: followUpPrompt.conceptName,
-          expectedCriteria: followUpPrompt.expectedCriteria,
-          difficultyLevel: followUpPrompt.difficultyLevel,
-        },
-        targetObjective: targetObjective
-          ? {
-              objective: targetObjective.objective,
-              complexity: targetObjective.complexity,
-            }
-          : null,
-        parentPromptId: originalResponse.promptId,
-        reasoning:
-          followUpType === 'PREREQUISITE'
-            ? `Your score (${data.score}%) suggests reviewing prerequisite concepts to strengthen foundation`
-            : `Excellent score (${data.score}%)! Ready for advanced application of this concept`,
+        hasFollowUp: false,
+        reason: `Follow-up questions temporarily disabled - schema migration needed`,
       })
     )
   } catch (error) {

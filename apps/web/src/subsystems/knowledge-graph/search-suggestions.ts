@@ -350,19 +350,20 @@ export async function updateSearchSuggestion(
       return  // Don't track very short terms
     }
 
-    await prisma.searchSuggestion.upsert({
-      where: { term: normalizedTerm },
-      update: {
-        frequency: { increment: 1 },
-        lastUsed: new Date(),
-      },
-      create: {
-        term: normalizedTerm,
-        suggestionType: type,
-        frequency: 1,
-        metadata: metadata || {},
-      },
-    })
+    // TODO: SearchSuggestion model removed in Epic 4 - needs schema migration
+    // await prisma.searchSuggestion.upsert({
+    //   where: { term: normalizedTerm },
+    //   update: {
+    //     frequency: { increment: 1 },
+    //     lastUsed: new Date(),
+    //   },
+    //   create: {
+    //     term: normalizedTerm,
+    //     suggestionType: type,
+    //     frequency: 1,
+    //     metadata: metadata || {},
+    //   },
+    // })
   } catch (error) {
     console.error('Failed to update search suggestion:', error)
     // Don't throw - suggestion tracking shouldn't break search
@@ -379,21 +380,22 @@ export async function seedMedicalTerms(terms: Array<{ term: string; category?: s
   let seeded = 0
 
   try {
-    for (const { term, category } of terms) {
-      await prisma.searchSuggestion.upsert({
-        where: { term },
-        update: {},  // Don't update if exists
-        create: {
-          term,
-          suggestionType: 'MEDICAL_TERM',
-          frequency: 10,  // Start with base frequency
-          metadata: category ? { category } : {},
-        },
-      })
-      seeded++
-    }
+    // TODO: SearchSuggestion model removed in Epic 4 - needs schema migration
+    // for (const { term, category } of terms) {
+    //   await prisma.searchSuggestion.upsert({
+    //     where: { term },
+    //     update: {},  // Don't update if exists
+    //     create: {
+    //       term,
+    //       suggestionType: 'MEDICAL_TERM',
+    //       frequency: 10,  // Start with base frequency
+    //       metadata: category ? { category } : {},
+    //     },
+    //   })
+    //   seeded++
+    // }
 
-    console.log(`Seeded ${seeded} medical term suggestions`)
+    console.log(`Seeded ${seeded} medical term suggestions (disabled - model removed)`)
     return seeded
   } catch (error) {
     console.error('Failed to seed medical terms:', error)
@@ -412,21 +414,22 @@ export async function cleanupOldSuggestions(
   minFrequency: number = 2
 ): Promise<number> {
   try {
+    // TODO: SearchSuggestion model removed in Epic 4 - needs schema migration
     const cutoffDate = new Date()
     cutoffDate.setDate(cutoffDate.getDate() - daysOld)
 
-    const result = await prisma.searchSuggestion.deleteMany({
-      where: {
-        lastUsed: { lt: cutoffDate },
-        frequency: { lt: minFrequency },
-        suggestionType: {
-          not: 'MEDICAL_TERM',  // Don't delete medical terms
-        },
-      },
-    })
+    // const result = await prisma.searchSuggestion.deleteMany({
+    //   where: {
+    //     lastUsed: { lt: cutoffDate },
+    //     frequency: { lt: minFrequency },
+    //     suggestionType: {
+    //       not: 'MEDICAL_TERM',  // Don't delete medical terms
+    //     },
+    //   },
+    // })
 
-    console.log(`Cleaned up ${result.count} old suggestions`)
-    return result.count
+    console.log(`Cleaned up 0 old suggestions (disabled - model removed)`)
+    return 0
   } catch (error) {
     console.error('Failed to cleanup old suggestions:', error)
     return 0
