@@ -7,11 +7,6 @@
  * Story 2.6 - Task 12.2: Test Adaptation Engine
  */
 
-<<<<<<< HEAD
-import { MissionAdaptationEngine } from '@/lib/mission-adaptation-engine'
-import { prisma } from '@/lib/db'
-import { MissionStatus } from '@/generated/prisma'
-=======
 // DISABLED: Tests reference MissionAdaptationEngine not yet implemented for Story 4.1
 // TODO: Re-enable after Story 2.6 (Mission Analytics) is complete
 // These tests are for Mission-related features, not Epic 4 Understanding Validation
@@ -20,18 +15,12 @@ import { MissionStatus } from '@/generated/prisma'
 import { MissionAdaptationEngine } from '@/lib/mission-adaptation-engine';
 import { prisma } from '@/lib/db';
 import { MissionStatus } from '@/generated/prisma';
->>>>>>> origin/main
 
 // Mock Prisma client
 jest.mock('@/lib/db')
 
-<<<<<<< HEAD
-describe('MissionAdaptationEngine', () => {
-  let engine: MissionAdaptationEngine
-=======
 describe.skip('MissionAdaptationEngine', () => {
   let engine: MissionAdaptationEngine;
->>>>>>> origin/main
 
   beforeEach(() => {
     engine = new MissionAdaptationEngine()
@@ -666,15 +655,8 @@ describe.skip('MissionAdaptationEngine', () => {
       ])
 
       // Should handle gracefully (last write wins or cooldown prevents second)
-<<<<<<< HEAD
-      expect(prisma.user.update).toHaveBeenCalled()
-    })
-  })
-})
-=======
       expect(prisma.user.update).toHaveBeenCalled();
     });
   });
 });
 */
->>>>>>> origin/main

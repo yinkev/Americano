@@ -39,6 +39,9 @@ model User {
   studyGoals                    StudyGoal[]
   studySessions                 StudySession[]
 
+  clinicalReasoningMetrics ClinicalReasoningMetric[]
+  scenarioResponses        ScenarioResponse[]
+
   @@map("users")
 }
 
@@ -132,6 +135,9 @@ model LearningObjective {
   performanceMetrics PerformanceMetric[]
   priorityFeedback   PriorityFeedback[]
   strugglePredictions StrugglePrediction[]
+  clinicalScenarios    ClinicalScenario[]
+  controlledFailures   ControlledFailure[]
+  masteryVerifications MasteryVerification[]
 
   @@index([lectureId])
   @@index([isHighYield])
@@ -249,6 +255,7 @@ model StudySession {
   mission               Mission?             @relation(fields: [missionId], references: [id])
   user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   validationResponses   ValidationResponse[]
+  scenarioResponses     ScenarioResponse[]
 
   @@index([userId])
   @@index([startedAt])
@@ -361,278 +368,6 @@ model BehavioralEvent {
   @@index([userId, dayOfWeek])            // For day-of-week pattern analysis
   @@index([userId, timeOfDay])            // For time-of-day pattern analysis
   @@map("behavioral_events")
-}
-
-
-// ============================================
-// Epic 4: Understanding Validation (from main branch)
-// Models renamed to avoid Epic 5 conflicts
-// ============================================
-
-model ClinicalScenario {
-  id             String       @id @default(cuid())
-  objectiveId    String
-  scenarioType   ScenarioType
-  difficulty     String // BASIC, INTERMEDIATE, ADVANCED
-  caseText       Json // Multi-stage case structure
-  boardExamTopic String?
-  createdAt      DateTime     @default(now())
-
-  objective LearningObjective  @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
-  responses ScenarioResponse[]
-
-  @@index([objectiveId])
-  @@index([boardExamTopic])
-  @@index([createdAt])
-  @@map("clinical_scenarios")
-}
-
-model ScenarioResponse {
-  id               String   @id @default(cuid())
-  scenarioId       String
-  userId           String
-  sessionId        String?
-  userChoices      Json // User selections at each stage
-  userReasoning    String   @db.Text
-  score            Int // Overall score 0-100
-  competencyScores Json // { dataGathering, diagnosis, management, clinicalReasoning }
-  timeSpent        Int // seconds
-  respondedAt      DateTime @default(now())
-
-  scenario ClinicalScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
-  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  session  StudySession?    @relation(fields: [sessionId], references: [id], onDelete: SetNull)
-
-  @@index([scenarioId])
-  @@index([userId])
-  @@index([respondedAt])
-  @@map("scenario_responses")
-}
-
-model ClinicalReasoningMetric {
-  id               String   @id @default(cuid())
-  userId           String
-  scenarioType     String
-  competencyScores Json // { dataGathering, diagnosis, management, clinicalReasoning }
-  boardExamTopic   String?
-  date             DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, date])
-  @@index([scenarioType])
-  @@index([boardExamTopic])
-  @@map("clinical_reasoning_metrics")
-}
-
-model MasteryVerification {
-  id               String                  @id @default(cuid())
-  userId           String
-  objectiveId      String
-  status           MasteryStatus           @default(NOT_STARTED)
-  verifiedAt       DateTime? // When mastery was achieved (null if not verified)
-  criteria         Json // Stores verification criteria met: {consecutiveScores: boolean, multipleTypes: boolean, difficultyMatch: boolean, calibrationAccuracy: boolean, timeSpaced: boolean}
-  completedAt      DateTime?
-  createdAt        DateTime                @default(now())
-  updatedAt        DateTime                @updatedAt
-
-  // Relations
-  learningObjective LearningObjective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, objectiveId]) // One mastery record per user per objective
-  @@index([userId])
-  @@index([objectiveId])
-  @@index([status])
-  @@index([userId, status]) // Query user's in-progress mastery verification
-  @@map("mastery_verifications")
-}
-
-model AdaptiveSession {
-  id                  String   @id @default(cuid())
-  userId              String
-  sessionId           String? // Link to StudySession if part of broader session
-  initialDifficulty   Int // Starting difficulty level (0-100)
-  currentDifficulty   Int // Current difficulty after adjustments (0-100)
-  irtEstimate         Float? // Theta parameter (knowledge estimate) from IRT model
-  confidenceInterval  Float? // ±X points at 95% confidence (for early stopping)
-  questionCount       Int      @default(0) // Number of questions asked in this adaptive session
-  trajectory          Json? // Array of {questionId, difficulty, score, adjustment} for session summary
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-
-  @@index([userId])
-  @@index([sessionId])
-  @@index([userId, createdAt]) // Query recent adaptive sessions
-  @@map("adaptive_sessions")
-}
-
-model CalibrationMetric {
-  id                   String   @id @default(cuid())
-  userId               String
-  objectiveId          String? // Optional: calibration metrics per learning objective
-  date                 DateTime @default(now())
-  avgDelta             Float // Average calibration delta for the period
-  correlationCoeff     Float // Pearson's r correlation coefficient
-  sampleSize           Int // Number of validation responses in this period
-  trend                String? // "improving", "stable", "declining"
-  overconfidentCount   Int      @default(0) // Count of OVERCONFIDENT responses
-  underconfidentCount  Int      @default(0) // Count of UNDERCONFIDENT responses
-  calibratedCount      Int      @default(0) // Count of CALIBRATED responses
-  meanAbsoluteError    Float? // MAE of calibration deltas
-  createdAt            DateTime @default(now())
-
-  @@unique([userId, date, objectiveId])
-  @@index([userId, date])
-  @@index([objectiveId])
-  @@index([correlationCoeff])
-  @@map("calibration_metrics")
-}
-
-model ControlledFailure {
-  id            String  @id @default(cuid())
-  objectiveId   String
-  userId        String
-  promptId      String // Link to ValidationPrompt
-  responseId    String? // Link to ValidationResponse
-  attemptNumber Int // 1 = initial failure, 2 = first retry, 3 = second retry, etc.
-  isCorrect     Boolean // False for initial failure, track progress on retries
-
-  // Emotion anchoring fields
-  emotionTag    EmotionTag?
-  personalNotes String?     @db.Text // User's personal reflection on what clicked
-
-  // Spaced repetition retry scheduling
-  retestSchedule Json // Array of ISO date strings ["+1d", "+3d", "+7d", "+14d", "+30d"]
-  nextRetryAt    DateTime? // Next scheduled retry date (for query optimization)
-
-  // Tracking
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  learningObjective LearningObjective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
-
-  // Performance indexes (Story context constraint #6)
-  @@index([userId, objectiveId]) // Query failures by user and concept
-  @@index([nextRetryAt]) // Query pending retries efficiently
-  @@index([userId, nextRetryAt]) // User's pending retries
-  @@map("controlled_failures")
-}
-
-model FailurePattern {
-  id                 String   @id @default(cuid())
-  userId             String
-  patternType        String // "category_cluster", "systematic_error", "temporal_pattern"
-  affectedObjectives Json // Array of objectiveId strings that exhibit this pattern
-  patternDescription String   @db.Text // Human-readable description (e.g., "Confuses ACE inhibitors vs ARBs")
-  remediation        String   @db.Text // Suggested remediation strategy
-  confidence         Float    @default(0.5) // 0.0-1.0 confidence in pattern detection
-  detectedAt         DateTime @default(now())
-  lastSeenAt         DateTime @default(now()) // Last time this pattern was observed
-
-  // Relations tracking
-  @@index([userId])
-  @@index([patternType])
-  @@index([userId, lastSeenAt]) // Query recent patterns for dashboard
-  @@map("failure_patterns")
-}
-
-model UnderstandingPrediction {
-  id                  String   @id @default(cuid())
-  userId              String
-  objectiveId         String
-  predictionType      String // EXAM_SUCCESS, FORGETTING_RISK, MASTERY_DATE
-  predictedValue      Float
-  confidenceInterval  Json // { lower: number, upper: number }
-  predictedAt         DateTime @default(now())
-  actualValue         Float?
-  accuracy            Float?
-
-  @@index([userId])
-  @@index([objectiveId])
-  @@index([predictedAt])
-  @@map("understanding_predictions")
-}
-
-model PeerBenchmark {
-  id           String   @id @default(cuid())
-  objectiveId  String
-  metric       String // comprehension_score, reasoning_score, etc
-  percentile25 Float
-  percentile50 Float
-  percentile75 Float
-  mean         Float
-  stdDev       Float
-  sampleSize   Int
-  calculatedAt DateTime @default(now())
-
-  @@unique([objectiveId, metric])
-  @@index([objectiveId])
-  @@map("peer_benchmarks")
-}
-
-model DailyInsight {
-  id                  String    @id @default(cuid())
-  userId              String
-  date                DateTime
-  insightType         String // daily_priority, weekly_top3, etc
-  message             String
-  recommendedActions  Json // string[]
-  priority            Int // 1-10
-  dismissed           Boolean   @default(false)
-
-  @@index([userId])
-  @@index([date])
-  @@map("daily_insights")
-}
-
-model UnderstandingBehavioralPattern {
-  id              String                @id @default(cuid())
-  userId          String
-  patternType     BehavioralPatternType
-  patternData     Json
-  confidence      Float
-  firstDetectedAt DateTime              @default(now())
-  lastSeenAt      DateTime              @default(now())
-
-  insights InsightPattern[]
-
-  @@index([userId])
-  @@index([patternType])
-  @@index([confidence])
-  @@map("behavioral_patterns")
-}
-
-model DailyUnderstandingInsight {
-  id             String      @id @default(cuid())
-  userId         String
-  insightType    InsightType
-  message        String      @db.Text
-  actionable     Boolean     @default(true)
-  priority       Int         @default(5)
-  createdAt      DateTime    @default(now())
-  acknowledgedAt DateTime?
-
-  patterns InsightPattern[]
-
-  @@index([userId])
-  @@index([createdAt])
-  @@index([acknowledgedAt])
-  @@map("behavioral_insights")
-}
-
-model UnderstandingInsightPattern {
-  id        String @id @default(cuid())
-  insightId String
-  patternId String
-
-  insight DailyUnderstandingInsight @relation(fields: [insightId], references: [id], onDelete: Cascade)
-  pattern UnderstandingBehavioralPattern @relation(fields: [patternId], references: [id], onDelete: Cascade)
-
-  @@unique([insightId, patternId])
-  @@index([insightId])
-  @@index([patternId])
-  @@map("insight_patterns")
 }
 
 // ============================================
@@ -1116,6 +851,227 @@ model user_source_preferences {
   @@unique([userId, sourceId])
   @@index([priority])
   @@index([userId])
+}
+
+// ============================================
+// Epic 4: Understanding Validation Models
+// ============================================
+
+model AdaptiveSession {
+  id                  String   @id @default(cuid())
+  userId              String
+  sessionId           String? // Link to StudySession if part of broader session
+  initialDifficulty   Int // Starting difficulty level (0-100)
+  currentDifficulty   Int // Current difficulty after adjustments (0-100)
+  irtEstimate         Float? // Theta parameter (knowledge estimate) from IRT model
+  confidenceInterval  Float? // ±X points at 95% confidence (for early stopping)
+  questionCount       Int      @default(0) // Number of questions asked in this adaptive session
+  trajectory          Json? // Array of {questionId, difficulty, score, adjustment} for session summary
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([userId, createdAt]) // Query recent adaptive sessions
+  @@map("adaptive_sessions")
+}
+
+model CalibrationMetric {
+  id                   String   @id @default(cuid())
+  userId               String
+  objectiveId          String? // Optional: calibration metrics per learning objective
+  date                 DateTime @default(now())
+  avgDelta             Float // Average calibration delta for the period
+  correlationCoeff     Float // Pearson's r correlation coefficient
+  sampleSize           Int // Number of validation responses in this period
+  trend                String? // "improving", "stable", "declining"
+  overconfidentCount   Int      @default(0) // Count of OVERCONFIDENT responses
+  underconfidentCount  Int      @default(0) // Count of UNDERCONFIDENT responses
+  calibratedCount      Int      @default(0) // Count of CALIBRATED responses
+  meanAbsoluteError    Float? // MAE of calibration deltas
+  createdAt            DateTime @default(now())
+
+  @@unique([userId, date, objectiveId])
+  @@index([userId, date])
+  @@index([objectiveId])
+  @@index([correlationCoeff])
+  @@map("calibration_metrics")
+}
+
+model ClinicalReasoningMetric {
+  id               String   @id @default(cuid())
+  userId           String
+  scenarioType     String
+  competencyScores Json // { dataGathering, diagnosis, management, clinicalReasoning }
+  boardExamTopic   String?
+  date             DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@index([scenarioType])
+  @@index([boardExamTopic])
+  @@map("clinical_reasoning_metrics")
+}
+
+model ClinicalScenario {
+  id             String       @id @default(cuid())
+  objectiveId    String
+  scenarioType   ScenarioType
+  difficulty     String // BASIC, INTERMEDIATE, ADVANCED
+  caseText       Json // Multi-stage case structure
+  boardExamTopic String?
+  createdAt      DateTime     @default(now())
+
+  objective LearningObjective  @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+  responses ScenarioResponse[]
+
+  @@index([objectiveId])
+  @@index([boardExamTopic])
+  @@index([createdAt])
+  @@map("clinical_scenarios")
+}
+
+model ControlledFailure {
+  id            String  @id @default(cuid())
+  objectiveId   String
+  userId        String
+  promptId      String // Link to ValidationPrompt
+  responseId    String? // Link to ValidationResponse
+  attemptNumber Int // 1 = initial failure, 2 = first retry, 3 = second retry, etc.
+  isCorrect     Boolean // False for initial failure, track progress on retries
+
+  // Emotion anchoring fields
+  emotionTag    EmotionTag?
+  personalNotes String?     @db.Text // User's personal reflection on what clicked
+
+  // Spaced repetition retry scheduling
+  retestSchedule Json // Array of ISO date strings ["+1d", "+3d", "+7d", "+14d", "+30d"]
+  nextRetryAt    DateTime? // Next scheduled retry date (for query optimization)
+
+  // Tracking
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  learningObjective LearningObjective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+
+  // Performance indexes (Story context constraint #6)
+  @@index([userId, objectiveId]) // Query failures by user and concept
+  @@index([nextRetryAt]) // Query pending retries efficiently
+  @@index([userId, nextRetryAt]) // User's pending retries
+  @@map("controlled_failures")
+}
+
+model DailyInsight {
+  id                  String    @id @default(cuid())
+  userId              String
+  date                DateTime
+  insightType         String // daily_priority, weekly_top3, etc
+  message             String
+  recommendedActions  Json // string[]
+  priority            Int // 1-10
+  dismissed           Boolean   @default(false)
+
+  @@index([userId])
+  @@index([date])
+  @@map("daily_insights")
+}
+
+model FailurePattern {
+  id                 String   @id @default(cuid())
+  userId             String
+  patternType        String // "category_cluster", "systematic_error", "temporal_pattern"
+  affectedObjectives Json // Array of objectiveId strings that exhibit this pattern
+  patternDescription String   @db.Text // Human-readable description (e.g., "Confuses ACE inhibitors vs ARBs")
+  remediation        String   @db.Text // Suggested remediation strategy
+  confidence         Float    @default(0.5) // 0.0-1.0 confidence in pattern detection
+  detectedAt         DateTime @default(now())
+  lastSeenAt         DateTime @default(now()) // Last time this pattern was observed
+
+  // Relations tracking
+  @@index([userId])
+  @@index([patternType])
+  @@index([userId, lastSeenAt]) // Query recent patterns for dashboard
+  @@map("failure_patterns")
+}
+
+model MasteryVerification {
+  id               String                  @id @default(cuid())
+  userId           String
+  objectiveId      String
+  status           MasteryStatus           @default(NOT_STARTED)
+  verifiedAt       DateTime? // When mastery was achieved (null if not verified)
+  criteria         Json // Stores verification criteria met: {consecutiveScores: boolean, multipleTypes: boolean, difficultyMatch: boolean, calibrationAccuracy: boolean, timeSpaced: boolean}
+  completedAt      DateTime?
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+
+  // Relations
+  learningObjective LearningObjective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, objectiveId]) // One mastery record per user per objective
+  @@index([userId])
+  @@index([objectiveId])
+  @@index([status])
+  @@index([userId, status]) // Query user's in-progress mastery verification
+  @@map("mastery_verifications")
+}
+
+model PeerBenchmark {
+  id           String   @id @default(cuid())
+  objectiveId  String
+  metric       String // comprehension_score, reasoning_score, etc
+  percentile25 Float
+  percentile50 Float
+  percentile75 Float
+  mean         Float
+  stdDev       Float
+  sampleSize   Int
+  calculatedAt DateTime @default(now())
+
+  @@unique([objectiveId, metric])
+  @@index([objectiveId])
+  @@map("peer_benchmarks")
+}
+
+model ScenarioResponse {
+  id               String   @id @default(cuid())
+  scenarioId       String
+  userId           String
+  sessionId        String?
+  userChoices      Json // User selections at each stage
+  userReasoning    String   @db.Text
+  score            Int // Overall score 0-100
+  competencyScores Json // { dataGathering, diagnosis, management, clinicalReasoning }
+  timeSpent        Int // seconds
+  respondedAt      DateTime @default(now())
+
+  scenario ClinicalScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session  StudySession?    @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([scenarioId])
+  @@index([userId])
+  @@index([respondedAt])
+  @@map("scenario_responses")
+}
+
+model UnderstandingPrediction {
+  id                  String   @id @default(cuid())
+  userId              String
+  objectiveId         String
+  predictionType      String // EXAM_SUCCESS, FORGETTING_RISK, MASTERY_DATE
+  predictedValue      Float
+  confidenceInterval  Json // { lower: number, upper: number }
+  predictedAt         DateTime @default(now())
+  actualValue         Float?
+  accuracy            Float?
+
+  @@index([userId])
+  @@index([objectiveId])
+  @@index([predictedAt])
+  @@map("understanding_predictions")
 }
 
 enum ProcessingStatus {
@@ -1926,9 +1882,6 @@ enum InterventionStatus {
   FAILED
 }
 
-// Epic 4 Enums
-
-
 model StruggleIndicator {
   id                  String        @id @default(cuid())
   userId              String
@@ -2062,4 +2015,32 @@ model StressResponsePattern {
 
   @@index([userId])
   @@map("stress_response_patterns")
+}
+
+// Epic 4 Enums
+enum CalibrationCategory {
+  OVERCONFIDENT // confidence > actual score + 15
+  UNDERCONFIDENT // confidence < actual score - 15
+  CALIBRATED // abs(confidence - score) <= 15
+  UNKNOWN // Insufficient data
+}
+
+enum EmotionTag {
+  SURPRISE
+  CONFUSION
+  FRUSTRATION
+  AHA_MOMENT
+}
+
+enum MasteryStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  VERIFIED
+}
+
+enum ScenarioType {
+  DIAGNOSIS
+  MANAGEMENT
+  DIFFERENTIAL
+  COMPLICATIONS
 }

@@ -44,19 +44,6 @@ export default async function MissionsPage() {
   const totalMissions = missions.length
   const completedMissions = missions.filter((m) => m.status === 'COMPLETED').length
   const completionRate = totalMissions > 0 ? (completedMissions / totalMissions) * 100 : 0
-<<<<<<< HEAD
-  const avgObjectives =
-    missions.length > 0
-      ? missions.reduce((sum, m) => {
-          try {
-            const objs = JSON.parse(m.objectives as string) as Array<unknown>
-            return sum + objs.length
-          } catch {
-            return sum
-          }
-        }, 0) / missions.length
-      : 0
-=======
   const avgObjectives = missions.length > 0
     ? missions.reduce((sum, m) => {
         try {
@@ -69,7 +56,6 @@ export default async function MissionsPage() {
         }
       }, 0) / missions.length
     : 0
->>>>>>> origin/main
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -137,20 +123,6 @@ export default async function MissionsPage() {
               </div>
             ) : (
               <div className="space-y-3">
-<<<<<<< HEAD
-                {missions.map((mission) => {
-                  let objectives: Array<{ objectiveId: string; completed: boolean }> = []
-                  try {
-                    objectives = JSON.parse(mission.objectives as string) as Array<{
-                      objectiveId: string
-                      completed: boolean
-                    }>
-                  } catch {
-                    objectives = []
-                  }
-                  const completedCount =
-                    mission.completedObjectivesCount || objectives.filter((o) => o.completed).length
-=======
                 {missions.map(mission => {
                   let objectives: Array<{
                     objectiveId: string
@@ -173,7 +145,6 @@ export default async function MissionsPage() {
                   }
 
                   const completedCount = mission.completedObjectivesCount || objectives.filter(o => o.completed).length
->>>>>>> origin/main
                   const totalCount = objectives.length
                   const rate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
 

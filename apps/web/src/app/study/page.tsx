@@ -1,32 +1,5 @@
 'use client'
 
-<<<<<<< HEAD
-import { useState, useEffect, useRef } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useSessionStore } from '@/store/use-session-store'
-import { useUserStore } from '@/store/use-user-store'
-import { SessionTimer } from '@/components/study/session-timer'
-import { ObjectiveContentPanel } from '@/components/study/objective-content-panel'
-import { ObjectiveTimer } from '@/components/study/objective-timer'
-import { MissionProgressHeader } from '@/components/study/mission-progress-header'
-import { FlashcardReview, FlashCard } from '@/components/study/flashcard-review'
-import { ObjectiveCompletionDialog } from '@/components/study/objective-completion-dialog'
-import { ObjectiveTransition } from '@/components/study/objective-transition'
-import { SessionResumeDialog } from '@/components/study/session-resume-dialog'
-import { SessionSettingsPanel } from '@/components/study/session-settings-panel'
-import { PomodoroTimer } from '@/components/study/pomodoro-timer'
-import { BreakReminderDialog } from '@/components/study/break-reminder-dialog'
-import { RealtimeOrchestrationPanel } from '@/components/study/realtime-orchestration-panel'
-import { IntelligentBreakNotification } from '@/components/study/intelligent-break-notification'
-import { ContentAdaptationDialog } from '@/components/study/content-adaptation-dialog'
-import { SessionRecommendationDialog } from '@/components/study/session-recommendation-dialog'
-import { CognitiveLoadIndicator } from '@/components/study/cognitive-load-indicator'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Play, Pause, Square, CheckCircle, Settings, ChevronLeft, Menu } from 'lucide-react'
-import { toast } from 'sonner'
-import { useStudyOrchestration } from '@/hooks/use-study-orchestration'
-=======
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSessionStore } from '@/store/use-session-store';
@@ -52,7 +25,6 @@ import { Badge } from '@/components/ui/badge';
 import { Play, Pause, Square, CheckCircle, Settings, ChevronLeft, Menu } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ValidationPromptData, ResponseEvaluationResponse } from '@/types/validation';
->>>>>>> origin/main
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,15 +37,6 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 
 interface LearningObjective {
-<<<<<<< HEAD
-  id: string
-  objective: string
-  complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
-  pageStart?: number
-  pageEnd?: number
-  isHighYield: boolean
-  boardExamTags: string[]
-=======
   id: string;
   objective: string;
   complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
@@ -82,7 +45,6 @@ interface LearningObjective {
   pageEnd?: number;
   isHighYield: boolean;
   boardExamTags: string[];
->>>>>>> origin/main
   lecture: {
     id: string
     title: string
@@ -108,11 +70,7 @@ interface Mission {
   estimatedMinutes: number
 }
 
-<<<<<<< HEAD
-type StudyPhase = 'content' | 'cards' | 'assessment'
-=======
 type StudyPhase = 'content' | 'comprehension' | 'cards' | 'assessment' | 'adaptive';
->>>>>>> origin/main
 
 export default function StudyPage() {
   const router = useRouter()
@@ -142,23 +100,6 @@ export default function StudyPage() {
     settings,
     updateSettings,
     resetSettings,
-<<<<<<< HEAD
-    // Real-time orchestration (Story 5.3)
-    orchestration,
-    initializeOrchestration,
-    recordSessionEvent,
-    updateCurrentPhase,
-    setBreakRecommendation,
-    setContentAdaptation,
-    setSessionRecommendation,
-    handleBreakTaken,
-    handleContentAdaptation,
-    handleSessionRecommendation,
-    updatePerformanceMetrics,
-    cleanupOrchestration,
-  } = useSessionStore()
-  const { userEmail } = useUserStore()
-=======
     objectivesCompletedSinceScenario: storeObjectivesCompletedSinceScenario,
     incrementObjectivesCompleted,
     resetScenarioCounter,
@@ -167,7 +108,6 @@ export default function StudyPage() {
     clearAdaptiveMetrics: storeClearAdaptiveMetrics,
   } = useSessionStore();
   const { userEmail } = useUserStore();
->>>>>>> origin/main
 
   // Real-time orchestration (Story 5.3)
   const studyOrchestration = useStudyOrchestration({
@@ -500,12 +440,6 @@ export default function StudyPage() {
   }
 
   const handleContentPhaseComplete = async () => {
-<<<<<<< HEAD
-    // Record phase completion with orchestration (Story 5.3)
-    studyOrchestration.recordInteraction('content_phase_completed')
-
-    // Move to cards phase
-=======
     // Story 4.1 Task 6.2: Check if comprehension validation is needed
     if (!currentObjective) return;
 
@@ -595,7 +529,6 @@ export default function StudyPage() {
     }
 
     // Move to cards phase or assessment (existing logic)
->>>>>>> origin/main
     if (cards.length > 0) {
       setStudyPhase('cards')
       studyOrchestration.recordPhaseChange('cards')
@@ -1731,67 +1664,6 @@ export default function StudyPage() {
           onSkipBreak={handleSkipBreak}
         />
 
-<<<<<<< HEAD
-        {/* Real-time Orchestration Dialogs (Story 5.3) */}
-        <IntelligentBreakNotification
-          open={showIntelligentBreak}
-          recommendation={null} // Will be generated by orchestration service
-          onTakeBreak={handleIntelligentBreakTake}
-          onSkipBreak={handleIntelligentBreakSkip}
-          onPostponeBreak={handleIntelligentBreakPostpone}
-          sessionProgress={{
-            objectivesCompleted: objectivesCompletedCount,
-            totalObjectives: mission?.objectives.length || 0,
-            sessionDuration: Math.round(studyOrchestration.sessionDuration / 60000),
-          }}
-        />
-
-        <ContentAdaptationDialog
-          open={showContentAdaptation}
-          adaptation={null} // Will be generated by orchestration service
-          onAccept={handleContentAdaptationAccept}
-          onDecline={handleContentAdaptationDecline}
-          onPostpone={handleContentAdaptationPostpone}
-          currentContent={{
-            type: (currentObjective?.objective?.complexity.toLowerCase() as any) || 'intermediate',
-            topic: currentObjective?.objective?.objective || '',
-            completedPercentage: storeMissionProgress
-              ? Math.round((storeMissionProgress.completed / storeMissionProgress.total) * 100)
-              : 0,
-          }}
-          sessionContext={{
-            objectivesCompleted: objectivesCompletedCount,
-            totalObjectives: mission?.objectives.length || 0,
-            timeSpent: Math.round(studyOrchestration.sessionDuration / 60000),
-            currentStreak: 1,
-          }}
-        />
-
-        <SessionRecommendationDialog
-          open={showSessionRecommendation}
-          recommendation={null} // Will be generated by orchestration service
-          onAccept={handleSessionRecommendationAccept}
-          onDecline={handleSessionRecommendationDecline}
-          sessionContext={{
-            objectivesCompleted: objectivesCompletedCount,
-            totalObjectives: mission?.objectives.length || 0,
-            sessionDuration: Math.round(studyOrchestration.sessionDuration / 60000),
-            plannedDuration: mission?.estimatedMinutes || 60,
-            performanceScore: studyOrchestration.performanceMetrics.recentAccuracy,
-            fatigueLevel: studyOrchestration.performanceMetrics.fatigueIndicator,
-            streakCount: 1,
-          }}
-          availableObjectives={
-            mission?.objectives.slice(currentObjectiveIndex + 1).map((obj) => ({
-              id: obj.objectiveId,
-              title: obj.objective?.objective || 'Objective',
-              estimatedMinutes: obj.estimatedMinutes,
-              difficulty: (obj.objective?.complexity.toLowerCase() as any) || 'intermediate',
-              priority: obj.objective?.isHighYield ? 'high' : 'medium',
-            })) || []
-          }
-        />
-=======
         {/* Comprehension Prompt Dialog (Story 4.1 Task 6) */}
         {comprehensionPrompt && currentObjective && (
           <ComprehensionPromptDialog
@@ -1864,7 +1736,6 @@ export default function StudyPage() {
              - ReflectionPromptDialog (after evaluation)
              When onComplete is called, all workflow steps are complete.
         */}
->>>>>>> origin/main
       </div>
     </div>
   )

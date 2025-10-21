@@ -194,13 +194,9 @@ export const GET = withErrorHandler(
     const responseData = {
       ...session,
       mission: enrichedMission,
-<<<<<<< HEAD
-    }
-=======
       comprehensionMetrics, // Story 4.1 Task 6.7
       calibrationMetrics, // Story 4.4 Task 10.6
     };
->>>>>>> origin/main
 
     return Response.json(successResponse({ session: responseData }))
   },

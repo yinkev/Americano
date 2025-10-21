@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Americano - Project Documentation
 
 ## Critical Development Standards
@@ -22,9 +21,9 @@
 
 ## Project Context
 
-This is the Epic 5 implementation branch for the Americano adaptive learning platform, focused on building the Behavioral Twin Engine with advanced analytics capabilities.
-=======
-# Claude Code Guidelines for Americano Project
+This is the Americano adaptive learning platform, integrating Epic 4 (Understanding Validation Engine) and Epic 5 (Behavioral Twin Engine) with advanced analytics capabilities.
+
+---
 
 ## Technology Stack Decisions
 
@@ -307,7 +306,7 @@ async def evaluate_comprehension(request: EvaluationRequest) -> EvaluationResult
 
 ### Type Safety Across Boundary
 
-**Pydantic � TypeScript:**
+**Pydantic → TypeScript:**
 1. Define Pydantic model in Python
 2. Generate TypeScript interface from Pydantic schema
 3. Use Zod on TypeScript side for runtime validation
@@ -385,7 +384,7 @@ npx prisma studio
 
 ### Deployment
 - **Next.js:** Vercel (automatic)
-- **Python services:** Docker � Cloud Run / Lambda
+- **Python services:** Docker → Cloud Run / Lambda
 - **Database:** PostgreSQL on managed service (e.g., Supabase, Neon)
 
 ---
@@ -483,36 +482,17 @@ npx prisma migrate dev
 - ❌ **Con:** Data not shared across epics (may need seed scripts)
 - ❌ **Con:** More complex to merge back to main (schema conflicts at merge time)
 
-### Current Setup (Story 4.2)
-
-**Status:** Epic 4 currently shares database with Epic 3 and Epic 5
-
-**Workaround applied:**
-- Skipped `prisma migrate dev` (due to drift detection)
-- Schema changes made to Prisma schema file
-- Will coordinate with Epic 3/5 teams before applying migrations
-- Python/TypeScript code functional (just database not synced yet)
-
-**Recommendation for future stories:**
-- Consider separate databases per epic for isolation
-- OR establish coordination protocol for shared database migrations (e.g., daily sync window)
-
 ---
 
 ## Epic 4 Context Files Generated
 
 All Epic 4 stories now have complete context XMLs:
--  `docs/stories/story-context-4.1.xml` (30KB, TypeScript)
--  `docs/stories/story-context-4.2.xml` (23KB, TypeScript)
--  `docs/stories/story-context-4.3.xml` (9.5KB, TypeScript + Python option)
--  `docs/stories/story-context-4.4.xml` (36KB, TypeScript + Python option)
--  `docs/stories/story-context-4.5.xml` (48KB, Python primary + TypeScript integration)
--  `docs/stories/story-context-4.6.xml` (32KB, TypeScript)
-
-**Next Steps:**
-1. Review context XMLs for accuracy
-2. Run `*story-ready` workflow to mark stories ready for development
-3. Begin implementation with Story 4.1 (foundation)
+- ✅ `docs/stories/story-context-4.1.xml` (30KB, TypeScript)
+- ✅ `docs/stories/story-context-4.2.xml` (23KB, TypeScript)
+- ✅ `docs/stories/story-context-4.3.xml` (9.5KB, TypeScript + Python option)
+- ✅ `docs/stories/story-context-4.4.xml` (36KB, TypeScript + Python option)
+- ✅ `docs/stories/story-context-4.5.xml` (48KB, Python primary + TypeScript integration)
+- ✅ `docs/stories/story-context-4.6.xml` (32KB, TypeScript)
 
 ---
 
@@ -549,5 +529,3 @@ All Epic 4 stories now have complete context XMLs:
 - ✅ ALWAYS load story-context-4.X.xml for implementation guidance
 
 **Timeline**: 4-6 weeks (parallel execution)
-
->>>>>>> origin/main

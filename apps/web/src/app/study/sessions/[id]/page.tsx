@@ -77,20 +77,12 @@ interface SessionData {
         id: string
         title: string
         course: {
-<<<<<<< HEAD
-          name: string
-        }
-      } | null
-    }
-  }>
-=======
           name: string;
         };
       } | null;
     };
   }>;
   calibrationMetrics?: CalibrationMetrics;
->>>>>>> origin/main
 }
 
 export default function SessionSummaryPage({ params }: { params: Promise<{ id: string }> }) {

@@ -124,10 +124,6 @@ interface SessionStore {
   // Session settings (Story 2.5 Task 10)
   settings: SessionSettings
 
-<<<<<<< HEAD
-  // Real-time orchestration state (Story 5.3)
-  orchestration: OrchestrationState
-=======
   // Clinical scenario tracking (Story 4.2 Task 7)
   objectivesCompletedSinceScenario: number
 
@@ -136,7 +132,6 @@ interface SessionStore {
   adaptiveScore: number | null
   adaptiveQuestionsAsked: number
   adaptiveEfficiency: number | null
->>>>>>> origin/main
 
   // Actions
   startSession: (sessionId: string, userEmail: string, missionId?: string) => void
@@ -162,20 +157,6 @@ interface SessionStore {
   updateSettings: (settings: Partial<SessionSettings>) => void
   resetSettings: () => void
 
-<<<<<<< HEAD
-  // Real-time orchestration actions (Story 5.3)
-  initializeOrchestration: (currentPhase?: 'content' | 'cards' | 'assessment') => void
-  recordSessionEvent: (event: Omit<SessionEvent, 'timestamp'>) => void
-  updateCurrentPhase: (phase: 'content' | 'cards' | 'assessment' | 'break') => void
-  setBreakRecommendation: (recommendation: BreakRecommendation | null) => void
-  setContentAdaptation: (adaptation: ContentAdaptation | null) => void
-  setSessionRecommendation: (recommendation: SessionRecommendation | null) => void
-  handleBreakTaken: () => void
-  handleContentAdaptation: (accepted: boolean) => void
-  handleSessionRecommendation: (accepted: boolean) => void
-  updatePerformanceMetrics: (metrics: Partial<OrchestrationState['performanceMetrics']>) => void
-  cleanupOrchestration: () => void
-=======
   // Clinical scenario tracking (Story 4.2 Task 7)
   incrementObjectivesCompleted: () => void
   resetScenarioCounter: () => void
@@ -184,7 +165,6 @@ interface SessionStore {
   setAdaptiveSessionId: (adaptiveSessionId: string | null) => void
   setAdaptiveMetrics: (score: number, questionsAsked: number, efficiency: number) => void
   clearAdaptiveMetrics: () => void
->>>>>>> origin/main
 
   // Computed values
   getElapsedTime: () => number
@@ -273,10 +253,6 @@ export const useSessionStore = create<SessionStore>()(
       // Session settings (Story 2.5 Task 10) - use defaults
       settings: DEFAULT_SETTINGS,
 
-<<<<<<< HEAD
-      // Real-time orchestration state (Story 5.3)
-      orchestration: DEFAULT_ORCHESTRATION_STATE,
-=======
       // Clinical scenario tracking (Story 4.2 Task 7)
       objectivesCompletedSinceScenario: 0,
 
@@ -285,7 +261,6 @@ export const useSessionStore = create<SessionStore>()(
       adaptiveScore: null,
       adaptiveQuestionsAsked: 0,
       adaptiveEfficiency: null,
->>>>>>> origin/main
 
       startSession: (sessionId: string, userEmail: string, missionId?: string) => {
         set({
@@ -493,204 +468,6 @@ export const useSessionStore = create<SessionStore>()(
         set({ settings: DEFAULT_SETTINGS })
       },
 
-<<<<<<< HEAD
-      // Real-time orchestration actions (Story 5.3)
-      initializeOrchestration: (currentPhase = 'content') => {
-        const { sessionId, missionId, settings } = get()
-
-        if (!sessionId || !settings.enableRealtimeOrchestration) {
-          return
-        }
-
-        // Initialize the orchestration service
-        realtimeOrchestrationService
-          .initializeSession(sessionId, missionId, currentPhase)
-          .then(() => {
-            set({
-              orchestration: {
-                ...get().orchestration,
-                isActive: true,
-                currentPhase,
-              },
-            })
-          })
-          .catch((error) => {
-            console.error('Failed to initialize orchestration:', error)
-          })
-      },
-
-      recordSessionEvent: (event) => {
-        const { orchestration, settings } = get()
-
-        if (!orchestration.isActive || !settings.enableRealtimeOrchestration) {
-          return
-        }
-
-        const fullEvent: SessionEvent = {
-          ...event,
-          timestamp: new Date(),
-        }
-
-        // Record event in orchestration service
-        realtimeOrchestrationService.recordEvent(fullEvent)
-
-        // Update last event in state
-        set({
-          orchestration: {
-            ...orchestration,
-            lastEvent: fullEvent,
-            orchestrationHistory: {
-              ...orchestration.orchestrationHistory,
-              totalInteractions: orchestration.orchestrationHistory.totalInteractions + 1,
-            },
-          },
-        })
-      },
-
-      updateCurrentPhase: (phase) => {
-        const { orchestration } = get()
-
-        if (!orchestration.isActive) {
-          return
-        }
-
-        set({
-          orchestration: {
-            ...orchestration,
-            currentPhase: phase,
-          },
-        })
-
-        // Record phase change event
-        get().recordSessionEvent({
-          type: phase === 'break' ? 'pause' : 'resume',
-          data: {},
-        })
-      },
-
-      setBreakRecommendation: (recommendation) => {
-        const { orchestration } = get()
-
-        set({
-          orchestration: {
-            ...orchestration,
-            currentRecommendation: {
-              ...orchestration.currentRecommendation,
-              break: recommendation,
-            },
-          },
-        })
-      },
-
-      setContentAdaptation: (adaptation) => {
-        const { orchestration } = get()
-
-        set({
-          orchestration: {
-            ...orchestration,
-            currentRecommendation: {
-              ...orchestration.currentRecommendation,
-              content: adaptation,
-            },
-          },
-        })
-      },
-
-      setSessionRecommendation: (recommendation) => {
-        const { orchestration } = get()
-
-        set({
-          orchestration: {
-            ...orchestration,
-            currentRecommendation: {
-              ...orchestration.currentRecommendation,
-              session: recommendation,
-            },
-          },
-        })
-      },
-
-      handleBreakTaken: () => {
-        const { orchestration } = get()
-
-        set({
-          orchestration: {
-            ...orchestration,
-            currentRecommendation: {
-              ...orchestration.currentRecommendation,
-              break: null,
-            },
-            orchestrationHistory: {
-              ...orchestration.orchestrationHistory,
-              breaksTaken: orchestration.orchestrationHistory.breaksTaken + 1,
-            },
-          },
-        })
-
-        // Update phase to break
-        get().updateCurrentPhase('break')
-      },
-
-      handleContentAdaptation: (accepted) => {
-        const { orchestration } = get()
-
-        set({
-          orchestration: {
-            ...orchestration,
-            currentRecommendation: {
-              ...orchestration.currentRecommendation,
-              content: null,
-            },
-            orchestrationHistory: {
-              ...orchestration.orchestrationHistory,
-              contentAdaptationsAccepted: accepted
-                ? orchestration.orchestrationHistory.contentAdaptationsAccepted + 1
-                : orchestration.orchestrationHistory.contentAdaptationsAccepted,
-            },
-          },
-        })
-      },
-
-      handleSessionRecommendation: (accepted) => {
-        const { orchestration } = get()
-
-        set({
-          orchestration: {
-            ...orchestration,
-            currentRecommendation: {
-              ...orchestration.currentRecommendation,
-              session: null,
-            },
-            orchestrationHistory: {
-              ...orchestration.orchestrationHistory,
-              sessionRecommendationsAccepted: accepted
-                ? orchestration.orchestrationHistory.sessionRecommendationsAccepted + 1
-                : orchestration.orchestrationHistory.sessionRecommendationsAccepted,
-            },
-          },
-        })
-      },
-
-      updatePerformanceMetrics: (metrics) => {
-        const { orchestration } = get()
-
-        set({
-          orchestration: {
-            ...orchestration,
-            performanceMetrics: {
-              ...orchestration.performanceMetrics,
-              ...metrics,
-            },
-          },
-        })
-      },
-
-      cleanupOrchestration: () => {
-        realtimeOrchestrationService.cleanup()
-
-        set({
-          orchestration: DEFAULT_ORCHESTRATION_STATE,
-=======
       // Clinical scenario tracking (Story 4.2 Task 7)
       incrementObjectivesCompleted: () => {
         const { objectivesCompletedSinceScenario } = get()
@@ -720,7 +497,6 @@ export const useSessionStore = create<SessionStore>()(
           adaptiveScore: null,
           adaptiveQuestionsAsked: 0,
           adaptiveEfficiency: null,
->>>>>>> origin/main
         })
       },
     }),

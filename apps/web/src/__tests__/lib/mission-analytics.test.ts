@@ -7,11 +7,6 @@
  * Story 2.6 - Task 12.1: Test Analytics Calculations
  */
 
-<<<<<<< HEAD
-import { MissionAnalyticsEngine } from '@/lib/mission-analytics-engine'
-import { prisma } from '@/lib/db'
-import { MissionStatus, AnalyticsPeriod } from '@/generated/prisma'
-=======
 // DISABLED: Tests reference MissionAnalyticsEngine not yet implemented for Story 4.1
 // TODO: Re-enable after Story 2.6 (Mission Analytics) is complete
 // These tests are for Mission-related features, not Epic 4 Understanding Validation
@@ -20,18 +15,12 @@ import { MissionStatus, AnalyticsPeriod } from '@/generated/prisma'
 import { MissionAnalyticsEngine } from '@/lib/mission-analytics-engine';
 import { prisma } from '@/lib/db';
 import { MissionStatus, AnalyticsPeriod } from '@/generated/prisma';
->>>>>>> origin/main
 
 // Mock Prisma client
 jest.mock('@/lib/db')
 
-<<<<<<< HEAD
-describe('MissionAnalyticsEngine', () => {
-  let engine: MissionAnalyticsEngine
-=======
 describe.skip('MissionAnalyticsEngine', () => {
   let engine: MissionAnalyticsEngine;
->>>>>>> origin/main
 
   beforeEach(() => {
     engine = new MissionAnalyticsEngine()
@@ -567,15 +556,8 @@ describe.skip('MissionAnalyticsEngine', () => {
       const result = await engine.calculateDailyAnalytics('user1')
 
       // Average: (1.0 + 0.5) / 2 = 0.75
-<<<<<<< HEAD
-      expect(result.avgSuccessScore).toBeCloseTo(0.75, 2)
-    })
-  })
-})
-=======
       expect(result.avgSuccessScore).toBeCloseTo(0.75, 2);
     });
   });
 });
 */
->>>>>>> origin/main

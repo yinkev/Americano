@@ -1,33 +1,4 @@
 /**
-<<<<<<< HEAD
- * Toast Hook
- * Simple toast notification hook for user feedback
- */
-
-'use client'
-
-import { toast as sonnerToast } from 'sonner'
-
-interface ToastProps {
-  title: string
-  description?: string
-  variant?: 'default' | 'destructive'
-}
-
-export function useToast() {
-  const toast = ({ title, description, variant = 'default' }: ToastProps) => {
-    if (variant === 'destructive') {
-      sonnerToast.error(title, {
-        description,
-      })
-    } else {
-      sonnerToast.success(title, {
-        description,
-      })
-    }
-  }
-
-  return { toast }
 =======
  * Temporary stub for useToast hook
  * TODO: Install shadcn/ui toast component: npx shadcn@latest add toast
@@ -44,5 +15,4 @@ export function useToast() {
       console.log('[Toast]', options.title, options.description)
     }
   }
->>>>>>> origin/main
 }
