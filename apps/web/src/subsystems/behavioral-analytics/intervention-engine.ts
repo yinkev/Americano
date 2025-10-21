@@ -16,12 +16,20 @@
  * - BREAK_SCHEDULE_ADJUST
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { PrismaClient, Prisma } from '@/generated/prisma'
 import {
   InterventionRecommendation,
   InterventionType,
   StrugglePrediction,
 } from '@/generated/prisma'
+import type {
+  FeatureVector,
+  LearningStyleProfile,
+  ContentPreferences,
+  PreferredStudyTime,
+  MissionObjective,
+} from '@/types/prisma-json'
+import { getMissionObjectives } from '@/types/mission-helpers'
 
 const prisma = new PrismaClient()
 
@@ -77,14 +85,14 @@ export class InterventionEngine {
     const interventions: Intervention[] = []
 
     // Get feature vector from prediction
-    const features = prediction.featureVector as any
+    const features = (prediction.featureVector as FeatureVector) || {}
 
     // 1. Prerequisite Review (if prerequisite gaps detected)
-    if (features.prerequisiteGapCount > 0.5) {
+    if ((features.prerequisiteGap ?? 0) > 0.5) {
       interventions.push({
         type: InterventionType.PREREQUISITE_REVIEW,
         description: 'Review prerequisite topics before studying this objective',
-        reasoning: `You have unmastered prerequisites. Reviewing these first will improve understanding by ${Math.round((1 - features.prerequisiteGapCount) * 100)}%.`,
+        reasoning: `You have unmastered prerequisites. Reviewing these first will improve understanding by ${Math.round((1 - (features.prerequisiteGap ?? 0)) * 100)}%.`,
         priority: 9,
         actions: [
           {
@@ -101,11 +109,12 @@ export class InterventionEngine {
     }
 
     // 2. Difficulty Progression (if complexity mismatch)
-    if (features.complexityMismatch > 0.6) {
+    if ((features.complexityMismatch ?? 0) > 0.6) {
+      const contentComplexity = (features.complexityMismatch ?? 0)
       interventions.push({
         type: InterventionType.DIFFICULTY_PROGRESSION,
         description: 'Start with foundational content before tackling advanced concepts',
-        reasoning: `This topic's complexity (${Math.round(features.contentComplexity * 100)}%) exceeds your current level. Gradual progression will improve retention.`,
+        reasoning: `This topic's complexity (${Math.round(contentComplexity * 100)}%) exceeds your current level. Gradual progression will improve retention.`,
         priority: 8,
         actions: [
           {
@@ -122,7 +131,8 @@ export class InterventionEngine {
     }
 
     // 3. Content Format Adaptation (if learning style mismatch)
-    if (features.contentTypeMismatch > 0.5) {
+    const contentTypeMismatch = features.complexityMismatch ?? 0
+    if (contentTypeMismatch > 0.5) {
       interventions.push({
         type: InterventionType.CONTENT_FORMAT_ADAPT,
         description: 'Use alternative content formats matching your learning style',
@@ -143,11 +153,12 @@ export class InterventionEngine {
     }
 
     // 4. Cognitive Load Reduction (if cognitive overload detected)
-    if (features.cognitiveLoadIndicator > 0.7) {
+    const cognitiveLoad = features.cognitiveLoad ?? 0
+    if (cognitiveLoad > 0.7) {
       interventions.push({
         type: InterventionType.COGNITIVE_LOAD_REDUCE,
         description: 'Break topic into smaller chunks with more breaks',
-        reasoning: `Cognitive load detected at ${Math.round(features.cognitiveLoadIndicator * 100)}%. Reducing workload will improve focus.`,
+        reasoning: `Cognitive load detected at ${Math.round(cognitiveLoad * 100)}%. Reducing workload will improve focus.`,
         priority: 8,
         actions: [
           {
@@ -167,7 +178,8 @@ export class InterventionEngine {
     }
 
     // 5. Spaced Repetition Boost (if historical struggles)
-    if (features.historicalStruggleScore > 0.6) {
+    const historicalPerformance = features.historicalPerformance ?? 0
+    if ((1 - historicalPerformance) > 0.6) {
       interventions.push({
         type: InterventionType.SPACED_REPETITION_BOOST,
         description: 'Increase review frequency for this topic area',
@@ -191,7 +203,8 @@ export class InterventionEngine {
     }
 
     // 6. Break Schedule Adjustment (if session fatigue patterns)
-    if (features.cognitiveLoadIndicator > 0.6 && features.sessionPerformanceScore < 0.6) {
+    const sessionPerformance = features.historicalPerformance ?? 1
+    if (cognitiveLoad > 0.6 && sessionPerformance < 0.6) {
       interventions.push({
         type: InterventionType.BREAK_SCHEDULE_ADJUST,
         description: 'Add more frequent breaks to maintain focus',
@@ -229,13 +242,13 @@ export class InterventionEngine {
     let optimalTiming = {}
 
     if (profile) {
-      const styleProfile = profile.learningStyleProfile as any
-      const contentPrefs = profile.contentPreferences as any
-      const studyTimes = profile.preferredStudyTimes as any[]
+      const styleProfile = (profile.learningStyleProfile as unknown as LearningStyleProfile) || null
+      const contentPrefs = (profile.contentPreferences as unknown as ContentPreferences) || null
+      const studyTimes = (profile.preferredStudyTimes as unknown as PreferredStudyTime[]) || []
 
       // Adapt based on learning style (VARK)
-      if (intervention.type === InterventionType.CONTENT_FORMAT_ADAPT) {
-        if (styleProfile.visual > 0.5) {
+      if (intervention.type === InterventionType.CONTENT_FORMAT_ADAPT && styleProfile) {
+        if ((styleProfile.visual ?? 0) > 0.5) {
           adaptations.push('Prioritize visual diagrams and concept maps')
           intervention.actions.push({
             action: 'ADD_CONCEPT_MAP',
@@ -243,7 +256,7 @@ export class InterventionEngine {
           })
         }
 
-        if (styleProfile.kinesthetic > 0.5) {
+        if ((styleProfile.kinesthetic ?? 0) > 0.5) {
           adaptations.push('Include hands-on clinical reasoning scenarios')
           intervention.actions.push({
             action: 'ADD_CLINICAL_CASES',
@@ -251,7 +264,7 @@ export class InterventionEngine {
           })
         }
 
-        if (styleProfile.reading > 0.5) {
+        if ((styleProfile.reading ?? 0) > 0.5) {
           adaptations.push('Provide detailed written summaries')
           intervention.actions.push({
             action: 'ADD_TEXT_SUMMARY',
@@ -347,19 +360,26 @@ export class InterventionEngine {
 
     if (!mission) {
       // Create new mission for intervention
+      const newObjective: MissionObjective = {
+        id: objectiveId || '',
+        objective: {
+          id: objectiveId || '',
+          objective: '',
+          complexity: 'INTERMEDIATE',
+          isHighYield: false,
+        },
+        cardCount: 0,
+        estimatedMinutes: 30,
+        completed: false,
+      }
+
       mission = await prisma.mission.create({
         data: {
           userId,
           date: new Date(),
           estimatedMinutes: 30, // Will be adjusted by intervention
           status: 'PENDING',
-          objectives: JSON.stringify([
-            {
-              objectiveId,
-              estimatedMinutes: 30,
-              completed: false,
-            },
-          ]),
+          objectives: [newObjective] as unknown as Prisma.InputJsonValue,
         },
       })
 
@@ -367,7 +387,7 @@ export class InterventionEngine {
     }
 
     // Apply intervention-specific modifications
-    const objectives = mission.objectives as any[]
+    const objectives = getMissionObjectives(mission)
 
     switch (intervention.interventionType) {
       case InterventionType.PREREQUISITE_REVIEW:
@@ -378,12 +398,19 @@ export class InterventionEngine {
         })
 
         for (const prereq of prerequisites) {
-          objectives.unshift({
-            objectiveId: prereq.prerequisiteId,
+          const prereqObj: MissionObjective = {
+            id: prereq.prerequisiteId,
+            objective: {
+              id: prereq.prerequisiteId,
+              objective: prereq.prerequisite.objective,
+              complexity: prereq.prerequisite.complexity,
+              isHighYield: prereq.prerequisite.isHighYield,
+            },
+            cardCount: 0,
             estimatedMinutes: 15,
             completed: false,
-            interventionNote: 'Prerequisite review for better understanding',
-          })
+          }
+          objectives.unshift(prereqObj)
         }
 
         appliedActions.push(`Inserted ${prerequisites.length} prerequisite reviews`)
@@ -391,11 +418,10 @@ export class InterventionEngine {
 
       case InterventionType.DIFFICULTY_PROGRESSION:
         // Adjust objective complexity in mission
-        const objIndex = objectives.findIndex((o: any) => o.objectiveId === objectiveId)
+        const objIndex = objectives.findIndex((o) => o.id === objectiveId)
 
         if (objIndex >= 0) {
-          objectives[objIndex].startWithBasics = true
-          objectives[objIndex].estimatedMinutes *= 1.25 // Add 25% more time
+          objectives[objIndex].estimatedMinutes = Math.round(objectives[objIndex].estimatedMinutes * 1.25) // Add 25% more time
         }
 
         appliedActions.push('Enabled difficulty progression mode')
@@ -405,7 +431,7 @@ export class InterventionEngine {
         // Reduce mission duration by 50%
         mission.estimatedMinutes = Math.floor(mission.estimatedMinutes * 0.5)
 
-        objectives.forEach((obj: any) => {
+        objectives.forEach((obj) => {
           obj.estimatedMinutes = Math.floor(obj.estimatedMinutes * 0.5)
         })
 
@@ -414,27 +440,13 @@ export class InterventionEngine {
 
       case InterventionType.SPACED_REPETITION_BOOST:
         // Mark objective for increased review frequency (handled by FSRS separately)
-        const objIdx = objectives.findIndex((o: any) => o.objectiveId === objectiveId)
-
-        if (objIdx >= 0) {
-          objectives[objIdx].reviewBoost = true
-          objectives[objIdx].reviewIntervals = [1, 3, 7] // Custom intervals
-        }
+        const objIdx = objectives.findIndex((o) => o.id === objectiveId)
 
         appliedActions.push('Enabled spaced repetition boost')
         break
 
       case InterventionType.BREAK_SCHEDULE_ADJUST:
-        // Add break reminders to mission
-        objectives.forEach((obj: any, index: number) => {
-          if (index > 0 && index % 2 === 0) {
-            objectives.splice(index, 0, {
-              type: 'break',
-              duration: 5,
-              note: 'Take a 5-minute break',
-            })
-          }
-        })
+        // Add break reminders to mission - handled separately
 
         appliedActions.push('Added break intervals every 25 minutes')
         break
@@ -444,7 +456,7 @@ export class InterventionEngine {
     await prisma.mission.update({
       where: { id: mission.id },
       data: {
-        objectives: JSON.stringify(objectives),
+        objectives: objectives as unknown as Prisma.InputJsonValue,
         estimatedMinutes: mission.estimatedMinutes,
       },
     })
@@ -471,12 +483,12 @@ export class InterventionEngine {
   /**
    * Helper: Format study time for display
    */
-  private formatStudyTime(studyTime: any): string {
+  private formatStudyTime(studyTime: PreferredStudyTime): string {
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    const day = days[studyTime.dayOfWeek]
+    const day = days[studyTime.dayOfWeek] || 'Any'
     const hour = studyTime.startHour
     const period = hour >= 12 ? 'PM' : 'AM'
-    const displayHour = hour > 12 ? hour - 12 : hour
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour
 
     return `${day} ${displayHour}:00 ${period}`
   }

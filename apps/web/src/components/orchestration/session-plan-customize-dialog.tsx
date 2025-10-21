@@ -169,7 +169,15 @@ export function SessionPlanCustomizeDialog({ open, onOpenChange, currentPlan, on
               <Brain className="size-4" style={{ color: 'oklch(0.6 0.05 230)' }} />
               Study Intensity
             </Label>
-            <RadioGroup value={intensity} onValueChange={(value) => setIntensity(value as any)}>
+            <RadioGroup
+              value={intensity}
+              onValueChange={(value) => {
+                // Type-safe intensity value setting
+                if (value === 'LOW' || value === 'MEDIUM' || value === 'HIGH') {
+                  setIntensity(value)
+                }
+              }}
+            >
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <label
                   htmlFor="intensity-low"

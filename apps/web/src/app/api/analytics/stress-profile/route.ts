@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
+import type { LearningStyleProfile } from '@/types/prisma-json'
 
 const prisma = new PrismaClient()
 
@@ -41,8 +42,25 @@ export async function GET(request: NextRequest) {
     }
 
     // Extract stress profile data from learningStyleProfile JSON
-    const learningStyle = (userProfile.learningStyleProfile as any) || {}
-    const stressProfile = learningStyle.stressProfile || {
+    const learningStyle = (userProfile.learningStyleProfile as unknown as LearningStyleProfile) || {
+      visual: 0.25,
+      auditory: 0.25,
+      reading: 0.25,
+      kinesthetic: 0.25,
+    }
+
+    // Stress profile is stored as extended properties on learningStyleProfile
+    interface ExtendedLearningStyle extends LearningStyleProfile {
+      stressProfile?: {
+        primaryStressors: string[]
+        avgRecoveryTime: number
+        copingStrategies: string[]
+      }
+      avgCognitiveLoad?: number
+    }
+
+    const extendedStyle = learningStyle as ExtendedLearningStyle
+    const stressProfile = extendedStyle.stressProfile || {
       primaryStressors: [],
       avgRecoveryTime: 24,
       copingStrategies: [],
@@ -51,9 +69,14 @@ export async function GET(request: NextRequest) {
     // Fetch stress-related patterns to enhance profile
     // Use BehavioralPattern as proxy for stress patterns
     // Wrap in try-catch for graceful degradation if table doesn't exist or query fails
-    let stressPatterns = []
+    interface PatternResult {
+      patternType: string
+      occurrenceCount: number
+      confidence: number
+    }
+    let stressPatterns: PatternResult[] = []
     try {
-      stressPatterns = await prisma.behavioralPattern.findMany({
+      const patterns = await prisma.behavioralPattern.findMany({
         where: {
           userId,
           confidence: { gte: 0.6 },
@@ -64,6 +87,11 @@ export async function GET(request: NextRequest) {
         orderBy: { occurrenceCount: 'desc' },
         take: 5,
       })
+      stressPatterns = patterns.map(p => ({
+        patternType: p.patternType,
+        occurrenceCount: p.occurrenceCount,
+        confidence: p.confidence,
+      }))
     } catch (error) {
       console.warn('Failed to fetch behavioral patterns, using defaults:', error)
       stressPatterns = []
@@ -98,10 +126,10 @@ export async function GET(request: NextRequest) {
       success: true,
       profileExists: true,
       primaryStressors,
-      loadTolerance: learningStyle.loadTolerance || 65,
-      avgCognitiveLoad: learningStyle.avgCognitiveLoad || null,
-      avgRecoveryTime: stressProfile.avgRecoveryTime || 24,
-      effectiveCopingStrategies: stressProfile.copingStrategies || [],
+      loadTolerance: learningStyle.loadTolerance ?? 65,
+      avgCognitiveLoad: extendedStyle.avgCognitiveLoad ?? null,
+      avgRecoveryTime: stressProfile.avgRecoveryTime ?? 24,
+      effectiveCopingStrategies: stressProfile.copingStrategies ?? [],
       profileConfidence,
       lastAnalyzedAt: userProfile.lastAnalyzedAt,
     })

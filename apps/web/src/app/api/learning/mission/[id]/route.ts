@@ -8,6 +8,7 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { withErrorHandler } from '@/lib/api-error'
+import { getMissionObjectives } from '@/types/mission-helpers'
 
 async function handler(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params
@@ -37,7 +38,7 @@ async function handler(request: NextRequest, context: { params: Promise<{ id: st
   }
 
   // Parse objectives from JSON
-  const objectives = mission.objectives as any[]
+  const objectives = getMissionObjectives(mission)
 
   return Response.json(
     successResponse({

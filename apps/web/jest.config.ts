@@ -7,14 +7,48 @@ const createJestConfig = nextJest({
 })
 
 // Add any custom config to be passed to Jest
-const config: Config = {
-  coverageProvider: 'v8',
-  testEnvironment: 'node', // Changed from jsdom to node for API route testing
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+const baseConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  testMatch: ['**/__tests__/**/*.test.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+  testPathIgnorePatterns: ['/node_modules/'],
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          jsx: 'react-jsx',
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+        },
+      },
+    ],
+  },
+}
+
+const config: Config = {
+  ...baseConfig,
+  testEnvironment: 'jsdom', // Default to jsdom for React components
+  setupFiles: ['<rootDir>/jest.setup-polyfills.ts'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  testMatch: ['<rootDir>/src/**/?(*.)+(spec|test).[jt]s?(x)'],
+  projects: [
+    {
+      displayName: 'jsdom',
+      testEnvironment: 'jsdom',
+      setupFiles: ['<rootDir>/jest.setup-polyfills.ts'],
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+      testMatch: ['<rootDir>/src/**/?(*.)+(spec|test).[jt]s?(x)'],
+      ...baseConfig,
+    },
+    {
+      displayName: 'node-api',
+      testEnvironment: 'node',
+      setupFilesAfterEnv: ['<rootDir>/jest.setup-node-api.ts'],
+      testMatch: ['<rootDir>/__tests__/api/**/*.test.[jt]s?(x)'],
+      ...baseConfig,
+    },
+  ],
   collectCoverageFrom: [
     'src/lib/**/*.{ts,tsx}',
     'src/components/**/*.{ts,tsx}',
@@ -40,22 +74,6 @@ const config: Config = {
     },
   },
   testTimeout: 10000,
-  transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        tsconfig: {
-          jsx: 'react-jsx',
-          esModuleInterop: true,
-          allowSyntheticDefaultImports: true,
-        },
-      },
-    ],
-  },
-  // MSW setup for API mocking
-  testEnvironmentOptions: {
-    customExportConditions: ['node', 'node-addons'],
-  },
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

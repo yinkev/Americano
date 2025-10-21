@@ -3,6 +3,9 @@ import { prisma } from '@/lib/db'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { withErrorHandler } from '@/lib/api-error'
 import { z } from 'zod'
+import { getMissionObjectives } from '@/types/mission-helpers'
+import { Prisma } from '@/generated/prisma'
+import type { MissionObjective } from '@/types/prisma-json'
 
 // Validation schemas
 const startSessionSchema = z.object({
@@ -32,9 +35,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   }
 
   // If missionId provided, load mission objectives (Story 2.5)
-  let missionObjectives: any = null
-  let currentObjective: any = null
-  let missionProgress: any = null
+  let missionObjectives: MissionObjective[] | null = null
+  let currentObjective: MissionObjective | null = null
+  let missionProgress: { completed: number; total: number } | null = null
 
   if (validatedData.missionId) {
     const mission = await prisma.mission.findUnique({
@@ -46,9 +49,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     }
 
     // mission.objectives is JSON array from Story 2.4
-    missionObjectives = mission.objectives as any[]
+    missionObjectives = getMissionObjectives(mission)
 
-    if (Array.isArray(missionObjectives) && missionObjectives.length > 0) {
+    if (missionObjectives.length > 0) {
       currentObjective = missionObjectives[0] // First objective
       missionProgress = {
         completed: 0,
@@ -64,8 +67,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       missionId: validatedData.missionId,
       startedAt: new Date(),
       currentObjectiveIndex: 0,
-      missionObjectives: missionObjectives,
-      objectiveCompletions: [],
+      missionObjectives: missionObjectives as unknown as Prisma.InputJsonValue,
+      objectiveCompletions: [] as unknown as Prisma.InputJsonValue,
     },
     include: {
       mission: true,

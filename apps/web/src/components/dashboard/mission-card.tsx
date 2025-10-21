@@ -94,6 +94,7 @@ export function MissionCard() {
     )
   }
 
+  // Extract objectives array directly from mission (already parsed)
   const objectives = getMissionObjectives(mission)
   const nextObjective = objectives.find((obj) => !obj.completed)
 
@@ -166,7 +167,7 @@ export function MissionCard() {
         {/* Objective List */}
         <div className="space-y-2">
           {objectives.slice(0, 3).map((obj, idx) => (
-            <div key={obj.objectiveId} className="flex items-start gap-2 text-sm">
+            <div key={obj.id} className="flex items-start gap-2 text-sm">
               <span
                 className={`flex-shrink-0 mt-0.5 ${
                   obj.completed ? 'text-success' : 'text-muted-foreground'

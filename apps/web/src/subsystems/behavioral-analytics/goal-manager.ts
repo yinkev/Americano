@@ -10,12 +10,18 @@
  */
 
 import { prisma } from '@/lib/db'
+import { Prisma } from '@/generated/prisma'
 import type {
   BehavioralGoal,
   BehavioralGoalType,
   GoalStatus,
   BehavioralPattern,
 } from '@/generated/prisma'
+import type {
+  PersonalizedForgettingCurve,
+  PreferredStudyTime,
+  GoalProgressEntry,
+} from '@/types/prisma-json'
 
 /**
  * Goal template for standardized goal creation
@@ -200,7 +206,7 @@ export class GoalManager {
         targetValue: input.targetValue,
         deadline: input.deadline,
         status: 'ACTIVE',
-        progressHistory: progressHistory as any,
+        progressHistory: progressHistory as unknown as Prisma.InputJsonValue,
       },
     })
 
@@ -275,7 +281,7 @@ export class GoalManager {
       where: { id: goalId },
       data: {
         currentValue,
-        progressHistory: progressHistory as any,
+        progressHistory: progressHistory as unknown as Prisma.InputJsonValue,
         ...(completed && {
           status: 'COMPLETED',
           completedAt: new Date(),
@@ -482,8 +488,8 @@ export class GoalManager {
       }
 
       case 'retentionHalfLifeDays': {
-        const curve = profile?.personalizedForgettingCurve as any
-        return curve?.halfLife || 0
+        const curve = profile?.personalizedForgettingCurve as unknown as PersonalizedForgettingCurve & { halfLife?: number } | null
+        return curve?.halfLife || curve?.stabilityFactor || 0
       }
 
       default:
@@ -497,7 +503,8 @@ export class GoalManager {
   private static calculatePeakHourSessions(sessions: any[], profile: any): number {
     if (!profile?.preferredStudyTimes) return 0
 
-    const peakHours = (profile.preferredStudyTimes as any[]).map((t) => t.startHour)
+    const times = profile.preferredStudyTimes as unknown as PreferredStudyTime[] | null
+    const peakHours = times?.map((t) => t.startHour) || []
     return sessions.filter((s) => {
       const hour = new Date(s.startedAt).getHours()
       return peakHours.includes(hour)
@@ -553,10 +560,14 @@ export class GoalManager {
 
     const notifData = messages[type]
 
+    /**
+     * @justification NotificationType enum doesn't include all goal-related types yet
+     * @todo Add GOAL_CREATED, GOAL_PROGRESS_25/50/75, GOAL_ACHIEVED to NotificationType enum in next schema update
+     */
     await prisma.insightNotification.create({
       data: {
         userId,
-        notificationType: type.replace('GOAL_CREATED', 'NEW_PATTERN') as any, // Map to enum
+        notificationType: type.replace('GOAL_CREATED', 'NEW_PATTERN') as any,
         title: notifData.title,
         message: notifData.message,
         priority: notifData.priority,

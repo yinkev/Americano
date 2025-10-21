@@ -29,6 +29,7 @@ import {
   StudySession,
 } from '@/generated/prisma'
 import { subDays, subWeeks, subMonths, differenceInDays } from 'date-fns'
+import type { FeatureVector } from '@/types/prisma-json'
 
 const prisma = new PrismaClient()
 
@@ -676,8 +677,8 @@ export class PredictionAccuracyTracker {
 
     // Pattern 1: Over-reliance on historical struggles
     const historicalStruggleErrors = errorPredictions.filter((p) => {
-      const features = p.featureVector as any
-      return features?.historicalStruggleScore > 0.7
+      const features = p.featureVector as unknown as FeatureVector | null
+      return (features?.historicalPerformance ?? 0) > 0.7
     })
 
     if (historicalStruggleErrors.length / errorPredictions.length > 0.4) {
@@ -704,8 +705,8 @@ export class PredictionAccuracyTracker {
 
     // Pattern 2: Complexity mismatch errors
     const complexityErrors = errorPredictions.filter((p) => {
-      const features = p.featureVector as any
-      return features?.complexityMismatch > 0.6
+      const features = p.featureVector as unknown as FeatureVector | null
+      return (features?.complexityMismatch ?? 0) > 0.6
     })
 
     if (complexityErrors.length / errorPredictions.length > 0.3) {
@@ -732,8 +733,8 @@ export class PredictionAccuracyTracker {
 
     // Pattern 3: Prerequisite gap errors
     const prerequisiteErrors = errorPredictions.filter((p) => {
-      const features = p.featureVector as any
-      return features?.prerequisiteGapCount > 0.5
+      const features = p.featureVector as unknown as FeatureVector | null
+      return (features?.prerequisiteGap ?? 0) > 0.5
     })
 
     if (prerequisiteErrors.length / errorPredictions.length > 0.35) {
@@ -783,15 +784,21 @@ export class PredictionAccuracyTracker {
     for (const featureName of featureNames) {
       // Calculate average feature value in false positives
       const fpValues = falsePositives
-        .map((p) => (p.featureVector as any)?.[featureName])
-        .filter((v) => v !== undefined)
+        .map((p) => {
+          const features = p.featureVector as unknown as FeatureVector | null
+          return features?.[featureName as keyof FeatureVector]
+        })
+        .filter((v): v is number => v !== undefined && v !== null)
       const fpAvg =
         fpValues.length > 0 ? fpValues.reduce((sum, v) => sum + v, 0) / fpValues.length : 0.5
 
       // Calculate average feature value in false negatives
       const fnValues = falseNegatives
-        .map((p) => (p.featureVector as any)?.[featureName])
-        .filter((v) => v !== undefined)
+        .map((p) => {
+          const features = p.featureVector as unknown as FeatureVector | null
+          return features?.[featureName as keyof FeatureVector]
+        })
+        .filter((v): v is number => v !== undefined && v !== null)
       const fnAvg =
         fnValues.length > 0 ? fnValues.reduce((sum, v) => sum + v, 0) / fnValues.length : 0.5
 

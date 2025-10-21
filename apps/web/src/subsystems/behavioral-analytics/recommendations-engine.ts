@@ -17,6 +17,11 @@ import type {
   InterventionRecommendation,
   RecommendationType,
 } from '@/generated/prisma'
+import type {
+  RecommendationBaselineMetrics,
+  RecommendationCurrentMetrics,
+  BehavioralPatternData,
+} from '@/types/prisma-json'
 
 /**
  * Recommendation template with scoring weights
@@ -371,8 +376,8 @@ export class RecommendationsEngine {
     const currentMetrics = await this.captureBaselineMetrics(applied.userId)
 
     // Calculate effectiveness (improvement percentage)
-    const baseline = applied.baselineMetrics as any
-    const current = currentMetrics as any
+    const baseline = applied.baselineMetrics as unknown as RecommendationBaselineMetrics
+    const current = currentMetrics as unknown as RecommendationCurrentMetrics
 
     const improvements = []
     if (baseline.behavioralScore && current.behavioralScore) {
@@ -419,7 +424,7 @@ export class RecommendationsEngine {
     const template = RECOMMENDATION_TEMPLATES[pattern.patternType]
     if (!template) return null
 
-    const evidence = pattern.evidence as any
+    const evidence = pattern.evidence as unknown as BehavioralPatternData & Record<string, unknown>
     const placeholders = this.extractPlaceholders(pattern, evidence)
 
     return {
@@ -518,36 +523,43 @@ export class RecommendationsEngine {
    */
   private static extractPlaceholders(
     pattern: BehavioralPattern,
-    evidence: any,
+    evidence: BehavioralPatternData & Record<string, unknown>,
   ): Record<string, string> {
     const placeholders: Record<string, string> = {}
 
     switch (pattern.patternType) {
       case 'OPTIMAL_STUDY_TIME':
-        placeholders.hourRange = `${evidence.hourOfDay}:00-${evidence.hourOfDay + 1}:00`
+        const hourOfDay = (evidence.hourOfDay as number) ?? 9
+        const timeOfDayScore = (evidence.timeOfDayScore as number) ?? 70
+        const sessionCount = (evidence.sessionCount as number) ?? 0
+        placeholders.hourRange = `${hourOfDay}:00-${hourOfDay + 1}:00`
         placeholders.performanceIncrease = Math.round(
-          ((evidence.timeOfDayScore - 70) / 70) * 100,
+          ((timeOfDayScore - 70) / 70) * 100,
         ).toString()
-        placeholders.sessionCount = evidence.sessionCount?.toString() || '0'
+        placeholders.sessionCount = sessionCount.toString()
         break
 
       case 'SESSION_DURATION_PREFERENCE':
-        placeholders.duration = evidence.recommendedDuration?.toString() || '45'
+        const recommendedDuration = (evidence.recommendedDuration as number) ?? 45
+        placeholders.duration = recommendedDuration.toString()
         placeholders.completionRate = '85' // Placeholder
         break
 
       case 'CONTENT_TYPE_PREFERENCE':
-        placeholders.contentType = evidence.topContentType || 'flashcards'
-        placeholders.targetPercentage = Math.round((evidence.effectiveness || 0.5) * 100).toString()
-        placeholders.effectiveness = Math.round((evidence.effectiveness || 0.5) * 100).toString()
+        const topContentType = (evidence.topContentType as string) ?? 'flashcards'
+        const effectiveness = (evidence.effectiveness as number) ?? 0.5
+        placeholders.contentType = topContentType
+        placeholders.targetPercentage = Math.round(effectiveness * 100).toString()
+        placeholders.effectiveness = Math.round(effectiveness * 100).toString()
         break
 
       case 'FORGETTING_CURVE':
-        const halfLife = evidence.halfLife || 5
+        const halfLife = (evidence.halfLife as number) ?? 5
+        const k = (evidence.k as number) ?? 0.14
         placeholders.halfLife = halfLife.toString()
         placeholders.reviewDays = Math.round(halfLife * 0.7).toString()
         placeholders.deviationPercent = '15' // Placeholder
-        placeholders.fasterSlower = evidence.k > 0.14 ? 'faster' : 'slower'
+        placeholders.fasterSlower = k > 0.14 ? 'faster' : 'slower'
         break
     }
 

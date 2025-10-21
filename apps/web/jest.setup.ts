@@ -1,5 +1,40 @@
 import '@testing-library/jest-dom'
 
+// Polyfill Web APIs needed by next/server in jsdom environment
+const { TextEncoder, TextDecoder } = require('util')
+const { ReadableStream } = require('web-streams-polyfill/ponyfill')
+
+Object.assign(global, {
+  TextEncoder,
+  TextDecoder,
+  ReadableStream,
+})
+
+// Mock fetch if not available
+if (typeof (global as any).fetch === 'undefined') {
+  (global as any).fetch = jest.fn(() =>
+    Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({}),
+      text: () => Promise.resolve(''),
+      blob: () => Promise.resolve(new Blob()),
+    }),
+  )
+}
+
+// Mock crypto for next/server
+if (typeof (global as any).crypto === 'undefined') {
+  (global as any).crypto = {
+    getRandomValues: (arr: Uint8Array) => {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = Math.floor(Math.random() * 256)
+      }
+      return arr
+    },
+  }
+}
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
@@ -21,57 +56,13 @@ jest.mock('next/navigation', () => ({
   },
 }))
 
-// Mock Prisma Client
-jest.mock('@/lib/db', () => ({
-  prisma: {
-    mission: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      count: jest.fn(),
-      aggregate: jest.fn(),
-      groupBy: jest.fn(),
-    },
-    missionFeedback: {
-      findMany: jest.fn(),
-      findFirst: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      aggregate: jest.fn(),
-    },
-    missionAnalytics: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      upsert: jest.fn(),
-    },
-    missionReview: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-    },
-    user: {
-      findUnique: jest.fn(),
-      update: jest.fn(),
-      create: jest.fn(),
-    },
-    userPreferences: {
-      findUnique: jest.fn(),
-      upsert: jest.fn(),
-    },
-    $transaction: jest.fn((callback) =>
-      callback({
-        mission: {
-          findMany: jest.fn(),
-          findUnique: jest.fn(),
-          create: jest.fn(),
-          update: jest.fn(),
-        },
-      }),
-    ),
+// Note: @/lib/db is mocked per-test to allow test-specific mock configurations
+// Global mock conflicts with jest-mock-extended factories used in individual tests
+
+// Mock PerformanceCalculator
+jest.mock('@/lib/performance-calculator', () => ({
+  PerformanceCalculator: {
+    calculateRetentionScore: jest.fn(),
   },
 }))
 
@@ -91,6 +82,15 @@ jest.mock('@prisma/client', () => ({
   },
   Prisma: {
     ModelName: {},
+  },
+}))
+
+// Mock generated Prisma types
+jest.mock('@/generated/prisma', () => ({
+  ObjectiveComplexity: {
+    BASIC: 'BASIC',
+    INTERMEDIATE: 'INTERMEDIATE',
+    ADVANCED: 'ADVANCED',
   },
 }))
 

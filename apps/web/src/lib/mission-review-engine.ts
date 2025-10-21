@@ -9,7 +9,7 @@
  */
 
 import { prisma } from '@/lib/db'
-import { MissionStatus, ReviewPeriod } from '@/generated/prisma'
+import { MissionStatus, ReviewPeriod, Prisma } from '@/generated/prisma'
 import { MissionAnalyticsEngine } from './mission-analytics-engine'
 import { MissionInsightsEngine } from './mission-insights-engine'
 
@@ -153,10 +153,10 @@ export class MissionReviewEngine {
         period: ReviewPeriod.WEEK,
         startDate,
         endDate,
-        summary: summary as any,
-        highlights: highlights as any,
-        insights: insights as any,
-        recommendations: recommendations as any,
+        summary: summary as unknown as Prisma.InputJsonValue,
+        highlights: highlights as unknown as Prisma.InputJsonValue,
+        insights: insights as unknown as Prisma.InputJsonValue,
+        recommendations: recommendations as unknown as Prisma.InputJsonValue,
       },
     })
 
@@ -240,10 +240,10 @@ export class MissionReviewEngine {
         period: ReviewPeriod.MONTH,
         startDate,
         endDate,
-        summary: summary as any,
-        highlights: highlights as any,
-        insights: insights as any,
-        recommendations: recommendations as any,
+        summary: summary as unknown as Prisma.InputJsonValue,
+        highlights: highlights as unknown as Prisma.InputJsonValue,
+        insights: insights as unknown as Prisma.InputJsonValue,
+        recommendations: recommendations as unknown as Prisma.InputJsonValue,
       },
     })
 

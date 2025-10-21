@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { withErrorHandler, ApiError } from '@/lib/api-error'
+import { getMissionObjectives } from '@/types/mission-helpers'
 
 // GET /api/learning/sessions/:id - Get a specific session
 export const GET = withErrorHandler(
@@ -53,8 +54,8 @@ export const GET = withErrorHandler(
     // Parse mission objectives and fetch learning objective details
     let enrichedMission = null
     if (session.mission) {
-      const missionObjectives = session.mission.objectives as any[]
-      const objectiveIds = missionObjectives.map((obj: any) => obj.objectiveId)
+      const missionObjectives = getMissionObjectives(session.mission)
+      const objectiveIds = missionObjectives.map((obj) => obj.id)
 
       // Fetch learning objectives
       const learningObjectives = await prisma.learningObjective.findMany({
@@ -74,9 +75,9 @@ export const GET = withErrorHandler(
       const objectiveMap = new Map(learningObjectives.map((obj) => [obj.id, obj]))
 
       // Enrich mission objectives with learning objective details
-      const enrichedObjectives = missionObjectives.map((missionObj: any) => ({
+      const enrichedObjectives = missionObjectives.map((missionObj) => ({
         ...missionObj,
-        objective: objectiveMap.get(missionObj.objectiveId) || null,
+        objective: objectiveMap.get(missionObj.id) || null,
       }))
 
       enrichedMission = {

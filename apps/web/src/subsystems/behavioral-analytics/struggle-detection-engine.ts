@@ -12,7 +12,7 @@
  * Runs as daily batch job (11 PM) or on-demand
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { PrismaClient, Prisma } from '@/generated/prisma'
 import {
   StrugglePrediction,
   StruggleIndicator,
@@ -28,6 +28,8 @@ import {
 import { addDays, subDays } from 'date-fns'
 import { StruggleFeatureExtractor } from './struggle-feature-extractor'
 import { StrugglePredictionModel } from './struggle-prediction-model'
+import { getMissionObjectives, getSessionMissionObjectives } from '@/types/mission-helpers'
+import type { FeatureVector } from '@/types/prisma-json'
 
 const prisma = new PrismaClient()
 
@@ -76,8 +78,8 @@ export class StruggleDetectionEngine {
     // Extract objectives from missions
     const objectiveIds: string[] = []
     for (const mission of upcomingMissions) {
-      const objectives = mission.objectives as any[]
-      objectiveIds.push(...objectives.map((o: any) => o.objectiveId))
+      const objectives = getMissionObjectives(mission)
+      objectiveIds.push(...objectives.map((o) => o.id))
     }
 
     // Also include objectives not yet in missions (next to be scheduled)
@@ -343,11 +345,12 @@ export class StruggleDetectionEngine {
     const createdIndicators: StruggleIndicator[] = []
 
     // Extract top features from feature vector (simplified for MVP)
-    const topFeatureNames = ['retentionScore', 'prerequisiteGapCount', 'complexityMismatch']
+    const featureVec = features as unknown as FeatureVector
+    const topFeatureNames: Array<keyof FeatureVector> = ['retentionScore', 'prerequisiteGap', 'complexityMismatch']
     const topFeatures = topFeatureNames
       .map(name => ({
-        name,
-        value: (features as any)[name] ?? 0.5,
+        name: String(name),
+        value: featureVec[name] ?? 0.5,
       }))
       .filter(f => f.value > 0.5)
       .slice(0, 3)
@@ -386,11 +389,11 @@ export class StruggleDetectionEngine {
         topicId: objective.lecture.course.id,
         predictedStruggleProbability: prediction.probability,
         predictionConfidence: prediction.confidence,
-        featureVector: features as any,
+        featureVector: features as unknown as Prisma.InputJsonValue,
         strugglingFactors: {
           indicators: createdIndicators.map(i => i.indicatorType),
           confidence: prediction.confidence,
-        },
+        } as unknown as Prisma.InputJsonValue,
         predictionStatus: PredictionStatus.PENDING,
       },
     })
@@ -578,14 +581,14 @@ export class StruggleDetectionEngine {
    * Helper: Get current objective being studied in session
    */
   private async getCurrentSessionObjective(session: any): Promise<any | null> {
-    const objectives = session.missionObjectives as any[]
+    const objectives = getSessionMissionObjectives(session.missionObjectives)
 
     if (!objectives || objectives.length === 0) {
       return null
     }
 
     const currentIndex = session.currentObjectiveIndex || 0
-    const currentObjectiveId = objectives[currentIndex]?.objectiveId
+    const currentObjectiveId = objectives[currentIndex]?.id
 
     if (!currentObjectiveId) {
       return null
@@ -645,8 +648,8 @@ export class StruggleDetectionEngine {
       const daysUntilDue = await this.calculateDaysUntilDue(prediction)
 
       // Calculate cognitive load from feature vector
-      const featureVector = prediction.featureVector as any
-      const cognitiveLoad = featureVector?.cognitiveLoadIndicator || 0.5
+      const featureVector = prediction.featureVector as unknown as FeatureVector | null
+      const cognitiveLoad = featureVector?.cognitiveLoad ?? 0.5
 
       // Priority formula: urgency(0.4) + confidence(0.3) + severity(0.2) + cognitiveLoad(0.1)
       const urgency = 1 - Math.min(daysUntilDue / 3, 1) // Normalize to 0-1 (3 days max)
@@ -750,9 +753,9 @@ export class StruggleDetectionEngine {
 
     // Find mission containing this objective
     for (const mission of missions) {
-      const objectives = mission.objectives as any[]
+      const objectives = getMissionObjectives(mission)
       const hasObjective = objectives.some(
-        (o: any) => o.objectiveId === prediction.learningObjectiveId,
+        (o) => o.id === prediction.learningObjectiveId,
       )
 
       if (hasObjective) {

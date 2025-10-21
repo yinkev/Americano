@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { successResponse } from '@/lib/api-response'
 import { withErrorHandler, ApiError } from '@/lib/api-error'
 import { PerformanceCalculator } from '@/lib/performance-calculator'
+import { getObjectiveCompletions, getSessionMissionObjectives } from '@/types/mission-helpers'
 import { z } from 'zod'
 
 /**
@@ -77,8 +78,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     sessions.map(async (session) => {
       const analytics = await PerformanceCalculator.calculateSessionAnalytics(session.id)
 
-      const objectiveCompletions = (session.objectiveCompletions || []) as any[]
-      const missionObjectives = (session.missionObjectives || []) as any[]
+      const objectiveCompletions = getObjectiveCompletions(session.objectiveCompletions)
+      const missionObjectives = getSessionMissionObjectives(session.missionObjectives)
 
       return {
         sessionId: session.id,

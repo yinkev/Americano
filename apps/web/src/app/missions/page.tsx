@@ -4,6 +4,9 @@ import { Calendar, Clock, Target, CheckCircle2 } from 'lucide-react'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 
+// Force dynamic rendering since this page requires database access
+export const dynamic = 'force-dynamic'
+
 interface MissionListItem {
   id: string
   date: Date
@@ -44,8 +47,12 @@ export default async function MissionsPage() {
   const avgObjectives =
     missions.length > 0
       ? missions.reduce((sum, m) => {
-          const objs = JSON.parse(m.objectives as string) as Array<unknown>
-          return sum + objs.length
+          try {
+            const objs = JSON.parse(m.objectives as string) as Array<unknown>
+            return sum + objs.length
+          } catch {
+            return sum
+          }
         }, 0) / missions.length
       : 0
 
@@ -116,10 +123,15 @@ export default async function MissionsPage() {
             ) : (
               <div className="space-y-3">
                 {missions.map((mission) => {
-                  const objectives = JSON.parse(mission.objectives as string) as Array<{
-                    objectiveId: string
-                    completed: boolean
-                  }>
+                  let objectives: Array<{ objectiveId: string; completed: boolean }> = []
+                  try {
+                    objectives = JSON.parse(mission.objectives as string) as Array<{
+                      objectiveId: string
+                      completed: boolean
+                    }>
+                  } catch {
+                    objectives = []
+                  }
                   const completedCount =
                     mission.completedObjectivesCount || objectives.filter((o) => o.completed).length
                   const totalCount = objectives.length

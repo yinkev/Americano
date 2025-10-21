@@ -1,0 +1,171 @@
+================================================================================
+                    EPIC 3, 4, 5 MODEL COMPARISON
+================================================================================
+
+EPIC 3: Knowledge Graph & Semantic Search (21 models) - REMOVED BY EPIC 4
+--------------------------------------------------------------------------------
+FirstAid Integration (7):
+  ✓ FirstAidSection
+  ✓ FirstAidGuideline  
+  ✓ FirstAidConceptMapping
+  ✓ FirstAidVersion
+  ✓ FirstAidEdition
+  ✓ LectureFirstAidMapping
+  ✓ Concept (shared)
+
+Semantic Search (6):
+  ✓ SearchQuery
+  ✓ SearchClick
+  ✓ SearchSuggestion
+  ✓ SavedSearch
+  ✓ SearchAlert
+  ✓ SearchAnalytics
+
+Recommendations (3):
+  ✓ ContentRecommendation
+  ✓ RecommendationFeedback
+  ✓ RecommendationAnalytics
+
+Conflict Management (5):
+  ✓ Conflict
+  ✓ ConflictResolution
+  ✓ ConflictHistory
+  ✓ ConflictFlag
+  ✓ Source
+  ✓ UserSourcePreference
+
+================================================================================
+EPIC 4: Understanding Validation Engine (15 models) - ON MAIN
+--------------------------------------------------------------------------------
+Clinical Validation (3):
+  ✓ ClinicalScenario
+  ✓ ScenarioResponse
+  ✓ ClinicalReasoningMetric
+
+Calibration & Benchmarking (3):
+  ✓ CalibrationMetric
+  ✓ PeerBenchmark
+  ✓ MasteryVerification
+
+Adaptive Learning (2):
+  ✓ AdaptiveSession
+  ✓ UnderstandingPrediction
+
+Failure Analysis (2):
+  ✓ ControlledFailure
+  ✓ FailurePattern
+
+Behavioral Insights (3): ⚠️ CONFLICTS WITH EPIC 5
+  ⚠️ BehavioralPattern (Epic 4 version)
+  ⚠️ BehavioralInsight (Epic 4 version)
+  ✓ InsightPattern
+
+User Profiles (2):
+  ✓ UserLearningProfile
+  ✓ DailyInsight
+
+================================================================================
+EPIC 5: Behavioral Twin Engine (33 models) - NOT YET MERGED
+--------------------------------------------------------------------------------
+Behavioral Analytics (4): ⚠️ CONFLICTS WITH EPIC 4
+  ⚠️ BehavioralPattern (Epic 5 version - different)
+  ⚠️ BehavioralInsight (Epic 5 version - different)
+  ✓ BehavioralGoal
+  ✓ StressResponsePattern
+
+Struggle Detection (3):
+  ✓ StruggleIndicator
+  ✓ StrugglePrediction
+  ✓ BurnoutRiskAssessment
+
+Personalization Engine (6):
+  ✓ PersonalizationConfig
+  ✓ PersonalizationPreferences
+  ✓ PersonalizationExperiment
+  ✓ PersonalizationEffectiveness
+  ✓ PersonalizationOutcome
+  ✓ ExperimentAssignment
+
+Recommendations & Interventions (4):
+  ✓ Recommendation
+  ✓ InterventionRecommendation
+  ✓ AppliedRecommendation
+  ✓ InsightNotification
+
+Learning Resources (2):
+  ✓ LearningArticle
+  ✓ ArticleRead
+
+Session Orchestration (3):
+  ✓ SessionOrchestrationPlan
+  ✓ ScheduleAdaptation
+  ✓ StudyScheduleRecommendation
+
+Cognitive Monitoring (2):
+  ✓ CognitiveLoadMetric
+  ✓ CalendarIntegration
+
+Conflict Tracking (4): 🔄 SIMILAR TO EPIC 3
+  ✓ conflicts (lowercase)
+  ✓ conflict_resolutions
+  ✓ conflict_history
+  ✓ conflict_flags
+
+Content & Search (5): 🔄 SIMILAR TO EPIC 3
+  ✓ content_recommendations
+  ✓ recommendation_analytics
+  ✓ recommendation_feedback
+  ✓ search_queries
+  ✓ search_clicks
+
+Sources (2): 🔄 SIMILAR TO EPIC 3
+  ✓ sources
+  ✓ user_source_preferences
+
+================================================================================
+CONFLICT RESOLUTION STRATEGY
+================================================================================
+
+⚠️ NAMING CONFLICTS (2):
+  - BehavioralPattern: Epic 4 vs Epic 5 (different schemas)
+  - BehavioralInsight: Epic 4 vs Epic 5 (different schemas)
+
+RECOMMENDATION:
+  Epic 4: Rename to UnderstandingPattern / DailyUnderstandingInsight
+  Epic 5: Keep BehavioralPattern / BehavioralInsight (more comprehensive)
+
+🔄 FUNCTIONAL OVERLAPS (Epic 3 vs Epic 5):
+  - Both have conflict tracking
+  - Both have search analytics
+  - Both have recommendation systems
+  - Epic 5 versions use lowercase/snake_case naming
+
+RECOMMENDATION:
+  Keep Epic 5 versions (newer, more comprehensive)
+  Archive Epic 3 versions if no production data
+
+================================================================================
+TOTAL MODEL COUNT AFTER RECONCILIATION
+================================================================================
+
+Epic 3 Models to Keep:    7  (FirstAid only, if needed)
+Epic 4 Models to Rename:  2  (BehavioralPattern → UnderstandingPattern)
+Epic 4 Models to Keep:   13  (Remaining Epic 4)
+Epic 5 Models to Keep:   33  (All Epic 5 models)
+─────────────────────────────
+TOTAL:                   55  models (if Epic 3 FirstAid restored)
+                         48  models (if Epic 3 excluded)
+
+================================================================================
+DECISION REQUIRED: Epic 3 FirstAid Integration
+================================================================================
+
+CHECK PRODUCTION STATUS:
+  [ ] Are FirstAid tables populated in production DB?
+  [ ] Are semantic search features actively used?
+  [ ] Are there any FirstAid API routes still active?
+
+IF YES → Restore FirstAid models (7 models)
+IF NO  → Skip Epic 3 entirely (save 21 models)
+
+================================================================================

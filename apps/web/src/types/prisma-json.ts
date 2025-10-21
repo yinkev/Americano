@@ -31,12 +31,15 @@ export interface MissionObjective {
 
 export interface ObjectiveCompletion {
   objectiveId: string;
-  completed: boolean;
+  completed?: boolean; // Optional for when pushed to array during completion
   completedAt?: string;
   confidence?: number;
+  confidenceRating?: number; // Session-level confidence rating (1-5)
+  selfAssessment?: number; // Session-level self-assessment (1-5)
   timeSpentMs?: number;
   cardsReviewed?: number;
   averageRating?: number;
+  notes?: string; // Optional notes from session completion
 }
 
 // ============================================

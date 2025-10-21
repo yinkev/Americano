@@ -6,6 +6,7 @@
 
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { Prisma } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
 import { MissionGenerator } from '@/lib/mission-generator'
 import { successResponse, errorResponse } from '@/lib/api-response'
@@ -66,7 +67,7 @@ async function handler(request: NextRequest, context: { params: Promise<{ id: st
       date: existingMission.date,
       status: 'PENDING',
       estimatedMinutes: generatedMission.estimatedMinutes,
-      objectives: generatedMission.objectives as any, // JSON
+      objectives: generatedMission.objectives as unknown as Prisma.InputJsonValue,
       reviewCardCount: generatedMission.reviewCardCount,
       newContentCount: generatedMission.newContentCount,
       completedObjectivesCount: 0,

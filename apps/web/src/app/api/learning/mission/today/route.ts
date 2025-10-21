@@ -10,6 +10,8 @@ import { MissionGenerator } from '@/lib/mission-generator'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { withErrorHandler } from '@/lib/api-error'
 import type { MissionProgress } from '@/types/mission'
+import { getMissionObjectives } from '@/types/mission-helpers'
+import { Prisma } from '@/generated/prisma'
 
 async function handler(request: NextRequest) {
   // Get user from header (MVP: hardcoded to kevy@americano.dev)
@@ -48,7 +50,7 @@ async function handler(request: NextRequest) {
         date: today,
         status: 'PENDING',
         estimatedMinutes: generatedMission.estimatedMinutes,
-        objectives: generatedMission.objectives as any, // JSON
+        objectives: generatedMission.objectives as unknown as Prisma.InputJsonValue,
         reviewCardCount: generatedMission.reviewCardCount,
         newContentCount: generatedMission.newContentCount,
         completedObjectivesCount: 0,
@@ -57,7 +59,7 @@ async function handler(request: NextRequest) {
   }
 
   // Parse objectives from JSON
-  const objectives = mission.objectives as any[]
+  const objectives = getMissionObjectives(mission)
 
   // Calculate progress
   const completedCount = objectives.filter((obj) => obj.completed).length

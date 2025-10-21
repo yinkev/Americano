@@ -131,6 +131,36 @@ interface PreferredStudyTime {
   endHour: number // 0-23
 }
 
+/**
+ * Extended learning objective with related data from Prisma query
+ * Used internally for mission generation logic
+ */
+interface ExtendedLearningObjective extends LearningObjective {
+  lecture?: {
+    id: string
+    title: string
+    courseId: string
+    course?: {
+      name: string
+    }
+  }
+  cards?: Array<{
+    id: string
+    nextReviewAt: Date | null
+    lapseCount: number
+    reviewCount: number
+  }>
+}
+
+/**
+ * Internal prioritized objective with extended data
+ */
+interface ExtendedPrioritizedObjective {
+  objective: ExtendedLearningObjective
+  priorityScore: number
+  reason: string
+}
+
 export class MissionGenerator {
   /**
    * Generate a daily mission for a user with behavioral personalization
@@ -363,9 +393,9 @@ export class MissionGenerator {
    * @returns Re-prioritized objectives with content mix adjustments
    */
   private applyContentMixPersonalization(
-    objectives: PrioritizedObjective[],
+    objectives: ExtendedPrioritizedObjective[],
     profile: UserLearningProfile | null,
-  ): PrioritizedObjective[] {
+  ): ExtendedPrioritizedObjective[] {
     if (!profile || !profile.learningStyleProfile) {
       return objectives // No personalization if profile missing
     }
@@ -382,7 +412,8 @@ export class MissionGenerator {
     return objectives
       .map((prioritized) => {
         let boostedScore = prioritized.priorityScore
-        const objective = prioritized.objective as any
+        // Type-safe access to objective properties
+        const objective = prioritized.objective
 
         // Boost clinical reasoning objectives for kinesthetic learners
         if (kinestheticBoost > 0 && this.isClinicalReasoningObjective(objective)) {
@@ -409,7 +440,7 @@ export class MissionGenerator {
    * @param objective Learning objective
    * @returns True if clinical reasoning objective
    */
-  private isClinicalReasoningObjective(objective: any): boolean {
+  private isClinicalReasoningObjective(objective: LearningObjective): boolean {
     const clinicalKeywords = ['clinical', 'diagnosis', 'treatment', 'patient', 'case']
     const objectiveText = objective.objective?.toLowerCase() || ''
     const tags = objective.boardExamTags || []
@@ -427,7 +458,7 @@ export class MissionGenerator {
    * @param objective Learning objective
    * @returns True if visual content available
    */
-  private hasVisualContent(objective: any): boolean {
+  private hasVisualContent(objective: LearningObjective): boolean {
     const visualKeywords = ['anatomy', 'structure', 'pathway', 'diagram', 'graph', 'chart']
     const objectiveText = objective.objective?.toLowerCase() || ''
 
@@ -548,7 +579,7 @@ export class MissionGenerator {
       includeWeakAreas: boolean
       limit: number
     },
-  ): Promise<PrioritizedObjective[]> {
+  ): Promise<ExtendedPrioritizedObjective[]> {
     // Get all learning objectives for user with related cards
     const objectives = await prisma.learningObjective.findMany({
       where: {
@@ -675,7 +706,7 @@ export class MissionGenerator {
    * @returns Composed objectives with interventions applied
    */
   private async composePredictionAwareMission(
-    prioritized: PrioritizedObjective[],
+    prioritized: ExtendedPrioritizedObjective[],
     constraints: {
       targetMinutes: number
       minObjectives: number
@@ -707,7 +738,7 @@ export class MissionGenerator {
       const prediction = predictionMap.get(objective.id)
 
       // Estimate time for this objective (with profile adjustments)
-      let estimatedMinutes = this.estimateObjectiveTime(objective as any, profile)
+      let estimatedMinutes = this.estimateObjectiveTime(objective, profile)
 
       // Task 12.2: Apply prediction-aware modulations
       if (prediction) {
@@ -752,8 +783,7 @@ export class MissionGenerator {
       }
 
       // Variety constraint: max 1 objective per course (avoid fatigue)
-      const objectiveData = objective as any
-      const courseId = objectiveData?.lecture?.courseId
+      const courseId = objective?.lecture?.courseId
       if (courseId && usedCourses.has(courseId) && selected.length >= minObjectives) {
         continue // Skip if already have objective from this course
       }
@@ -761,7 +791,7 @@ export class MissionGenerator {
       // Add to mission (with prediction context if available)
       selected.push({
         objectiveId: objective.id,
-        objective: objective as any,
+        objective: objective,
         estimatedMinutes,
         completed: false,
         predictionId: prediction?.id,
@@ -806,7 +836,7 @@ export class MissionGenerator {
    * @deprecated Use composePredictionAwareMission for Story 5.2+
    */
   private composeMissionObjectives(
-    prioritized: PrioritizedObjective[],
+    prioritized: ExtendedPrioritizedObjective[],
     constraints: {
       targetMinutes: number
       minObjectives: number
@@ -824,7 +854,7 @@ export class MissionGenerator {
       if (selected.length >= maxObjectives) break
 
       // Estimate time for this objective (with profile adjustments)
-      const estimatedMinutes = this.estimateObjectiveTime(objective as any, profile)
+      const estimatedMinutes = this.estimateObjectiveTime(objective, profile)
 
       // Check if adding this would exceed target (but allow if under min)
       if (
@@ -835,8 +865,7 @@ export class MissionGenerator {
       }
 
       // Variety constraint: max 1 objective per course (avoid fatigue)
-      const objectiveData = objective as any
-      const courseId = objectiveData?.lecture?.courseId
+      const courseId = objective?.lecture?.courseId
       if (courseId && usedCourses.has(courseId) && selected.length >= minObjectives) {
         continue // Skip if already have objective from this course
       }
@@ -844,7 +873,7 @@ export class MissionGenerator {
       // Add to mission
       selected.push({
         objectiveId: objective.id,
-        objective: objective as any,
+        objective: objective,
         estimatedMinutes,
         completed: false,
       })
@@ -884,12 +913,12 @@ export class MissionGenerator {
    * Based on complexity + mastery level + ADVANCED buffer
    * Accounts for attention cycle patterns from profile
    *
-   * @param objective Learning objective
+   * @param objective Learning objective (may include extended data)
    * @param profile User learning profile (nullable)
    * @returns Estimated time in minutes
    */
   private estimateObjectiveTime(
-    objective: LearningObjective,
+    objective: ExtendedLearningObjective,
     profile: UserLearningProfile | null = null,
   ): number {
     const baseTime = COMPLEXITY_TIME_MAP[objective.complexity]
@@ -903,8 +932,8 @@ export class MissionGenerator {
       MASTERED: 0.7, // -30% time (quick review)
     }
 
-    const masteryLevel = (objective as any).masteryLevel || 'INTERMEDIATE'
-    const adjustment = masteryAdjustments[masteryLevel] || 1.0
+    // masteryLevel is defined in LearningObjective base type
+    const adjustment = masteryAdjustments[objective.masteryLevel] || 1.0
 
     let estimatedTime = Math.round(baseTime * adjustment)
 

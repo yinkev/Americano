@@ -10,6 +10,7 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
+import { getObjectiveCompletions } from '@/types/mission-helpers'
 
 // Zod validation schema for query parameters
 const HeatmapQuerySchema = z.object({
@@ -66,7 +67,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   sessions.forEach((session) => {
     if (session.objectiveCompletions) {
-      const completions = session.objectiveCompletions as any[]
+      const completions = getObjectiveCompletions(session.objectiveCompletions)
       const totalObjectives = completions.length
       const completedObjectives = completions.filter((c) => c.completedAt).length
 

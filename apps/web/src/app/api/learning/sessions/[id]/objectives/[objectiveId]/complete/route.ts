@@ -1,7 +1,9 @@
 import { NextRequest } from 'next/server'
+import { Prisma } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { withErrorHandler } from '@/lib/api-error'
+import { getSessionMissionObjectives, getObjectiveCompletions, getMissionObjectives } from '@/types/mission-helpers'
 import { z } from 'zod'
 
 const completeObjectiveSchema = z.object({
@@ -48,8 +50,8 @@ export async function POST(
     }
 
     // Get current mission objectives snapshot
-    const missionObjectives = (session.missionObjectives || []) as any[]
-    const objectiveCompletions = (session.objectiveCompletions || []) as any[]
+    const missionObjectives = getSessionMissionObjectives(session.missionObjectives)
+    const objectiveCompletions = getObjectiveCompletions(session.objectiveCompletions)
 
     // Add completion record
     objectiveCompletions.push({
@@ -70,15 +72,15 @@ export async function POST(
       where: { id: resolvedParams.id },
       data: {
         currentObjectiveIndex: newIndex,
-        objectiveCompletions: objectiveCompletions,
+        objectiveCompletions: objectiveCompletions as unknown as Prisma.InputJsonValue,
       },
     })
 
     // Update mission objective completion status if mission exists
     if (session.missionId && session.mission) {
-      const missionObjectivesData = (session.mission.objectives || []) as any[]
-      const updatedMissionObjectives = missionObjectivesData.map((obj: any) => {
-        if (obj.objectiveId === resolvedParams.objectiveId) {
+      const missionObjectivesData = getMissionObjectives(session.mission)
+      const updatedMissionObjectives = missionObjectivesData.map((obj) => {
+        if (obj.id === resolvedParams.objectiveId) {
           return {
             ...obj,
             completed: true,
@@ -91,8 +93,8 @@ export async function POST(
       await prisma.mission.update({
         where: { id: session.missionId },
         data: {
-          objectives: updatedMissionObjectives,
-          completedObjectivesCount: updatedMissionObjectives.filter((o: any) => o.completed).length,
+          objectives: updatedMissionObjectives as unknown as Prisma.InputJsonValue,
+          completedObjectivesCount: updatedMissionObjectives.filter((o) => o.completed).length,
         },
       })
     }

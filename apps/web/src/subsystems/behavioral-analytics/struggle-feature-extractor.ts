@@ -26,6 +26,7 @@ import {
   ReviewRating,
 } from '@/generated/prisma'
 import { subDays, differenceInDays } from 'date-fns'
+import type { LearningStyleProfile, ContentPreferences, BehavioralPatternData, EventData } from '@/types/prisma-json'
 
 /**
  * Feature vector with 15+ normalized features (0-1 scale)
@@ -520,8 +521,8 @@ export class StruggleFeatureExtractor {
     if (strugglePatterns.length > 0) {
       // Check if evidence includes this topic area
       const relevantPatterns = strugglePatterns.filter((p) => {
-        const evidence = p.evidence as any
-        return evidence.topicArea === topicArea || evidence.courseId === objective.lecture.courseId
+        const evidence = p.evidence as unknown as BehavioralPatternData & Record<string, unknown>
+        return (evidence.topicArea as string) === topicArea || (evidence.courseId as string) === objective.lecture.courseId
       })
 
       if (relevantPatterns.length > 0) {
@@ -537,12 +538,13 @@ export class StruggleFeatureExtractor {
 
     let contentTypeMismatch = 0 // Default (no mismatch)
     if (learningProfile) {
-      const styleProfile = learningProfile.learningStyleProfile as any
-      const contentPrefs = learningProfile.contentPreferences as any
+      const styleProfile = learningProfile.learningStyleProfile as unknown as LearningStyleProfile | null
+      const contentPrefs = learningProfile.contentPreferences as unknown as ContentPreferences | null
 
       // For MVP, assume lecture-based objectives match "reading" style
       // Visual learners may struggle with text-heavy content
-      if (styleProfile.visual > 0.5 && contentPrefs.lectures > 0.4) {
+      const lecturePreference = (contentPrefs?.preferredTypes?.includes('lectures')) ? 0.8 : 0.2
+      if ((styleProfile?.visual || 0) > 0.5 && lecturePreference > 0.4) {
         contentTypeMismatch = 0.6 // Moderate mismatch
       }
     }

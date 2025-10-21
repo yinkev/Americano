@@ -10,7 +10,7 @@
  */
 
 import { prisma } from '@/lib/db'
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@/generated/prisma'
 import type {
   BehavioralPattern,
   BehavioralInsight,
@@ -18,6 +18,8 @@ import type {
   BehavioralPatternType,
   InsightType,
 } from '@/generated/prisma'
+
+type JsonValue = Prisma.JsonValue
 import type {
   BehavioralPatternData,
   LearningStyleProfile,
@@ -302,7 +304,7 @@ export class BehavioralPatternEngine {
                 patternData: {
                   ...evidenceData,
                   consecutiveNonOccurrences,
-                } as Prisma.JsonValue,
+                } as unknown as Prisma.InputJsonValue,
               },
             })
             deprecated++
@@ -498,7 +500,7 @@ export class BehavioralPatternEngine {
           avgRetention: timePattern.avgRetention,
           completionRate: timePattern.completionRate,
           timeOfDayScore: timePattern.timeOfDayScore,
-        } as Prisma.JsonValue,
+        },
         evidence: [
           `${timePattern.sessionCount} sessions analyzed`,
           `Performance score: ${Math.round(timePattern.avgPerformanceScore * 100)}%`,
@@ -518,9 +520,9 @@ export class BehavioralPatternEngine {
         confidence: analysis.durationPattern.confidence,
         patternData: {
           recommendedDuration: analysis.durationPattern.recommendedDuration,
-          optimalBucket: analysis.durationPattern.optimalBucket,
+          optimalBucket: analysis.durationPattern.optimalBucket as unknown as JsonValue,
           totalSessionsAnalyzed: analysis.durationPattern.totalSessionsAnalyzed,
-        } as Prisma.JsonValue,
+        } as unknown as JsonValue,
         evidence: [
           `${analysis.durationPattern.totalSessionsAnalyzed} sessions analyzed`,
           `Optimal range: ${analysis.durationPattern.optimalBucket}`,
@@ -539,10 +541,10 @@ export class BehavioralPatternEngine {
         patternName: `Prefers ${topContentType[0]} content`,
         confidence: Math.min(1.0, topContentType[1] * 1.5),
         patternData: {
-          contentPreferences: analysis.contentPrefs,
+          contentPreferences: analysis.contentPrefs as unknown as JsonValue,
           topContentType: topContentType[0],
           effectiveness: topContentType[1],
-        } as Prisma.JsonValue,
+        } as unknown as JsonValue,
         evidence: [
           `Top content type: ${topContentType[0]}`,
           `Effectiveness: ${Math.round(topContentType[1] * 100)}%`,
@@ -564,7 +566,7 @@ export class BehavioralPatternEngine {
           k: analysis.forgettingCurve.k,
           halfLife: analysis.forgettingCurve.halfLife,
           deviation: analysis.forgettingCurve.deviation,
-        } as Prisma.JsonValue,
+        },
         evidence: [
           `Half-life: ${Math.round(analysis.forgettingCurve.halfLife)} days`,
           `Deviation: ${analysis.forgettingCurve.deviation}`,
@@ -619,7 +621,7 @@ export class BehavioralPatternEngine {
           data: {
             userId: pattern.userId,
             patternType: pattern.patternType,
-            patternData: pattern.patternData,
+            patternData: pattern.patternData as unknown as Prisma.InputJsonValue,
             patternName: pattern.patternName,
             confidence: pattern.confidence,
             evidence: pattern.evidence,
@@ -682,13 +684,13 @@ export class BehavioralPatternEngine {
           : 45,
       ),
       optimalSessionDuration: analysis.durationPattern.recommendedDuration,
-      contentPreferences: analysis.contentPrefs as Prisma.JsonValue,
-      learningStyleProfile: analysis.learningStyle as Prisma.JsonValue,
+      contentPreferences: analysis.contentPrefs as unknown as Prisma.InputJsonValue,
+      learningStyleProfile: analysis.learningStyle as unknown as Prisma.InputJsonValue,
       personalizedForgettingCurve: {
         initialRetention: analysis.forgettingCurve.R0,
         decayRate: analysis.forgettingCurve.k,
         stabilityFactor: analysis.forgettingCurve.halfLife,
-      } as Prisma.JsonValue,
+      } as unknown as Prisma.InputJsonValue,
       lastAnalyzedAt: new Date(),
       dataQualityScore,
     }
@@ -697,11 +699,11 @@ export class BehavioralPatternEngine {
       where: { userId },
       update: {
         ...profileData,
-        preferredStudyTimes: profileData.preferredStudyTimes as Prisma.JsonValue,
+        preferredStudyTimes: profileData.preferredStudyTimes as unknown as Prisma.InputJsonValue,
       },
       create: {
         ...profileData,
-        preferredStudyTimes: profileData.preferredStudyTimes as Prisma.JsonValue,
+        preferredStudyTimes: profileData.preferredStudyTimes as unknown as Prisma.InputJsonValue,
       },
     })
   }
@@ -743,9 +745,9 @@ export class BehavioralPatternEngine {
         preferredStudyTimes: [],
         averageSessionDuration: 45,
         optimalSessionDuration: 45,
-        contentPreferences: defaultContentPrefs as Prisma.JsonValue,
-        learningStyleProfile: defaultLearningStyle as Prisma.JsonValue,
-        personalizedForgettingCurve: defaultForgettingCurve as Prisma.JsonValue,
+        contentPreferences: defaultContentPrefs as unknown as Prisma.InputJsonValue,
+        learningStyleProfile: defaultLearningStyle as unknown as Prisma.InputJsonValue,
+        personalizedForgettingCurve: defaultForgettingCurve as unknown as Prisma.InputJsonValue,
         lastAnalyzedAt: new Date(),
         dataQualityScore: 0,
       },

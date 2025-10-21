@@ -12,6 +12,12 @@
  */
 
 import { PrismaClient } from '@/generated/prisma'
+import type {
+  LearningStyleProfile,
+  ContentPreferences,
+  PersonalizedForgettingCurve,
+  PreferredStudyTime,
+} from '@/types/prisma-json'
 
 // ============================================
 // Type Definitions
@@ -198,26 +204,36 @@ export class PersonalizationEngine {
       })
 
       if (profile && profile.dataQualityScore >= this.MIN_DATA_QUALITY_SCORE) {
+        const times = profile.preferredStudyTimes as unknown as PreferredStudyTime[] | null
+        const learningStyle = profile.learningStyleProfile as unknown as LearningStyleProfile | null
+        const curve = profile.personalizedForgettingCurve as unknown as (PersonalizedForgettingCurve & { R0?: number; k?: number; halfLife?: number }) | null
+        const contentPrefs = profile.contentPreferences as unknown as ContentPreferences | null
+
         insights.patterns = {
-          optimalStudyTimes: (profile.preferredStudyTimes as any) || [],
+          optimalStudyTimes: (times || []).map(t => ({
+            dayOfWeek: t.dayOfWeek,
+            startHour: t.startHour,
+            endHour: t.endHour,
+            confidence: t.effectiveness,
+          })),
           sessionDurationPreference: {
             optimal: profile.optimalSessionDuration,
             average: profile.averageSessionDuration,
             confidence: profile.dataQualityScore,
           },
-          learningStyleProfile: (profile.learningStyleProfile as any) || {
+          learningStyleProfile: learningStyle || {
             visual: 0.25,
             auditory: 0.25,
             reading: 0.25,
             kinesthetic: 0.25,
           },
-          forgettingCurve: (profile.personalizedForgettingCurve as any) || {
-            R0: 0.9,
-            k: 0.15,
-            halfLife: 4.6,
+          forgettingCurve: {
+            R0: curve?.R0 ?? curve?.initialRetention ?? 0.9,
+            k: curve?.k ?? curve?.decayRate ?? 0.15,
+            halfLife: curve?.halfLife ?? (curve?.stabilityFactor ? curve.stabilityFactor * 24 : 4.6),
             confidence: 0.5,
           },
-          contentPreferences: (profile.contentPreferences as any) || {},
+          contentPreferences: (contentPrefs as Record<string, number>) || {},
         }
         insights.dataQuality.patternsAvailable = true
       }

@@ -2,6 +2,8 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 import { successResponse } from '@/lib/api-response'
 import { withErrorHandler } from '@/lib/api-error'
+import type { ObjectiveCompletion, MissionObjective } from '@/types/prisma-json'
+import { getObjectiveCompletions, getMissionObjectives } from '@/types/mission-helpers'
 
 /**
  * GET /api/learning/sessions/:id/analytics
@@ -43,25 +45,14 @@ export const GET = withErrorHandler(
     }
 
     // Objective completions snapshot (Story 2.5) lives as JSON on session
-    const objectiveCompletions: Array<{
-      objectiveId: string
-      completedAt: string
-      timeSpentMs: number
-      selfAssessment: number
-      confidenceRating: number
-      notes?: string
-    }> = Array.isArray(session.objectiveCompletions) ? (session.objectiveCompletions as any[]) : []
+    const objectiveCompletions = getObjectiveCompletions(session.objectiveCompletions)
 
     // Mission objectives snapshot (estimatedMinutes)
-    const missionObjectives: Array<{
-      objectiveId: string
-      estimatedMinutes: number
-      objective?: { objective?: string; complexity?: string }
-    }> = session.mission?.objectives ? ((session.mission.objectives as any[]) ?? []) : []
+    const missionObjectives = session.mission ? getMissionObjectives(session.mission) : []
 
     // Build objectives dataset for charts/table
     const objectives = objectiveCompletions.map((completion, index) => {
-      const missionObj = missionObjectives.find((o) => o.objectiveId === completion.objectiveId)
+      const missionObj = missionObjectives.find((o) => o.id === completion.objectiveId)
       const timeSpentMinutes = Math.round((completion.timeSpentMs || 0) / 60000)
       const estimatedMinutes = missionObj?.estimatedMinutes ?? 0
 

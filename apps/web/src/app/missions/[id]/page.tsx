@@ -6,6 +6,9 @@ import { Calendar, Clock, Target, TrendingUp, CheckCircle2, XCircle, BarChart3 }
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 
+// Force dynamic rendering since this page requires database access
+export const dynamic = 'force-dynamic'
+
 interface PageProps {
   params: Promise<{ id: string }>
 }
@@ -28,14 +31,26 @@ export default async function MissionDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  // Parse objectives from JSON
-  const objectives = JSON.parse(mission.objectives as string) as Array<{
+  // Parse objectives from JSON with error handling
+  let objectives: Array<{
     objectiveId: string
     estimatedMinutes: number
     completed: boolean
     completedAt?: string
     notes?: string
-  }>
+  }> = []
+
+  try {
+    objectives = JSON.parse(mission.objectives as string) as Array<{
+      objectiveId: string
+      estimatedMinutes: number
+      completed: boolean
+      completedAt?: string
+      notes?: string
+    }>
+  } catch {
+    objectives = []
+  }
 
   // Fetch full objective details
   const objectiveIds = objectives.map((obj) => obj.objectiveId)

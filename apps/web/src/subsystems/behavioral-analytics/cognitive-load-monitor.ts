@@ -9,7 +9,8 @@
  *           + (performanceDecline * 0.15) + (durationStress * 0.10)
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { PrismaClient, Prisma } from '@/generated/prisma'
+import type { StressIndicator as StressIndicatorType } from '@/types/prisma-json'
 
 const prisma = new PrismaClient()
 
@@ -283,7 +284,7 @@ export class CognitiveLoadMonitor {
         userId,
         sessionId,
         loadScore: loadData.loadScore,
-        stressIndicators: loadData.stressIndicators as any, // JSON field
+        stressIndicators: loadData.stressIndicators as unknown as Prisma.InputJsonValue,
         confidenceLevel: loadData.confidenceLevel,
       },
     })
@@ -299,7 +300,7 @@ export class CognitiveLoadMonitor {
             loadScore: loadData.loadScore,
             overload: true,
             stressIndicators: loadData.stressIndicators,
-          } as any,
+          } as unknown as Prisma.InputJsonValue,
           timestamp: new Date(),
         },
       })

@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 import { successResponse } from '@/lib/api-response'
 import { withErrorHandler, ApiError } from '@/lib/api-error'
+import { getObjectiveCompletions, getSessionMissionObjectives } from '@/types/mission-helpers'
 import { z } from 'zod'
 
 /**
@@ -80,8 +81,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   // Calculate summary statistics for each session
   const sessionsWithStats = sessions.map((session) => {
-    const objectiveCompletions = (session.objectiveCompletions || []) as any[]
-    const missionObjectives = (session.missionObjectives || []) as any[]
+    const objectiveCompletions = getObjectiveCompletions(session.objectiveCompletions)
+    const missionObjectives = getSessionMissionObjectives(session.missionObjectives)
 
     // Calculate card statistics
     const totalCards = session.reviews.length
@@ -98,17 +99,17 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     const completionRate = totalObjectives > 0 ? objectivesCompleted / totalObjectives : 0
 
     const totalObjectiveTimeMs = objectiveCompletions.reduce(
-      (sum: number, c: any) => sum + (c.timeSpentMs || 0),
+      (sum, c) => sum + (c.timeSpentMs || 0),
       0,
     )
 
     // Average self-assessment
     const assessments = objectiveCompletions
-      .map((c: any) => c.selfAssessment)
-      .filter((a: any) => a !== undefined)
+      .map((c) => c.selfAssessment)
+      .filter((a) => a !== undefined)
     const averageSelfAssessment =
       assessments.length > 0
-        ? assessments.reduce((sum: number, a: number) => sum + a, 0) / assessments.length
+        ? assessments.reduce((sum, a) => sum + a, 0) / assessments.length
         : null
 
     return {

@@ -59,7 +59,7 @@ async function handleGET(request: NextRequest, context: RouteContext) {
   // Merge objective details with mission objectives
   const enrichedObjectives = objectives.map((obj) => ({
     ...obj,
-    objective: objectiveMap.get(obj.objectiveId),
+    objective: objectiveMap.get(obj.id),
   }))
 
   const missionData = {

@@ -6,10 +6,12 @@
 
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { Prisma } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
 import { MissionGenerator } from '@/lib/mission-generator'
 import { successResponse, errorResponse } from '@/lib/api-response'
 import { withErrorHandler } from '@/lib/api-error'
+import { getMissionObjectives } from '@/types/mission-helpers'
 
 const generateMissionSchema = z.object({
   date: z.string().datetime().optional(), // ISO 8601 date
@@ -59,7 +61,7 @@ async function handler(request: NextRequest) {
 
   if (existingMission && !regenerate) {
     // Return existing mission
-    const objectives = existingMission.objectives as any[]
+    const objectives = getMissionObjectives(existingMission)
 
     return Response.json(
       successResponse({
@@ -96,7 +98,7 @@ async function handler(request: NextRequest) {
       date: targetDate,
       status: 'PENDING',
       estimatedMinutes: generatedMission.estimatedMinutes,
-      objectives: generatedMission.objectives as any, // JSON
+      objectives: generatedMission.objectives as unknown as Prisma.InputJsonValue,
       reviewCardCount: generatedMission.reviewCardCount,
       newContentCount: generatedMission.newContentCount,
       completedObjectivesCount: 0,

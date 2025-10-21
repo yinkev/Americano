@@ -9,8 +9,9 @@
  *           + (irregularity * 0.15) + (engagementDecay * 0.1) + (recoveryDeficit * 0.05)
  */
 
-import { PrismaClient, BurnoutRiskLevel } from '@/generated/prisma'
+import { PrismaClient, BurnoutRiskLevel, Prisma } from '@/generated/prisma'
 import { subDays, differenceInDays } from 'date-fns'
+import type { ContributingFactor as ContributingFactorType } from '@/types/prisma-json'
 
 const prisma = new PrismaClient()
 
@@ -728,7 +729,7 @@ export class BurnoutPreventionEngine {
         userId,
         riskScore: assessment.riskScore,
         riskLevel: assessment.riskLevel,
-        contributingFactors: assessment.contributingFactors as any,
+        contributingFactors: assessment.contributingFactors as unknown as Prisma.InputJsonValue,
         recommendations: assessment.recommendations,
       },
     })

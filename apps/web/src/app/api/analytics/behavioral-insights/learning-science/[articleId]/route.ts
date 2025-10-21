@@ -11,6 +11,7 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
+import type { LearningStyleProfile, PersonalizedForgettingCurve } from '@/types/prisma-json'
 
 // Query parameter validation
 const ArticleQuerySchema = z.object({
@@ -49,7 +50,24 @@ async function injectPersonalizedData(
       })
 
       if (profile?.personalizedForgettingCurve) {
-        const curve = profile.personalizedForgettingCurve as any
+        // Legacy forgetting curve format with R0, k, halfLife properties
+        interface LegacyForgettingCurve extends PersonalizedForgettingCurve {
+          R0?: number
+          k?: number
+          halfLife?: number
+          optimalIntervals?: number[]
+          dataSources?: {
+            sessionCount: number
+            weeksAnalyzed: number
+          }
+        }
+
+        const curve = profile.personalizedForgettingCurve as unknown as LegacyForgettingCurve
+
+        // Map new properties to legacy if needed
+        const r0 = curve.R0 ?? curve.initialRetention
+        const k = curve.k ?? curve.decayRate
+        const halfLife = curve.halfLife ?? (curve.stabilityFactor * 24) // Convert days to hours approximation
 
         injectedHTML = `
 ## Your Personalized Forgetting Curve
@@ -57,25 +75,25 @@ async function injectPersonalizedData(
 Based on your study patterns, we've calculated your personal forgetting curve:
 
 **Your Retention Parameters:**
-- **Initial Retention (R₀)**: ${(curve.R0 * 100).toFixed(1)}%
-- **Decay Rate (k)**: ${curve.k.toFixed(4)}
-- **Half-life**: ~${curve.halfLife ? Math.round(curve.halfLife) : 'N/A'} hours
+- **Initial Retention (R₀)**: ${(r0 * 100).toFixed(1)}%
+- **Decay Rate (k)**: ${k.toFixed(4)}
+- **Half-life**: ~${halfLife ? Math.round(halfLife) : 'N/A'} hours
 
 **What this means for you:**
 
 ${
-  curve.k < 0.05
+  k < 0.05
     ? '✅ **Excellent retention!** Your forgetting curve is slower than average. You retain information well over time.'
-    : curve.k < 0.08
+    : k < 0.08
       ? '✓ **Good retention.** Your decay rate is average. Spaced reviews will optimize your learning.'
       : '⚠️ **Faster forgetting.** Your curve suggests more frequent review intervals would help. Consider reviewing material sooner.'
 }
 
 **Optimal Review Schedule (personalized for you):**
-1. First review: ${curve.optimalIntervals?.[0] || 1} day after learning
-2. Second review: ${curve.optimalIntervals?.[1] || 3} days after first
-3. Third review: ${curve.optimalIntervals?.[2] || 7} days after second
-4. Fourth review: ${curve.optimalIntervals?.[3] || 14} days after third
+1. First review: ${curve.optimalIntervals?.[0] || curve.optimalSpacing?.[0] || 1} day after learning
+2. Second review: ${curve.optimalIntervals?.[1] || curve.optimalSpacing?.[1] || 3} days after first
+3. Third review: ${curve.optimalIntervals?.[2] || curve.optimalSpacing?.[2] || 7} days after second
+4. Fourth review: ${curve.optimalIntervals?.[3] || curve.optimalSpacing?.[3] || 14} days after third
 
 *This is based on ${curve.dataSources?.sessionCount || 0} study sessions analyzed over ${curve.dataSources?.weeksAnalyzed || 0} weeks.*
 `
@@ -104,7 +122,10 @@ We'll analyze your retention patterns and provide:
       })
 
       if (profile?.learningStyleProfile) {
-        const vark = profile.learningStyleProfile as any
+        const vark = profile.learningStyleProfile as unknown as LearningStyleProfile & {
+          confidenceLevel?: number
+          sessionCount?: number
+        }
 
         // Find dominant style
         const styles = [
@@ -150,7 +171,7 @@ ${
         : '- Use clinical simulations and hands-on practice\n- Pace while reviewing flashcards\n- Build physical models of concepts\n- **Growth area**: Practice with abstract theoretical content'
 }
 
-*Analysis based on ${vark.confidenceLevel >= 0.7 ? 'high' : vark.confidenceLevel >= 0.5 ? 'moderate' : 'preliminary'} confidence (${(vark.confidenceLevel * 100).toFixed(0)}%) from ${vark.sessionCount || 0} sessions.*
+*Analysis based on ${(vark.confidenceLevel ?? 0.5) >= 0.7 ? 'high' : (vark.confidenceLevel ?? 0.5) >= 0.5 ? 'moderate' : 'preliminary'} confidence (${((vark.confidenceLevel ?? 0.5) * 100).toFixed(0)}%) from ${vark.sessionCount || 0} sessions.*
 `
         personalizedSections.varkProfile = vark
       } else {
@@ -183,7 +204,11 @@ We'll analyze your content preferences to determine:
 
       if (patterns.length > 0) {
         const pattern = patterns[0]
-        const data = pattern.evidence as any
+        const data = (pattern.evidence as unknown as Record<string, unknown> & {
+          optimalStartHour?: number
+          sessionsAnalyzed?: number
+          performancePeaks?: Array<{ startHour: number; endHour: number; effectivenessScore?: number }>
+        }) || { optimalStartHour: 10, sessionsAnalyzed: 0, performancePeaks: [] }
 
         // Determine chronotype
         const peakHour = data.optimalStartHour || 10

@@ -22,6 +22,7 @@ import type {
   ValidationResponse,
 } from '@/generated/prisma'
 import { ReviewRating, InterventionType } from '@/generated/prisma'
+import type { EventData } from '@/types/prisma-json'
 
 /**
  * Struggle rate calculation result
@@ -217,10 +218,13 @@ export class StruggleReductionAnalyzer {
       if (event.sessionPerformanceScore !== null && event.sessionPerformanceScore < 65) {
         lowPerformanceSessionsCount++
         // Mark topics from this session as struggles
-        const eventData = event.eventData as any
-        if (eventData.objectiveIds && Array.isArray(eventData.objectiveIds)) {
-          for (const objectiveId of eventData.objectiveIds) {
-            topicStruggles.set(objectiveId, true)
+        const eventData = event.eventData as unknown as EventData
+        const objectiveIds = eventData.objectiveIds
+        if (objectiveIds && Array.isArray(objectiveIds)) {
+          for (const objectiveId of objectiveIds) {
+            if (typeof objectiveId === 'string') {
+              topicStruggles.set(objectiveId, true)
+            }
           }
         }
       }
@@ -362,10 +366,13 @@ export class StruggleReductionAnalyzer {
     for (const event of behavioralEvents) {
       if (event.sessionPerformanceScore !== null && event.sessionPerformanceScore < 65) {
         lowPerformanceSessionsCount++
-        const eventData = event.eventData as any
-        if (eventData.objectiveIds && Array.isArray(eventData.objectiveIds)) {
-          for (const objectiveId of eventData.objectiveIds) {
-            topicStruggles.set(objectiveId, true)
+        const eventData = event.eventData as unknown as EventData
+        const objectiveIds = eventData.objectiveIds
+        if (objectiveIds && Array.isArray(objectiveIds)) {
+          for (const objectiveId of objectiveIds) {
+            if (typeof objectiveId === 'string') {
+              topicStruggles.set(objectiveId, true)
+            }
           }
         }
       }

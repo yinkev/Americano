@@ -105,7 +105,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           className={cn(buttonVariants({ variant, size, className }))}
           {...safeProps}
         >
-          {currentIcon}
           {children}
         </Slot>
       )

@@ -8,12 +8,12 @@ import type { MissionObjective, ObjectiveCompletion } from './prisma-json'
 /**
  * Type-safe getter for mission objectives
  */
-export function getMissionObjectives(mission: Mission): MissionObjective[] {
+export function getMissionObjectives(mission: Mission | { objectives: unknown }): MissionObjective[] {
   if (!mission.objectives) return []
 
   // Prisma returns JSON fields as objects already
   if (Array.isArray(mission.objectives)) {
-    return mission.objectives as MissionObjective[]
+    return mission.objectives as unknown as MissionObjective[]
   }
 
   return []
@@ -28,7 +28,7 @@ export function getObjectiveCompletions(
   if (!objectiveCompletions) return []
 
   if (Array.isArray(objectiveCompletions)) {
-    return objectiveCompletions as ObjectiveCompletion[]
+    return objectiveCompletions as unknown as ObjectiveCompletion[]
   }
 
   return []
@@ -43,7 +43,7 @@ export function getSessionMissionObjectives(
   if (!missionObjectives) return []
 
   if (Array.isArray(missionObjectives)) {
-    return missionObjectives as MissionObjective[]
+    return missionObjectives as unknown as MissionObjective[]
   }
 
   return []

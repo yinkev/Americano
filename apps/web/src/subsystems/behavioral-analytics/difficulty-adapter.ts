@@ -12,6 +12,7 @@
  */
 
 import { PrismaClient } from '@/generated/prisma'
+import type { LearningStyleProfile } from '@/types/prisma-json'
 
 const prisma = new PrismaClient()
 
@@ -114,8 +115,8 @@ export class DifficultyAdapter {
     })
 
     // Extract load tolerance from learning profile data or use default
-    const loadTolerance =
-      (userProfile?.learningStyleProfile as any)?.loadTolerance || 65 // Default threshold
+    const learningStyle = userProfile?.learningStyleProfile as unknown as (LearningStyleProfile & { loadTolerance?: number }) | null
+    const loadTolerance = learningStyle?.loadTolerance || 65 // Default threshold
 
     // Critical overload (>80)
     if (currentLoad > 80) {
