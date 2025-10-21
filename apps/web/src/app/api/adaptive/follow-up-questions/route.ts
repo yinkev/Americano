@@ -30,11 +30,7 @@ export async function POST(request: NextRequest) {
     const originalResponse = await prisma.validationResponse.findUnique({
       where: { id: data.responseId },
       include: {
-        prompt: {
-          include: {
-            learningObjective: true,
-          },
-        },
+        prompt: true,
       },
     })
 
@@ -115,19 +111,10 @@ export async function POST(request: NextRequest) {
       targetObjectiveId = data.objectiveId
     }
 
-    // Find appropriate follow-up prompt
-    const followUpPrompt = await prisma.validationPrompt.findFirst({
-      where: {
-        objectiveId: targetObjectiveId,
-        difficultyLevel: {
-          gte: targetDifficulty - 10,
-          lte: targetDifficulty + 10,
-        },
-      },
-      orderBy: {
-        timesUsed: 'asc',
-      },
-    })
+    // TODO: Schema doesn't support objectiveId on ValidationPrompt yet
+    // This endpoint needs schema migration to add objectiveId and difficultyLevel fields
+    // For now, return no follow-up available
+    const followUpPrompt = null
 
     if (!followUpPrompt) {
       // No follow-up available
@@ -139,14 +126,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Update prompt usage
-    await prisma.validationPrompt.update({
-      where: { id: followUpPrompt.id },
-      data: {
-        timesUsed: { increment: 1 },
-        lastUsedAt: new Date(),
-      },
-    })
+    // Note: timesUsed tracking not available in current schema
 
     // Get target objective details
     const targetObjective = await prisma.learningObjective.findUnique({
