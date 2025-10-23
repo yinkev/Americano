@@ -18,10 +18,14 @@
     "build:ml": "cd services/ml-service && pip install -r requirements.txt",
     "health-check": "bash scripts/check-services.sh",
     "setup": "bash scripts/setup.sh",
-    "setup:ml": "bash scripts/setup-ml.sh"
+    "setup:ml": "bash scripts/setup-ml.sh",
+    "lint:docs": "markdownlint 'docs/**/*.md' '*.md' 'bmad/**/*.md' --ignore node_modules --ignore apps/web/node_modules",
+    "check:links": "find docs -name '*.md' -not -path '*/node_modules/*' -exec markdown-link-check --config .markdown-link-check.json {} \\;"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
+    "markdownlint-cli": "^0.39.0",
+    "markdown-link-check": "^3.12.1",
     "prisma": "^5.17.0"
   },
   "engines": {

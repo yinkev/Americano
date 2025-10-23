@@ -1,9 +1,71 @@
+---
+title: "Database Migration Strategy: Multi-Worktree Setup"
+description: "Comprehensive guide for managing Prisma migrations in multi-worktree Git setup with shared PostgreSQL database, conflict resolution procedures, and merge strategies"
+type: "Guide"
+status: "Deprecated"
+version: "1.1"
+
+owner: "Bob (Scrum Master)"
+dri_backup: "Winston (Architect)"
+contributors: ["Database Optimizer", "Technical Team"]
+review_cadence: "Monthly"
+
+created_date: "2025-10-16T00:00:00-07:00"
+last_updated: "2025-10-23T12:05:00-07:00"
+last_reviewed: "2025-10-23T12:05:00-07:00"
+next_review_due: "2025-11-16"
+
+depends_on:
+  - apps/web/prisma/schema.prisma
+  - CLAUDE.md
+affects:
+  - Git worktree workflows (deprecated)
+  - Database migration management
+related_adrs: []
+
+audience:
+  - experienced-devs
+technical_level: "Advanced"
+tags: ["database", "migration", "prisma", "git-worktree", "multi-worktree", "strategy", "deprecated"]
+keywords: ["Prisma migrations", "worktree", "shared database", "conflict resolution", "drift detection", "merge strategy"]
+search_priority: "high"
+
+lifecycle:
+  stage: "Deprecated"
+  deprecation_date: "2025-10-21"
+  replacement_doc: "README.md (standard single-branch workflow)"
+  archive_after: "2026-01-16"
+
+metrics:
+  word_count: 4800
+  reading_time_min: 24
+  code_examples: 35
+  last_link_check: "2025-10-23T12:05:00-07:00"
+  broken_links: 0
+
+changelog:
+  - version: "1.1"
+    date: "2025-10-23"
+    author: "Kevy"
+    changes:
+      - "Added enhanced frontmatter for documentation refactor"
+      - "Marked as deprecated (all epics merged to main, worktrees no longer active)"
+      - "Document retained for historical reference and knowledge"
+  - version: "1.0"
+    date: "2025-10-16"
+    author: "Bob (Scrum Master)"
+    changes:
+      - "Initial documentation of multi-worktree migration strategy"
+      - "Conflict resolution procedures"
+      - "Merge strategies and troubleshooting"
+---
+
 # Database Migration Strategy: Multi-Worktree Setup
 
 **Document Version:** 1.0
 **Date:** 2025-10-16
 **Author:** Bob (Scrum Master)
-**Status:** Active Policy
+**Status:** Active Policy (DEPRECATED as of 2025-10-21 - All epics merged, worktrees inactive)
 
 ---
 

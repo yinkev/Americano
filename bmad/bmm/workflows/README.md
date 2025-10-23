@@ -1,5 +1,6 @@
 ---
-last-redoc-date: 2025-10-12
+last-redoc-date: 2025-10-23
+type: "Workflow Collection"
 ---
 
 # BMM Workflows - The Complete v6 Flow

@@ -1,3 +1,65 @@
+---
+title: "Americano Solution Architecture"
+description: "Complete system architecture for Americano adaptive learning platform including tech stack, design decisions, and Epic 3/4/5 integration"
+type: "Architecture"
+status: "Active"
+version: "3.0"
+
+owner: "Kevy"
+dri_backup: "Winston (Architect)"
+contributors: ["Amelia", "Database Optimizer"]
+review_cadence: "Monthly"
+
+created_date: "2025-10-14T09:00:00-07:00"
+last_updated: "2025-10-23T11:30:00-07:00"
+last_reviewed: "2025-10-23T11:30:00-07:00"
+next_review_due: "2025-11-23"
+
+depends_on:
+  - docs/PRD-Americano-2025-10-14.md
+  - docs/ux-specification.md
+affects:
+  - docs/index.md
+  - docs/developer-guides/getting-started.md
+  - docs/api-contracts.md
+related_adrs:
+  - docs/architecture/ADR-001-hybrid-typescript-python.md
+  - docs/architecture/ADR-003-two-tier-caching.md
+  - docs/architecture/ADR-005-gemini-embeddings-1536.md
+
+audience:
+  - experienced-devs
+  - external-contributors
+technical_level: "Advanced"
+tags: ["architecture", "system-design", "epic-3", "epic-4", "epic-5"]
+keywords: ["Next.js 15", "FastAPI", "PostgreSQL", "pgvector", "hybrid architecture"]
+search_priority: "critical"
+
+lifecycle:
+  stage: "Active"
+  deprecation_date: null
+  replacement_doc: null
+  archive_after: null
+
+changelog:
+  - version: "3.0"
+    date: "2025-10-23"
+    author: "Kevy"
+    changes:
+      - "Added enhanced frontmatter"
+      - "Epic 3/4/5 complete and integrated"
+  - version: "2.0"
+    date: "2025-10-20"
+    author: "Kevy"
+    changes:
+      - "Added Epic 5 behavioral twin architecture"
+  - version: "1.0"
+    date: "2025-10-14"
+    author: "Winston"
+    changes:
+      - "Initial architecture documentation"
+---
+
 # Americano Solution Architecture
 **Date:** 2025-10-14
 **Project:** Americano - AI-Powered Medical Education Platform

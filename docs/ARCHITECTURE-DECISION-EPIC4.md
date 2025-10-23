@@ -1,3 +1,74 @@
+---
+title: "Architecture Decision Record: Epic 4 Implementation Strategy"
+description: "ADR documenting hybrid TypeScript + Python architecture for Epic 4 Understanding Validation Engine with parallel AI agent execution strategy"
+type: "Architecture"
+status: "Active"
+version: "1.1"
+
+owner: "Kevy"
+dri_backup: "Bob (Scrum Master)"
+contributors: ["Winston (Architect)", "Python-Pro Agent", "TypeScript-Pro Agent"]
+review_cadence: "Per Epic"
+
+created_date: "2025-10-16T00:00:00-07:00"
+last_updated: "2025-10-23T11:45:00-07:00"
+last_reviewed: "2025-10-23T11:45:00-07:00"
+next_review_due: "2026-01-16"
+
+depends_on:
+  - CLAUDE.md
+  - docs/PRD-Americano-2025-10-14.md
+  - docs/stories/story-context-4.1.xml
+  - docs/stories/story-context-4.2.xml
+  - docs/stories/story-context-4.3.xml
+  - docs/stories/story-context-4.4.xml
+  - docs/stories/story-context-4.5.xml
+  - docs/stories/story-context-4.6.xml
+affects:
+  - apps/web/src/app/api/validation/**
+  - apps/api/src/validation/**
+  - apps/web/prisma/schema.prisma
+related_adrs:
+  - docs/architecture/ADR-001-hybrid-typescript-python.md
+
+audience:
+  - experienced-devs
+  - architects
+  - epic-4-team
+technical_level: "Advanced"
+tags: ["epic-4", "architecture", "adr", "hybrid-architecture", "typescript", "python", "irt", "adaptive-assessment"]
+keywords: ["FastAPI", "Next.js", "scipy", "sklearn", "IRT", "parallel-execution", "AI-agents"]
+search_priority: "critical"
+
+lifecycle:
+  stage: "Active"
+  deprecation_date: null
+  replacement_doc: null
+  archive_after: null
+
+metrics:
+  word_count: 2845
+  reading_time_min: 14
+  code_examples: 3
+  last_link_check: "2025-10-23T11:45:00-07:00"
+  broken_links: 0
+
+changelog:
+  - version: "1.1"
+    date: "2025-10-23"
+    author: "Kevy"
+    changes:
+      - "Added enhanced frontmatter for documentation refactor"
+      - "Updated to reflect Epic 4 completion status"
+  - version: "1.0"
+    date: "2025-10-16"
+    author: "Kevy"
+    changes:
+      - "Initial ADR documenting hybrid architecture decision"
+      - "Defined parallel AI agent execution strategy"
+      - "Stakeholder approval from Kevy and Bob"
+---
+
 # Architecture Decision Record: Epic 4 Implementation Strategy
 
 **Date:** 2025-10-16

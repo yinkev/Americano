@@ -1,3 +1,8 @@
+---
+last-redoc-date: 2025-10-23
+type: "Module"
+---
+
 # BMM - BMad Method Module
 
 The BMM (BMad Method Module) is the core orchestration system for the BMad Method v6a, providing comprehensive software development lifecycle management through specialized agents, workflows, teams, and tasks.

@@ -1,3 +1,66 @@
+---
+title: "Development Environment Setup - Americano"
+description: "Quick reference guide for database schema management, Prisma Client regeneration, common troubleshooting fixes, and pre-commit checklist"
+type: "Guide"
+status: "Active"
+version: "1.1"
+
+owner: "Kevy"
+dri_backup: "Winston (Architect)"
+contributors: ["Development Team", "Database Optimizer"]
+review_cadence: "Per Change"
+
+created_date: "2025-10-20T00:00:00-07:00"
+last_updated: "2025-10-23T12:00:00-07:00"
+last_reviewed: "2025-10-23T12:00:00-07:00"
+next_review_due: "2025-11-23"
+
+depends_on:
+  - apps/web/prisma/schema.prisma
+  - docs/DATABASE-SCHEMA-FIX-2025-10-20.md
+  - README.md
+affects:
+  - All developers
+  - Development workflow
+related_adrs: []
+
+audience:
+  - new-developers
+  - experienced-devs
+technical_level: "Beginner"
+tags: ["development", "setup", "troubleshooting", "prisma", "database", "schema"]
+keywords: ["Prisma Client", "schema.prisma", "migration", "regenerate", "dev server", "clean build"]
+search_priority: "high"
+
+lifecycle:
+  stage: "Active"
+  deprecation_date: null
+  replacement_doc: null
+  archive_after: null
+
+metrics:
+  word_count: 450
+  reading_time_min: 2
+  code_examples: 8
+  last_link_check: "2025-10-23T12:00:00-07:00"
+  broken_links: 0
+
+changelog:
+  - version: "1.1"
+    date: "2025-10-23"
+    author: "Kevy"
+    changes:
+      - "Added enhanced frontmatter for documentation refactor"
+      - "Updated for current development workflow"
+  - version: "1.0"
+    date: "2025-10-20"
+    author: "Development Team"
+    changes:
+      - "Initial development environment setup guide"
+      - "Database schema management procedures"
+      - "Common troubleshooting fixes"
+---
+
 # Development Environment Setup - Americano Epic 5
 
 ## Database Schema Management

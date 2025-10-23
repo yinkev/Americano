@@ -1,9 +1,0 @@
-
-> @americano/web@0.1.0 typecheck /Users/kyin/Projects/Americano-epic5/apps/web
-> tsc -p tsconfig.json --noEmit
-
-src/subsystems/behavioral-analytics/struggle-reduction-analyzer.ts(700,11): error TS2322: Type 'string | null' is not assignable to type 'string | NestedStringFilter<"StrugglePrediction"> | undefined'.
-  Type 'null' is not assignable to type 'string | NestedStringFilter<"StrugglePrediction"> | undefined'.
-src/subsystems/behavioral-analytics/struggle-reduction-analyzer.ts(727,23): error TS2551: Property 'learningObjective' does not exist on type '{ id: string; userId: string; learningObjectiveId: string; topicId: string | null; predictedStruggleProbability: number; predictionConfidence: number; predictionStatus: PredictionStatus; ... 8 more ...; interventionId: string | null; }'. Did you mean 'learningObjectiveId'?
-src/subsystems/behavioral-analytics/struggle-reduction-analyzer.ts(729,34): error TS2551: Property 'learningObjective' does not exist on type '{ id: string; userId: string; learningObjectiveId: string; topicId: string | null; predictedStruggleProbability: number; predictionConfidence: number; predictionStatus: PredictionStatus; ... 8 more ...; interventionId: string | null; }'. Did you mean 'learningObjectiveId'?
- ELIFECYCLE  Command failed with exit code 2.

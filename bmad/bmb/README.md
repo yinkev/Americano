@@ -1,3 +1,8 @@
+---
+last-redoc-date: 2025-10-23
+type: "Module"
+---
+
 # BMB - BMad Builder Module
 
 The BMB (BMad Builder Module) provides specialized tools and workflows for creating, customizing, and extending BMad Method components, including custom agents, workflows, and integrations.

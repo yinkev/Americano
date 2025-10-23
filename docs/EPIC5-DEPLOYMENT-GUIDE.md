@@ -1,3 +1,77 @@
+---
+title: "Epic 5 Production Deployment Guide"
+description: "Comprehensive deployment guide for Epic 5 Behavioral Twin Engine covering Vercel, PostgreSQL (Neon), Redis (Upstash), FastAPI ML service, monitoring, and rollback procedures"
+type: "Guide"
+status: "Active"
+version: "1.1"
+
+owner: "Kevy"
+dri_backup: "Winston (Architect)"
+contributors: ["Wave 4 Deployment Team", "Database Optimizer", "Performance Engineer"]
+review_cadence: "Per Change"
+
+created_date: "2025-10-20T00:00:00-07:00"
+last_updated: "2025-10-23T11:50:00-07:00"
+last_reviewed: "2025-10-23T11:50:00-07:00"
+next_review_due: "2025-11-20"
+
+depends_on:
+  - docs/solution-architecture.md
+  - docs/EPIC5-MASTER-SUMMARY.md
+  - docs/stories/story-context-5.1.xml
+  - docs/stories/story-context-5.2.xml
+  - docs/stories/story-context-5.3.xml
+  - docs/stories/story-context-5.4.xml
+  - docs/stories/story-context-5.5.xml
+  - docs/stories/story-context-5.6.xml
+  - apps/web/prisma/schema.prisma
+affects:
+  - Production deployment infrastructure
+  - CI/CD pipelines
+  - Monitoring and observability
+related_adrs:
+  - docs/architecture/ADR-003-two-tier-caching.md
+  - docs/architecture/ADR-005-gemini-embeddings-1536.md
+
+audience:
+  - experienced-devs
+  - devops-engineers
+  - production-engineers
+technical_level: "Advanced"
+tags: ["epic-5", "deployment", "production", "vercel", "postgresql", "redis", "fastapi", "monitoring", "docker"]
+keywords: ["Neon", "Upstash", "fly.io", "Docker", "SSL", "connection pooling", "rollback", "backup"]
+search_priority: "critical"
+
+lifecycle:
+  stage: "Active"
+  deprecation_date: null
+  replacement_doc: null
+  archive_after: null
+
+metrics:
+  word_count: 8500
+  reading_time_min: 42
+  code_examples: 45
+  last_link_check: "2025-10-23T11:50:00-07:00"
+  broken_links: 0
+
+changelog:
+  - version: "1.1"
+    date: "2025-10-23"
+    author: "Kevy"
+    changes:
+      - "Added enhanced frontmatter for documentation refactor"
+      - "Reflects Epic 5 completion and production readiness"
+  - version: "1.0"
+    date: "2025-10-20"
+    author: "Wave 4 Deployment Team"
+    changes:
+      - "Initial production deployment guide"
+      - "Complete Vercel, Neon, Upstash, fly.io setup"
+      - "Security hardening and monitoring setup"
+      - "Rollback and maintenance procedures"
+---
+
 # Epic 5 Production Deployment Guide
 
 **Document Version**: 1.0.0
