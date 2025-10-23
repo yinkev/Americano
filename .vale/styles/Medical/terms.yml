@@ -1,0 +1,93 @@
+extends: spelling
+message: "Consider using '%s' instead of '%s'"
+level: suggestion
+ignore:
+  # Medical Terminology
+  - USMLE
+  - COMLEX
+  - NBME
+  - AAMC
+  - NRMP
+  - ERAS
+  - pharmacology
+  - pathophysiology
+  - biochemistry
+  - immunology
+  - microbiology
+  - cardiology
+  - nephrology
+  - gastroenterology
+  - pulmonology
+  - endocrinology
+  - hematology
+  - oncology
+  - neurology
+  - psychiatry
+  - dermatology
+  - obstetrics
+  - gynecology
+  - pediatrics
+  - geriatrics
+  - anesthesiology
+  - radiology
+  - pathology
+
+  # Clinical Terms
+  - anamnesis
+  - auscultation
+  - palpation
+  - percuss
+  - percussion
+  - tachycardia
+  - bradycardia
+  - hypertension
+  - hypotension
+  - dyspnea
+  - cyanosis
+  - edema
+  - ascites
+  - jaundice
+  - hemoptysis
+  - hematemesis
+  - hematuria
+  - dysuria
+  - oliguria
+  - polyuria
+  - syncope
+
+  # Americano-Specific
+  - Americano
+  - FSRS
+  - pgvector
+  - Prisma
+  - shadcn
+  - Zustand
+  - Recharts
+  - NextJS
+  - FastAPI
+  - Pydantic
+
+  # Technical Terms
+  - frontend
+  - backend
+  - fullstack
+  - serverless
+  - microservices
+  - monorepo
+  - TypeScript
+  - JavaScript
+  - PostgreSQL
+  - embeddings
+  - RAG
+  - LLM
+  - ML
+  - AI
+  - API
+  - REST
+  - GraphQL
+  - JSON
+  - YAML
+  - XML
+  - CI
+  - CD
+  - DevOps

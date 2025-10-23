@@ -403,7 +403,9 @@ export class GoalManager {
     if (profile?.learningStyleProfile) {
       const learningStyle = profile.learningStyleProfile as Record<string, number>
       const maxStyle = Math.max(...Object.values(learningStyle))
-      const balance = 1 - (maxStyle - Object.values(learningStyle).reduce((a, b) => a + b, 0) / 4)
+      const avgStyle = Object.values(learningStyle).reduce((a, b) => a + b, 0) / 4
+      const rawBalance = 1 - (maxStyle - avgStyle)
+      const balance = Math.max(0, Math.min(1, rawBalance))
 
       if (balance < 0.7) {
         const template = GOAL_TEMPLATES.CONTENT_DIVERSIFICATION
@@ -484,7 +486,9 @@ export class GoalManager {
         if (!profile?.learningStyleProfile) return 0
         const styles = profile.learningStyleProfile as Record<string, number>
         const maxStyle = Math.max(...Object.values(styles))
-        return 1 - (maxStyle - Object.values(styles).reduce((a, b) => a + b, 0) / 4)
+        const avgStyle = Object.values(styles).reduce((a, b) => a + b, 0) / 4
+        const raw = 1 - (maxStyle - avgStyle)
+        return Math.max(0, Math.min(1, raw))
       }
 
       case 'retentionHalfLifeDays': {
@@ -503,10 +507,26 @@ export class GoalManager {
   private static calculatePeakHourSessions(sessions: any[], profile: any): number {
     if (!profile?.preferredStudyTimes) return 0
 
-    const times = profile.preferredStudyTimes as unknown as PreferredStudyTime[] | null
-    const peakHours = times?.map((t) => t.startHour) || []
+    const times = (profile.preferredStudyTimes as unknown as PreferredStudyTime[] | null) || []
+    const peakHours = Array.from(
+      new Set(
+        times
+          .map((t) => Number((t as any).startHour))
+          .filter((h) => Number.isFinite(h))
+          .map((h) => Math.max(0, Math.min(23, Math.floor(h)))),
+      ),
+    )
+
+    if (peakHours.length === 0) return 0
+
     return sessions.filter((s) => {
-      const hour = new Date(s.startedAt).getHours()
+      const startedAt =
+        s.startedAt instanceof Date ? (s.startedAt as Date) : new Date((s as any).startedAt as any)
+      if (!startedAt || isNaN(startedAt.getTime())) {
+        return false
+      }
+      // Use UTC to avoid timezone drift across environments
+      const hour = startedAt.getUTCHours()
       return peakHours.includes(hour)
     }).length
   }

@@ -1,0 +1,69 @@
+name: Documentation Quality Gate
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '*.md'
+      - 'bmad/**/*.md'
+      - '.markdownlint.json'
+      - '.markdown-link-check.json'
+      - '.vale.ini'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '*.md'
+      - 'bmad/**/*.md'
+
+jobs:
+  quality-check:
+    name: Documentation Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Markdown Lint
+        run: npm run lint:docs
+        continue-on-error: false
+
+      - name: Link Check
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          config-file: '.markdown-link-check.json'
+          folder-path: 'docs'
+          check-modified-files-only: 'yes'
+          base-branch: 'main'
+        continue-on-error: true
+
+      - name: Vale Linting
+        uses: errata-ai/vale-action@v2
+        with:
+          files: docs
+          fail_on_error: false
+          filter_mode: added
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        continue-on-error: true
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Documentation Quality Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Markdown linting completed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Link checking completed (warnings only)" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Vale grammar checking completed (suggestions only)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Note:** Only markdown linting failures will block PR merges." >> $GITHUB_STEP_SUMMARY

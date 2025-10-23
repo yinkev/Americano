@@ -1,12 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import { motion, type HTMLMotionProps } from 'motion/react'
+import { motion } from 'motion/react'
 
 import { cn } from '@/lib/utils'
 import { cardVariants as animationVariants, getAnimationConfig } from '@/lib/animation-variants'
 
-type MotionDivProps = HTMLMotionProps<'div'>
 
 export interface CardProps
   extends Omit<

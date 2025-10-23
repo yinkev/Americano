@@ -156,23 +156,26 @@ export class ForgettingCurveAnalyzer {
               (1000 * 60 * 60 * 24)
 
             const retentionScore = PerformanceCalculator.calculateRetentionScore([nextReview])
+            const safeRetention = Number(retentionScore)
 
-            dataPoints.push({
-              days: daysSinceReview,
-              retention: retentionScore,
-            })
+            if (Number.isFinite(safeRetention)) {
+              dataPoints.push({
+                days: daysSinceReview,
+                retention: safeRetention,
+              })
+            }
           }
         }
       }
     }
 
     if (dataPoints.length === 0) {
-      // No valid data points - return default curve
+      // No valid data points - return default curve with confidence from total review count
       return {
         R0: EBBINGHAUS_R0,
         k: EBBINGHAUS_K,
         halfLife: Math.log(2) / EBBINGHAUS_K,
-        confidence: 0,
+        confidence: Math.min(1.0, totalReviews / MIN_REVIEWS),
         deviation: 'No valid retention intervals found',
       }
     }
@@ -181,13 +184,14 @@ export class ForgettingCurveAnalyzer {
     const { R0, k } = this.fitExponentialCurve(dataPoints)
 
     // Step 5: Calculate half-life
-    const halfLife = Math.log(2) / k
+    const halfLifeRaw = Math.log(2) / k
+    const halfLife = Number.isFinite(halfLifeRaw) && halfLifeRaw > 0 ? halfLifeRaw : Math.log(2) / EBBINGHAUS_K
 
     // Step 6: Compare to standard Ebbinghaus curve
     const deviation = this.calculateDeviation(k, halfLife)
 
-    // Step 7: Calculate confidence based on sample size
-    const confidence = Math.min(1.0, dataPoints.length / MIN_REVIEWS)
+    // Step 7: Calculate confidence based on total review count (not interval matches)
+    const confidence = Math.min(1.0, totalReviews / MIN_REVIEWS)
 
     return {
       R0,
@@ -263,7 +267,8 @@ export class ForgettingCurveAnalyzer {
     for (const interval of SAMPLE_INTERVALS) {
       const data = intervalData.get(interval)
       if (data && data.retentions.length > 0) {
-        const avgRetention = data.retentions.reduce((sum, r) => sum + r, 0) / data.retentions.length
+        const avgRaw = data.retentions.reduce((sum, r) => sum + r, 0) / data.retentions.length
+        const avgRetention = Number.isFinite(avgRaw) ? Math.max(0, Math.min(1, avgRaw)) : 0
 
         retentionCurve.push({
           days: interval,
@@ -318,23 +323,26 @@ export class ForgettingCurveAnalyzer {
     const daysSinceReview = (Date.now() - lastReview.reviewedAt.getTime()) / (1000 * 60 * 60 * 24)
 
     // Calculate current retention using personalized curve: R(t) = R₀ × e^(-kt)
-    const currentRetention = curve.R0 * Math.exp(-curve.k * daysSinceReview)
+    const currentRetentionRaw = curve.R0 * Math.exp(-curve.k * daysSinceReview)
+    const currentRetention = Number.isFinite(currentRetentionRaw)
+      ? Math.max(0, Math.min(1, currentRetentionRaw))
+      : 0
 
     // Calculate days until retention drops below 0.5
     // Solve: 0.5 = R₀ × e^(-kt) for t
     // t = -ln(0.5/R₀) / k
     const targetRetention = 0.5
-    const daysUntilForgetting = Math.max(
-      0,
-      -Math.log(targetRetention / curve.R0) / curve.k - daysSinceReview,
-    )
+    const daysUntilForgettingRaw = -Math.log(targetRetention / curve.R0) / curve.k - daysSinceReview
+    const daysUntilForgetting = Number.isFinite(daysUntilForgettingRaw)
+      ? Math.max(0, daysUntilForgettingRaw)
+      : 0
 
     // Recommend review when retention is expected to drop to 0.7 (optimal spacing)
     const optimalRetention = 0.7
-    const daysUntilOptimalReview = Math.max(
-      0,
-      -Math.log(optimalRetention / curve.R0) / curve.k - daysSinceReview,
-    )
+    const daysUntilOptimalReviewRaw = -Math.log(optimalRetention / curve.R0) / curve.k - daysSinceReview
+    const daysUntilOptimalReview = Number.isFinite(daysUntilOptimalReviewRaw)
+      ? Math.max(0, daysUntilOptimalReviewRaw)
+      : 0
 
     const recommendedReviewDate = new Date(
       Date.now() + daysUntilOptimalReview * 24 * 60 * 60 * 1000,
@@ -342,7 +350,7 @@ export class ForgettingCurveAnalyzer {
 
     return {
       objectiveId,
-      currentRetention: Math.max(0, Math.min(1, currentRetention)),
+      currentRetention,
       daysUntilForgetting,
       recommendedReviewDate,
       confidence: curve.confidence,

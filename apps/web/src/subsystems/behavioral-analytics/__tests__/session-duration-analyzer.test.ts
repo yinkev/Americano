@@ -649,4 +649,58 @@ describe('SessionDurationAnalyzer', () => {
       expect(result.totalSessionsAnalyzed).toBe(0)
     })
   })
+
+  describe('robustness - invalid durations', () => {
+    it('filters invalid or null durations and keeps aggregates finite', async () => {
+      const userId = 'test-invalid-durations'
+
+      const mockSessions = [
+        {
+          id: 's1',
+          userId,
+          startedAt: new Date('2025-01-01T10:00:00Z'),
+          completedAt: new Date('2025-01-01T10:45:00Z'),
+          durationMs: 45 * 60 * 1000,
+          reviews: [{ id: 'r', rating: 'GOOD' }],
+          objectiveCompletions: [{ completed: true, selfAssessment: 5 }],
+          mission: null,
+        },
+        {
+          id: 's2',
+          userId,
+          startedAt: new Date('2025-01-02T10:00:00Z'),
+          completedAt: new Date('2025-01-02T10:20:00Z'),
+          durationMs: null,
+          reviews: [],
+          objectiveCompletions: [],
+          mission: null,
+        },
+        {
+          id: 's3',
+          userId,
+          startedAt: new Date('2025-01-03T10:00:00Z'),
+          completedAt: new Date('2025-01-03T10:50:00Z'),
+          durationMs: 'not-a-number' as any,
+          reviews: [],
+          objectiveCompletions: [],
+          mission: null,
+        },
+      ]
+
+      mockPrisma.studySession.findMany.mockResolvedValue(mockSessions as any)
+
+      const result = await analyzer.analyzeSessionDurationPatterns(userId)
+
+      // Only the valid session should be analyzed
+      expect(result.totalSessionsAnalyzed).toBe(1)
+
+      // All bucket metrics should be finite numbers
+      result.allBuckets.forEach((b) => {
+        expect(Number.isFinite(b.avgPerformance)).toBe(true)
+        expect(Number.isFinite(b.completionRate)).toBe(true)
+        expect(Number.isFinite(b.fatigueIndicator)).toBe(true)
+        expect(Number.isFinite(b.bucketScore)).toBe(true)
+      })
+    })
+  })
 })

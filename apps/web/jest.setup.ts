@@ -56,183 +56,95 @@ jest.mock('next/navigation', () => ({
   },
 }))
 
-<<<<<<< HEAD
-// Note: @/lib/db is mocked per-test to allow test-specific mock configurations
-// Global mock conflicts with jest-mock-extended factories used in individual tests
-
-// Mock PerformanceCalculator
+ // Note: '@/lib/db' is NOT globally mocked; use per-test mocks to avoid hoisting/order issues.
 jest.mock('@/lib/performance-calculator', () => ({
   PerformanceCalculator: {
     calculateRetentionScore: jest.fn(),
-=======
-// Mock Prisma Client
-jest.mock('@/lib/db', () => ({
-  prisma: {
-    mission: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      count: jest.fn(),
-      aggregate: jest.fn(),
-      groupBy: jest.fn(),
-    },
-    missionFeedback: {
-      findMany: jest.fn(),
-      findFirst: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      aggregate: jest.fn(),
-    },
-    missionAnalytics: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      upsert: jest.fn(),
-    },
-    missionReview: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-    },
-    user: {
-      findUnique: jest.fn(),
-      update: jest.fn(),
-      create: jest.fn(),
-    },
-    userPreferences: {
-      findUnique: jest.fn(),
-      upsert: jest.fn(),
-    },
-    // Clinical scenario models (Story 4.2)
-    clinicalScenario: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      findFirst: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      count: jest.fn(),
-    },
-    scenarioResponse: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      findFirst: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      aggregate: jest.fn(),
-      groupBy: jest.fn(),
-    },
-    clinicalReasoningMetric: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      findFirst: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      upsert: jest.fn(),
-      aggregate: jest.fn(),
-      groupBy: jest.fn(),
-    },
-    validationPrompt: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      count: jest.fn(),
-    },
-    validationResponse: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      aggregate: jest.fn(),
-      count: jest.fn(),
-    },
-    calibrationMetric: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      upsert: jest.fn(),
-    },
-    learningObjective: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    },
-    $transaction: jest.fn((callback) => callback({
-      mission: {
-        findMany: jest.fn(),
-        findUnique: jest.fn(),
-        create: jest.fn(),
-        update: jest.fn(),
-      },
-      clinicalScenario: {
-        findMany: jest.fn(),
-        findUnique: jest.fn(),
-        create: jest.fn(),
-        update: jest.fn(),
-      },
-      scenarioResponse: {
-        findMany: jest.fn(),
-        findUnique: jest.fn(),
-        create: jest.fn(),
-        update: jest.fn(),
-      },
-    })),
->>>>>>> origin/main
+    calculateAttentionScore: jest.fn(),
+    calculateMasteryScore: jest.fn(),
   },
 }))
 
-// Mock Prisma enums
-jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn(),
-  MissionStatus: {
-    COMPLETED: 'COMPLETED',
-    SKIPPED: 'SKIPPED',
-    IN_PROGRESS: 'IN_PROGRESS',
-  },
-  AnalyticsPeriod: {
-    DAILY: 'DAILY',
-    WEEKLY: 'WEEKLY',
-    MONTHLY: 'MONTHLY',
-    ALL_TIME: 'ALL_TIME',
-  },
-  // Clinical scenario enums (Story 4.2)
-  ScenarioType: {
-    DIAGNOSIS: 'DIAGNOSIS',
-    MANAGEMENT: 'MANAGEMENT',
-    DIFFERENTIAL: 'DIFFERENTIAL',
-    COMPLICATIONS: 'COMPLICATIONS',
-  },
-  PromptType: {
-    EXPLAIN_TO_PATIENT: 'EXPLAIN_TO_PATIENT',
-    CLINICAL_REASONING: 'CLINICAL_REASONING',
-    CONTROLLED_FAILURE: 'CONTROLLED_FAILURE',
-  },
-  ObjectiveComplexity: {
-    BASIC: 'BASIC',
-    INTERMEDIATE: 'INTERMEDIATE',
-    ADVANCED: 'ADVANCED',
-  },
-  MasteryLevel: {
-    NOT_STARTED: 'NOT_STARTED',
-    BEGINNER: 'BEGINNER',
-    INTERMEDIATE: 'INTERMEDIATE',
-    ADVANCED: 'ADVANCED',
-    MASTERED: 'MASTERED',
-  },
-  Prisma: {
-    ModelName: {},
-  },
-}))
+// Mock Prisma Client and enums with a constructable client that exposes model methods used by tests
+jest.mock('@prisma/client', () => {
+  class PrismaClient {
+    studySession = {
+      findMany: jest.fn(),
+      update: jest.fn(),
+      create: jest.fn(),
+      count: jest.fn(),
+    }
+    review = {
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      count: jest.fn(),
+    }
+    behavioralGoal = {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      count: jest.fn(),
+    }
+    userLearningProfile = {
+      findUnique: jest.fn(),
+      update: jest.fn(),
+    }
+    insightNotification = {
+      create: jest.fn(),
+    }
+    achievement = {
+      create: jest.fn(),
+    }
+    behavioralPattern = {
+      findMany: jest.fn(),
+      create: jest.fn(),
+    }
+  }
+
+  return {
+    PrismaClient,
+    MissionStatus: {
+      COMPLETED: 'COMPLETED',
+      SKIPPED: 'SKIPPED',
+      IN_PROGRESS: 'IN_PROGRESS',
+    },
+    AnalyticsPeriod: {
+      DAILY: 'DAILY',
+      WEEKLY: 'WEEKLY',
+      MONTHLY: 'MONTHLY',
+      ALL_TIME: 'ALL_TIME',
+    },
+    // Clinical scenario enums (Story 4.2)
+    ScenarioType: {
+      DIAGNOSIS: 'DIAGNOSIS',
+      MANAGEMENT: 'MANAGEMENT',
+      DIFFERENTIAL: 'DIFFERENTIAL',
+      COMPLICATIONS: 'COMPLICATIONS',
+    },
+    PromptType: {
+      EXPLAIN_TO_PATIENT: 'EXPLAIN_TO_PATIENT',
+      CLINICAL_REASONING: 'CLINICAL_REASONING',
+      CONTROLLED_FAILURE: 'CONTROLLED_FAILURE',
+    },
+    ObjectiveComplexity: {
+      BASIC: 'BASIC',
+      INTERMEDIATE: 'INTERMEDIATE',
+      ADVANCED: 'ADVANCED',
+    },
+    MasteryLevel: {
+      NOT_STARTED: 'NOT_STARTED',
+      BEGINNER: 'BEGINNER',
+      INTERMEDIATE: 'INTERMEDIATE',
+      ADVANCED: 'ADVANCED',
+      MASTERED: 'MASTERED',
+    },
+    Prisma: {
+      ModelName: {},
+    },
+  }
+})
 
 // Mock generated Prisma types
 jest.mock('@/generated/prisma', () => ({
@@ -260,12 +172,62 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   takeRecords: jest.fn(),
 }))
 
-// Setup will be imported by individual test files to avoid ESM issues
-// DO NOT import MSW setup here - it causes Jest/ESM conflicts
+ // Ensure '@/lib/db' is mocked before modules under test import it
+ // Provides a constructable prisma-like shape with jest.fn methods that tests can control
+ jest.mock('@/lib/db', () => {
+   const studySession = {
+     findMany: jest.fn(),
+     update: jest.fn(),
+     create: jest.fn(),
+     count: jest.fn(),
+   }
+   const review = {
+     findMany: jest.fn(),
+     findFirst: jest.fn(),
+     create: jest.fn(),
+     count: jest.fn(),
+   }
+   const behavioralGoal = {
+     create: jest.fn(),
+     findMany: jest.fn(),
+     findUnique: jest.fn(),
+     update: jest.fn(),
+     count: jest.fn(),
+   }
+   const userLearningProfile = {
+     findUnique: jest.fn(),
+     update: jest.fn(),
+   }
+   const insightNotification = {
+     create: jest.fn(),
+   }
+   const achievement = {
+     create: jest.fn(),
+   }
+   const behavioralPattern = {
+     findMany: jest.fn(),
+     create: jest.fn(),
+   }
 
-// Suppress console errors in tests (optional)
-global.console = {
-  ...console,
-  error: jest.fn(),
-  warn: jest.fn(),
-}
+   return {
+     prisma: {
+       studySession,
+       review,
+       behavioralGoal,
+       userLearningProfile,
+       insightNotification,
+       achievement,
+       behavioralPattern,
+     },
+   }
+ })
+
+ // Setup will be imported by individual test files to avoid ESM issues
+ // DO NOT import MSW setup here - it causes Jest/ESM conflicts
+
+ // Suppress console errors in tests (optional)
+ global.console = {
+   ...console,
+   error: jest.fn(),
+   warn: jest.fn(),
+ }

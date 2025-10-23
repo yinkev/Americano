@@ -1,7 +1,7 @@
 // src/lib/db.ts
 // Prisma Client singleton with query logging and connection configuration
 
-import { PrismaClient } from '@/generated/prisma'
+import { PrismaClient } from '@prisma/client'
 import { prismaConfig } from '../../prisma/prisma-config'
 
 const prismaClientSingleton = () => {

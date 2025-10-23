@@ -628,3 +628,58 @@ describe('StudyTimeAnalyzer', () => {
     })
   })
 })
+
+describe('robustness - NaN and UTC', () => {
+  it('should use UTC hours and never emit NaN', async () => {
+    const userId = 'test-utc-nan'
+    const baseDate = new Date('2025-01-01T09:00:00Z')
+
+    const mockSessions = [
+      // 5 valid sessions at 09:00Z to satisfy threshold
+      ...Array.from({ length: 5 }, (_, i) => ({
+        id: `valid-${i}`,
+        userId,
+        startedAt: new Date(baseDate.getTime() + i * 24 * 60 * 60 * 1000),
+        completedAt: new Date(baseDate.getTime() + i * 24 * 60 * 60 * 1000 + 60 * 60 * 1000),
+        durationMs: 60 * 60 * 1000,
+        reviewsCompleted: 30,
+        objectiveCompletions: [
+          { objectiveId: 'obj', completedAt: new Date().toISOString(), selfAssessment: 4 },
+        ],
+        reviews: [{ id: `r${i}`, rating: 'GOOD' }],
+      })),
+      // Invalid/edge inputs that should be ignored safely
+      {
+        id: 'bad-1',
+        userId,
+        startedAt: 'invalid-date' as any,
+        completedAt: 'invalid-date' as any,
+        durationMs: null,
+        reviewsCompleted: 0,
+        objectiveCompletions: [],
+        reviews: [],
+      },
+    ]
+
+    mockPrisma.studySession.findMany.mockResolvedValue(mockSessions as any)
+    mockPerformanceCalculator.calculateRetentionScore.mockReturnValue(0.8)
+
+    const patterns = await StudyTimeAnalyzer.analyzeOptimalStudyTimes(userId, 6)
+
+    // Should have valid numeric hours and finite scores
+    patterns.forEach((p) => {
+      expect(typeof p.hourOfDay).toBe('number')
+      expect(Number.isNaN(p.hourOfDay)).toBe(false)
+      expect(p.hourOfDay).toBeGreaterThanOrEqual(0)
+      expect(p.hourOfDay).toBeLessThanOrEqual(23)
+      expect(Number.isFinite(p.timeOfDayScore)).toBe(true)
+    })
+
+    const effectiveness = await StudyTimeAnalyzer.calculateTimeOfDayEffectiveness(userId)
+    effectiveness.forEach((e) => {
+      expect(e.hour).toBeGreaterThanOrEqual(0)
+      expect(e.hour).toBeLessThanOrEqual(23)
+      expect(Number.isFinite(e.score)).toBe(true)
+    })
+  })
+})

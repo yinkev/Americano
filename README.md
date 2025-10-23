@@ -1,6 +1,58 @@
+---
+title: "Americano - AI-Powered Medical Education Platform"
+description: "Adaptive learning platform for medical students with AI, behavioral analytics, and personalized interventions"
+type: "Guide"
+status: "Active"
+version: "2.0"
+
+owner: "Kevy"
+review_cadence: "Quarterly"
+
+created_date: "2025-10-14T09:00:00-07:00"
+last_updated: "2025-10-23T11:30:00-07:00"
+last_reviewed: "2025-10-23T11:30:00-07:00"
+next_review_due: "2026-01-23"
+
+depends_on:
+  - docs/solution-architecture.md
+  - docs/development-environment-setup.md
+affects:
+  - docs/index.md
+
+audience:
+  - new-developers
+  - external-contributors
+technical_level: "Beginner"
+tags: ["setup", "quickstart", "onboarding"]
+keywords: ["Next.js", "FastAPI", "PostgreSQL", "ML", "medical education"]
+search_priority: "critical"
+
+lifecycle:
+  stage: "Active"
+  deprecation_date: null
+  replacement_doc: null
+  archive_after: null
+
+changelog:
+  - version: "2.0"
+    date: "2025-10-23"
+    author: "Kevy"
+    changes:
+      - "Added frontmatter for documentation refactor"
+      - "Updated Epic 5 status (complete)"
+      - "Added link to docs/index.md"
+  - version: "1.0"
+    date: "2025-10-14"
+    author: "Kevy"
+    changes:
+      - "Initial README with Quick Start"
+---
+
 # Americano - AI-Powered Medical Education Platform
 
 An adaptive learning platform for medical students powered by AI, behavioral analytics, and personalized interventions.
+
+**📚 Full Documentation:** See [docs/index.md](./docs/index.md) for complete project documentation.
 
 ## Quick Start: One Command to Rule Them All
 
@@ -467,10 +519,11 @@ cd services/ml-service && black . && flake8
 
 ## Support & Documentation
 
+- **📚 Complete Documentation Index:** [docs/index.md](./docs/index.md) - Start here for everything
 - **Setup Issues:** See "Troubleshooting" section above
 - **API Questions:** Visit http://localhost:8000/docs after starting ML service
-- **Feature Documentation:** See docs/ directory
-- **Architecture:** See AGENTS.MD and CLAUDE.MD
+- **Architecture:** [docs/solution-architecture.md](./docs/solution-architecture.md) + AGENTS.MD and CLAUDE.MD
+- **Frontmatter Standard:** [docs/frontmatter-standard.md](./docs/frontmatter-standard.md) - Documentation metadata guidelines
 
 ## License
 

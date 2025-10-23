@@ -145,9 +145,15 @@ export class SessionDurationAnalyzer {
 
     // Group sessions into duration buckets
     const bucketGroups = new Map<string, typeof sessions>()
+    let validSessions = 0
 
     for (const session of sessions) {
-      const durationMinutes = session.durationMs! / (1000 * 60)
+      const durationMs = Number((session as any).durationMs ?? NaN)
+      if (!Number.isFinite(durationMs) || durationMs <= 0) {
+        continue
+      }
+      validSessions++
+      const durationMinutes = durationMs / (1000 * 60)
       const bucket = DURATION_BUCKETS.find(
         (b) => durationMinutes >= b.min && durationMinutes < b.max,
       )
@@ -181,9 +187,10 @@ export class SessionDurationAnalyzer {
 
       // Calculate composite bucket score
       // Formula: (avgPerformance * 0.5 + completionRate * 0.3 + (1 - fatigue) * 0.2) * 100
-      const bucketScore =
+      const rawScore =
         (avgPerformance * 0.5 + completionRate * 100 * 0.3 + (1 - fatigueIndicator) * 100 * 0.2) *
         1.0
+      const bucketScore = Math.max(0, Math.min(100, rawScore))
 
       bucketAnalyses.push({
         durationRange: bucket.label,
@@ -197,10 +204,14 @@ export class SessionDurationAnalyzer {
       })
     }
 
-    // Find optimal bucket (highest score)
+    // Find optimal bucket (highest score; tie-break by sessionCount)
     let optimalBucket = bucketAnalyses[0]
     for (const bucket of bucketAnalyses) {
-      if (bucket.bucketScore > (optimalBucket?.bucketScore ?? 0)) {
+      if (
+        bucket.bucketScore > (optimalBucket?.bucketScore ?? 0) ||
+        (bucket.bucketScore === (optimalBucket?.bucketScore ?? 0) &&
+          (bucket.sessionCount > (optimalBucket?.sessionCount ?? 0)))
+      ) {
         optimalBucket = bucket
       }
     }
@@ -221,25 +232,27 @@ export class SessionDurationAnalyzer {
         allBuckets: [],
         recommendedDuration: 45,
         confidence: 0,
-        totalSessionsAnalyzed: sessions.length,
+        totalSessionsAnalyzed: validSessions,
       }
     }
 
     // Calculate recommended duration (midpoint of optimal bucket)
-    const recommendedDuration =
+    let recommendedDuration =
       optimalBucket.maxMinutes === 120 // Handle 90+ bucket
         ? 90
         : (optimalBucket.minMinutes + optimalBucket.maxMinutes) / 2
+    // Clamp to 30–90 minutes to avoid extremes
+    recommendedDuration = Math.max(30, Math.min(90, recommendedDuration))
 
     // Calculate confidence based on total sessions analyzed
-    const confidence = Math.min(1.0, sessions.length / 50)
+    const confidence = Math.min(1.0, validSessions / 50)
 
     return {
       optimalBucket,
       allBuckets: bucketAnalyses.sort((a, b) => b.bucketScore - a.bucketScore),
       recommendedDuration: Math.round(recommendedDuration),
-      confidence,
-      totalSessionsAnalyzed: sessions.length,
+      confidence: Math.min(1.0, validSessions / 50),
+      totalSessionsAnalyzed: validSessions,
     }
   }
 
@@ -268,9 +281,13 @@ export class SessionDurationAnalyzer {
       },
     })
 
+    const validDurations = sessions
+      .map((s) => Number((s as any).durationMs ?? NaN))
+      .filter((d) => Number.isFinite(d) && d > 0)
+
     const currentAvg =
-      sessions.length > 0
-        ? sessions.reduce((sum, s) => sum + s.durationMs!, 0) / sessions.length / (1000 * 60)
+      validDurations.length > 0
+        ? validDurations.reduce((sum, d) => sum + d, 0) / validDurations.length / (1000 * 60)
         : 45 // Default to 45 minutes if no data
 
     // Generate reasoning
@@ -333,9 +350,13 @@ export class SessionDurationAnalyzer {
       },
     })
 
+    const validAllDurations = allSessions
+      .map((s) => Number((s as any).durationMs ?? NaN))
+      .filter((d) => Number.isFinite(d) && d > 0)
+
     const averageSessionLength =
-      allSessions.length > 0
-        ? allSessions.reduce((sum, s) => sum + s.durationMs!, 0) / allSessions.length / (1000 * 60)
+      validAllDurations.length > 0
+        ? validAllDurations.reduce((sum, d) => sum + d, 0) / validAllDurations.length / (1000 * 60)
         : 45
 
     // Need at least 5 long sessions for meaningful analysis
@@ -381,7 +402,10 @@ export class SessionDurationAnalyzer {
       if (segments.length >= 3) {
         const baselinePerformance = segments[0].performance
         for (let i = 1; i < segments.length; i++) {
-          const degradation = (baselinePerformance - segments[i].performance) / baselinePerformance
+          const degradation =
+            baselinePerformance > 0
+              ? (baselinePerformance - segments[i].performance) / baselinePerformance
+              : 0
           if (degradation >= FATIGUE_DEGRADATION_THRESHOLD) {
             fatiguePoints.push(segments[i].minuteMark)
             break
