@@ -3,6 +3,30 @@
 **Date:** 2025-10-16
 **Context:** Working on Epic 3 and Epic 5 in parallel using git worktrees
 **Decision:** Use shared database with migration coordination protocol
+**Status:** DEPRECATED (All epics merged to main as of 2025-10-21)
+
+---
+
+## ⚠️ DEPRECATION NOTICE
+
+**This document describes a workflow that is NO LONGER IN USE.**
+
+**Status:** Deprecated as of October 21, 2025
+**Reason:** All epics (3, 4, 5) have been successfully merged to the main branch
+**Replacement:** Standard single-branch development on `main`
+
+**Deprecated Workflow:**
+- Multi-worktree development (Americano-epic3, Americano-epic4, Americano-epic5)
+- Shared database coordination across worktrees
+- Migration conflict resolution using `prisma migrate resolve`
+
+**Current Workflow:**
+- Single main branch development
+- Standard Prisma migration workflow
+- See [Development Environment Setup](./development-environment-setup.md) for current practices
+
+**Historical Value:**
+This document is preserved for reference in case multi-worktree development is needed in the future.
 
 ---
 
@@ -16,13 +40,8 @@ DATABASE_URL="postgresql://kyin@localhost:5432/americano"
 ```
 
 **Worktrees:**
-<<<<<<< HEAD
 - **Epic 3:** `/Users/kyin/Projects/Americano-epic3` (branch: `feature/epic-3-knowledge-graph`)
 - **Epic 5:** `/Users/kyin/Projects/Americano-epic5` (branch: `feature/epic-5-behavioral-twin`)
-=======
-- Epic 3: `/Users/kyin/Projects/Americano-epic3` (branch: `feature/epic-3-knowledge-graph`)
-- Epic 5: TBD (branch: TBD)
->>>>>>> origin/main
 
 ---
 
@@ -48,30 +67,15 @@ git merge origin/main
 
 ### When Applying Migrations:
 
-<<<<<<< HEAD
 **Epic 3:**
-=======
-**Epic 3 (Current):**
->>>>>>> origin/main
 ```bash
 cd /Users/kyin/Projects/Americano-epic3/apps/web
 npx prisma migrate dev --name add_vector_search_and_analytics
 ```
 
-<<<<<<< HEAD
 **Epic 5:**
 ```bash
 cd /Users/kyin/Projects/Americano-epic5/apps/web
-=======
-**Epic 5 (Later, when switching worktrees):**
-```bash
-cd /path/to/epic5/worktree/apps/web
-
-# IMPORTANT: Apply pending migrations first
-npx prisma migrate deploy  # Applies Epic 3's migration
-
-# Then create Epic 5's migration
->>>>>>> origin/main
 npx prisma migrate dev --name add_epic5_features
 ```
 
@@ -108,10 +112,7 @@ npx prisma generate          # Regenerate Prisma Client
 
 **Solution (BEST PRACTICE):**
 ```bash
-<<<<<<< HEAD
 # FROM EPIC 3 WORKTREE:
-=======
->>>>>>> origin/main
 # Step 1: Mark Epic 5's migration as resolved (tells Prisma it's okay)
 cd /Users/kyin/Projects/Americano-epic3/apps/web
 npx prisma migrate resolve --applied 20251016231054_add_story_5_1_behavioral_pattern_models
@@ -121,7 +122,6 @@ npx prisma migrate deploy
 
 # Step 3: Verify everything is synced
 npx prisma migrate status
-<<<<<<< HEAD
 
 # FROM EPIC 5 WORKTREE (reciprocal):
 # Step 1: Mark Epic 3's migration as resolved
@@ -130,8 +130,6 @@ npx prisma migrate resolve --applied 20251016000000_create_vector_indexes
 
 # Step 2: Verify
 npx prisma migrate status
-=======
->>>>>>> origin/main
 ```
 
 **Why this is the best way:**
@@ -208,12 +206,9 @@ npx prisma migrate dev --name <migration_name>
 # Regenerate Prisma Client
 npx prisma generate
 
-<<<<<<< HEAD
 # Mark migration as resolved (when it exists in DB but not locally)
 npx prisma migrate resolve --applied <migration_name>
 
-=======
->>>>>>> origin/main
 # Reset database (DESTRUCTIVE - dev only)
 npx prisma migrate reset
 
@@ -225,7 +220,6 @@ npx prisma studio
 
 ## 🎯 Current State (Updated 2025-10-16)
 
-<<<<<<< HEAD
 ### Epic 3 Status:
 - ✅ Worktree: `/Users/kyin/Projects/Americano-epic3`
 - ✅ Branch: `feature/epic-3-knowledge-graph`
@@ -292,31 +286,5 @@ npx prisma studio
 
 ---
 
-**Last Updated:** 2025-10-16 by Amelia (DEV Agent) - Epic 5 Worktree
-=======
-**Epic 3 Status:**
-- ✅ Story 3.1 implementation complete (all 7 tasks, 31 subtasks)
-- ⏳ Migration conflict detected: Epic 5 migration already in database
-- ⏳ Resolution in progress using `prisma migrate resolve`
-
-**Epic 5 Status:**
-- ✅ Already has migration in database: `20251016231054_add_story_5_1_behavioral_pattern_models`
-- ⏳ Worktree location unknown
-- ⏳ Will need to resolve Epic 3's migrations when you switch back to it
-
-**Database State:**
-- Last common migration: `20251015231031_story_2_5_mission_orchestration_fields`
-- Applied but not in Epic 3: `20251016231054_add_story_5_1_behavioral_pattern_models`
-- Pending in Epic 3: `20251016000000_create_vector_indexes`
-
-**Next Steps:**
-1. ✅ Resolve Epic 5 migration conflict using `prisma migrate resolve`
-2. Apply Epic 3 migrations using `prisma migrate deploy`
-3. Test Epic 3 search feature
-4. Commit Epic 3 work
-5. When switching to Epic 5: resolve Epic 3's migrations there too
-
----
-
-**Last Updated:** 2025-10-16 by Amelia (DEV Agent)
->>>>>>> origin/main
+**Last Updated:** 2025-10-23 (Merge conflicts resolved, deprecated status added)
+**Originally Updated:** 2025-10-16 by Amelia (DEV Agent) - Epic 5 Worktree

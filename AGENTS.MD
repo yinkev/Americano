@@ -1,8 +1,9 @@
 # Agent Development Protocol
 
 **Project:** Americano - AI-Powered Medical Education Platform
-**Last Updated:** 2025-10-14
+**Last Updated:** 2025-10-23
 **Status:** MANDATORY - All agents must follow this protocol
+**Documentation Index:** [docs/index.md](./docs/index.md) - Complete project documentation
 
 ---
 
@@ -258,8 +259,87 @@ Before committing documentation updates, ask:
 - "Am I following the protocol I'm documenting?"
 - "Did I use training data instead of current docs?"
 
-**Last Protocol Update:** 2025-10-15 (Story 2.1: Learning Objective Extraction - Added board exam tagging patterns, ChatMock prompt engineering for medical education)
-**Next Review:** After Epic 2 completion
+**Last Protocol Update:** 2025-10-23 (Added documentation system references - docs/index.md, ADR system, quality gates)
+**Next Review:** After next epic completion or quarterly (2026-01-23)
+
+---
+
+## Documentation System for Agents
+
+**CRITICAL:** All agents must be aware of and use the project documentation system.
+
+### Documentation Entry Points
+
+1. **Master Index:** [docs/index.md](./docs/index.md)
+   - Single source of truth for all documentation
+   - 10 essential documentation areas
+   - Complete navigation to all resources
+
+2. **Architecture Decision Records:** [docs/architecture/ADR-INDEX.md](./docs/architecture/ADR-INDEX.md)
+   - 5 ADRs documenting critical technical decisions
+   - Context, alternatives considered, rationale for each decision
+   - Supersedes memory/training data for architectural patterns
+
+3. **API Contracts:** [docs/api-contracts.md](./docs/api-contracts.md)
+   - Canonical API documentation (40+ Next.js routes, 5 FastAPI endpoints)
+   - OpenAPI specification reference
+   - Authentication requirements
+
+4. **Data Models:** [docs/data-models.md](./docs/data-models.md)
+   - 77 Prisma models documented
+   - 27 strategic indexes
+   - pgvector configuration
+
+5. **Frontmatter Standard:** [docs/frontmatter-standard.md](./docs/frontmatter-standard.md)
+   - Template for all documentation metadata
+   - Required fields for documentation updates
+   - ISO 8601 timestamp format
+
+### Documentation Quality Gates
+
+**Before updating ANY documentation:**
+
+1. **Read the Frontmatter Standard:** [docs/frontmatter-standard.md](./docs/frontmatter-standard.md)
+2. **Check existing ADRs:** [docs/architecture/ADR-INDEX.md](./docs/architecture/ADR-INDEX.md)
+3. **Verify with context7 MCP:** Fetch latest library/framework docs
+4. **Add proper frontmatter:** Include all required metadata fields
+5. **Update timestamps:** Use ISO 8601 format with timezone
+6. **Run quality checks:**
+   ```bash
+   npm run lint:docs      # Markdown linting
+   npm run check:links    # Link verification
+   vale docs/             # Grammar checking (optional locally)
+   ```
+
+**Quality Gate CI:** All documentation changes are automatically checked in GitHub Actions (`.github/workflows/docs-quality.yml`)
+
+### Documentation Update Protocol for Agents
+
+When creating or updating documentation:
+
+1. ✅ **Add frontmatter** using template from [docs/frontmatter-standard.md](./docs/frontmatter-standard.md)
+2. ✅ **Cross-link** to related documentation (use `depends_on`, `affects`, `related_adrs` fields)
+3. ✅ **Update index** if adding new major documentation
+4. ✅ **Follow BMAD conventions** for agent/workflow READMEs
+5. ✅ **Verify links** are not broken (`npm run check:links`)
+6. ✅ **ISO 8601 timestamps** with timezone (e.g., `2025-10-23T15:00:00-07:00`)
+
+### When to Create an ADR
+
+Create an Architecture Decision Record when:
+- Making a significant architectural choice (e.g., technology stack, design pattern)
+- Choosing between 3+ viable alternatives
+- Decision impacts multiple epics or has long-term consequences
+- Decision involves trade-offs that need documentation
+
+**ADR Template:** [docs/architecture/adr-template.md](./docs/architecture/adr-template.md)
+
+**Process:**
+1. Copy template to `docs/architecture/ADR-XXX-short-title.md`
+2. Fill in all sections (Context, Options, Decision, Consequences)
+3. Add frontmatter with proper metadata
+4. Update [docs/architecture/ADR-INDEX.md](./docs/architecture/ADR-INDEX.md)
+5. Get user (Kevy) approval before marking as "Accepted"
 
 ---
 
