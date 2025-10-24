@@ -29,11 +29,11 @@
 Americano is a Level 3 greenfield adaptive learning platform for medical students, combining AI-powered personalization with behavioral analytics to eliminate "what to study" anxiety.
 
 **Key Resources:**
-- [Product Requirements Document](./PRD-Americano-2025-10-14.md) - Complete product specifications
-- [UX Specification](./ux-specification.md) - User flows and UI design
-- [Product Brief](./product-brief-Americano-2025-10-14.md) - Executive summary
-- [Competitive Intelligence](./competitive-intelligence-2025-10-14.md) - Market analysis
-- [Innovation Strategy](./innovation-strategy-2025-10-15.md) - Strategic differentiation
+- [Product Requirements Document](./overview/PRD-Americano-2025-10-14.md) - Complete product specifications
+- [UX Specification](./overview/ux-specification.md) - User flows and UI design
+- [Product Brief](./overview/product-brief-Americano-2025-10-14.md) - Executive summary
+- [Competitive Intelligence](./overview/competitive-intelligence-2025-10-14.md) - Market analysis
+- [Innovation Strategy](./overview/innovation-strategy-2025-10-15.md) - Strategic differentiation
 
 **Completed Epics:**
 - ✅ [Epic 3: Knowledge Graph & Semantic Search](epics/epic-3/epic-3-completion-report.md) - 6 stories, ~102 points
@@ -45,14 +45,14 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 ## 🏗️ Architecture
 
 ### Core Documentation
-- **[Solution Architecture](./solution-architecture.md)** - System overview, tech stack, design decisions
-- **[Architecture Brief](./architecture-brief.md)** - High-level architecture summary
+- **[Solution Architecture](./overview/solution-architecture.md)** - System overview, tech stack, design decisions
+- **[Architecture Brief](./overview/architecture-brief.md)** - High-level architecture summary
 - **[ADR Index](./architecture/ADR-INDEX.md)** - Architecture Decision Records (5 ADRs)
 
 ### Epic-Specific Architecture
-- [Epic 4 Architecture Decision](./ARCHITECTURE-DECISION-EPIC4.md) - Hybrid TypeScript + Python rationale
-- [Epic 5 Architecture Reviews](./EPIC-5-STORIES-5.3-5.6-ARCHITECTURE-REVIEW.md) - Stories 5.3-5.6 design
-- [Story 5.2 Data Pipeline](./story-5.2-data-pipeline-architecture.md) - Analytics pipeline design
+- [Epic 4 Architecture Decision](./epic-docs/architecture-decision-epic-4.md) - Hybrid TypeScript + Python rationale
+- [Epic 5 Architecture Reviews](./epic-docs/epic-5-stories-architecture-review.md) - Stories 5.3-5.6 design
+- [Story 5.2 Data Pipeline](./epic-docs/story-5.2-data-pipeline-architecture.md) - Analytics pipeline design
 - [Story 5.5 Backend Architecture](./STORY-5.5-BACKEND-ARCHITECTURE-REVIEW.md) - Personalization backend
 
 ### Specialized Architecture
@@ -65,20 +65,20 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 ## 🔌 API Contracts
 
 ### API Documentation
-- **[API Contracts](./api-contracts.md)** - Comprehensive API documentation (40+ Next.js routes + 5 FastAPI endpoints)
+- **[API Contracts](./api/api-contracts.md)** - Comprehensive API documentation (40+ Next.js routes + 5 FastAPI endpoints)
 - **[OpenAPI Specification](../apps/web/docs/api/openapi.yaml)** - Canonical API contract
-- [API Endpoints Summary](./api-endpoints.md) - Quick reference
-- [API Routes (Task 11)](./api-routes-task-11.md) - Implementation details
+- [API Endpoints Summary](./api/api-endpoints.md) - Quick reference
+- [API Routes (Task 11)](./api/api-routes-task-11.md) - Implementation details
 
 ### Epic-Specific APIs
-- **Epic 3 APIs** - Semantic search, knowledge graph endpoints (see [API Contracts](./api-contracts.md#epic-3-semantic-search))
-- [Story 5.2 Interventions API](./API-STORY-5.2-INTERVENTIONS.md) - Behavioral intervention endpoints
-- [Story 5.5 Preferences API](./API-STORY-5.5-PREFERENCES.md) - User preference endpoints
+- **Epic 3 APIs** - Semantic search, knowledge graph endpoints (see [API Contracts](./api/api-contracts.md#epic-3-semantic-search))
+- [Story 5.2 Interventions API](./api/api-story-5.2-interventions.md) - Behavioral intervention endpoints
+- [Story 5.5 Preferences API](./api/api-story-5.5-preferences.md) - User preference endpoints
 - [Story 5.6 API Reference](./STORY-5.6-API-QUICK-REFERENCE.md) - Analytics dashboard APIs
 - [Conflict Endpoints](./backend/conflict-api-endpoints-summary.md) - Content conflict detection
 
 ### Authentication
-- [Authentication MVP](./authentication-mvp.md) - Auth strategy (planned)
+- [Authentication MVP](./planning/authentication-mvp.md) - Auth strategy (planned)
 
 ---
 
@@ -86,7 +86,7 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 
 ### Database Schema
 - **[Prisma Schema](../apps/web/prisma/schema.prisma)** - 77 models, 55 enums, 27 strategic indexes
-- **[Data Models Documentation](./data-models.md)** - Comprehensive data model documentation
+- **[Data Models Documentation](./database/data-models.md)** - Comprehensive data model documentation
 
 ### Key Model Groups
 - **Epic 3 Models:** ContentChunk, Embedding, KnowledgeGraphNode, FirstAidSection (semantic search)
@@ -94,8 +94,8 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 - **Epic 5 Models:** UserLearningProfile, StrugglePrediction, CognitiveLoadEvent (20+ models, behavioral analytics)
 
 ### Database Operations
-- [Database Migration Strategy](./DATABASE-MIGRATION-STRATEGY.md) - Prisma migrate workflows
-- [Worktree Database Strategy](./WORKTREE-DATABASE-STRATEGY.md) - Multi-worktree database handling (deprecated)
+- [Database Migration Strategy](./database/database-migration-strategy.md) - Prisma migrate workflows
+- [Worktree Database Strategy](./deprecated/WORKTREE-DATABASE-STRATEGY.md) - Multi-worktree database handling (deprecated)
 - [Database Issues Troubleshooting](./troubleshooting/database-issues.md) - Common DB problems
 
 ---
@@ -103,9 +103,9 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 ## 👨‍💻 Developer Guides
 
 ### Getting Started
-- **[Development Environment Setup](./development-environment-setup.md)** - Complete local setup guide
-- [Services Setup](./SERVICES-SETUP.md) - Next.js, FastAPI, ML service configuration
-- [Development Warnings](./development-warnings.md) - Common pitfalls to avoid
+- **[Development Environment Setup](./technical/development-environment-setup.md)** - Complete local setup guide
+- [Services Setup](./technical/services-setup.md) - Next.js, FastAPI, ML service configuration
+- [Development Warnings](./technical/development-warnings.md) - Common pitfalls to avoid
 
 ### Feature Guides
 - [First Aid Contextual Loading](./developer-guides/first-aid-contextual-loading-guide.md) - Board exam content integration
@@ -120,8 +120,8 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 ### Technical References
 - [Git Workflow Guide](./technical/git-workflow-guide.md) - Branching and PR strategy
 - [Rate Limiting (Deferred)](./technical/rate-limiting-deferred.md) - Rate limit implementation notes
-- [Gemini API Rate Limits](./GEMINI-API-RATE-LIMITS.md) - Google Gemini embedding API constraints
-- [Technical Decisions Template](./technical-decisions-template.md) - ADR template
+- [Gemini API Rate Limits](./technical/gemini-api-rate-limits.md) - Google Gemini embedding API constraints
+- [Technical Decisions Template](./architecture/technical-decisions-template.md) - ADR template
 
 ---
 
@@ -165,9 +165,9 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 ## 🚀 Migrations & Releases
 
 ### Database Migrations
-- **[Migrations Guide](./migrations.md)** - Central migration guide with rollback procedures
-- [Database Migration Strategy](./DATABASE-MIGRATION-STRATEGY.md) - Prisma migration workflows
-- [Worktree Database Strategy](./WORKTREE-DATABASE-STRATEGY.md) - Multi-worktree considerations
+- **[Migrations Guide](./database/migrations.md)** - Central migration guide with rollback procedures
+- [Database Migration Strategy](./database/database-migration-strategy.md) - Prisma migration workflows
+- [Worktree Database Strategy](./deprecated/WORKTREE-DATABASE-STRATEGY.md) - Multi-worktree considerations (deprecated)
 
 ### Releases & Changelogs
 - **[CHANGELOG.md](../CHANGELOG.md)** - Consolidated changelog (Keep a Changelog format)
@@ -178,10 +178,10 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 - [Epic 4 Pre-Deploy Checklist](./deployments/epic4-pre-deploy-checklist.md) - Pre-deployment verification
 - [Epic 4 DB Verification](./deployments/epic4-db-verification.md) - Database verification steps
 - [Epic 4 Debt & Hardening](./deployments/epic4-debt-hardening.md) - Technical debt and hardening
-- [Epic 5 Deployment Guide](./EPIC5-DEPLOYMENT-GUIDE.md) - Epic 5 deployment procedures
-- [Epic 5 Design System](./EPIC5-DESIGN-SYSTEM-GUIDE.md) - UI design system guide
+- [Epic 5 Deployment Guide](./epic-docs/epic-5-deployment-guide.md) - Epic 5 deployment procedures
+- [Epic 5 Design System](./epic-docs/epic-5-design-system-guide.md) - UI design system guide
 - [Merge Quickstart](./MERGE-QUICKSTART.md) - Multi-worktree merge guide (deprecated)
-- [Multi-Worktree Merge Plan](./MULTI-WORKTREE-MERGE-PLAN.md) - Worktree merge strategy (deprecated)
+- [Multi-Worktree Merge Plan](./deprecated/MULTI-WORKTREE-MERGE-PLAN.md) - Worktree merge strategy (deprecated)
 
 ### Release Notes
 - [Epic 4 Release Notes](./releases/epic4-release-notes.md) - What shipped in Epic 4
@@ -192,7 +192,7 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 
 ### Common Issues
 - [Database Issues](./troubleshooting/database-issues.md) - Database connection and migration problems
-- [Lecture Upload Troubleshooting](./TROUBLESHOOTING-LECTURE-UPLOAD.md) - Content upload issues
+- [Lecture Upload Troubleshooting](./technical/troubleshooting-lecture-upload.md) - Content upload issues
 
 ### Session Summaries (Debugging Context)
 - [Session Handoff 2025-10-16](./SESSION-HANDOFF-2025-10-16.md) - Work handoff context
@@ -207,8 +207,8 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 **Status:** ✅ Complete (October 17, 2025) | **Points:** ~78 | **Stories:** 6/6
 
 ### Overview
-- [Epic 4 Implementation Guide](./EPIC4-IMPLEMENTATION-GUIDE.md) - Implementation strategy
-- [Architecture Decision](./ARCHITECTURE-DECISION-EPIC4.md) - Hybrid TypeScript + Python rationale
+- [Epic 4 Implementation Guide](./epic-docs/epic-4-implementation-guide.md) - Implementation strategy
+- [Architecture Decision](./epic-docs/architecture-decision-epic-4.md) - Hybrid TypeScript + Python rationale
 
 ### Story Documentation
 - [Story 4.1: Comprehension Prompts](./stories/story-4.1.md) - AI-powered evaluation
@@ -230,25 +230,25 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 
 ### Overview
 - [Epic 5 Completion Report](epics/epic-5/EPIC-5-MERGE-COMPLETION-FINAL.md) - Complete epic summary with deliverables and metrics
-- [Epic 5 Implementation Plan](./EPIC-5-IMPLEMENTATION-PLAN.md) - Original implementation strategy
-- [Epic 5 Retrospective Handoff](./EPIC-5-RETROSPECTIVE-HANDOFF.md) - Lessons learned and handoff
-- [Epic 5 TEA Findings](./EPIC-5-TEA-FINDINGS-SUMMARY.md) - Technical Excellence Audit results
-- [Epic 5 Integration Contracts](./epic-5-integration-contracts.md) - API integration specs
+- [Epic 5 Implementation Plan](./epic-docs/epic-5-implementation-plan.md) - Original implementation strategy
+- [Epic 5 Retrospective Handoff](./epic-docs/epic-5-retrospective-handoff.md) - Lessons learned and handoff
+- [Epic 5 TEA Findings](./epic-docs/epic-5-tea-findings.md) - Technical Excellence Audit results
+- [Epic 5 Integration Contracts](./epic-docs/epic-5-integration-contracts.md) - API integration specs
 
 ### Story Documentation
 - [Story 5.1: Learning Pattern Recognition](./stories/story-5.1.md) - VARK profiling, forgetting curves
 - [Story 5.2: Predictive Analytics](./stories/story-5.2.md) - ML-powered struggle prediction (73% accuracy)
-  - [Data Pipeline Architecture](./story-5.2-data-pipeline-architecture.md)
+  - [Data Pipeline Architecture](./epic-docs/story-5.2-data-pipeline-architecture.md)
 - [Story 5.3: Optimal Study Timing](./stories/story-5.3.md) - Google Calendar integration
 - [Story 5.4: Cognitive Load Monitoring](./stories/story-5.4.md) - Burnout prevention
 - [Story 5.5: Adaptive Personalization](./stories/story-5.5.md) - Multi-armed bandit optimization
 - [Story 5.6: Behavioral Insights Dashboard](./stories/story-5.6.md) - Goal tracking, learning science UI
 
 ### Technical Assets
-- [Performance Benchmarks](./EPIC5-PERFORMANCE-BENCHMARKS.md) - 98.5% API improvement (21.2s → 180ms)
-- [Deployment Guide](./EPIC5-DEPLOYMENT-GUIDE.md) - Production deployment procedures
-- [Design System Guide](./EPIC5-DESIGN-SYSTEM-GUIDE.md) - OKLCH + glassmorphism design patterns
-- [Architecture Reviews 5.3-5.6](./EPIC-5-STORIES-5.3-5.6-ARCHITECTURE-REVIEW.md) - Stories 5.3-5.6 design decisions
+- [Performance Benchmarks](./epic-docs/epic-5-performance-benchmarks.md) - 98.5% API improvement (21.2s → 180ms)
+- [Deployment Guide](./epic-docs/epic-5-deployment-guide.md) - Production deployment procedures
+- [Design System Guide](./epic-docs/epic-5-design-system-guide.md) - OKLCH + glassmorphism design patterns
+- [Architecture Reviews 5.3-5.6](./epic-docs/epic-5-stories-architecture-review.md) - Stories 5.3-5.6 design decisions
 
 ### Retrospective
 - [Epic 5 Retrospective](./retrospectives/epic-5-retrospective-2025-10-20.md) - Complete lessons learned
@@ -295,22 +295,22 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 ## 🎨 Additional Resources
 
 ### Planning & Strategy
-- [Epics Overview](./epics-Americano-2025-10-14.md) - All epics at a glance
-- [Backlog](./backlog.md) - Future work items
-- [BMAD Workflow Status](./bmm-workflow-status.md) - BMAD Method adoption status
-- [Brainstorming Results](./brainstorming-session-results-2025-10-14.md) - Ideation session
+- [Epics Overview](./planning/epics-Americano-2025-10-14.md) - All epics at a glance
+- [Backlog](./planning/backlog.md) - Future work items
+- [BMAD Workflow Status](./deprecated/bmm-workflow-status.md) - BMAD Method adoption status (deprecated)
+- [Brainstorming Results](./planning/brainstorming-session-results-2025-10-14.md) - Ideation session
 
 ### UX & Design
-- [Wireframes: Study Session UI](./wireframes-study-session-ui.md) - UI mockups
-- [Mobile Search Implementation](./mobile-search-implementation.md) - Mobile-responsive search
+- [Wireframes: Study Session UI](./planning/wireframes-study-session-ui.md) - UI mockups
+- [Mobile Search Implementation](./planning/mobile-search-implementation.md) - Mobile-responsive search
 - [Analytics Dashboard Implementation](./analytics-dashboard-implementation-report.md) - Dashboard UI
 
 ### Privacy & Compliance
-- [Search Analytics Privacy](./search-analytics-privacy-compliance.md) - GDPR/CCPA compliance
+- [Search Analytics Privacy](./technical/search-analytics-privacy-compliance.md) - GDPR/CCPA compliance
 
 ### Technical Components
-- [Task 8 Feedback Loop](./task-8-feedback-loop-components.md) - Feedback mechanism components
-- [Task 8 Workflow Diagram](./task-8-workflow-diagram.md) - Workflow visualization
+- [Task 8 Feedback Loop](./epic-docs/task-8-feedback-loop-components.md) - Feedback mechanism components
+- [Task 8 Workflow Diagram](./epic-docs/task-8-workflow-diagram.md) - Workflow visualization
 - [Integration Checklist (Task 6-7)](./integration/task-6-7-integration-checklist.md) - Integration validation
 
 ---
@@ -402,23 +402,23 @@ This documentation is optimized for AI agents (like Claude Code) to understand a
 ### When Planning New Features:
 
 **UI-only features:**
-- Reference: [Solution Architecture](./solution-architecture.md), [UX Specification](./ux-specification.md)
+- Reference: [Solution Architecture](./overview/solution-architecture.md), [UX Specification](./overview/ux-specification.md)
 - Check: Component patterns in Epic 5 Design System Guide
 
 **API/Backend features:**
-- Reference: [Architecture Decision Epic 4](./ARCHITECTURE-DECISION-EPIC4.md), API Contracts
+- Reference: [Architecture Decision Epic 4](./epic-docs/architecture-decision-epic-4.md), API Contracts
 - Check: Existing endpoints in Epic 3/4/5 API docs
 
 **Full-stack features:**
-- Reference: All architecture docs + [Integration Contracts](./epic-5-integration-contracts.md)
+- Reference: All architecture docs + [Integration Contracts](./epic-docs/epic-5-integration-contracts.md)
 - Check: Epic completion reports for patterns
 
 **Database changes:**
-- Reference: [Database Migration Strategy](./DATABASE-MIGRATION-STRATEGY.md)
+- Reference: [Database Migration Strategy](./database/database-migration-strategy.md)
 - Check: Prisma schema for existing models
 
 **Deployment changes:**
-- Reference: [Epic 4 Deployment Plan](./deployments/epic4-deployment-plan.md), [Epic 5 Deployment Guide](./EPIC5-DEPLOYMENT-GUIDE.md)
+- Reference: [Epic 4 Deployment Plan](./deployments/epic4-deployment-plan.md), [Epic 5 Deployment Guide](./epic-docs/epic-5-deployment-guide.md)
 
 ---
 
