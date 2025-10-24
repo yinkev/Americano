@@ -443,6 +443,12 @@ This index follows the BMAD Method documentation principles:
 - **[Best Practices Audit](./DOCUMENTATION-BEST-PRACTICES-AUDIT.md)** - Comprehensive audit (Grade: A+, 95/100)
 - **[Frontmatter Standard](./frontmatter-standard.md)** - Metadata template and guidelines
 
+### Deprecated Documentation
+- **[Deprecated Archive](./deprecated/README.md)** - Historical documentation no longer in active use
+  - Multi-worktree development workflows (deprecated Oct 2025)
+  - Epic 1-5 status tracking (all epics complete)
+  - Preserved for historical reference
+
 ### Quality Gates
 - **Markdown Linting:** `npm run lint:docs` - Automated syntax checking
 - **Link Checking:** `npm run check:links` - Broken link detection
