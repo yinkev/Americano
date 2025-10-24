@@ -438,9 +438,9 @@ This index follows the BMAD Method documentation principles:
 ## 📊 Documentation Quality & Meta-Documentation
 
 ### Quality Reports
-- **[Documentation Excellence Report](./DOCUMENTATION-EXCELLENCE-REPORT.md)** - 🏆 World-class achievement report (Oct 23, 2025)
-- **[Doc Health Metrics](./DOC-HEALTH-METRICS.md)** - Quantitative metrics and tracking
-- **[Best Practices Audit](./DOCUMENTATION-BEST-PRACTICES-AUDIT.md)** - Comprehensive audit (Grade: A+, 95/100)
+- **[Documentation Excellence Report](./documentation-excellence-report.md)** - 🏆 World-class achievement report (Oct 23, 2025)
+- **[Doc Health Metrics](./doc-health-metrics.md)** - Quantitative metrics and tracking
+- **[Best Practices Audit](./documentation-best-practices-audit.md)** - Comprehensive audit (Grade: A+, 95/100)
 - **[Frontmatter Standard](./frontmatter-standard.md)** - Metadata template and guidelines
 
 ### Deprecated Documentation
