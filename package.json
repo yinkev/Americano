@@ -19,10 +19,15 @@
     "health-check": "bash scripts/check-services.sh",
     "setup": "bash scripts/setup.sh",
     "setup:ml": "bash scripts/setup-ml.sh",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "check": "biome ci .",
     "lint:docs": "markdownlint 'docs/**/*.md' '*.md' 'bmad/**/*.md' --ignore node_modules --ignore apps/web/node_modules",
     "check:links": "find docs -name '*.md' -not -path '*/node_modules/*' -exec markdown-link-check --config .markdown-link-check.json {} \\;"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.2.6",
     "concurrently": "^8.2.2",
     "markdownlint-cli": "^0.39.0",
     "markdown-link-check": "^3.12.1",
