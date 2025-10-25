@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { BookOpen, ChevronLeft, ChevronRight, Target } from 'lucide-react'
+import { typography, colors } from '@/lib/design-tokens'
 
 interface LearningObjective {
   id: string
@@ -233,10 +234,9 @@ export function ObjectiveContentPanel({
 
     return (
       <Card
-        className="p-4 backdrop-blur-xl border-0"
+        className="p-4 border border-border rounded-xl shadow-sm"
         style={{
           background: 'oklch(1 0 0 / 0.95)',
-          boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
         }}
       >
         <div className="flex items-center justify-between">
@@ -278,186 +278,139 @@ export function ObjectiveContentPanel({
   }
 
   return (
-    <div className="space-y-6">
-      <Card
-        className="p-6 backdrop-blur-xl border-0"
-        style={{
-          background: 'oklch(1 0 0 / 0.95)',
-          boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
-        }}
-      >
-        <div className="flex items-start gap-4">
-          <Target
-            className="w-6 h-6 flex-shrink-0 mt-1"
-            style={{ color: complexityColors[objective.complexity] }}
-          />
-
-          <div className="flex-1 space-y-3">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge
-                  variant="outline"
-                  style={{
-                    background: `${complexityColors[objective.complexity]}15`,
-                    color: complexityColors[objective.complexity],
-                    borderColor: complexityColors[objective.complexity],
-                  }}
-                >
-                  {complexityLabels[objective.complexity]}
-                </Badge>
-
-                {objective.isHighYield && (
-                  <Badge
-                    variant="outline"
-                    style={{
-                      background: 'oklch(0.9 0.1 60 / 0.2)',
-                      color: 'oklch(0.5 0.15 60)',
-                      borderColor: 'oklch(0.7 0.12 60)',
-                    }}
-                  >
-                    ⭐ High-Yield
-                  </Badge>
-                )}
-
-                {objective.boardExamTags.slice(0, 2).map((tag) => (
-                  <Badge key={tag} variant="outline" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-
-              <h2 className="text-2xl font-bold" style={{ color: 'oklch(0.3 0.15 250)' }}>
-                {objective.objective}
-              </h2>
-            </div>
-
-            <div
-              className="flex items-center gap-2 text-sm"
-              style={{ color: 'oklch(0.5 0.1 250)' }}
+    <Card className="bg-card p-6 border border-border rounded-xl shadow-sm">
+      <div className="flex items-start gap-4 mb-4">
+        <Target
+          className="w-6 h-6 flex-shrink-0 mt-1"
+          style={{ color: complexityColors[objective.complexity] }}
+        />
+        <div className="flex-1 space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge
+              variant="outline"
+              style={{
+                background: `${complexityColors[objective.complexity]}15`,
+                color: complexityColors[objective.complexity],
+                borderColor: complexityColors[objective.complexity],
+              }}
             >
-              <BookOpen className="w-4 h-4" />
-              <span>
-                <span className="font-medium">{objective.lecture.course.name}</span>
-                {' • '}
-                {objective.lecture.title}
-                {pageStart && (
-                  <>
-                    {' • '}
-                    <span>
-                      Page{pageStart !== pageEnd && 's'} {pageStart}
-                      {pageEnd && pageEnd !== pageStart && `-${pageEnd}`}
-                    </span>
-                  </>
-                )}
-              </span>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      <Card
-        className="p-6 backdrop-blur-xl border-0"
-        style={{
-          background: 'oklch(0.99 0.003 250)',
-          boxShadow: '0 8px 32px rgba(31, 38, 135, 0.08)',
-        }}
-      >
-        <h3 className="text-lg font-semibold mb-4" style={{ color: 'oklch(0.4 0.15 250)' }}>
-          Focused Reading
-        </h3>
-
-        {isLoadingContent ? (
-          <div className="space-y-3">
-            <div className="animate-pulse h-4 rounded bg-[oklch(0.95_0.003_250)]" />
-            <div className="animate-pulse h-4 rounded bg-[oklch(0.95_0.003_250)]" />
-            <div className="animate-pulse h-4 rounded bg-[oklch(0.95_0.003_250)] w-3/4" />
-          </div>
-        ) : contentError ? (
-          <p className="text-sm" style={{ color: 'oklch(0.6 0.1 250)' }}>
-            {contentError}
-          </p>
-        ) : contentChunks.length === 0 ? (
-          <p className="text-sm" style={{ color: 'oklch(0.6 0.1 250)' }}>
-            No related lecture content available for this objective.
-          </p>
-        ) : (
-          <>
-            <div
-              className="flex items-center justify-between mb-3 text-xs"
-              style={{ color: 'oklch(0.6 0.1 250)' }}
-            >
-              <span>
-                Section {activeChunkIndex + 1} of {contentChunks.length}
-                {activeChunk?.pageNumber && ` • Page ${activeChunk.pageNumber}`}
-              </span>
-            </div>
-
-            <div
-              className="rounded-xl border border-[oklch(0.92_0.005_250)] bg-[oklch(1_0_0/0.95)] p-4 text-sm leading-relaxed"
-              style={{ color: 'oklch(0.4 0.15 250)' }}
-              dangerouslySetInnerHTML={{ __html: highlightedContent }}
-            />
-          </>
-        )}
-      </Card>
-
-      {renderNavigationControls()}
-
-      {prerequisites.length > 0 && (
-        <Card
-          className="p-6 backdrop-blur-xl border-0"
-          style={{
-            background: 'oklch(1 0 0 / 0.95)',
-            boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
-          }}
-        >
-          <h3 className="text-lg font-semibold mb-3" style={{ color: 'oklch(0.4 0.15 250)' }}>
-            Prerequisites
-          </h3>
-          <div className="space-y-2">
-            {prerequisites.map((prereq) => (
-              <div
-                key={prereq.id}
-                className="flex items-start gap-2 p-3 rounded-lg"
-                style={{ background: 'oklch(0.98 0.005 250)' }}
+              {complexityLabels[objective.complexity]}
+            </Badge>
+            {objective.isHighYield && (
+              <Badge
+                variant="outline"
+                style={{
+                  background: 'oklch(0.9 0.1 60 / 0.2)',
+                  color: 'oklch(0.5 0.15 60)',
+                  borderColor: 'oklch(0.7 0.12 60)',
+                }}
               >
-                <Badge
-                  variant="outline"
-                  className="mt-0.5"
-                  style={{
-                    background: `${complexityColors[prereq.complexity]}15`,
-                    color: complexityColors[prereq.complexity],
-                    borderColor: complexityColors[prereq.complexity],
-                  }}
-                >
-                  {complexityLabels[prereq.complexity]}
-                </Badge>
-                <span className="text-sm" style={{ color: 'oklch(0.4 0.15 250)' }}>
-                  {prereq.objective}
-                </span>
-              </div>
+                ⭐ High-Yield
+              </Badge>
+            )}
+            {objective.boardExamTags.slice(0, 2).map((tag) => (
+              <Badge key={tag} variant="outline" className="text-xs">
+                {tag}
+              </Badge>
             ))}
           </div>
-        </Card>
-      )}
+          <h2 className={`${typography.heading.h2} text-foreground`}>
+            {objective.objective}
+          </h2>
+          <div className={`${typography.body.small} text-muted-foreground flex items-center gap-2`}>
+            <BookOpen className="w-4 h-4" />
+            <span>
+              <span className="font-medium">{objective.lecture.course.name}</span>
+              {' • '}
+              {objective.lecture.title}
+              {pageStart && (
+                <>
+                  {' • '}
+                  <span>
+                    Page{pageStart !== pageEnd && 's'} {pageStart}
+                    {pageEnd && pageEnd !== pageEnd && `-${pageEnd}`}
+                  </span>
+                </>
+              )}
+            </span>
+          </div>
+        </div>
+      </div>
 
-      <Card
-        className="p-6 backdrop-blur-xl border-0"
-        style={{
-          background: 'oklch(0.98 0.005 250 / 0.8)',
-          boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
-        }}
-      >
-        <h3 className="text-sm font-semibold mb-2" style={{ color: 'oklch(0.4 0.15 250)' }}>
-          Study Tips
-        </h3>
-        <ul className="space-y-1 text-sm" style={{ color: 'oklch(0.5 0.1 250)' }}>
-          <li>• Read through the objective and understand the key concepts</li>
-          <li>• Review the lecture content for this section</li>
-          <li>• Complete the flashcard reviews for active recall</li>
-          <li>• Assess your understanding before moving to the next objective</li>
-        </ul>
-      </Card>
-    </div>
+      <div className="space-y-6">
+        <div>
+          <h3 className={`${typography.heading.h3} text-foreground mb-2`}>Focused Reading</h3>
+          {isLoadingContent ? (
+            <div className="space-y-3">
+              <div className="animate-pulse h-4 rounded bg-muted" />
+              <div className="animate-pulse h-4 rounded bg-muted" />
+              <div className="animate-pulse h-4 rounded bg-muted w-3/4" />
+            </div>
+          ) : contentError ? (
+            <p className={`${typography.body.base} text-destructive`}>
+              {contentError}
+            </p>
+          ) : contentChunks.length === 0 ? (
+            <p className={`${typography.body.base} text-muted-foreground`}>
+              No related lecture content available for this objective.
+            </p>
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground">
+                <span>
+                  Section {activeChunkIndex + 1} of {contentChunks.length}
+                  {activeChunk?.pageNumber && ` • Page ${activeChunk.pageNumber}`}
+                </span>
+              </div>
+              <div
+                className="rounded-xl border border-border bg-background/50 p-4 text-sm leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: highlightedContent }}
+              />
+            </>
+          )}
+        </div>
+
+        {renderNavigationControls()}
+
+        {prerequisites.length > 0 && (
+          <div>
+            <h3 className={`${typography.heading.h3} text-foreground mb-2`}>Prerequisites</h3>
+            <div className="space-y-2">
+              {prerequisites.map((prereq) => (
+                <div
+                  key={prereq.id}
+                  className="flex items-start gap-2 p-3 rounded-lg bg-muted/50"
+                >
+                  <Badge
+                    variant="outline"
+                    className="mt-0.5"
+                    style={{
+                      background: `${complexityColors[prereq.complexity]}15`,
+                      color: complexityColors[prereq.complexity],
+                      borderColor: complexityColors[prereq.complexity],
+                    }}
+                  >
+                    {complexityLabels[prereq.complexity]}
+                  </Badge>
+                  <span className={`${typography.body.small} text-muted-foreground`}>
+                    {prereq.objective}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div>
+          <h3 className={`${typography.heading.h3} text-foreground mb-2`}>Study Tips</h3>
+          <ul className={`space-y-1 ${typography.body.small} text-muted-foreground`}>
+            <li>• Read through the objective and understand the key concepts</li>
+            <li>• Review the lecture content for this section</li>
+            <li>• Complete the flashcard reviews for active recall</li>
+            <li>• Assess your understanding before moving to the next objective</li>
+          </ul>
+        </div>
+      </div>
+    </Card>
   )
 }

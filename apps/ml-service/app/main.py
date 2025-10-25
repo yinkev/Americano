@@ -14,7 +14,15 @@ from contextlib import asynccontextmanager
 import logging
 
 from app.routes import predictions, interventions, analytics
-from app.services.database import prisma
+from app.utils.config import settings
+from typing import Any
+try:
+    if settings.DB_ADAPTER.lower() == "prisma":
+        from app.services.database import _get_prisma_client  # type: ignore
+    else:
+        _get_prisma_client = None  # type: ignore
+except Exception:
+    _get_prisma_client = None  # type: ignore
 from app.utils.logging import setup_logging
 from app.utils.config import settings
 
@@ -35,15 +43,19 @@ async def lifespan(app: FastAPI):
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     logger.info(f"Database: {settings.DATABASE_URL[:20]}...")
 
-    await prisma.connect()
-    logger.info("Prisma client connected")
+    if _get_prisma_client is not None:
+        client = _get_prisma_client()
+        await client.connect()
+        logger.info("Prisma client connected")
 
     yield
 
     # Shutdown
     logger.info("Shutting down ML Service...")
-    await prisma.disconnect()
-    logger.info("Prisma client disconnected")
+    if _get_prisma_client is not None:
+        client = _get_prisma_client()
+        await client.disconnect()
+        logger.info("Prisma client disconnected")
 
 
 # Initialize FastAPI app
@@ -94,13 +106,21 @@ async def health_check():
     Returns:
         dict: Service health status and metadata
     """
-    return {
+    status = {
         "status": "healthy",
         "service": "ml-service",
         "version": "1.0.0",
         "environment": settings.ENVIRONMENT,
-        "database": "connected" if prisma.is_connected() else "disconnected"
     }
+    try:
+        if _get_prisma_client is not None:
+            client = _get_prisma_client()
+            status["database"] = "connected" if client.is_connected() else "disconnected"
+        else:
+            status["database"] = "sqlalchemy"
+    except Exception:
+        status["database"] = "unknown"
+    return status
 
 
 @app.get("/")

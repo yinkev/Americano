@@ -12,9 +12,10 @@
  * - User Notes: 50 (personal, unverified content)
  */
 
-import { PrismaClient, SourceType } from '../src/generated/prisma'
+import { SourceType } from '../src/generated/prisma'
+import { prisma } from '../src/lib/db'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 /**
  * Default sources to seed
@@ -315,7 +316,7 @@ async function main() {
 
   for (const sourceData of SOURCES) {
     try {
-      const source = await prisma.source.upsert({
+      const source = await prismaClient.source.upsert({
         where: { name: sourceData.name },
         update: {
           credibilityScore: sourceData.credibilityScore,
@@ -348,5 +349,5 @@ main()
     process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect()
+    await prismaClient.$disconnect()
   })

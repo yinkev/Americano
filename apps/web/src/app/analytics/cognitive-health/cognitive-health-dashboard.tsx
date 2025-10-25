@@ -48,6 +48,19 @@ interface CognitiveHealthData {
   }
 }
 
+// Narrower type to fix implicit any usage from API response
+interface PrimaryStressor {
+  stressorType: string
+  severity: number
+}
+
+interface StressProfileAPIResponse {
+  primaryStressors: PrimaryStressor[]
+  loadTolerance: number
+  effectiveCopingStrategies: string[]
+  profileConfidence: number
+}
+
 // Placeholder userId (auth deferred per Story 5.4 constraints)
 const PLACEHOLDER_USER_ID = 'user_demo_001'
 const REFRESH_INTERVAL_MS = 30 * 1000 // 30 seconds (Story 5.4 polish requirement)
@@ -86,9 +99,21 @@ export function CognitiveHealthDashboard() {
       const stressProfileRes = await fetch(
         `/api/analytics/stress-profile?userId=${PLACEHOLDER_USER_ID}`,
       )
-      let stressProfileData = null
+      let stressProfileData: StressProfileAPIResponse | null = null
       if (stressProfileRes.ok) {
-        stressProfileData = await stressProfileRes.json()
+        const parsed = (await stressProfileRes.json()) as Partial<StressProfileAPIResponse>
+        // Coerce to safe shape with sensible defaults
+        stressProfileData = {
+          primaryStressors: Array.isArray(parsed.primaryStressors)
+            ? (parsed.primaryStressors as PrimaryStressor[])
+            : [],
+          loadTolerance: typeof parsed.loadTolerance === 'number' ? parsed.loadTolerance : 0,
+          effectiveCopingStrategies: Array.isArray(parsed.effectiveCopingStrategies)
+            ? (parsed.effectiveCopingStrategies as string[])
+            : [],
+          profileConfidence:
+            typeof parsed.profileConfidence === 'number' ? parsed.profileConfidence : 0,
+        }
       }
 
       // Transform history data
@@ -122,9 +147,9 @@ export function CognitiveHealthDashboard() {
         },
         stressProfile: stressProfileData
           ? {
-              triggers: stressProfileData.primaryStressors.map((s: any) => ({
+              triggers: (stressProfileData.primaryStressors ?? []).map((s) => ({
                 dimension: s.stressorType,
-                score: s.severity * 100,
+                score: Math.max(0, Math.min(100, (s.severity ?? 0) * 100)),
                 isPrimary: true,
               })),
               loadTolerance: stressProfileData.loadTolerance,

@@ -12,9 +12,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
-const prisma = new PrismaClient()
 
 const AddContentSchema = z.object({
   sessionId: z.string(),

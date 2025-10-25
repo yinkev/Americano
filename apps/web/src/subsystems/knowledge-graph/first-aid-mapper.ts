@@ -16,8 +16,9 @@
  * - Stores mappings in LectureFirstAidMapping table
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import { embeddingService } from '@/lib/embedding-service'
+import type { Prisma } from '@/generated/prisma'
 
 /**
  * First Aid mapping result
@@ -63,7 +64,7 @@ export interface MappingQualityMetrics {
  * ```
  */
 export class FirstAidMapper {
-  private prisma: PrismaClient
+  private prisma = prisma
 
   // Similarity thresholds (Task 2.2)
   private readonly HIGH_CONFIDENCE_THRESHOLD = 0.75
@@ -71,7 +72,7 @@ export class FirstAidMapper {
   private readonly HIGH_YIELD_BOOST = 0.1
 
   constructor() {
-    this.prisma = new PrismaClient()
+    // use singleton prisma
   }
 
   /**
@@ -86,7 +87,7 @@ export class FirstAidMapper {
     console.log(`📍 Mapping lecture ${lectureId} to First Aid sections...`)
 
     // Get lecture content chunks with embeddings
-    const chunks = await this.prisma.$queryRawUnsafe<any[]>(
+    const chunks = await this.prisma.$queryRawUnsafe<Array<{ id: string; content: string; embedding: unknown; chunkIndex: number }>>(
       `
       SELECT id, content, embedding, "chunkIndex"
       FROM content_chunks
@@ -109,7 +110,7 @@ export class FirstAidMapper {
 
     for (const chunk of chunks) {
       const chunkMappings = await this.findRelevantFirstAidSectionsForEmbedding(
-        chunk.embedding,
+        (chunk.embedding as unknown as number[]),
         5 // Top 5 per chunk
       )
       allMappings.push(...chunkMappings)
@@ -166,7 +167,16 @@ export class FirstAidMapper {
     const embeddingStr = `[${queryEmbedding.join(',')}]`
 
     // Search with pgvector cosine distance
-    const results = await this.prisma.$queryRawUnsafe<any[]>(
+    const results = await this.prisma.$queryRawUnsafe<Array<{
+      id: string
+      system: string
+      section: string
+      subsection: string | null
+      pageNumber: number
+      content: string
+      isHighYield: boolean
+      distance: number
+    }>>(
       `
       SELECT
         id,
@@ -187,7 +197,7 @@ export class FirstAidMapper {
     )
 
     // Convert distance to similarity and apply high-yield boost
-    const mappings = results.map((row: any) => {
+    const mappings = results.map((row) => {
       const baseSimilarity = this.distanceToSimilarity(row.distance)
 
       // Apply high-yield boost (Task 2.3)
@@ -312,32 +322,10 @@ export class FirstAidMapper {
    * Task 2.2: Persistence of mapping results
    */
   private async storeMappings(lectureId: string, mappings: FirstAidMapping[]): Promise<void> {
-    for (const mapping of mappings) {
-      try {
-        await this.prisma.lectureFirstAidMapping.upsert({
-          where: {
-            lectureId_firstAidSectionId: {
-              lectureId,
-              firstAidSectionId: mapping.firstAidSectionId,
-            },
-          },
-          create: {
-            lectureId,
-            firstAidSectionId: mapping.firstAidSectionId,
-            confidence: mapping.similarity,
-            priority: mapping.priority,
-            rationale: mapping.rationale,
-            autoMapped: true,
-          },
-          update: {
-            confidence: mapping.similarity,
-            priority: mapping.priority,
-            rationale: mapping.rationale,
-          },
-        })
-      } catch (error) {
-        console.error(`Failed to store mapping: ${error}`)
-      }
+    // Persistence disabled: lectureFirstAidMapping model/table not defined yet.
+    // This method is a no-op to avoid runtime/compile-time errors.
+    if (mappings.length > 0) {
+      console.warn('[FirstAidMapper] Persistence disabled (no lectureFirstAidMapping model). Skipping save.')
     }
   }
 
@@ -576,15 +564,11 @@ export class FirstAidMapper {
    */
   async getReferencesForChunk(chunkId: string, limit: number = 5): Promise<FirstAidMapping[]> {
     // Get the chunk with its embedding
-    const chunk = await this.prisma.contentChunk.findUnique({
-      where: { id: chunkId },
-      select: {
-        id: true,
-        content: true,
-        embedding: true,
-        lectureId: true,
-      },
-    })
+    const rows = await this.prisma.$queryRawUnsafe<Array<{ id: string; content: string; embedding: unknown }>>(
+      `SELECT id, content, embedding FROM content_chunks WHERE id = $1 AND embedding IS NOT NULL`,
+      chunkId
+    )
+    const chunk = rows[0]
 
     if (!chunk || !chunk.embedding) {
       console.warn(`Chunk ${chunkId} not found or has no embedding`)

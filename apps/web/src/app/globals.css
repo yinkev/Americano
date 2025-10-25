@@ -357,4 +357,32 @@
     left: 1rem;
     top: 1rem;
   }
+
+  .primary-button {
+    background-color: oklch(0.75 0.18 240);
+    color: oklch(0.99 0 0);
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .primary-button:hover {
+    background-color: oklch(0.65 0.18 240);
+  }
+
+  .compact-button {
+    background-color: oklch(0.95 0 0);
+    color: oklch(0.1 0 0);
+    padding: 6px 12px;
+    border-radius: 5px;
+    border: 1px solid oklch(0.9 0 0);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .compact-button:hover {
+    background-color: oklch(0.9 0 0);
+  }
 }

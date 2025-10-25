@@ -19,11 +19,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import { firstAidMapper } from '@/subsystems/knowledge-graph/first-aid-mapper'
 import { searchRateLimiter } from '@/lib/rate-limiter'
 
-const prisma = new PrismaClient()
 
 /**
  * GET /api/first-aid/references

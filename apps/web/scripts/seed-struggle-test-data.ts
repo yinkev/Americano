@@ -11,7 +11,7 @@
  * - Expected prediction: HIGH struggle probability (>0.7) due to prerequisite gap
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import {
   ProcessingStatus,
   ObjectiveComplexity,
@@ -26,7 +26,7 @@ import {
 } from '@/generated/prisma'
 import { subDays, addDays, addHours, startOfDay } from 'date-fns'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 const TEST_USER_EMAIL = 'kevy@americano.dev'
 
@@ -35,12 +35,12 @@ async function main() {
 
   // Clean up existing test data
   console.log('🧹 Cleaning up existing test data...')
-  const existingUser = await prisma.user.findUnique({
+  const existingUser = await prismaClient.user.findUnique({
     where: { email: TEST_USER_EMAIL },
   })
 
   if (existingUser) {
-    await prisma.user.delete({
+    await prismaClient.user.delete({
       where: { id: existingUser.id },
     })
     console.log('✅ Cleaned up existing test user\n')
@@ -48,7 +48,7 @@ async function main() {
 
   // Step 1: Create test user
   console.log('👤 Creating test user...')
-  const user = await prisma.user.create({
+  const user = await prismaClient.user.create({
     data: {
       email: TEST_USER_EMAIL,
       name: 'Kevin (Test User)',
@@ -61,7 +61,7 @@ async function main() {
 
   // Step 2: Create courses
   console.log('📚 Creating courses...')
-  const anatomyCourse = await prisma.course.create({
+  const anatomyCourse = await prismaClient.course.create({
     data: {
       userId: user.id,
       name: 'Human Anatomy',
@@ -71,7 +71,7 @@ async function main() {
     },
   })
 
-  const physiologyCourse = await prisma.course.create({
+  const physiologyCourse = await prismaClient.course.create({
     data: {
       userId: user.id,
       name: 'Human Physiology',
@@ -84,7 +84,7 @@ async function main() {
 
   // Step 3: Create lectures
   console.log('📖 Creating lectures...')
-  const anatomyLecture = await prisma.lecture.create({
+  const anatomyLecture = await prismaClient.lecture.create({
     data: {
       userId: user.id,
       courseId: anatomyCourse.id,
@@ -99,7 +99,7 @@ async function main() {
     },
   })
 
-  const physiologyLecture = await prisma.lecture.create({
+  const physiologyLecture = await prismaClient.lecture.create({
     data: {
       userId: user.id,
       courseId: physiologyCourse.id,
@@ -119,7 +119,7 @@ async function main() {
   console.log('🎯 Creating learning objectives...')
 
   // ANATOMY OBJECTIVES (strong area - high mastery)
-  const anatomyObjective1 = await prisma.learningObjective.create({
+  const anatomyObjective1 = await prismaClient.learningObjective.create({
     data: {
       lectureId: anatomyLecture.id,
       objective: 'Describe the structure and function of skeletal muscle fibers',
@@ -135,7 +135,7 @@ async function main() {
     },
   })
 
-  const anatomyObjective2 = await prisma.learningObjective.create({
+  const anatomyObjective2 = await prismaClient.learningObjective.create({
     data: {
       lectureId: anatomyLecture.id,
       objective: 'Explain the anatomical features of major muscle groups',
@@ -152,7 +152,7 @@ async function main() {
   })
 
   // PHYSIOLOGY OBJECTIVES (struggle area - low mastery)
-  const membraneTransportObjective = await prisma.learningObjective.create({
+  const membraneTransportObjective = await prismaClient.learningObjective.create({
     data: {
       lectureId: physiologyLecture.id,
       objective: 'Explain cell membrane transport mechanisms (passive and active transport)',
@@ -168,7 +168,7 @@ async function main() {
     },
   })
 
-  const actionPotentialObjective = await prisma.learningObjective.create({
+  const actionPotentialObjective = await prismaClient.learningObjective.create({
     data: {
       lectureId: physiologyLecture.id,
       objective: 'Describe the generation and propagation of action potentials in neurons',
@@ -184,7 +184,7 @@ async function main() {
     },
   })
 
-  const synapticTransmissionObjective = await prisma.learningObjective.create({
+  const synapticTransmissionObjective = await prismaClient.learningObjective.create({
     data: {
       lectureId: physiologyLecture.id,
       objective: 'Explain synaptic transmission and neurotransmitter release',
@@ -202,7 +202,7 @@ async function main() {
 
   // Create prerequisite relationships
   console.log('🔗 Creating prerequisite relationships...')
-  await prisma.objectivePrerequisite.create({
+  await prismaClient.objectivePrerequisite.create({
     data: {
       objectiveId: actionPotentialObjective.id,
       prerequisiteId: membraneTransportObjective.id,
@@ -210,7 +210,7 @@ async function main() {
     },
   })
 
-  await prisma.objectivePrerequisite.create({
+  await prismaClient.objectivePrerequisite.create({
     data: {
       objectiveId: synapticTransmissionObjective.id,
       prerequisiteId: actionPotentialObjective.id,
@@ -224,7 +224,7 @@ async function main() {
 
   // Anatomy cards (STRONG PERFORMANCE - 85% retention)
   const anatomyCards = await Promise.all([
-    prisma.card.create({
+    prismaClient.card.create({
       data: {
         courseId: anatomyCourse.id,
         lectureId: anatomyLecture.id,
@@ -241,7 +241,7 @@ async function main() {
         lapseCount: 1, // Few lapses
       },
     }),
-    prisma.card.create({
+    prismaClient.card.create({
       data: {
         courseId: anatomyCourse.id,
         lectureId: anatomyLecture.id,
@@ -262,7 +262,7 @@ async function main() {
 
   // Physiology cards (WEAK PERFORMANCE - 30% retention)
   const physiologyCards = await Promise.all([
-    prisma.card.create({
+    prismaClient.card.create({
       data: {
         courseId: physiologyCourse.id,
         lectureId: physiologyLecture.id,
@@ -279,7 +279,7 @@ async function main() {
         lapseCount: 4, // Many lapses
       },
     }),
-    prisma.card.create({
+    prismaClient.card.create({
       data: {
         courseId: physiologyCourse.id,
         lectureId: physiologyLecture.id,
@@ -306,7 +306,7 @@ async function main() {
     // Anatomy reviews (GOOD performance)
     for (const card of anatomyCards) {
       const rating = Math.random() > 0.15 ? ReviewRating.GOOD : ReviewRating.EASY // 85% good or better
-      await prisma.review.create({
+      await prismaClient.review.create({
         data: {
           userId: user.id,
           cardId: card.id,
@@ -481,7 +481,7 @@ async function main() {
 
   // Step 9: Create user learning profile
   console.log('👤 Creating user learning profile...')
-  await prisma.userLearningProfile.create({
+  await prismaClient.userLearningProfile.create({
     data: {
       userId: user.id,
       preferredStudyTimes: [
@@ -515,7 +515,7 @@ async function main() {
 
   // Step 10: Create upcoming exam
   console.log('📅 Creating upcoming exam...')
-  await prisma.exam.create({
+  await prismaClient.exam.create({
     data: {
       userId: user.id,
       courseId: physiologyCourse.id,
@@ -528,7 +528,7 @@ async function main() {
 
   // Step 11: Create pending mission with action potential objective
   console.log('🎯 Creating pending mission for prediction test...')
-  await prisma.mission.create({
+  await prismaClient.mission.create({
     data: {
       userId: user.id,
       date: addDays(new Date(), 2), // 2 days from now
@@ -616,5 +616,5 @@ main()
     process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect()
+    await prismaClient.$disconnect()
   })

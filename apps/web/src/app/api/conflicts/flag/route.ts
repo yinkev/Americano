@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
 
           if (detected) {
             // Create Conflict record
-            const conflict = await prisma.conflict.create({
+            const conflict = await prisma.conflicts.create({
               data: {
                 sourceAChunkId: detected.sourceAChunkId,
                 sourceBChunkId: detected.sourceBChunkId,

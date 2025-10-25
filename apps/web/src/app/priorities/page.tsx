@@ -6,6 +6,9 @@
  */
 
 import { Sparkles } from 'lucide-react'
+
+// This page fetches dynamic data at request time
+export const dynamic = 'force-dynamic'
 import { PrioritiesClient } from './priorities-client'
 
 interface PriorityObjective {

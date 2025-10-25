@@ -31,22 +31,22 @@ export const spacing = {
 
 export const colors = {
   // Playful accents for gamification
-  success: 'oklch(0.7 0.15 145)', // Vibrant green
-  warning: 'oklch(0.75 0.15 85)', // Warm amber
-  info: 'oklch(0.65 0.18 240)', // Bright blue
-  energy: 'oklch(0.7 0.18 50)', // Energetic orange
+  success: 'oklch(0.8 0.15 145)', // Softer green
+  warning: 'oklch(0.85 0.15 85)', // Softer amber
+  info: 'oklch(0.75 0.18 240)', // Softer blue
+  energy: 'oklch(0.8 0.18 50)', // Softer orange
 
   // Medical professional
-  clinical: 'oklch(0.6 0.15 230)', // Professional blue
-  lab: 'oklch(0.65 0.12 160)', // Clinical teal
-  alert: 'oklch(0.6 0.20 30)', // Medical red
+  clinical: 'oklch(0.7 0.15 230)', // Professional blue
+  lab: 'oklch(0.75 0.12 160)', // Softer clinical teal
+  alert: 'oklch(0.7 0.20 30)', // Softer medical red
 
   // Neutral light theme
-  background: 'oklch(0.98 0 0)', // Near white
-  foreground: 'oklch(0.15 0 0)', // Near black
-  muted: 'oklch(0.92 0 0)', // Light gray
-  mutedForeground: 'oklch(0.5 0 0)', // Medium gray
-  border: 'oklch(0.88 0 0)', // Border gray
+  background: 'oklch(0.99 0 0)', // Almost white
+  foreground: 'oklch(0.1 0 0)', // Near black
+  muted: 'oklch(0.95 0 0)', // Lighter gray
+  mutedForeground: 'oklch(0.4 0 0)', // Darker medium gray
+  border: 'oklch(0.9 0 0)', // Lighter border gray
 } as const
 
 export const transitions = {
@@ -57,9 +57,9 @@ export const transitions = {
 } as const
 
 export const shadows = {
-  sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-  md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-  lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+  sm: '0 1px 2px 0 rgb(0 0 0 / 0.03)',
+  md: '0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)',
+  lg: '0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08)',
   xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
 } as const
 
@@ -69,15 +69,6 @@ export const borderRadius = {
   lg: '12px',
   xl: '16px',
   full: '9999px',
-} as const
-
-/**
- * Glassmorphism effect (use sparingly!)
- * Only for special accent cards and hover states
- */
-export const glassmorphism = {
-  light: 'bg-white/80 backdrop-blur-sm border border-white/30',
-  medium: 'bg-white/70 backdrop-blur-md border border-white/20',
 } as const
 
 /**

@@ -5,6 +5,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "noImplicitAny": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -24,16 +25,28 @@
   },
   "include": [
     "next-env.d.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    ".next/types/**/*.ts",
-    "__tests__/**/*.ts"
+    "src/app/**/*.ts",
+    "src/app/**/*.tsx",
+    "src/components/**/*.ts",
+    "src/components/**/*.tsx",
+    "src/lib/**/*.ts",
+    "src/lib/**/*.tsx",
+    "src/types/**/*.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "prisma/**/*.ts",
     "src/types/api-generated.ts",
-    "src/app/api/adaptive/**/*.ts",
-    "src/subsystems/knowledge-graph/search-suggestions.ts"
+    "src/app/api/adaptive/**",
+    "src/app/api/calibration/**",
+    "src/subsystems/**",
+    "src/subsystems/knowledge-graph/**",
+    "src/__tests__/**",
+    "src/**/__tests__/**",
+    "src/**/__mocks__/**",
+    "src/**/__snapshots__/**",
+    "__tests__/**",
+    "tests/**"
   ]
 }

@@ -29,11 +29,12 @@
 
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { PrismaClient, ConflictStatus, ChangeType } from '@/generated/prisma'
+import { ConflictStatus, ChangeType } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import { successResponse, errorResponse, ErrorCodes, withErrorHandler } from '@/lib/api-response'
 import { conflictDetector } from '@/subsystems/knowledge-graph/conflict-detector'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 /**
  * Request validation schema
@@ -100,7 +101,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     for (const detected of detectedConflicts) {
       try {
         // Check if conflict already exists
-        const existing = await prisma.conflict.findFirst({
+        const existing = await prismaClient.conflict.findFirst({
           where: {
             AND: [
               { sourceAChunkId: detected.sourceAChunkId },
@@ -116,7 +117,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         }
 
         // Create new conflict
-        const conflict = await prisma.conflict.create({
+        const conflict = await prismaClient.conflict.create({
           data: {
             conceptId: detected.conceptId,
             sourceAChunkId: detected.sourceAChunkId,
@@ -131,7 +132,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         })
 
         // Create history entry
-        await prisma.conflictHistory.create({
+        await prismaClient.conflictHistory.create({
           data: {
             conflictId: conflict.id,
             changeType: ChangeType.DETECTED,
@@ -174,7 +175,5 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       ),
       { status: 500 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 })

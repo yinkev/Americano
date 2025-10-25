@@ -2,15 +2,15 @@
 // Comprehensive seed data for Stories 5.3, 5.4, 5.6 integration validation
 // Generates 12+ weeks of realistic behavioral data for testing
 
-import { PrismaClient } from '../src/generated/prisma'
+import { prisma } from '../src/lib/db'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 async function main() {
   console.log('🌱 Starting Epic 5 Integration Seed (Stories 5.3, 5.4, 5.6)...\n')
 
   // Get or create test user
-  const testUser = await prisma.user.upsert({
+  const testUser = await prismaClient.user.upsert({
     where: { email: 'integration-test@americano.dev' },
     update: {},
     create: {
@@ -21,7 +21,7 @@ async function main() {
   console.log(`✓ Test user created: ${testUser.name} (${testUser.id})`)
 
   // Create test course
-  const testCourse = await prisma.course.create({
+  const testCourse = await prismaClient.course.create({
     data: {
       userId: testUser.id,
       name: 'Medical Biochemistry',
@@ -33,7 +33,7 @@ async function main() {
 
   // Create learning objectives
   const objectives = await Promise.all([
-    prisma.learningObjective.create({
+    prismaClient.learningObjective.create({
       data: {
         lectureId: 'temp-lecture-1',
         objective: 'Understand glycolysis pathway and regulation',
@@ -43,7 +43,7 @@ async function main() {
         masteryLevel: 'INTERMEDIATE',
       },
     }),
-    prisma.learningObjective.create({
+    prismaClient.learningObjective.create({
       data: {
         lectureId: 'temp-lecture-2',
         objective: 'Master citric acid cycle intermediates',

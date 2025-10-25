@@ -10,9 +10,9 @@
  * 5. Circadian Rhythms & Optimal Timing
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 const articles = [
   {
@@ -686,7 +686,7 @@ async function seedLearningArticles() {
   console.log('🌱 Seeding learning science articles...')
 
   for (const article of articles) {
-    const existing = await prisma.learningArticle.findUnique({
+    const existing = await prismaClient.learningArticle.findUnique({
       where: { slug: article.slug },
     })
 
@@ -695,7 +695,7 @@ async function seedLearningArticles() {
       continue
     }
 
-    await prisma.learningArticle.create({
+    await prismaClient.learningArticle.create({
       data: article,
     })
 
@@ -713,7 +713,7 @@ if (require.main === module) {
       process.exit(1)
     })
     .finally(async () => {
-      await prisma.$disconnect()
+      await prismaClient.$disconnect()
     })
 }
 

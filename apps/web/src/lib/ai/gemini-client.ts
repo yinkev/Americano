@@ -1,5 +1,7 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
-import { retryService, DEFAULT_POLICIES, PermanentError } from '../retry/retry-service'
+// Using the unified Google Gen AI SDK per latest docs
+// Model: text-embedding-004 with outputDimensionality = 1536
+import { GoogleGenAI } from '@google/genai'
+import { retryService, DEFAULT_POLICIES } from '../retry/retry-service'
 
 interface EmbeddingResult {
   embedding: number[]
@@ -7,7 +9,7 @@ interface EmbeddingResult {
 }
 
 export class GeminiClient {
-  private genAI: GoogleGenerativeAI
+  private ai: GoogleGenAI
   private readonly model = 'gemini-embedding-001'
 
   constructor() {
@@ -17,7 +19,7 @@ export class GeminiClient {
       throw new Error('GEMINI_API_KEY environment variable is required')
     }
 
-    this.genAI = new GoogleGenerativeAI(apiKey)
+    this.ai = new GoogleGenAI({ apiKey })
   }
 
   /**
@@ -28,9 +30,20 @@ export class GeminiClient {
   async generateEmbedding(text: string): Promise<EmbeddingResult> {
     const result = await retryService.execute(
       async () => {
-        const model = this.genAI.getGenerativeModel({ model: this.model })
-        const result = await model.embedContent(text)
-        return result.embedding.values
+        const response = await this.ai.models.embedContent({
+          model: this.model,
+          contents: text,
+          config: {
+            // Per ai.google.dev, gemini-embedding-001 defaults to 3072; we enforce 1536 for pgvector
+            outputDimensionality: 1536,
+            taskType: 'RETRIEVAL_DOCUMENT',
+          } as any,
+        })
+        const values = (response as any).embedding?.values as number[] | undefined
+        if (!values || !Array.isArray(values)) {
+          throw new Error('Gemini embedContent returned no embedding values')
+        }
+        return values
       },
       DEFAULT_POLICIES.GEMINI_API,
       'gemini-embedding',

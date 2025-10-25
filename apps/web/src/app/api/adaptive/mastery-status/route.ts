@@ -15,7 +15,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserId } from '@/lib/auth'
 import { ApiError } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
+import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
 import { validateQuery, masteryStatusQuerySchema } from '@/lib/validation'
 import { MasteryVerificationEngine } from '@/lib/adaptive/mastery-verification'
 
@@ -56,12 +56,15 @@ export async function GET(request: NextRequest) {
     console.error('[API] GET /api/adaptive/mastery-status error:', error)
 
     if (error instanceof ApiError) {
-      return NextResponse.json(errorResponse(error), { status: error.statusCode })
+      return NextResponse.json(
+        errorResponse(error.code, error.message, (error as any).details),
+        { status: error.statusCode },
+      )
     }
 
     return NextResponse.json(
-      errorResponse(ApiError.internal('Failed to get mastery status')),
-      { status: 500 }
+      errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to get mastery status'),
+      { status: 500 },
     )
   }
 }

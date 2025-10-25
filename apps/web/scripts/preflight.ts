@@ -12,7 +12,7 @@
 // - apps/web/src/lib/embedding-service.ts (env dim check)
 
 import 'dotenv/config'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/db'
 
 type Check = {
   name: string
@@ -58,9 +58,9 @@ async function main() {
 
   // 3) DB vector dims check (content_chunks)
   //    This is robust to empty tables or missing embeddings; only strict if env dim is set and rows exist.
-  const prisma = new PrismaClient()
+  const prismaClient = prisma
   try {
-    const rows = await prisma.$queryRawUnsafe<{ dims: number; count: string }[]>(
+    const rows = await prismaClient.$queryRawUnsafe<{ dims: number; count: string }[]>(
       `
         SELECT vector_dims(embedding) AS dims, COUNT(*)::text
         FROM content_chunks
@@ -103,7 +103,7 @@ async function main() {
       details: `query failed (${err?.message || 'unknown error'})`
     })
   } finally {
-    await prisma.$disconnect()
+    await prismaClient.$disconnect()
   }
 
   // 4) Rate limiter + PII logger files existence check (lightweight)

@@ -44,7 +44,7 @@ tests/
 
 3. **Database configured:**
    - Set `DATABASE_URL` in `.env`
-   - Run Prisma migrations: `prisma db push`
+   - (Deprecated) Prisma Python migrations are no longer used. Runtime reads from Postgres via SQLAlchemy.
 
 4. **Test database:**
    - Use separate test database (recommended)

@@ -9,11 +9,12 @@
  *           + (irregularity * 0.15) + (engagementDecay * 0.1) + (recoveryDeficit * 0.05)
  */
 
-import { PrismaClient, BurnoutRiskLevel, Prisma } from '@/generated/prisma'
+import type { Prisma, BurnoutRiskLevel } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import { subDays, differenceInDays } from 'date-fns'
 import type { ContributingFactor as ContributingFactorType } from '@/types/prisma-json'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 // ============================================
 // Types & Interfaces
@@ -91,7 +92,7 @@ export class BurnoutPreventionEngine {
       // Fetch data for 14-day analysis window
       const [studySessions, cognitiveLoadMetrics, missions, performanceMetrics] = await Promise.all(
         [
-          prisma.studySession.findMany({
+          prismaClient.studySession.findMany({
             where: {
               userId,
               startedAt: { gte: twoWeeksAgo },
@@ -99,21 +100,21 @@ export class BurnoutPreventionEngine {
             },
             orderBy: { startedAt: 'asc' },
           }),
-          prisma.cognitiveLoadMetric.findMany({
+          prismaClient.cognitiveLoadMetric.findMany({
             where: {
               userId,
               timestamp: { gte: twoWeeksAgo },
             },
             orderBy: { timestamp: 'asc' },
           }),
-          prisma.mission.findMany({
+          prismaClient.mission.findMany({
             where: {
               userId,
               date: { gte: twoWeeksAgo },
             },
             orderBy: { date: 'asc' },
           }),
-          prisma.performanceMetric.findMany({
+          prismaClient.performanceMetric.findMany({
             where: {
               userId,
               date: { gte: twoWeeksAgo },

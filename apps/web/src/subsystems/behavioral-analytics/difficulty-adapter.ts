@@ -11,10 +11,10 @@
  * - Critical (>80): Emergency adaptation, 100% review, suggest break
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import type { LearningStyleProfile } from '@/types/prisma-json'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 // ============================================
 // Types & Interfaces
@@ -110,7 +110,7 @@ export class DifficultyAdapter {
     const sessionModifications: SessionModification[] = []
 
     // Fetch user's load tolerance (personalized threshold)
-    const userProfile = await prisma.userLearningProfile.findUnique({
+    const userProfile = await prismaClient.userLearningProfile.findUnique({
       where: { userId },
     })
 

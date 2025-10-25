@@ -15,33 +15,33 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
-# Check if virtual environment exists
-if [ ! -d "venv" ] && [ ! -d ".venv" ]; then
-    echo "📦 Creating virtual environment..."
-    python3 -m venv venv
-    echo "✅ Virtual environment created"
+export PATH="$HOME/.local/bin:$PATH"
+if ! command -v uv >/dev/null 2>&1; then
+  echo "📦 Installing uv..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# Activate virtual environment
-if [ -d "venv" ]; then
-    source venv/bin/activate
-elif [ -d ".venv" ]; then
-    source .venv/bin/activate
+if [ ! -d ".venv" ]; then
+  echo "📦 Creating Python 3.11 venv (uv)..."
+  uv venv --python 3.11 .venv
+  echo "✅ Virtual environment created"
 fi
+
+source .venv/bin/activate
 
 # Install dependencies if needed
-if ! python -c "import fastapi" 2>/dev/null; then
-    echo "📦 Installing dependencies..."
-    pip install -r requirements.txt
-    echo "✅ Dependencies installed"
+echo "📦 Installing dependencies..."
+if command -v uv >/dev/null 2>&1; then
+  uv pip install -r requirements.txt
+else
+  python -m pip install --upgrade pip
+  pip install -r requirements.txt
 fi
+echo "✅ Dependencies installed"
 
 # Generate Prisma client if needed
-if [ ! -d "node_modules" ]; then
-    echo "🔧 Generating Prisma client..."
-    prisma generate
-    echo "✅ Prisma client generated"
-fi
+# Generate Prisma client is managed from apps/web; skip here
 
 echo ""
 echo "✨ Starting FastAPI server..."

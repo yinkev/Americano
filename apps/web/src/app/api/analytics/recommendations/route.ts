@@ -44,13 +44,13 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - days);
 
     // Fetch recommendations in period
-    const recommendations = await prisma.contentRecommendation.findMany({
+    const recommendations = await prisma.content_recommendations.findMany({
       where: {
         userId,
         createdAt: { gte: startDate },
       },
       include: {
-        feedback: true,
+        recommendation_feedback: true,
       },
     });
 
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     const ctr = totalRecommendations > 0 ? clickedCount / totalRecommendations : 0;
 
     // Calculate average rating
-    const allFeedback = recommendations.flatMap(r => r.feedback);
+    const allFeedback = recommendations.flatMap(r => r.recommendation_feedback);
     const avgRating = allFeedback.length > 0
       ? allFeedback.reduce((sum, f) => sum + f.rating, 0) / allFeedback.length
       : 0;

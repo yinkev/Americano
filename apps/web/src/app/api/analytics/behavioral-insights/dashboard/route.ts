@@ -80,7 +80,14 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const consistencyScore = Math.min(100, (totalSessions / 30) * 100) // Sessions per day as %
   const focusScore =
     patterns.length > 0
-      ? Math.round((patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length) * 100)
+      ? Math.round(
+          (patterns.reduce(
+            (sum: number, p: { confidence: number }) => sum + p.confidence,
+            0,
+          ) /
+            patterns.length) *
+            100,
+        )
       : 0
   const retentionScore = 75 // Placeholder - would calculate from review accuracy
   const efficiencyScore = 80 // Placeholder - would calculate from mission completion rate

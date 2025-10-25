@@ -118,7 +118,7 @@ export async function GET(request: NextRequest) {
 
     // Fetch conflicts with source details
     const [conflicts, total] = await Promise.all([
-      prisma.conflict.findMany({
+      prisma.conflicts.findMany({
         where,
         include: {
           concept: {
@@ -193,7 +193,7 @@ export async function GET(request: NextRequest) {
         skip: offset,
         take: limit,
       }),
-      prisma.conflict.count({ where }),
+      prisma.conflicts.count({ where }),
     ])
 
     const latency = Date.now() - startTime

@@ -7,10 +7,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import { difficultyAdapter } from '@/subsystems/behavioral-analytics/difficulty-adapter'
 
-const prisma = new PrismaClient()
 
 const applyInterventionSchema = z.object({
   userId: z.string(),

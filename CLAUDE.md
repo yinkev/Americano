@@ -1,3 +1,31 @@
+---
+title: "Americano - Project Documentation (Claude)"
+description: "Standards and decisions for analytics subsystems and hybrid Python/TypeScript architecture."
+type: "Guide"
+status: "Active"
+version: "1.1"
+owner: "Kevy"
+review_cadence: "Per Epic"
+created_date: "2025-10-16T09:00:00-07:00"
+last_updated: "2025-10-24T10:08:00-07:00"
+last_reviewed: "2025-10-24T10:08:00-07:00"
+depends_on:
+  - docs/architecture/ADR-001-hybrid-typescript-python.md
+  - docs/architecture/ADR-006-motion-standard.md
+affects:
+  - apps/api
+  - apps/ml-service
+  - apps/web
+audience:
+  - experienced-devs
+  - architects
+technical_level: "Advanced"
+tags: ["analytics", "python", "fastapi", "testing", "animation"]
+search_priority: "high"
+lifecycle:
+  stage: "Active"
+---
+
 # Americano - Project Documentation
 
 ## Critical Development Standards
@@ -161,7 +189,7 @@ This is the Americano adaptive learning platform, integrating Epic 4 (Understand
 ## Testing Strategy
 
 ### TypeScript Testing
-- **Framework:** Vitest (fast, compatible with Next.js 15)
+- **Framework:** Jest 30 (configured in `apps/web`)
 - **Component tests:** React Testing Library
 - **E2E tests:** Playwright (when needed)
 - **Coverage target:** 70%+ for critical paths
@@ -180,6 +208,14 @@ This is the Americano adaptive learning platform, integrating Epic 4 (Understand
 
 **Architecture Overview:**
 ```
+
+---
+
+## Library Standards Update
+
+- Animations: Use motion.dev (`motion/react`). Do not use `framer-motion`.
+- Package manager: npm workspaces (no pnpm/yarn locks).
+- Prisma: JS/TS on v6. For Python, avoid expanding `prisma` usage; plan migration to SQLAlchemy within `apps/ml-service`.
 User → Next.js UI (TypeScript) → Next.js API Route (TypeScript proxy) → Python FastAPI Service → ChatMock/GPT-5
                                                                               ↓
                                                                          Pydantic Models

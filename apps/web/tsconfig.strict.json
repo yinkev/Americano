@@ -1,0 +1,29 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noImplicitAny": true
+  },
+  "include": [
+    "src/app/api/adaptive/next-question/route.ts",
+    "src/app/api/adaptive/submit-response/route.ts",
+    "src/lib/adaptive/adaptive-engine.ts",
+    "src/lib/adaptive/irt-engine.ts",
+    "src/app/api/analytics/recommendations/route.ts",
+    "src/subsystems/knowledge-graph/search-suggestions.ts",
+    "src/subsystems/knowledge-graph/conflict-detector.ts"
+    ,
+    "src/subsystems/knowledge-graph/first-aid-mapper.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/__tests__/**",
+    "src/lib/**/__tests__/**",
+    "src/lib/**/__examples__/**",
+    "src/__tests__/**",
+    "__tests__/**",
+    "src/**/__mocks__/**",
+    "src/lib/**/*.test.ts",
+    "src/lib/**/*.test.tsx",
+    "tests/**"
+  ]
+}

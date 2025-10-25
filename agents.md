@@ -1,3 +1,33 @@
+---
+title: "Agent Development Protocol"
+description: "Mandatory protocol for all agents contributing to Americano, including documentation fetch rules, quality gates, and technology standards."
+type: "Guide"
+status: "Active"
+version: "1.1"
+owner: "Kevy"
+review_cadence: "Per Change"
+created_date: "2025-10-23T15:00:00-07:00"
+last_updated: "2025-10-24T10:05:00-07:00"
+last_reviewed: "2025-10-24T10:05:00-07:00"
+depends_on:
+  - docs/architecture/ADR-006-motion-standard.md
+  - docs/frontmatter-standard.md
+affects:
+  - apps/web
+  - apps/ml-service
+related_adrs:
+  - docs/architecture/ADR-004-oklch-glassmorphism.md
+  - docs/architecture/ADR-006-motion-standard.md
+audience:
+  - agents
+  - developers
+technical_level: "Intermediate"
+tags: ["protocol", "quality", "docs", "animation", "prisma"]
+search_priority: "critical"
+lifecycle:
+  stage: "Active"
+---
+
 # Agent Development Protocol
 
 **Project:** Americano - AI-Powered Medical Education Platform
@@ -159,10 +189,10 @@ Agent: "Creating upload API route with Next.js..."
 - Icon collapsible mode for responsive layout
 
 ### Always Use Context7 For Layout/Animation Libraries:
-- **motion.dev:** Modern animation library (replaces deprecated Framer Motion), animations, gestures, layout animations, page transitions
-- **bentogrid:** Modern grid layouts, bento grid patterns, responsive layouts
+- motion.dev (package: `motion`) — modern animation library replacing Framer Motion; use `motion/react` in React
+- bentogrid — modern grid layouts, bento grid patterns, responsive layouts
 
-**Installation:** Use `pnpm add motion` for motion.dev
+**Installation:** Use `npm i motion` for motion.dev
 **Documentation:** Fetch latest API from context7 MCP before implementation
 **IMPORTANT:** motion.dev is the modern replacement - DO NOT use framer-motion (deprecated)
 
@@ -184,7 +214,15 @@ Agent: "Creating upload API route with Next.js..."
 - ✅ **ALWAYS use OKLCH color space** for colors (not hex, not HSL, not RGB)
   - Format: `oklch(L C H)` where L=lightness (0-1), C=chroma (0-0.4), H=hue (0-360)
   - Example: `oklch(0.7 0.15 230)` for blue
-  - Rationale: Perceptual uniformity, better accessibility, consistent brightness across hues
+- Rationale: Perceptual uniformity, better accessibility, consistent brightness across hues
+
+### Package Manager Standard
+- Use npm workspaces (Node 20+, npm 10+). Do not add pnpm/yarn lockfiles.
+- If a pnpm lockfile appears, remove it and run `npm install` to regenerate consistent locks.
+
+### Prisma Standards
+- Prisma JS/TS: Use Prisma v6 across the repo; generator may be `prisma-client-js` or `prisma-client` with explicit `output`.
+- Prisma Python: Existing usage in `apps/ml-service` is TEMPORARY and considered deprecated. Do not add new code with Prisma Python; prefer SQLAlchemy in Python. Migration plan tracked in ADR backlog.
 
 ---
 

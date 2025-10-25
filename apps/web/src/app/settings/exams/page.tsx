@@ -6,6 +6,9 @@
  */
 
 import { Calendar } from 'lucide-react'
+
+// This page fetches dynamic data at request time
+export const dynamic = 'force-dynamic'
 import { ExamsClient } from './exams-client'
 
 interface Course {

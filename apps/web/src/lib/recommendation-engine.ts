@@ -20,12 +20,12 @@
 import { prisma } from '@/lib/db';
 import type {
   ContentChunk,
-  ContentRecommendation,
   RecommendationStatus,
   ContentSourceType,
   LearningObjective,
   ConceptRelationship,
   RelationshipType,
+  content_recommendations as ContentRecommendation,
 } from '@/generated/prisma';
 
 // ============================================
@@ -493,7 +493,7 @@ export class RecommendationEngine {
         recommendations.map(async (rec) => {
           const reasoning = this.generateReasoning(rec.candidate, rec.scores, rec.finalScore);
 
-          return prisma.contentRecommendation.create({
+          return prisma.content_recommendations.create({
             data: {
               userId,
               recommendedContentId: rec.candidate.contentId,

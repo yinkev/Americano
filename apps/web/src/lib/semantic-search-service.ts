@@ -20,7 +20,8 @@
  * - Circuit breaker pattern for failing services
  */
 
-import { PrismaClient, Prisma } from '@prisma/client'
+import type { Prisma } from '@prisma/client'
+import { prisma } from '@/lib/db'
 import { embeddingService } from './embedding-service'
 import { retryService, DEFAULT_POLICIES, type RetryResult, ErrorCategory, RetriableError, PermanentError } from './retry/retry-service'
 
@@ -213,12 +214,10 @@ interface KeywordMatch {
  * ```
  */
 export class SemanticSearchService {
-  private prisma: PrismaClient
+  private prisma = prisma
   private retryAttempts: number = 0
 
-  constructor() {
-    this.prisma = new PrismaClient()
-  }
+  constructor() {}
 
   /**
    * Disconnect Prisma client

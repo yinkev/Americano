@@ -72,7 +72,7 @@ cd ../..
 
 # Step 4: Setup ML service
 echo -e "${YELLOW}[4/5] Setting up ML service...${NC}"
-cd services/ml-service
+cd apps/ml-service
 
 # Create virtual environment
 if [ ! -d "venv" ]; then
@@ -101,10 +101,10 @@ if [ ! -f "apps/web/.env.local" ]; then
     echo -e "${BLUE}Copy .env.example to .env.local and fill in your values${NC}"
 fi
 
-if [ ! -f "services/ml-service/.env" ]; then
-    echo -e "${YELLOW}Note: services/ml-service/.env not found${NC}"
-    if [ -f "services/ml-service/.env.example" ]; then
-        cp services/ml-service/.env.example services/ml-service/.env
+if [ ! -f "apps/ml-service/.env" ]; then
+    echo -e "${YELLOW}Note: apps/ml-service/.env not found${NC}"
+    if [ -f "apps/ml-service/.env.example" ]; then
+        cp apps/ml-service/.env.example apps/ml-service/.env
         echo -e "${GREEN}✓ Created .env from .env.example${NC}"
     fi
 fi

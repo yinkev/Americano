@@ -2,12 +2,14 @@
 
 **FastAPI microservice providing ML prediction capabilities for predictive analytics in medical education.**
 
+> 2025-10-24: Prisma Python is deprecated and removed from runtime. The service now uses SQLAlchemy Core + psycopg v3. Any references to `prisma generate` / Prisma migrations below are historical. See `apps/ml-service/DEPRECATED.md`.
+
 Story: **5.2 - Predictive Analytics for Learning Struggles**
 
 ## Architecture
 
 - **Framework:** FastAPI (async-first, high-performance)
-- **Database:** PostgreSQL via Prisma Python Client
+- **Database:** PostgreSQL via SQLAlchemy Core (psycopg v3)
 - **Validation:** Pydantic V2
 - **ML:** scikit-learn (logistic regression) + rule-based system
 - **Deployment:** uvicorn ASGI server
@@ -21,7 +23,7 @@ Story: **5.2 - Predictive Analytics for Learning Struggles**
 - ✅ CORS middleware for Next.js integration
 - ✅ Health check endpoint (`/health`)
 - ✅ Research-grade ML models
-- ✅ Prisma ORM with type safety
+- ✅ SQLAlchemy repositories for read paths
 
 ## Endpoints
 
@@ -46,7 +48,7 @@ Story: **5.2 - Predictive Analytics for Learning Struggles**
 - PostgreSQL 14+ (with same database as Next.js app)
 - Poetry or pip
 
-### Installation
+### Installation (SQLAlchemy runtime)
 
 ```bash
 # Navigate to ml-service directory
@@ -64,11 +66,7 @@ cp .env.example .env
 # Edit .env with your database credentials
 # DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
 
-# Generate Prisma client
-prisma generate
-
-# Run database migrations (if needed)
-prisma migrate deploy
+# No Prisma steps needed; ensure `.env` has DATABASE_URL and run the start script.
 ```
 
 ### Development

@@ -17,7 +17,9 @@
  * - Medical specialty-aware credibility adjustments
  */
 
-import { PrismaClient, Source, SourceType, Conflict } from '@/generated/prisma'
+import type { sources as SourceModel } from '@/generated/prisma'
+import { SourceType } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 /**
  * Evidence-Based Medicine hierarchy levels
@@ -154,11 +156,9 @@ const SOURCE_TYPE_TO_EVIDENCE_LEVEL: Record<SourceType, EvidenceLevel> = {
  * ```
  */
 export class EBMEvaluator {
-  private prisma: PrismaClient
+  private prisma = prisma
 
-  constructor() {
-    this.prisma = new PrismaClient()
-  }
+  constructor() {}
 
   /**
    * Disconnect Prisma client
@@ -236,7 +236,7 @@ export class EBMEvaluator {
     userId?: string
   ): Promise<EBMComparison> {
     // Fetch conflict with sources
-    const conflict = await this.prisma.conflict.findUnique({
+    const conflict = await this.prisma.conflicts.findUnique({
       where: { id: conflictId },
       include: {
         sourceAChunk: {
@@ -263,7 +263,7 @@ export class EBMEvaluator {
     const sourceBType = conflict.sourceBFirstAid ? 'FIRST_AID' : 'LECTURE'
 
     // Create temporary source objects for evaluation
-    const sourceA: Partial<Source> = {
+    const sourceA: Partial<SourceModel> = {
       id: conflict.sourceAChunkId || conflict.sourceAFirstAidId || '',
       type: sourceAType as SourceType,
       credibilityScore: DEFAULT_CREDIBILITY_SCORES[sourceAType as SourceType],
@@ -271,7 +271,7 @@ export class EBMEvaluator {
       metadata: {}
     }
 
-    const sourceB: Partial<Source> = {
+    const sourceB: Partial<SourceModel> = {
       id: conflict.sourceBChunkId || conflict.sourceBFirstAidId || '',
       type: sourceBType as SourceType,
       credibilityScore: DEFAULT_CREDIBILITY_SCORES[sourceBType as SourceType],
@@ -280,8 +280,8 @@ export class EBMEvaluator {
     }
 
     // Evaluate both sources
-    const ratingA = await this.evaluateSource(sourceA as Source)
-    const ratingB = await this.evaluateSource(sourceB as Source)
+    const ratingA = await this.evaluateSource(sourceA as SourceModel)
+    const ratingB = await this.evaluateSource(sourceB as SourceModel)
 
     // Apply user preferences if available
     const userPreferences = userId ? await this.getUserSourcePreferences(userId) : null
@@ -353,7 +353,7 @@ export class EBMEvaluator {
    * @param topic - Medical topic or condition
    * @returns Clinical guideline source or null
    */
-  async getClinicallGuideline(topic: string): Promise<Source | null> {
+  async getClinicallGuideline(topic: string): Promise<SourceModel | null> {
     // Future: Query clinical guideline database
     // For MVP: Return null (guidelines will be added via seed data)
     return null
@@ -417,7 +417,7 @@ export class EBMEvaluator {
    * Calculate peer review bonus (0-10 points)
    * Peer-reviewed sources get higher credibility
    */
-  private calculatePeerReviewBonus(source: Partial<Source>): number {
+  private calculatePeerReviewBonus(source: Partial<SourceModel>): number {
     const metadata = source.metadata as any
 
     if (metadata?.peerReviewed === true) return 10
@@ -477,7 +477,7 @@ export class EBMEvaluator {
   /**
    * Calculate confidence in rating based on metadata completeness
    */
-  private calculateConfidence(source: Partial<Source>): number {
+  private calculateConfidence(source: Partial<SourceModel>): number {
     let confidence = 0.5 // Base confidence
 
     if (source.lastUpdated) confidence += 0.15
@@ -505,9 +505,9 @@ export class EBMEvaluator {
    * Task 2.4: Get user source preferences
    */
   private async getUserSourcePreferences(userId: string) {
-    return await this.prisma.userSourcePreference.findMany({
+    return await this.prisma.user_source_preferences.findMany({
       where: { userId },
-      include: { source: true }
+      include: { sources: true }
     })
   }
 

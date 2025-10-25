@@ -11,7 +11,7 @@
  * Epic 3 - Database Retry Strategy
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import type { PrismaClient } from '@prisma/client'
 import { retryService, DEFAULT_POLICIES, RetryPolicy, PermanentError } from './retry-service'
 
 /**

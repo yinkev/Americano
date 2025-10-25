@@ -1,6 +1,5 @@
 generator client {
   provider        = "prisma-client-js"
-  output          = "../src/generated/prisma"
   previewFeatures = ["postgresqlExtensions"]
 }
 
@@ -138,6 +137,7 @@ model LearningObjective {
   clinicalScenarios    ClinicalScenario[]
   controlledFailures   ControlledFailure[]
   masteryVerifications MasteryVerification[]
+  validationPrompts    ValidationPrompt[]
 
   @@index([lectureId])
   @@index([isHighYield])
@@ -304,8 +304,15 @@ model ValidationPrompt {
   conceptName      String
   expectedCriteria String[]
   createdAt        DateTime             @default(now())
+  // New: link prompts to a concrete learning objective (nullable for safe backfill)
+  objectiveId      String
+  learningObjective LearningObjective   @relation(fields: [objectiveId], references: [id])
+  // New: normalized difficulty on a 0–100 scale
+  difficultyLevel  Int                  @default(50)
   responses        ValidationResponse[]
 
+  @@index([objectiveId])
+  @@index([difficultyLevel])
   @@map("validation_prompts")
 }
 
@@ -851,6 +858,30 @@ model user_source_preferences {
   @@unique([userId, sourceId])
   @@index([priority])
   @@index([userId])
+}
+
+// Minimal First Aid edition/version tracking for board exam content
+model FirstAidEdition {
+  id                String   @id @default(cuid())
+  userId            String
+  title             String?
+  year              Int
+  editionNumber     Int?     @unique
+  versionNumber     String?  // e.g., "2026.0"
+  isActive          Boolean  @default(true)
+  uploadedAt        DateTime @default(now())
+  releaseDate       DateTime?
+  mappingStatus     String?  // PENDING | COMPLETED | FAILED
+  processingProgress Int     @default(0)
+  sectionCount      Int      @default(0)
+  highYieldCount    Int      @default(0)
+  totalPages        Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId])
+  @@index([year])
+  @@map("first_aid_editions")
 }
 
 // ============================================

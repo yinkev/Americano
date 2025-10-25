@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from 'react'
 import { Brain, TrendingUp, TrendingDown, Minus, AlertCircle, Coffee } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'

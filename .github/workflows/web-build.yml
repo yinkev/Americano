@@ -1,0 +1,38 @@
+name: Web CI
+
+on:
+  pull_request:
+    paths:
+      - 'apps/web/**'
+      - '.github/workflows/web-build.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'apps/web/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps (root)
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate --schema apps/web/prisma/schema.prisma
+
+      - name: Build (PWA disabled)
+        env:
+          ENABLE_PWA: 'false'
+        run: |
+          cd apps/web
+          npm run build
+

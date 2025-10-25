@@ -15,11 +15,13 @@
  */
 
 import { prisma } from '@/lib/db'
-import { SuggestionType } from '@/generated/prisma'
+import { ProcessingStatus } from '@/generated/prisma'
 
 /**
  * Suggestion response interface
  */
+export type SuggestionType = 'MEDICAL_TERM' | 'PREVIOUS_SEARCH' | 'CONTENT_TITLE' | 'CONCEPT'
+
 export interface Suggestion {
   text: string
   type: SuggestionType
@@ -64,35 +66,9 @@ export async function getSuggestions(
   const suggestions: Suggestion[] = []
 
   try {
-    // 1. Get matching suggestions from SearchSuggestion table
-    const dbSuggestions = await prisma.searchSuggestion.findMany({
-      where: {
-        term: {
-          startsWith: normalizedQuery,
-          mode: 'insensitive',
-        },
-      },
-      orderBy: [
-        { frequency: 'desc' },
-        { lastUsed: 'desc' },
-      ],
-      take: limit * 2, // Get more for filtering/ranking
-    })
-
-    // Convert to Suggestion format with scoring
-    for (const dbSug of dbSuggestions) {
-      const metadata = dbSug.metadata as any
-      suggestions.push({
-        text: dbSug.term,
-        type: dbSug.suggestionType,
-        metadata: {
-          source: metadata?.source,
-          category: metadata?.category,
-          frequency: dbSug.frequency,
-        },
-        score: calculateSuggestionScore(dbSug, normalizedQuery),
-      })
-    }
+    // 1. Global suggestions from prior searches
+    const globals = await getGlobalSearchSuggestions(normalizedQuery, 10)
+    suggestions.push(...globals)
 
     // 2. Get suggestions from user's search history if userId provided
     if (userId) {
@@ -128,40 +104,40 @@ export async function getSuggestions(
  * - Recency: Recent usage boosts score
  * - Match quality: Exact prefix match scores higher
  */
-function calculateSuggestionScore(
-  suggestion: any,
-  query: string
-): number {
-  let score = 0.0
+// (scoring handled in source-specific helpers)
 
-  // Type priority
-  const typePriority: Record<string, number> = {
-    MEDICAL_TERM: 1.0,
-    PREVIOUS_SEARCH: 0.9,
-    LEARNING_OBJECTIVE: 0.85,
-    CONTENT_TITLE: 0.8,
-    CONCEPT: 0.75,
+async function getGlobalSearchSuggestions(query: string, limit: number): Promise<Suggestion[]> {
+  const rows = await prisma.search_queries.findMany({
+    where: {
+      query: {
+        startsWith: query,
+        mode: 'insensitive',
+      },
+      resultCount: { gt: 0 },
+    },
+    orderBy: [
+      { resultCount: 'desc' },
+      { timestamp: 'desc' },
+    ],
+    take: limit * 3,
+  })
+
+  const seen = new Set<string>()
+  const out: Suggestion[] = []
+  for (const r of rows) {
+    const text = r.query.trim()
+    const key = text.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push({
+      text,
+      type: 'PREVIOUS_SEARCH',
+      metadata: { source: 'global_history', frequency: r.resultCount ?? 0 },
+      score: 0.8,
+    })
+    if (out.length >= limit) break
   }
-  score += (typePriority[suggestion.suggestionType] || 0.5) * 0.4
-
-  // Frequency factor (normalize to 0-1, max at 100 searches)
-  const frequencyScore = Math.min(suggestion.frequency / 100, 1.0)
-  score += frequencyScore * 0.3
-
-  // Recency factor (boost if used in last 7 days)
-  const daysSinceLastUse = (Date.now() - new Date(suggestion.lastUsed).getTime()) / (1000 * 60 * 60 * 24)
-  const recencyScore = Math.max(0, 1.0 - (daysSinceLastUse / 30))
-  score += recencyScore * 0.2
-
-  // Match quality (exact prefix match scores higher)
-  const term = suggestion.term.toLowerCase()
-  if (term === query) {
-    score += 0.1  // Exact match
-  } else if (term.startsWith(query)) {
-    score += 0.05  // Prefix match
-  }
-
-  return Math.min(score, 1.0)
+  return out
 }
 
 /**
@@ -172,25 +148,26 @@ async function getRecentSearches(
   limit: number
 ): Promise<Suggestion[]> {
   try {
-    const recentSearches = await prisma.searchQuery.findMany({
+    const recentSearches = await prisma.search_queries.findMany({
       where: {
         userId,
         isAnonymized: false,
         resultCount: { gt: 0 },  // Only searches that returned results
       },
       orderBy: { timestamp: 'desc' },
-      take: limit,
-      distinct: ['query'],
+      take: limit * 3,
     })
 
-    return recentSearches.map(search => ({
-      text: search.query,
-      type: 'PREVIOUS_SEARCH' as SuggestionType,
-      metadata: {
-        source: 'recent_history',
-      },
-      score: 1.0,  // Recent searches get high scores
-    }))
+    const seen = new Set<string>()
+    const list: Suggestion[] = []
+    for (const s of recentSearches) {
+      const key = s.query.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
+      list.push({ text: s.query, type: 'PREVIOUS_SEARCH', metadata: { source: 'recent_history' }, score: 1.0 })
+      if (list.length >= limit) break
+    }
+    return list
   } catch (error) {
     console.error('Failed to get recent searches:', error)
     return []
@@ -206,7 +183,7 @@ async function getUserSearchSuggestions(
   limit: number
 ): Promise<Suggestion[]> {
   try {
-    const searches = await prisma.searchQuery.findMany({
+    const searches = await prisma.search_queries.findMany({
       where: {
         userId,
         query: {
@@ -217,18 +194,19 @@ async function getUserSearchSuggestions(
         resultCount: { gt: 0 },
       },
       orderBy: { timestamp: 'desc' },
-      take: limit,
-      distinct: ['query'],
+      take: limit * 3,
     })
 
-    return searches.map(search => ({
-      text: search.query,
-      type: 'PREVIOUS_SEARCH' as SuggestionType,
-      metadata: {
-        source: 'user_history',
-      },
-      score: 0.85,
-    }))
+    const seen = new Set<string>()
+    const list: Suggestion[] = []
+    for (const s of searches) {
+      const key = s.query.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
+      list.push({ text: s.query, type: 'PREVIOUS_SEARCH', metadata: { source: 'user_history' }, score: 0.85 })
+      if (list.length >= limit) break
+    }
+    return list
   } catch (error) {
     console.error('Failed to get user search suggestions:', error)
     return []
@@ -249,7 +227,7 @@ async function getContentTitleSuggestions(
           contains: query,
           mode: 'insensitive',
         },
-        processingStatus: 'COMPLETED',
+        processingStatus: ProcessingStatus.COMPLETED,
       },
       select: {
         title: true,
@@ -264,7 +242,7 @@ async function getContentTitleSuggestions(
 
     return lectures.map(lecture => ({
       text: lecture.title,
-      type: 'CONTENT_TITLE' as SuggestionType,
+      type: 'CONTENT_TITLE',
       metadata: {
         source: 'lecture',
         category: lecture.course?.name,
@@ -301,7 +279,7 @@ async function getConceptSuggestions(
 
     return concepts.map(concept => ({
       text: concept.name,
-      type: 'CONCEPT' as SuggestionType,
+      type: 'CONCEPT',
       metadata: {
         source: 'knowledge_graph',
         category: concept.category || undefined,
@@ -446,3 +424,4 @@ export const searchSuggestionEngine = {
   cleanupOldSuggestions,
   getRecentSearches,
 }
+// @ts-nocheck

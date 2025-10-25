@@ -7,15 +7,20 @@
 -- lists = 100 is recommended for datasets < 1M rows
 -- vector_cosine_ops uses cosine distance (1 - cosine similarity)
 
-CREATE INDEX IF NOT EXISTS content_chunks_embedding_idx
-ON content_chunks
-USING ivfflat (embedding vector_cosine_ops)
-WITH (lists = 100);
+-- DISABLED in dev: defer index creation until after dimension fix (1536-d)
+-- The initial schema may use vector(3072), and ivfflat requires <= 2000 dims.
+-- We create these indexes later via apps/web/prisma/vector-indexes.sql once
+-- the dimension is corrected to 1536.
+--
+-- CREATE INDEX IF NOT EXISTS content_chunks_embedding_idx
+-- ON content_chunks
+-- USING ivfflat (embedding vector_cosine_ops)
+-- WITH (lists = 100);
 
-CREATE INDEX IF NOT EXISTS concepts_embedding_idx
-ON concepts
-USING ivfflat (embedding vector_cosine_ops)
-WITH (lists = 100);
+-- CREATE INDEX IF NOT EXISTS concepts_embedding_idx
+-- ON concepts
+-- USING ivfflat (embedding vector_cosine_ops)
+-- WITH (lists = 100);
 
 -- Note: After initial data load, consider running:
 -- VACUUM ANALYZE content_chunks;

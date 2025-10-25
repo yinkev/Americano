@@ -6,9 +6,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { ConflictDetector } from '@/subsystems/knowledge-graph/conflict-detector'
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
-const prisma = new PrismaClient()
 const contentConflictDetector = new ConflictDetector()
 
 export async function POST(request: NextRequest) {

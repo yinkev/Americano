@@ -11,7 +11,8 @@
  * based on data availability.
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
+import type { PrismaClient } from '@prisma/client'
 import type {
   LearningStyleProfile,
   ContentPreferences,
@@ -135,8 +136,8 @@ export class PersonalizationEngine {
   private readonly MIN_CONFIDENCE_THRESHOLD = 0.7
   private readonly MIN_DATA_QUALITY_SCORE = 0.6
 
-  constructor(prisma: PrismaClient) {
-    this.prisma = prisma
+  constructor(prismaClient: PrismaClient = prisma) {
+    this.prisma = prismaClient
   }
 
   /**

@@ -31,10 +31,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import { subDays } from 'date-fns'
 
-const prisma = new PrismaClient()
 
 interface DataPoint {
   timestamp: Date

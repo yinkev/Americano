@@ -51,7 +51,7 @@ export async function GET(
     const { id } = await params
 
     // Fetch conflict with all related data
-    const conflict = await prisma.conflict.findUnique({
+    const conflict = await prisma.conflicts.findUnique({
       where: { id },
       include: {
         concept: {
@@ -296,7 +296,7 @@ export async function PATCH(
     const { status, notes } = validatedBody.data
 
     // Fetch current conflict
-    const currentConflict = await prisma.conflict.findUnique({
+    const currentConflict = await prisma.conflicts.findUnique({
       where: { id },
       select: { status: true },
     })
@@ -346,7 +346,7 @@ export async function PATCH(
 
     // Update conflict and create history record in transaction
     const [updatedConflict] = await prisma.$transaction([
-      prisma.conflict.update({
+      prisma.conflicts.update({
         where: { id },
         data: {
           status,

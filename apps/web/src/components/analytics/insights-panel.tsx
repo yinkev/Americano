@@ -24,6 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { typography, colors, glassmorphism } from '@/lib/design-tokens'
 
 interface Insight {
   id: string
@@ -165,16 +166,16 @@ export function InsightsPanel() {
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className={`${glassmorphism.light}`}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-2">
-              <Sparkles className="size-5 text-[oklch(0.7_0.15_230)]" />
+            <div className={`rounded-full bg-[${colors.clinical}]/10 p-2`}>
+              <Sparkles className={`size-5 text-[${colors.clinical}]`} />
             </div>
             <div>
-              <CardTitle className="text-lg font-heading">Mission Insights</CardTitle>
-              <p className="text-xs text-muted-foreground">
+              <CardTitle className={`${typography.heading.h3} text-foreground`}>Mission Insights</CardTitle>
+              <p className={`${typography.body.tiny} text-muted-foreground`}>
                 Last updated: {lastRefresh.toLocaleTimeString()}
               </p>
             </div>
@@ -183,7 +184,7 @@ export function InsightsPanel() {
             variant="ghost"
             size="sm"
             onClick={fetchInsights}
-            className="text-[oklch(0.7_0.15_230)] hover:text-[oklch(0.65_0.15_230)]"
+            className={`text-[${colors.clinical}] hover:text-[${colors.clinical}]/80`}
           >
             Refresh
           </Button>
@@ -200,7 +201,7 @@ export function InsightsPanel() {
               <AccordionItem
                 key={insight.id}
                 value={insight.id}
-                className="rounded-xl border border-border bg-card transition-all hover:border-[oklch(0.7_0.15_230)]/30"
+                className={`rounded-xl border border-border bg-card transition-all hover:border-[${colors.clinical}]/30`}
               >
                 <AccordionTrigger className="p-4 hover:no-underline">
                   <div className="flex items-start gap-3 flex-1 text-left">
@@ -212,10 +213,10 @@ export function InsightsPanel() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className="text-sm font-semibold text-foreground">{insight.headline}</h4>
+                        <h4 className={`${typography.body.small} font-semibold text-foreground`}>{insight.headline}</h4>
                         <Badge
                           variant="secondary"
-                          className="text-xs"
+                          className={`${typography.body.tiny}`}
                           style={{
                             backgroundColor: `${sentimentColor}/0.1`,
                             color: sentimentColor,
@@ -228,13 +229,13 @@ export function InsightsPanel() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-3 ml-14">
+                  <p className={`${typography.body.small} text-muted-foreground leading-relaxed mb-3 ml-14`}>
                     {insight.detail}
                   </p>
                   {insight.action && (
                     <a
                       href={insight.actionUrl || '#'}
-                      className="inline-flex items-center gap-1 text-sm font-medium hover:underline transition-colors ml-14"
+                      className={`inline-flex items-center gap-1 ${typography.body.small} font-medium hover:underline transition-colors ml-14`}
                       style={{ color: sentimentColor }}
                     >
                       {insight.action} →
@@ -247,7 +248,7 @@ export function InsightsPanel() {
         </Accordion>
 
         <div className="mt-6 pt-6 border-t border-border">
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <p className={`${typography.body.tiny} text-muted-foreground leading-relaxed`}>
             Insights are generated daily based on your recent mission activity. Click any insight to
             see more details and recommended actions.
           </p>

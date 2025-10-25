@@ -48,7 +48,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Aggregate content from all chunks
-    const fullText = lecture.contentChunks.map((chunk) => chunk.content).join('\n\n')
+    const fullText = lecture.contentChunks
+      .map((chunk: { content: string }) => chunk.content)
+      .join('\n\n')
 
     if (!fullText || fullText.trim().length === 0) {
       return Response.json(
@@ -62,8 +64,8 @@ export async function POST(request: NextRequest) {
 
     // Extract page numbers from content chunks
     const pageNumbers = lecture.contentChunks
-      .map((chunk) => chunk.pageNumber)
-      .filter((page): page is number => page !== null)
+      .map((chunk: { pageNumber: number | null }) => chunk.pageNumber)
+      .filter((page: number | null): page is number => page !== null)
 
     // Initialize ChatMock client and extract objectives
     const chatMockClient = new ChatMockClient()
@@ -115,15 +117,18 @@ export async function POST(request: NextRequest) {
           .map((prereqText) => {
             // Find best matching existing objective
             const matches = existingObjectives
-              .map((existing) => ({
+              .map((existing: { id: string; objective: string }) => ({
                 id: existing.id,
                 similarity: calculateSimilarity(
                   prereqText.toLowerCase(),
                   existing.objective.toLowerCase(),
                 ),
               }))
-              .filter((match) => match.similarity >= 0.8)
-              .sort((a, b) => b.similarity - a.similarity)
+              .filter((match: { similarity: number }) => match.similarity >= 0.8)
+              .sort(
+                (a: { similarity: number }, b: { similarity: number }) =>
+                  b.similarity - a.similarity,
+              )
 
             return matches.length > 0
               ? {

@@ -15,7 +15,7 @@
  * - Supports multiple version sources (web scraping, API, manual)
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 /**
  * Version information for a First Aid edition
@@ -60,10 +60,10 @@ export interface VersionComparisonResult {
  * ```
  */
 export class FirstAidVersionChecker {
-  private prisma: PrismaClient
+  private prisma = prisma
 
   constructor() {
-    this.prisma = new PrismaClient()
+    // uses singleton prisma
   }
 
   /**

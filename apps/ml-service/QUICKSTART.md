@@ -33,8 +33,8 @@ venv\Scripts\activate  # Windows
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Generate Prisma client
-prisma generate
+# 4. (Deprecated) Prisma client
+Prisma Python is deprecated. No client generation is required. Runtime uses SQLAlchemy.
 
 # 5. Verify database connection
 # Check .env file has DATABASE_URL configured

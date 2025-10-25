@@ -10,7 +10,7 @@
  *   - src.adaptive.models
  *   - src.analytics.models
  *
- * Generated: 2025-10-21 23:05:42 UTC
+ * Generated: 2025-10-24 16:03:29 UTC
  * Generator: Custom Pydantic V2 → TypeScript converter
  *
  * To regenerate:

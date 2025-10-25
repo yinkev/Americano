@@ -17,10 +17,14 @@ import { useState, useEffect } from 'react'
 import { MissionCompletionChart } from '@/components/analytics/mission-completion-chart'
 import { InsightsPanel } from '@/components/analytics/insights-panel'
 import { RecommendationsPanel } from '@/components/analytics/recommendations-panel'
+import { StatsGrid } from '@/components/dashboard/stats-grid'
+import { MissionProgress } from '@/components/dashboard/mission-progress'
+import { BadgesDisplay } from '@/components/dashboard/badges-display'
+import { ProgressStats } from '@/components/dashboard/progress-stats'
 import { Trophy, Target, Flame, TrendingUp, Activity } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { typography } from '@/lib/design-tokens'
+import { typography, glassmorphism } from '@/lib/design-tokens'
 
 interface MissionSummary {
   completionRate: number
@@ -142,7 +146,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b bg-white/50 backdrop-blur-sm">
+      <div className={`border-b ${glassmorphism.light}`}>
         <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8">
           <div className="flex items-start gap-4">
             <div
@@ -166,117 +170,39 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-          {/* Current Streak */}
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all duration-150">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div
-                  className="rounded-full p-3"
-                  style={{ backgroundColor: 'oklch(0.7 0.18 50 / 0.1)' }}
-                >
-                  <Flame className="size-6" style={{ color: 'oklch(0.7 0.18 50)' }} />
-                </div>
-                <div className="text-right">
-                  <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Best</p>
-                  <p className={`${typography.body.small} font-semibold text-foreground`}>
-                    {summary.streak.longest} days
-                  </p>
-                </div>
-              </div>
-              <h3 className={`${typography.body.small} font-medium text-muted-foreground mb-1`}>
-                Current Streak
-              </h3>
-              <p className="text-[32px] font-heading font-bold text-foreground">
-                {summary.streak.current}
-                <span className="text-[16px] text-muted-foreground ml-2">days</span>
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Completion Rate */}
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all duration-150">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div
-                  className="rounded-full p-3"
-                  style={{ backgroundColor: 'oklch(0.65 0.18 240 / 0.1)' }}
-                >
-                  <Target className="size-6" style={{ color: 'oklch(0.65 0.18 240)' }} />
-                </div>
-                <div className="text-right">
-                  <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Target</p>
-                  <p className={`${typography.body.small} font-semibold text-foreground`}>80%</p>
-                </div>
-              </div>
-              <h3 className={`${typography.body.small} font-medium text-muted-foreground mb-1`}>
-                Completion Rate
-              </h3>
-              <p className="text-[32px] font-heading font-bold text-foreground">
-                {(summary.completionRate * 100).toFixed(1)}
-                <span className="text-[16px] text-muted-foreground ml-2">%</span>
-              </p>
-              <p className={`${typography.body.tiny} text-muted-foreground mt-2`}>
-                {summary.missions.completed}/{summary.missions.total} missions
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Success Score */}
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all duration-150">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div
-                  className="rounded-full p-3"
-                  style={{ backgroundColor: 'oklch(0.7 0.15 145 / 0.1)' }}
-                >
-                  <Trophy className="size-6" style={{ color: 'oklch(0.7 0.15 145)' }} />
-                </div>
-                <div className="text-right">
-                  <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Max</p>
-                  <p className={`${typography.body.small} font-semibold text-foreground`}>1.00</p>
-                </div>
-              </div>
-              <h3 className={`${typography.body.small} font-medium text-muted-foreground mb-1`}>
-                Success Score
-              </h3>
-              <p className="text-[32px] font-heading font-bold text-foreground">
-                {summary.successScore.toFixed(2)}
-              </p>
-              <p className={`${typography.body.tiny} text-muted-foreground mt-2`}>
-                Average across all missions
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Missions Completed */}
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all duration-150">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div
-                  className="rounded-full p-3"
-                  style={{ backgroundColor: 'oklch(0.7 0.15 280 / 0.1)' }}
-                >
-                  <TrendingUp className="size-6" style={{ color: 'oklch(0.7 0.15 280)' }} />
-                </div>
-                <div className="text-right">
-                  <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Skipped</p>
-                  <p className={`${typography.body.small} font-semibold text-foreground`}>
-                    {summary.missions.skipped}
-                  </p>
-                </div>
-              </div>
-              <h3 className={`${typography.body.small} font-medium text-muted-foreground mb-1`}>
-                Missions Completed
-              </h3>
-              <p className="text-[32px] font-heading font-bold text-foreground">
-                {summary.missions.completed}
-              </p>
-              <p className={`${typography.body.tiny} text-muted-foreground mt-2`}>Last 7 days</p>
-            </CardContent>
-          </Card>
+        {/* Your Progress */}
+        <div className="mb-8">
+          <h2 className={`${typography.heading.h2} text-foreground mb-4`}>Your Progress</h2>
+          <ProgressStats
+            streak={summary.streak.current}
+            cardsReviewed={summary.missions.completed}
+            accuracy={(summary.completionRate * 100).toFixed(1)}
+            points={summary.successScore.toFixed(2) * 1000}
+          />
+          <BadgesDisplay />
         </div>
+
+        {/* Today's Mission */}
+        <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] mb-8">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className={`${typography.heading.h2} text-foreground`}>Today's Mission</h2>
+              <button className="primary-button">Regenerate mission</button>
+            </div>
+            <p className={`${typography.body.base} text-muted-foreground mb-4`}>Fri, Oct 24</p>
+            <MissionProgress current={summary.missions.completed} total={summary.missions.total} />
+            {summary.missions.completed === summary.missions.total && summary.missions.total > 0 ? (
+              <div className="flex items-center justify-center py-4 rounded-lg"
+                   style={{ backgroundColor: 'oklch(from var(--color-success) l c h / 0.1)' }}>
+                <p className={`${typography.body.base} text-success font-semibold`}>🎉 Mission complete!</p>
+              </div>
+            ) : (
+              <p className={`${typography.body.base} text-muted-foreground text-center py-4`}>
+                {summary.missions.total - summary.missions.completed} objectives remaining
+              </p>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Completion Trends Chart */}
         <div className="mb-8">

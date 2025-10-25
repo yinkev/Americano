@@ -30,7 +30,9 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from app.ml import StrugglePredictionModel, FEATURE_NAMES
-from app.services.database import prisma
+import sys
+print("[DEPRECATED] Prisma Python has been removed; training script to be ported to SQLAlchemy.")
+sys.exit(0)
 from app.utils.logging import setup_logging
 
 setup_logging()

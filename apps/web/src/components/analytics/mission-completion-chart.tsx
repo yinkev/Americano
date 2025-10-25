@@ -22,6 +22,7 @@ import {
 } from 'recharts'
 import { format } from 'date-fns'
 import { Calendar, TrendingUp, BarChart3 } from 'lucide-react'
+import { typography, colors, glassmorphism } from '@/lib/design-tokens'
 
 interface TrendData {
   date: string
@@ -101,14 +102,14 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all border border-white/30 p-6">
+    <div className={`${glassmorphism.light} rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all p-6`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-[18px] font-heading font-semibold text-foreground">
+          <h3 className={`${typography.heading.h3} text-foreground`}>
             Mission Completion Trends
           </h3>
-          <p className="text-[13px] text-muted-foreground mt-1">
+          <p className={`${typography.body.small} text-muted-foreground mt-1`}>
             Average: {avgCompletionRate}% completion rate
           </p>
         </div>
@@ -117,8 +118,8 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
             onClick={() => setSelectedChartType('line')}
             className={`p-2 rounded-lg transition-colors ${
               selectedChartType === 'line'
-                ? 'bg-[oklch(0.7_0.15_230)] text-white'
-                : 'bg-white/60 text-[oklch(0.556_0_0)] hover:bg-white/80'
+                ? `bg-[${colors.clinical}] text-white`
+                : `bg-white/60 text-[${colors.mutedForeground}] hover:bg-white/80`
             }`}
             aria-label="Line chart"
             title="Line chart"
@@ -129,8 +130,8 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
             onClick={() => setSelectedChartType('bar')}
             className={`p-2 rounded-lg transition-colors ${
               selectedChartType === 'bar'
-                ? 'bg-[oklch(0.7_0.15_230)] text-white'
-                : 'bg-white/60 text-[oklch(0.556_0_0)] hover:bg-white/80'
+                ? `bg-[${colors.clinical}] text-white`
+                : `bg-white/60 text-[${colors.mutedForeground}] hover:bg-white/80`
             }`}
             aria-label="Bar chart"
             title="Bar chart"
@@ -149,8 +150,8 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
               onClick={() => setSelectedPeriod(p)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                 selectedPeriod === p
-                  ? 'bg-[oklch(0.7_0.15_230)] text-white'
-                  : 'bg-white/60 text-[oklch(0.556_0_0)] hover:bg-white/80'
+                  ? `bg-[${colors.clinical}] text-white`
+                  : `bg-white/60 text-[${colors.mutedForeground}] hover:bg-white/80`
               }`}
             >
               {p === '7d' ? '7 Days' : p === '30d' ? '30 Days' : '90 Days'}
@@ -163,28 +164,28 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
       <ResponsiveContainer width="100%" height={300}>
         {selectedChartType === 'line' ? (
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={colors.muted} vertical={false} />
             <XAxis
               dataKey="date"
-              stroke="oklch(0.556 0 0)"
+              stroke={colors.mutedForeground}
               style={{ fontSize: '12px' }}
-              tick={{ fill: 'oklch(0.556 0 0)' }}
+              tick={{ fill: colors.mutedForeground }}
             />
             <YAxis
-              stroke="oklch(0.556 0 0)"
+              stroke={colors.mutedForeground}
               style={{ fontSize: '12px' }}
-              tick={{ fill: 'oklch(0.556 0 0)' }}
+              tick={{ fill: colors.mutedForeground }}
               domain={[0, 100]}
               label={{
                 value: 'Completion Rate (%)',
                 angle: -90,
                 position: 'insideLeft',
-                style: { fontSize: '12px', fill: 'oklch(0.556 0 0)' },
+                style: { fontSize: '12px', fill: colors.mutedForeground },
               }}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'oklch(1 0 0 / 0.95)',
+                backgroundColor: `oklch(from ${colors.background} l c h / 0.95)`,
                 backdropFilter: 'blur(12px)',
                 border: 'none',
                 borderRadius: '12px',
@@ -192,7 +193,7 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
                 padding: '12px',
               }}
               labelStyle={{
-                color: 'oklch(0.145 0 0)',
+                color: colors.foreground,
                 fontWeight: 600,
                 marginBottom: '4px',
               }}
@@ -202,13 +203,13 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
             <Line
               type="monotone"
               dataKey="displayValue"
-              stroke="oklch(0.7 0.15 230)"
+              stroke={colors.clinical}
               strokeWidth={3}
               dot={{
-                fill: 'oklch(0.7 0.15 230)',
+                fill: colors.clinical,
                 r: 5,
                 strokeWidth: 2,
-                stroke: 'oklch(1 0 0)',
+                stroke: colors.background,
               }}
               activeDot={{ r: 7 }}
               name="Completion Rate (%)"
@@ -217,7 +218,7 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
             <Line
               type="monotone"
               dataKey={() => 80}
-              stroke="oklch(0.75 0.15 160)"
+              stroke={colors.lab}
               strokeWidth={2}
               strokeDasharray="5 5"
               dot={false}
@@ -226,28 +227,28 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
           </LineChart>
         ) : (
           <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={colors.muted} vertical={false} />
             <XAxis
               dataKey="date"
-              stroke="oklch(0.556 0 0)"
+              stroke={colors.mutedForeground}
               style={{ fontSize: '12px' }}
-              tick={{ fill: 'oklch(0.556 0 0)' }}
+              tick={{ fill: colors.mutedForeground }}
             />
             <YAxis
-              stroke="oklch(0.556 0 0)"
+              stroke={colors.mutedForeground}
               style={{ fontSize: '12px' }}
-              tick={{ fill: 'oklch(0.556 0 0)' }}
+              tick={{ fill: colors.mutedForeground }}
               domain={[0, 100]}
               label={{
                 value: 'Completion Rate (%)',
                 angle: -90,
                 position: 'insideLeft',
-                style: { fontSize: '12px', fill: 'oklch(0.556 0 0)' },
+                style: { fontSize: '12px', fill: colors.mutedForeground },
               }}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'oklch(1 0 0 / 0.95)',
+                backgroundColor: `oklch(from ${colors.background} l c h / 0.95)`,
                 backdropFilter: 'blur(12px)',
                 border: 'none',
                 borderRadius: '12px',
@@ -255,7 +256,7 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
                 padding: '12px',
               }}
               labelStyle={{
-                color: 'oklch(0.145 0 0)',
+                color: colors.foreground,
                 fontWeight: 600,
                 marginBottom: '4px',
               }}
@@ -264,7 +265,7 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
             <Legend />
             <Bar
               dataKey="displayValue"
-              fill="oklch(0.7 0.15 230)"
+              fill={colors.clinical}
               radius={[8, 8, 0, 0]}
               name="Completion Rate (%)"
             />
@@ -273,20 +274,20 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
       </ResponsiveContainer>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-[oklch(0.922_0_0)]">
+      <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-[${colors.border}]">
         <div>
-          <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Best Day</p>
-          <p className="text-lg font-semibold text-[oklch(0.145_0_0)]">
+          <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Best Day</p>
+          <p className={`${typography.body.base} font-semibold text-foreground`}>
             {Math.max(...chartData.map((d) => d.displayValue)).toFixed(0)}%
           </p>
         </div>
         <div>
-          <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Average</p>
-          <p className="text-lg font-semibold text-[oklch(0.145_0_0)]">{avgCompletionRate}%</p>
+          <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Average</p>
+          <p className={`${typography.body.base} font-semibold text-foreground`}>{avgCompletionRate}%</p>
         </div>
         <div>
-          <p className="text-xs text-[oklch(0.556_0_0)] mb-1">Trend</p>
-          <p className="text-lg font-semibold text-[oklch(0.145_0_0)]">
+          <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Trend</p>
+          <p className={`${typography.body.base} font-semibold text-foreground`}>
             {calculateTrend(chartData)}
           </p>
         </div>

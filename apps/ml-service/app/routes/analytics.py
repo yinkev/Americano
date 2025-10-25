@@ -5,8 +5,8 @@ FastAPI routes for model performance and struggle reduction metrics.
 """
 
 from fastapi import APIRouter, Depends, HTTPException
-from prisma import Prisma
-from prisma.errors import PrismaError
+from typing import Any as Prisma
+PrismaError = Exception
 from typing import Optional
 from datetime import datetime, timedelta
 import logging
@@ -15,7 +15,7 @@ import asyncio
 from app.models.analytics import ModelPerformanceResponse, StruggleReductionResponse, TimelinePoint
 from app.services.database import get_db
 from app.utils.config import settings
-from prisma.enums import PredictionStatus
+from app.models.predictions import PredictionStatus
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -33,7 +33,54 @@ async def get_model_performance(
     """
     try:
         async with asyncio.timeout(10):
-            # Get all confirmed predictions
+            if settings.DB_ADAPTER.lower() != "prisma":
+                # Quick SQLAlchemy read path for metrics (read-only)
+                from sqlalchemy import select
+                from app.db.sqlalchemy_adapter import get_sqlalchemy_session, StrugglePrediction
+
+                with get_sqlalchemy_session() as session:
+                    q = select(StrugglePrediction)
+                    if user_id:
+                        q = q.where(StrugglePrediction.userId == user_id)
+                    preds = session.execute(q).scalars().all()
+
+                if len(preds) < 10:
+                    return ModelPerformanceResponse(
+                        accuracy=0.0,
+                        precision=0.0,
+                        recall=0.0,
+                        f1_score=0.0,
+                        calibration={"prob_true": [], "prob_pred": []},
+                        model_type=settings.MODEL_TYPE,
+                        model_version=settings.MODEL_VERSION,
+                        last_updated=datetime.utcnow(),
+                        data_points=len(preds),
+                    )
+
+                tp = sum(1 for p in preds if (p.actualOutcome or False) and p.predictedStruggleProbability >= 0.5)
+                fp = sum(1 for p in preds if not (p.actualOutcome or False) and p.predictedStruggleProbability >= 0.5)
+                tn = sum(1 for p in preds if not (p.actualOutcome or False) and p.predictedStruggleProbability < 0.5)
+                fn = sum(1 for p in preds if (p.actualOutcome or False) and p.predictedStruggleProbability < 0.5)
+
+                total = len(preds)
+                accuracy = (tp + tn) / total if total else 0.0
+                precision = tp / (tp + fp) if (tp + fp) else 0.0
+                recall = tp / (tp + fn) if (tp + fn) else 0.0
+                f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) else 0.0
+
+                return ModelPerformanceResponse(
+                    accuracy=accuracy,
+                    precision=precision,
+                    recall=recall,
+                    f1_score=f1,
+                    calibration={"prob_true": [], "prob_pred": []},
+                    model_type=settings.MODEL_TYPE,
+                    model_version=settings.MODEL_VERSION,
+                    last_updated=datetime.utcnow(),
+                    data_points=total,
+                )
+
+            # Prisma path (unchanged)
             where = {"predictionStatus": {"in": [PredictionStatus.CONFIRMED, PredictionStatus.FALSE_POSITIVE]}}
             if user_id:
                 where["userId"] = user_id
@@ -41,7 +88,6 @@ async def get_model_performance(
             predictions = await db.struggleprediction.find_many(where=where)
 
             if len(predictions) < 10:
-                # Not enough data for metrics
                 return ModelPerformanceResponse(
                     accuracy=0.0,
                     precision=0.0,
@@ -54,7 +100,6 @@ async def get_model_performance(
                     data_points=len(predictions)
                 )
 
-            # Calculate metrics
             true_positives = sum(1 for p in predictions if p.actualOutcome and p.predictedStruggleProbability >= 0.5)
             false_positives = sum(1 for p in predictions if not p.actualOutcome and p.predictedStruggleProbability >= 0.5)
             true_negatives = sum(1 for p in predictions if not p.actualOutcome and p.predictedStruggleProbability < 0.5)
@@ -71,7 +116,7 @@ async def get_model_performance(
                 precision=precision,
                 recall=recall,
                 f1_score=f1,
-                calibration={"prob_true": [0.2, 0.5, 0.8], "prob_pred": [0.25, 0.52, 0.78]},  # Simplified
+                calibration={"prob_true": [0.2, 0.5, 0.8], "prob_pred": [0.25, 0.52, 0.78]},
                 model_type=settings.MODEL_TYPE,
                 model_version=settings.MODEL_VERSION,
                 last_updated=datetime.utcnow(),

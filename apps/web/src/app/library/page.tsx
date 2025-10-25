@@ -201,59 +201,67 @@ export default function LibraryPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Library</h1>
-          <p className="text-muted-foreground">Browse and manage your lecture collection</p>
+          <h1 className="text-2xl font-bold tracking-tight">Library</h1>
+        </div>
+        <div className="flex gap-2">
+          <UploadDialog
+            open={uploadDialogOpen}
+            onOpenChange={setUploadDialogOpen}
+            onUploadComplete={fetchLectures}
+            courses={courses}
+          />
+          <Button className="compact-button" onClick={() => setCourseDialogOpen(true)}>Create Course</Button>
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="flex gap-2 mb-6">
-        <div className="flex-1 flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search lectures by title, course, or tags..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="pl-10"
-            />
-          </div>
-          <Button onClick={handleSearch}>Search</Button>
-          {searchQuery && (
-            <Button variant="outline" onClick={handleClearSearch}>
-              Clear
-            </Button>
-          )}
-        </div>
+      {/* Search and Filters */}
+      <div className="flex items-center gap-2 mb-4 p-2 bg-muted/30 rounded-md">
+        <Search className="h-4 w-4 text-muted-foreground ml-2" />
+        <Input
+          placeholder="Search lectures..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          className="flex-1 bg-transparent border-none focus:ring-0"
+        />
+        <LectureFilters
+          courses={courses}
+          selectedCourse={selectedCourse}
+          selectedStatus={selectedStatus}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onCourseChange={setSelectedCourse}
+          onStatusChange={setSelectedStatus}
+          onSortChange={(field, order) => {
+            setSortBy(field)
+            setSortOrder(order)
+          }}
+        />
       </div>
-
-      {/* Filters */}
-      <LectureFilters
-        courses={courses}
-        selectedCourse={selectedCourse}
-        selectedStatus={selectedStatus}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        onCourseChange={setSelectedCourse}
-        onStatusChange={setSelectedStatus}
-        onSortChange={(field, order) => {
-          setSortBy(field)
-          setSortOrder(order)
-        }}
-      />
 
       {/* Bulk Action Toolbar */}
       {selectedLectures.size > 0 && (
-        <BulkActionToolbar
-          selectedCount={selectedLectures.size}
-          selectedLectureIds={Array.from(selectedLectures)}
-          courses={courses}
-          onComplete={handleBulkActionComplete}
-          onCancel={() => setSelectedLectures(new Set())}
-        />
+        <div className="flex items-center justify-between p-2 mb-4 bg-muted/30 rounded-md">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={selectedLectures.size === lectures.length && lectures.length > 0}
+              onCheckedChange={toggleSelectAll}
+              id="select-all"
+            />
+            <label htmlFor="select-all" className="text-sm font-medium cursor-pointer">
+              {selectedLectures.size} selected
+            </label>
+          </div>
+          <BulkActionToolbar
+            selectedCount={selectedLectures.size}
+            selectedLectureIds={Array.from(selectedLectures)}
+            courses={courses}
+            onComplete={handleBulkActionComplete}
+            onCancel={() => setSelectedLectures(new Set())}
+          />
+        </div>
       )}
 
       {/* Lecture List */}
@@ -276,18 +284,6 @@ export default function LibraryPage() {
         </Card>
       ) : (
         <>
-          {/* Select All Checkbox */}
-          <div className="flex items-center gap-2 mb-4 p-4 bg-muted/30 rounded-md">
-            <Checkbox
-              checked={selectedLectures.size === lectures.length && lectures.length > 0}
-              onCheckedChange={toggleSelectAll}
-              id="select-all"
-            />
-            <label htmlFor="select-all" className="text-sm font-medium cursor-pointer">
-              Select all ({lectures.length})
-            </label>
-          </div>
-
           <LectureList
             lectures={lectures}
             selectedLectures={selectedLectures}
@@ -305,14 +301,14 @@ export default function LibraryPage() {
               </p>
               <div className="flex gap-2">
                 <Button
-                  variant="outline"
+                  className="compact-button"
                   disabled={!pagination.hasPrevPage}
                   onClick={() => setCurrentPage((p) => p - 1)}
                 >
                   Previous
                 </Button>
                 <Button
-                  variant="outline"
+                  className="compact-button"
                   disabled={!pagination.hasNextPage}
                   onClick={() => setCurrentPage((p) => p + 1)}
                 >

@@ -158,10 +158,30 @@ Selected Google Gemini text-embedding-001 at 1536 dimensions for semantic search
 
 ---
 
+### ADR-006: Standardize on motion.dev; Deprecate framer-motion
+**Status:** ✅ Accepted (2025-10-24)
+**Epic:** Cross-UI
+**File:** [ADR-006-motion-standard.md](./ADR-006-motion-standard.md)
+
+**Summary:**
+Consolidate all React animations on motion.dev (`motion` package). Remove `framer-motion` to reduce bundle size, avoid API drift, and align with design rules.
+
+**Key Decision:**
+- Library: `motion` from motion.dev
+- Import path: `motion/react` for React
+- AnimatePresence: use `mode="wait"` instead of deprecated `exitBeforeEnter`
+
+**Impact:**
+- Smaller bundle, simpler API surface
+- One animation library across UI
+- Eliminates dual-dependency drift
+
+---
+
 ## ADR Statistics
 
-**Total ADRs:** 5
-**Active:** 4
+**Total ADRs:** 6
+**Active:** 5
 **Deprecated:** 1
 **Coverage by Epic:**
 - Epic 3: 1 ADR (ADR-005)

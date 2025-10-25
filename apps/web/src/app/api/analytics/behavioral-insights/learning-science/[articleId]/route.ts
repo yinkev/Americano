@@ -290,7 +290,8 @@ We'll identify:
       // Fetch review accuracy and active recall patterns
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
 
-      const reviews = await prisma.review.findMany({
+      type ReviewRating = 'GOOD' | 'EASY' | 'AGAIN' | 'HARD'
+      const reviews: { rating: ReviewRating; reviewedAt: Date }[] = await prisma.review.findMany({
         where: {
           userId,
           reviewedAt: { gte: thirtyDaysAgo },
@@ -307,8 +308,8 @@ We'll identify:
         const accuracy = (correct / reviews.length) * 100
 
         // Group by week to show trend
-        const weeklyData: { [key: string]: { correct: number; total: number } } = {}
-        reviews.forEach((review) => {
+        const weeklyData: Record<string, { correct: number; total: number }> = {}
+        reviews.forEach((review: { rating: ReviewRating; reviewedAt: Date }) => {
           const week = new Date(review.reviewedAt)
           week.setDate(week.getDate() - week.getDay()) // Start of week
           const weekKey = week.toISOString().split('T')[0]

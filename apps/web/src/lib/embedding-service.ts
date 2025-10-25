@@ -183,10 +183,16 @@ export class EmbeddingService {
           throw new Error(embeddingResult.error)
         }
 
+        // Enforce 1536-dimension invariant
+        if (embeddingResult.embedding.length !== 1536) {
+          throw new Error(
+            `Invalid embedding dimension: ${embeddingResult.embedding.length}. Expected 1536. ` +
+              `Check Gemini model and outputDimensionality configuration.`
+          )
+        }
         return embeddingResult.embedding
       },
       {
-        maxAttempts: this.config.maxRetries,
         ...DEFAULT_POLICIES.GEMINI_API,
       },
       'embedding-service'
@@ -281,8 +287,7 @@ export class EmbeddingService {
             // Log permanent errors (these won't succeed even with retry)
             if (result.permanent && this.config.enableRetryLogging) {
               console.error(
-                `[EmbeddingService] Permanent error for text ${originalIndex}: ${result.error}`,
-                result.errorDetails?.type
+                `[EmbeddingService] Permanent error for text ${originalIndex}: ${result.error}`
               )
             }
 

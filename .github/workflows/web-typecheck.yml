@@ -1,0 +1,36 @@
+name: Web Typecheck
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Typecheck web (strict baseline)
+        working-directory: apps/web
+        env:
+          ENABLE_PWA: 'false'
+        run: npx tsc -p tsconfig.strict.json --noEmit
+
+      - name: Guard: ban framer-motion and pnpm lock
+        run: |
+          if rg -n "framer-motion" package.json apps/web/package.json >/dev/null 2>&1; then
+            echo "framer-motion found; use motion (motion.dev)" && exit 1
+          fi
+          if [ -f pnpm-lock.yaml ] || rg -n "pnpm" .npmrc package.json >/dev/null 2>&1; then
+            echo "pnpm artifacts found; use npm workspaces" && exit 1
+          fi

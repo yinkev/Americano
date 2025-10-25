@@ -1249,73 +1249,45 @@ export default function StudyPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2" style={{ color: 'oklch(0.3 0.15 250)' }}>
-              Study Session
-            </h1>
-            <p className="text-base" style={{ color: 'oklch(0.5 0.1 250)' }}>
-              Track your study time and maintain consistent habits
-            </p>
-          </div>
-
-          <div
-            className="rounded-2xl p-8 backdrop-blur-md"
-            style={{
-              background: 'oklch(1 0 0 / 0.8)',
-              boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
-            }}
-          >
-            <div className="mb-8">
-              <SessionTimer />
-            </div>
-
-            <div className="flex justify-center gap-4">
-              {!sessionId ? (
-                <Button
-                  size="lg"
-                  onClick={handleStartSession}
-                  disabled={isStarting}
-                  className="min-h-[44px] px-8"
-                  style={{
-                    background: 'oklch(0.55 0.2 250)',
-                    color: 'oklch(1 0 0)',
-                  }}
-                >
-                  <Play className="mr-2 h-5 w-5" />
-                  {isStarting ? 'Starting...' : 'Start Session'}
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    onClick={isPaused ? handleResumeSession : handlePauseSession}
-                    className="min-h-[44px] px-8"
-                  >
-                    {isPaused ? (
-                      <Play className="mr-2 h-5 w-5" />
-                    ) : (
-                      <Pause className="mr-2 h-5 w-5" />
-                    )}
-                    {isPaused ? 'Resume' : 'Pause'}
-                  </Button>
-                  <Button
-                    size="lg"
-                    onClick={handleCompleteSession}
-                    disabled={isCompleting}
-                    className="min-h-[44px] px-8"
-                    style={{
-                      background: 'oklch(0.65 0.2 140)',
-                      color: 'oklch(1 0 0)',
-                    }}
-                  >
-                    <Square className="mr-2 h-5 w-5" />
-                    {isCompleting ? 'Completing...' : 'Complete Session'}
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Study Session</h1>
+        </div>
+        <div className="flex gap-2">
+          {!sessionId ? (
+                          <Button
+                            className="compact-button"              onClick={handleStartSession}
+              disabled={isStarting}
+            >
+              <Play className="mr-2 h-4 w-4" />
+              {isStarting ? 'Starting...' : 'Start Session'}
+            </Button>
+          ) : (
+            <>
+              <Button
+                className="compact-button"
+                variant="outline"
+                onClick={isPaused ? handleResumeSession : handlePauseSession}
+              >
+                {isPaused ? (
+                  <Play className="mr-2 h-4 w-4" />
+                ) : (
+                  <Pause className="mr-2 h-4 w-4" />
+                )}
+                {isPaused ? 'Resume' : 'Pause'}
+              </Button>
+              <Button
+                className="compact-button"
+                onClick={handleCompleteSession}
+                disabled={isCompleting}
+              >
+                <Square className="mr-2 h-4 w-4" />
+                {isCompleting ? 'Completing...' : 'Complete Session'}
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
         </div>
       </div>
     )
@@ -1376,10 +1348,9 @@ export default function StudyPage() {
           {/* Main Study Area */}
           {!sessionId ? (
             <div
-              className="rounded-2xl p-8 backdrop-blur-md text-center"
+              className="rounded-2xl p-8 text-center"
               style={{
                 background: 'oklch(1 0 0 / 0.8)',
-                boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
               }}
             >
               <Button
@@ -1400,12 +1371,11 @@ export default function StudyPage() {
             <>
               {/* Objective Timer or Pomodoro Timer */}
               <div
-                className="rounded-2xl p-6 backdrop-blur-md"
+                className="rounded-2xl p-6 text-center"
                 style={{
                   background: settings.focusMode
                     ? 'oklch(0.98 0.01 250 / 0.95)'
                     : 'oklch(1 0 0 / 0.95)',
-                  boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
                 }}
               >
                 {settings.pomodoroMode ? (

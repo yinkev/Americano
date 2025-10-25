@@ -15,7 +15,7 @@
  * - Stores notification history in database
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import type { VersionComparisonResult } from './first-aid-version-checker'
 
 /**
@@ -45,10 +45,10 @@ export interface NotificationResult {
  * ```
  */
 export class FirstAidUpdateNotifier {
-  private prisma: PrismaClient
+  private prisma = prisma
 
   constructor() {
-    this.prisma = new PrismaClient()
+    // uses singleton prisma
   }
 
   /**

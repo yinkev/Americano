@@ -1,33 +1,33 @@
 """
-Prisma Python Client Singleton
+Database access helpers.
 
-Manages database connection lifecycle for the FastAPI application.
+When DB_ADAPTER=prisma, exposes a Prisma client (lazy).
+When DB_ADAPTER=sqlalchemy, routes should avoid Prisma and use repository adapters.
 """
 
-from prisma import Prisma
 import logging
+from typing import Any, Optional
+from app.utils.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Global Prisma client instance
-prisma = Prisma(
-    auto_register=True,
-    log_queries=False  # Set to True for debugging
-)
+_prisma: Optional[Any] = None
 
 
-async def get_db() -> Prisma:
-    """
-    Dependency for FastAPI routes that need database access.
+def _get_prisma_client() -> Any:
+    global _prisma
+    if _prisma is None:
+        # Import lazily to avoid requiring generated client unless needed
+        from prisma import Prisma  # type: ignore
 
-    Usage:
-        @router.get("/...")
-        async def endpoint(db: Prisma = Depends(get_db)):
-            ...
+        _prisma = Prisma(auto_register=True, log_queries=False)
+    return _prisma
 
-    Returns:
-        Prisma: Connected database client
-    """
-    if not prisma.is_connected():
-        await prisma.connect()
-    return prisma
+
+async def get_db() -> Any:
+    if settings.DB_ADAPTER.lower() != "prisma":
+        return None
+    client = _get_prisma_client()
+    if not client.is_connected():
+        await client.connect()
+    return client

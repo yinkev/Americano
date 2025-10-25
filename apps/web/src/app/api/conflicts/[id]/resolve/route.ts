@@ -112,7 +112,7 @@ export async function POST(
     const { resolution, preferredSourceId, evidence, notes } = validatedBody.data
 
     // Fetch conflict to validate it exists and can be resolved
-    const conflict = await prisma.conflict.findUnique({
+    const conflict = await prisma.conflicts.findUnique({
       where: { id: conflictId },
       select: {
         id: true,
@@ -190,7 +190,7 @@ export async function POST(
       }),
 
       // Update Conflict status to RESOLVED
-      prisma.conflict.update({
+      prisma.conflicts.update({
         where: { id: conflictId },
         data: {
           status: ConflictStatus.RESOLVED,

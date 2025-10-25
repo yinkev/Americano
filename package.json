@@ -4,18 +4,17 @@
   "description": "Americano - AI-Powered Medical Education Platform",
   "private": true,
   "workspaces": [
-    "apps/web",
-    "services/ml-service"
+    "apps/web"
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:ml\"",
     "dev:web": "cd apps/web && npm run dev",
-    "dev:ml": "cd services/ml-service && source venv/bin/activate && uvicorn app.main:app --reload --port 8000",
+    "dev:ml": "cd apps/ml-service && ./start-ml-service.sh",
     "dev:web-only": "cd apps/web && npm run dev",
-    "dev:ml-only": "cd services/ml-service && source venv/bin/activate && uvicorn app.main:app --reload --port 8000",
+    "dev:ml-only": "cd apps/ml-service && ./start-ml-service.sh",
     "build": "npm run build:web && npm run build:ml",
     "build:web": "cd apps/web && npm run build",
-    "build:ml": "cd services/ml-service && pip install -r requirements.txt",
+    "build:ml": "cd apps/ml-service && bash -lc 'export PATH=\"$HOME/.local/bin:$PATH\"; if command -v uv >/dev/null 2>&1; then uv pip install -r requirements.txt; else python3 -m pip install --upgrade pip && pip install -r requirements.txt; fi'",
     "health-check": "bash scripts/check-services.sh",
     "setup": "bash scripts/setup.sh",
     "setup:ml": "bash scripts/setup-ml.sh",
@@ -29,9 +28,9 @@
   "devDependencies": {
     "@biomejs/biome": "^2.2.6",
     "concurrently": "^8.2.2",
-    "markdownlint-cli": "^0.39.0",
     "markdown-link-check": "^3.12.1",
-    "prisma": "^5.17.0"
+    "markdownlint-cli": "^0.39.0",
+    "prisma": "^6.18.0"
   },
   "engines": {
     "node": ">=20.0.0",
@@ -39,6 +38,6 @@
     "python": ">=3.11.0"
   },
   "dependencies": {
-    "@prisma/client": "^5.17.0"
+    "@prisma/client": "^6.18.0"
   }
 }

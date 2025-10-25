@@ -16,15 +16,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getUserId } from '@/lib/auth'
 import { ApiError } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
-import { validateRequest, submitResponseSchema } from '@/lib/validation'
+import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
+import { validateRequest, submitResponseSchema, type SubmitResponseInput } from '@/lib/validation'
 import { AdaptiveDifficultyEngine } from '@/lib/adaptive/adaptive-engine'
 import { IrtEngine } from '@/lib/adaptive/irt-engine'
 
 export async function POST(request: NextRequest) {
   try {
     // Validate request
-    const data = await validateRequest(request, submitResponseSchema)
+    const data = await validateRequest<SubmitResponseInput>(request, submitResponseSchema)
     const userId = await getUserId()
 
     // Initialize engines
@@ -32,12 +32,7 @@ export async function POST(request: NextRequest) {
     const irtEngine = new IrtEngine()
 
     // Get prompt details
-    const prompt = await prisma.validationPrompt.findUnique({
-      where: { id: data.promptId },
-      include: {
-        learningObjective: true,
-      },
-    })
+    const prompt = await prisma.validationPrompt.findUnique({ where: { id: data.promptId } })
 
     if (!prompt) {
       throw ApiError.notFound('Validation prompt not found')
@@ -79,10 +74,6 @@ export async function POST(request: NextRequest) {
         score: normalizedScore,
         confidenceLevel: data.confidence,
         calibrationDelta,
-        calibrationCategory,
-        initialDifficulty: data.currentDifficulty,
-        timeToRespond: data.timeToRespond,
-        isFollowUpQuestion: false,
         respondedAt: new Date(),
       },
     })
@@ -99,17 +90,12 @@ export async function POST(request: NextRequest) {
       where: {
         userId,
         sessionId: data.sessionId,
-        prompt: {
-          objectiveId: data.objectiveId,
-        },
       },
       orderBy: {
         respondedAt: 'desc',
       },
       take: 10,
-      include: {
-        prompt: true,
-      },
+      include: { prompt: true },
     })
 
     // Calculate IRT knowledge estimate
@@ -117,10 +103,10 @@ export async function POST(request: NextRequest) {
     let efficiencyMetrics = null
 
     if (recentResponses.length >= 1) {
-      const irtResponses = recentResponses.map((r) => ({
-        difficulty: r.prompt.difficultyLevel,
+      const irtResponses = recentResponses.map((r: any) => ({
+        difficulty: r.prompt?.difficultyLevel ?? data.currentDifficulty,
         correct: r.score > 0.6,
-        timeSpent: r.timeToRespond,
+        timeSpent: 0,
       }))
 
       irtEstimate = irtEngine.estimateKnowledgeLevel(irtResponses)
@@ -178,12 +164,15 @@ export async function POST(request: NextRequest) {
     console.error('[API] POST /api/adaptive/submit-response error:', error)
 
     if (error instanceof ApiError) {
-      return NextResponse.json(errorResponse(error), { status: error.statusCode })
+      return NextResponse.json(
+        errorResponse(error.code, error.message, (error as any).details),
+        { status: error.statusCode },
+      )
     }
 
     return NextResponse.json(
-      errorResponse(ApiError.internal('Failed to submit response')),
-      { status: 500 }
+      errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to submit response'),
+      { status: 500 },
     )
   }
 }

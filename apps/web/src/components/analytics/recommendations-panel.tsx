@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
+import { typography, colors, glassmorphism } from '@/lib/design-tokens'
 
 interface Recommendation {
   id: string
@@ -151,15 +152,15 @@ export function RecommendationsPanel() {
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className={`${glassmorphism.light}`}>
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="rounded-full bg-[oklch(0.7_0.15_50)]/10 p-2">
-            <Lightbulb className="size-5 text-[oklch(0.7_0.15_50)]" />
+          <div className={`rounded-full bg-[${colors.energy}]/10 p-2`}>
+            <Lightbulb className={`size-5 text-[${colors.energy}]`} />
           </div>
           <div>
-            <CardTitle className="text-lg font-heading">Personalized Recommendations</CardTitle>
-            <CardDescription>Based on your recent mission performance</CardDescription>
+            <CardTitle className={`${typography.heading.h3} text-foreground`}>Personalized Recommendations</CardTitle>
+            <CardDescription className={`${typography.body.small} text-muted-foreground`}>Based on your recent mission performance</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -173,14 +174,14 @@ export function RecommendationsPanel() {
             return (
               <Card
                 key={recommendation.id}
-                className="relative bg-card border-border hover:border-[oklch(0.7_0.15_230)]/30 transition-all"
+                className={`relative bg-card border-border hover:border-[${colors.clinical}]/30 transition-all`}
               >
                 <CardContent className="p-5">
                   {/* Priority Badge */}
                   <div className="absolute top-3 right-3">
                     <Badge
                       variant="secondary"
-                      className="text-xs"
+                      className={`${typography.body.tiny}`}
                       style={{
                         backgroundColor: `${priorityColor}/0.1`,
                         color: priorityColor,
@@ -201,14 +202,14 @@ export function RecommendationsPanel() {
                       <Icon className="size-5" style={{ color: priorityColor }} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-base font-semibold text-foreground mb-2">
+                      <h4 className={`${typography.body.base} font-semibold text-foreground mb-2`}>
                         {recommendation.title}
                       </h4>
-                      <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                      <p className={`${typography.body.small} text-muted-foreground leading-relaxed mb-3`}>
                         {recommendation.description}
                       </p>
                       <div className="p-3 bg-muted/50 rounded-lg">
-                        <p className="text-xs text-muted-foreground leading-relaxed">
+                        <p className={`${typography.body.tiny} text-muted-foreground leading-relaxed`}>
                           <strong className="text-foreground">Why?</strong>{' '}
                           {recommendation.rationale}
                         </p>
@@ -232,7 +233,7 @@ export function RecommendationsPanel() {
                       size="sm"
                       onClick={() => handleApply(recommendation)}
                       disabled={applyingId !== null}
-                      className="gap-2 bg-[oklch(0.7_0.15_230)] hover:bg-[oklch(0.65_0.15_230)]"
+                      className={`gap-2 bg-[${colors.clinical}] hover:bg-[${colors.clinical}]/80`}
                     >
                       {applyingId === recommendation.id ? (
                         <>
@@ -254,7 +255,7 @@ export function RecommendationsPanel() {
         </div>
 
         <div className="mt-6 pt-6 border-t border-border">
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <p className={`${typography.body.tiny} text-muted-foreground leading-relaxed`}>
             Recommendations are generated based on your last 14 missions and update weekly. Applied
             recommendations will be reflected in future mission generation.
           </p>

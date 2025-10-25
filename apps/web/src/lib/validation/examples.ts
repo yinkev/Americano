@@ -8,7 +8,7 @@
  */
 
 import { z } from 'zod'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/db'
 import {
   validateSqlResult,
   validateSingleSqlResult,
@@ -24,7 +24,7 @@ import {
   ExtractionErrorCode,
 } from '@/lib/errors'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 /* ============================================================================
  * EXAMPLE 1: SEMANTIC SEARCH SERVICE
@@ -55,7 +55,7 @@ export async function semanticSearch(
 ): Promise<Result<SearchResult[], SearchError>> {
   try {
     // Execute vector similarity search
-    const rawResults = await prisma.$queryRaw<unknown>`
+    const rawResults = await prismaClient.$queryRaw<unknown>`
       SELECT
         c.id as "conceptId",
         c.name as "conceptName",

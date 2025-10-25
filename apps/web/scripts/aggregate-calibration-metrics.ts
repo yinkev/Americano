@@ -21,10 +21,10 @@
  *   0 2 * * * cd /path/to/americano-epic4/apps/web && npx tsx scripts/aggregate-calibration-metrics.ts >> /var/log/calibration-aggregation.log 2>&1
  */
 
-import { PrismaClient } from '@/generated/prisma';
+import { prisma } from '@/lib/db';
 import { subDays, startOfDay, endOfDay, format } from 'date-fns';
 
-const prisma = new PrismaClient();
+const prismaClient = prisma;
 
 /**
  * Calculate Pearson correlation coefficient between two arrays
@@ -80,7 +80,7 @@ async function aggregateCalibrationMetrics(date: Date) {
 
   console.log(`\n[${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}] Aggregating calibration metrics for ${format(date, 'yyyy-MM-dd')}`);
 
-  const responses = await prisma.validationResponse.findMany({
+  const responses = await prismaClient.validationResponse.findMany({
     where: {
       respondedAt: {
         gte: startDate,
@@ -186,7 +186,7 @@ async function aggregateCalibrationMetrics(date: Date) {
     const previousDayStart = startOfDay(subDays(date, 1));
     const previousDayEnd = endOfDay(subDays(date, 1));
 
-    const previousMetric = await prisma.calibrationMetric.findFirst({
+    const previousMetric = await prismaClient.calibrationMetric.findFirst({
       where: {
         userId,
         objectiveId: objectiveId || null,

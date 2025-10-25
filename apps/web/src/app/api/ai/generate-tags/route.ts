@@ -55,11 +55,13 @@ export async function POST(request: NextRequest) {
 
     // Prepare context
     const contentSample = lecture.contentChunks
-      .map((chunk) => chunk.content)
+      .map((chunk: { content: string }) => chunk.content)
       .join('\n\n')
       .substring(0, 4000) // Limit to ~4000 chars
 
-    const objectivesSample = lecture.learningObjectives.map((obj) => obj.objective).join('\n')
+    const objectivesSample = lecture.learningObjectives
+      .map((obj: { objective: string }) => obj.objective)
+      .join('\n')
 
     // Generate tags using GPT-5
     const client = new ChatMockClient()

@@ -17,7 +17,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getUserId } from '@/lib/auth'
 import { ApiError } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
+import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
 import { validateRequest, followUpQuestionsSchema } from '@/lib/validation'
 
 export async function POST(request: NextRequest) {
@@ -124,12 +124,15 @@ export async function POST(request: NextRequest) {
     console.error('[API] POST /api/adaptive/follow-up-questions error:', error)
 
     if (error instanceof ApiError) {
-      return NextResponse.json(errorResponse(error), { status: error.statusCode })
+      return NextResponse.json(
+        errorResponse(error.code, error.message, error.details),
+        { status: error.statusCode },
+      )
     }
 
     return NextResponse.json(
-      errorResponse(ApiError.internal('Failed to generate follow-up questions')),
-      { status: 500 }
+      errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to generate follow-up questions'),
+      { status: 500 },
     )
   }
 }

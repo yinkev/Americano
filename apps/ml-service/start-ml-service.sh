@@ -7,17 +7,32 @@ set -e
 echo "Starting Americano ML Service..."
 echo ""
 
-# Check if virtual environment exists
-if [ ! -d "venv" ] && [ ! -d ".venv" ]; then
-    echo "Creating virtual environment..."
-    python3 -m venv venv
+# Prefer uv-managed Python 3.11 venv
+export PATH="$HOME/.local/bin:$PATH"
+if ! command -v uv >/dev/null 2>&1; then
+  echo "Installing uv..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# Activate virtual environment
-if [ -d "venv" ]; then
-    source venv/bin/activate
-elif [ -d ".venv" ]; then
-    source .venv/bin/activate
+if [ ! -d ".venv" ]; then
+  echo "Creating Python 3.11 virtualenv with uv..."
+  uv venv --python 3.11 .venv
+fi
+
+source .venv/bin/activate
+
+# Export environment
+if [ -f ".env" ]; then
+  set -a
+  source .env
+  set +a
+fi
+
+# Free port if occupied
+if lsof -ti tcp:8000 >/dev/null 2>&1; then
+  echo "Freeing port 8000..."
+  lsof -ti tcp:8000 | xargs -r kill -9 || true
 fi
 
 # Check if .env exists
@@ -27,9 +42,12 @@ if [ ! -f ".env" ]; then
 fi
 
 # Install/update dependencies
-if ! python -c "import fastapi" 2>/dev/null; then
-    echo "Installing dependencies..."
-    pip install -r requirements.txt
+echo "Installing/updating dependencies..."
+if command -v uv >/dev/null 2>&1; then
+  uv pip install -r requirements.txt
+else
+  python -m pip install --upgrade pip
+  pip install -r requirements.txt
 fi
 
 echo ""

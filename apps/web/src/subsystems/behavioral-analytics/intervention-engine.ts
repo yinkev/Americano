@@ -16,7 +16,8 @@
  * - BREAK_SCHEDULE_ADJUST
  */
 
-import { PrismaClient, Prisma } from '@/generated/prisma'
+import type { Prisma } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import {
   InterventionRecommendation,
   InterventionType,
@@ -31,7 +32,7 @@ import type {
 } from '@/types/prisma-json'
 import { getMissionObjectives } from '@/types/mission-helpers'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 /**
  * Intervention with specific actions
@@ -234,7 +235,7 @@ export class InterventionEngine {
     userId: string,
   ): Promise<TailoredIntervention> {
     // Get user learning profile
-    const profile = await prisma.userLearningProfile.findUnique({
+    const profile = await prismaClient.userLearningProfile.findUnique({
       where: { userId },
     })
 
@@ -314,7 +315,7 @@ export class InterventionEngine {
    * Apply intervention to user's mission queue
    */
   async applyIntervention(interventionId: string): Promise<ApplicationResult> {
-    const intervention = await prisma.interventionRecommendation.findUnique({
+    const intervention = await prismaClient.interventionRecommendation.findUnique({
       where: { id: interventionId },
       include: {
         prediction: {
@@ -373,7 +374,7 @@ export class InterventionEngine {
         completed: false,
       }
 
-      mission = await prisma.mission.create({
+      mission = await prismaClient.mission.create({
         data: {
           userId,
           date: new Date(),
@@ -392,7 +393,7 @@ export class InterventionEngine {
     switch (intervention.interventionType) {
       case InterventionType.PREREQUISITE_REVIEW:
         // Insert prerequisite objectives before main objective
-        const prerequisites = await prisma.objectivePrerequisite.findMany({
+        const prerequisites = await prismaClient.objectivePrerequisite.findMany({
           where: { objectiveId: objectiveId || '' },
           include: { prerequisite: true },
         })
@@ -453,7 +454,7 @@ export class InterventionEngine {
     }
 
     // Update mission with modified objectives
-    await prisma.mission.update({
+    await prismaClient.mission.update({
       where: { id: mission.id },
       data: {
         objectives: objectives as unknown as Prisma.InputJsonValue,
@@ -462,7 +463,7 @@ export class InterventionEngine {
     })
 
     // Mark intervention as applied
-    await prisma.interventionRecommendation.update({
+    await prismaClient.interventionRecommendation.update({
       where: { id: interventionId },
       data: {
         status: 'COMPLETED',

@@ -12,7 +12,8 @@
  * Runs as daily batch job (11 PM) or on-demand
  */
 
-import { PrismaClient, Prisma } from '@/generated/prisma'
+import type { Prisma } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import {
   StrugglePrediction,
   StruggleIndicator,
@@ -31,7 +32,7 @@ import { StrugglePredictionModel } from './struggle-prediction-model'
 import { getMissionObjectives, getSessionMissionObjectives } from '@/types/mission-helpers'
 import type { FeatureVector } from '@/types/prisma-json'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 /**
  * Struggle alert for user notification
@@ -62,7 +63,7 @@ export class StruggleDetectionEngine {
    */
   async runPredictions(userId: string): Promise<StrugglePrediction[]> {
     // Get upcoming missions in next 7-14 days
-    const upcomingMissions = await prisma.mission.findMany({
+    const upcomingMissions = await prismaClient.mission.findMany({
       where: {
         userId,
         date: {
@@ -83,7 +84,7 @@ export class StruggleDetectionEngine {
     }
 
     // Also include objectives not yet in missions (next to be scheduled)
-    const unscheduledObjectives = await prisma.learningObjective.findMany({
+    const unscheduledObjectives = await prismaClient.learningObjective.findMany({
       where: {
         lecture: { userId },
         masteryLevel: {
@@ -131,7 +132,7 @@ export class StruggleDetectionEngine {
     userId: string,
     daysAhead: number = 7,
   ): Promise<StrugglePrediction[]> {
-    return await prisma.strugglePrediction.findMany({
+    return await prismaClient.strugglePrediction.findMany({
       where: {
         userId,
         predictionDate: {

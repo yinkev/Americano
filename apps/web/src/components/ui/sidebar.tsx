@@ -315,6 +315,9 @@ SidebarRail.displayName = 'SidebarRail'
 
 const SidebarInset = React.forwardRef<HTMLDivElement, React.ComponentProps<'main'>>(
   ({ className, ...props }, ref) => {
+    const { open, isMobile } = useSidebar();
+    const marginLeft = isMobile ? 0 : open ? '16rem' : '3rem';
+
     return (
       <main
         ref={ref}
@@ -323,6 +326,7 @@ const SidebarInset = React.forwardRef<HTMLDivElement, React.ComponentProps<'main
           'md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow',
           className,
         )}
+        style={{ marginLeft }}
         {...props}
       />
     )

@@ -9,10 +9,11 @@
  *           + (performanceDecline * 0.15) + (durationStress * 0.10)
  */
 
-import { PrismaClient, Prisma } from '@/generated/prisma'
+import type { Prisma } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import type { StressIndicator as StressIndicatorType } from '@/types/prisma-json'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 // ============================================
 // Types & Interfaces
@@ -279,7 +280,7 @@ export class CognitiveLoadMonitor {
       confidenceLevel: number
     },
   ): Promise<void> {
-    await prisma.cognitiveLoadMetric.create({
+    await prismaClient.cognitiveLoadMetric.create({
       data: {
         userId,
         sessionId,
@@ -291,7 +292,7 @@ export class CognitiveLoadMonitor {
 
     // Also update BehavioralEvent if cognitive overload detected
     if (loadData.loadScore > 80) {
-      await prisma.behavioralEvent.create({
+      await prismaClient.behavioralEvent.create({
         data: {
           userId,
           eventType: 'SESSION_ENDED',

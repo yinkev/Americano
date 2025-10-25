@@ -14,7 +14,7 @@
  * 3. Manual invocation for testing
  */
 
-import { NextRequest, NextResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { subDays, startOfDay, endOfDay } from 'date-fns';
 

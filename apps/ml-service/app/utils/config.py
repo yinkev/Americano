@@ -27,6 +27,7 @@ class Settings(BaseSettings):
 
     # Database
     DATABASE_URL: str
+    DB_ADAPTER: str = "sqlalchemy"  # prisma | sqlalchemy (default: sqlalchemy)
 
     # CORS Origins (comma-separated string)
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3001"

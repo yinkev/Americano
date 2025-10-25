@@ -19,10 +19,10 @@
  * - Query 4 (Batch mappings): <300ms
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import { performance } from 'perf_hooks'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 interface QueryResult {
   name: string
@@ -71,8 +71,8 @@ async function main() {
  * Check if test data exists
  */
 async function checkTestData(): Promise<boolean> {
-  const sectionCount = await prisma.firstAidSection.count()
-  const mappingCount = await prisma.lectureFirstAidMapping.count()
+  const sectionCount = await prismaClient.firstAidSection.count()
+  const mappingCount = await prismaClient.lectureFirstAidMapping.count()
 
   console.log(`📊 Test Data:`)
   console.log(`   - First Aid Sections: ${sectionCount}`)
@@ -87,7 +87,7 @@ async function checkTestData(): Promise<boolean> {
 async function validateQuery1A() {
   console.log('Testing Query 1A: Cross-reference by concept (vector search)...')
 
-  const concept = await prisma.concept.findFirst({
+  const concept = await prismaClient.concept.findFirst({
     where: { category: { not: null } }, // Use category instead of embedding since embedding is Unsupported
   })
 
@@ -96,7 +96,7 @@ async function validateQuery1A() {
     return
   }
 
-  const user = await prisma.user.findFirst()
+  const user = await prismaClient.user.findFirst()
   if (!user) {
     console.warn('⚠️  No users found, skipping Query 1A')
     return
@@ -129,13 +129,13 @@ async function validateQuery1A() {
       LIMIT 10
     `
 
-    const result = await prisma.$queryRawUnsafe(query, concept.id, user.id)
+    const result = await prismaClient.$queryRawUnsafe(query, concept.id, user.id)
 
     const duration = performance.now() - startTime
     const target = 100
 
     // Check if uses vector index
-    const explainResult = await prisma.$queryRawUnsafe<any[]>(
+    const explainResult = await prismaClient.$queryRawUnsafe<any[]>(
       `EXPLAIN ${query}`,
       concept.id,
       user.id
@@ -174,7 +174,7 @@ async function validateQuery1A() {
 async function validateQuery1B() {
   console.log('Testing Query 1B: Lecture-based concept lookup...')
 
-  const mapping = await prisma.lectureFirstAidMapping.findFirst()
+  const mapping = await prismaClient.lectureFirstAidMapping.findFirst()
   if (!mapping) {
     console.warn('⚠️  No mappings found, skipping Query 1B')
     return
@@ -183,7 +183,7 @@ async function validateQuery1B() {
   const startTime = performance.now()
 
   try {
-    const result = await prisma.lectureFirstAidMapping.findMany({
+    const result = await prismaClient.lectureFirstAidMapping.findMany({
       where: {
         lectureId: mapping.lectureId,
         confidence: { gte: 0.65 },

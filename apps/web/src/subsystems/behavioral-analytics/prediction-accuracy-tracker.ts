@@ -20,7 +20,7 @@
  *   - Manual correction allowed (user can override)
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import {
   StrugglePrediction,
   PredictionStatus,
@@ -31,7 +31,8 @@ import {
 import { subDays, subWeeks, subMonths, differenceInDays } from 'date-fns'
 import type { FeatureVector } from '@/types/prisma-json'
 
-const prisma = new PrismaClient()
+// use singleton prisma
+const prismaInstance = prisma
 
 /**
  * Accuracy metrics for model performance evaluation

@@ -1,35 +1,37 @@
 #!/bin/bash
 
-# Americano Services Health Check
+# Americano Services Health Check (soft playful)
 # Verifies that both Next.js and FastAPI services are running
 
 set -e
 
 # Colors for output
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
+GREEN='\033[1;92m'
+RED='\033[1;91m'
+BLUE='\033[1;94m'
+CYAN='\033[1;96m'
+HL_CYAN='\033[1;30;106m'
 NC='\033[0m' # No Color
 
-echo -e "${YELLOW}=== Americano Services Health Check ===${NC}\n"
+echo -e "${CYAN}[ ${WHITE}Americano Health Check${CYAN} ]${NC}"
 
 # Check Next.js
-echo "Checking Next.js on http://localhost:3000..."
+echo -e "${BLUE}🔎 Next.js${NC}  http://localhost:3000"
 if curl -s http://localhost:3000 > /dev/null 2>&1; then
-    echo -e "${GREEN}✓ Next.js is running${NC}"
+    echo -e "${GREEN}✅ Next.js is running${NC}"
     NEXT_STATUS="ok"
 else
-    echo -e "${RED}✗ Next.js is NOT running${NC}"
+    echo -e "${RED}❌ Next.js is NOT running${NC}"
     NEXT_STATUS="fail"
 fi
 
 # Check FastAPI
-echo "Checking FastAPI on http://localhost:8000..."
+echo -e "${BLUE}🔎 FastAPI${NC} http://localhost:8000"
 if curl -s http://localhost:8000/health > /dev/null 2>&1; then
-    echo -e "${GREEN}✓ FastAPI is running${NC}"
+    echo -e "${GREEN}✅ FastAPI is running${NC}"
     FASTAPI_STATUS="ok"
 else
-    echo -e "${RED}✗ FastAPI is NOT running${NC}"
+    echo -e "${RED}❌ FastAPI is NOT running${NC}"
     FASTAPI_STATUS="fail"
 fi
 
@@ -37,7 +39,7 @@ echo ""
 
 # Summary
 if [ "$NEXT_STATUS" = "ok" ] && [ "$FASTAPI_STATUS" = "ok" ]; then
-    echo -e "${GREEN}=== All services running! ===${NC}"
+    echo -e "${GREEN}🎉 All good — happy studying!${NC}"
     echo ""
     echo "Frontend:    http://localhost:3000"
     echo "Backend API: http://localhost:8000"
@@ -56,8 +58,8 @@ else
         echo "  npm run dev:ml-only"
     fi
     echo ""
-    echo -e "${YELLOW}To start both services:${NC}"
-    echo "  npm run dev"
+    echo -e "${CYAN}To start both services:${NC}"
+    echo "  make up"
     echo ""
     exit 1
 fi

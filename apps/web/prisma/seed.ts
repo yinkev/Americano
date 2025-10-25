@@ -2,13 +2,13 @@
 // Seed database with Dumpling demo user (placeholder data for development)
 // Delete Dumpling via Settings → Delete Demo User when ready for real data
 
-import { PrismaClient } from '../src/generated/prisma'
+import { prisma } from '../src/lib/db'
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 async function main() {
   // Create Kevy (real user - you)
-  const kevy = await prisma.user.upsert({
+  const kevy = await prismaClient.user.upsert({
     where: { email: 'kevy@americano.dev' },
     update: {},
     create: {
@@ -20,7 +20,7 @@ async function main() {
   console.log('✓ Kevy user created:', kevy)
 
   // Create Dumpling demo user (all placeholder content belongs to this user)
-  const demoUser = await prisma.user.upsert({
+  const demoUser = await prismaClient.user.upsert({
     where: { email: 'dumpling@americano.demo' },
     update: {},
     create: {
@@ -32,7 +32,7 @@ async function main() {
   console.log('✓ Dumpling demo user created:', demoUser)
 
   // Create sample courses for Dumpling (realistic PNWU-COM OMS 1 curriculum)
-  const anatomyCourse = await prisma.course.upsert({
+  const anatomyCourse = await prismaClient.course.upsert({
     where: { id: 'demo-gross-anatomy' },
     update: {},
     create: {
@@ -44,7 +44,7 @@ async function main() {
     },
   })
 
-  const scifomCourse = await prisma.course.upsert({
+  const scifomCourse = await prismaClient.course.upsert({
     where: { id: 'demo-scifom' },
     update: {},
     create: {
@@ -56,7 +56,7 @@ async function main() {
     },
   })
 
-  const pharmacologyCourse = await prisma.course.upsert({
+  const pharmacologyCourse = await prismaClient.course.upsert({
     where: { id: 'demo-pharmacology' },
     update: {},
     create: {
@@ -68,7 +68,7 @@ async function main() {
     },
   })
 
-  const oppCourse = await prisma.course.upsert({
+  const oppCourse = await prismaClient.course.upsert({
     where: { id: 'demo-opp' },
     update: {},
     create: {
@@ -632,10 +632,30 @@ Students who sleep 7-9 hours show **30% better retention** than those sleeping <
   ]
 
   for (const article of articles) {
+    const summary = (article as any).summary || (article as any).subtitle || article.title
+    const readingTimeMinutes = (article as any).estimatedReadTime || (article as any).readingTimeMinutes || 7
+    const personalizedSections = (article as any).personalizedSections || undefined
+    const externalLinks = (article as any).externalLinks || undefined
+    const difficulty = (article as any).difficulty || 'BEGINNER'
+    const tags = (article as any).tags || []
+
+    const toSave = {
+      slug: article.slug,
+      title: article.title,
+      category: article.category,
+      summary,
+      content: article.content,
+      personalizedSections,
+      externalLinks,
+      readingTimeMinutes,
+      difficulty,
+      tags,
+    }
+
     const created = await prisma.learningArticle.upsert({
       where: { slug: article.slug },
-      update: article,
-      create: article,
+      update: toSave,
+      create: toSave,
     })
     console.log(`✓ Learning article created: ${created.title}`)
   }

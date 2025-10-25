@@ -5,17 +5,18 @@ FastAPI routes for struggle prediction analysis.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from prisma import Prisma
-from prisma.errors import PrismaError
+from typing import Any as Prisma
+PrismaError = Exception
 from typing import Optional
 import logging
 import asyncio
 
-from app.models.predictions import PredictionRequest, PredictionResponse, PredictionDetail, AlertResponse
+from app.models.predictions import PredictionRequest, PredictionResponse, PredictionDetail, AlertResponse, PredictionStatus
 from app.models.feedback import FeedbackRequest, FeedbackResponse
 from app.services.database import get_db
-from app.services.detection_engine import StruggleDetectionEngine
-from prisma.enums import PredictionStatus
+from app.utils.config import settings
+from app.db.core import session as sa_session
+from app.db.predictions_repo import PredictionsRepo
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -33,15 +34,24 @@ async def generate_predictions(
     """
     try:
         async with asyncio.timeout(10):
+            # For SQLAlchemy adapter (personal use), return empty set for now
+            if settings.DB_ADAPTER.lower() != "prisma":
+                return PredictionResponse(
+                    predictions=[],
+                    alerts=None,
+                    total_count=0,
+                    high_risk_count=0,
+                    medium_risk_count=0,
+                    low_risk_count=0,
+                )
+
+            # Lazy import only when Prisma is enabled
+            from app.services.detection_engine import StruggleDetectionEngine  # type: ignore
+
             engine = StruggleDetectionEngine(db)
-
-            # Run predictions
             predictions = await engine.run_predictions(request.user_id, request.days_ahead)
-
-            # Generate alerts
             alerts = await engine.generate_alerts(request.user_id)
 
-            # Convert to response models
             prediction_details = []
             for pred in predictions:
                 detail = PredictionDetail(
@@ -59,7 +69,6 @@ async def generate_predictions(
                 )
                 prediction_details.append(detail)
 
-            # Count by risk level
             high = sum(1 for p in prediction_details if p.risk_level == "HIGH")
             medium = sum(1 for p in prediction_details if p.risk_level == "MEDIUM")
             low = sum(1 for p in prediction_details if p.risk_level == "LOW")
@@ -70,7 +79,7 @@ async def generate_predictions(
                 total_count=len(prediction_details),
                 high_risk_count=high,
                 medium_risk_count=medium,
-                low_risk_count=low
+                low_risk_count=low,
             )
 
     except asyncio.TimeoutError:
@@ -113,40 +122,67 @@ async def get_predictions(
     """
     try:
         async with asyncio.timeout(10):
-            where = {
-                "userId": user_id,
-                "predictedStruggleProbability": {"gte": min_probability}
-            }
-            if status:
-                where["predictionStatus"] = status
+            if settings.DB_ADAPTER.lower() == "sqlalchemy":
+                # SQLAlchemy Core read path
+                with sa_session() as s:
+                    repo = PredictionsRepo(s)
+                    rows = repo.list(user_id=user_id, status=status.value if status else None, min_probability=min_probability)
+                prediction_details = []
+                for r in rows:
+                    risk = "HIGH" if (r.get("predictedStruggleProbability") or 0) >= 0.7 else (
+                        "MEDIUM" if (r.get("predictedStruggleProbability") or 0) >= 0.4 else "LOW"
+                    )
+                    prediction_details.append(
+                        PredictionDetail(
+                            id=r["id"],
+                            user_id=r["userId"],
+                            learning_objective_id=r.get("learningObjectiveId"),
+                            topic_id=r.get("topicId"),
+                            prediction_date=r["predictionDate"],
+                            predicted_struggle_probability=r["predictedStruggleProbability"],
+                            prediction_confidence=r["predictionConfidence"],
+                            prediction_status=PredictionStatus(r["predictionStatus"]),
+                            feature_vector=r.get("featureVector") or {},
+                            risk_level=risk,
+                            reasoning="",
+                        )
+                    )
+            else:
+                # Prisma read path (default)
+                where = {
+                    "userId": user_id,
+                    "predictedStruggleProbability": {"gte": min_probability}
+                }
+                if status:
+                    where["predictionStatus"] = status
 
-            predictions = await db.struggleprediction.find_many(
-                where=where,
-                include={
-                    "learningObjective": {"include": {"lecture": {"include": {"course": True}}}},
-                    "indicators": True
-                },
-                order={"predictionDate": "asc"}
-            )
-
-            prediction_details = [
-                PredictionDetail(
-                    id=pred.id,
-                    user_id=pred.userId,
-                    learning_objective_id=pred.learningObjectiveId,
-                    topic_id=pred.topicId,
-                    prediction_date=pred.predictionDate,
-                    predicted_struggle_probability=pred.predictedStruggleProbability,
-                    prediction_confidence=pred.predictionConfidence,
-                    prediction_status=pred.predictionStatus,
-                    feature_vector=pred.featureVector if isinstance(pred.featureVector, dict) else {},
-                    risk_level="HIGH" if pred.predictedStruggleProbability >= 0.7 else "MEDIUM" if pred.predictedStruggleProbability >= 0.4 else "LOW",
-                    reasoning="",
-                    objective_name=pred.learningObjective.objective if pred.learningObjective else None,
-                    course_name=pred.learningObjective.lecture.course.name if pred.learningObjective and pred.learningObjective.lecture else None
+                predictions = await db.struggleprediction.find_many(
+                    where=where,
+                    include={
+                        "learningObjective": {"include": {"lecture": {"include": {"course": True}}}},
+                        "indicators": True
+                    },
+                    order={"predictionDate": "asc"}
                 )
-                for pred in predictions
-            ]
+
+                prediction_details = [
+                    PredictionDetail(
+                        id=pred.id,
+                        user_id=pred.userId,
+                        learning_objective_id=pred.learningObjectiveId,
+                        topic_id=pred.topicId,
+                        prediction_date=pred.predictionDate,
+                        predicted_struggle_probability=pred.predictedStruggleProbability,
+                        prediction_confidence=pred.predictionConfidence,
+                        prediction_status=pred.predictionStatus,
+                        feature_vector=pred.featureVector if isinstance(pred.featureVector, dict) else {},
+                        risk_level="HIGH" if pred.predictedStruggleProbability >= 0.7 else "MEDIUM" if pred.predictedStruggleProbability >= 0.4 else "LOW",
+                        reasoning="",
+                        objective_name=pred.learningObjective.objective if pred.learningObjective else None,
+                        course_name=pred.learningObjective.lecture.course.name if pred.learningObjective and pred.learningObjective.lecture else None
+                    )
+                    for pred in predictions
+                ]
 
             high = sum(1 for p in prediction_details if p.risk_level == "HIGH")
             medium = sum(1 for p in prediction_details if p.risk_level == "MEDIUM")
