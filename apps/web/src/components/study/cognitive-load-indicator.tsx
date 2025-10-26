@@ -20,7 +20,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { typography, colors, transitions, borderRadius } from '@/lib/design-tokens'
+// Legacy design-tokens removed; use app tokens/utilities instead.
 import { buttonVariants, numberCounterVariants } from '@/lib/animation-variants'
 
 interface CognitiveLoadIndicatorProps {

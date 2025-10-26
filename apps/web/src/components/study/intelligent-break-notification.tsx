@@ -47,7 +47,7 @@ import {
 } from '@/services/realtime-orchestration'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { typography, colors, borderRadius } from '@/lib/design-tokens'
+// Legacy design-tokens removed; use app tokens/utilities instead.
 import { modalVariants, buttonVariants, progressVariants } from '@/lib/animation-variants'
 
 interface IntelligentBreakNotificationProps {

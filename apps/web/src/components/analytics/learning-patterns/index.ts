@@ -1,5 +1,0 @@
-export { StudyTimeHeatmap } from './StudyTimeHeatmap'
-export { SessionPerformanceChart } from './SessionPerformanceChart'
-export { LearningStyleProfile } from './LearningStyleProfile'
-export { ForgettingCurveVisualization } from './ForgettingCurveVisualization'
-export { BehavioralInsightsPanel } from './BehavioralInsightsPanel'

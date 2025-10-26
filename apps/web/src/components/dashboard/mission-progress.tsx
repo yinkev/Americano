@@ -1,4 +1,4 @@
-import { typography, colors, borderRadius } from '@/lib/design-tokens';
+// Legacy design-tokens removed; use app tokens/utilities instead.
 
 interface MissionProgressProps {
   current: number;

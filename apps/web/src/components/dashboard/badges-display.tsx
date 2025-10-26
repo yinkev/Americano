@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Trophy, Flame, Target } from 'lucide-react';
-import { typography, colors } from '@/lib/design-tokens';
+// Legacy design-tokens removed; use app tokens/utilities instead.
 import { Button } from '@/components/ui/button';
 
 interface BadgeProps {

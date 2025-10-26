@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { typography, colors, glassmorphism } from '@/lib/design-tokens';
+// Legacy design-tokens removed; use app tokens/utilities instead.
 
 interface ProgressStatsProps {
   streak: number;

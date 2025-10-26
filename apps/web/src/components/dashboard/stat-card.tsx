@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { typography, colors, transitions, shadows, borderRadius, glassmorphism } from '@/lib/design-tokens';
+// Legacy design-tokens removed; use app tokens/utilities instead.
 
 export function StatCard({ title, value, unit, icon, color, secondaryValue, secondaryLabel, footer }) {
   const cardColor = colors[color] || colors.clinical;
