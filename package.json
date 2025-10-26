@@ -29,8 +29,8 @@
   "devDependencies": {
     "@biomejs/biome": "^2.2.6",
     "concurrently": "^8.2.2",
-    "markdownlint-cli": "^0.39.0",
     "markdown-link-check": "^3.12.1",
+    "markdownlint-cli": "^0.39.0",
     "prisma": "^5.17.0"
   },
   "engines": {
@@ -39,6 +39,7 @@
     "python": ">=3.11.0"
   },
   "dependencies": {
-    "@prisma/client": "^5.17.0"
+    "@prisma/client": "^5.17.0",
+    "motion": "^12.23.24"
   }
 }
