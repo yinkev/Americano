@@ -132,7 +132,7 @@ export default function UploadPage() {
 
   return (
     <div className="container mx-auto py-8 max-w-2xl">
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+      <Card className="bg-card  border-border shadow-none rounded-xl">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold text-gray-800">Upload Lecture PDF</CardTitle>
           <CardDescription className="text-gray-600">
@@ -144,7 +144,7 @@ export default function UploadPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* File Upload Area */}
               <div
-                className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all duration-200 ease-in-out bg-gray-50/50"
+                className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-card transition-all duration-200 ease-in-out bg-card"
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 onClick={() => document.getElementById('file-input')?.click()}
@@ -181,7 +181,7 @@ export default function UploadPage() {
                   name="courseId"
                   required
                   disabled={uploading}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-200"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-card  transition-all duration-200"
                 >
                   <option value="">Select a course</option>
                   {courses.map((course) => (
@@ -246,7 +246,7 @@ export default function UploadPage() {
               <Button
                 type="submit"
                 disabled={!selectedFile || uploading}
-                className="w-full bg-blue-400 hover:bg-blue-500 shadow-md hover:shadow-lg rounded-lg transition-all duration-200"
+                className="w-full bg-blue-400 hover:bg-blue-500 shadow-none hover:shadow-none rounded-lg transition-all duration-200"
               >
                 {uploading ? 'Uploading...' : 'Upload and Process'}
               </Button>
@@ -263,7 +263,7 @@ export default function UploadPage() {
                   <div className="space-y-2">
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
-                        className="bg-blue-400 h-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(96,165,250,0.4)]"
+                        className="bg-blue-400 h-2 rounded-full animate-pulse shadow-none"
                         style={{ width: '60%' }}
                       />
                     </div>

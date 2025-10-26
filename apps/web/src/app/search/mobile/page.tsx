@@ -163,9 +163,9 @@ export default function MobileSearchPage() {
   }, [searchParams]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-card  ">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-white/60 pb-safe">
+      <header className="sticky top-0 z-50 bg-card  border-b border-border pb-safe">
         <div className="p-4 space-y-4">
           {/* Top Bar */}
           <div className="flex items-center gap-3">

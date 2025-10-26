@@ -381,7 +381,7 @@ export function SessionSettingsPanel({
   if (variant === 'inline') {
     return (
       <div
-        className="rounded-2xl backdrop-blur-md"
+        className="rounded-xl "
         style={{
           background: 'oklch(1 0 0 / 0.9)',
           boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',

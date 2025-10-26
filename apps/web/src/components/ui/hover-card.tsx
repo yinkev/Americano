@@ -67,8 +67,8 @@ export const HoverCardContent = React.forwardRef<
       ref={ref}
       className={cn(
         'absolute z-50',
-        'bg-white/95 backdrop-blur-xl',
-        'border border-white/20 rounded-lg shadow-xl',
+        'bg-card ',
+        'border border-border/50 rounded-xl shadow-none',
         'p-4',
         'min-w-[200px]',
         'invisible opacity-0 transition-all duration-200',

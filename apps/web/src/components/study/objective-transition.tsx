@@ -84,11 +84,11 @@ export function ObjectiveTransition({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center "
       style={{ background: 'oklch(0.2 0.05 250 / 0.8)' }}
     >
       <Card
-        className="max-w-2xl w-full mx-4 p-8 backdrop-blur-xl border-0 animate-in fade-in zoom-in duration-300"
+        className="max-w-2xl w-full mx-4 p-8  border-0 animate-in fade-in zoom-in duration-300"
         style={{
           background: 'oklch(1 0 0 / 0.95)',
           boxShadow: '0 8px 32px rgba(31, 38, 135, 0.2)',

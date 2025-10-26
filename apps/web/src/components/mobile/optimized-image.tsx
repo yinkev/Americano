@@ -97,7 +97,7 @@ export function LazyImage({
       {isInView ? (
         <OptimizedImage src={src} alt={alt} {...props} />
       ) : (
-        <div className="w-full h-full bg-muted/20 animate-pulse" />
+        <div className="w-full h-full bg-card animate-pulse" />
       )}
     </div>
   )

@@ -106,7 +106,7 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)]">
+    <Card className="bg-card  border-border shadow-none transition-all duration-300 hover:shadow-none">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -142,7 +142,7 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
             {/* Timeline Grid */}
             <div className="relative">
               {/* Horizontal Timeline Line */}
-              <div className="absolute top-8 left-4 right-4 h-0.5 bg-gradient-to-r from-muted via-border to-muted" />
+              <div className="absolute top-8 left-4 right-4 h-0.5 bg-card" />
 
               {/* Days */}
               <div className="relative grid grid-cols-7 gap-2 sm:gap-4">
@@ -161,12 +161,12 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
                           relative z-10 flex flex-col items-center justify-center size-16 rounded-full border-2 transition-all duration-300 hover:scale-110
                           ${
                             isToday
-                              ? 'text-white shadow-lg'
+                              ? 'text-white shadow-none'
                               : hasHighRisk
                                 ? 'text-foreground'
                                 : hasEvents
-                                  ? 'bg-white/80 text-foreground'
-                                  : 'bg-muted/30 border-muted text-muted-foreground'
+                                  ? 'bg-card text-foreground'
+                                  : 'bg-card border-muted text-muted-foreground'
                           }
                         `}
                         style={{
@@ -205,7 +205,7 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
                                 className="group relative flex items-center justify-center"
                               >
                                 <div
-                                  className="p-1.5 rounded-md transition-all duration-200 hover:scale-110 cursor-pointer hover:shadow-md"
+                                  className="p-1.5 rounded-md transition-all duration-200 hover:scale-110 cursor-pointer hover:shadow-none"
                                   style={{
                                     backgroundColor: `color-mix(in oklch, ${color}, transparent 85%)`,
                                   }}
@@ -216,7 +216,7 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
 
                                 {/* Tooltip on hover - hidden on mobile */}
                                 <div className="hidden sm:block absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20">
-                                  <div className="px-3 py-2 rounded-lg bg-foreground/90 backdrop-blur-sm text-white shadow-lg">
+                                  <div className="px-3 py-2 rounded-lg bg-card  text-white shadow-none">
                                     <p className={`${typography.body.tiny} font-semibold`}>
                                       {event.title}
                                     </p>
@@ -227,7 +227,7 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
                                     )}
                                   </div>
                                   <div
-                                    className="w-2 h-2 bg-foreground/90 rotate-45 mx-auto -mt-1"
+                                    className="w-2 h-2 bg-card rotate-45 mx-auto -mt-1"
                                     style={{ marginTop: '-4px' }}
                                   />
                                 </div>
@@ -289,7 +289,7 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
                 return (
                   <div
                     key={event.id}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 transition-all duration-200 hover:bg-muted/50 hover:scale-[1.01]"
+                    className="flex items-start gap-3 p-3 rounded-lg bg-card transition-all duration-200 hover:bg-card hover:scale-[1.01]"
                   >
                     <div
                       className="p-2 rounded-lg shrink-0"

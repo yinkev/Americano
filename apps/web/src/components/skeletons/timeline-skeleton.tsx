@@ -44,8 +44,8 @@ export function TimelineSkeleton({
           {/* Timeline Content */}
           <div
             className={cn(
-              'flex-1 bg-white/80 backdrop-blur-md border border-border rounded-lg p-4',
-              'shadow-[0_2px_8px_rgba(31,38,135,0.08)]',
+              'flex-1 bg-card  border border-border rounded-lg p-4',
+              'shadow-none',
             )}
           >
             {/* Header */}

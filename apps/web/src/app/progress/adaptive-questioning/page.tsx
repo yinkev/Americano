@@ -210,7 +210,7 @@ export default function AdaptiveQuestioningDashboardPage() {
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium bg-white/60 text-gray-700 hover:bg-white/80 shadow-sm transition-colors min-h-[44px]"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium bg-card text-gray-700 hover:bg-card shadow-none transition-colors min-h-[44px]"
           aria-label="Toggle filters"
           aria-expanded={showFilters}
         >
@@ -221,7 +221,7 @@ export default function AdaptiveQuestioningDashboardPage() {
 
       {/* Filters */}
       {showFilters && (
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] mb-6">
+        <Card className="p-6 bg-card  border border-border shadow-none mb-6">
           <h3 className="text-lg font-heading font-bold text-foreground mb-4">Date Range</h3>
           <div className="flex gap-3 flex-wrap">
             {(['7days', '30days', '90days'] as const).map((range) => (
@@ -231,7 +231,7 @@ export default function AdaptiveQuestioningDashboardPage() {
                 className={`px-4 py-2 rounded-xl font-medium transition-colors min-h-[44px] ${
                   dateRange === range
                     ? 'bg-[oklch(0.55_0.22_264)] text-white'
-                    : 'bg-white/60 text-gray-700 hover:bg-white/80'
+                    : 'bg-card text-gray-700 hover:bg-card'
                 }`}
                 aria-pressed={dateRange === range}
               >
@@ -245,7 +245,7 @@ export default function AdaptiveQuestioningDashboardPage() {
       {/* Key Metrics Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* IRT Estimate */}
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Knowledge Level</span>
@@ -268,7 +268,7 @@ export default function AdaptiveQuestioningDashboardPage() {
         </Card>
 
         {/* Mastery Progress */}
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Mastery Progress</span>
@@ -286,7 +286,7 @@ export default function AdaptiveQuestioningDashboardPage() {
         {/* Efficiency Score */}
         {efficiencyMetrics && (
           <>
-            <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+            <Card className="p-6 bg-card  border border-border shadow-none">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Efficiency</span>
@@ -301,7 +301,7 @@ export default function AdaptiveQuestioningDashboardPage() {
               </div>
             </Card>
 
-            <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+            <Card className="p-6 bg-card  border border-border shadow-none">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Time Saved</span>
@@ -322,7 +322,7 @@ export default function AdaptiveQuestioningDashboardPage() {
 
       {/* Difficulty Trajectory Line Chart */}
       {difficultyTrajectory.length > 0 && (
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <h2 className="text-xl font-heading font-semibold mb-6">
             Difficulty Progression Over Questions
           </h2>
@@ -389,7 +389,7 @@ export default function AdaptiveQuestioningDashboardPage() {
 
       {/* Score vs Difficulty Scatter Plot */}
       {performanceData.length > 0 && (
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <h2 className="text-xl font-heading font-semibold mb-6">
             Performance vs Difficulty (Target Zone: 60-80%)
           </h2>
@@ -431,7 +431,7 @@ export default function AdaptiveQuestioningDashboardPage() {
                   if (active && payload && payload.length > 0) {
                     const data = payload[0].payload as PerformancePoint;
                     return (
-                      <div className="bg-white/95 backdrop-blur-xl border border-white/30 shadow-lg p-3 rounded-lg">
+                      <div className="bg-card  border border-border shadow-none p-3 rounded-lg">
                         <p className="font-semibold text-sm mb-1">{data.conceptName}</p>
                         <p className="text-xs text-muted-foreground">
                           Difficulty: {data.difficulty} | Score: {data.score}%
@@ -473,7 +473,7 @@ export default function AdaptiveQuestioningDashboardPage() {
       {/* Mastery Progress Tracker & Skill Tree */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Mastery Criteria Checklist */}
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <div className="flex items-center gap-3 mb-6">
             <Award className="w-6 h-6" style={{ color: 'oklch(0.8 0.15 60)' }} />
             <h2 className="text-xl font-heading font-semibold">Mastery Verification</h2>
@@ -538,7 +538,7 @@ export default function AdaptiveQuestioningDashboardPage() {
         </Card>
 
         {/* Skill Tree Visualization */}
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <div className="flex items-center gap-3 mb-6">
             <TrendingUp className="w-6 h-6" style={{ color: 'oklch(0.55 0.22 264)' }} />
             <h2 className="text-xl font-heading font-semibold">Complexity Progression</h2>
@@ -645,7 +645,7 @@ export default function AdaptiveQuestioningDashboardPage() {
 
       {/* Session History Table */}
       {sessionHistory.length > 0 && (
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <h2 className="text-xl font-heading font-semibold mb-6">Recent Session History</h2>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -661,7 +661,7 @@ export default function AdaptiveQuestioningDashboardPage() {
               </thead>
               <tbody>
                 {sessionHistory.map((entry) => (
-                  <tr key={entry.id} className="border-b border-gray-100 hover:bg-gray-50/50">
+                  <tr key={entry.id} className="border-b border-gray-100 hover:bg-card">
                     <td className="py-3 px-4 text-sm text-gray-900">{entry.questionNumber}</td>
                     <td className="py-3 px-4 text-sm text-gray-900 font-medium">
                       {entry.conceptName}
@@ -694,7 +694,7 @@ export default function AdaptiveQuestioningDashboardPage() {
 
       {/* Efficiency Comparison */}
       {efficiencyMetrics && (
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <h2 className="text-xl font-heading font-semibold mb-6">Assessment Efficiency</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Bar comparison */}

@@ -114,7 +114,7 @@ export default function CoursesPage() {
         </div>
         <Button
           onClick={handleAddCourse}
-          className="rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+          className="rounded-lg shadow-none hover:shadow-none transition-all duration-200"
         >
           <Plus className="mr-2 h-4 w-4" />
           Add Course
@@ -122,12 +122,12 @@ export default function CoursesPage() {
       </div>
 
       {courses.length === 0 ? (
-        <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+        <Card className="bg-card  border-border shadow-none rounded-xl">
           <CardContent className="flex flex-col items-center justify-center h-64">
             <p className="text-muted-foreground mb-4">No courses yet</p>
             <Button
               onClick={handleAddCourse}
-              className="rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              className="rounded-lg shadow-none hover:shadow-none transition-all duration-200"
             >
               <Plus className="mr-2 h-4 w-4" />
               Create your first course
@@ -139,7 +139,7 @@ export default function CoursesPage() {
           {courses.map((course) => (
             <Card
               key={course.id}
-              className="relative overflow-hidden bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl hover:shadow-[0_10px_40px_rgba(31,38,135,0.15)] hover:scale-[1.02] transition-all duration-200"
+              className="relative overflow-hidden bg-card  border-border shadow-none rounded-xl hover:shadow-none hover:scale-[1.02] transition-all duration-200"
             >
               {course.color && (
                 <div
@@ -159,7 +159,7 @@ export default function CoursesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="rounded-lg hover:bg-white/50 transition-all duration-200"
+                      className="rounded-lg hover:bg-card transition-all duration-200"
                       onClick={() => handleEditCourse(course)}
                     >
                       <Pencil className="h-4 w-4" />
@@ -167,7 +167,7 @@ export default function CoursesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="rounded-lg hover:bg-white/50 transition-all duration-200"
+                      className="rounded-lg hover:bg-card transition-all duration-200"
                       onClick={() => handleDeleteClick(course)}
                     >
                       <Trash2 className="h-4 w-4" />

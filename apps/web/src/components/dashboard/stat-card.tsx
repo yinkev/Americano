@@ -6,7 +6,7 @@ export function StatCard({ title, value, unit, icon, color, secondaryValue, seco
 
   return (
     <Card
-      className={`${glassmorphism.light} hover:shadow-lg transition-all`}
+      className={`${glassmorphism.light} hover:shadow-none transition-all`}
       style={{
         borderRadius: borderRadius.xl,
         transition: transitions.medium,

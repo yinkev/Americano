@@ -78,7 +78,7 @@ export default function PatternsTab() {
   return (
     <div className="space-y-6">
       {/* Strengths Section */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-['DM_Sans']">
             <TrendingUp className="w-5 h-5 text-[oklch(0.7_0.15_145)]" />
@@ -111,7 +111,7 @@ export default function PatternsTab() {
       </Card>
 
       {/* Weaknesses Section */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-['DM_Sans']">
             <AlertTriangle className="w-5 h-5 text-[oklch(0.65_0.20_25)]" />
@@ -157,7 +157,7 @@ export default function PatternsTab() {
       </Card>
 
       {/* Inconsistencies Section */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-['DM_Sans']">
             <Activity className="w-5 h-5 text-[oklch(0.75_0.12_85)]" />
@@ -217,7 +217,7 @@ export default function PatternsTab() {
       </Card>
 
       {/* Calibration Issues Section */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-['DM_Sans']">
             <Brain className="w-5 h-5 text-[oklch(0.6_0.18_280)]" />
@@ -306,7 +306,7 @@ export default function PatternsTab() {
       </Card>
 
       {/* AI Insights Section */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-['DM_Sans']">
             <Brain className="w-5 h-5 text-[oklch(0.6_0.18_280)]" />
@@ -464,7 +464,7 @@ function PatternsSkeleton() {
       {[1, 2, 3, 4, 5].map((i) => (
         <Card
           key={i}
-          className="animate-pulse bg-white/95 backdrop-blur-xl rounded-2xl border-0 shadow-[0_8px_32px_rgba(31,38,135,0.1)]"
+          className="animate-pulse bg-card  rounded-xl border-0 shadow-none"
         >
           <CardHeader>
             <div className="h-6 w-48 bg-[oklch(0.9_0.05_240)] rounded" />

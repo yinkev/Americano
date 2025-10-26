@@ -6,7 +6,7 @@
  * - OKLCH colors for category badges and reading indicators (no gradients)
  * - Design tokens from /lib/design-tokens.ts
  * - Typography system (font-heading, precise text sizes)
- * - Glassmorphism effects (bg-white/80 backdrop-blur-md)
+ * - Glassmorphism effects (bg-card )
  *
  * Displays learning science articles with personalized content.
  * Features:
@@ -163,7 +163,7 @@ export function LearningArticleReader({
   if (error) {
     return (
       <Card
-        className="bg-white/80 backdrop-blur-md shadow-sm border"
+        className="bg-card  shadow-none border"
         style={{ borderColor: colors.alert }}
       >
         <CardContent className="flex flex-col items-center justify-center py-12">
@@ -178,7 +178,7 @@ export function LearningArticleReader({
   // Loading state
   if (isLoading || isLoadingProp) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md shadow-sm animate-pulse">
+      <Card className="bg-card  shadow-none animate-pulse">
         <CardHeader>
           <div className="h-8 rounded w-1/4 mb-4" style={{ backgroundColor: 'oklch(0.9 0.02 230)' }} />
           <div className="h-6 rounded w-1/3 mb-2" style={{ backgroundColor: 'oklch(0.91 0.02 230)' }} />
@@ -203,7 +203,7 @@ export function LearningArticleReader({
   const renderedContent = renderMarkdown(article.personalizedContent || article.content)
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md shadow-sm">
+    <Card className="bg-card  shadow-none">
       <CardHeader>
         <div className="space-y-4">
           {/* Article Selector */}

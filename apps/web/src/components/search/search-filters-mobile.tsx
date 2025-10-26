@@ -122,8 +122,8 @@ export function SearchFiltersMobile({
           size="lg"
           className={cn(
             // Mobile-optimized sizing: min 44px height
-            "h-14 px-6 gap-3 rounded-2xl",
-            "bg-white/90 backdrop-blur-md border-2 border-white/60",
+            "h-14 px-6 gap-3 rounded-xl",
+            "bg-card  border-2 border-border",
             "hover:bg-white hover:border-primary/30",
             "transition-all duration-200",
             className
@@ -149,7 +149,7 @@ export function SearchFiltersMobile({
         className={cn(
           // Mobile-optimized bottom sheet
           "h-[85vh] rounded-t-3xl",
-          "bg-white/95 backdrop-blur-lg border-t-2 border-white/60",
+          "bg-card  border-t-2 border-border",
           // Safe area for mobile devices
           "pb-safe"
         )}
@@ -180,7 +180,7 @@ export function SearchFiltersMobile({
                 <Star className="size-5 text-amber-500" aria-hidden="true" />
                 High Yield Content
               </Label>
-              <div className="flex items-center space-x-3 p-4 rounded-xl bg-amber-50/50 border border-amber-200/50">
+              <div className="flex items-center space-x-3 p-4 rounded-xl bg-card border border-amber-200/50">
                 <Checkbox
                   id="high-yield"
                   checked={localFilters.highYieldOnly || false}
@@ -207,7 +207,7 @@ export function SearchFiltersMobile({
                 {(["basic", "intermediate", "advanced"] as const).map((level) => (
                   <div
                     key={level}
-                    className="flex items-center space-x-3 p-4 rounded-xl bg-muted/30 border border-border/50"
+                    className="flex items-center space-x-3 p-4 rounded-xl bg-card border border-border/50"
                   >
                     <Checkbox
                       id={`difficulty-${level}`}
@@ -238,7 +238,7 @@ export function SearchFiltersMobile({
                   {availableCourses.map((course) => (
                     <div
                       key={course.id}
-                      className="flex items-center space-x-3 p-4 rounded-xl bg-muted/30 border border-border/50"
+                      className="flex items-center space-x-3 p-4 rounded-xl bg-card border border-border/50"
                     >
                       <Checkbox
                         id={`course-${course.id}`}
@@ -297,7 +297,7 @@ export function SearchFiltersMobile({
             variant="outline"
             size="lg"
             onClick={handleClear}
-            className="flex-1 h-14 rounded-2xl"
+            className="flex-1 h-14 rounded-xl"
             disabled={activeFilterCount === 0}
           >
             Clear All
@@ -306,7 +306,7 @@ export function SearchFiltersMobile({
             variant="default"
             size="lg"
             onClick={handleApply}
-            className="flex-1 h-14 rounded-2xl"
+            className="flex-1 h-14 rounded-xl"
           >
             Apply Filters
           </Button>

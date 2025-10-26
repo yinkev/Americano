@@ -21,7 +21,7 @@ import { AlertTriangle, TrendingUp, TrendingDown, Info } from 'lucide-react';
  * - Min 44px touch targets
  *
  * Design System:
- * - Glassmorphism: bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]
+ * - Glassmorphism: bg-card  shadow-none
  * - OKLCH colors:
  *   - Memorization (Blue): oklch(0.6 0.18 230)
  *   - Understanding (Orange): oklch(0.7 0.15 45)
@@ -49,7 +49,7 @@ export default function ComparisonTab() {
 
   if (error) {
     return (
-      <Alert variant="destructive" className="bg-white/95 backdrop-blur-xl">
+      <Alert variant="destructive" className="bg-card ">
         <AlertTriangle className="h-4 w-4" />
         <AlertTitle>Error Loading Comparison Data</AlertTitle>
         <AlertDescription>
@@ -80,7 +80,7 @@ export default function ComparisonTab() {
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Correlation Card */}
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="bg-card  shadow-none">
           <CardHeader>
             <CardTitle className="text-lg font-['DM_Sans']">Correlation</CardTitle>
             <CardDescription>Memorization vs. Understanding</CardDescription>
@@ -101,7 +101,7 @@ export default function ComparisonTab() {
         </Card>
 
         {/* Gap Summary Card */}
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="bg-card  shadow-none">
           <CardHeader>
             <CardTitle className="text-lg font-['DM_Sans']">Knowledge Gaps</CardTitle>
             <CardDescription>Illusion of Knowledge Detection</CardDescription>
@@ -131,7 +131,7 @@ export default function ComparisonTab() {
         </Card>
 
         {/* Average Scores Card */}
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="bg-card  shadow-none">
           <CardHeader>
             <CardTitle className="text-lg font-['DM_Sans']">Average Scores</CardTitle>
             <CardDescription>Last {data.memorization.length} data points</CardDescription>
@@ -172,7 +172,7 @@ export default function ComparisonTab() {
       </div>
 
       {/* Dual-Axis Line Chart */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  shadow-none">
         <CardHeader>
           <CardTitle className="text-xl font-['DM_Sans']">Understanding vs. Memorization Over Time</CardTitle>
           <CardDescription>
@@ -259,7 +259,7 @@ export default function ComparisonTab() {
 
       {/* Gap Analysis - Illusion of Knowledge Alerts */}
       {(highGaps > 0 || mediumGaps > 0) && (
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="bg-card  shadow-none">
           <CardHeader>
             <CardTitle className="text-xl font-['DM_Sans'] flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" style={{ color: 'oklch(0.65 0.20 25)' }} />
@@ -278,7 +278,7 @@ export default function ComparisonTab() {
                   <Alert
                     key={gap.objectiveId}
                     variant={gap.gap > 30 ? 'destructive' : 'default'}
-                    className="bg-white/95 backdrop-blur-xl"
+                    className="bg-card "
                   >
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle className="flex items-center justify-between">
@@ -318,7 +318,7 @@ export default function ComparisonTab() {
 
       {/* No Gaps - Positive Feedback */}
       {highGaps === 0 && mediumGaps === 0 && (
-        <Alert className="bg-white/95 backdrop-blur-xl border-2" style={{ borderColor: 'oklch(0.7 0.15 145)' }}>
+        <Alert className="bg-card  border-2" style={{ borderColor: 'oklch(0.7 0.15 145)' }}>
           <TrendingUp className="h-4 w-4" style={{ color: 'oklch(0.7 0.15 145)' }} />
           <AlertTitle className="font-['DM_Sans']">Excellent Alignment!</AlertTitle>
           <AlertDescription>
@@ -340,7 +340,7 @@ function CustomTooltip({ active, payload, label }: any) {
   }
 
   return (
-    <div className="bg-white/95 backdrop-blur-xl shadow-lg rounded-lg p-3 border border-gray-200">
+    <div className="bg-card  shadow-none rounded-lg p-3 border border-gray-200">
       <p className="text-sm font-medium mb-2">
         {new Date(label).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
       </p>
@@ -372,7 +372,7 @@ function LoadingSkeleton() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="h-40 bg-white/95 backdrop-blur-xl animate-pulse">
+          <Card key={i} className="h-40 bg-card  animate-pulse">
             <CardContent className="p-6">
               <div className="space-y-3">
                 <div className="h-4 bg-gray-200 rounded w-3/4" />
@@ -383,7 +383,7 @@ function LoadingSkeleton() {
           </Card>
         ))}
       </div>
-      <Card className="h-96 bg-white/95 backdrop-blur-xl animate-pulse">
+      <Card className="h-96 bg-card  animate-pulse">
         <CardContent className="p-6 flex items-center justify-center">
           <p className="text-sm text-[oklch(0.6_0.05_240)]">Loading comparison chart...</p>
         </CardContent>

@@ -274,7 +274,7 @@ export default function KnowledgeGraph({
       >
         {/* Graph controls: zoom, fit view, etc. */}
         <Controls
-          className="!bg-white/80 backdrop-blur-md !border-gray-200 !shadow-lg"
+          className="!bg-card  !border-gray-200 !shadow-none"
           showInteractive={false}
         />
 
@@ -287,7 +287,7 @@ export default function KnowledgeGraph({
         />
 
         {/* Info panel with instructions */}
-        <Panel position="top-left" className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg">
+        <Panel position="top-left" className="bg-card  rounded-lg p-3 shadow-none">
           <div className="text-xs space-y-1">
             <div className="font-semibold text-gray-900">Knowledge Graph</div>
             <div className="text-gray-600">
@@ -325,7 +325,7 @@ export default function KnowledgeGraph({
 
         {/* Selected node info panel */}
         {selectedNode && (
-          <Panel position="top-right" className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg max-w-xs">
+          <Panel position="top-right" className="bg-card  rounded-lg p-3 shadow-none max-w-xs">
             <div className="text-xs space-y-1">
               <div className="font-semibold text-gray-900">
                 {nodes.find((n) => n.id === selectedNode)?.data.name}
@@ -343,7 +343,7 @@ export default function KnowledgeGraph({
         )}
 
         {/* Graph statistics panel */}
-        <Panel position="bottom-left" className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg">
+        <Panel position="bottom-left" className="bg-card  rounded-lg p-3 shadow-none">
           <div className="text-xs space-y-1">
             <div className="font-semibold text-gray-900">Graph Stats</div>
             <div className="text-gray-600">

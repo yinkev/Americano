@@ -89,7 +89,7 @@ export function PredictionAccuracyChart() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  border-border shadow-none">
         <CardContent className="p-6 h-96 flex items-center justify-center">
           <p className={`${typography.body.small} text-muted-foreground`}>
             Loading accuracy trends...
@@ -101,7 +101,7 @@ export function PredictionAccuracyChart() {
 
   if (data.length === 0) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  border-border shadow-none">
         <CardContent className="p-6 h-96 flex flex-col items-center justify-center">
           <p className={`${typography.body.small} text-muted-foreground`}>
             Not enough data to show accuracy trends yet
@@ -143,7 +143,7 @@ export function PredictionAccuracyChart() {
   const trendColor = getTrendColor(f1Trend)
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)]">
+    <Card className="bg-card  border-border shadow-none transition-all duration-300 hover:shadow-none">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
@@ -175,7 +175,7 @@ export function PredictionAccuracyChart() {
 
       <CardContent className="space-y-6">
         {/* Metrics Summary */}
-        <div className="grid grid-cols-3 gap-4 p-4 rounded-xl bg-muted/50">
+        <div className="grid grid-cols-3 gap-4 p-4 rounded-xl bg-card">
           <div className="transition-all duration-200 hover:scale-[1.02]">
             <p className={`${typography.body.tiny} text-muted-foreground mb-1`}>Precision</p>
             <p className="text-2xl font-bold text-foreground">{latestData.precision.toFixed(0)}%</p>
@@ -285,7 +285,7 @@ export function PredictionAccuracyChart() {
         </ResponsiveContainer>
 
         {/* Comparison with Platform */}
-        <div className="flex items-center justify-between p-4 rounded-xl bg-muted/50 transition-all duration-200 hover:bg-muted/70 hover:scale-[1.01]">
+        <div className="flex items-center justify-between p-4 rounded-xl bg-card transition-all duration-200 hover:bg-card hover:scale-[1.01]">
           <div>
             <p className={`${typography.body.small} font-medium text-foreground mb-1`}>
               Your Model vs Platform

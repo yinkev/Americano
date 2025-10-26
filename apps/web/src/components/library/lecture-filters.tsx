@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUpDown } from 'lucide-react'
+import { ArrowUpDown, SlidersHorizontal } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -42,59 +42,53 @@ export function LectureFilters({
   }
 
   return (
-    <div className="flex flex-wrap gap-4 mb-6 p-4 bg-muted/30 rounded-md">
-      {/* Course Filter */}
-      <div className="flex-1 min-w-[200px]">
-        <Select value={selectedCourse} onValueChange={onCourseChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="All Courses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Courses</SelectItem>
-            {courses.map((course) => (
-              <SelectItem key={course.id} value={course.id}>
-                {course.code ? `${course.code} - ${course.name}` : course.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+    // I would add a motion.div here for a playful entrance animation
+    <div className="flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-2 text-lg font-semibold text-muted-foreground">
+            <SlidersHorizontal className="w-6 h-6" />
+            <span>Filters:</span>
+        </div>
+      <Select value={selectedCourse} onValueChange={onCourseChange}>
+        <SelectTrigger className="rounded-full h-12 text-md font-semibold bg-card border-none focus:ring-2 focus:ring-primary">
+          <SelectValue placeholder="All Courses" />
+        </SelectTrigger>
+        <SelectContent className="bg-card  rounded-xl border-border/50">
+          <SelectItem value="all">All Courses</SelectItem>
+          {courses.map((course) => (
+            <SelectItem key={course.id} value={course.id}>
+              {course.code ? `${course.code} - ${course.name}` : course.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-      {/* Status Filter */}
-      <div className="flex-1 min-w-[200px]">
-        <Select value={selectedStatus} onValueChange={onStatusChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="All Statuses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="PENDING">Pending</SelectItem>
-            <SelectItem value="PROCESSING">Processing</SelectItem>
-            <SelectItem value="COMPLETED">Completed</SelectItem>
-            <SelectItem value="FAILED">Failed</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Select value={selectedStatus} onValueChange={onStatusChange}>
+        <SelectTrigger className="rounded-full h-12 text-md font-semibold bg-card border-none focus:ring-2 focus:ring-primary">
+          <SelectValue placeholder="All Statuses" />
+        </SelectTrigger>
+        <SelectContent className="bg-card  rounded-xl border-border/50">
+          <SelectItem value="all">All Statuses</SelectItem>
+          <SelectItem value="PENDING">Pending</SelectItem>
+          <SelectItem value="PROCESSING">Processing</SelectItem>
+          <SelectItem value="COMPLETED">Completed</SelectItem>
+          <SelectItem value="FAILED">Failed</SelectItem>
+        </SelectContent>
+      </Select>
 
-      {/* Sort Field */}
-      <div className="flex-1 min-w-[200px]">
-        <Select value={sortBy} onValueChange={(field) => onSortChange(field, sortOrder)}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="uploadedAt">Upload Date</SelectItem>
-            <SelectItem value="title">Title</SelectItem>
-            <SelectItem value="processedAt">Processed Date</SelectItem>
-            <SelectItem value="processingStatus">Status</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Select value={sortBy} onValueChange={(field) => onSortChange(field, sortOrder)}>
+        <SelectTrigger className="rounded-full h-12 text-md font-semibold bg-card border-none focus:ring-2 focus:ring-primary">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className="bg-card  rounded-xl border-border/50">
+          <SelectItem value="uploadedAt">Sort by Date</SelectItem>
+          <SelectItem value="title">Sort by Title</SelectItem>
+          <SelectItem value="processingStatus">Sort by Status</SelectItem>
+        </SelectContent>
+      </Select>
 
-      {/* Sort Order Toggle */}
-      <Button variant="outline" onClick={toggleSortOrder}>
-        <ArrowUpDown className="mr-2 h-4 w-4" />
-        {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+      <Button variant="ghost" onClick={toggleSortOrder} className="rounded-full h-12 text-md font-semibold gap-2">
+        <ArrowUpDown className="h-5 w-5" />
+        {sortOrder === 'asc' ? 'ASC' : 'DESC'}
       </Button>
     </div>
   )

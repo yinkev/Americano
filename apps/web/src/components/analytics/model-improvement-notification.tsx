@@ -72,7 +72,7 @@ export function ModelImprovementNotification({ improvement, onShown }: Props) {
       {
         duration: 5000,
         icon: <CheckCircle2 className="size-5 text-[oklch(0.7_0.12_145)]" />,
-        className: 'bg-white/95 backdrop-blur-md border-[oklch(0.7_0.12_145)]/20',
+        className: 'bg-card  border-[oklch(0.7_0.12_145)]/20',
       },
     )
 
@@ -136,7 +136,7 @@ export function showModelImprovementToast(improvement: ModelImprovement) {
     {
       duration: 6000,
       icon: <Sparkles className="size-5 text-[oklch(0.7_0.12_145)]" />,
-      className: 'bg-white/95 backdrop-blur-md border-[oklch(0.7_0.12_145)]/20',
+      className: 'bg-card  border-[oklch(0.7_0.12_145)]/20',
     },
   )
 }

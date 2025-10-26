@@ -164,7 +164,7 @@ export function ObjectiveList({ lectureId }: ObjectiveListProps) {
                   {objs.map((obj) => (
                     <div
                       key={obj.id}
-                      className="bg-white border shadow-sm rounded-lg p-4 hover:shadow-md hover:scale-[1.005] transition-all duration-300"
+                      className="bg-white border shadow-none rounded-lg p-4 hover:shadow-none hover:scale-[1.005] transition-all duration-300"
                     >
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex-1">

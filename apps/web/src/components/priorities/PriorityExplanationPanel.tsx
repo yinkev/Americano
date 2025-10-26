@@ -31,9 +31,9 @@ export function PriorityExplanationPanel({
   return (
     <Card
       className={cn(
-        'bg-background border shadow-sm',
+        'bg-background border shadow-none',
         'rounded-lg p-4',
-        'hover:shadow-md transition-shadow duration-300',
+        'hover:shadow-none transition-shadow-none duration-300',
         className,
       )}
     >
@@ -63,7 +63,7 @@ export function PriorityExplanationPanel({
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="mt-6 space-y-6 animate-in slide-in-from-top-2 duration-200">
+        <div className="mt-6 space-y-6 animate-in slide-in- duration-200">
           {/* Factor Breakdown */}
           <div className="space-y-4">
             <h4 className="text-[11px] font-semibold text-foreground uppercase tracking-wide">
@@ -76,7 +76,7 @@ export function PriorityExplanationPanel({
                 .map((factor, index) => (
                   <div
                     key={factor.name}
-                    className="space-y-2 p-4 rounded-lg bg-secondary/30 border border-border"
+                    className="space-y-2 p-4 rounded-lg bg-card border border-border"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -113,7 +113,7 @@ export function PriorityExplanationPanel({
                 {explanation.recommendations.map((rec, index) => (
                   <div
                     key={index}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-info/10 border border-info/30"
+                    className="flex items-start gap-3 p-3 rounded-lg bg-card border border-info/30"
                   >
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-info text-info-foreground flex items-center justify-center text-[11px] font-semibold mt-0.5">
                       {index + 1}
@@ -146,7 +146,7 @@ export function PriorityExplanationCompact({
     <div
       className={cn(
         'space-y-2 p-4 rounded-lg',
-        'bg-secondary/30 border border-border',
+        'bg-card border border-border',
         className,
       )}
     >

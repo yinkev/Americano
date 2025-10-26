@@ -132,7 +132,7 @@ export default function StrugglePredictionsPage() {
 
           {/* Section 5: Feedback */}
           <section>
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)]">
+            <div className="bg-card  rounded-xl shadow-none border border-border p-6 transition-all duration-300 hover:shadow-none">
               <h3 className={`${typography.heading.h3} text-foreground mb-3`}>
                 Help Improve Predictions
               </h3>
@@ -214,7 +214,7 @@ async function ActivePredictions() {
 
   if (mockPredictions.length === 0) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
+      <div className="bg-card  rounded-xl shadow-none border border-border p-6">
         <p className="text-sm text-muted-foreground text-center">
           No active predictions. Keep studying to build your learning profile!
         </p>

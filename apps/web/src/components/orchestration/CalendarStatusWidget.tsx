@@ -158,7 +158,7 @@ export function CalendarStatusWidget({ userId, onStatusChange, className = '' }:
 
   if (loading) {
     return (
-      <Card className={`shadow-sm ${className}`}>
+      <Card className={`shadow-none ${className}`}>
         <CardHeader className="p-4 pb-0">
           <h3 className="font-heading font-semibold text-foreground text-[16px]">Calendar Integration</h3>
         </CardHeader>
@@ -172,7 +172,7 @@ export function CalendarStatusWidget({ userId, onStatusChange, className = '' }:
   // Not Connected State
   if (!status?.connected) {
     return (
-      <Card className={`shadow-sm ${className}`}>
+      <Card className={`shadow-none ${className}`}>
         <CardHeader className="p-4 pb-0">
           <div className="flex items-center gap-2">
             <Calendar className="size-5 text-info" />
@@ -243,7 +243,7 @@ export function CalendarStatusWidget({ userId, onStatusChange, className = '' }:
   }
 
   return (
-    <Card className={`shadow-sm ${className}`}>
+    <Card className={`shadow-none ${className}`}>
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center gap-2">
           <Calendar className="size-5" style={{ color: 'oklch(0.7 0.15 145)' }} />

@@ -28,8 +28,8 @@ export function AnalyticsCardSkeleton({
   return (
     <div
       className={cn(
-        'bg-white/80 backdrop-blur-md border border-[oklch(0.9_0.02_230)] rounded-xl p-6',
-        'shadow-[0_8px_32px_rgba(31,38,135,0.1)]',
+        'bg-card  border border-[oklch(0.9_0.02_230)] rounded-xl p-6',
+        'shadow-none',
         className,
       )}
     >
@@ -54,7 +54,7 @@ export function AnalyticsCardSkeleton({
 
       {/* Chart Placeholder */}
       {showChart && (
-        <div className="h-64 rounded-lg flex items-end justify-around px-4 pb-4 bg-muted/50">
+        <div className="h-64 rounded-lg flex items-end justify-around px-4 pb-4 bg-card">
           {[...Array(7)].map((_, i) => (
             <Skeleton
               key={i}

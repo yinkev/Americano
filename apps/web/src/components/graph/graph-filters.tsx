@@ -115,7 +115,7 @@ export default function GraphFilters({
   return (
     <div
       className={cn(
-        'rounded-xl border backdrop-blur-md overflow-hidden',
+        'rounded-xl border  overflow-hidden',
         className
       )}
       style={{

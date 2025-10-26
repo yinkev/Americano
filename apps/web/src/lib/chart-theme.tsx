@@ -361,7 +361,7 @@ export function CustomChartTooltip({ active, payload, label }: any) {
 
   return (
     <div
-      className="rounded-lg shadow-lg backdrop-blur-sm"
+      className="rounded-lg shadow-none "
       style={{
         backgroundColor: chartColors.tooltip.background,
         border: `1px solid ${chartColors.tooltip.border}`,

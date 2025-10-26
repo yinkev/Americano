@@ -1,338 +1,390 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { Play, Settings, Calendar, Clock, Brain } from 'lucide-react'
-import { OptimalTimeSlotsPanel } from '@/components/orchestration/OptimalTimeSlotsPanel'
-import { SessionPlanPreview } from '@/components/orchestration/SessionPlanPreview'
-import { CognitiveLoadIndicator } from '@/components/orchestration/CognitiveLoadIndicator'
-import { CalendarStatusWidget } from '@/components/orchestration/CalendarStatusWidget'
-import { SessionPlanCustomizeDialog } from '@/components/orchestration/session-plan-customize-dialog'
+import { motion } from 'motion/react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import {
+  Clock,
+  Brain,
+  Target,
+  Zap,
+  ArrowLeft,
+  Play,
+  Settings as SettingsIcon,
+  TrendingUp,
+  BookOpen,
+  Sparkles
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useUserStore } from '@/store/use-user-store'
-import { toast } from 'sonner'
+import { Card } from '@/components/ui/card'
+import { Slider } from '@/components/ui/slider'
+import { Label } from '@/components/ui/label'
+import {
+  springSubtle,
+  springSmooth,
+  listContainerVariants,
+  listItemVariants,
+  modalContentVariants
+} from '@/lib/design-system'
 
-interface TimeSlot {
-  startTime: string
-  endTime: string
-  duration: number
-  score: number
-  confidence: number
-  reasoning: string[]
-  calendarConflict: boolean
-  conflictingEvents?: Array<{ summary: string; start: string; end: string }>
+interface StudyConfig {
+  duration: number // minutes
+  flashcardsMix: number // percentage
+  comprehensionMix: number // percentage
+  clinicalCasesMix: number // percentage
+  difficultyLevel: 'adaptive' | 'easy' | 'medium' | 'hard'
+  focusMode: boolean
 }
 
-interface SessionPlan {
-  id: string
-  startTime: string
-  endTime: string
-  duration: number
-  intensity: 'LOW' | 'MEDIUM' | 'HIGH'
-  contentSequence: {
-    sequence: Array<{
-      type: 'flashcard' | 'new_flashcard' | 'validation' | 'clinical' | 'lecture' | 'break'
-      id: string | null
-      duration: number
-      phase: 'warmup' | 'peak' | 'winddown'
-      difficulty?: number
-    }>
-    totalDuration: number
-    phases: {
-      warmUp: number
-      peak: number
-      windDown: number
-    }
-  }
-  breaks: {
-    breakIntervals: number[]
-    breakDurations: number[]
-    totalBreakTime: number
-    reasoning: string
-  }
-  confidence: number
-}
+const difficultyOptions = [
+  { value: 'adaptive', label: 'Adaptive', description: 'AI adjusts difficulty based on performance' },
+  { value: 'easy', label: 'Easy', description: 'Review familiar concepts' },
+  { value: 'medium', label: 'Medium', description: 'Balanced challenge' },
+  { value: 'hard', label: 'Hard', description: 'Push your limits' },
+] as const
 
-export default function OrchestrationPage() {
+export default function StudyOrchestrationPage() {
   const router = useRouter()
-  const { userEmail } = useUserStore()
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null)
-  const [sessionPlan, setSessionPlan] = useState<SessionPlan | null>(null)
-  const [loadingPlan, setLoadingPlan] = useState(false)
-  const [showCustomizeDialog, setShowCustomizeDialog] = useState(false)
-  const [calendarConnected, setCalendarConnected] = useState(false)
+  const searchParams = useSearchParams()
+  const mode = searchParams.get('mode') || 'deep-study'
 
-  // Fetch session plan when time slot is selected
+  const [config, setConfig] = useState<StudyConfig>({
+    duration: 45,
+    flashcardsMix: 40,
+    comprehensionMix: 40,
+    clinicalCasesMix: 20,
+    difficultyLevel: 'adaptive',
+    focusMode: true,
+  })
+
+  const [estimatedCards, setEstimatedCards] = useState(0)
+  const [estimatedTopics, setEstimatedTopics] = useState(0)
+
   useEffect(() => {
-    if (!selectedTimeSlot) {
-      setSessionPlan(null)
-      return
-    }
+    // Calculate estimated cards based on duration and mix
+    const cardsPerMinute = 1.5
+    const totalCards = Math.floor(config.duration * cardsPerMinute)
+    setEstimatedCards(totalCards)
+    setEstimatedTopics(Math.floor(totalCards / 5))
+  }, [config])
 
-    async function fetchSessionPlan() {
-      if (!selectedTimeSlot) return
+  const handleStartSession = async () => {
+    // TODO: Create session via API
+    router.push('/study/sessions/new')
+  }
 
-      setLoadingPlan(true)
-      try {
-        const res = await fetch('/api/orchestration/session-plan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: userEmail,
-            startTime: selectedTimeSlot.startTime,
-            duration: selectedTimeSlot.duration,
-          }),
-        })
+  const updateMix = (key: 'flashcardsMix' | 'comprehensionMix' | 'clinicalCasesMix', value: number) => {
+    // Auto-balance the other two sliders
+    const total = 100
+    const remaining = total - value
 
-        if (!res.ok) throw new Error('Failed to fetch session plan')
-
-        const data = await res.json()
-        setSessionPlan(data.plan)
-      } catch (err) {
-        console.error('Failed to fetch session plan:', err)
-        toast.error('Failed to load session plan')
-      } finally {
-        setLoadingPlan(false)
+    setConfig(prev => {
+      if (key === 'flashcardsMix') {
+        const ratio = prev.comprehensionMix / (prev.comprehensionMix + prev.clinicalCasesMix)
+        return {
+          ...prev,
+          flashcardsMix: value,
+          comprehensionMix: Math.round(remaining * ratio),
+          clinicalCasesMix: Math.round(remaining * (1 - ratio)),
+        }
+      } else if (key === 'comprehensionMix') {
+        const ratio = prev.flashcardsMix / (prev.flashcardsMix + prev.clinicalCasesMix)
+        return {
+          ...prev,
+          comprehensionMix: value,
+          flashcardsMix: Math.round(remaining * ratio),
+          clinicalCasesMix: Math.round(remaining * (1 - ratio)),
+        }
+      } else {
+        const ratio = prev.flashcardsMix / (prev.flashcardsMix + prev.comprehensionMix)
+        return {
+          ...prev,
+          clinicalCasesMix: value,
+          flashcardsMix: Math.round(remaining * ratio),
+          comprehensionMix: Math.round(remaining * (1 - ratio)),
+        }
       }
-    }
-
-    fetchSessionPlan()
-  }, [selectedTimeSlot, userEmail])
-
-  function handleTimeSlotSelect(timeSlot: TimeSlot) {
-    setSelectedTimeSlot(timeSlot)
-  }
-
-  function handleStartSession() {
-    if (!selectedTimeSlot) return
-
-    // Navigate to study session with the selected time slot
-    const params = new URLSearchParams({
-      startTime: selectedTimeSlot.startTime,
-      duration: selectedTimeSlot.duration.toString(),
     })
-    router.push(`/study?${params.toString()}`)
-  }
-
-  function handleCustomizeSchedule() {
-    setShowCustomizeDialog(true)
-  }
-
-  function handleCalendarSettings() {
-    // Navigate to calendar settings
-    router.push('/settings?tab=calendar')
-  }
-
-  function handleCalendarStatusChange(connected: boolean) {
-    setCalendarConnected(connected)
-  }
-
-  function handleSavePlanCustomization(customPlan: Partial<SessionPlan>) {
-    if (sessionPlan) {
-      setSessionPlan({ ...sessionPlan, ...customPlan })
-      toast.success('Session plan customized')
-    }
-    setShowCustomizeDialog(false)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[oklch(0.98_0.02_250)] via-[oklch(0.96_0.01_250)] to-[oklch(0.94_0.02_250)]">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-6 py-8 max-w-6xl">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-3">
-              <Clock className="size-6 text-[oklch(0.7_0.15_230)]" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-[oklch(0.145_0_0)]">Study Orchestration</h1>
-              <p className="text-[oklch(0.556_0_0)]">
-                AI-powered timing and session planning for optimal learning
-              </p>
-            </div>
-          </div>
-        </div>
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={springSmooth}
+        >
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            className="mb-4 gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Time Slots and Session Plan */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Today's Recommended Study Schedule */}
-            <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="size-5 text-[oklch(0.7_0.15_230)]" />
-                  Today's Recommended Study Schedule
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm text-[oklch(0.556_0_0)] mb-4">
-                  {new Date().toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+          <h1 className="text-4xl font-heading font-bold mb-2">
+            Configure Your Session
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Customize your learning experience for optimal results
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Configuration Panel */}
+          <motion.div
+            className="lg:col-span-2 space-y-6"
+            variants={listContainerVariants}
+            initial="initial"
+            animate="animate"
+          >
+            {/* Duration */}
+            <motion.div variants={listItemVariants}>
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-card flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <Label className="text-lg font-semibold">Study Duration</Label>
+                    <p className="text-sm text-muted-foreground">How long do you want to study?</p>
+                  </div>
                 </div>
 
-                {/* Quick Action Buttons */}
-                <div className="flex items-center gap-3 mb-6">
-                  <Button
-                    onClick={handleStartSession}
-                    disabled={!selectedTimeSlot}
-                    className="bg-[oklch(0.7_0.15_230)] hover:bg-[oklch(0.65_0.15_230)]"
-                  >
-                    <Play className="size-4 mr-2" />
-                    Start Recommended Session
-                  </Button>
-                  <Button variant="outline" onClick={handleCustomizeSchedule}>
-                    <Settings className="size-4 mr-2" />
-                    Customize Schedule
-                  </Button>
-                </div>
-
-                {/* Selected Time Slot Info */}
-                {selectedTimeSlot && (
-                  <div className="p-4 rounded-xl bg-[oklch(0.7_0.15_230)]/5 border border-[oklch(0.7_0.15_230)]/20">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-semibold text-[oklch(0.145_0_0)] mb-1">
-                          Selected Time Slot
-                        </h4>
-                        <p className="text-sm text-[oklch(0.556_0_0)]">
-                          {selectedTimeSlot.startTime} - {selectedTimeSlot.endTime}
-                        </p>
-                      </div>
-                      <Button size="sm" onClick={() => setSelectedTimeSlot(null)} variant="outline">
-                        Change
-                      </Button>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-3xl font-bold">{config.duration} min</span>
+                    <div className="flex gap-2">
+                      {[15, 30, 45, 60, 90].map(dur => (
+                        <Button
+                          key={dur}
+                          variant={config.duration === dur ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setConfig(prev => ({ ...prev, duration: dur }))}
+                        >
+                          {dur}
+                        </Button>
+                      ))}
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Optimal Time Recommendations */}
-            <OptimalTimeSlotsPanel userId={userEmail} onSelectSlot={handleTimeSlotSelect} />
-
-            {/* Session Plan Preview */}
-            {selectedTimeSlot && (
-              <SessionPlanPreview
-                plan={sessionPlan}
-                loading={loadingPlan}
-                onCustomize={handleCustomizeSchedule}
-              />
-            )}
-          </div>
-
-          {/* Right Column - Cognitive Load and Calendar Status */}
-          <div className="space-y-6">
-            {/* Cognitive Load Indicator */}
-            <CognitiveLoadIndicator userId={userEmail} />
-
-            {/* Calendar Integration Status */}
-            <CalendarStatusWidget
-              userId={userEmail}
-              onStatusChange={handleCalendarStatusChange}
-            />
-
-            {/* Quick Settings */}
-            <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="size-5" />
-                  Quick Settings
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={() => router.push('/settings')}
-                  >
-                    <Settings className="size-4 mr-2" />
-                    Study Preferences
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={() => router.push('/settings/exams')}
-                  >
-                    <Calendar className="size-4 mr-2" />
-                    Exam Schedule
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={() => router.push('/priorities')}
-                  >
-                    <Brain className="size-4 mr-2" />
-                    Learning Priorities
-                  </Button>
+                  <Slider
+                    value={[config.duration]}
+                    onValueChange={([val]) => setConfig(prev => ({ ...prev, duration: val }))}
+                    min={15}
+                    max={120}
+                    step={5}
+                    className="w-full"
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              </Card>
+            </motion.div>
 
-        {/* Bottom Section - Additional Info */}
-        <div className="mt-8">
-          <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Brain className="size-5 text-[oklch(0.7_0.15_230)]" />
-                How It Works
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-4 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-                    <Clock className="size-8 text-[oklch(0.7_0.15_230)]" />
+            {/* Content Mix */}
+            <motion.div variants={listItemVariants}>
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-card flex items-center justify-center">
+                    <Brain className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <h3 className="font-semibold text-[oklch(0.145_0_0)] mb-2">Pattern Analysis</h3>
-                  <p className="text-sm text-[oklch(0.556_0_0)]">
-                    We analyze your historical performance data to identify when you learn best
-                  </p>
+                  <div>
+                    <Label className="text-lg font-semibold">Content Mix</Label>
+                    <p className="text-sm text-muted-foreground">Balance between different learning modes</p>
+                  </div>
                 </div>
 
-                <div className="text-center">
-                  <div className="rounded-full bg-[oklch(0.75_0.15_160)]/10 p-4 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-                    <Brain className="size-8 text-[oklch(0.75_0.15_160)]" />
+                <div className="space-y-6">
+                  {/* Flashcards */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">Flashcards</span>
+                      <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">
+                        {config.flashcardsMix}%
+                      </span>
+                    </div>
+                    <Slider
+                      value={[config.flashcardsMix]}
+                      onValueChange={([val]) => updateMix('flashcardsMix', val)}
+                      min={0}
+                      max={100}
+                      step={5}
+                      className="w-full"
+                    />
                   </div>
-                  <h3 className="font-semibold text-[oklch(0.145_0_0)] mb-2">
-                    Cognitive Awareness
-                  </h3>
-                  <p className="text-sm text-[oklch(0.556_0_0)]">
-                    Session intensity adapts to your current cognitive load and fatigue levels
-                  </p>
+
+                  {/* Comprehension */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">Comprehension Prompts</span>
+                      <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                        {config.comprehensionMix}%
+                      </span>
+                    </div>
+                    <Slider
+                      value={[config.comprehensionMix]}
+                      onValueChange={([val]) => updateMix('comprehensionMix', val)}
+                      min={0}
+                      max={100}
+                      step={5}
+                      className="w-full"
+                    />
+                  </div>
+
+                  {/* Clinical Cases */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">Clinical Cases</span>
+                      <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                        {config.clinicalCasesMix}%
+                      </span>
+                    </div>
+                    <Slider
+                      value={[config.clinicalCasesMix]}
+                      onValueChange={([val]) => updateMix('clinicalCasesMix', val)}
+                      min={0}
+                      max={100}
+                      step={5}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* Difficulty */}
+            <motion.div variants={listItemVariants}>
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-card flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div>
+                    <Label className="text-lg font-semibold">Difficulty Level</Label>
+                    <p className="text-sm text-muted-foreground">Choose your challenge level</p>
+                  </div>
                 </div>
 
-                <div className="text-center">
-                  <div className="rounded-full bg-[oklch(0.7_0.15_50)]/10 p-4 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-                    <Calendar className="size-8 text-[oklch(0.7_0.15_50)]" />
+                <div className="grid grid-cols-2 gap-3">
+                  {difficultyOptions.map(option => (
+                    <button
+                      key={option.value}
+                      onClick={() => setConfig(prev => ({ ...prev, difficultyLevel: option.value }))}
+                      className={`
+                        p-4 rounded-xl border-2 text-left transition-all
+                        ${config.difficultyLevel === option.value
+                          ? 'border-primary bg-card shadow-none'
+                          : 'border-border hover:border-primary/50'
+                        }
+                      `}
+                    >
+                      <div className="font-semibold mb-1">{option.label}</div>
+                      <div className="text-xs text-muted-foreground">{option.description}</div>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* Focus Mode */}
+            <motion.div variants={listItemVariants}>
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-card flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <div>
+                      <Label className="text-lg font-semibold">Focus Mode</Label>
+                      <p className="text-sm text-muted-foreground">Minimize distractions during study</p>
+                    </div>
                   </div>
-                  <h3 className="font-semibold text-[oklch(0.145_0_0)] mb-2">Smart Scheduling</h3>
-                  <p className="text-sm text-[oklch(0.556_0_0)]">
-                    Calendar integration prevents conflicts and finds optimal study windows
-                  </p>
+                  <Button
+                    variant={config.focusMode ? 'default' : 'outline'}
+                    onClick={() => setConfig(prev => ({ ...prev, focusMode: !prev.focusMode }))}
+                  >
+                    {config.focusMode ? 'Enabled' : 'Disabled'}
+                  </Button>
+                </div>
+              </Card>
+            </motion.div>
+          </motion.div>
+
+          {/* Preview Panel */}
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ ...springSmooth, delay: 0.2 }}
+          >
+            <Card className="p-6 sticky top-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-card flex items-center justify-center">
+                  <Target className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-semibold">Session Preview</h3>
+              </div>
+
+              <div className="space-y-4">
+                {/* Estimated Cards */}
+                <div className="flex items-center justify-between py-3 border-b border-border">
+                  <span className="text-muted-foreground">Estimated Cards</span>
+                  <span className="text-2xl font-bold">{estimatedCards}</span>
+                </div>
+
+                {/* Topics Covered */}
+                <div className="flex items-center justify-between py-3 border-b border-border">
+                  <span className="text-muted-foreground">Topics Covered</span>
+                  <span className="text-2xl font-bold">{estimatedTopics}</span>
+                </div>
+
+                {/* Completion Time */}
+                <div className="flex items-center justify-between py-3 border-b border-border">
+                  <span className="text-muted-foreground">Expected Duration</span>
+                  <span className="text-2xl font-bold">{config.duration}m</span>
+                </div>
+
+                {/* Difficulty */}
+                <div className="flex items-center justify-between py-3">
+                  <span className="text-muted-foreground">Difficulty</span>
+                  <span className="text-lg font-semibold capitalize">{config.difficultyLevel}</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
 
-        {/* Session Plan Customization Dialog */}
-        {sessionPlan && (
-          <SessionPlanCustomizeDialog
-            open={showCustomizeDialog}
-            onOpenChange={setShowCustomizeDialog}
-            currentPlan={sessionPlan}
-            onSave={handleSavePlanCustomization}
-          />
-        )}
+              {/* Start Button */}
+              <motion.div
+                className="mt-8"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  className="w-full py-6 text-lg font-semibold gap-2 shadow-none"
+                  onClick={handleStartSession}
+                  size="lg"
+                >
+                  <Play className="w-5 h-5" />
+                  Start Session
+                </Button>
+              </motion.div>
+
+              {/* Focus Mode Note */}
+              {config.focusMode && (
+                <motion.div
+                  className="mt-4 p-3 rounded-lg bg-indigo-50 dark:bg-card border border-indigo-200 dark:border-indigo-800"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  transition={springSubtle}
+                >
+                  <p className="text-sm text-indigo-900 dark:text-indigo-200">
+                    Focus mode will hide the sidebar and minimize distractions
+                  </p>
+                </motion.div>
+              )}
+            </Card>
+          </motion.div>
+        </div>
       </div>
     </div>
   )

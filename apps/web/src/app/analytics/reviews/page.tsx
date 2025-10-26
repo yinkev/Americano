@@ -295,7 +295,7 @@ export default function MissionReviewsPage() {
 
       {/* Stats Summary (if reviews exist) */}
       {!isLoading && reviews.length > 0 && (
-        <div className="mt-8 p-6 rounded-lg bg-white/80 backdrop-blur-md border-white/20">
+        <div className="mt-8 p-6 rounded-lg bg-card  border-border">
           <h3 className="text-sm font-semibold mb-4">Overall Statistics</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>

@@ -186,7 +186,7 @@ export function MissionEffectivenessTable() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30">
+      <div className="flex items-center justify-center h-64 bg-card  rounded-xl shadow-none border border-border">
         <div className="text-[13px] text-muted-foreground">Loading effectiveness data...</div>
       </div>
     )
@@ -194,7 +194,7 @@ export function MissionEffectivenessTable() {
 
   if (data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
+      <div className="flex flex-col items-center justify-center h-64 bg-card  rounded-xl shadow-none border border-border p-6">
         <div className="text-[13px] text-muted-foreground">No effectiveness data available</div>
         <p className="text-[11px] text-muted-foreground mt-2">
           Complete missions over multiple weeks to see trends
@@ -204,7 +204,7 @@ export function MissionEffectivenessTable() {
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all border border-white/30 p-6">
+    <div className="bg-card  rounded-xl shadow-none hover:shadow-none transition-all border border-border p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -215,7 +215,7 @@ export function MissionEffectivenessTable() {
         </div>
         <button
           onClick={exportToCSV}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/60 text-[oklch(0.556_0_0)] hover:bg-white/80 transition-colors text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card text-[oklch(0.556_0_0)] hover:bg-card transition-colors text-sm font-medium"
           aria-label="Export to CSV"
         >
           <Download className="size-4" />
@@ -237,7 +237,7 @@ export function MissionEffectivenessTable() {
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 filterDifficulty === level
                   ? 'bg-[oklch(0.7_0.15_230)] text-white'
-                  : 'bg-white/60 text-[oklch(0.556_0_0)] hover:bg-white/80'
+                  : 'bg-card text-[oklch(0.556_0_0)] hover:bg-card'
               }`}
             >
               {level === 'all' ? 'All' : `${level}/5`}
@@ -418,8 +418,8 @@ export function MissionEffectivenessTable() {
             {filteredData.map((row, index) => (
               <tr
                 key={row.week}
-                className={`border-b border-[oklch(0.922_0_0)] hover:bg-white/60 transition-colors ${
-                  index % 2 === 0 ? 'bg-white/20' : ''
+                className={`border-b border-[oklch(0.922_0_0)] hover:bg-card transition-colors ${
+                  index % 2 === 0 ? 'bg-card' : ''
                 }`}
               >
                 <td className="px-4 py-4">

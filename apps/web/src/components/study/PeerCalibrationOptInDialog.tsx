@@ -64,8 +64,8 @@ export function PeerCalibrationOptInDialog({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white/95 backdrop-blur-xl rounded-lg shadow-[0_8px_32px_rgba(31,38,135,0.2)] max-w-lg w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-card ">
+      <div className="bg-card  rounded-lg shadow-none max-w-lg w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[oklch(0.8_0.05_240)]">
           <div className="flex items-center gap-3">

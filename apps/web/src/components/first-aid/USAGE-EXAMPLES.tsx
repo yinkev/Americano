@@ -99,7 +99,7 @@ export function ExampleLecturePage() {
           </p>
 
           {/* Context Indicator Group Example */}
-          <div className="my-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200/50">
+          <div className="my-4 p-4 bg-card rounded-lg border border-blue-200/50">
             <p className="text-sm font-medium mb-2">Related First Aid Topics:</p>
             <FirstAidContextIndicatorGroup
               indicators={references.map(ref => ({
@@ -522,7 +522,7 @@ export function ExampleDashboardWidget() {
   ]
 
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-xl border border-white/40 p-6">
+    <div className="bg-card  rounded-xl border border-border p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">High-Yield First Aid Topics</h3>
         <button
@@ -537,7 +537,7 @@ export function ExampleDashboardWidget() {
         {topReferences.slice(0, 3).map((ref) => (
           <div
             key={ref.guidelineId}
-            className="flex items-center justify-between p-3 rounded-lg border border-white/40 hover:bg-white/60 cursor-pointer transition-colors"
+            className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-card cursor-pointer transition-colors"
             onClick={() => router.push(`/first-aid/sections/${ref.guidelineId}`)}
           >
             <div className="flex items-center gap-2">

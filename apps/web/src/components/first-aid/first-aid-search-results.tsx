@@ -51,7 +51,7 @@ export function FirstAidSearchResults({
           regex.test(part) ? (
             <mark
               key={index}
-              className="bg-primary/20 text-foreground font-medium px-0.5 rounded"
+              className="bg-card text-foreground font-medium px-0.5 rounded"
             >
               {part}
             </mark>
@@ -65,7 +65,7 @@ export function FirstAidSearchResults({
 
   if (!results || results.length === 0) {
     return (
-      <Card className={cn('bg-white/80 backdrop-blur-md border-border/50', className)}>
+      <Card className={cn('bg-card  border-border/50', className)}>
         <CardContent className="py-8">
           <div className="text-center space-y-2">
             <BookOpen className="h-12 w-12 mx-auto text-muted-foreground/50" />
@@ -98,8 +98,8 @@ export function FirstAidSearchResults({
             key={result.id}
             className={cn(
               'transition-all duration-200 cursor-pointer',
-              'bg-white/80 backdrop-blur-md border-border/50',
-              'hover:bg-white hover:border-border hover:shadow-md'
+              'bg-card  border-border/50',
+              'hover:bg-white hover:border-border hover:shadow-none'
             )}
             onClick={() => onResultClick?.(result)}
           >
@@ -132,7 +132,7 @@ export function FirstAidSearchResults({
                     {/* Source Badge */}
                     <Badge
                       variant="default"
-                      className="text-xs bg-primary/90 text-primary-foreground"
+                      className="text-xs bg-card text-primary-foreground"
                     >
                       First Aid
                     </Badge>
@@ -201,7 +201,7 @@ export function FirstAidSearchResults({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 text-xs text-primary hover:text-primary hover:bg-primary/10"
+                  className="h-8 text-xs text-primary hover:text-primary hover:bg-card"
                   onClick={(e) => {
                     e.stopPropagation()
                     onResultClick?.(result)

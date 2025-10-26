@@ -61,7 +61,7 @@ export function showConflictToast(
   toast.custom(
     (t) => (
       <div
-        className="relative overflow-hidden rounded-lg border-2 shadow-lg"
+        className="relative overflow-hidden rounded-lg border-2 shadow-none"
         style={{
           borderColor: colors.border,
           backgroundColor: colors.bg,
@@ -192,7 +192,7 @@ export function showBatchConflictToast(
   toast.custom(
     (t) => (
       <div
-        className="relative overflow-hidden rounded-lg border-2 shadow-lg"
+        className="relative overflow-hidden rounded-lg border-2 shadow-none"
         style={{
           borderColor: primaryColor.border,
           backgroundColor: primaryColor.bg,
@@ -385,7 +385,7 @@ export function ConflictNotificationBadge({
   return (
     <button
       onClick={onClick}
-      className={`relative inline-flex items-center justify-center rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-all ${className}`}
+      className={`relative inline-flex items-center justify-center rounded-full bg-destructive text-destructive-foreground hover:bg-card focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-all ${className}`}
       style={{
         minWidth: '20px',
         minHeight: '20px',

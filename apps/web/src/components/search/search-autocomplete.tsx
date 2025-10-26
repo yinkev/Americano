@@ -249,7 +249,7 @@ export function SearchAutocomplete({
   return (
     <div
       ref={dropdownRef}
-      className={`absolute z-50 mt-2 w-full rounded-lg border border-oklch-gray-200 bg-white/95 backdrop-blur-md shadow-lg ${className}`}
+      className={`absolute z-50 mt-2 w-full rounded-lg border border-oklch-gray-200 bg-card  shadow-none ${className}`}
       style={{ maxHeight: '400px', overflowY: 'auto' }}
     >
       {/* Loading indicator */}

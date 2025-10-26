@@ -130,7 +130,7 @@ export function CognitiveLoadIndicator({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-white/80 backdrop-blur-sm border border-white/30 ${className}`}
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-card  border border-border ${className}`}
       >
         <Brain className="size-4 text-muted-foreground animate-pulse" />
         <span className={`${typography.body.small} text-muted-foreground`}>Loading...</span>
@@ -148,7 +148,7 @@ export function CognitiveLoadIndicator({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3, ease: [0, 0, 0.2, 1] }}
         whileHover={{ scale: 1.02, transition: { duration: 0.15 } }}
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg border backdrop-blur-sm ${className}`}
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg border  ${className}`}
         style={{
           backgroundColor: config.bgColor,
           borderColor: config.color,
@@ -195,7 +195,7 @@ export function CognitiveLoadIndicator({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: [0, 0, 0.2, 1] }}
-      className={`bg-white/80 backdrop-blur-md border border-white/30 shadow-lg p-6 ${className}`}
+      className={`bg-card  border border-border shadow-none p-6 ${className}`}
       style={{ borderRadius: borderRadius.xl }}
     >
       {/* Header */}

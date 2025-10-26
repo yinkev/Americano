@@ -589,7 +589,7 @@ export function IntelligentBreakNotification({
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 100 }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed top-4 right-4 z-50 text-white p-4 shadow-lg max-w-sm"
+              className="fixed top-4 right-4 z-50 text-white p-4 shadow-none max-w-sm"
               style={{
                 backgroundColor: colors.alert,
                 borderRadius: borderRadius.lg,

@@ -93,7 +93,7 @@ export function PDFViewer({ lectureId, fileName }: PDFViewerProps) {
     <TooltipProvider>
       <div className="flex flex-col h-full">
         {/* Enhanced Controls Toolbar */}
-        <div className="flex items-center gap-4 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center gap-4 p-4 border-b bg-background/95  supports-[backdrop-filter]:bg-card">
           {/* Page Navigation */}
           <div className="flex items-center gap-2">
             <Tooltip>
@@ -199,7 +199,7 @@ export function PDFViewer({ lectureId, fileName }: PDFViewerProps) {
         </div>
 
         {/* PDF Document */}
-        <div className="flex-1 overflow-auto bg-muted/20 p-4">
+        <div className="flex-1 overflow-auto bg-card p-4">
           <div className="flex justify-center">
             <Document
               file={pdfUrl}
@@ -221,7 +221,7 @@ export function PDFViewer({ lectureId, fileName }: PDFViewerProps) {
                 rotate={rotation}
                 renderTextLayer={true}
                 renderAnnotationLayer={true}
-                className="shadow-lg"
+                className="shadow-none"
               />
             </Document>
           </div>

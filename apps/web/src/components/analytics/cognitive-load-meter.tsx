@@ -98,7 +98,7 @@ export function CognitiveLoadMeter({
   const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus
 
   return (
-    <Card className={`bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all ${className}`}>
+    <Card className={`bg-card  border-border shadow-none hover:shadow-none transition-all ${className}`}>
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
           <h3 className="font-heading font-semibold text-foreground text-[16px]">Cognitive Load</h3>
@@ -177,7 +177,7 @@ export function CognitiveLoadMeter({
 
       {/* Animated linear progress bar with OKLCH gradient (zone-based colors, no CSS gradients) */}
       <div className="mb-4">
-        <div className="w-full h-3 bg-muted/30 rounded-full overflow-hidden relative">
+        <div className="w-full h-3 bg-card rounded-full overflow-hidden relative">
           {/* Multi-segment progress bar using solid OKLCH colors */}
           <div className="absolute inset-0 flex">
             {Object.entries(LOAD_ZONES).map(([zoneName, zoneData]) => {

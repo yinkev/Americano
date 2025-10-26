@@ -165,7 +165,7 @@ export function ConflictAnalyticsDashboard({
         <TabsContent value="overview" className="space-y-4 mt-4">
           <div className="grid gap-4 lg:grid-cols-2">
             {/* Status Distribution Pie Chart */}
-            <Card className="p-4 bg-white/80 backdrop-blur-md border-border">
+            <Card className="p-4 bg-card  border-border">
               <h3 className="text-sm font-semibold mb-4">Conflicts by Status</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -188,7 +188,7 @@ export function ConflictAnalyticsDashboard({
             </Card>
 
             {/* Severity Distribution Bar Chart */}
-            <Card className="p-4 bg-white/80 backdrop-blur-md border-border">
+            <Card className="p-4 bg-card  border-border">
               <h3 className="text-sm font-semibold mb-4">Conflicts by Severity</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data.bySeverity}>
@@ -217,7 +217,7 @@ export function ConflictAnalyticsDashboard({
         {/* Trends Tab */}
         <TabsContent value="trends" className="space-y-4 mt-4">
           {/* Resolution Rate Over Time */}
-          <Card className="p-4 bg-white/80 backdrop-blur-md border-border">
+          <Card className="p-4 bg-card  border-border">
             <h3 className="text-sm font-semibold mb-4">Resolution Rate Over Time</h3>
             <ResponsiveContainer width="100%" height={350}>
               <LineChart data={data.resolutionTrend}>
@@ -263,7 +263,7 @@ export function ConflictAnalyticsDashboard({
           </Card>
 
           {/* Top Conflicting Concepts */}
-          <Card className="p-4 bg-white/80 backdrop-blur-md border-border">
+          <Card className="p-4 bg-card  border-border">
             <h3 className="text-sm font-semibold mb-4">Top Conflicting Concepts</h3>
             <div className="space-y-3">
               {data.topConcepts.slice(0, 10).map((concept, index) => (
@@ -276,7 +276,7 @@ export function ConflictAnalyticsDashboard({
         {/* Sources Tab */}
         <TabsContent value="sources" className="space-y-4 mt-4">
           {/* Source Credibility Comparison */}
-          <Card className="p-4 bg-white/80 backdrop-blur-md border-border">
+          <Card className="p-4 bg-card  border-border">
             <h3 className="text-sm font-semibold mb-4">Source Credibility Comparison</h3>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={data.sourceCredibility} layout="horizontal">
@@ -352,7 +352,7 @@ function SummaryCard({
   color: string
 }) {
   return (
-    <Card className="p-4 bg-white/80 backdrop-blur-md border-border">
+    <Card className="p-4 bg-card  border-border">
       <div className="flex items-center justify-between mb-2">
         <p className="text-xs text-muted-foreground">{title}</p>
         <div style={{ color }}>{icon}</div>
@@ -418,7 +418,7 @@ function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload || !payload.length) return null
 
   return (
-    <div className="rounded-lg border bg-white/95 backdrop-blur-md p-3 shadow-lg">
+    <div className="rounded-lg border bg-card  p-3 shadow-none">
       {label && <p className="text-sm font-semibold mb-1">{label}</p>}
       {payload.map((entry: any, index: number) => (
         <div key={index} className="flex items-center gap-2">

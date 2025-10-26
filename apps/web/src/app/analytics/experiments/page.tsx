@@ -169,7 +169,7 @@ export default function PersonalizationExperimentsDashboardPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Active Experiments */}
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
+          <Card className="bg-card  border-border shadow-none rounded-xl hover:shadow-none transition-all">
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
                 <div
@@ -199,7 +199,7 @@ export default function PersonalizationExperimentsDashboardPage() {
           </Card>
 
           {/* Completed Experiments */}
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
+          <Card className="bg-card  border-border shadow-none rounded-xl hover:shadow-none transition-all">
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
                 <div
@@ -231,7 +231,7 @@ export default function PersonalizationExperimentsDashboardPage() {
           </Card>
 
           {/* Total Users */}
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
+          <Card className="bg-card  border-border shadow-none rounded-xl hover:shadow-none transition-all">
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
                 <div
@@ -264,7 +264,7 @@ export default function PersonalizationExperimentsDashboardPage() {
 
       {/* Main Content */}
       {experiments.length === 0 ? (
-        <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+        <Card className="bg-card  border-border shadow-none rounded-xl">
           <CardContent className="p-12 flex flex-col items-center justify-center">
             <FlaskConical className="size-16 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold text-foreground mb-2">
@@ -284,7 +284,7 @@ export default function PersonalizationExperimentsDashboardPage() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Left Column: Experiment List */}
           <div className="xl:col-span-1">
-            <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+            <Card className="bg-card  border-border shadow-none rounded-xl">
               <CardHeader>
                 <CardTitle className="font-heading font-semibold text-[18px]">
                   Experiments
@@ -326,8 +326,8 @@ export default function PersonalizationExperimentsDashboardPage() {
                       key={experiment.id}
                       className={`p-4 rounded-xl border cursor-pointer transition-all ${
                         isSelected
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border hover:border-primary/30 bg-muted/10'
+                          ? 'border-primary bg-card'
+                          : 'border-border hover:border-primary/30 bg-card'
                       }`}
                       onClick={() => setSelectedExperiment(experiment)}
                     >
@@ -383,7 +383,7 @@ export default function PersonalizationExperimentsDashboardPage() {
             {selectedExperiment ? (
               <>
                 {/* Experiment Header */}
-                <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+                <Card className="bg-card  border-border shadow-none rounded-xl">
                   <CardHeader>
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
@@ -408,7 +408,7 @@ export default function PersonalizationExperimentsDashboardPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-muted/20 border border-border">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-card border border-border">
                       <div>
                         <p className="text-xs text-muted-foreground mb-1">Start Date</p>
                         <p className="text-sm font-medium">
@@ -463,7 +463,7 @@ export default function PersonalizationExperimentsDashboardPage() {
 
                 {/* Active Experiment Info */}
                 {selectedExperiment.status === 'active' && (
-                  <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+                  <Card className="bg-card  border-border shadow-none rounded-xl">
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
                         <div
@@ -488,7 +488,7 @@ export default function PersonalizationExperimentsDashboardPage() {
                 )}
               </>
             ) : (
-              <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+              <Card className="bg-card  border-border shadow-none rounded-xl">
                 <CardContent className="p-12 flex flex-col items-center justify-center">
                   <Info className="size-12 text-muted-foreground mb-3" />
                   <p className="text-sm text-muted-foreground">

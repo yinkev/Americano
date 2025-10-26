@@ -170,7 +170,7 @@ export function InterventionFeedbackCard({ intervention, onFeedbackSubmitted, on
   const displayRating = hoverRating || starRating
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className="bg-card  border-border shadow-none">
       <CardHeader className="pb-3">
         <CardTitle className="font-heading text-lg text-foreground flex items-start justify-between gap-3">
           <span>How helpful was this intervention?</span>
@@ -247,7 +247,7 @@ export function InterventionFeedbackCard({ intervention, onFeedbackSubmitted, on
                   ${
                     selectedHelpfulness === option.value
                       ? `border-[${option.color}] bg-[${option.color}]/5`
-                      : 'border-muted bg-muted/30 hover:bg-muted/50'
+                      : 'border-muted bg-card hover:bg-card'
                   }
                 `}
                 onClick={() => setSelectedHelpfulness(option.value)}
@@ -279,7 +279,7 @@ export function InterventionFeedbackCard({ intervention, onFeedbackSubmitted, on
 
         {/* Optional Comments */}
         {(selectedHelpfulness !== null || starRating > 0) && (
-          <div className="space-y-2 animate-in slide-in-from-top-2 duration-200">
+          <div className="space-y-2 animate-in slide-in- duration-200">
             <Label htmlFor="intervention-comments" className="text-sm font-medium text-foreground">
               Tell us more (optional)
             </Label>
@@ -288,7 +288,7 @@ export function InterventionFeedbackCard({ intervention, onFeedbackSubmitted, on
               placeholder="What worked well or could be improved..."
               value={comments}
               onChange={(e) => setComments(e.target.value)}
-              className="min-h-[70px] resize-none bg-white/80 backdrop-blur-sm"
+              className="min-h-[70px] resize-none bg-card "
               maxLength={300}
               aria-label="Additional intervention feedback"
             />

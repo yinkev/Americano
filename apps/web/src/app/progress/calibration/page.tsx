@@ -237,7 +237,7 @@ export default function CalibrationDashboardPage() {
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium bg-white/60 text-gray-700 hover:bg-white/80 shadow-sm transition-colors min-h-[44px]"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium bg-card text-gray-700 hover:bg-card shadow-none transition-colors min-h-[44px]"
           aria-label="Toggle filters"
           aria-expanded={showFilters}
         >
@@ -248,7 +248,7 @@ export default function CalibrationDashboardPage() {
 
       {/* Filters */}
       {showFilters && (
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] mb-6">
+        <Card className="p-6 bg-card  border border-border shadow-none mb-6">
           <h3 className="text-lg font-heading font-bold text-foreground mb-4">Date Range</h3>
           <div className="flex gap-3 flex-wrap">
             {(['7days', '30days', '90days'] as const).map((range) => (
@@ -258,7 +258,7 @@ export default function CalibrationDashboardPage() {
                 className={`px-4 py-2 rounded-xl font-medium transition-colors min-h-[44px] ${
                   dateRange === range
                     ? 'bg-[oklch(0.55_0.22_264)] text-white'
-                    : 'bg-white/60 text-gray-700 hover:bg-white/80'
+                    : 'bg-card text-gray-700 hover:bg-card'
                 }`}
                 aria-pressed={dateRange === range}
               >
@@ -273,7 +273,7 @@ export default function CalibrationDashboardPage() {
       {metrics && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Mean Absolute Error */}
-          <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+          <Card className="p-6 bg-card  border border-border shadow-none">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Calibration Error</span>
@@ -289,7 +289,7 @@ export default function CalibrationDashboardPage() {
           </Card>
 
           {/* Correlation Coefficient with Interpretation */}
-          <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+          <Card className="p-6 bg-card  border border-border shadow-none">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Correlation</span>
@@ -310,7 +310,7 @@ export default function CalibrationDashboardPage() {
 
           {/* Trend */}
           {trendIndicator && (
-            <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+            <Card className="p-6 bg-card  border border-border shadow-none">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Trend</span>
@@ -335,7 +335,7 @@ export default function CalibrationDashboardPage() {
 
       {/* Dual Line Chart: Confidence vs Score Over Time */}
       {trendData.length > 0 && (
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <h2 className="text-xl font-heading font-semibold mb-6">
             Confidence vs. Score Over Time
           </h2>
@@ -386,7 +386,7 @@ export default function CalibrationDashboardPage() {
       )}
 
       {/* Calibration Scatter Plot */}
-      <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="p-6 bg-card  border border-border shadow-none">
         <h2 className="text-xl font-heading font-semibold mb-6">
           Calibration Accuracy
         </h2>
@@ -428,7 +428,7 @@ export default function CalibrationDashboardPage() {
                 if (active && payload && payload.length > 0) {
                   const data = payload[0].payload;
                   return (
-                    <div className="bg-white/95 backdrop-blur-xl border border-white/30 shadow-lg p-3 rounded-lg">
+                    <div className="bg-card  border border-border shadow-none p-3 rounded-lg">
                       <p className="font-semibold text-sm mb-1">{data.name}</p>
                       <p className="text-xs text-muted-foreground">
                         Confidence: {data.x}% | Score: {data.y}%
@@ -504,7 +504,7 @@ export default function CalibrationDashboardPage() {
 
       {/* Category Breakdown Bar Chart */}
       {categoryBreakdown.length > 0 && (
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <h2 className="text-xl font-heading font-semibold mb-6">
             Calibration Category Breakdown
           </h2>
@@ -552,7 +552,7 @@ export default function CalibrationDashboardPage() {
       {/* Overconfident and Underconfident Topics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Overconfident Topics */}
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <div className="flex items-center gap-3 mb-4">
             <ArrowUpCircle className="w-6 h-6" style={{ color: 'oklch(0.65 0.20 25)' }} />
             <h2 className="text-xl font-heading font-semibold">Overconfident Topics</h2>
@@ -591,7 +591,7 @@ export default function CalibrationDashboardPage() {
         </Card>
 
         {/* Underconfident Topics */}
-        <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="p-6 bg-card  border border-border shadow-none">
           <div className="flex items-center gap-3 mb-4">
             <ArrowDownCircle className="w-6 h-6" style={{ color: 'oklch(0.65 0.18 230)' }} />
             <h2 className="text-xl font-heading font-semibold">Underconfident Topics</h2>

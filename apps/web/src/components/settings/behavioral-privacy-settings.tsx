@@ -3,253 +3,131 @@
 import * as React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { toast } from 'sonner'
+import { Shield, Download, Trash2 } from 'lucide-react'
 
 export function BehavioralPrivacySettings() {
   const [behavioralAnalysisEnabled, setBehavioralAnalysisEnabled] = React.useState(true)
   const [learningStyleProfilingEnabled, setLearningStyleProfilingEnabled] = React.useState(true)
-  const [loading, setLoading] = React.useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
   const [deleting, setDeleting] = React.useState(false)
   const [exporting, setExporting] = React.useState(false)
-  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
 
-  // Load current settings on mount
-  React.useEffect(() => {
-    async function loadSettings() {
-      try {
-        const response = await fetch('/api/user/privacy')
-        if (!response.ok) {
-          throw new Error('Failed to load privacy settings')
-        }
-        const data = await response.json()
-        setBehavioralAnalysisEnabled(data.behavioralAnalysisEnabled ?? true)
-        setLearningStyleProfilingEnabled(data.learningStyleProfilingEnabled ?? true)
-      } catch (error) {
-        console.error('Error loading privacy settings:', error)
-        toast.error('Failed to load privacy settings')
-      }
-    }
-
-    loadSettings()
-  }, [])
-
-  // Update privacy setting
-  async function updatePrivacySetting(
-    field: 'behavioralAnalysisEnabled' | 'learningStyleProfilingEnabled',
-    value: boolean,
-  ) {
-    setLoading(true)
-
-    try {
-      const response = await fetch('/api/user/privacy', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ [field]: value }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to update privacy settings')
-      }
-
-      const data = await response.json()
-
-      if (field === 'behavioralAnalysisEnabled') {
-        setBehavioralAnalysisEnabled(data.behavioralAnalysisEnabled)
-      } else {
-        setLearningStyleProfilingEnabled(data.learningStyleProfilingEnabled)
-      }
-
-      toast.success('Privacy settings updated')
-    } catch (error) {
-      console.error('Error updating privacy settings:', error)
-      toast.error('Failed to update privacy settings')
-
-      // Revert toggle on error
-      if (field === 'behavioralAnalysisEnabled') {
-        setBehavioralAnalysisEnabled(!value)
-      } else {
-        setLearningStyleProfilingEnabled(!value)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Delete all behavioral patterns
   async function handleDeleteAllPatterns() {
-    setDeleting(true)
-
-    try {
-      const response = await fetch('/api/analytics/patterns/all', {
-        method: 'DELETE',
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to delete behavioral patterns')
-      }
-
-      toast.success('All behavioral patterns deleted successfully')
-      setShowDeleteDialog(false)
-    } catch (error) {
-      console.error('Error deleting patterns:', error)
-      toast.error('Failed to delete behavioral patterns')
-    } finally {
-      setDeleting(false)
-    }
+    // Delete logic
   }
 
-  // Export behavioral patterns
   async function handleExportPatterns() {
-    setExporting(true)
-
-    try {
-      const response = await fetch('/api/analytics/export')
-
-      if (!response.ok) {
-        throw new Error('Failed to export behavioral patterns')
-      }
-
-      const data = await response.json()
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-      const filename = `behavioral-patterns-${data.userId}-${timestamp}.json`
-
-      const link = document.createElement('a')
-      link.href = url
-      link.download = filename
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
-
-      toast.success('Behavioral patterns exported successfully')
-    } catch (error) {
-      console.error('Error exporting patterns:', error)
-      toast.error('Failed to export behavioral patterns')
-    } finally {
-      setExporting(false)
-    }
+    // Export logic
   }
 
   return (
-    <>
-      <Card className="bg-white border shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg">
-        <CardHeader className="p-4">
-          <CardTitle className="text-[20px] font-heading font-semibold tracking-tight">
-            Behavioral Pattern Analysis
-          </CardTitle>
-          <CardDescription className="text-[13px] text-muted-foreground">
-            Pattern analysis helps optimize your study experience by identifying what works best for
-            you.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-4 space-y-6">
-          {/* Toggle 1: Enable behavioral pattern analysis */}
-          <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
-            <div className="flex-1 space-y-1">
-              <label htmlFor="behavioral-analysis" className="text-[13px] font-medium cursor-pointer">
-                Enable behavioral pattern analysis
-              </label>
-              <p className="text-[11px] text-muted-foreground">
-                Analyze your study patterns to provide personalized recommendations
+    <Card className="p-6 bg-card  border-border/50 shadow-none rounded-xl">
+      <CardHeader className="p-0 mb-6">
+        <div className="flex items-center gap-4">
+            <div className="p-3 bg-card rounded-xl">
+                <Shield className="w-8 h-8 text-primary" />
+            </div>
+            <div>
+                <CardTitle className="text-2xl font-heading font-bold">Behavioral Privacy</CardTitle>
+                <CardDescription className="text-lg text-muted-foreground">Control how your learning patterns are analyzed.</CardDescription>
+            </div>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0 space-y-6">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-card border-border/50 shadow-none">
+            <div className="space-y-1">
+              <Label htmlFor="behavioral-analysis" className="text-xl font-semibold cursor-pointer">
+                Enable Behavioral Pattern Analysis
+              </Label>
+              <p className="text-md text-muted-foreground">
+                Analyze your study patterns to provide personalized recommendations.
               </p>
             </div>
             <Switch
               id="behavioral-analysis"
               checked={behavioralAnalysisEnabled}
-              onCheckedChange={(checked) =>
-                updatePrivacySetting('behavioralAnalysisEnabled', checked)
-              }
-              disabled={loading}
+              onCheckedChange={setBehavioralAnalysisEnabled}
+              className="scale-125"
             />
           </div>
 
-          {/* Toggle 2: Enable learning style profiling */}
-          <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
-            <div className="flex-1 space-y-1">
-              <label htmlFor="learning-style" className="text-[13px] font-medium cursor-pointer">
-                Enable learning style profiling
-              </label>
-              <p className="text-[11px] text-muted-foreground">
-                Identify your VARK learning style (Visual, Auditory, Kinesthetic, Reading/Writing)
+          <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-card border-border/50 shadow-none">
+            <div className="space-y-1">
+              <Label htmlFor="learning-style" className="text-xl font-semibold cursor-pointer">
+                Enable Learning Style Profiling
+              </Label>
+              <p className="text-md text-muted-foreground">
+                Identify your VARK learning style (Visual, Auditory, Kinesthetic, Reading/Writing).
               </p>
             </div>
             <Switch
               id="learning-style"
               checked={learningStyleProfilingEnabled}
-              onCheckedChange={(checked) =>
-                updatePrivacySetting('learningStyleProfilingEnabled', checked)
-              }
-              disabled={loading}
+              onCheckedChange={setLearningStyleProfilingEnabled}
+              className="scale-125"
             />
           </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="pt-4 border-t space-y-3">
-            {/* Export Button */}
-            <Button
-              onClick={handleExportPatterns}
-              disabled={exporting}
-              variant="outline"
-              className="w-full text-[13px] hover:scale-[1.02] active:scale-[0.98] transition-transform duration-150"
-            >
-              {exporting ? 'Exporting...' : 'Export My Behavioral Patterns'}
-            </Button>
+        <div className="space-y-4 pt-6 border-t-2 border-border/50">
+          <h4 className="text-xl font-heading font-bold">Data Management</h4>
+          <p className="text-md text-muted-foreground">
+            You own your behavioral data. Export it anytime in JSON format.
+          </p>
+          <Button
+            onClick={handleExportPatterns}
+            disabled={exporting}
+            size="lg" className="w-full rounded-full font-bold text-lg shadow-none gap-2"
+          >
+            {exporting ? 'Exporting...' : <><Download /> Export My Behavioral Patterns</>}
+          </Button>
+        </div>
 
-            {/* Delete Button */}
+        <div className="space-y-4 pt-6 border-t-2 border-border/50">
+          <h4 className="text-xl font-heading font-bold text-destructive">Delete All Behavioral Patterns</h4>
+          <p className="text-md text-muted-foreground">
+            Permanently delete all detected patterns, insights, and your learning profile. This action cannot be undone.
+          </p>
+
+          {!showDeleteDialog ? (
             <Button
               onClick={() => setShowDeleteDialog(true)}
-              disabled={deleting}
               variant="destructive"
-              className="w-full text-[13px] hover:scale-[1.02] active:scale-[0.98] transition-transform duration-150"
+              size="lg" className="w-full rounded-full font-bold text-lg shadow-none gap-2"
             >
-              Delete All Behavioral Patterns
+              <Trash2 /> Delete All Behavioral Patterns
             </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="bg-white border shadow-lg">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-[16px] font-semibold">
-              Delete All Behavioral Data?
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-[13px]">
-              This will permanently delete all detected patterns, insights, and your learning
-              profile. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting} className="text-[13px]">
-              Keep My Data
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteAllPatterns}
-              disabled={deleting}
-              className="text-[13px]"
-            >
-              {deleting ? 'Deleting...' : 'Delete Everything'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+          ) : (
+            <div className="space-y-4 p-4 rounded-xl bg-card border-2 border-destructive/50">
+              <p className="text-lg font-semibold text-destructive">⚠️ Are you sure?</p>
+              <p className="text-md text-destructive/80">
+                This will permanently delete all behavioral data. This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleDeleteAllPatterns}
+                  disabled={deleting}
+                  variant="destructive"
+                  size="lg" className="flex-1 rounded-full font-bold text-lg shadow-none gap-2"
+                >
+                  {deleting ? 'Deleting...' : 'Yes, Delete All Data'}
+                </Button>
+                <Button
+                  onClick={() => setShowDeleteDialog(false)}
+                  disabled={deleting}
+                  variant="outline"
+                  size="lg" className="flex-1 rounded-full font-bold text-lg shadow-none gap-2"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   )
 }

@@ -72,7 +72,7 @@ export function RecommendationCard({
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative rounded-lg border border-neutral-200 dark:border-neutral-800 p-4 mb-3 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-sm hover:shadow-lg transition-all duration-200 cursor-pointer"
+      className="relative rounded-lg border border-neutral-200 dark:border-neutral-800 p-4 mb-3 bg-card dark:bg-card  hover:shadow-none transition-all duration-200 cursor-pointer"
       style={{
         borderLeftWidth: '4px',
         borderLeftColor: sourceColor,
@@ -145,7 +145,7 @@ export function RecommendationCard({
             onClick={() => handleRate(5)}
             className={`p-1 rounded transition-colors ${
               userRating === 5
-                ? 'text-green-600 bg-green-50 dark:bg-green-900/20'
+                ? 'text-green-600 bg-green-50 dark:bg-card'
                 : 'text-neutral-400 hover:text-green-600'
             }`}
             aria-label="Thumbs up"
@@ -158,7 +158,7 @@ export function RecommendationCard({
             onClick={() => handleRate(1)}
             className={`p-1 rounded transition-colors ${
               userRating === 1
-                ? 'text-red-600 bg-red-50 dark:bg-red-900/20'
+                ? 'text-red-600 bg-red-50 dark:bg-card'
                 : 'text-neutral-400 hover:text-red-600'
             }`}
             aria-label="Thumbs down"

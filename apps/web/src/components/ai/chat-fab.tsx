@@ -30,10 +30,10 @@ export function ChatFAB() {
       {/* Floating Action Button - Bottom-right desktop, bottom-center mobile */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed z-50 rounded-full shadow-lg transition-all duration-200
+        className={`fixed z-50 rounded-full shadow-none transition-all duration-200
                    ${isOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}
                    bg-[oklch(0.7_0.15_230)] text-white
-                   hover:bg-[oklch(0.65_0.15_230)] hover:shadow-xl hover:scale-110
+                   hover:bg-[oklch(0.65_0.15_230)] hover:shadow-none hover:scale-110
                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white
                    bottom-6 right-6 md:bottom-8 md:right-8 lg:bottom-10 lg:right-10
                    size-14 md:size-16`}
@@ -50,13 +50,13 @@ export function ChatFAB() {
                    bottom-6 right-6 md:bottom-8 md:right-8 lg:bottom-10 lg:right-10
                    ${isMinimized ? 'h-16' : 'h-[500px]'}
                    w-[calc(100vw-3rem)] md:w-96
-                   rounded-2xl bg-white/95 backdrop-blur-xl border border-white/40 shadow-[0_12px_48px_rgba(31,38,135,0.2)]
+                   rounded-xl bg-muted shadow-none
                    flex flex-col overflow-hidden`}
         role="dialog"
         aria-label="AI Chat Assistant"
       >
         {/* Chat Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[oklch(0.922_0_0)] bg-white/60">
+        <div className="flex items-center justify-between p-4 bg-muted">
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-2">
               <MessageCircle className="size-5 text-[oklch(0.7_0.15_230)]" />
@@ -74,7 +74,7 @@ export function ChatFAB() {
             <button
               onClick={() => setIsMinimized(!isMinimized)}
               className="size-9 flex items-center justify-center rounded-lg
-                         text-[oklch(0.556_0_0)] hover:text-[oklch(0.145_0_0)] hover:bg-white/80
+                         text-[oklch(0.556_0_0)] hover:text-[oklch(0.145_0_0)] hover:bg-card
                          transition-colors duration-200
                          focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[oklch(0.7_0.15_230)]"
               aria-label={isMinimized ? 'Maximize chat' : 'Minimize chat'}
@@ -107,7 +107,7 @@ export function ChatFAB() {
                 <div className="flex-shrink-0 size-8 rounded-full bg-[oklch(0.7_0.15_230)]/10 flex items-center justify-center">
                   <MessageCircle className="size-4 text-[oklch(0.7_0.15_230)]" />
                 </div>
-                <div className="flex-1 rounded-lg bg-white/60 backdrop-blur-sm border border-white/40 p-3">
+                <div className="flex-1 rounded-lg bg-card p-3">
                   <p className="text-sm text-[oklch(0.145_0_0)] leading-relaxed">
                     Hi! I'm your AI study assistant. I can help you with:
                   </p>
@@ -124,7 +124,7 @@ export function ChatFAB() {
             </div>
 
             {/* Message Input */}
-            <div className="p-4 border-t border-[oklch(0.922_0_0)] bg-white/60">
+            <div className="p-4 bg-muted">
               <form
                 onSubmit={(e) => {
                   e.preventDefault()
@@ -139,9 +139,9 @@ export function ChatFAB() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Type your message..."
-                  className="flex-1 px-4 py-2 rounded-lg border border-[oklch(0.922_0_0)]
-                             bg-white text-[oklch(0.145_0_0)] placeholder:text-[oklch(0.556_0_0)]
-                             focus:outline-none focus:ring-2 focus:ring-[oklch(0.7_0.15_230)] focus:border-transparent
+                  className="flex-1 px-4 py-2 rounded-lg bg-card border border-transparent
+                             text-foreground placeholder:text-muted-foreground
+                             focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
                              min-h-[44px]"
                   aria-label="Chat message"
                 />
@@ -149,10 +149,8 @@ export function ChatFAB() {
                   type="submit"
                   disabled={!message.trim()}
                   className="size-11 flex items-center justify-center rounded-lg
-                             bg-[oklch(0.7_0.15_230)] text-white
-                             hover:bg-[oklch(0.65_0.15_230)] disabled:opacity-50 disabled:cursor-not-allowed
-                             transition-colors duration-200
-                             focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                             bg-primary text-primary-foreground hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed
+                             transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label="Send message"
                 >
                   <Send className="size-5" />

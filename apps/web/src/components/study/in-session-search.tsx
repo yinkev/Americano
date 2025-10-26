@@ -227,7 +227,7 @@ export function InSessionSearch({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent
-        className="max-w-3xl max-h-[80vh] p-0 bg-white/95 backdrop-blur-md border-white/40"
+        className="max-w-3xl max-h-[80vh] p-0 bg-card  border-border"
         aria-describedby="in-session-search-description"
       >
         <DialogHeader className="px-6 pt-6 pb-4">
@@ -263,7 +263,7 @@ export function InSessionSearch({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="pl-10 bg-white/60 border-white/40"
+                className="pl-10 bg-card border-border"
                 aria-label="Search query"
               />
             </div>
@@ -301,7 +301,7 @@ export function InSessionSearch({
                     variant="outline"
                     size="sm"
                     onClick={() => handleHistoryClick(item.query)}
-                    className="text-xs bg-white/40 hover:bg-white/60 border-white/40"
+                    className="text-xs bg-card hover:bg-card border-border"
                   >
                     {item.query}
                   </Button>
@@ -327,7 +327,7 @@ export function InSessionSearch({
                         size="sm"
                         onClick={() => handleAddToSession(result)}
                         disabled={addingToSession === result.id}
-                        className="bg-primary/90 hover:bg-primary rounded-lg shadow-sm"
+                        className="bg-card hover:bg-primary rounded-lg shadow-none"
                         aria-label={`Add ${result.title} to current session`}
                       >
                         {addingToSession === result.id ? (

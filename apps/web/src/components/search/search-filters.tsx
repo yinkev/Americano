@@ -93,7 +93,7 @@ export function SearchFilters({
 
   return (
     <Card className={cn(
-      "border-white/40 bg-white/80 backdrop-blur-md shadow-lg",
+      "border-border bg-card  shadow-none",
       className
     )}>
       <CardHeader className="pb-4">
@@ -149,7 +149,7 @@ export function SearchFilters({
           </div>
         </div>
 
-        <Separator className="bg-white/40" />
+        <Separator className="bg-card" />
 
         {/* Content Type Filter */}
         <div className="space-y-3">
@@ -174,7 +174,7 @@ export function SearchFilters({
           </div>
         </div>
 
-        <Separator className="bg-white/40" />
+        <Separator className="bg-card" />
 
         {/* Date Range Filter */}
         <div className="space-y-3">
@@ -185,7 +185,7 @@ export function SearchFilters({
                 variant="outline"
                 className={cn(
                   "w-full justify-start text-left font-normal h-10 rounded-xl",
-                  "bg-white/60 hover:bg-white/80 border-white/40",
+                  "bg-card hover:bg-card border-border",
                   !filters.dateRange && "text-muted-foreground"
                 )}
               >
@@ -201,7 +201,7 @@ export function SearchFilters({
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className="w-auto p-0 bg-white/98 backdrop-blur-xl border-white/40"
+              className="w-auto p-0 bg-card  border-border"
               align="start"
             >
               <Calendar
@@ -218,7 +218,7 @@ export function SearchFilters({
                 className="rounded-xl"
               />
               {filters.dateRange && (
-                <div className="p-3 border-t border-white/40">
+                <div className="p-3 border-t border-border">
                   <Button
                     variant="ghost"
                     size="sm"

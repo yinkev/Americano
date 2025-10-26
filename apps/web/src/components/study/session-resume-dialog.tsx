@@ -113,7 +113,7 @@ export function SessionResumeDialog({
         <div className="space-y-6 py-4">
           {/* Session Context Preview */}
           <div
-            className="rounded-xl p-4 backdrop-blur-md space-y-3"
+            className="rounded-xl p-4  space-y-3"
             style={{
               background: 'oklch(0.98 0.01 250 / 0.9)',
               border: '1px solid oklch(0.9 0.01 250)',
@@ -176,7 +176,7 @@ export function SessionResumeDialog({
           {/* Timeout Warning */}
           {hasTimeout && (
             <div
-              className="rounded-xl p-4 backdrop-blur-md flex items-start gap-3"
+              className="rounded-xl p-4  flex items-start gap-3"
               style={{
                 background: 'oklch(0.95 0.05 80 / 0.3)',
                 border: '1px solid oklch(0.65 0.15 80 / 0.3)',

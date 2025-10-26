@@ -117,6 +117,11 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 - [Story 3.4 Task 6](./implementation/story-3.4-task-6-historical-tracking-ui.md) - Historical tracking UI
 - [Story 3.6 Task 6-7](./implementation/story-3.6-task-6-7-summary.md) - Advanced search features
 
+### AI Agent Guides
+- **[AI Agents Usage Guide](./ai-agents-usage-guide.md)** - Gemini & Codex CLI usage, session management, orchestration
+- **[MCP Setup Guide](./mcp-setup-guide.md)** - Model Context Protocol (context7, chrome-devtools-mcp)
+- [gemini.md](../gemini.md) - Project context file for Gemini AI (required reading)
+
 ### Technical References
 - [Git Workflow Guide](./technical/git-workflow-guide.md) - Branching and PR strategy
 - [Rate Limiting (Deferred)](./technical/rate-limiting-deferred.md) - Rate limit implementation notes

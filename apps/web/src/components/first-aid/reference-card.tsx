@@ -83,8 +83,8 @@ export function FirstAidReferenceCard({
   return (
     <Card
       className={cn(
-        "border-white/40 bg-white/80 backdrop-blur-md",
-        "hover:bg-white/95 hover:shadow-lg transition-all duration-200",
+        "border-border bg-card ",
+        "hover:bg-card hover:shadow-none transition-all duration-200",
         "group cursor-pointer",
         className
       )}
@@ -110,7 +110,7 @@ export function FirstAidReferenceCard({
               {/* Source Badge */}
               <Badge
                 variant="outline"
-                className="text-xs bg-blue-500/10 text-blue-700 border-blue-500/20"
+                className="text-xs bg-card text-blue-700 border-blue-500/20"
               >
                 First Aid
               </Badge>
@@ -180,7 +180,7 @@ export function FirstAidReferenceCard({
                 <Badge
                   key={index}
                   variant="outline"
-                  className="text-xs py-0.5 px-2 bg-white/60"
+                  className="text-xs py-0.5 px-2 bg-card"
                 >
                   {concept}
                 </Badge>
@@ -188,7 +188,7 @@ export function FirstAidReferenceCard({
               {relatedConcepts.length > 3 && (
                 <Badge
                   variant="outline"
-                  className="text-xs py-0.5 px-2 bg-white/60 text-muted-foreground"
+                  className="text-xs py-0.5 px-2 bg-card text-muted-foreground"
                   aria-label={`${relatedConcepts.length - 3} more concepts`}
                 >
                   +{relatedConcepts.length - 3} more
@@ -211,7 +211,7 @@ export function FirstAidReferenceCard({
           <Button
             variant="ghost"
             size="sm"
-            className="ml-auto h-8 px-3 text-xs group-hover:bg-white/60"
+            className="ml-auto h-8 px-3 text-xs group-hover:bg-card"
             aria-label={`View ${title} in full`}
           >
             View guideline
@@ -230,31 +230,31 @@ export function FirstAidReferenceCardSkeleton({ className }: { className?: strin
   return (
     <Card
       className={cn(
-        "border-white/40 bg-white/80 backdrop-blur-md",
+        "border-border bg-card ",
         className
       )}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 space-y-2">
-            <div className="h-4 w-24 bg-muted/40 rounded animate-pulse" />
-            <div className="h-5 w-48 bg-muted/60 rounded animate-pulse" />
-            <div className="h-3 w-32 bg-muted/40 rounded animate-pulse" />
+            <div className="h-4 w-24 bg-card rounded animate-pulse" />
+            <div className="h-5 w-48 bg-card rounded animate-pulse" />
+            <div className="h-3 w-32 bg-card rounded animate-pulse" />
           </div>
           <div className="space-y-1">
-            <div className="h-3 w-12 bg-muted/60 rounded animate-pulse" />
-            <div className="h-1.5 w-16 bg-muted/40 rounded animate-pulse" />
+            <div className="h-3 w-12 bg-card rounded animate-pulse" />
+            <div className="h-1.5 w-16 bg-card rounded animate-pulse" />
           </div>
         </div>
       </CardHeader>
       <CardContent className="pb-4 space-y-3">
-        <div className="h-10 w-full bg-muted/40 rounded animate-pulse" />
+        <div className="h-10 w-full bg-card rounded animate-pulse" />
         <div className="space-y-2">
-          <div className="h-3 w-24 bg-muted/40 rounded animate-pulse" />
+          <div className="h-3 w-24 bg-card rounded animate-pulse" />
           <div className="flex gap-1.5">
-            <div className="h-6 w-20 bg-muted/40 rounded animate-pulse" />
-            <div className="h-6 w-16 bg-muted/40 rounded animate-pulse" />
-            <div className="h-6 w-24 bg-muted/40 rounded animate-pulse" />
+            <div className="h-6 w-20 bg-card rounded animate-pulse" />
+            <div className="h-6 w-16 bg-card rounded animate-pulse" />
+            <div className="h-6 w-24 bg-card rounded animate-pulse" />
           </div>
         </div>
       </CardContent>

@@ -117,9 +117,9 @@ export function ModelPerformanceMetrics({ isAdmin = false }: Props) {
 
   if (!isAdmin) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  border-border shadow-none">
         <CardContent className="p-6">
-          <Alert className="bg-muted/50 border-border">
+          <Alert className="bg-card border-border">
             <Lock className="size-4" />
             <AlertDescription className="ml-2">
               Admin access required to view model performance metrics
@@ -132,7 +132,7 @@ export function ModelPerformanceMetrics({ isAdmin = false }: Props) {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  border-border shadow-none">
         <CardContent className="p-6 h-96 flex items-center justify-center">
           <p className="text-sm text-muted-foreground">Loading model metrics...</p>
         </CardContent>
@@ -142,7 +142,7 @@ export function ModelPerformanceMetrics({ isAdmin = false }: Props) {
 
   if (!data) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  border-border shadow-none">
         <CardContent className="p-6 h-96 flex items-center justify-center">
           <p className="text-sm text-muted-foreground">Failed to load model metrics</p>
         </CardContent>
@@ -173,7 +173,7 @@ export function ModelPerformanceMetrics({ isAdmin = false }: Props) {
   }))
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className="bg-card  border-border shadow-none">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -258,7 +258,7 @@ export function ModelPerformanceMetrics({ isAdmin = false }: Props) {
           </div>
 
           {/* Calculated Metrics */}
-          <div className="grid grid-cols-3 gap-4 mt-4 p-4 rounded-xl bg-muted/50">
+          <div className="grid grid-cols-3 gap-4 mt-4 p-4 rounded-xl bg-card">
             <div>
               <p className="text-xs text-muted-foreground mb-1">Accuracy</p>
               <p className="text-2xl font-bold text-foreground">{accuracy.toFixed(1)}%</p>
@@ -341,7 +341,7 @@ export function ModelPerformanceMetrics({ isAdmin = false }: Props) {
                     ${
                       test.isWinner
                         ? 'border-[oklch(0.7_0.12_145)] bg-[oklch(0.7_0.12_145)]/10'
-                        : 'border-muted bg-muted/30'
+                        : 'border-muted bg-card'
                     }
                   `}
                 >
@@ -362,7 +362,7 @@ export function ModelPerformanceMetrics({ isAdmin = false }: Props) {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 h-2 bg-muted/30 rounded-full overflow-hidden">
+                    <div className="flex-1 h-2 bg-card rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[oklch(0.7_0.15_230)] transition-all"
                         style={{ width: `${test.accuracy * 100}%` }}

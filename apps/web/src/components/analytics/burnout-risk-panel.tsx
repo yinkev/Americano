@@ -90,7 +90,7 @@ export function BurnoutRiskPanel({
   const sortedFactors = [...contributingFactors].sort((a, b) => b.percentage - a.percentage)
 
   return (
-    <Card className={`bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all ${className}`}>
+    <Card className={`bg-card  border-border shadow-none hover:shadow-none transition-all ${className}`}>
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
           <h3 className="font-heading font-semibold text-foreground text-[16px]">Burnout Risk</h3>
@@ -133,7 +133,7 @@ export function BurnoutRiskPanel({
         <div className="grid grid-cols-2 gap-4">
           <div
             className={`p-4 rounded-lg ${
-              daysSinceLastRest > 7 ? 'bg-destructive/10 border border-destructive/30' : 'bg-muted/30'
+              daysSinceLastRest > 7 ? 'bg-card border border-destructive/30' : 'bg-card'
             }`}
           >
             <div className="flex items-center gap-2 mb-2">
@@ -154,7 +154,7 @@ export function BurnoutRiskPanel({
 
           {/* Recovery progress (if in recovery) */}
           {recoveryProgress !== undefined && (
-            <div className="p-4 rounded-lg bg-success/10 border border-success/30">
+            <div className="p-4 rounded-lg bg-card border border-success/30">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingDown className="size-4 text-success" />
                 <span className="text-[11px] font-medium text-muted-foreground">Recovery Progress</span>
@@ -181,7 +181,7 @@ export function BurnoutRiskPanel({
                 </div>
 
                 {/* Progress bar */}
-                <div className="w-full h-2 bg-muted/30 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-card rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-500"
                     style={{
@@ -204,7 +204,7 @@ export function BurnoutRiskPanel({
             {recommendations.map((recommendation, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 p-3 rounded-lg bg-muted/40 hover:bg-muted/60 transition-colors"
+                className="flex items-start gap-3 p-3 rounded-lg bg-card hover:bg-card transition-colors"
               >
                 <div
                   className="shrink-0 size-5 rounded-full flex items-center justify-center text-[11px] font-bold mt-0.5"
@@ -241,7 +241,7 @@ export function BurnoutRiskPanel({
                   console.log('Reschedule Session action triggered')
                 }}
                 variant="outline"
-                className="font-semibold hover:bg-white/50 transition-all"
+                className="font-semibold hover:bg-card transition-all"
                 style={{
                   borderColor: config.color,
                   color: config.color,
@@ -276,7 +276,7 @@ export function BurnoutRiskPanel({
                 console.log('View detailed analytics')
               }}
               variant="ghost"
-              className="w-full font-medium text-[13px] hover:bg-muted/60"
+              className="w-full font-medium text-[13px] hover:bg-card"
             >
               View Detailed Analytics
             </Button>

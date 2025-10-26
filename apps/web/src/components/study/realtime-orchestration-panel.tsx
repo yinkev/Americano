@@ -182,7 +182,7 @@ export function RealtimeOrchestrationPanel({
 
   if (loading) {
     return (
-      <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="rounded-xl bg-card  border border-border shadow-none">
         <CardContent className="p-6">
           <div className="flex items-center gap-2">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
@@ -200,7 +200,7 @@ export function RealtimeOrchestrationPanel({
   if (compact) {
     // Compact version for minimal UI
     return (
-      <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="rounded-xl bg-card  border border-border shadow-none">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -239,7 +239,7 @@ export function RealtimeOrchestrationPanel({
   return (
     <div className="space-y-4">
       {/* Session Timeline Header */}
-      <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="rounded-xl bg-card  border border-border shadow-none">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Target className="h-5 w-5 text-blue-600" />
@@ -319,7 +319,7 @@ export function RealtimeOrchestrationPanel({
       </Card>
 
       {/* Performance Metrics */}
-      <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="rounded-xl bg-card  border border-border shadow-none">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <BarChart3 className="h-5 w-5 text-purple-600" />
@@ -402,7 +402,7 @@ export function RealtimeOrchestrationPanel({
 
       {/* Orchestration Adaptations */}
       {orchestrationPlan.adaptations && (
-        <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="rounded-xl bg-card  border border-border shadow-none">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
               <Lightbulb className="h-5 w-5 text-yellow-600" />

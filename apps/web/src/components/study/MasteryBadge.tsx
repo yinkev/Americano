@@ -192,7 +192,7 @@ export function MasteryBadge({
             </div>
 
             {/* Mastery Criteria */}
-            <div className="pt-2 border-t border-white/20">
+            <div className="pt-2 border-t border-border">
               <p className="text-sm font-medium mb-2">Criteria Met:</p>
               <ul className="space-y-1 text-xs">
                 {getMasteryCriteria().map((criterion, index) => (
@@ -204,7 +204,7 @@ export function MasteryBadge({
             </div>
 
             {/* Congratulations message */}
-            <div className="pt-2 border-t border-white/20">
+            <div className="pt-2 border-t border-border">
               <p className="text-xs opacity-90">
                 🎉 Congratulations! You&apos;ve demonstrated comprehensive mastery of
                 this concept at the {complexityLevel.toLowerCase()} level.
@@ -215,7 +215,7 @@ export function MasteryBadge({
             </div>
 
             {/* Date Details */}
-            <div className="pt-2 border-t border-white/20">
+            <div className="pt-2 border-t border-border">
               <p className="text-xs opacity-70">
                 Verified on {verifiedAt.toLocaleDateString('en-US', {
                   weekday: 'long',

@@ -88,7 +88,7 @@ export function ExperimentVariantComparison({
       : '0.0'
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
+    <Card className="bg-card  border-border shadow-none rounded-xl hover:shadow-none transition-all">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -154,7 +154,7 @@ export function ExperimentVariantComparison({
             className={`p-4 rounded-xl border transition-all ${
               statistical.winningVariant === 'A'
                 ? 'border-[oklch(0.7_0.15_145)] bg-[oklch(0.7_0.15_145)]/5'
-                : 'border-border bg-muted/10'
+                : 'border-border bg-card'
             }`}
           >
             <div className="flex items-center justify-between mb-4">
@@ -229,7 +229,7 @@ export function ExperimentVariantComparison({
             className={`p-4 rounded-xl border transition-all ${
               statistical.winningVariant === 'B'
                 ? 'border-[oklch(0.7_0.15_145)] bg-[oklch(0.7_0.15_145)]/5'
-                : 'border-border bg-muted/10'
+                : 'border-border bg-card'
             }`}
           >
             <div className="flex items-center justify-between mb-4">

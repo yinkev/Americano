@@ -86,7 +86,7 @@ interface EfficiencyMetrics {
  * - 44px minimum touch targets for accessibility
  *
  * **Design System:**
- * - Background: bg-white/95 backdrop-blur-xl
+ * - Background: bg-card 
  * - Colors: OKLCH color space (no gradients)
  * - Fonts: Inter (body), DM Sans (headings)
  * - Touch targets: min-h-[44px]
@@ -219,7 +219,7 @@ export function AdaptiveAssessmentInterface({
 
   if (!currentQuestion) {
     return (
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  shadow-none">
         <CardContent className="flex items-center justify-center min-h-[200px]">
           <p className="text-muted-foreground">Loading question...</p>
         </CardContent>
@@ -232,7 +232,7 @@ export function AdaptiveAssessmentInterface({
       {/* Difficulty Adjustment Notification */}
       {difficultyAdjustment && (
         <div
-          className="flex items-center gap-3 p-4 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-safe:duration-300 motion-reduce:animate-none"
+          className="flex items-center gap-3 p-4 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-300 motion-reduce:animate-none"
           style={{
             backgroundColor:
               difficultyAdjustment.type === 'increase'
@@ -287,7 +287,7 @@ export function AdaptiveAssessmentInterface({
       )}
 
       {/* Main Assessment Card */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-500 motion-reduce:animate-none">
+      <Card className="bg-card  shadow-none motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-500 motion-reduce:animate-none">
         <CardHeader>
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
@@ -389,7 +389,7 @@ export function AdaptiveAssessmentInterface({
           {/* Efficiency Metrics */}
           {efficiencyMetrics && (
             <div
-              className="p-4 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-4 motion-safe:duration-500 motion-reduce:animate-none"
+              className="p-4 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-500 motion-reduce:animate-none"
               style={{
                 backgroundColor: 'oklch(0.95 0.02 230)',
                 borderColor: 'oklch(0.85 0.04 230)',

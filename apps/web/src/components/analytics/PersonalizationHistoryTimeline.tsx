@@ -155,7 +155,7 @@ export function PersonalizationHistoryTimeline() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+      <Card className="bg-card  border-border shadow-none rounded-xl">
         <CardContent className="p-6 h-96 flex items-center justify-center">
           <p className="text-[13px] text-muted-foreground">Loading history...</p>
         </CardContent>
@@ -164,7 +164,7 @@ export function PersonalizationHistoryTimeline() {
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
+    <Card className="bg-card  border-border shadow-none rounded-xl hover:shadow-none transition-all">
       <CardHeader>
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
@@ -253,7 +253,7 @@ export function PersonalizationHistoryTimeline() {
 
                     {/* Event Card */}
                     <div
-                      className="p-4 rounded-xl border transition-all hover:shadow-md"
+                      className="p-4 rounded-xl border transition-all hover:shadow-none"
                       style={{
                         backgroundColor: `${contextColor}/0.05`,
                         borderColor: `${contextColor}/0.2`,

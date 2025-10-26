@@ -88,7 +88,7 @@ export default function GraphStats({ nodes, edges, className = '' }: GraphStatsP
 
   return (
     <Card
-      className={`backdrop-blur-md border overflow-hidden ${className}`}
+      className={` border overflow-hidden ${className}`}
       style={{
         backgroundColor: 'oklch(1 0 0 / 0.85)',
         borderColor: 'oklch(0.85 0.05 240 / 0.3)',

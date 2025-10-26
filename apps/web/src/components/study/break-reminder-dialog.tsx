@@ -90,7 +90,7 @@ export function BreakReminderDialog({
             <>
               {/* Break Timer */}
               <div
-                className="rounded-xl p-8 backdrop-blur-md text-center space-y-4"
+                className="rounded-xl p-8  text-center space-y-4"
                 style={{
                   background: 'oklch(0.98 0.01 250 / 0.9)',
                   border: '1px solid oklch(0.9 0.01 250)',
@@ -127,7 +127,7 @@ export function BreakReminderDialog({
             <>
               {/* Break Prompt */}
               <div
-                className="rounded-xl p-6 backdrop-blur-md text-center space-y-3"
+                className="rounded-xl p-6  text-center space-y-3"
                 style={{
                   background: 'oklch(0.98 0.01 250 / 0.9)',
                   border: '1px solid oklch(0.9 0.01 250)',

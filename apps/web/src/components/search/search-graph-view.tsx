@@ -422,7 +422,7 @@ export function SearchGraphView({
         minZoom={0.1}
         maxZoom={2}
         attributionPosition="bottom-right"
-        className="bg-white/40 backdrop-blur-sm"
+        className="bg-card "
       >
         {/* Cluster backgrounds */}
         {clusterConfigs.map((cluster) => (
@@ -452,13 +452,13 @@ export function SearchGraphView({
 
         {/* Graph controls */}
         <Controls
-          className="!bg-white/80 backdrop-blur-md !border-gray-200 !shadow-lg"
+          className="!bg-card  !border-gray-200 !shadow-none"
           showInteractive={false}
         />
 
         {/* MiniMap for navigation */}
         <MiniMap
-          className="!bg-white/80 backdrop-blur-md !border-gray-200 !shadow-lg"
+          className="!bg-card  !border-gray-200 !shadow-none"
           nodeColor={(node) => {
             const nodeData = node.data as SearchNodeData
             return nodeData.metadata?.isHighYield
@@ -479,7 +479,7 @@ export function SearchGraphView({
         {/* Custom Controls Panel */}
         <Panel position="top-left" className="space-y-2">
           {/* Graph info */}
-          <div className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg">
+          <div className="bg-card  rounded-lg p-3 shadow-none">
             <div className="text-xs space-y-1">
               <div className="font-semibold text-gray-900">Search Graph</div>
               <div className="text-gray-600">
@@ -493,7 +493,7 @@ export function SearchGraphView({
           </div>
 
           {/* Quick actions */}
-          <div className="bg-white/80 backdrop-blur-md rounded-lg p-2 shadow-lg flex gap-2">
+          <div className="bg-card  rounded-lg p-2 shadow-none flex gap-2">
             <Button
               size="sm"
               variant="ghost"
@@ -533,7 +533,7 @@ export function SearchGraphView({
           </div>
 
           {/* Legend */}
-          <div className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg">
+          <div className="bg-card  rounded-lg p-3 shadow-none">
             <div className="text-xs space-y-2">
               <div className="font-semibold text-gray-900 mb-2">Legend</div>
               <div className="flex items-center gap-2">
@@ -566,7 +566,7 @@ export function SearchGraphView({
 
         {/* Selected node info */}
         {selectedNodeData && (
-          <Panel position="top-right" className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg max-w-xs">
+          <Panel position="top-right" className="bg-card  rounded-lg p-3 shadow-none max-w-xs">
             <div className="text-xs space-y-2">
               <div className="font-semibold text-gray-900">
                 {selectedNodeData.label}
@@ -576,7 +576,7 @@ export function SearchGraphView({
                   {selectedNodeData.type}
                 </Badge>
                 {selectedNodeData.metadata?.isHighYield && (
-                  <Badge className="text-xs bg-yellow-500/10 text-yellow-700 border-yellow-500/20">
+                  <Badge className="text-xs bg-card text-yellow-700 border-yellow-500/20">
                     High-Yield
                   </Badge>
                 )}
@@ -593,7 +593,7 @@ export function SearchGraphView({
                 <Button
                   size="sm"
                   onClick={handleExpandSearch}
-                  className="w-full mt-2 bg-primary/90 hover:bg-primary"
+                  className="w-full mt-2 bg-card hover:bg-primary"
                 >
                   <Plus className="h-3 w-3 mr-1" />
                   Show Related
@@ -604,7 +604,7 @@ export function SearchGraphView({
         )}
 
         {/* Keyboard shortcuts hint */}
-        <Panel position="bottom-left" className="bg-white/80 backdrop-blur-md rounded-lg p-2 shadow-lg">
+        <Panel position="bottom-left" className="bg-card  rounded-lg p-2 shadow-none">
           <div className="text-[10px] text-gray-500 space-y-1">
             <div>↑↓ Navigate • Enter Expand • Esc Deselect</div>
           </div>
@@ -612,7 +612,7 @@ export function SearchGraphView({
 
         {/* Performance warning */}
         {results.length > maxNodes && (
-          <Panel position="bottom-right" className="bg-yellow-500/80 backdrop-blur-md rounded-lg p-2 shadow-lg">
+          <Panel position="bottom-right" className="bg-card  rounded-lg p-2 shadow-none">
             <div className="text-[10px] text-white">
               Showing {maxNodes} of {results.length} results
             </div>

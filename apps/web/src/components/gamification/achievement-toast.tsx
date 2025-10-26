@@ -52,7 +52,7 @@ export function showAchievementToast(achievement: Achievement, onDismiss?: () =>
   toast.custom(
     (_t) => (
       <div
-        className="relative overflow-hidden rounded-lg border shadow-lg"
+        className="relative overflow-hidden rounded-lg border shadow-none"
         style={{
           borderColor: tierColor,
           backgroundColor: 'oklch(0.98 0.01 220)',

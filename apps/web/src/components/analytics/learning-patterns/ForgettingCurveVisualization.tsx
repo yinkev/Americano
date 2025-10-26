@@ -47,7 +47,7 @@ export function ForgettingCurveVisualization({ curve }: ForgettingCurveProps) {
     if (active && payload && payload.length) {
       return (
         <div
-          className="px-3 py-2 rounded-md shadow-lg"
+          className="px-3 py-2 rounded-md shadow-none"
           style={{
             backgroundColor: 'oklch(0.95 0.01 230)',
             border: '1px solid oklch(0.85 0.02 230)',

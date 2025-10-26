@@ -61,7 +61,7 @@ export default function RecommendationsTab() {
   return (
     <div className="space-y-6">
       {/* Daily Insight Card - Prominent at Top */}
-      <Card className="bg-gradient-to-br from-[oklch(0.98_0.02_280)] to-[oklch(0.98_0.02_240)] backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.15)] rounded-2xl border-2 border-[oklch(0.6_0.18_280)]">
+      <Card className="bg-card    shadow-none rounded-xl border-2 border-[oklch(0.6_0.18_280)]">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -118,7 +118,7 @@ export default function RecommendationsTab() {
       </Card>
 
       {/* Weekly Top 3 Recommendations */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-['DM_Sans']">
             <Target className="w-5 h-5 text-[oklch(0.6_0.18_230)]" />
@@ -149,7 +149,7 @@ export default function RecommendationsTab() {
       </Card>
 
       {/* Intervention Suggestions */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-['DM_Sans']">
             <Brain className="w-5 h-5 text-[oklch(0.6_0.18_280)]" />
@@ -175,7 +175,7 @@ export default function RecommendationsTab() {
       </Card>
 
       {/* Study Strategy Insights */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-['DM_Sans']">
             <Lightbulb className="w-5 h-5 text-[oklch(0.75_0.12_85)]" />
@@ -303,7 +303,7 @@ function WeeklyRecommendationCard({
   ];
 
   return (
-    <div className="p-4 bg-[oklch(0.99_0.01_240)] rounded-xl border border-[oklch(0.9_0.02_240)] hover:shadow-md transition-shadow">
+    <div className="p-4 bg-[oklch(0.99_0.01_240)] rounded-xl border border-[oklch(0.9_0.02_240)] hover:shadow-none transition-shadow-none">
       <div className="flex items-start gap-4">
         {/* Rank Badge */}
         <div
@@ -506,7 +506,7 @@ function RecommendationsSkeleton() {
   return (
     <div className="space-y-6">
       {/* Daily Insight Skeleton */}
-      <Card className="animate-pulse bg-white/95 backdrop-blur-xl rounded-2xl border-0 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="animate-pulse bg-card  rounded-xl border-0 shadow-none">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="h-6 w-48 bg-[oklch(0.9_0.05_240)] rounded" />
@@ -524,7 +524,7 @@ function RecommendationsSkeleton() {
       </Card>
 
       {/* Weekly Top 3 Skeleton */}
-      <Card className="animate-pulse bg-white/95 backdrop-blur-xl rounded-2xl border-0 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="animate-pulse bg-card  rounded-xl border-0 shadow-none">
         <CardHeader>
           <div className="h-6 w-56 bg-[oklch(0.9_0.05_240)] rounded" />
         </CardHeader>
@@ -536,7 +536,7 @@ function RecommendationsSkeleton() {
       </Card>
 
       {/* Interventions Skeleton */}
-      <Card className="animate-pulse bg-white/95 backdrop-blur-xl rounded-2xl border-0 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="animate-pulse bg-card  rounded-xl border-0 shadow-none">
         <CardHeader>
           <div className="h-6 w-64 bg-[oklch(0.9_0.05_240)] rounded" />
         </CardHeader>

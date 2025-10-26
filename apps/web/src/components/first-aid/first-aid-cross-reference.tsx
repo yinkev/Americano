@@ -98,7 +98,7 @@ export function FirstAidCrossReference({
 
   if (isLoading) {
     return (
-      <Card className={cn('bg-white/80 backdrop-blur-md border-border/50', className)}>
+      <Card className={cn('bg-card  border-border/50', className)}>
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" />
@@ -116,7 +116,7 @@ export function FirstAidCrossReference({
 
   if (!references || references.length === 0) {
     return (
-      <Card className={cn('bg-white/80 backdrop-blur-md border-border/50', className)}>
+      <Card className={cn('bg-card  border-border/50', className)}>
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" />
@@ -133,7 +133,7 @@ export function FirstAidCrossReference({
   }
 
   return (
-    <Card className={cn('bg-white/80 backdrop-blur-md border-border/50', className)}>
+    <Card className={cn('bg-card  border-border/50', className)}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -178,8 +178,8 @@ export function FirstAidCrossReference({
             key={reference.id}
             className={cn(
               'rounded-lg border transition-all duration-200',
-              'bg-white/60 backdrop-blur-sm border-border/60',
-              'hover:bg-white/80 hover:border-border/80 hover:shadow-sm'
+              'bg-card  border-border/60',
+              'hover:bg-card hover:border-border/80 hover:shadow-none'
             )}
           >
             <div className="p-4">

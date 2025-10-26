@@ -213,7 +213,7 @@ export default function MissionHistoryPage() {
       </div>
 
       {/* Filters and Search */}
-      <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
+      <div className="rounded-xl bg-card  border border-border shadow-none p-6">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search */}
           <div className="flex-1">
@@ -224,7 +224,7 @@ export default function MissionHistoryPage() {
                 placeholder="Search by objective name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white/60 border-white/30 focus:border-[oklch(0.7_0.15_230)] focus:ring-[oklch(0.7_0.15_230)]/20"
+                className="pl-10 bg-card border-border focus:border-[oklch(0.7_0.15_230)] focus:ring-[oklch(0.7_0.15_230)]/20"
               />
             </div>
           </div>
@@ -232,7 +232,7 @@ export default function MissionHistoryPage() {
           {/* Status Filter */}
           <div className="w-full lg:w-48">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="bg-white/60 border-white/30">
+              <SelectTrigger className="bg-card border-border">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
@@ -248,7 +248,7 @@ export default function MissionHistoryPage() {
           {/* Date Range Filter */}
           <div className="w-full lg:w-48">
             <Select value={dateRange} onValueChange={setDateRange}>
-              <SelectTrigger className="bg-white/60 border-white/30">
+              <SelectTrigger className="bg-card border-border">
                 <SelectValue placeholder="Date range" />
               </SelectTrigger>
               <SelectContent>
@@ -270,7 +270,7 @@ export default function MissionHistoryPage() {
                 setSortOrder(order)
               }}
             >
-              <SelectTrigger className="bg-white/60 border-white/30">
+              <SelectTrigger className="bg-card border-border">
                 <div className="flex items-center gap-2">
                   <ArrowUpDown className="size-4" />
                   <SelectValue placeholder="Sort by" />
@@ -294,7 +294,7 @@ export default function MissionHistoryPage() {
             <Button
               variant="outline"
               onClick={clearFilters}
-              className="w-full lg:w-auto border-white/30 hover:bg-white/60"
+              className="w-full lg:w-auto border-border hover:bg-card"
             >
               <X className="size-4 mr-2" />
               Clear
@@ -304,7 +304,7 @@ export default function MissionHistoryPage() {
 
         {/* Selected Missions Actions */}
         {selectedMissions.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-white/30 flex items-center justify-between">
+          <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
             <p className="text-sm text-[oklch(0.556_0_0)]">
               {selectedMissions.length} mission{selectedMissions.length !== 1 ? 's' : ''} selected
             </p>
@@ -326,7 +326,7 @@ export default function MissionHistoryPage() {
           <p className="text-sm text-[oklch(0.556_0_0)]">
             Showing {filteredMissions.length} of {missions.length} missions
           </p>
-          <TabsList className="bg-white/60 border border-white/30">
+          <TabsList className="bg-card border border-border">
             <TabsTrigger value="list" className="gap-2">
               <List className="size-4" />
               List
@@ -341,7 +341,7 @@ export default function MissionHistoryPage() {
         {/* List View */}
         <TabsContent value="list" className="space-y-4">
           {filteredMissions.length === 0 ? (
-            <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-12 text-center">
+            <div className="rounded-xl bg-card  border border-border shadow-none p-12 text-center">
               <Calendar className="size-12 mx-auto mb-4 text-[oklch(0.556_0_0)]" />
               <p className="text-lg font-medium text-[oklch(0.145_0_0)] mb-2">No missions found</p>
               <p className="text-sm text-[oklch(0.556_0_0)]">
@@ -363,10 +363,10 @@ export default function MissionHistoryPage() {
                 <div
                   key={mission.id}
                   id={`mission-${mission.id}`}
-                  className={`rounded-2xl bg-white/80 backdrop-blur-md border transition-all duration-200 ${
+                  className={`rounded-xl bg-card  border transition-all duration-200 ${
                     isSelected
-                      ? 'border-[oklch(0.7_0.15_230)] shadow-[0_8px_32px_rgba(31,38,135,0.2)]'
-                      : 'border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)]'
+                      ? 'border-[oklch(0.7_0.15_230)] shadow-none'
+                      : 'border-border shadow-none hover:shadow-none'
                   } p-6`}
                 >
                   <div className="flex items-start gap-4">

@@ -89,7 +89,7 @@ export function ReflectionPromptDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <DialogContent className="max-w-2xl bg-card  shadow-none">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div

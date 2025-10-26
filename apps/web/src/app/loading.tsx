@@ -3,7 +3,7 @@ export default function Loading() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
       <div className="w-full max-w-6xl space-y-6">
         {/* Skeleton Header */}
-        <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
+        <div className="rounded-xl bg-card  border border-border shadow-none p-6">
           <div className="space-y-4">
             {/* Title skeleton */}
             <div className="h-8 w-64 bg-[oklch(0.97_0_0)] rounded-lg animate-pulse" />
@@ -17,7 +17,7 @@ export default function Loading() {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6"
+              className="rounded-xl bg-card  border border-border shadow-none p-6"
             >
               <div className="space-y-4">
                 {/* Card title */}

@@ -194,7 +194,7 @@ export default function GraphExport({ nodes, edges }: GraphExportProps) {
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isExporting}
-        className="px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2 shadow-lg backdrop-blur-md"
+        className="px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2 shadow-none "
         style={{
           backgroundColor: isExporting ? 'oklch(0.85 0.05 240)' : 'oklch(0.98 0.02 240 / 0.9)',
           color: 'oklch(0.3 0.05 240)',
@@ -259,7 +259,7 @@ export default function GraphExport({ nodes, edges }: GraphExportProps) {
       {/* Dropdown menu */}
       {isOpen && !isExporting && (
         <div
-          className="absolute top-full right-0 mt-2 w-64 rounded-lg shadow-xl overflow-hidden backdrop-blur-md"
+          className="absolute top-full right-0 mt-2 w-64 rounded-lg shadow-none overflow-hidden "
           style={{
             backgroundColor: 'oklch(0.98 0.02 240 / 0.95)',
             borderWidth: '1px',

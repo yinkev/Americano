@@ -231,7 +231,7 @@ export function ConflictDetailModal({
 
             <TabsContent value="comparison" className="mt-4">
               {/* Conflict explanation */}
-              <Alert className="mb-4 bg-white/80 backdrop-blur-md">
+              <Alert className="mb-4 bg-card ">
                 <Lightbulb className="h-4 w-4" />
                 <AlertDescription>{conflict.explanation}</AlertDescription>
               </Alert>
@@ -413,7 +413,7 @@ function AnalysisPanel({ analysis }: { analysis: ConflictAnalysis }) {
   return (
     <div className="space-y-6">
       {/* Medical context */}
-      <div className="rounded-lg border bg-white/80 backdrop-blur-md p-4">
+      <div className="rounded-lg border bg-card  p-4">
         <h3 className="mb-2 font-semibold text-sm">Medical Context</h3>
         <p className="text-sm text-muted-foreground">{analysis.medicalContext}</p>
       </div>
@@ -422,7 +422,7 @@ function AnalysisPanel({ analysis }: { analysis: ConflictAnalysis }) {
       <div className="space-y-3">
         <h3 className="font-semibold text-sm">Key Differences</h3>
         {analysis.keyDifferences.map((diff, index) => (
-          <div key={index} className="rounded-lg border bg-white/80 backdrop-blur-md p-4">
+          <div key={index} className="rounded-lg border bg-card  p-4">
             <div className="mb-2 flex items-center justify-between">
               <span className="font-medium text-sm">{diff.aspect}</span>
               <Badge
@@ -453,7 +453,7 @@ function AnalysisPanel({ analysis }: { analysis: ConflictAnalysis }) {
       </div>
 
       {/* AI resolution suggestion */}
-      <div className="rounded-lg border-2 bg-white/80 backdrop-blur-md p-4"
+      <div className="rounded-lg border-2 bg-card  p-4"
            style={{ borderColor: 'oklch(0.65 0.18 240)' }}>
         <div className="mb-3 flex items-center gap-2">
           <Lightbulb className="h-5 w-5" style={{ color: 'oklch(0.65 0.18 240)' }} />
@@ -479,7 +479,7 @@ function AnalysisPanel({ analysis }: { analysis: ConflictAnalysis }) {
       </div>
 
       {/* Clinical implications */}
-      <Alert className="bg-white/80 backdrop-blur-md">
+      <Alert className="bg-card ">
         <AlertTriangle className="h-4 w-4" />
         <AlertDescription>
           <strong>Clinical Implications:</strong> {analysis.clinicalImplications}
@@ -487,7 +487,7 @@ function AnalysisPanel({ analysis }: { analysis: ConflictAnalysis }) {
       </Alert>
 
       {/* Recommended action */}
-      <div className="rounded-lg border bg-white/80 backdrop-blur-md p-4">
+      <div className="rounded-lg border bg-card  p-4">
         <h3 className="mb-2 font-semibold text-sm">Recommended Action</h3>
         <p className="text-sm text-muted-foreground">{analysis.recommendedAction}</p>
       </div>
@@ -565,7 +565,7 @@ function HistoryPanel({ conflict }: { conflict: Conflict }) {
       </div>
 
       {conflict.resolution && (
-        <div className="rounded-lg border bg-white/80 backdrop-blur-md p-4 mt-4">
+        <div className="rounded-lg border bg-card  p-4 mt-4">
           <h4 className="mb-2 font-semibold text-sm">Resolution Details</h4>
           <p className="text-sm mb-2">{conflict.resolution.reasoning}</p>
           {conflict.resolution.evidence && (

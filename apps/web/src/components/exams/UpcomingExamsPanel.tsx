@@ -52,7 +52,7 @@ function getUrgencyLevel(daysUntil: number): {
       level: 'critical',
       label: 'URGENT',
       color: 'text-rose-700',
-      bgColor: 'bg-rose-50/80',
+      bgColor: 'bg-card',
       borderColor: 'border-rose-200',
     }
   } else if (daysUntil <= 7) {
@@ -60,7 +60,7 @@ function getUrgencyLevel(daysUntil: number): {
       level: 'high',
       label: 'SOON',
       color: 'text-amber-700',
-      bgColor: 'bg-amber-50/80',
+      bgColor: 'bg-card',
       borderColor: 'border-amber-200',
     }
   } else if (daysUntil <= 14) {
@@ -68,7 +68,7 @@ function getUrgencyLevel(daysUntil: number): {
       level: 'medium',
       label: 'UPCOMING',
       color: 'text-blue-700',
-      bgColor: 'bg-blue-50/80',
+      bgColor: 'bg-card',
       borderColor: 'border-blue-200',
     }
   }
@@ -77,7 +77,7 @@ function getUrgencyLevel(daysUntil: number): {
     level: 'low',
     label: 'SCHEDULED',
     color: 'text-emerald-700',
-    bgColor: 'bg-emerald-50/80',
+    bgColor: 'bg-card',
     borderColor: 'border-emerald-200',
   }
 }
@@ -119,9 +119,9 @@ export function UpcomingExamsPanel({
   return (
     <Card
       className={cn(
-        'bg-background border shadow-sm',
+        'bg-background border shadow-none',
         'rounded-lg p-4',
-        'hover:shadow-md transition-shadow duration-300',
+        'hover:shadow-none transition-shadow-none duration-300',
         className,
       )}
     >
@@ -146,7 +146,7 @@ export function UpcomingExamsPanel({
               size="sm"
               className={cn(
                 'rounded-lg gap-2',
-                'bg-clinical text-clinical-foreground hover:bg-clinical/90',
+                'bg-clinical text-clinical-foreground hover:bg-card',
                 'transition-all duration-150 hover:scale-[1.02] active:scale-[0.98]',
               )}
             >
@@ -179,7 +179,7 @@ export function UpcomingExamsPanel({
                 key={exam.id}
                 className={cn(
                   'p-4 border-2 transition-all duration-300',
-                  'hover:shadow-md hover:scale-[1.005]',
+                  'hover:shadow-none hover:scale-[1.005]',
                   urgency.bgColor,
                   urgency.borderColor,
                 )}
@@ -267,7 +267,7 @@ export function UpcomingExamsPanel({
                       size="sm"
                       variant="ghost"
                       onClick={() => onDeleteExam(exam.id)}
-                      className="h-8 w-8 p-0 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all duration-150"
+                      className="h-8 w-8 p-0 rounded-lg hover:bg-card hover:text-destructive transition-all duration-150"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -322,7 +322,7 @@ export function UpcomingExamsCompact({ exams, className }: { exams: Exam[]; clas
               'p-3 rounded-lg border',
               'bg-background',
               urgency.borderColor,
-              'transition-all duration-150 hover:shadow-sm',
+              'transition-all duration-150 hover:shadow-none',
             )}
           >
             <div className="flex items-start justify-between gap-2">

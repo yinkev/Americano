@@ -114,7 +114,7 @@ export function OptimalTimeSlotsPanel({
 
   if (loading) {
     return (
-      <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="rounded-xl bg-card  border border-border shadow-none">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="size-5" aria-hidden="true" />
@@ -135,7 +135,7 @@ export function OptimalTimeSlotsPanel({
   }
 
   return (
-    <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className="rounded-xl bg-card  border border-border shadow-none">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="size-5 text-[oklch(0.7_0.15_230)]" aria-hidden="true" />
@@ -155,7 +155,7 @@ export function OptimalTimeSlotsPanel({
                 ${
                   selectedTimeSlotId === timeSlot.id
                     ? 'border-[oklch(0.7_0.15_230)] bg-[oklch(0.7_0.15_230)]/5'
-                    : 'border-[oklch(0.922_0_0)] hover:border-[oklch(0.922_0_0)]/60 hover:bg-white/40'
+                    : 'border-[oklch(0.922_0_0)] hover:border-[oklch(0.922_0_0)]/60 hover:bg-card'
                 }
               `}
             >
@@ -190,7 +190,7 @@ export function OptimalTimeSlotsPanel({
                           <Info className="size-3 text-[oklch(0.556_0_0)]" aria-hidden="true" />
                         </Button>
                       </HoverCardTrigger>
-                      <HoverCardContent className="w-80 bg-white/98 backdrop-blur-xl border-white/40">
+                      <HoverCardContent className="w-80 bg-card  border-border">
                         <p className="text-sm text-[oklch(0.145_0_0)]">{timeSlot.reasoning}</p>
                       </HoverCardContent>
                     </HoverCard>

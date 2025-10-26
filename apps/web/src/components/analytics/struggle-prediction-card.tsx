@@ -82,7 +82,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] hover:scale-[1.01]">
+    <Card className="bg-card  border-border shadow-none transition-all duration-300 hover:shadow-none hover:scale-[1.01]">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -159,7 +159,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
         {/* Expandable Feature Breakdown */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className={`w-full flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-all duration-200 ${typography.body.small} font-medium text-foreground hover:scale-[1.01] active:scale-[0.99]`}
+          className={`w-full flex items-center justify-between p-3 rounded-lg bg-card hover:bg-muted transition-all duration-200 ${typography.body.small} font-medium text-foreground hover:scale-[1.01] active:scale-[0.99]`}
           aria-expanded={expanded}
           aria-label="Toggle feature breakdown"
         >
@@ -168,7 +168,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
         </button>
 
         {expanded && (
-          <div className="space-y-3 pt-2 animate-in slide-in-from-top-2 duration-200">
+          <div className="space-y-3 pt-2 animate-in slide-in- duration-200">
             <p className="text-xs text-muted-foreground">
               This prediction is based on the following factors:
             </p>
@@ -217,7 +217,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
                 View Intervention
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-white/95 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.15)]">
+            <DialogContent className="bg-card  border-border shadow-none">
               <DialogHeader>
                 <DialogTitle className={`${typography.heading.h2} font-heading`}>
                   Recommended Intervention
@@ -227,7 +227,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
-                <div className="p-4 rounded-lg bg-muted/50 transition-all duration-200 hover:bg-muted/70">
+                <div className="p-4 rounded-lg bg-card transition-all duration-200 hover:bg-card">
                   <h4 className={`${typography.heading.h3} text-foreground mb-2`}>
                     Prerequisite Review
                   </h4>
@@ -236,7 +236,7 @@ export function StrugglePredictionCard({ prediction }: Props) {
                     missions to your queue.
                   </p>
                 </div>
-                <div className="p-4 rounded-lg bg-muted/50 transition-all duration-200 hover:bg-muted/70">
+                <div className="p-4 rounded-lg bg-card transition-all duration-200 hover:bg-card">
                   <h4 className={`${typography.heading.h3} text-foreground mb-2`}>
                     Spaced Repetition Boost
                   </h4>
@@ -296,7 +296,7 @@ function FeatureBar({
       </div>
       <Progress
         value={value}
-        className="h-2 bg-muted/30 transition-all duration-500 group-hover:h-2.5"
+        className="h-2 bg-card transition-all duration-500 group-hover:h-2.5"
       />
       <p className={`${typography.body.tiny} text-muted-foreground`}>{description}</p>
     </div>

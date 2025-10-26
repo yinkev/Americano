@@ -13,7 +13,7 @@ import { Target, TrendingUp, Award, Calendar, ArrowLeft } from 'lucide-react'
 import { MissionCompletionChart } from '@/components/analytics/mission-completion-chart'
 import { PerformanceCorrelationPanel } from '@/components/analytics/performance-correlation-panel'
 import { MissionEffectivenessTable } from '@/components/analytics/mission-effectiveness-table'
-import { RecommendationsPanel } from '@/components/analytics/recommendations-panel'
+import { RecommendationsPanel } from '@/components/analytics/behavioral-insights/recommendations-panel'
 import { InsightsPanel } from '@/components/analytics/insights-panel'
 
 interface MissionStats {
@@ -105,8 +105,8 @@ export default function MissionAnalyticsPage() {
                 onClick={() => setPeriod(p)}
                 className={`px-4 py-2 rounded-xl text-[13px] font-semibold transition-all hover:scale-[1.02] active:scale-[0.98] ${
                   period === p
-                    ? 'bg-[oklch(0.7_0.15_230)] text-white shadow-sm'
-                    : 'bg-white/80 backdrop-blur-md text-[oklch(0.556_0_0)] hover:bg-white hover:shadow-sm border border-white/30'
+                    ? 'bg-[oklch(0.7_0.15_230)] text-white shadow-none'
+                    : 'bg-card  text-[oklch(0.556_0_0)] hover:bg-white hover:shadow-none border border-border'
                 }`}
               >
                 {p === '7d' ? '7 Days' : p === '30d' ? '30 Days' : '90 Days'}
@@ -122,7 +122,7 @@ export default function MissionAnalyticsPage() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 animate-pulse"
+              className="bg-card  rounded-xl shadow-none border border-border p-6 animate-pulse"
             >
               <div className="h-12 bg-[oklch(0.922_0_0)] rounded" />
             </div>
@@ -131,7 +131,7 @@ export default function MissionAnalyticsPage() {
       ) : stats ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           {/* Completion Rate */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
+          <div className="bg-card  rounded-xl shadow-none border border-border p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-2">
                 <Target className="size-5 text-[oklch(0.7_0.15_230)]" />
@@ -147,7 +147,7 @@ export default function MissionAnalyticsPage() {
           </div>
 
           {/* Current Streak */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
+          <div className="bg-card  rounded-xl shadow-none border border-border p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="rounded-full bg-[oklch(0.7_0.15_50)]/10 p-2">
                 <Calendar className="size-5 text-[oklch(0.7_0.15_50)]" />
@@ -163,7 +163,7 @@ export default function MissionAnalyticsPage() {
           </div>
 
           {/* Success Score */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
+          <div className="bg-card  rounded-xl shadow-none border border-border p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="rounded-full bg-[oklch(0.75_0.15_160)]/10 p-2">
                 <Award className="size-5 text-[oklch(0.75_0.15_160)]" />
@@ -182,7 +182,7 @@ export default function MissionAnalyticsPage() {
           </div>
 
           {/* Performance Trend */}
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
+          <div className="bg-card  rounded-xl shadow-none border border-border p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-2">
                 <TrendingUp className="size-5 text-[oklch(0.7_0.15_230)]" />
@@ -198,7 +198,7 @@ export default function MissionAnalyticsPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6 mb-8">
+        <div className="bg-card  rounded-xl shadow-none border border-border p-6 mb-8">
           <p className="text-sm text-[oklch(0.556_0_0)] text-center">No mission data available</p>
         </div>
       )}
@@ -235,7 +235,7 @@ export default function MissionAnalyticsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Link
           href="/missions/history"
-          className="p-6 rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all"
+          className="p-6 rounded-xl bg-card  border border-border shadow-none hover:shadow-none transition-all"
         >
           <h3 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)] mb-2">
             Mission History
@@ -248,7 +248,7 @@ export default function MissionAnalyticsPage() {
 
         <Link
           href="/settings"
-          className="p-6 rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all"
+          className="p-6 rounded-xl bg-card  border border-border shadow-none hover:shadow-none transition-all"
         >
           <h3 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)] mb-2">
             Mission Settings

@@ -191,7 +191,7 @@ export default function PitfallsDashboardPage() {
           </p>
         </div>
 
-        <Card className="p-12 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] text-center">
+        <Card className="p-12 bg-card  border border-border shadow-none text-center">
           <CheckCircle2
             className="w-16 h-16 mx-auto mb-4"
             style={{ color: 'oklch(0.7 0.15 145)' }}
@@ -220,7 +220,7 @@ export default function PitfallsDashboardPage() {
       </div>
 
       {/* Top 5 Failure Patterns Bar Chart */}
-      <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="p-6 bg-card  border border-border shadow-none">
         <h2 className="text-xl font-heading font-semibold mb-6">
           Top 5 Failure Patterns
         </h2>
@@ -260,7 +260,7 @@ export default function PitfallsDashboardPage() {
               content={({ active, payload }) => {
                 if (active && payload && payload.length > 0) {
                   return (
-                    <div className="bg-white/95 backdrop-blur-xl border border-white/30 shadow-lg p-3 rounded-lg max-w-xs">
+                    <div className="bg-card  border border-border shadow-none p-3 rounded-lg max-w-xs">
                       <p className="font-semibold text-sm mb-1">
                         {payload[0].payload.fullDescription}
                       </p>
@@ -294,7 +294,7 @@ export default function PitfallsDashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Pattern Info */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+            <Card className="p-6 bg-card  border border-border shadow-none">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-start gap-3 flex-1">
                   <AlertTriangle
@@ -337,7 +337,7 @@ export default function PitfallsDashboardPage() {
                   {selectedPattern.affectedConcepts.map((concept) => (
                     <div
                       key={concept.id}
-                      className="p-3 rounded-lg border border-border bg-background/50"
+                      className="p-3 rounded-lg border border-border bg-card"
                     >
                       <p className="text-sm font-medium">{concept.name}</p>
                       <p className="text-xs text-muted-foreground">
@@ -428,7 +428,7 @@ export default function PitfallsDashboardPage() {
                 </Button>
 
                 {selectedPattern.status === 'REMEDIATION' && (
-                  <div className="flex items-start gap-2 p-3 rounded-lg bg-white/50">
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-card">
                     <TrendingUp
                       className="w-4 h-4 flex-shrink-0 mt-0.5"
                       style={{ color: 'oklch(0.75 0.12 85)' }}
@@ -440,7 +440,7 @@ export default function PitfallsDashboardPage() {
                 )}
 
                 {selectedPattern.status === 'MASTERY' && (
-                  <div className="flex items-start gap-2 p-3 rounded-lg bg-white/50">
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-card">
                     <CheckCircle2
                       className="w-4 h-4 flex-shrink-0 mt-0.5"
                       style={{ color: 'oklch(0.7 0.15 145)' }}
@@ -457,7 +457,7 @@ export default function PitfallsDashboardPage() {
       )}
 
       {/* Pattern Resolution Tracker */}
-      <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="p-6 bg-card  border border-border shadow-none">
         <h2 className="text-xl font-heading font-semibold mb-6">
           Resolution Progress
         </h2>

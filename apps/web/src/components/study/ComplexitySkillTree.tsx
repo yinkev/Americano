@@ -147,7 +147,7 @@ export function ComplexitySkillTree({
   };
 
   return (
-    <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className="bg-card  shadow-none">
       <CardHeader>
         <CardTitle className="text-xl font-dm-sans">Complexity Progression</CardTitle>
       </CardHeader>
@@ -155,7 +155,7 @@ export function ComplexitySkillTree({
         {/* Unlock Animation Banner */}
         {showUnlockAnimation && (
           <div
-            className="mb-6 p-4 rounded-lg border animate-in fade-in slide-in-from-top-2"
+            className="mb-6 p-4 rounded-lg border animate-in fade-in slide-in-"
             style={{
               backgroundColor: 'oklch(0.95 0.05 145)',
               borderColor: 'oklch(0.85 0.08 145)',
@@ -206,7 +206,7 @@ export function ComplexitySkillTree({
                         'w-full min-h-[100px] p-4 rounded-lg border-2 transition-all duration-200',
                         'focus:outline-none focus:ring-2 focus:ring-offset-2',
                         level.isUnlocked
-                          ? 'cursor-pointer hover:scale-[1.02] hover:shadow-lg'
+                          ? 'cursor-pointer hover:scale-[1.02] hover:shadow-none'
                           : 'cursor-not-allowed opacity-60'
                       )}
                       style={{

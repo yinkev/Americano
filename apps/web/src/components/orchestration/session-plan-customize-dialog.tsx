@@ -125,7 +125,7 @@ export function SessionPlanCustomizeDialog({ open, onOpenChange, currentPlan, on
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white/95 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.15)] max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card  border-border shadow-none max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-heading text-2xl flex items-center gap-2">
             <Zap className="size-6" style={{ color: 'oklch(0.7 0.15 230)' }} />
@@ -243,7 +243,7 @@ export function SessionPlanCustomizeDialog({ open, onOpenChange, currentPlan, on
               {Object.entries(contentTypes).map(([type, enabled]) => (
                 <label
                   key={type}
-                  className="flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer hover:bg-muted/50"
+                  className="flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer hover:bg-card"
                   style={{
                     borderColor: enabled ? 'oklch(0.7 0.12 145)' : 'oklch(0.9 0.02 230)',
                     backgroundColor: enabled ? 'oklch(0.7 0.12 145)/0.05' : 'transparent',

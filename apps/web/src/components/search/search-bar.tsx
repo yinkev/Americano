@@ -76,7 +76,7 @@ export function SearchBar({
           placeholder={placeholder}
           className={cn(
             "h-11 pl-9 pr-20 rounded-xl",
-            "bg-white/80 backdrop-blur-md border-white/40",
+            "bg-card  border-border",
             "focus-visible:ring-2 focus-visible:ring-primary/20",
             "placeholder:text-muted-foreground/60"
           )}
@@ -89,7 +89,7 @@ export function SearchBar({
               variant="ghost"
               size="icon-sm"
               onClick={handleClear}
-              className="rounded-lg hover:bg-white/60"
+              className="rounded-lg hover:bg-card"
             >
               <X className="size-4" />
               <span className="sr-only">Clear search</span>

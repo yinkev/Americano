@@ -16,6 +16,7 @@
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --maxWorkers=2",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint:ui-guards": "./scripts/guard-forbidden-css.sh",
     "test:unit": "jest -c jest.config.ts --testPathIgnorePatterns=__tests__/integration",
     "test:integration": "RUN_DB_INTEGRATION=1 jest -c jest.config.ts __tests__/integration --runInBand",
     "aggregate:calibration": "tsx scripts/aggregate-calibration-metrics.ts",

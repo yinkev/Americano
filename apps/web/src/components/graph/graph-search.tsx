@@ -141,7 +141,7 @@ export default function GraphSearch({
   return (
     <div className={`relative ${className}`}>
       <div
-        className="flex items-center gap-2 px-4 py-2 rounded-lg backdrop-blur-md border"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg  border"
         style={{
           backgroundColor: 'oklch(1 0 0 / 0.9)',
           borderColor: 'oklch(0.85 0.05 240 / 0.3)',
@@ -192,7 +192,7 @@ export default function GraphSearch({
       {/* Error message */}
       {error && (
         <div
-          className="absolute top-full mt-2 w-full px-3 py-2 rounded-lg text-xs backdrop-blur-md border"
+          className="absolute top-full mt-2 w-full px-3 py-2 rounded-lg text-xs  border"
           style={{
             backgroundColor: 'oklch(0.95 0.05 20 / 0.9)',
             borderColor: 'oklch(0.7 0.15 20 / 0.3)',

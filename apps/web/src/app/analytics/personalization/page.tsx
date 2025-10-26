@@ -16,7 +16,7 @@ import { Separator } from '@/components/ui/separator'
 import { PersonalizationEffectivenessChart } from '@/components/analytics/PersonalizationEffectivenessChart'
 import { ActivePersonalizationsPanel } from '@/components/analytics/ActivePersonalizationsPanel'
 import { PersonalizationHistoryTimeline } from '@/components/analytics/PersonalizationHistoryTimeline'
-import { PersonalizationSettings } from '@/components/settings/PersonalizationSettings'
+import { PersonalizationSettings } from '@/components/settings/personalization-settings'
 import {
   Sparkles,
   TrendingUp,
@@ -134,7 +134,7 @@ export default function PersonalizationDashboardPage() {
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Personalization Level */}
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
+          <Card className="bg-card  border-border shadow-none rounded-xl hover:shadow-none transition-all">
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
                 <div className="p-2 rounded-xl" style={{ backgroundColor: `${levelColor}/0.15` }}>
@@ -166,7 +166,7 @@ export default function PersonalizationDashboardPage() {
           </Card>
 
           {/* Active Features */}
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
+          <Card className="bg-card  border-border shadow-none rounded-xl hover:shadow-none transition-all">
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
                 <div
@@ -196,7 +196,7 @@ export default function PersonalizationDashboardPage() {
           {/* These insight cards would be populated from PersonalizationConfig data in production */}
           {/* For now, they serve as placeholders showing potential personalization insights */}
           {preferences?.missionPersonalizationEnabled && (
-            <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+            <Card className="bg-card  border-border shadow-none rounded-xl">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div
@@ -215,7 +215,7 @@ export default function PersonalizationDashboardPage() {
 
           {/* Content Style */}
           {preferences?.contentPersonalizationEnabled && (
-            <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+            <Card className="bg-card  border-border shadow-none rounded-xl">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div
@@ -236,7 +236,7 @@ export default function PersonalizationDashboardPage() {
 
       {/* Settings (Collapsible) */}
       {showSettings && (
-        <div className="mb-8 animate-in slide-in-from-top-4 duration-300">
+        <div className="mb-8 animate-in slide-in- duration-300">
           <PersonalizationSettings />
         </div>
       )}
@@ -260,7 +260,7 @@ export default function PersonalizationDashboardPage() {
 
       {/* Footer: Info Panel */}
       <div className="mt-8">
-        <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+        <Card className="bg-card  border-border shadow-none rounded-xl">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div

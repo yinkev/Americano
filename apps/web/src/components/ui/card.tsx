@@ -1,124 +1,96 @@
-'use client'
+import * as React from "react";
+import { motion } from "motion/react";
+import { type VariantProps, cva } from "class-variance-authority";
 
-import * as React from 'react'
-import { motion } from 'motion/react'
+import { cn } from "@/lib/utils";
 
-import { cn } from '@/lib/utils'
-import { cardVariants as animationVariants, getAnimationConfig } from '@/lib/animation-variants'
-
+const cardVariants = cva(
+  // 2025 UI: flat surfaces, no shadows; no border/background by default
+  "rounded-xl bg-transparent text-card-foreground shadow-none transition-colors",
+  {
+    variants: {
+      interactive: {
+        true: "cursor-pointer", // no lift/shadow-none; keep pointer only
+        false: "",
+      },
+      padding: {
+        default: "",
+        none: "p-0",
+      },
+    },
+    defaultVariants: {
+      interactive: false,
+      padding: "default",
+    },
+  }
+);
 
 export interface CardProps
-  extends Omit<
-    React.HTMLAttributes<HTMLDivElement>,
-    | 'onAnimationStart'
-    | 'onDragStart'
-    | 'onDragEnd'
-    | 'onDrag'
-    | 'onDirectionLock'
-    | 'onDragTransitionEnd'
-  > {
-  /**
-   * Interactive cards have hover lift + scale effect (for clickable cards)
-   * Static cards have subtle shadow-only effect (for info cards)
-   * Glow cards have OKLCH-based glow effect
-   */
-  interactive?: 'interactive' | 'static' | 'glow' | false
-}
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof cardVariants> {}
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, interactive = false, onClick, ...props }, ref) => {
-    // Extract any potential conflicting props to ensure they don't get spread
-    const {
-      onAnimationStart: _onAnimationStart,
-      onDragStart: _onDragStart,
-      onDragEnd: _onDragEnd,
-      onDrag: _onDrag,
-      ...safeProps
-    } = props as any
-
-    // Determine if card should be interactive
-    const isInteractive = interactive !== false || !!onClick
-
-    // Select animation variant
-    const variant = interactive === 'glow'
-      ? animationVariants.glow
-      : interactive === 'static'
-        ? animationVariants.static
-        : interactive === 'interactive' || isInteractive
-          ? animationVariants.interactive
-          : null
-
-    if (!variant) {
-      // No animation - static card
-      return (
-        <div
-          ref={ref}
-          className={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
-          onClick={onClick}
-          {...safeProps}
-        />
-      )
-    }
-
-    return (
-      <motion.div
-        ref={ref}
-        className={cn(
-          'rounded-lg border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md',
-          isInteractive && 'cursor-pointer',
-          className
-        )}
-        onClick={onClick}
-        initial="rest"
-        whileHover="hover"
-        variants={{
-          rest: getAnimationConfig(variant.rest),
-          hover: getAnimationConfig(variant.hover),
-        }}
-        {...safeProps}
-      />
-    )
-  },
-)
-Card.displayName = 'Card'
+  ({ className, interactive, padding, ...props }, ref) => (
+    <motion.div
+      whileHover={interactive ? { y: -4, transition: { type: "spring", stiffness: 200, damping: 25 } } : undefined}
+      className={cn(cardVariants({ interactive, padding }), className)}
+      ref={ref}
+      {...props}
+    />
+  )
+);
+Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex flex-col space-y-1.5 p-4', className)} {...props} />
-  ),
-)
-CardHeader.displayName = 'CardHeader'
-
-const CardTitle = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('font-semibold leading-none tracking-tight', className)}
+      className={cn("flex flex-col space-y-1.5 p-6", className)}
       {...props}
     />
-  ),
-)
-CardTitle.displayName = 'CardTitle'
+  )
+);
+CardHeader.displayName = "CardHeader";
 
-const CardDescription = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('text-sm text-muted-foreground', className)} {...props} />
-  ),
-)
-CardDescription.displayName = 'CardDescription'
+const CardTitle = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLHeadingElement>
+>(({ className, ...props }, ref) => (
+  <h3
+    ref={ref}
+    className={cn(
+      "text-2xl font-semibold leading-none tracking-tight",
+      className
+    )}
+    {...props}
+  />
+));
+CardTitle.displayName = "CardTitle";
+
+const CardDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
+));
+CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('p-4 pt-0', className)} {...props} />
-  ),
-)
-CardContent.displayName = 'CardContent'
+    <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+  )
+);
+CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex items-center p-4 pt-0', className)} {...props} />
-  ),
-)
-CardFooter.displayName = 'CardFooter'
+    <div ref={ref} className={cn("flex items-center p-6 pt-0", className)} {...props} />
+  )
+);
+CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };

@@ -195,7 +195,7 @@ export function CognitiveHealthDashboard() {
 
   if (error || !data) {
     return (
-      <div className="bg-white border shadow-sm rounded-lg p-8">
+      <div className="bg-white border shadow-none rounded-lg p-8">
         <div className="flex items-start gap-4 text-center justify-center">
           <AlertCircle className="size-6 text-destructive shrink-0 mt-1" />
           <div>
@@ -208,7 +208,7 @@ export function CognitiveHealthDashboard() {
                 setLoading(true)
                 fetchCognitiveHealthData()
               }}
-              className="h-9 px-4 bg-clinical text-clinical-foreground rounded-md text-[13px] font-medium hover:bg-clinical/90 transition-colors"
+              className="h-9 px-4 bg-clinical text-clinical-foreground rounded-md text-[13px] font-medium hover:bg-card transition-colors"
             >
               Retry
             </button>

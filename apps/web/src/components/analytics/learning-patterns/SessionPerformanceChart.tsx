@@ -64,7 +64,7 @@ export function SessionPerformanceChart() {
 
   if (error || !data) {
     return (
-      <Alert className="bg-destructive/10 border-destructive/20">
+      <Alert className="bg-card border-destructive/20">
         <AlertDescription className="text-destructive">{error || 'No session performance data available'}</AlertDescription>
       </Alert>
     )
@@ -80,7 +80,7 @@ export function SessionPerformanceChart() {
       const data = payload[0].payload
       return (
         <div
-          className="px-3 py-2 rounded-lg shadow-lg backdrop-blur-sm"
+          className="px-3 py-2 rounded-lg shadow-none "
           style={chartTheme.tooltip.contentStyle}
         >
           <p className="text-[13px] font-medium mb-1" style={chartTheme.tooltip.labelStyle}>
@@ -204,7 +204,7 @@ export function SessionPerformanceChart() {
 
       {/* Insights */}
       <div
-        className="text-[13px] space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-300"
+        className="text-[13px] space-y-1 animate-in fade-in slide-in- duration-300"
         role="status"
         aria-live="polite"
       >

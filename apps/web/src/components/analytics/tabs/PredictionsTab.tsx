@@ -92,7 +92,7 @@ function ExamSuccessCard({ prediction }: { prediction: any }) {
 
   return (
     <div
-      className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/50"
+      className="bg-card  rounded-xl p-6 shadow-none border border-border"
       style={{ minHeight: '44px' }}
     >
       <div className="flex items-start justify-between mb-6">
@@ -196,7 +196,7 @@ function ForgettingRisksList({ risks }: { risks: any[] }) {
 
   return (
     <div
-      className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/50"
+      className="bg-card  rounded-xl p-6 shadow-none border border-border"
       style={{ minHeight: '44px' }}
     >
       <div className="flex items-center gap-2 mb-4">
@@ -225,7 +225,7 @@ function ForgettingRisksList({ risks }: { risks: any[] }) {
           {sortedRisks.map((risk, idx) => (
             <button
               key={risk.objectiveId}
-              className="w-full text-left p-4 rounded-xl hover:shadow-md transition-all duration-200 group"
+              className="w-full text-left p-4 rounded-xl hover:shadow-none transition-all duration-200 group"
               style={{
                 backgroundColor: 'oklch(0.98 0.01 240)',
                 border: '1px solid oklch(0.9 0.02 240)',
@@ -286,7 +286,7 @@ function MasteryDatesList({ predictions }: { predictions: any[] }) {
 
   return (
     <div
-      className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/50"
+      className="bg-card  rounded-xl p-6 shadow-none border border-border"
       style={{ minHeight: '44px' }}
     >
       <div className="flex items-center gap-2 mb-4">
@@ -372,7 +372,7 @@ function ModelAccuracyCard({ accuracy }: { accuracy: any }) {
 
   return (
     <div
-      className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/50"
+      className="bg-card  rounded-xl p-6 shadow-none border border-border"
       style={{ minHeight: '44px' }}
     >
       <div className="flex items-start justify-between mb-6">
@@ -495,7 +495,7 @@ function PredictionsTabSkeleton() {
     <div className="space-y-6 animate-pulse">
       {/* Exam Success Skeleton */}
       <div
-        className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/50"
+        className="bg-card  rounded-xl p-6 shadow-none border border-border"
         style={{ minHeight: '300px' }}
       >
         <div className="h-6 w-48 rounded" style={{ backgroundColor: 'oklch(0.9 0.02 240)' }} />
@@ -508,7 +508,7 @@ function PredictionsTabSkeleton() {
         {[1, 2].map((i) => (
           <div
             key={i}
-            className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/50"
+            className="bg-card  rounded-xl p-6 shadow-none border border-border"
             style={{ minHeight: '400px' }}
           >
             <div className="h-6 w-48 rounded mb-4" style={{ backgroundColor: 'oklch(0.9 0.02 240)' }} />
@@ -527,7 +527,7 @@ function PredictionsTabSkeleton() {
 
       {/* Accuracy Skeleton */}
       <div
-        className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/50"
+        className="bg-card  rounded-xl p-6 shadow-none border border-border"
         style={{ minHeight: '200px' }}
       >
         <div className="h-6 w-48 rounded" style={{ backgroundColor: 'oklch(0.9 0.02 240)' }} />

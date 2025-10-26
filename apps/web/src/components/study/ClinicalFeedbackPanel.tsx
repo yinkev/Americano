@@ -109,7 +109,7 @@ export function ClinicalFeedbackPanel({
   return (
     <div className="space-y-6 py-6">
       {/* Overall Score with Progress Ring */}
-      <div className="rounded-2xl bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-8">
+      <div className="rounded-xl bg-card  border border-border shadow-none p-8">
         <h2 className="text-2xl font-heading font-semibold text-[oklch(0.145_0_0)] mb-6">
           Clinical Reasoning Assessment
         </h2>
@@ -197,7 +197,7 @@ export function ClinicalFeedbackPanel({
       </div>
 
       {/* Competency Radar Chart */}
-      <div className="rounded-2xl bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-8">
+      <div className="rounded-xl bg-card  border border-border shadow-none p-8">
         <h3 className="text-xl font-heading font-semibold text-[oklch(0.145_0_0)] mb-6">
           Competency Breakdown
         </h3>
@@ -225,7 +225,7 @@ export function ClinicalFeedbackPanel({
       {/* Strengths Section */}
       {evaluation.strengths.length > 0 && (
         <div
-          className="rounded-2xl backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6"
+          className="rounded-xl  border border-border shadow-none p-6"
           style={{ backgroundColor: 'oklch(0.95 0.05 145)' }}
         >
           <div className="flex items-center gap-2 mb-4">
@@ -248,7 +248,7 @@ export function ClinicalFeedbackPanel({
       {/* Weaknesses Section */}
       {evaluation.weaknesses.length > 0 && (
         <div
-          className="rounded-2xl backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6"
+          className="rounded-xl  border border-border shadow-none p-6"
           style={{ backgroundColor: 'oklch(0.95 0.05 85)' }}
         >
           <div className="flex items-center gap-2 mb-4">
@@ -271,7 +271,7 @@ export function ClinicalFeedbackPanel({
       {/* Missed Findings (if any) */}
       {evaluation.missedFindings.length > 0 && (
         <div
-          className="rounded-2xl backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6"
+          className="rounded-xl  border border-border shadow-none p-6"
           style={{ backgroundColor: 'oklch(0.95 0.05 25)' }}
         >
           <div className="flex items-center gap-2 mb-4">
@@ -294,7 +294,7 @@ export function ClinicalFeedbackPanel({
       {/* Cognitive Biases (if detected) */}
       {evaluation.cognitiveBiases.length > 0 && (
         <div
-          className="rounded-2xl backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6"
+          className="rounded-xl  border border-border shadow-none p-6"
           style={{ backgroundColor: 'oklch(0.95 0.05 25)' }}
         >
           <div className="flex items-center gap-2 mb-4">
@@ -316,7 +316,7 @@ export function ClinicalFeedbackPanel({
       {/* Optimal Pathway */}
       {evaluation.optimalPathway && (
         <div
-          className="rounded-2xl backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6"
+          className="rounded-xl  border border-border shadow-none p-6"
           style={{ backgroundColor: 'oklch(0.95 0.05 230)' }}
         >
           <div className="flex items-center gap-2 mb-4">
@@ -336,7 +336,7 @@ export function ClinicalFeedbackPanel({
       {/* Teaching Points */}
       {evaluation.teachingPoints.length > 0 && (
         <div
-          className="rounded-2xl backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6"
+          className="rounded-xl  border border-border shadow-none p-6"
           style={{ backgroundColor: 'oklch(0.95 0.05 280)' }}
         >
           <div className="flex items-center gap-2 mb-4">
@@ -366,9 +366,9 @@ export function ClinicalFeedbackPanel({
         <button
           onClick={onReview}
           disabled={isReviewing}
-          className="flex-1 min-h-[44px] rounded-lg bg-white/80 backdrop-blur-md border border-white/30 px-6 py-3
+          className="flex-1 min-h-[44px] rounded-lg bg-card  border border-border px-6 py-3
                      text-[oklch(0.145_0_0)] font-semibold text-sm
-                     hover:bg-white/95 transition-colors duration-200
+                     hover:bg-card transition-colors duration-200
                      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[oklch(0.7_0.15_230)]
                      disabled:opacity-50 disabled:cursor-not-allowed
                      flex items-center justify-center gap-2"

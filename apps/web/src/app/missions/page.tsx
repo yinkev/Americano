@@ -75,7 +75,7 @@ export default async function MissionsPage() {
 
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card className="bg-white/80 backdrop-blur-md border-white/20">
+          <Card className="bg-card  border-border">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -87,7 +87,7 @@ export default async function MissionsPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-md border-white/20">
+          <Card className="bg-card  border-border">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -99,7 +99,7 @@ export default async function MissionsPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-md border-white/20">
+          <Card className="bg-card  border-border">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -113,7 +113,7 @@ export default async function MissionsPage() {
         </div>
 
         {/* Mission List */}
-        <Card className="bg-white/80 backdrop-blur-md border-white/20">
+        <Card className="bg-card  border-border">
           <CardContent className="pt-6">
             {missions.length === 0 ? (
               <div className="text-center py-12">

@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
-import { ChevronDown, ChevronUp, Settings, Clock, Target } from 'lucide-react'
+import { ChevronDown, ChevronUp, Settings, Clock, Target, Wand2 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 
@@ -54,7 +54,6 @@ export function MissionPreview() {
   async function fetchPreview() {
     try {
       setIsLoading(true)
-      // Calculate tomorrow's date
       const tomorrow = new Date()
       tomorrow.setDate(tomorrow.getDate() + 1)
       const dateStr = tomorrow.toISOString().split('T')[0]
@@ -74,28 +73,19 @@ export function MissionPreview() {
   }
 
   async function handleCustomize() {
-    // Store customization preference (would be saved to user preferences in Task 8)
-    // For now, just close dialog and re-fetch with custom time
     setIsCustomizing(false)
-
-    // Re-fetch preview with custom time
-    // Note: This would ideally save to user preferences first
     await fetchPreview()
   }
 
   if (isLoading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/20 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Target className="w-5 h-5" />
-            Tomorrow's Mission Preview
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
-          <Skeleton className="h-10 w-full" />
+      <Card className="bg-transparent border-none shadow-none rounded-xl">
+        <CardContent className="p-8">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 bg-muted rounded-xl w-1/2" />
+            <div className="h-4 bg-muted rounded-xl w-full" />
+            <div className="h-4 bg-muted rounded-xl w-3/4" />
+          </div>
         </CardContent>
       </Card>
     )
@@ -103,159 +93,89 @@ export function MissionPreview() {
 
   if (!preview || preview.objectives.length === 0) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/20 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-transparent border-none shadow-none rounded-xl">
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Target className="w-5 h-5" />
-            Tomorrow's Mission Preview
+          <CardTitle className="text-lg flex items-center gap-3 font-heading">
+            <Wand2 className="w-6 h-6 text-primary" />
+            Tomorrow's Plan
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600">
-            No objectives available for tomorrow yet. Check back later!
-          </p>
+          <p className="text-md font-semibold text-muted-foreground">No objectives planned for tomorrow yet.</p>
         </CardContent>
       </Card>
     )
   }
 
-  const complexityColors = {
-    BASIC: 'bg-green-100 text-green-800 border-green-200',
-    INTERMEDIATE: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    ADVANCED: 'bg-red-100 text-red-800 border-red-200',
-  }
-
   return (
     <>
-      <Card className="bg-white/80 backdrop-blur-md border-white/20 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_8px_32px_rgba(31,38,135,0.15)] transition-shadow">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary" />🔮 Tomorrow's Mission Preview
+      {/* I would add a motion.div here for a subtle entrance animation */}
+      <Card className="bg-transparent border-none shadow-none rounded-xl">
+        <CardHeader className="p-6">
+          <CardTitle className="text-xl flex items-center justify-between font-heading">
+            <span className="flex items-center gap-3">
+              <Wand2 className="w-6 h-6 text-primary" />
+              Tomorrow's Plan
             </span>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsCustomizing(true)}
-              className="h-8 gap-1.5 text-xs"
+              className="h-9 gap-2 text-sm rounded-full"
             >
-              <Settings className="w-3.5 h-3.5" />
+              <Settings className="w-4 h-4" />
               Adjust
             </Button>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          {/* Summary */}
-          <div className="flex items-center gap-3 text-sm">
-            <span className="font-medium text-gray-900">
-              {preview.objectives.length}{' '}
-              {preview.objectives.length === 1 ? 'objective' : 'objectives'}
+        <CardContent className="p-6 space-y-4">
+          <div className="flex items-center justify-between text-md">
+            <span className="font-semibold text-foreground">
+              {preview.objectives.length} objectives
             </span>
-            <span className="text-gray-400">•</span>
-            <span className="flex items-center gap-1.5 text-gray-600">
-              <Clock className="w-4 h-4" />
-              {preview.estimatedMinutes} min estimated
+            <span className="flex items-center gap-2 text-muted-foreground font-medium">
+              <Clock className="w-5 h-5" />
+              {preview.estimatedMinutes} min
             </span>
           </div>
 
-          {/* Expandable Objective List */}
-          <div className="space-y-2">
-            {!isExpanded ? (
-              <div className="space-y-1.5">
-                {preview.objectives.slice(0, 2).map((obj, index) => (
-                  <div key={obj.objectiveId} className="flex items-start gap-2 text-sm">
-                    <span className="text-gray-500 font-medium">{index + 1}.</span>
-                    <span className="flex-1 text-gray-700">{obj.objective.title}</span>
-                    <span className="text-gray-500 text-xs">({obj.estimatedMinutes}m)</span>
-                  </div>
-                ))}
-                {preview.objectives.length > 2 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsExpanded(true)}
-                    className="w-full h-8 gap-1.5 text-xs text-gray-600 hover:text-gray-900"
-                  >
-                    <ChevronDown className="w-3.5 h-3.5" />
-                    Show {preview.objectives.length - 2} more
-                  </Button>
-                )}
+          {/* I would add a motion.div here to animate the expansion */}
+          <div className="space-y-3 pt-4">
+            {preview.objectives.slice(0, isExpanded ? preview.objectives.length : 2).map((obj, index) => (
+              <div key={obj.objectiveId} className="flex items-start gap-3 text-md p-3 rounded-xl bg-card">
+                <span className="text-primary font-bold">{index + 1}.</span>
+                <span className="flex-1 text-foreground font-medium">{obj.objective.title}</span>
               </div>
-            ) : (
-              <div className="space-y-2">
-                {preview.objectives.map((obj, index) => (
-                  <div key={obj.objectiveId} className="space-y-1">
-                    <div className="flex items-start gap-2 text-sm">
-                      <span className="text-gray-500 font-medium">{index + 1}.</span>
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-900">{obj.objective.title}</span>
-                          {obj.objective.isHighYield && <span className="text-xs">⭐</span>}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            variant="outline"
-                            className={`text-xs py-0 ${complexityColors[obj.objective.complexity]}`}
-                          >
-                            {obj.objective.complexity}
-                          </Badge>
-                          <span className="text-gray-500 text-xs">
-                            {obj.estimatedMinutes} minutes
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsExpanded(false)}
-                  className="w-full h-8 gap-1.5 text-xs text-gray-600 hover:text-gray-900"
-                >
-                  <ChevronUp className="w-3.5 h-3.5" />
-                  Show less
-                </Button>
-              </div>
+            ))}
+            {preview.objectives.length > 2 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="w-full h-9 gap-2 text-sm text-muted-foreground hover:text-foreground rounded-full"
+              >
+                {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                {isExpanded ? 'Show Less' : `Show ${preview.objectives.length - 2} More`}
+              </Button>
             )}
           </div>
 
-          {/* Priority Breakdown (if available) */}
-          {preview.priorityBreakdown && (
-            <div className="pt-2 border-t border-gray-100">
-              <p className="text-xs text-gray-500 mb-1.5">Priority Balance:</p>
-              <div className="flex items-center gap-3 text-xs">
-                <span className="text-gray-700">
-                  📅 FSRS: {Math.round(preview.priorityBreakdown.fsrs * 100)}%
-                </span>
-                <span className="text-gray-700">
-                  ⭐ High-yield: {Math.round(preview.priorityBreakdown.highYield * 100)}%
-                </span>
-                <span className="text-gray-700">
-                  🎯 Weak areas: {Math.round(preview.priorityBreakdown.weakAreas * 100)}%
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Action Message */}
-          <div className="pt-2 text-xs text-gray-600 italic">
-            Mission will generate automatically tomorrow morning
+          <div className="pt-4 text-sm text-center text-muted-foreground italic">
+            Your mission for tomorrow is all set!
           </div>
         </CardContent>
       </Card>
 
-      {/* Customization Dialog */}
       <Dialog open={isCustomizing} onOpenChange={setIsCustomizing}>
-        <DialogContent className="sm:max-w-md bg-white/95 backdrop-blur-xl">
-          <DialogHeader>
-            <DialogTitle>Adjust Tomorrow's Mission</DialogTitle>
-            <DialogDescription>Customize your mission duration and preferences</DialogDescription>
+        <DialogContent className="sm:max-w-md bg-card rounded-xl shadow-none border-none">
+          <DialogHeader className="p-6">
+            <DialogTitle className="text-2xl font-heading">Customize Your Mission</DialogTitle>
+            <DialogDescription className="text-md">Adjust the duration for tomorrow's study session.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="minutes">Target Study Time</Label>
-              <div className="flex items-center gap-3">
+          <div className="p-6 space-y-6">
+            <div className="space-y-4">
+              <Label htmlFor="minutes" className="text-lg font-semibold">Target Time</Label>
+              <div className="flex items-center gap-4">
                 <Slider
                   id="minutes"
                   min={15}
@@ -265,20 +185,15 @@ export function MissionPreview() {
                   onValueChange={(value) => setCustomMinutes(value[0])}
                   className="flex-1"
                 />
-                <span className="text-sm font-medium text-gray-700 w-16 text-right">
+                <span className="text-xl font-bold text-primary w-20 text-center">
                   {customMinutes} min
                 </span>
               </div>
-              <p className="text-xs text-gray-500">
-                Mission will include 2-4 objectives fitting within this time
-              </p>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCustomizing(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCustomize}>Apply Changes</Button>
+          <DialogFooter className="p-6">
+            <Button variant="outline" onClick={() => setIsCustomizing(false)} className="rounded-full text-lg px-6 py-3">Cancel</Button>
+            <Button onClick={handleCustomize} className="rounded-full text-lg px-6 py-3">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -23,7 +23,7 @@ export function SearchError({ error, onRetry, className }: SearchErrorProps) {
     <Alert
       variant="destructive"
       className={cn(
-        "border-red-500/20 bg-red-50/80 backdrop-blur-md",
+        "border-red-500/20 bg-card ",
         className
       )}
       role="alert"
@@ -38,7 +38,7 @@ export function SearchError({ error, onRetry, className }: SearchErrorProps) {
             variant="outline"
             size="sm"
             onClick={onRetry}
-            className="rounded-lg bg-white/60 hover:bg-white/80"
+            className="rounded-lg bg-card hover:bg-card"
             aria-label="Retry search"
           >
             <RefreshCw className="size-4 mr-2" aria-hidden="true" />

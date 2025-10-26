@@ -84,7 +84,7 @@ export function ExperimentControlPanel({
 
   return (
     <>
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+      <Card className="bg-card  border-border shadow-none rounded-xl">
         <CardHeader>
           <CardTitle className="font-heading font-semibold text-[18px] flex items-center gap-2">
             <Sparkles className="size-5" style={{ color: 'oklch(0.7 0.15 230)' }} />
@@ -173,7 +173,7 @@ export function ExperimentControlPanel({
                 className={`p-4 rounded-xl border transition-all ${
                   recommendedVariant === 'A'
                     ? 'border-[oklch(0.7_0.15_145)] bg-[oklch(0.7_0.15_145)]/5'
-                    : 'border-border bg-muted/10'
+                    : 'border-border bg-card'
                 }`}
               >
                 <div className="flex items-center justify-between mb-3">
@@ -220,7 +220,7 @@ export function ExperimentControlPanel({
                 className={`p-4 rounded-xl border transition-all ${
                   recommendedVariant === 'B'
                     ? 'border-[oklch(0.7_0.15_145)] bg-[oklch(0.7_0.15_145)]/5'
-                    : 'border-border bg-muted/10'
+                    : 'border-border bg-card'
                 }`}
               >
                 <div className="flex items-center justify-between mb-3">
@@ -265,7 +265,7 @@ export function ExperimentControlPanel({
           </div>
 
           {/* Warning */}
-          <div className="p-4 rounded-xl bg-muted/10 border border-border">
+          <div className="p-4 rounded-xl bg-card border border-border">
             <p className="text-xs text-muted-foreground">
               <span className="font-semibold">Note:</span> Concluding an experiment is irreversible.
               The selected variant's configuration will be applied to all users, and the experiment
@@ -277,7 +277,7 @@ export function ExperimentControlPanel({
 
       {/* Conclude Confirmation Dialog */}
       <AlertDialog open={showConcludeDialog} onOpenChange={setShowConcludeDialog}>
-        <AlertDialogContent className="bg-white border shadow-lg">
+        <AlertDialogContent className="bg-white border shadow-none">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-[16px]">
               Conclude Experiment with Variant {selectedVariant}?

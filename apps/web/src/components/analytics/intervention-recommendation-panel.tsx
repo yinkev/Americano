@@ -118,7 +118,7 @@ export function InterventionRecommendationPanel() {
   }
 
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow">
+    <Card className="shadow-none hover:shadow-none transition-shadow-none">
       <CardHeader className="p-4 pb-0">
         <div className="flex items-start justify-between gap-4">
           <CardTitle className="font-heading text-[16px]">Recommended Actions</CardTitle>
@@ -128,7 +128,7 @@ export function InterventionRecommendationPanel() {
         </div>
 
         {/* Auto-Apply Toggle */}
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 mt-4">
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-card mt-4">
           <button
             onClick={() => setAutoApply(!autoApply)}
             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
@@ -139,7 +139,7 @@ export function InterventionRecommendationPanel() {
             aria-label="Auto-apply interventions"
           >
             <span
-              className={`pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+              className={`pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-none ring-0 transition duration-200 ease-in-out ${
                 autoApply ? 'translate-x-5' : 'translate-x-0'
               }`}
             />
@@ -196,15 +196,15 @@ function InterventionCard({
     <div
       className={`p-4 rounded-xl border transition-all ${
         intervention.applied
-          ? 'bg-success/10 border-success/30'
-          : 'bg-card border-border hover:shadow-sm'
+          ? 'bg-card border-success/30'
+          : 'bg-card border-border hover:shadow-none'
       }`}
     >
       <div className="flex items-start gap-3">
         {/* Icon */}
         <div
           className={`p-2 rounded-lg shrink-0 ${
-            intervention.applied ? 'bg-success/20' : 'bg-info/10'
+            intervention.applied ? 'bg-card' : 'bg-card'
           }`}
         >
           <Icon
@@ -223,7 +223,7 @@ function InterventionCard({
           <div className="flex items-center gap-2 mb-3">
             <Badge
               variant="secondary"
-              className="text-[11px] px-2 py-0.5 bg-success/10 text-success border-success/30"
+              className="text-[11px] px-2 py-0.5 bg-card text-success border-success/30"
             >
               {effectiveness.toFixed(0)}% Effective
             </Badge>
@@ -240,7 +240,7 @@ function InterventionCard({
             ) : (
               <Button
                 size="sm"
-                className="w-full min-h-9 bg-info hover:bg-info/90 text-white"
+                className="w-full min-h-9 bg-info hover:bg-card text-white"
                 onClick={() => onApply(intervention.id)}
                 disabled={isApplying}
               >

@@ -29,7 +29,7 @@ export const buttonVariants = {
     transition: { duration: 0.15, ease: [0, 0, 0.2, 1] as const },
   },
 
-  // Press state: Scale down + shadow inset (spring effect)
+  // Press state: Scale down + shadow-none inset (spring effect)
   tap: {
     scale: 0.98,
     boxShadow: '0 1px 2px oklch(0 0 0 / 0.05)',
@@ -77,7 +77,7 @@ export const cardVariants = {
     },
   },
 
-  // Static card (info only) - subtle shadow only
+  // Static card (info only) - subtle shadow-none only
   static: {
     rest: {
       boxShadow: '0 1px 3px oklch(0 0 0 / 0.1)',

@@ -117,8 +117,8 @@ export function ConfidenceIntervalDisplay({
           <div
             className={cn(
               'inline-flex items-center gap-3 px-4 py-2 rounded-lg',
-              'bg-white/95 backdrop-blur-xl border',
-              'hover:shadow-md transition-all duration-200 cursor-help',
+              'bg-card  border',
+              'hover:shadow-none transition-all duration-200 cursor-help',
               className
             )}
             style={{
@@ -186,7 +186,7 @@ export function ConfidenceIntervalDisplay({
             {/* Visual Range */}
             <div>
               <p className="text-xs opacity-80 mb-2">Confidence Range</p>
-              <div className="relative h-8 rounded-full overflow-hidden bg-white/20">
+              <div className="relative h-8 rounded-full overflow-hidden bg-card">
                 {/* Full range bar */}
                 <div
                   className="absolute top-0 h-full opacity-40"
@@ -213,7 +213,7 @@ export function ConfidenceIntervalDisplay({
             </div>
 
             {/* Explanation */}
-            <div className="pt-2 border-t border-white/20">
+            <div className="pt-2 border-t border-border">
               <p className="text-xs opacity-90 mb-2">
                 <span className="font-semibold">{getPrecisionLevel()} Precision</span>
               </p>
@@ -223,7 +223,7 @@ export function ConfidenceIntervalDisplay({
             </div>
 
             {/* IRT Context */}
-            <div className="pt-2 border-t border-white/20">
+            <div className="pt-2 border-t border-border">
               <p className="text-xs opacity-80">
                 <span className="font-semibold">What is IRT?</span> Item Response Theory
                 estimates your knowledge level using fewer questions by adapting difficulty
@@ -232,7 +232,7 @@ export function ConfidenceIntervalDisplay({
             </div>
 
             {/* Precision Scale Reference */}
-            <div className="pt-2 border-t border-white/20 space-y-1 text-xs">
+            <div className="pt-2 border-t border-border space-y-1 text-xs">
               <div className="flex items-center justify-between">
                 <span>High (&lt; 10)</span>
                 <div

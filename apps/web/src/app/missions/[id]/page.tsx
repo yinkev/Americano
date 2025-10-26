@@ -141,7 +141,7 @@ export default async function MissionDetailPage({ params }: PageProps) {
 
         {/* Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card className="bg-white/80 backdrop-blur-md border-white/20">
+          <Card className="bg-card  border-border">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -153,7 +153,7 @@ export default async function MissionDetailPage({ params }: PageProps) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-md border-white/20">
+          <Card className="bg-card  border-border">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -167,7 +167,7 @@ export default async function MissionDetailPage({ params }: PageProps) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-md border-white/20">
+          <Card className="bg-card  border-border">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -183,7 +183,7 @@ export default async function MissionDetailPage({ params }: PageProps) {
         </div>
 
         {/* Objectives Section */}
-        <Card className="bg-white/80 backdrop-blur-md border-white/20 mb-6">
+        <Card className="bg-card  border-border mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5" />
@@ -266,7 +266,7 @@ export default async function MissionDetailPage({ params }: PageProps) {
 
         {/* Study Sessions Section */}
         {mission.studySessions.length > 0 && (
-          <Card className="bg-white/80 backdrop-blur-md border-white/20 mb-6">
+          <Card className="bg-card  border-border mb-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" />
@@ -307,7 +307,7 @@ export default async function MissionDetailPage({ params }: PageProps) {
         )}
 
         {/* Mission Insights */}
-        <Card className="bg-white/80 backdrop-blur-md border-white/20">
+        <Card className="bg-card  border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="w-5 h-5" />

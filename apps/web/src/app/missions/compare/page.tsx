@@ -180,12 +180,12 @@ function ComparisonContent() {
     return (
       <div className="container max-w-7xl mx-auto p-6 space-y-6">
         <Link href="/missions/history">
-          <Button variant="outline" className="border-white/30 hover:bg-white/60">
+          <Button variant="outline" className="border-border hover:bg-card">
             <ArrowLeft className="size-4 mr-2" />
             Back to History
           </Button>
         </Link>
-        <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-12 text-center">
+        <div className="rounded-xl bg-card  border border-border shadow-none p-12 text-center">
           <Target className="size-12 mx-auto mb-4 text-[oklch(0.556_0_0)]" />
           <p className="text-lg font-medium text-[oklch(0.145_0_0)] mb-2">No missions to compare</p>
           <p className="text-sm text-[oklch(0.556_0_0)]">
@@ -200,12 +200,12 @@ function ComparisonContent() {
     return (
       <div className="container max-w-7xl mx-auto p-6 space-y-6">
         <Link href="/missions/history">
-          <Button variant="outline" className="border-white/30 hover:bg-white/60">
+          <Button variant="outline" className="border-border hover:bg-card">
             <ArrowLeft className="size-4 mr-2" />
             Back to History
           </Button>
         </Link>
-        <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-12 text-center">
+        <div className="rounded-xl bg-card  border border-border shadow-none p-12 text-center">
           <Target className="size-12 mx-auto mb-4 text-[oklch(0.556_0_0)]" />
           <p className="text-lg font-medium text-[oklch(0.145_0_0)] mb-2">
             Select one more mission
@@ -228,7 +228,7 @@ function ComparisonContent() {
       <div className="flex items-center justify-between">
         <div className="space-y-2">
           <Link href="/missions/history">
-            <Button variant="outline" className="border-white/30 hover:bg-white/60 mb-4">
+            <Button variant="outline" className="border-border hover:bg-card mb-4">
               <ArrowLeft className="size-4 mr-2" />
               Back to History
             </Button>
@@ -243,7 +243,7 @@ function ComparisonContent() {
       </div>
 
       {/* Insights Summary */}
-      <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6">
+      <div className="rounded-xl bg-card  border border-border shadow-none p-6">
         <h2 className="text-lg font-heading font-semibold text-[oklch(0.145_0_0)] mb-4">
           Key Insights
         </h2>
@@ -285,7 +285,7 @@ function ComparisonContent() {
           return (
             <div
               key={mission.id}
-              className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-6 space-y-6"
+              className="rounded-xl bg-card  border border-border shadow-none p-6 space-y-6"
             >
               {/* Header */}
               <div className="space-y-3">
@@ -359,7 +359,7 @@ function ComparisonContent() {
               </div>
 
               {/* Objectives List */}
-              <div className="space-y-3 pt-4 border-t border-white/30">
+              <div className="space-y-3 pt-4 border-t border-border">
                 <p className="text-sm font-medium text-[oklch(0.556_0_0)]">Objectives</p>
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {mission.objectives.map((obj, objIdx) => (
@@ -408,7 +408,7 @@ function ComparisonContent() {
               </div>
 
               {/* View Details Link */}
-              <div className="pt-4 border-t border-white/30">
+              <div className="pt-4 border-t border-border">
                 <Link
                   href={`/missions/${mission.id}`}
                   className="text-sm font-medium text-[oklch(0.7_0.15_230)] hover:text-[oklch(0.65_0.15_230)] transition-colors"

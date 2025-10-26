@@ -113,7 +113,7 @@ export function StressPatternsTimeline({
             : 'Critical'
 
     return (
-      <div className="bg-card border border-border shadow-sm rounded-lg p-4 max-w-xs">
+      <div className="bg-card border border-border shadow-none rounded-lg p-4 max-w-xs">
         <div className="text-[13px] font-semibold text-foreground mb-2">{data.formattedDate}</div>
         <div className="space-y-1 text-[11px]">
           <div className="flex items-center justify-between gap-4">
@@ -153,7 +153,7 @@ export function StressPatternsTimeline({
 
   if (filteredData.length === 0) {
     return (
-      <Card className={`shadow-sm ${className}`}>
+      <Card className={`shadow-none ${className}`}>
         <CardContent className="p-4">
           <div className="flex items-center justify-center py-12 text-center">
             <div>
@@ -169,7 +169,7 @@ export function StressPatternsTimeline({
   }
 
   return (
-    <Card className={`shadow-sm hover:shadow-md transition-shadow ${className}`}>
+    <Card className={`shadow-none hover:shadow-none transition-shadow-none ${className}`}>
       <CardHeader className="p-4 pb-0">
         {/* Header with time range toggle */}
         <div className="flex items-center justify-between">
@@ -181,13 +181,13 @@ export function StressPatternsTimeline({
           </div>
 
           {/* Time range toggle with Wave 3 micro-interactions */}
-          <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-card rounded-lg p-1">
             <button
               onClick={() => setTimeRange('7day')}
               className={`px-3 py-1.5 text-[13px] font-medium rounded-md transition-all duration-200 ${
                 timeRange === '7day'
-                  ? 'bg-white shadow-sm text-foreground scale-100'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/50 active:scale-95'
+                  ? 'bg-white shadow-none text-foreground scale-100'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-card active:scale-95'
               }`}
             >
               7 Days
@@ -196,8 +196,8 @@ export function StressPatternsTimeline({
               onClick={() => setTimeRange('30day')}
               className={`px-3 py-1.5 text-[13px] font-medium rounded-md transition-all duration-200 ${
                 timeRange === '30day'
-                  ? 'bg-white shadow-sm text-foreground scale-100'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/50 active:scale-95'
+                  ? 'bg-white shadow-none text-foreground scale-100'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-card active:scale-95'
               }`}
             >
               30 Days
@@ -209,19 +209,19 @@ export function StressPatternsTimeline({
       <CardContent className="p-4 pt-4 space-y-4">
         {/* Summary stats with Wave 3 micro-interactions */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-muted/30 rounded-lg p-3 transition-all duration-200 hover:bg-muted/50 hover:scale-[1.02]">
+          <div className="bg-card rounded-lg p-3 transition-all duration-200 hover:bg-card hover:scale-[1.02]">
             <div className="text-[11px] text-muted-foreground mb-1">Average Load</div>
             <div className="text-[20px] font-bold font-heading text-foreground">
               {Math.round(stats.avgLoad)}
             </div>
           </div>
-          <div className="bg-muted/30 rounded-lg p-3 transition-all duration-200 hover:bg-muted/50 hover:scale-[1.02]">
+          <div className="bg-card rounded-lg p-3 transition-all duration-200 hover:bg-card hover:scale-[1.02]">
             <div className="text-[11px] text-muted-foreground mb-1">Peak Load</div>
             <div className="text-[20px] font-bold font-heading text-foreground">
               {Math.round(stats.maxLoad)}
             </div>
           </div>
-          <div className="bg-muted/30 rounded-lg p-3 transition-all duration-200 hover:bg-muted/50 hover:scale-[1.02]">
+          <div className="bg-card rounded-lg p-3 transition-all duration-200 hover:bg-card hover:scale-[1.02]">
             <div className="text-[11px] text-muted-foreground mb-1">Overload Events</div>
             <div className="text-[20px] font-bold font-heading text-foreground">
               {stats.overloadCount}

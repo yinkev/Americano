@@ -94,7 +94,7 @@ export function CognitiveLoadIndicator({ userId, className = '' }: Props) {
   }
 
   return (
-    <Card className={`shadow-sm hover:shadow-md transition-shadow ${className}`}>
+    <Card className={`shadow-none hover:shadow-none transition-shadow-none ${className}`}>
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

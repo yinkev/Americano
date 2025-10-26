@@ -236,7 +236,7 @@ export function ReflectionHistoryView({
       </div>
 
       {/* Reflection Timeline */}
-      <Card className="p-6 bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="p-6 bg-card  shadow-none">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <Calendar className="h-5 w-5 text-muted-foreground" />
           Your Reflections ({filteredReflections.length})
@@ -265,7 +265,7 @@ export function ReflectionHistoryView({
                 return (
                   <div
                     key={reflection.id}
-                    className="p-4 rounded-lg border transition-all hover:shadow-md"
+                    className="p-4 rounded-lg border transition-all hover:shadow-none"
                     style={{
                       backgroundColor: 'oklch(0.99 0.01 240)',
                       borderColor: 'oklch(0.90 0.02 240)',

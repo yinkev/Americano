@@ -100,17 +100,17 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
   // Get success score rating
   const getSuccessRating = (score: number): { label: string; color: string } => {
     if (score >= 0.8)
-      return { label: 'EXCELLENT', color: 'bg-green-500/10 text-green-700 border-green-500/20' }
+      return { label: 'EXCELLENT', color: 'bg-card text-green-700 border-green-500/20' }
     if (score >= 0.7)
-      return { label: 'GOOD', color: 'bg-blue-500/10 text-blue-700 border-blue-500/20' }
+      return { label: 'GOOD', color: 'bg-card text-blue-700 border-blue-500/20' }
     if (score >= 0.6)
-      return { label: 'FAIR', color: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20' }
+      return { label: 'FAIR', color: 'bg-card text-yellow-700 border-yellow-500/20' }
     if (score >= 0.5)
       return {
         label: 'NEEDS IMPROVEMENT',
-        color: 'bg-orange-500/10 text-orange-700 border-orange-500/20',
+        color: 'bg-card text-orange-700 border-orange-500/20',
       }
-    return { label: 'POOR', color: 'bg-red-500/10 text-red-700 border-red-500/20' }
+    return { label: 'POOR', color: 'bg-card text-red-700 border-red-500/20' }
   }
 
   const successRating = getSuccessRating(review.summary.avgSuccessScore)
@@ -124,7 +124,7 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
+    <Card className="bg-card  border-border shadow-none rounded-xl hover:shadow-none transition-all">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -215,7 +215,7 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
                     {review.highlights.personalBests.map((best, index) => (
                       <div
                         key={index}
-                        className="flex items-start gap-2 text-sm p-2 rounded-lg bg-green-500/5 border border-green-500/10"
+                        className="flex items-start gap-2 text-sm p-2 rounded-lg bg-card border border-green-500/10"
                       >
                         <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                         <span>{best}</span>
@@ -233,7 +233,7 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
                       {review.highlights.topObjectives.slice(0, 3).map((obj) => (
                         <div
                           key={obj.objectiveId}
-                          className="text-sm p-2 rounded-lg bg-blue-500/5 border border-blue-500/10"
+                          className="text-sm p-2 rounded-lg bg-card border border-blue-500/10"
                         >
                           <div className="font-medium truncate">{obj.objective}</div>
                         </div>
@@ -260,7 +260,7 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
                     {review.insights.improvements.map((improvement, index) => (
                       <div
                         key={index}
-                        className="flex items-start gap-2 text-sm p-2 rounded-lg bg-green-500/5 border border-green-500/10"
+                        className="flex items-start gap-2 text-sm p-2 rounded-lg bg-card border border-green-500/10"
                       >
                         <TrendingUp className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                         <span>{improvement}</span>
@@ -275,7 +275,7 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
                     {review.insights.patterns.map((pattern, index) => (
                       <div
                         key={index}
-                        className="text-sm p-2 rounded-lg bg-blue-500/5 border border-blue-500/10"
+                        className="text-sm p-2 rounded-lg bg-card border border-blue-500/10"
                       >
                         {pattern}
                       </div>
@@ -289,7 +289,7 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
                     {review.insights.concerns.map((concern, index) => (
                       <div
                         key={index}
-                        className="flex items-start gap-2 text-sm p-2 rounded-lg bg-orange-500/5 border border-orange-500/10"
+                        className="flex items-start gap-2 text-sm p-2 rounded-lg bg-card border border-orange-500/10"
                       >
                         <AlertCircle className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
                         <span>{concern}</span>
@@ -311,15 +311,15 @@ export function ReviewCard({ review, onApplyRecommendations }: ReviewCardProps) 
                 <div className="space-y-2">
                   {review.recommendations.actionItems.map((item, index) => {
                     const priorityColors = {
-                      HIGH: 'bg-red-500/10 text-red-700 border-red-500/20',
-                      MEDIUM: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20',
-                      LOW: 'bg-blue-500/10 text-blue-700 border-blue-500/20',
+                      HIGH: 'bg-card text-red-700 border-red-500/20',
+                      MEDIUM: 'bg-card text-yellow-700 border-yellow-500/20',
+                      LOW: 'bg-card text-blue-700 border-blue-500/20',
                     }
 
                     return (
                       <div
                         key={index}
-                        className="space-y-1 p-3 rounded-lg bg-white/50 border border-white/40"
+                        className="space-y-1 p-3 rounded-lg bg-card border border-border"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">

@@ -1,5 +1,6 @@
 'use client'
 
+import { motion } from 'motion/react'
 import {
   Home,
   Library,
@@ -13,10 +14,18 @@ import {
   Clock,
   Brain,
   FlaskConical,
+  Trophy,
+  Star,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useUserStore } from '@/store/use-user-store'
+import {
+  springSubtle,
+  springResponsive,
+  buttonIconVariants,
+  listItemVariants,
+} from '@/lib/design-system'
 
 import {
   Sidebar,
@@ -38,11 +47,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 // Main navigation items
 const navItems = [
   {
-    title: 'Dashboard',
+    title: 'Home',
     url: '/',
     icon: Home,
   },
@@ -57,9 +67,9 @@ const navItems = [
     icon: BookOpen,
   },
   {
-    title: 'Orchestration',
-    url: '/study/orchestration',
-    icon: Clock,
+    title: 'Quests',
+    url: '/quests',
+    icon: Trophy,
   },
   {
     title: 'Progress',
@@ -72,19 +82,9 @@ const navItems = [
     icon: Sparkles,
   },
   {
-    title: 'Behavioral Insights',
+    title: 'Insights',
     url: '/analytics/behavioral-insights',
     icon: Brain,
-  },
-  {
-    title: 'Experiments',
-    url: '/analytics/experiments',
-    icon: FlaskConical,
-  },
-  {
-    title: 'Exams',
-    url: '/settings/exams',
-    icon: Calendar,
   },
   {
     title: 'Settings',
@@ -111,60 +111,90 @@ export function AppSidebar() {
   const router = useRouter()
   const { userEmail, setUserEmail } = useUserStore()
 
-  // Find active user based on stored email
   const activeUser = users.find((u) => u.email === userEmail) || users[0]
 
   return (
-    <Sidebar variant="sidebar" collapsible="icon" className="border-none">
-      <SidebarHeader className="border-b border-white/20 bg-white/95 backdrop-blur-xl shadow-[0_4px_16px_rgba(31,38,135,0.06)]">
+    <Sidebar variant="sidebar" collapsible="icon" className="border-none bg-sidebar">
+      <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild className="hover:bg-white/60">
+            <SidebarMenuButton size="lg" asChild className="hover:bg-card">
               <Link href="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
-                  <BookOpen className="size-4" />
+                <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-none">
+                  <Star className="size-5" />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-heading font-bold">Americano</span>
-                  <span className="truncate text-xs text-muted-foreground/80">
-                    Medical Learning
+                <div className="grid flex-1 text-left text-md leading-tight">
+                  <span className="truncate font-bold font-heading">Americano</span>
+                  <span className="truncate text-sm text-muted-foreground">
+                    Your Study Buddy
                   </span>
                 </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+
+        {/* Theme Toggle - Positioned below logo */}
+        <div className="px-2 py-2">
+          <ThemeToggle />
+        </div>
       </SidebarHeader>
 
-      <SidebarContent className="bg-white/90 backdrop-blur-xl">
-        <SidebarGroup className="px-2">
-          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider px-2">
-            Navigation
+      <SidebarContent className="p-4">
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-sm font-semibold text-muted-foreground/80 px-2">
+            Explore
           </SidebarGroupLabel>
           <SidebarGroupContent className="mt-2">
-            <SidebarMenu className="gap-1">
-              {navItems.map((item) => {
+            <SidebarMenu className="gap-2">
+              {navItems.map((item, index) => {
                 const isActive = pathname === item.url
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      tooltip={item.title}
-                      isActive={isActive}
-                      className={`
-                        rounded-xl transition-all duration-200 font-medium
-                        ${
-                          isActive
-                            ? 'bg-white shadow-[0_4px_16px_rgba(31,38,135,0.12)] text-foreground'
-                            : 'hover:bg-white/70 hover:shadow-[0_2px_8px_rgba(31,38,135,0.06)]'
-                        }
-                      `}
+                    <motion.div
+                      variants={listItemVariants}
+                      initial="initial"
+                      animate="animate"
+                      custom={index}
+                      whileHover={{
+                        scale: 1.02,
+                        x: isActive ? 0 : 4,
+                        transition: springResponsive,
+                      }}
+                      whileTap={{
+                        scale: 0.98,
+                        transition: springResponsive,
+                      }}
                     >
-                      <Link href={item.url}>
-                        <item.icon className={isActive ? 'text-primary' : ''} />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
+                      <SidebarMenuButton
+                        asChild
+                        tooltip={item.title}
+                        isActive={isActive}
+                        className={`
+                          rounded-xl transition-all duration-300 font-semibold
+                          ${
+                            isActive
+                              ? 'bg-card text-primary shadow-none'
+                              : 'hover:bg-card hover:shadow-none'
+                          }
+                        `}
+                      >
+                        <Link href={item.url}>
+                          <motion.div
+                            animate={{
+                              rotate: isActive ? [0, -10, 10, -10, 0] : 0,
+                            }}
+                            transition={{
+                              duration: 0.5,
+                              ease: 'easeInOut',
+                            }}
+                          >
+                            <item.icon className={'size-5'} />
+                          </motion.div>
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </motion.div>
                   </SidebarMenuItem>
                 )
               })}
@@ -173,23 +203,23 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-white/20 bg-white/95 backdrop-blur-xl shadow-[0_-4px_16px_rgba(31,38,135,0.06)] p-2">
+      <SidebarFooter className="p-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  className="hover:bg-white/70 hover:shadow-[0_2px_12px_rgba(31,38,135,0.08)] transition-all duration-200 rounded-xl data-[state=open]:bg-white/70"
+                  className="hover:bg-card hover:shadow-none transition-all duration-300 rounded-xl data-[state=open]:bg-card"
                 >
-                  <Avatar className="size-8 rounded-xl shadow-sm">
+                  <Avatar className="size-10 rounded-xl shadow-none">
                     <AvatarFallback className="rounded-xl bg-primary text-primary-foreground font-bold">
                       {activeUser.avatar}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">{activeUser.name}</span>
-                    <span className="truncate text-xs text-muted-foreground/80">
+                    <span className="truncate text-xs text-muted-foreground">
                       {activeUser.email}
                     </span>
                   </div>
@@ -199,9 +229,9 @@ export function AppSidebar() {
               <DropdownMenuContent
                 side="top"
                 align="end"
-                className="w-[--radix-popper-anchor-width] bg-white/98 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.15)] border-white/40 rounded-2xl p-2"
+                className="w-[--radix-popper-anchor-width] bg-card shadow-none border rounded-xl p-2"
               >
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground/70">
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground/80">
                   Switch Account
                 </div>
                 {users.map((user) => (
@@ -213,8 +243,8 @@ export function AppSidebar() {
                     }}
                     className="rounded-xl gap-2 cursor-pointer"
                   >
-                    <Avatar className="size-6 rounded-lg">
-                      <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold text-xs">
+                    <Avatar className="size-8 rounded-lg">
+                      <AvatarFallback className="rounded-lg bg-card text-primary font-semibold text-sm">
                         {user.avatar}
                       </AvatarFallback>
                     </Avatar>
@@ -225,7 +255,7 @@ export function AppSidebar() {
                     {activeUser.email === user.email && <Check className="size-4 text-primary" />}
                   </DropdownMenuItem>
                 ))}
-                <div className="h-px bg-border/50 my-2" />
+                <div className="h-px bg-card my-2" />
                 <DropdownMenuItem className="rounded-xl text-muted-foreground">
                   <Settings className="size-4 mr-2" />
                   <span>Account Settings</span>

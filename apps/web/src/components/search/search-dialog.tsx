@@ -233,7 +233,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                     onSelect={() => handleSelect(result)}
                     className={cn(
                       "cursor-pointer py-3",
-                      "data-[selected='true']:bg-white/60"
+                      "data-[selected='true']:bg-card"
                     )}
                     aria-label={`${result.title}, ${similarityPercent}% match`}
                   >
@@ -248,7 +248,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                           </p>
                           {result.metadata?.isHighYield && (
                             <Badge
-                              className="text-xs py-0 px-1 bg-yellow-500/10 text-yellow-700 border-yellow-500/20"
+                              className="text-xs py-0 px-1 bg-card text-yellow-700 border-yellow-500/20"
                               aria-label="High-yield"
                             >
                               HY
@@ -302,7 +302,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
 
       {/* Keyboard shortcuts hint */}
       <div
-        className="border-t border-white/20 px-3 py-2 text-xs text-muted-foreground/70"
+        className="border-t border-border px-3 py-2 text-xs text-muted-foreground/70"
         role="status"
         aria-label="Keyboard shortcuts"
       >

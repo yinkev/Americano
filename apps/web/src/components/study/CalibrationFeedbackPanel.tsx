@@ -120,7 +120,7 @@ export function CalibrationFeedbackPanel({
 
   return (
     <div
-      className="space-y-6 p-6 rounded-lg border bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]"
+      className="space-y-6 p-6 rounded-lg border bg-card  shadow-none"
       style={{
         borderColor: 'oklch(0.9 0.02 240)',
       }}

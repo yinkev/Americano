@@ -249,7 +249,7 @@ export function SessionRecommendationDialog({
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="max-w-3xl rounded-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl rounded-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="space-y-3">
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-blue-100 p-3">
@@ -372,7 +372,7 @@ export function SessionRecommendationDialog({
                 <div
                   key={option.id}
                   className={cn(
-                    'rounded-lg border-2 p-4 cursor-pointer transition-all hover:shadow-md',
+                    'rounded-lg border-2 p-4 cursor-pointer transition-all hover:shadow-none',
                     selectedOption === option.id
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300',

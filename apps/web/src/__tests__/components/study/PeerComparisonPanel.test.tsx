@@ -440,8 +440,8 @@ describe('PeerComparisonPanel', () => {
       });
 
       const panel = container.firstChild as HTMLElement;
-      expect(panel).toHaveClass('backdrop-blur-xl');
-      expect(panel).toHaveClass('bg-white/95');
+      expect(panel).toHaveClass('');
+      expect(panel).toHaveClass('bg-card');
     });
 
     it('should have proper semantic structure', async () => {

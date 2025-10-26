@@ -176,7 +176,7 @@ export function SavedSearches({ onRunSearch, className = '' }: SavedSearchesProp
 
   if (loading) {
     return (
-      <div className={`rounded-lg border border-oklch-gray-200 bg-white/80 backdrop-blur-md p-6 ${className}`}>
+      <div className={`rounded-lg border border-oklch-gray-200 bg-card  p-6 ${className}`}>
         <div className="animate-pulse">
           <div className="h-6 bg-oklch-gray-200 rounded w-1/3 mb-4"></div>
           <div className="space-y-3">
@@ -204,7 +204,7 @@ export function SavedSearches({ onRunSearch, className = '' }: SavedSearchesProp
   }
 
   return (
-    <div className={`rounded-lg border border-oklch-gray-200 bg-white/80 backdrop-blur-md ${className}`}>
+    <div className={`rounded-lg border border-oklch-gray-200 bg-card  ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-oklch-gray-200">
         <h3 className="text-lg font-semibold text-oklch-gray-900">

@@ -67,7 +67,7 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot, className = '' }: 
 
   if (loading) {
     return (
-      <Card className={`shadow-sm ${className}`}>
+      <Card className={`shadow-none ${className}`}>
         <CardHeader className="p-4 pb-0">
           <h3 className="font-heading font-semibold text-foreground text-[16px]">Optimal Study Times</h3>
         </CardHeader>
@@ -82,7 +82,7 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot, className = '' }: 
 
   if (error || slots.length === 0) {
     return (
-      <Card className={`shadow-sm ${className}`}>
+      <Card className={`shadow-none ${className}`}>
         <CardHeader className="p-4 pb-0">
           <h3 className="font-heading font-semibold text-foreground text-[16px]">Optimal Study Times</h3>
         </CardHeader>
@@ -100,7 +100,7 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot, className = '' }: 
   }
 
   return (
-    <Card className={`shadow-sm ${className}`}>
+    <Card className={`shadow-none ${className}`}>
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
           <h3 className="font-heading font-semibold text-foreground text-[16px]">Optimal Study Times</h3>
@@ -162,7 +162,7 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
 
   return (
     <div
-      className="p-4 rounded-lg border transition-all hover:shadow-md"
+      className="p-4 rounded-lg border transition-all hover:shadow-none"
       style={{
         backgroundColor: 'oklch(0.98 0 0)',
         borderColor: slot.calendarConflict ? availabilityColor : 'oklch(0.9 0 0)',
@@ -278,7 +278,7 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
       <div className="mt-3">
         <button
           onClick={() => setShowDetails(!showDetails)}
-          className="w-full flex items-center justify-between p-2 rounded hover:bg-muted/50 transition-colors text-[13px]"
+          className="w-full flex items-center justify-between p-2 rounded hover:bg-card transition-colors text-[13px]"
           aria-expanded={showDetails}
           aria-label="Toggle reasoning details"
         >

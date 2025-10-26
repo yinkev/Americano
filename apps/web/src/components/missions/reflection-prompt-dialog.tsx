@@ -73,7 +73,7 @@ export function ReflectionPromptDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-md border border-white/30">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card  border border-border">
         <DialogHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
@@ -123,7 +123,7 @@ export function ReflectionPromptDialog({
                   }))
                 }
                 placeholder="Example: Spaced repetition, active recall, teaching concepts to others..."
-                className="min-h-[100px] bg-white/60 border-white/30 focus:border-[oklch(0.7_0.15_230)] focus:ring-[oklch(0.7_0.15_230)]/20"
+                className="min-h-[100px] bg-card border-border focus:border-[oklch(0.7_0.15_230)] focus:ring-[oklch(0.7_0.15_230)]/20"
                 disabled={submitting}
               />
             </div>
@@ -146,7 +146,7 @@ export function ReflectionPromptDialog({
                   }))
                 }
                 placeholder="Example: Complex anatomy structures, physiology mechanisms, clinical reasoning..."
-                className="min-h-[100px] bg-white/60 border-white/30 focus:border-[oklch(0.7_0.15_230)] focus:ring-[oklch(0.7_0.15_230)]/20"
+                className="min-h-[100px] bg-card border-border focus:border-[oklch(0.7_0.15_230)] focus:ring-[oklch(0.7_0.15_230)]/20"
                 disabled={submitting}
               />
             </div>
@@ -169,7 +169,7 @@ export function ReflectionPromptDialog({
                   }))
                 }
                 placeholder="Example: I feel more confident with anatomy but still uncertain about pathophysiology..."
-                className="min-h-[100px] bg-white/60 border-white/30 focus:border-[oklch(0.7_0.15_230)] focus:ring-[oklch(0.7_0.15_230)]/20"
+                className="min-h-[100px] bg-card border-border focus:border-[oklch(0.7_0.15_230)] focus:ring-[oklch(0.7_0.15_230)]/20"
                 disabled={submitting}
               />
             </div>
@@ -192,7 +192,7 @@ export function ReflectionPromptDialog({
                   }))
                 }
                 placeholder="Any other observations, patterns, or goals you'd like to note..."
-                className="min-h-[80px] bg-white/60 border-white/30 focus:border-[oklch(0.7_0.15_230)] focus:ring-[oklch(0.7_0.15_230)]/20"
+                className="min-h-[80px] bg-card border-border focus:border-[oklch(0.7_0.15_230)] focus:ring-[oklch(0.7_0.15_230)]/20"
                 disabled={submitting}
               />
             </div>
@@ -208,12 +208,12 @@ export function ReflectionPromptDialog({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-between gap-3 pt-4 border-t border-white/30">
+          <div className="flex items-center justify-between gap-3 pt-4 border-t border-border">
             <Button
               variant="outline"
               onClick={handleSkip}
               disabled={submitting}
-              className="border-white/30 hover:bg-white/60"
+              className="border-border hover:bg-card"
             >
               Skip for Now
             </Button>

@@ -86,7 +86,7 @@ export function StudyTimeHeatmap() {
 
   if (error || !data) {
     return (
-      <Alert className="bg-destructive/10 border-destructive/20">
+      <Alert className="bg-card border-destructive/20">
         <AlertDescription className="text-destructive">{error || 'No heatmap data available'}</AlertDescription>
       </Alert>
     )
@@ -191,7 +191,7 @@ export function StudyTimeHeatmap() {
       {/* Tooltip */}
       {hoveredCell && (
         <div
-          className="fixed z-50 px-3 py-2 rounded-md shadow-lg pointer-events-none"
+          className="fixed z-50 px-3 py-2 rounded-md shadow-none pointer-events-none"
           style={{
             backgroundColor: 'oklch(0.2 0.05 230)',
             color: 'oklch(0.98 0 0)',

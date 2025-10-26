@@ -1,17 +1,18 @@
 ---
 title: "Americano - Project Documentation (Claude)"
-description: "Standards and decisions for analytics subsystems and hybrid Python/TypeScript architecture."
+description: "Standards and decisions for analytics subsystems, hybrid Python/TypeScript architecture, and UI/UX design system."
 type: "Guide"
 status: "Active"
-version: "1.1"
+version: "1.2"
 owner: "Kevy"
 review_cadence: "Per Epic"
 created_date: "2025-10-16T09:00:00-07:00"
-last_updated: "2025-10-24T10:08:00-07:00"
-last_reviewed: "2025-10-24T10:08:00-07:00"
+last_updated: "2025-10-25T12:30:00-07:00"
+last_reviewed: "2025-10-25T12:30:00-07:00"
 depends_on:
   - docs/architecture/ADR-001-hybrid-typescript-python.md
   - docs/architecture/ADR-006-motion-standard.md
+  - docs/UI-UX-DESIGN-SYSTEM.md
 affects:
   - apps/api
   - apps/ml-service
@@ -20,7 +21,7 @@ audience:
   - experienced-devs
   - architects
 technical_level: "Advanced"
-tags: ["analytics", "python", "fastapi", "testing", "animation"]
+tags: ["analytics", "python", "fastapi", "testing", "animation", "design-system", "ui-ux"]
 search_priority: "high"
 lifecycle:
   stage: "Active"
@@ -216,6 +217,296 @@ This is the Americano adaptive learning platform, integrating Epic 4 (Understand
 - Animations: Use motion.dev (`motion/react`). Do not use `framer-motion`.
 - Package manager: npm workspaces (no pnpm/yarn locks).
 - Prisma: JS/TS on v6. For Python, avoid expanding `prisma` usage; plan migration to SQLAlchemy within `apps/ml-service`.
+
+---
+
+## UI/UX Design System (2025-2026)
+
+**Status:** ACTIVE | **Date Established:** 2025-10-25
+**Design System Version:** 1.0.0
+**Complete Guide:** [docs/UI-UX-DESIGN-SYSTEM.md](./docs/UI-UX-DESIGN-SYSTEM.md)
+
+### Design Philosophy
+
+**Aesthetic:** Apple "Think Different" minimalism meets playful, expressive medical education
+**Quality Bar:** World-class 2025-2026 UI/UX patterns with cognitive science backing
+
+**Core Principles:**
+- **Subtle over flashy** - Sophisticated, not aggressive
+- **Breathable whitespace** - "Bento box" card layouts with clear visual hierarchy
+- **Physics-based motion** - Natural spring animations via motion.dev
+- **Perceptually uniform colors** - OKLCH color space for accessibility
+- **Accessibility first** - WCAG 2.1 AAA compliance, respects `prefers-reduced-motion`
+
+**Anti-Patterns (Explicitly Avoided):**
+- ❌ NO glassmorphism (outdated 2024 trend)
+- ❌ NO heavy gradients (replaced with solid OKLCH colors)
+- ❌ NO aggressive animations (subtle springs only)
+- ❌ NO cluttered layouts (minimalist bento box grid)
+
+### Design System Components
+
+**Location:** `apps/web/src/lib/design-system/`
+
+**Core Modules:**
+1. **colors.ts** - OKLCH color tokens (light/dark modes, semantic colors, gamification palette)
+2. **animations.ts** - motion.dev presets (spring physics, page transitions, celebration effects)
+3. **typography.ts** - Font families (Figtree headings, Inter body), scales, preset styles
+4. **spacing.ts** - 4px grid system (0-128px scale), padding/margin/gap utilities
+5. **index.ts** - Barrel export with design philosophy constants
+
+**Usage:**
+```typescript
+import { springSubtle, buttonPrimaryVariants, textH1, spacing, colors } from '@/lib/design-system'
+```
+
+### Color System (OKLCH)
+
+**Primary Palette:**
+- **Light Mode:** `oklch(0.75 0.12 240)` - Soft blue primary
+- **Dark Mode:** `oklch(0.6 0.15 250)` - Vibrant blue for OLED
+- **Accent:** `oklch(0.78 0.13 340)` - Vibrant pink for CTAs
+
+**Gamification Colors:**
+- **Energy:** `oklch(0.7 0.18 50)` - Warm orange for XP
+- **Clinical:** `oklch(0.6 0.15 230)` - Professional blue for clinical skills
+- **Lab:** `oklch(0.65 0.12 160)` - Fresh green for lab work
+
+**Why OKLCH:**
+- Perceptual uniformity (equal lightness across hues)
+- Better accessibility (predictable contrast ratios)
+- Consistent brightness (no HSL "dark yellow" problem)
+- Future-proof (CSS Color Level 4 standard)
+
+### Typography System
+
+**Heading Font:** Figtree (Geometric sans-serif)
+- Clean, modern, Apple-inspired
+- Used for H1-H6, display text
+- Weights: 300 (light), 400 (regular), 600 (semibold), 700 (bold)
+
+**Body Font:** Inter (Humanist sans-serif)
+- Optimized for long-form reading
+- High legibility at all sizes
+- Used for body text, captions, UI labels
+- Weights: 400 (regular), 500 (medium), 600 (semibold)
+
+**Scale:** 1.25 ratio (major third)
+- xs: 12px, sm: 14px, base: 16px, lg: 20px, xl: 25px, 2xl: 31px, 3xl: 39px, 4xl: 49px
+
+**Utilities:**
+- `textTruncate` - Single-line ellipsis
+- `textClamp(lines)` - Multi-line clamping
+- `textBalance` - Balanced headings (CSS `text-wrap: balance`)
+- `textPretty` - Better line breaks (CSS `text-wrap: pretty`)
+
+### Animation System (motion.dev v12.23.24)
+
+**Spring Physics Presets:**
+- `springSubtle` - Default (stiffness: 200, damping: 25) - Most UI interactions
+- `springSmooth` - Cards/modals (stiffness: 180, damping: 28) - Larger elements
+- `springResponsive` - Buttons/toggles (stiffness: 240, damping: 22) - Immediate feedback
+- `springGentle` - Tooltips/popovers (stiffness: 160, damping: 30) - Delicate animations
+- `springBouncy` - Achievements ONLY (stiffness: 220, damping: 15) - Celebratory
+
+**Button Variants:**
+```typescript
+// Primary button: Subtle scale + lift
+buttonPrimaryVariants = {
+  initial: { scale: 1, y: 0 },
+  hover: { scale: 1.02, y: -1 },
+  tap: { scale: 0.98, y: 0 },
+}
+```
+
+**Page Transitions:**
+- `pageSlideInVariants` - Slide + fade from right (forward navigation)
+- `pageFadeVariants` - Simple fade (non-directional)
+- `pageScaleVariants` - Scale + fade (modals/dialogs)
+
+**Celebration Animations:**
+- `xpIncrementVariants` - Number pops up and fades (+50 XP)
+- `achievementUnlockVariants` - Badge scales in with bounce
+- `confettiVariants` - Particle physics with gravity
+- `progressFillVariants` - Smooth progress bar fill
+
+**Accessibility:**
+- Respects `prefers-reduced-motion` (instant transitions if reduced)
+- `getMotionPreference(transition)` helper utility
+
+### Spacing System
+
+**Grid:** 4px base unit
+**Scale:** 0, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 80, 96, 112, 128px
+
+**Utilities:**
+- `spacing(key)` - Get spacing value (e.g., `spacing('4')` → `'16px'`)
+- `padding(size)`, `paddingX(size)`, `paddingY(size)` - Padding helpers
+- `margin(size)`, `marginX(size)`, `marginY(size)` - Margin helpers
+- `gap(size)`, `gapX(size)`, `gapY(size)` - Flex/grid gap helpers
+
+**Container Widths:**
+- `sm: 640px`, `md: 768px`, `lg: 1024px`, `xl: 1280px`, `2xl: 1536px`
+
+**Responsive Spacing:**
+```typescript
+responsiveSpacing({ base: '4', md: '6', lg: '8' })
+// Returns: { base: '16px', md: '24px', lg: '32px' }
+```
+
+### UI Component Architecture
+
+**Foundation (shadcn/ui):** 40+ components installed
+- Layout: `Sidebar`, `Card`, `Sheet`, `Separator`, `ScrollArea`
+- Forms: `Input`, `Textarea`, `Select`, `Checkbox`, `Radio`, `Switch`, `Slider`
+- Feedback: `Button`, `Badge`, `Toast`, `Alert`, `Progress`
+- Navigation: `Tabs`, `Accordion`, `Breadcrumb`, `Pagination`
+- Overlays: `Dialog`, `Popover`, `Tooltip`, `DropdownMenu`
+
+**Global Layout Pattern:**
+- `SidebarProvider` wrapping app in root layout
+- `SidebarInset` for main content area
+- Collapsible sidebar (icon mode for responsive)
+- NO glassmorphism styling (solid backgrounds)
+- OKLCH colors from design system
+
+**Theme System:**
+- `next-themes` for dark/light mode toggle
+- System preference detection
+- CSS variables for all color tokens
+- `data-theme` attribute on `<html>` tag
+
+### Page Architecture (40+ Pages Being Redesigned)
+
+**Core Sections:**
+1. **Dashboard (Home)** - Mission cards, XP progress, quick actions, upcoming reviews
+2. **Study** - Flashcard review, mission progress, objective content
+3. **Library** - Lecture management, course organization, bulk actions, upload
+4. **Progress** - Mastery distribution, performance trends, weak areas
+5. **Priorities** - Study queue, mission adaptation, personalization
+6. **Analytics/Insights** - Behavioral twin, learning patterns, recommendations, goals
+7. **Settings** - Personalization, calendar integration, privacy controls
+8. **Quests** - Gamification layer (NEW experimental section)
+
+**Design Patterns Per Section:**
+- Bento box card layouts (rounded corners, clear modules)
+- Subtle hover effects (lift + shadow)
+- Stagger animations for lists/grids
+- Empty states with playful illustrations
+- Loading skeletons with pulse animations
+
+### UX Psychology Principles
+
+**Cognitive Load Reduction:**
+- One primary action per screen (vibrant accent color)
+- Clear visual hierarchy (typography scale + spacing)
+- Chunked information (bento box cards)
+- Progressive disclosure (accordions, tabs)
+
+**Emotional Design:**
+- Playful celebrations (confetti, badges, XP pops)
+- Encouraging feedback ("You're on a 7-day streak!")
+- Calm color palette (reduces study anxiety)
+- Subtle animations (feels alive, responsive)
+
+**Anticipatory UX:**
+- Predictive content surfacing (Behavioral Twin)
+- Adaptive layouts (VARK learning style support)
+- Burnout prevention (suggested breaks, low-stakes games)
+- "Serendipity Mode" (random interesting medical facts)
+
+**Flow & Focus:**
+- "Cognitive tunnels" for deep work (case studies fade out distractions)
+- Minimal context-switching (smooth transitions)
+- Clear progress indicators (gamified XP bars)
+- Distraction-free study modes
+
+### Development Standards
+
+**Component Creation:**
+1. ✅ Fetch latest shadcn/ui component docs via MCP
+2. ✅ Install component: `npx shadcn@latest add <component>`
+3. ✅ Import design system tokens: `import { springSubtle, colors, spacing } from '@/lib/design-system'`
+4. ✅ Apply motion.dev animations: `<motion.div variants={buttonPrimaryVariants} />`
+5. ✅ Use OKLCH colors: `className="bg-primary text-primary-foreground"`
+6. ✅ Follow spacing system: `className="p-4 gap-6"` (4px grid)
+7. ✅ Test dark mode: Toggle theme, verify contrast
+8. ✅ Test `prefers-reduced-motion`: Verify instant transitions
+
+**Animation Best Practices:**
+- Default to `springSubtle` for most interactions
+- Use `springBouncy` ONLY for celebrations (XP, achievements)
+- Always provide `initial`, `animate`, `exit` variants
+- Use `getMotionPreference()` wrapper for accessibility
+- Stagger children with `listContainerVariants` + `listItemVariants`
+
+**Color Usage:**
+- Primary: Main brand actions (buttons, links, sidebar active)
+- Accent: Single most important CTA per screen
+- Secondary: Supporting actions, less emphasis
+- Muted: Subtle backgrounds, disabled states
+- Semantic: Success (green), Warning (yellow), Destructive (red), Info (blue)
+- Gamification: Energy (orange XP), Clinical (blue skills), Lab (green progress)
+
+**Accessibility Checklist:**
+- [ ] WCAG 2.1 AAA contrast ratios (OKLCH helps guarantee this)
+- [ ] Keyboard navigation (tab, arrow keys, enter, esc)
+- [ ] Focus indicators (visible rings on all interactive elements)
+- [ ] Screen reader labels (`aria-label`, `aria-describedby`)
+- [ ] `prefers-reduced-motion` respected (instant transitions)
+- [ ] Color not sole indicator (icons, text labels)
+
+### File Locations
+
+**Design System:**
+- Core: `apps/web/src/lib/design-system/` (colors, animations, typography, spacing, index)
+- Docs: `docs/UI-UX-DESIGN-SYSTEM.md` (complete guide)
+- Spec: `docs/design-system-spec.md` (technical spec)
+- Direction: `docs/design-direction.md` (design philosophy)
+
+**Components:**
+- shadcn/ui: `apps/web/src/components/ui/` (button, card, input, etc.)
+- Layout: `apps/web/src/components/` (new-app-sidebar.tsx, etc.)
+- Feature-specific: `apps/web/src/components/{dashboard,library,study,progress,etc.}/`
+
+**Pages:**
+- App Router: `apps/web/src/app/` (page.tsx for routes)
+- Layouts: `apps/web/src/app/layout.tsx` (root layout with SidebarProvider)
+
+**Globals:**
+- CSS: `apps/web/src/app/globals.css` (Tailwind v4 @theme, CSS variables)
+- Fonts: `apps/web/src/app/layout.tsx` (next/font integration)
+
+### Migration Notes
+
+**From Epic 5 Design System:**
+- ✅ Retained: OKLCH color system (same tokens)
+- ✅ Retained: motion.dev v12.23.24 (same library)
+- ❌ Removed: Glassmorphism styling (outdated trend)
+- ❌ Removed: Gradient backgrounds (replaced with solid OKLCH)
+- ✅ Improved: Typography scale (1.25 ratio, clearer hierarchy)
+- ✅ Improved: Spacing system (4px grid, utility functions)
+- ✅ New: Apple minimalism aesthetic (breathable whitespace)
+- ✅ New: Bento box layouts (clear visual modules)
+
+**Breaking Changes from Old Design:**
+- NO MORE `bg-gradient-*` classes (use solid colors)
+- NO MORE `backdrop-blur-*` for cards (glassmorphism removed)
+- Typography now uses Figtree (headings) + Inter (body) instead of single font
+- Spacing must follow 4px grid (use `spacing()` helper)
+- All animations must use motion.dev (no framer-motion)
+
+### References
+
+- **ADR-006:** motion.dev Standard ([docs/architecture/ADR-006-motion-standard.md](./docs/architecture/ADR-006-motion-standard.md))
+- **Design Guide:** [docs/UI-UX-DESIGN-SYSTEM.md](./docs/UI-UX-DESIGN-SYSTEM.md)
+- **Design Spec:** [docs/design-system-spec.md](./docs/design-system-spec.md)
+- **Design Direction:** [docs/design-direction.md](./docs/design-direction.md)
+- **motion.dev Docs:** https://motion.dev
+- **OKLCH Converter:** https://oklch.com
+- **shadcn/ui Docs:** https://ui.shadcn.com
+
+---
 User → Next.js UI (TypeScript) → Next.js API Route (TypeScript proxy) → Python FastAPI Service → ChatMock/GPT-5
                                                                               ↓
                                                                          Pydantic Models
@@ -1779,3 +2070,5 @@ grep -A2 "current_phase" CLAUDE.md
 - Complete all tasks in approved phase
 - Pause after phase, await user approval for next phase
 - Do NOT proceed to next phase automatically
+- read gemini.md as well
+- <critical> All agents will ready agents.md, claude.md, gemini.md, and use context7 and chrome-devtools-mcp

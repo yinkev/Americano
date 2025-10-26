@@ -99,7 +99,7 @@ export default function BenchmarksTab() {
 
       {/* Sample Size Warning */}
       {!isStatisticallyValid && (
-        <Alert className="border-[oklch(0.75_0.12_85)] bg-[oklch(0.95_0.12_85)]/50 backdrop-blur-xl">
+        <Alert className="border-[oklch(0.75_0.12_85)] bg-[oklch(0.95_0.12_85)]/50 ">
           <AlertTriangle className="h-5 w-5 text-[oklch(0.75_0.12_85)]" />
           <AlertDescription className="ml-2 text-[oklch(0.4_0.12_85)]">
             <strong>Limited Sample Size:</strong> Only {data.sampleSize} users in your cohort.
@@ -109,7 +109,7 @@ export default function BenchmarksTab() {
       )}
 
       {/* Peer Distribution Box Plots */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl font-['DM_Sans']">
             <Users className="w-6 h-6 text-[oklch(0.6_0.18_230)]" />
@@ -133,7 +133,7 @@ export default function BenchmarksTab() {
       {/* Relative Strengths and Weaknesses */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Relative Strengths */}
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+        <Card className="bg-card  shadow-none rounded-xl border-0">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-['DM_Sans']">
               <Award className="w-5 h-5 text-[oklch(0.7_0.15_145)]" />
@@ -177,7 +177,7 @@ export default function BenchmarksTab() {
         </Card>
 
         {/* Relative Weaknesses */}
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+        <Card className="bg-card  shadow-none rounded-xl border-0">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg font-['DM_Sans']">
               <AlertTriangle className="w-5 h-5 text-[oklch(0.65_0.20_25)]" />
@@ -257,7 +257,7 @@ function PrivacyNoticeCard({ sampleSize }: PrivacyNoticeCardProps) {
   };
 
   return (
-    <Card className="bg-[oklch(0.95_0.18_230)]/50 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-[oklch(0.8_0.18_230)]">
+    <Card className="bg-[oklch(0.95_0.18_230)]/50  shadow-none rounded-xl border-[oklch(0.8_0.18_230)]">
       <CardContent className="pt-6">
         <div className="flex items-start gap-4">
           <Shield className="w-6 h-6 text-[oklch(0.6_0.18_230)] shrink-0 mt-1" />
@@ -459,7 +459,7 @@ function CustomTooltip({ active, payload }: any) {
   const data = payload[0].payload;
 
   return (
-    <div className="bg-white/95 backdrop-blur-xl shadow-xl rounded-xl p-4 border border-[oklch(0.9_0.05_240)]">
+    <div className="bg-card  shadow-none rounded-xl p-4 border border-[oklch(0.9_0.05_240)]">
       <p className="font-semibold text-[oklch(0.3_0.05_240)] mb-2">
         {data.name}
       </p>
@@ -508,7 +508,7 @@ function GrowthRateComparison({ sampleSize }: GrowthRateComparisonProps) {
   ];
 
   return (
-    <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+    <Card className="bg-card  shadow-none rounded-xl border-0">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl font-['DM_Sans']">
           {isAboveAverage ? (
@@ -573,7 +573,7 @@ function GrowthRateComparison({ sampleSize }: GrowthRateComparisonProps) {
                     if (!active || !payload || !payload.length) return null;
                     const data = payload[0];
                     return (
-                      <div className="bg-white/95 backdrop-blur-xl shadow-xl rounded-xl p-3 border border-[oklch(0.9_0.05_240)]">
+                      <div className="bg-card  shadow-none rounded-xl p-3 border border-[oklch(0.9_0.05_240)]">
                         <p className="font-semibold text-[oklch(0.3_0.05_240)]">
                           {data.payload.category}
                         </p>
@@ -628,7 +628,7 @@ function BenchmarksSkeleton() {
   return (
     <div className="space-y-6">
       {/* Privacy notice skeleton */}
-      <Card className="h-40 animate-pulse bg-white/95 backdrop-blur-xl rounded-2xl border-0">
+      <Card className="h-40 animate-pulse bg-card  rounded-xl border-0">
         <CardContent className="pt-6">
           <div className="space-y-3">
             <div className="h-4 w-48 bg-[oklch(0.9_0.05_240)] rounded" />
@@ -639,7 +639,7 @@ function BenchmarksSkeleton() {
       </Card>
 
       {/* Box plots skeleton */}
-      <Card className="h-[600px] animate-pulse bg-white/95 backdrop-blur-xl rounded-2xl border-0">
+      <Card className="h-[600px] animate-pulse bg-card  rounded-xl border-0">
         <CardHeader>
           <div className="h-6 w-64 bg-[oklch(0.9_0.05_240)] rounded" />
         </CardHeader>
@@ -657,7 +657,7 @@ function BenchmarksSkeleton() {
         {[1, 2].map((i) => (
           <Card
             key={i}
-            className="h-64 animate-pulse bg-white/95 backdrop-blur-xl rounded-2xl border-0"
+            className="h-64 animate-pulse bg-card  rounded-xl border-0"
           >
             <CardHeader>
               <div className="h-5 w-40 bg-[oklch(0.9_0.05_240)] rounded" />

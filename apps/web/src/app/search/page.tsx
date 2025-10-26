@@ -128,7 +128,7 @@ export default function SearchPage() {
 
               {/* Search Tips */}
               {query.length === 0 && (
-                <Card className="border-white/40 bg-white/80 backdrop-blur-md">
+                <Card className="border-border bg-card ">
                   <CardHeader>
                     <CardTitle className="text-sm">Search Tips</CardTitle>
                   </CardHeader>
@@ -142,7 +142,7 @@ export default function SearchPage() {
               )}
 
               {/* Keyboard Shortcuts */}
-              <Card className="border-white/40 bg-white/80 backdrop-blur-md">
+              <Card className="border-border bg-card ">
                 <CardHeader>
                   <CardTitle className="text-sm">Keyboard Shortcuts</CardTitle>
                 </CardHeader>
@@ -173,7 +173,7 @@ export default function SearchPage() {
           {/* Results Area */}
           <main className="flex-1 min-w-0">
             {query.length > 0 && query.length < 2 && (
-              <Card className="border-white/40 bg-white/80 backdrop-blur-md text-center py-8">
+              <Card className="border-border bg-card  text-center py-8">
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
                     Enter at least 2 characters to search
@@ -191,7 +191,7 @@ export default function SearchPage() {
                       {totalResults} {totalResults === 1 ? "result" : "results"} found
                       {query && ` for "${query}"`}
                     </h2>
-                    <Separator className="mt-2 bg-white/40" />
+                    <Separator className="mt-2 bg-card" />
                   </div>
                 )}
 

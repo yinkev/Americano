@@ -6,7 +6,7 @@ export default function NotFound() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Glassmorphism Card with OKLCH colors - NO gradients */}
-        <div className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-8">
+        <div className="rounded-xl bg-card  border border-border shadow-none p-8">
           {/* 404 Icon */}
           <div className="flex justify-center mb-6">
             <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-4">
@@ -33,7 +33,7 @@ export default function NotFound() {
                 href="/"
                 className="inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[160px] px-6 py-3
                            rounded-lg bg-[oklch(0.7_0.15_230)] text-white font-medium
-                           shadow-md hover:shadow-lg hover:bg-[oklch(0.65_0.15_230)]
+                           shadow-none hover:shadow-none hover:bg-[oklch(0.65_0.15_230)]
                            transition-all duration-200 hover:scale-[1.02]
                            focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[oklch(0.7_0.15_230)]"
               >

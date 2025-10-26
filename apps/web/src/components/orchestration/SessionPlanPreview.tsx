@@ -88,7 +88,7 @@ export function SessionPlanPreview({ plan, loading, onCustomize, className = '' 
 
   if (loading) {
     return (
-      <Card className={`shadow-sm ${className}`}>
+      <Card className={`shadow-none ${className}`}>
         <CardHeader className="p-4 pb-0">
           <h3 className="font-heading font-semibold text-foreground text-[16px]">Session Plan</h3>
         </CardHeader>
@@ -106,7 +106,7 @@ export function SessionPlanPreview({ plan, loading, onCustomize, className = '' 
 
   if (!plan) {
     return (
-      <Card className={`shadow-sm ${className}`}>
+      <Card className={`shadow-none ${className}`}>
         <CardHeader className="p-4 pb-0">
           <h3 className="font-heading font-semibold text-foreground text-[16px]">Session Plan</h3>
         </CardHeader>
@@ -156,7 +156,7 @@ export function SessionPlanPreview({ plan, loading, onCustomize, className = '' 
 
   return (
     <Card
-      className={`shadow-sm hover:shadow-md transition-shadow ${className}`}
+      className={`shadow-none hover:shadow-none transition-shadow-none ${className}`}
       role="region"
       aria-label="Session Plan Preview"
     >

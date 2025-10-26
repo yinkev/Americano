@@ -25,7 +25,7 @@ import { useRefreshAll } from '@/hooks/use-understanding-analytics';
  * - Responsive layout (3 → 2 → 1 columns)
  *
  * Design System (C-7):
- * - Glassmorphism: bg-white/95 backdrop-blur-xl
+ * - Glassmorphism: bg-card 
  * - OKLCH colors: oklch(0.6_0.05_240) for text
  * - Typography: Inter (body), DM Sans (headings)
  * - Touch targets: min 44px
@@ -156,7 +156,7 @@ export function UnderstandingDashboard() {
 
       {/* Tabbed Analytics Views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-1 rounded-2xl flex-wrap h-auto">
+        <TabsList className="bg-card  shadow-none p-1 rounded-xl flex-wrap h-auto">
           <TabsTrigger value="overview" className="min-h-[44px]">
             Overview
           </TabsTrigger>
@@ -248,7 +248,7 @@ function TabSkeleton() {
       {[1, 2, 3, 4, 5, 6].map((i) => (
         <Card
           key={i}
-          className="h-48 bg-white/95 backdrop-blur-xl animate-pulse"
+          className="h-48 bg-card  animate-pulse"
         >
           <CardContent className="p-6">
             <div className="space-y-3">

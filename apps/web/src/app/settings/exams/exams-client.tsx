@@ -130,7 +130,7 @@ export function ExamsClient({ exams: initialExams, courses }: ExamsClientProps) 
       <div className="flex justify-end">
         <ExamDialog
           trigger={
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-none hover:shadow-none transition-all duration-200">
               <Plus className="h-4 w-4 mr-2" />
               Add Exam
             </Button>
@@ -150,7 +150,7 @@ export function ExamsClient({ exams: initialExams, courses }: ExamsClientProps) 
             {upcomingExams.map((exam) => (
               <Card
                 key={exam.id}
-                className="bg-white/80 backdrop-blur-md border-white/20 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl transition-all duration-200 hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)]"
+                className="bg-card  border-border shadow-none rounded-xl transition-all duration-200 hover:shadow-none"
               >
                 <CardHeader>
                   <div className="flex items-start justify-between">
@@ -167,7 +167,7 @@ export function ExamsClient({ exams: initialExams, courses }: ExamsClientProps) 
                         variant="ghost"
                         size="icon"
                         onClick={() => setEditingExam(exam)}
-                        className="h-8 w-8 rounded-lg hover:bg-white/60"
+                        className="h-8 w-8 rounded-lg hover:bg-card"
                       >
                         <Pencil className="h-4 w-4 text-gray-600" />
                       </Button>
@@ -175,7 +175,7 @@ export function ExamsClient({ exams: initialExams, courses }: ExamsClientProps) 
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteExam(exam.id)}
-                        className="h-8 w-8 rounded-lg hover:bg-white/60 hover:text-red-600"
+                        className="h-8 w-8 rounded-lg hover:bg-card hover:text-red-600"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -196,7 +196,7 @@ export function ExamsClient({ exams: initialExams, courses }: ExamsClientProps) 
                           <Badge
                             key={idx}
                             variant="secondary"
-                            className="bg-white/60 text-gray-700 text-xs rounded-lg border-gray-200"
+                            className="bg-card text-gray-700 text-xs rounded-lg border-gray-200"
                           >
                             {topic}
                           </Badge>
@@ -204,7 +204,7 @@ export function ExamsClient({ exams: initialExams, courses }: ExamsClientProps) 
                         {exam.coverageTopics.length > 3 && (
                           <Badge
                             variant="secondary"
-                            className="bg-white/60 text-gray-700 text-xs rounded-lg border-gray-200"
+                            className="bg-card text-gray-700 text-xs rounded-lg border-gray-200"
                           >
                             +{exam.coverageTopics.length - 3} more
                           </Badge>
@@ -227,7 +227,7 @@ export function ExamsClient({ exams: initialExams, courses }: ExamsClientProps) 
             {pastExams.map((exam) => (
               <Card
                 key={exam.id}
-                className="bg-white/60 backdrop-blur-md border-white/20 shadow-[0_4px_16px_rgba(31,38,135,0.06)] rounded-2xl opacity-75"
+                className="bg-card  border-border shadow-none rounded-xl opacity-75"
               >
                 <CardHeader>
                   <div className="flex items-start justify-between">
@@ -243,7 +243,7 @@ export function ExamsClient({ exams: initialExams, courses }: ExamsClientProps) 
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDeleteExam(exam.id)}
-                      className="h-8 w-8 rounded-lg hover:bg-white/60 hover:text-red-600"
+                      className="h-8 w-8 rounded-lg hover:bg-card hover:text-red-600"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -263,7 +263,7 @@ export function ExamsClient({ exams: initialExams, courses }: ExamsClientProps) 
 
       {/* Empty State */}
       {exams.length === 0 && (
-        <Card className="bg-white/80 backdrop-blur-md border-white/20 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+        <Card className="bg-card  border-border shadow-none rounded-xl">
           <CardContent className="p-12 text-center">
             <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600 text-lg mb-2">No exams scheduled</p>

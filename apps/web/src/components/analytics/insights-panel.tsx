@@ -125,7 +125,7 @@ export function InsightsPanel() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  border-border shadow-none">
         <CardContent className="p-6">
           <div className="animate-pulse space-y-4">
             <div className="h-6 bg-muted rounded w-1/3" />
@@ -139,7 +139,7 @@ export function InsightsPanel() {
 
   if (insights.length === 0) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  border-border shadow-none">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-[oklch(0.7_0.15_230)]/10 p-2">

@@ -83,7 +83,7 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30">
+      <div className="flex items-center justify-center h-96 bg-card  rounded-xl shadow-none border border-border">
         <div className="text-[13px] text-muted-foreground">Loading completion data...</div>
       </div>
     )
@@ -91,7 +91,7 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
 
   if (data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 bg-white/80 backdrop-blur-md rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/30 p-6">
+      <div className="flex flex-col items-center justify-center h-96 bg-card  rounded-xl shadow-none border border-border p-6">
         <Calendar className="size-12 text-muted-foreground mb-4" />
         <div className="text-[13px] text-muted-foreground">No mission data available yet.</div>
         <p className="text-[11px] text-muted-foreground mt-2">
@@ -102,7 +102,7 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
   }
 
   return (
-    <div className={`${glassmorphism.light} rounded-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all p-6`}>
+    <div className={`${glassmorphism.light} rounded-xl shadow-none hover:shadow-none transition-all p-6`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -119,7 +119,7 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
             className={`p-2 rounded-lg transition-colors ${
               selectedChartType === 'line'
                 ? `bg-[${colors.clinical}] text-white`
-                : `bg-white/60 text-[${colors.mutedForeground}] hover:bg-white/80`
+                : `bg-card text-[${colors.mutedForeground}] hover:bg-card`
             }`}
             aria-label="Line chart"
             title="Line chart"
@@ -131,7 +131,7 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
             className={`p-2 rounded-lg transition-colors ${
               selectedChartType === 'bar'
                 ? `bg-[${colors.clinical}] text-white`
-                : `bg-white/60 text-[${colors.mutedForeground}] hover:bg-white/80`
+                : `bg-card text-[${colors.mutedForeground}] hover:bg-card`
             }`}
             aria-label="Bar chart"
             title="Bar chart"
@@ -151,7 +151,7 @@ export function MissionCompletionChart({ period = '30d', chartType = 'line' }: P
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                 selectedPeriod === p
                   ? `bg-[${colors.clinical}] text-white`
-                  : `bg-white/60 text-[${colors.mutedForeground}] hover:bg-white/80`
+                  : `bg-card text-[${colors.mutedForeground}] hover:bg-card`
               }`}
             >
               {p === '7d' ? '7 Days' : p === '30d' ? '30 Days' : '90 Days'}

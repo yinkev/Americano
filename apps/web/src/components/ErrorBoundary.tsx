@@ -92,7 +92,7 @@ export class ErrorBoundary extends Component<Props, State> {
           role="alert"
           aria-live="assertive"
         >
-          <div className="max-w-md w-full rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-8">
+          <div className="max-w-md w-full rounded-xl bg-card  border border-border shadow-none p-8">
             {/* Error Icon */}
             <div className="flex justify-center mb-6">
               <div

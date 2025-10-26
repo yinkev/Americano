@@ -103,7 +103,7 @@ export function PeerComparisonPanel({ userId, courseId, className = '' }: PeerCo
 
   if (loading) {
     return (
-      <div className={`bg-white/95 backdrop-blur-xl rounded-lg p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] ${className}`}>
+      <div className={`bg-card  rounded-lg p-6 shadow-none ${className}`}>
         <div className="flex items-center justify-center py-12">
           <div className="animate-pulse text-[oklch(0.6_0.05_240)]">Loading peer comparison...</div>
         </div>
@@ -113,7 +113,7 @@ export function PeerComparisonPanel({ userId, courseId, className = '' }: PeerCo
 
   if (notEnabled) {
     return (
-      <div className={`bg-white/95 backdrop-blur-xl rounded-lg p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] ${className}`}>
+      <div className={`bg-card  rounded-lg p-6 shadow-none ${className}`}>
         <div className="text-center py-8">
           <Users className="w-12 h-12 mx-auto mb-4 text-[oklch(0.6_0.05_240)]" />
           <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'DM Sans, sans-serif' }}>
@@ -136,7 +136,7 @@ export function PeerComparisonPanel({ userId, courseId, className = '' }: PeerCo
 
   if (error) {
     return (
-      <div className={`bg-white/95 backdrop-blur-xl rounded-lg p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] ${className}`}>
+      <div className={`bg-card  rounded-lg p-6 shadow-none ${className}`}>
         <div className="flex items-center gap-3 text-[oklch(0.65_0.20_25)]">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <div>
@@ -171,7 +171,7 @@ export function PeerComparisonPanel({ userId, courseId, className = '' }: PeerCo
   const userPos = scaleToPercent(userCorrelation);
 
   return (
-    <div className={`bg-white/95 backdrop-blur-xl rounded-lg p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] ${className}`}>
+    <div className={`bg-card  rounded-lg p-6 shadow-none ${className}`}>
       <div className="flex items-center gap-3 mb-6">
         <Users className="w-6 h-6 text-[oklch(0.6_0.18_230)]" />
         <h3 className="text-xl font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>
@@ -240,7 +240,7 @@ export function PeerComparisonPanel({ userId, courseId, className = '' }: PeerCo
 
           {/* User position marker */}
           <div
-            className="absolute w-3 h-3 rounded-full bg-[oklch(0.65_0.20_25)] border-2 border-white shadow-lg z-10"
+            className="absolute w-3 h-3 rounded-full bg-[oklch(0.65_0.20_25)] border-2 border-white shadow-none z-10"
             style={{
               left: `${userPos}%`,
               top: '50%',

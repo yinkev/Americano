@@ -362,7 +362,7 @@ export function ComprehensionPromptDialog({
         open={open && (workflowState === 'PROMPT_DISPLAY' || workflowState === 'EVALUATION_RESULTS')}
         onOpenChange={onOpenChange}
       >
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-200 motion-reduce:animate-none">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-card  shadow-none motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-200 motion-reduce:animate-none">
           <DialogHeader>
             <DialogTitle className="text-2xl font-dm-sans">
               Explain to a Patient
@@ -374,7 +374,7 @@ export function ComprehensionPromptDialog({
 
           <div className="space-y-6 py-4">
             {/* Prompt Text */}
-            <div className="p-4 rounded-lg bg-oklch-primary/5 border border-oklch-primary/20">
+            <div className="p-4 rounded-lg bg-card border border-oklch-primary/20">
               <p className="text-base leading-relaxed">{prompt.promptText}</p>
             </div>
 
@@ -486,7 +486,7 @@ export function ComprehensionPromptDialog({
               <div className="space-y-6">
                 {/* Overall Score */}
                 <div
-                  className="flex flex-col items-center gap-4 p-6 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-500 motion-reduce:animate-none"
+                  className="flex flex-col items-center gap-4 p-6 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-500 motion-reduce:animate-none"
                   style={{
                     backgroundColor: 'oklch(1 0 0)',
                     borderColor: 'oklch(0.9 0.02 240)',
@@ -536,28 +536,28 @@ export function ComprehensionPromptDialog({
 
                 {/* Subscores */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-safe:delay-100 motion-reduce:animate-none">
+                  <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-500 motion-safe:delay-100 motion-reduce:animate-none">
                     <div className="flex justify-between text-sm">
                       <span>Terminology</span>
                       <span className="font-medium">{Math.round(evaluation.terminology_score)}%</span>
                     </div>
                     <Progress value={evaluation.terminology_score} className="h-2 motion-safe:transition-all motion-safe:duration-500" />
                   </div>
-                  <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-safe:delay-150 motion-reduce:animate-none">
+                  <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-500 motion-safe:delay-150 motion-reduce:animate-none">
                     <div className="flex justify-between text-sm">
                       <span>Relationships</span>
                       <span className="font-medium">{Math.round(evaluation.relationships_score)}%</span>
                     </div>
                     <Progress value={evaluation.relationships_score} className="h-2 motion-safe:transition-all motion-safe:duration-500" />
                   </div>
-                  <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-safe:delay-200 motion-reduce:animate-none">
+                  <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-500 motion-safe:delay-200 motion-reduce:animate-none">
                     <div className="flex justify-between text-sm">
                       <span>Application</span>
                       <span className="font-medium">{Math.round(evaluation.application_score)}%</span>
                     </div>
                     <Progress value={evaluation.application_score} className="h-2 motion-safe:transition-all motion-safe:duration-500" />
                   </div>
-                  <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-safe:delay-[250ms] motion-reduce:animate-none">
+                  <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-500 motion-safe:delay-[250ms] motion-reduce:animate-none">
                     <div className="flex justify-between text-sm">
                       <span>Clarity</span>
                       <span className="font-medium">{Math.round(evaluation.clarity_score)}%</span>
@@ -569,7 +569,7 @@ export function ComprehensionPromptDialog({
                 {/* Strengths */}
                 {evaluation.strengths.length > 0 && (
                   <div
-                    className="p-4 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-4 motion-safe:duration-500 motion-reduce:animate-none"
+                    className="p-4 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-500 motion-reduce:animate-none"
                     style={{
                       backgroundColor: 'oklch(0.95 0.05 145)',
                       borderColor: 'oklch(0.85 0.08 145)',
@@ -605,7 +605,7 @@ export function ComprehensionPromptDialog({
                 {/* Gaps */}
                 {evaluation.gaps.length > 0 && (
                   <div
-                    className="p-4 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 motion-safe:duration-500 motion-reduce:animate-none"
+                    className="p-4 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-500 motion-reduce:animate-none"
                     style={{
                       backgroundColor: 'oklch(0.95 0.05 85)',
                       borderColor: 'oklch(0.85 0.08 85)',

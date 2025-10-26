@@ -9,7 +9,7 @@
  * - OKLCH skeleton colors (no hex)
  * - Staggered animations with design tokens
  * - Typography from /lib/design-tokens.ts
- * - Glassmorphism (bg-white/80 backdrop-blur-md)
+ * - Glassmorphism (bg-card )
  */
 
 import { Brain, TrendingUp, Target, BookOpen } from 'lucide-react'
@@ -36,11 +36,11 @@ export default function Loading() {
 
       {/* Tab Navigation */}
       <div className="mb-6">
-        <div className="grid grid-cols-4 w-full max-w-2xl mx-auto gap-2 p-1 bg-muted/30 rounded-lg">
+        <div className="grid grid-cols-4 w-full max-w-2xl mx-auto gap-2 p-1 bg-card rounded-lg">
           {[Brain, TrendingUp, Target, BookOpen].map((Icon, i) => (
             <div
               key={i}
-              className="flex items-center justify-center gap-2 p-2 rounded bg-white/80 backdrop-blur-md animate-pulse"
+              className="flex items-center justify-center gap-2 p-2 rounded bg-card  animate-pulse"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
               <Icon className="size-4 text-muted-foreground" />
@@ -71,7 +71,7 @@ export default function Loading() {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="bg-white/80 backdrop-blur-md border rounded-xl p-6 space-y-4 animate-pulse"
+              className="bg-card  border rounded-xl p-6 space-y-4 animate-pulse"
               style={{
                 borderColor: 'oklch(0.9 0.02 230)',
                 animationDelay: `${i * 0.1}s`,

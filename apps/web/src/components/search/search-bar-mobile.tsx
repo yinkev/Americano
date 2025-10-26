@@ -120,8 +120,8 @@ export function SearchBarMobile({
           aria-describedby={isListening ? "voice-search-active" : undefined}
           className={cn(
             // Mobile-first sizing: min 44px height for touch targets
-            "h-14 pl-12 pr-24 rounded-2xl text-base",
-            "bg-white/90 backdrop-blur-md border-2 border-white/60",
+            "h-14 pl-12 pr-24 rounded-xl text-base",
+            "bg-card  border-2 border-border",
             "focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/50",
             "placeholder:text-muted-foreground/70",
             // Prevent zoom on focus (iOS)
@@ -146,8 +146,8 @@ export function SearchBarMobile({
                 // Min 44px touch target
                 "h-11 w-11 rounded-xl transition-colors",
                 isListening
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "hover:bg-white/80"
+                  ? "bg-primary text-primary-foreground hover:bg-card"
+                  : "hover:bg-card"
               )}
             >
               {isListening ? (
@@ -166,7 +166,7 @@ export function SearchBarMobile({
               size="icon"
               onClick={handleClear}
               aria-label="Clear search"
-              className="h-11 w-11 rounded-xl hover:bg-white/80"
+              className="h-11 w-11 rounded-xl hover:bg-card"
             >
               <X className="size-5" />
             </Button>
@@ -178,7 +178,7 @@ export function SearchBarMobile({
       {isListening && (
         <div
           id="voice-search-active"
-          className="mt-2 px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-medium"
+          className="mt-2 px-4 py-2 rounded-xl bg-card text-primary text-sm font-medium"
           role="status"
           aria-live="polite"
         >
@@ -189,7 +189,7 @@ export function SearchBarMobile({
       {/* Voice Search Error */}
       {speechError && (
         <div
-          className="mt-2 px-4 py-2 rounded-xl bg-destructive/10 text-destructive text-sm"
+          className="mt-2 px-4 py-2 rounded-xl bg-card text-destructive text-sm"
           role="alert"
         >
           {speechError}

@@ -162,7 +162,7 @@ export function ExportButton({ query, filters, disabled, className }: ExportButt
           size="sm"
           disabled={disabled || isExporting || !query}
           className={cn(
-            "rounded-lg bg-white/60 hover:bg-white/80 border-white/40",
+            "rounded-lg bg-card hover:bg-card border-border",
             className
           )}
           aria-label="Export search results"
@@ -181,7 +181,7 @@ export function ExportButton({ query, filters, disabled, className }: ExportButt
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-64 bg-white/95 backdrop-blur-md border-white/40">
+      <DropdownMenuContent align="end" className="w-64 bg-card  border-border">
         <DropdownMenuLabel className="flex items-center gap-2">
           Export Results
           {remainingExports !== null && (

@@ -209,12 +209,18 @@ Agent: "Creating upload API route with Next.js..."
 - ❌ **DO NOT USE:** tailwind.config.ts/js (deprecated in v4)
 - ✅ **FOR ANIMATIONS:** Use Tailwind v4 built-in animations now, motion.dev for advanced later
 
-### Design System Rules:
+### Design System Rules (2025-2026 Redesign):
 - ❌ **NEVER use gradients** (bg-gradient-*, linear-gradient, radial-gradient)
+- ❌ **NEVER use glassmorphism** (backdrop-blur on cards - outdated 2024 trend)
 - ✅ **ALWAYS use OKLCH color space** for colors (not hex, not HSL, not RGB)
   - Format: `oklch(L C H)` where L=lightness (0-1), C=chroma (0-0.4), H=hue (0-360)
   - Example: `oklch(0.7 0.15 230)` for blue
-- Rationale: Perceptual uniformity, better accessibility, consistent brightness across hues
+- ✅ **ALWAYS use design system tokens** from `@/lib/design-system`
+  - Colors: Import from `colors.ts` (light/dark modes, semantic, gamification)
+  - Animations: Import from `animations.ts` (spring physics, variants)
+  - Typography: Import from `typography.ts` (Figtree headings, Inter body)
+  - Spacing: Import from `spacing.ts` (4px grid system)
+- Rationale: Perceptual uniformity, better accessibility, consistent brightness across hues, Apple minimalism aesthetic
 
 ### Package Manager Standard
 - Use npm workspaces (Node 20+, npm 10+). Do not add pnpm/yarn lockfiles.
@@ -237,6 +243,11 @@ Agent: "Creating upload API route with Next.js..."
 
 ### Specific Reminders:
 - **DEV agents:** Verify library APIs before every subsystem implementation
+- **Frontend-developer agents:** Use design system (`apps/web/src/lib/design-system/`) for ALL UI work
+  - Import tokens: `import { springSubtle, colors, spacing } from '@/lib/design-system'`
+  - Fetch shadcn/ui docs via MCP before adding components
+  - Follow Apple minimalism aesthetic (NO glassmorphism, NO gradients)
+  - Test dark mode and `prefers-reduced-motion` for accessibility
 - **PM agents:** Check latest workflow patterns when creating stories
 - **Architect agents:** Validate architectural patterns against current docs
 

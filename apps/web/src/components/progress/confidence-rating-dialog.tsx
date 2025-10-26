@@ -76,11 +76,11 @@ export function ConfidenceRatingDialog({
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={onClose} />
+      <div className="fixed inset-0 bg-card  z-50" onClick={onClose} />
 
       {/* Dialog */}
       <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-        <div className="bg-background border shadow-lg rounded-lg max-w-lg w-full p-6">
+        <div className="bg-background border shadow-none rounded-lg max-w-lg w-full p-6">
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div>
@@ -93,7 +93,7 @@ export function ConfidenceRatingDialog({
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-secondary/80 transition-all duration-150"
+              className="p-2 rounded-lg hover:bg-card transition-all duration-150"
               aria-label="Close dialog"
             >
               <X className="w-5 h-5 text-muted-foreground" />
@@ -101,7 +101,7 @@ export function ConfidenceRatingDialog({
           </div>
 
           {/* Objective Text */}
-          <div className="mb-6 p-4 bg-secondary/30 rounded-lg">
+          <div className="mb-6 p-4 bg-card rounded-lg">
             <p className="text-[13px] text-foreground italic">"{objectiveText}"</p>
           </div>
 
@@ -113,8 +113,8 @@ export function ConfidenceRatingDialog({
                 onClick={() => setSelectedConfidence(level.value)}
                 className={`w-full p-4 rounded-lg text-left transition-all duration-150 min-h-[44px] hover:scale-[1.01] active:scale-[0.99] ${
                   selectedConfidence === level.value
-                    ? 'bg-clinical text-clinical-foreground shadow-md'
-                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                    ? 'bg-clinical text-clinical-foreground shadow-none'
+                    : 'bg-secondary text-secondary-foreground hover:bg-card'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -149,14 +149,14 @@ export function ConfidenceRatingDialog({
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 h-9 px-4 rounded-lg font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-150 hover:scale-[1.02] active:scale-[0.98]"
+              className="flex-1 h-9 px-4 rounded-lg font-medium bg-secondary text-secondary-foreground hover:bg-card transition-all duration-150 hover:scale-[1.02] active:scale-[0.98]"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
               disabled={selectedConfidence === null || submitting}
-              className="flex-1 h-9 px-4 rounded-lg font-medium bg-clinical text-clinical-foreground hover:bg-clinical/90 transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="flex-1 h-9 px-4 rounded-lg font-medium bg-clinical text-clinical-foreground hover:bg-card transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {submitting ? 'Submitting...' : 'Submit Rating'}
             </button>

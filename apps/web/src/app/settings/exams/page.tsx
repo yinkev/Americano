@@ -70,12 +70,12 @@ export default async function ExamsPage() {
   const [exams, courses] = await Promise.all([getExams(), getCourses()])
 
   return (
-    <div className="min-h-screen bg-white/50 p-8">
+    <div className="min-h-screen bg-card p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
-        <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-8 border border-white/20">
+        <div className="bg-card  rounded-xl shadow-none p-8 border border-border">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-white/60 rounded-xl">
+            <div className="p-2 bg-card rounded-xl">
               <Calendar className="h-6 w-6 text-blue-600" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900">Exam Management</h1>

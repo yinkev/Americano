@@ -68,7 +68,7 @@ export function PerformanceCorrelationPanel() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  border-border shadow-none">
         <CardContent className="flex items-center justify-center h-96">
           <div className="text-sm text-muted-foreground">Loading correlation analysis...</div>
         </CardContent>
@@ -78,7 +78,7 @@ export function PerformanceCorrelationPanel() {
 
   if (!data || data.sampleSize < 7) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  border-border shadow-none">
         <CardContent className="flex flex-col items-center justify-center h-96 p-6">
           <TrendingUp className="size-12 text-muted-foreground mb-4" />
           <div className="text-sm text-muted-foreground text-center">
@@ -125,7 +125,7 @@ export function PerformanceCorrelationPanel() {
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className="bg-card  border-border shadow-none">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex-1">

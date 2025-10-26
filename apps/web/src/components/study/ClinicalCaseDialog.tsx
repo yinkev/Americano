@@ -182,7 +182,7 @@ export function ClinicalCaseDialog({
 
         {/* Chief Complaint Stage */}
         {currentStage === 'chiefComplaint' && (
-          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 motion-safe:duration-300 motion-reduce:animate-none">
+          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-300 motion-reduce:animate-none">
             <div
               className="p-6 rounded-lg border"
               style={{
@@ -229,7 +229,7 @@ export function ClinicalCaseDialog({
 
         {/* History Stage */}
         {currentStage === 'history' && (
-          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 motion-safe:duration-300 motion-reduce:animate-none">
+          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-300 motion-reduce:animate-none">
             <div
               className="p-6 rounded-lg border space-y-4"
               style={{
@@ -288,7 +288,7 @@ export function ClinicalCaseDialog({
 
         {/* Physical Exam Stage */}
         {currentStage === 'physicalExam' && (
-          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 motion-safe:duration-300 motion-reduce:animate-none">
+          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-300 motion-reduce:animate-none">
             <div
               className="p-6 rounded-lg border space-y-4"
               style={{
@@ -352,7 +352,7 @@ export function ClinicalCaseDialog({
 
         {/* Workup Stage */}
         {currentStage === 'workup' && (
-          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 motion-safe:duration-300 motion-reduce:animate-none">
+          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-300 motion-reduce:animate-none">
             <div
               className="p-6 rounded-lg border"
               style={{
@@ -401,12 +401,12 @@ export function ClinicalCaseDialog({
 
         {/* Questions Stage */}
         {currentStage === 'questions' && (
-          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 motion-safe:duration-300 motion-reduce:animate-none">
+          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-300 motion-reduce:animate-none">
             <div className="space-y-6">
               {caseData.questions.map((question, qIndex) => (
                 <div
                   key={qIndex}
-                  className="p-6 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-400 motion-reduce:animate-none"
+                  className="p-6 rounded-lg border motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-400 motion-reduce:animate-none"
                   style={{
                     backgroundColor: 'oklch(0.95 0.05 200)',
                     borderColor: 'oklch(0.85 0.08 200)',

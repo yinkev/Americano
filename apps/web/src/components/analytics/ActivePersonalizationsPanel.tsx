@@ -106,7 +106,7 @@ export function ActivePersonalizationsPanel() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+      <Card className="bg-card  border-border shadow-none rounded-xl">
         <CardContent className="p-6 h-64 flex items-center justify-center">
           <p className="text-[13px] text-muted-foreground">Loading personalizations...</p>
         </CardContent>
@@ -116,7 +116,7 @@ export function ActivePersonalizationsPanel() {
 
   if (!data) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+      <Card className="bg-card  border-border shadow-none rounded-xl">
         <CardContent className="p-6 h-64 flex flex-col items-center justify-center">
           <Info className="size-12 text-muted-foreground mb-3" />
           <p className="text-[13px] text-muted-foreground text-center">
@@ -140,7 +140,7 @@ export function ActivePersonalizationsPanel() {
   const activeCount = personalizations.filter((p) => p.config?.enabled).length
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
+    <Card className="bg-card  border-border shadow-none rounded-xl hover:shadow-none transition-all">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -176,7 +176,7 @@ export function ActivePersonalizationsPanel() {
             return (
               <div key={personalization.key}>
                 {index > 0 && <Separator className="my-4" />}
-                <div className="p-4 rounded-xl bg-muted/10 border border-border opacity-60">
+                <div className="p-4 rounded-xl bg-card border border-border opacity-60">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3 flex-1">
                       <div

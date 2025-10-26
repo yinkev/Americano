@@ -69,7 +69,7 @@ export function StressProfileCard({
     const isAboveTolerance = data.score > data.tolerance
 
     return (
-      <div className="bg-card border border-border shadow-sm rounded-lg p-3">
+      <div className="bg-card border border-border shadow-none rounded-lg p-3">
         <div className="text-[13px] font-semibold text-foreground mb-1">{data.dimension}</div>
         <div className="space-y-1 text-[11px]">
           <div className="flex items-center justify-between gap-4">
@@ -98,7 +98,7 @@ export function StressProfileCard({
   }
 
   return (
-    <Card className={`shadow-sm hover:shadow-md transition-shadow ${className}`}>
+    <Card className={`shadow-none hover:shadow-none transition-shadow-none ${className}`}>
       <CardHeader className="p-4 pb-0">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -184,7 +184,7 @@ export function StressProfileCard({
         )}
 
         {/* Load tolerance indicator */}
-        <div className="p-3 rounded-lg bg-muted/30">
+        <div className="p-3 rounded-lg bg-card">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-medium text-muted-foreground">Your Load Tolerance</span>
             <span className="text-[20px] font-bold font-heading text-foreground">
@@ -206,7 +206,7 @@ export function StressProfileCard({
             {copingStrategies.map((strategy, index) => (
               <li
                 key={index}
-                className="flex items-start gap-3 p-3 rounded-lg bg-success/10 border border-success/30 hover:bg-success/20 transition-colors"
+                className="flex items-start gap-3 p-3 rounded-lg bg-card border border-success/30 hover:bg-card transition-colors"
               >
                 <span className="shrink-0 size-5 rounded-full bg-success text-white flex items-center justify-center text-[11px] font-bold mt-0.5">
                   {index + 1}

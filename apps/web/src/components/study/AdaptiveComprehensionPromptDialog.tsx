@@ -392,7 +392,7 @@ export function AdaptiveComprehensionPromptDialog({
         open={open && (workflowState === 'PROMPT_DISPLAY' || workflowState === 'EVALUATION_RESULTS')}
         onOpenChange={onOpenChange}
       >
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-card  shadow-none">
           <DialogHeader>
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1">
@@ -452,7 +452,7 @@ export function AdaptiveComprehensionPromptDialog({
             )}
 
             {/* Prompt Text */}
-            <div className="p-4 rounded-lg bg-oklch-primary/5 border border-oklch-primary/20">
+            <div className="p-4 rounded-lg bg-card border border-oklch-primary/20">
               <p className="text-base leading-relaxed">{prompt.promptText}</p>
             </div>
 

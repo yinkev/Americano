@@ -16,7 +16,7 @@
 import { useState, useEffect } from 'react'
 import { MissionCompletionChart } from '@/components/analytics/mission-completion-chart'
 import { InsightsPanel } from '@/components/analytics/insights-panel'
-import { RecommendationsPanel } from '@/components/analytics/recommendations-panel'
+import { RecommendationsPanel } from '@/components/analytics/behavioral-insights/recommendations-panel'
 import { StatsGrid } from '@/components/dashboard/stats-grid'
 import { MissionProgress } from '@/components/dashboard/mission-progress'
 import { BadgesDisplay } from '@/components/dashboard/badges-display'
@@ -79,7 +79,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-background">
         {/* Header Skeleton */}
-        <div className="border-b bg-white/50 backdrop-blur-sm">
+        <div className="border-b bg-card ">
           <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8">
             <div className="flex items-start gap-4">
               <Skeleton className="size-14 rounded-xl" />
@@ -97,7 +97,7 @@ export default function DashboardPage() {
             {[1, 2, 3, 4].map((i) => (
               <Card
                 key={i}
-                className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]"
+                className="bg-card  border-border shadow-none"
               >
                 <CardContent className="p-6">
                   <Skeleton className="h-20 rounded-lg" />
@@ -105,7 +105,7 @@ export default function DashboardPage() {
               </Card>
             ))}
           </div>
-          <Skeleton className="h-96 rounded-2xl mb-8" />
+          <Skeleton className="h-96 rounded-xl mb-8" />
         </div>
       </div>
     )
@@ -115,7 +115,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-16">
-          <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+          <Card className="bg-card  border-border shadow-none">
             <CardContent className="p-8 text-center">
               <div
                 className="size-16 mx-auto mb-4 rounded-full flex items-center justify-center"
@@ -183,7 +183,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Today's Mission */}
-        <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] mb-8">
+        <Card className="bg-card  border-border shadow-none mb-8">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className={`${typography.heading.h2} text-foreground`}>Today's Mission</h2>

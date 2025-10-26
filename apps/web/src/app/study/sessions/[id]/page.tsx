@@ -346,7 +346,7 @@ View full summary: ${window.location.href}`
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {/* Duration */}
           <div
-            className="rounded-2xl p-6 backdrop-blur-md"
+            className="rounded-xl p-6 "
             style={{
               background: 'oklch(1 0 0 / 0.8)',
               boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
@@ -368,7 +368,7 @@ View full summary: ${window.location.href}`
 
           {/* Reviews */}
           <div
-            className="rounded-2xl p-6 backdrop-blur-md"
+            className="rounded-xl p-6 "
             style={{
               background: 'oklch(1 0 0 / 0.8)',
               boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
@@ -390,7 +390,7 @@ View full summary: ${window.location.href}`
 
           {/* New Cards */}
           <div
-            className="rounded-2xl p-6 backdrop-blur-md"
+            className="rounded-xl p-6 "
             style={{
               background: 'oklch(1 0 0 / 0.8)',
               boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
@@ -413,7 +413,7 @@ View full summary: ${window.location.href}`
 
         {/* Session Notes */}
         <div
-          className="rounded-2xl p-6 backdrop-blur-md mb-8"
+          className="rounded-xl p-6  mb-8"
           style={{
             background: 'oklch(1 0 0 / 0.8)',
             boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
@@ -446,7 +446,7 @@ View full summary: ${window.location.href}`
         {/* Content Studied */}
         {session.reviews.length > 0 && (
           <div
-            className="rounded-2xl p-6 backdrop-blur-md"
+            className="rounded-xl p-6 "
             style={{
               background: 'oklch(1 0 0 / 0.8)',
               boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
@@ -491,7 +491,7 @@ View full summary: ${window.location.href}`
 
             {/* Objective Table */}
             <div
-              className="rounded-2xl p-6 backdrop-blur-md mb-8"
+              className="rounded-xl p-6  mb-8"
               style={{
                 background: 'oklch(1 0 0 / 0.8)',
                 boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
@@ -643,7 +643,7 @@ View full summary: ${window.location.href}`
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
               {/* Time Per Objective Chart */}
               <div
-                className="rounded-2xl p-6 backdrop-blur-md"
+                className="rounded-xl p-6 "
                 style={{
                   background: 'oklch(1 0 0 / 0.8)',
                   boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
@@ -668,7 +668,7 @@ View full summary: ${window.location.href}`
 
               {/* Self-Assessment Radar Chart */}
               <div
-                className="rounded-2xl p-6 backdrop-blur-md"
+                className="rounded-xl p-6 "
                 style={{
                   background: 'oklch(1 0 0 / 0.8)',
                   boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
@@ -688,7 +688,7 @@ View full summary: ${window.location.href}`
 
             {/* Accuracy Trends Chart */}
             <div
-              className="rounded-2xl p-6 backdrop-blur-md mb-8"
+              className="rounded-xl p-6  mb-8"
               style={{
                 background: 'oklch(1 0 0 / 0.8)',
                 boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
@@ -711,7 +711,7 @@ View full summary: ${window.location.href}`
         {/* Performance Insights */}
         {session.objectiveCompletions && session.objectiveCompletions.length > 0 && (
           <div
-            className="rounded-2xl p-6 backdrop-blur-md mb-8"
+            className="rounded-xl p-6  mb-8"
             style={{
               background: 'oklch(1 0 0 / 0.8)',
               boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
@@ -822,7 +822,7 @@ View full summary: ${window.location.href}`
         {/* Story 4.4 Task 10.6-10.8: Calibration Metrics */}
         {session.calibrationMetrics && session.calibrationMetrics.totalValidations > 0 && (
           <div
-            className="rounded-2xl p-6 backdrop-blur-md mb-8"
+            className="rounded-xl p-6  mb-8"
             style={{
               background: 'oklch(1 0 0 / 0.8)',
               boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',

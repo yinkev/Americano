@@ -68,7 +68,7 @@ function GoalCard({ goal }: { goal: StudyGoal }) {
       : 'oklch(0.65 0.15 230)'
 
   return (
-    <Card className="overflow-hidden border transition-all hover:shadow-md">
+    <Card className="overflow-hidden border transition-all hover:shadow-none">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-base">

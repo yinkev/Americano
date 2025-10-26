@@ -85,7 +85,7 @@ export function FirstAidCrossReferencePanel({
     return (
       <Card
         className={cn(
-          "border-white/40 bg-white/80 backdrop-blur-md",
+          "border-border bg-card ",
           isSidebar ? "w-full sticky top-4" : "w-full",
           className
         )}
@@ -119,7 +119,7 @@ export function FirstAidCrossReferencePanel({
     return (
       <Card
         className={cn(
-          "border-white/40 bg-white/80 backdrop-blur-md",
+          "border-border bg-card ",
           isSidebar ? "w-full sticky top-4" : "w-full",
           className
         )}
@@ -133,7 +133,7 @@ export function FirstAidCrossReferencePanel({
           </div>
         </CardHeader>
         <CardContent>
-          <Alert variant="destructive" className="bg-red-50/80">
+          <Alert variant="destructive" className="bg-card">
             <AlertCircle className="size-4" />
             <AlertDescription className="text-sm">
               {error}
@@ -149,7 +149,7 @@ export function FirstAidCrossReferencePanel({
     return (
       <Card
         className={cn(
-          "border-white/40 bg-white/80 backdrop-blur-md",
+          "border-border bg-card ",
           isSidebar ? "w-full sticky top-4" : "w-full",
           className
         )}
@@ -184,7 +184,7 @@ export function FirstAidCrossReferencePanel({
   return (
     <Card
       className={cn(
-        "border-white/40 bg-white/80 backdrop-blur-md",
+        "border-border bg-card ",
         isSidebar ? "w-full sticky top-4" : "w-full",
         className
       )}
@@ -262,8 +262,8 @@ export function FirstAidCrossReferencePanelCompact({
   if (isLoading) {
     return (
       <div className={cn("space-y-2", className)}>
-        <div className="h-4 w-32 bg-muted/60 rounded animate-pulse" />
-        <div className="h-20 w-full bg-muted/40 rounded animate-pulse" />
+        <div className="h-4 w-32 bg-card rounded animate-pulse" />
+        <div className="h-20 w-full bg-card rounded animate-pulse" />
       </div>
     )
   }
@@ -285,7 +285,7 @@ export function FirstAidCrossReferencePanelCompact({
             onClick={() => onReferenceClick?.(reference.guidelineId)}
             className={cn(
               "w-full text-left p-3 rounded-lg border transition-all",
-              "bg-white/80 border-white/40 hover:bg-white/95 hover:shadow-sm"
+              "bg-card border-border hover:bg-card hover:shadow-none"
             )}
           >
             <div className="flex items-start justify-between gap-2">

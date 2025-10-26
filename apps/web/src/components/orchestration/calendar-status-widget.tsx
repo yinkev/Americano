@@ -140,7 +140,7 @@ export function CalendarStatusWidget({
   if (loading) {
     return (
       <Card
-        className={`rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] ${className}`}
+        className={`rounded-xl bg-card  border border-border shadow-none ${className}`}
       >
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -168,7 +168,7 @@ export function CalendarStatusWidget({
   if (!calendarStatus.connected) {
     return (
       <Card
-        className={`rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] ${className}`}
+        className={`rounded-xl bg-card  border border-border shadow-none ${className}`}
       >
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -210,7 +210,7 @@ export function CalendarStatusWidget({
 
   return (
     <Card
-      className={`rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] ${className}`}
+      className={`rounded-xl bg-card  border border-border shadow-none ${className}`}
     >
       <CardHeader>
         <div className="flex items-center justify-between">

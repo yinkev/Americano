@@ -184,7 +184,7 @@ export function SessionPlanPreview({
 
   if (!timeSlot) {
     return (
-      <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="rounded-xl bg-card  border border-border shadow-none">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Play className="size-5" />
@@ -206,7 +206,7 @@ export function SessionPlanPreview({
 
   if (loading) {
     return (
-      <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="rounded-xl bg-card  border border-border shadow-none">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Play className="size-5" />
@@ -235,7 +235,7 @@ export function SessionPlanPreview({
   }
 
   return (
-    <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className="rounded-xl bg-card  border border-border shadow-none">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>

@@ -190,7 +190,7 @@ export default function ComprehensionAnalyticsPage() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  shadow-none">
         <CardHeader>
           <CardTitle>Filters</CardTitle>
         </CardHeader>
@@ -274,7 +274,7 @@ export default function ComprehensionAnalyticsPage() {
 
       {/* Comprehension Trends Chart */}
       {filteredData.length > 0 && (
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="bg-card  shadow-none">
           <CardHeader>
             <CardTitle>Comprehension Score Trends</CardTitle>
             <CardDescription>
@@ -317,7 +317,7 @@ export default function ComprehensionAnalyticsPage() {
 
       {/* Calibration Accuracy Chart - Task 7.6 */}
       {filteredData.length > 0 && (
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="bg-card  shadow-none">
           <CardHeader>
             <CardTitle>Confidence Calibration Accuracy</CardTitle>
             <CardDescription>
@@ -383,7 +383,7 @@ export default function ComprehensionAnalyticsPage() {
       {filteredData.length > 0 && (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredData.map((obj) => (
-            <Card key={obj.objectiveId} className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+            <Card key={obj.objectiveId} className="bg-card  shadow-none">
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">

@@ -28,7 +28,7 @@ export function TableSkeleton({
   return (
     <div
       className={cn(
-        'bg-white/80 backdrop-blur-md border border-border rounded-xl overflow-hidden',
+        'bg-card  border border-border rounded-xl overflow-hidden',
         className,
       )}
     >
@@ -59,7 +59,7 @@ export function TableSkeleton({
                 key={rowIndex}
                 className={cn(
                   'border-b border-muted',
-                  rowIndex % 2 === 0 && 'bg-muted/30',
+                  rowIndex % 2 === 0 && 'bg-card',
                 )}
               >
                 {[...Array(columns)].map((_, colIndex) => (

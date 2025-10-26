@@ -119,7 +119,7 @@ export function InterventionDialog({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-[oklch(0.6_0.05_240)]/20"
+        className="max-w-2xl max-h-[80vh] overflow-y-auto bg-card  shadow-none border border-[oklch(0.6_0.05_240)]/20"
         aria-describedby="intervention-description"
       >
         <DialogHeader>
@@ -173,7 +173,7 @@ export function InterventionDialog({
                         >
                           Confidence: {example.confidence}/5
                         </span>
-                        <span className="text-[oklch(0.5_0.05_240)]">’</span>
+                        <span className="text-[oklch(0.5_0.05_240)]">Â’</span>
                         <span className="font-semibold text-[oklch(0.3_0.05_240)]">
                           Score: {example.score}%
                         </span>
@@ -232,7 +232,7 @@ export function InterventionDialog({
                 }`}
                 aria-hidden="true"
               >
-                ¼
+                Â¼
               </span>
             </button>
 

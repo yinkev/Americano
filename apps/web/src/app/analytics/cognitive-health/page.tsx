@@ -20,7 +20,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 // Loading skeleton components - Epic 5 design with glassmorphism
 function LoadMeterSkeleton() {
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className="bg-card  border-border shadow-none">
       <CardHeader className="p-4 pb-0">
         <Skeleton className="h-6 w-32 rounded-lg" />
       </CardHeader>
@@ -36,7 +36,7 @@ function LoadMeterSkeleton() {
 
 function TimelineSkeleton() {
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className="bg-card  border-border shadow-none">
       <CardHeader className="p-4 pb-0">
         <Skeleton className="h-6 w-40 rounded-lg" />
       </CardHeader>
@@ -54,7 +54,7 @@ function TimelineSkeleton() {
 
 function RiskPanelSkeleton() {
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+    <Card className="bg-card  border-border shadow-none">
       <CardHeader className="p-4 pb-0">
         <Skeleton className="h-6 w-32 rounded-lg" />
       </CardHeader>
@@ -81,7 +81,7 @@ export default function CognitiveHealthPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b bg-white/50 backdrop-blur-sm">
+      <div className="border-b bg-card ">
         <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8">
           <div className="flex items-start gap-4">
             <div
@@ -104,7 +104,7 @@ export default function CognitiveHealthPage() {
 
           {/* Quick stats bar - Epic 5 design with glassmorphism */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-white/80 backdrop-blur-md shadow-sm border border-white/30">
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-card  shadow-none border border-border">
               <Activity className="size-5 shrink-0" style={{ color: 'oklch(0.7 0.15 145)' }} />
               <div className="flex-1 min-w-0">
                 <div className="text-[11px] text-muted-foreground font-medium">Current Session</div>
@@ -114,7 +114,7 @@ export default function CognitiveHealthPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-white/80 backdrop-blur-md shadow-sm border border-white/30">
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-card  shadow-none border border-border">
               <TrendingUp className="size-5 shrink-0" style={{ color: 'oklch(0.65 0.18 240)' }} />
               <div className="flex-1 min-w-0">
                 <div className="text-[11px] text-muted-foreground font-medium">Analysis Period</div>
@@ -124,7 +124,7 @@ export default function CognitiveHealthPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-white/80 backdrop-blur-md shadow-sm border border-white/30">
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-card  shadow-none border border-border">
               <Brain className="size-5 shrink-0" style={{ color: 'oklch(0.65 0.18 350)' }} />
               <div className="flex-1 min-w-0">
                 <div className="text-[11px] text-muted-foreground font-medium">Real-time Updates</div>

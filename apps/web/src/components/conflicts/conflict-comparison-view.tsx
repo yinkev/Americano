@@ -290,7 +290,7 @@ export function ConflictComparisonView({
   return (
     <div className={cn('space-y-4', className)}>
       {/* Conflict metadata */}
-      <Card className="bg-white/80 backdrop-blur-md p-4">
+      <Card className="bg-card  p-4">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-muted-foreground">Conflict Type:</span>
@@ -319,7 +319,7 @@ export function ConflictComparisonView({
       >
         {/* Source A */}
         <div className="space-y-4">
-          <Card className="bg-white/80 backdrop-blur-md p-4">
+          <Card className="bg-card  p-4">
             <div className="mb-3 flex items-center gap-2">
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                 A
@@ -333,7 +333,7 @@ export function ConflictComparisonView({
 
         {/* Source B */}
         <div className="space-y-4">
-          <Card className="bg-white/80 backdrop-blur-md p-4">
+          <Card className="bg-card  p-4">
             <div className="mb-3 flex items-center gap-2">
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-xs font-bold text-secondary-foreground">
                 B

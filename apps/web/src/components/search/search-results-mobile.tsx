@@ -108,18 +108,18 @@ export function SearchResultsMobile({
     return (
       <div className={cn("space-y-3", className)} role="status" aria-live="polite">
         {[...Array(3)].map((_, i) => (
-          <Card key={i} className="border-white/40 bg-white/80 backdrop-blur-md animate-pulse">
+          <Card key={i} className="border-border bg-card  animate-pulse">
             <div className="p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 space-y-2">
-                  <div className="h-3 bg-muted/50 rounded w-1/4" />
-                  <div className="h-5 bg-muted/50 rounded w-3/4" />
+                  <div className="h-3 bg-card rounded w-1/4" />
+                  <div className="h-5 bg-card rounded w-3/4" />
                 </div>
-                <div className="h-10 w-14 bg-muted/50 rounded" />
+                <div className="h-10 w-14 bg-card rounded" />
               </div>
               <div className="space-y-2">
-                <div className="h-3 bg-muted/50 rounded w-full" />
-                <div className="h-3 bg-muted/50 rounded w-5/6" />
+                <div className="h-3 bg-card rounded w-full" />
+                <div className="h-3 bg-card rounded w-5/6" />
               </div>
             </div>
           </Card>
@@ -133,7 +133,7 @@ export function SearchResultsMobile({
     return (
       <Card
         className={cn(
-          "border-white/40 bg-white/80 backdrop-blur-md text-center py-12",
+          "border-border bg-card  text-center py-12",
           className
         )}
         role="status"
@@ -167,7 +167,7 @@ export function SearchResultsMobile({
           aria-live="polite"
           aria-atomic="true"
         >
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card text-primary text-sm font-medium">
             <RefreshCw
               className={cn(
                 "size-4 transition-transform",
@@ -246,7 +246,7 @@ export function SearchResultsMobile({
               variant="outline"
               size="lg"
               onClick={onLoadMore}
-              className="h-12 px-6 rounded-2xl gap-2"
+              className="h-12 px-6 rounded-xl gap-2"
             >
               <span>Load More</span>
               <ChevronDown className="size-4" />

@@ -411,7 +411,7 @@ export function SearchAnalyticsDashboardEnhanced({
                     if (active && payload && payload[0]) {
                       const data = payload[0].payload
                       return (
-                        <div className="bg-white p-3 border rounded-lg shadow-lg">
+                        <div className="bg-white p-3 border rounded-lg shadow-none">
                           <p className="font-medium text-sm mb-1">{data.fullName}</p>
                           <p className="text-sm text-gray-600">
                             Count: <span className="font-semibold">{data.count}</span>

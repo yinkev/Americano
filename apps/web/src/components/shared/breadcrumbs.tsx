@@ -19,7 +19,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
       <Link
         href="/"
         className="flex items-center justify-center size-8 rounded-lg text-[oklch(0.556_0_0)]
-                   hover:text-[oklch(0.7_0.15_230)] hover:bg-white/60 transition-colors duration-200
+                   hover:text-[oklch(0.7_0.15_230)] hover:bg-card transition-colors duration-200
                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[oklch(0.7_0.15_230)]"
         aria-label="Home"
       >

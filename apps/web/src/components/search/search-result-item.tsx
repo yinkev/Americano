@@ -85,7 +85,7 @@ function highlightText(text: string, query?: string): React.ReactNode {
       return (
         <mark
           key={index}
-          className="bg-yellow-200/60 text-foreground font-semibold rounded px-0.5"
+          className="bg-card text-foreground font-semibold rounded px-0.5"
         >
           {part}
         </mark>
@@ -115,8 +115,8 @@ export function SearchResultItem({
   return (
     <Card
       className={cn(
-        "border-white/40 bg-white/80 backdrop-blur-md",
-        "hover:bg-white/95 hover:shadow-lg transition-all duration-200",
+        "border-border bg-card ",
+        "hover:bg-card hover:shadow-none transition-all duration-200",
         "group cursor-pointer",
         className
       )}
@@ -134,7 +134,7 @@ export function SearchResultItem({
               </Badge>
               {result.metadata?.isHighYield && (
                 <Badge
-                  className="text-xs bg-yellow-500/10 text-yellow-700 border-yellow-500/20"
+                  className="text-xs bg-card text-yellow-700 border-yellow-500/20"
                   aria-label="High-yield content"
                 >
                   High-Yield
@@ -230,7 +230,7 @@ export function SearchResultItem({
           variant="ghost"
           size="sm"
           asChild
-          className="group-hover:bg-white/60 rounded-lg"
+          className="group-hover:bg-card rounded-lg"
           aria-label={`View ${result.title} in context`}
         >
           <Link href={`/library/${result.id}`}>

@@ -303,7 +303,7 @@ export function ExamDialog({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-lg bg-clinical text-clinical-foreground hover:bg-clinical/90 transition-all duration-150 hover:scale-[1.02] active:scale-[0.98]"
+                className="rounded-lg bg-clinical text-clinical-foreground hover:bg-card transition-all duration-150 hover:scale-[1.02] active:scale-[0.98]"
               >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {exam ? 'Update Exam' : 'Create Exam'}

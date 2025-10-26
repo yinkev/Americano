@@ -1,51 +1,120 @@
+'use client'
+
+import { motion } from 'motion/react'
+import { HeroSection } from '@/components/dashboard/hero-section'
 import { MissionCard } from '@/components/dashboard/mission-card'
-import { MissionPreview } from '@/components/dashboard/mission-preview'
 import { ProgressSummary } from '@/components/dashboard/progress-summary'
 import { UpcomingReviews } from '@/components/dashboard/upcoming-reviews'
 import { QuickActions } from '@/components/dashboard/quick-actions'
+import { LearningStreak } from '@/components/dashboard/learning-streak'
+import { RecentActivity } from '@/components/dashboard/recent-activity'
+import { MissionPreview } from '@/components/dashboard/mission-preview'
+import { springSmooth, pageFadeVariants } from '@/lib/design-system'
+
+// Mock data - In production, fetch from API
+const heroStats = {
+  xpThisWeek: 2840,
+  currentStreak: 7,
+  studyTimeToday: 45,
+}
+
+const streakData = {
+  currentStreak: 7,
+  longestStreak: 14,
+  lastThirtyDays: Array.from({ length: 30 }, (_, i) => {
+    // Mock pattern: studied most days, missed a few
+    const missedDays = [2, 5, 8, 15, 22]
+    return !missedDays.includes(i)
+  }),
+}
+
+const recentSessions = [
+  {
+    id: '1',
+    title: 'Cardiovascular Physiology',
+    date: '2h ago',
+    cardsReviewed: 24,
+    accuracy: 87,
+    timeSpent: 25,
+    type: 'flashcards' as const,
+  },
+  {
+    id: '2',
+    title: 'Acute MI Case Study',
+    date: '5h ago',
+    cardsReviewed: 1,
+    accuracy: 92,
+    timeSpent: 18,
+    type: 'clinical-case' as const,
+  },
+  {
+    id: '3',
+    title: 'Pharmacology Quiz',
+    date: 'Yesterday',
+    cardsReviewed: 15,
+    accuracy: 73,
+    timeSpent: 12,
+    type: 'quiz' as const,
+  },
+  {
+    id: '4',
+    title: 'Renal System Validation',
+    date: 'Yesterday',
+    cardsReviewed: 8,
+    accuracy: 95,
+    timeSpent: 20,
+    type: 'validation' as const,
+  },
+  {
+    id: '5',
+    title: 'Anatomy Flashcards',
+    date: '2 days ago',
+    cardsReviewed: 32,
+    accuracy: 81,
+    timeSpent: 30,
+    type: 'flashcards' as const,
+  },
+]
 
 export default function Dashboard() {
   return (
-    <div className="flex-1 overflow-y-auto">
+    <motion.div
+      className="flex-1 overflow-y-auto"
+      variants={pageFadeVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       {/* Page Container - responsive padding */}
-      <div className="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl">
-        {/* Welcome Header */}
-        <div className="mb-6 md:mb-8">
-          <h1 className="text-3xl md:text-4xl font-heading font-bold text-[oklch(0.145_0_0)] mb-2">
-            Welcome back, Student!
-          </h1>
-          <p className="text-base text-[oklch(0.556_0_0)]">
-            You're doing great. Let's continue your learning journey.
-          </p>
-        </div>
+      <div className="mx-auto w-full max-w-[1024px] px-4 md:px-6">
+        {/* Hero Section with Welcome & Quick Stats */}
+        <HeroSection userName="Student" stats={heroStats} />
 
-        {/* Dashboard Grid - Responsive: 1 col mobile, 2 col tablet, 3 col desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {/* Mission Card - Full width on mobile, spans 2 cols on desktop */}
-          <div className="lg:col-span-2">
+        {/* Main Content - Two column layout (2fr / 1fr) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+          {/* Left column: primary content */}
+          <div className="space-y-6">
             <MissionCard />
+            <UpcomingReviews />
+            <RecentActivity sessions={recentSessions} />
           </div>
 
-          {/* Right Column - Progress Summary & Mission Preview */}
-          <div className="space-y-4 md:space-y-6">
+          {/* Right column: summaries and utilities */}
+          <div className="space-y-6">
             <ProgressSummary />
             <MissionPreview />
-          </div>
-
-          {/* Upcoming Reviews - Left column on desktop */}
-          <div className="lg:col-span-2">
-            <UpcomingReviews />
-          </div>
-
-          {/* Quick Actions - Right column on desktop */}
-          <div>
             <QuickActions />
+            <LearningStreak
+              currentStreak={streakData.currentStreak}
+              longestStreak={streakData.longestStreak}
+              lastThirtyDays={streakData.lastThirtyDays}
+            />
           </div>
         </div>
 
         {/* Accessibility: Hidden heading for screen readers */}
         <h2 className="sr-only">Dashboard Overview</h2>
       </div>
-    </div>
+    </motion.div>
   )
 }

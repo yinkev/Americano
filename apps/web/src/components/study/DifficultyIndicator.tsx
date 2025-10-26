@@ -114,8 +114,8 @@ export function DifficultyIndicator({
           <div
             className={cn(
               'inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200',
-              'bg-white/95 backdrop-blur-xl border',
-              'hover:shadow-md cursor-help',
+              'bg-card  border',
+              'hover:shadow-none cursor-help',
               className
             )}
             style={{
@@ -180,7 +180,7 @@ export function DifficultyIndicator({
             <p className="text-xs opacity-90">{getDifficultyDescription()}</p>
 
             {/* Difficulty Range Reference */}
-            <div className="pt-2 mt-2 border-t border-white/20 space-y-1 text-xs">
+            <div className="pt-2 mt-2 border-t border-border space-y-1 text-xs">
               <div className="flex items-center justify-between">
                 <span>Low (0-40)</span>
                 <div

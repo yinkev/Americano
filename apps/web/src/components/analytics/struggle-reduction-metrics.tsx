@@ -92,7 +92,7 @@ export function StruggleReductionMetrics() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  border-border shadow-none">
         <CardContent className="p-6 h-64 flex items-center justify-center">
           <p className={`${typography.body.small} text-muted-foreground`}>Loading metrics...</p>
         </CardContent>
@@ -102,7 +102,7 @@ export function StruggleReductionMetrics() {
 
   if (!data || data.weeksTracked < 2) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  border-border shadow-none">
         <CardContent className="p-6 h-64 flex flex-col items-center justify-center">
           <Calendar className="size-12 text-muted-foreground mb-3" />
           <p className={`${typography.body.small} text-muted-foreground`}>
@@ -138,7 +138,7 @@ export function StruggleReductionMetrics() {
         : chartColors.text // Gray - Modest
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)]">
+    <Card className="bg-card  border-border shadow-none transition-all duration-300 hover:shadow-none">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <CardTitle className={`${typography.heading.h3} font-heading`}>Your Progress</CardTitle>
@@ -159,7 +159,7 @@ export function StruggleReductionMetrics() {
       <CardContent className="space-y-6">
         {/* Big Number - Reduction Percentage (NO gradients - use solid OKLCH colors) */}
         <div
-          className="text-center py-6 px-4 rounded-2xl transition-all duration-300 hover:scale-[1.01]"
+          className="text-center py-6 px-4 rounded-xl transition-all duration-300 hover:scale-[1.01]"
           style={{
             backgroundColor: `color-mix(in oklch, ${colors.success}, transparent 92%)`,
           }}
@@ -231,7 +231,7 @@ export function StruggleReductionMetrics() {
               return (
                 <div
                   key={point.week}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/30 transition-all duration-200 hover:scale-[1.01]"
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-card transition-all duration-200 hover:scale-[1.01]"
                 >
                   <div className="flex items-center gap-2 w-24">
                     <div
@@ -245,7 +245,7 @@ export function StruggleReductionMetrics() {
                     </span>
                   </div>
                   <div className="flex-1">
-                    <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+                    <div className="h-2 bg-card rounded-full overflow-hidden">
                       <div
                         className="h-full transition-all duration-500"
                         style={{

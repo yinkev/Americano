@@ -132,7 +132,7 @@ function MetricCard({
         : 'oklch(0.6 0.05 240)'; // Gray for stable
 
   return (
-    <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0 motion-safe:transition-all motion-safe:duration-150 hover:translate-y-[-2px] hover:shadow-[0_16px_48px_rgba(31,38,135,0.15)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-reduce:animate-none">
+    <Card className="bg-card  shadow-none rounded-xl border-0 motion-safe:transition-all motion-safe:duration-150 hover:translate-y-[-2px] hover:shadow-none motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in- motion-safe:duration-500 motion-reduce:animate-none">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-[oklch(0.6_0.05_240)]">
           {title}
@@ -191,7 +191,7 @@ function OverviewSkeleton() {
       {[1, 2, 3, 4, 5, 6].map((i) => (
         <Card
           key={i}
-          className="h-48 motion-safe:animate-pulse motion-reduce:animate-none bg-white/95 backdrop-blur-xl rounded-2xl border-0 shadow-[0_8px_32px_rgba(31,38,135,0.1)]"
+          className="h-48 motion-safe:animate-pulse motion-reduce:animate-none bg-card  rounded-xl border-0 shadow-none"
         >
           <CardHeader className="pb-2">
             <div className="h-4 w-24 bg-[oklch(0.9_0.05_240)] rounded" />

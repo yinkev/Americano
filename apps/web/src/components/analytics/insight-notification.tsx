@@ -69,7 +69,7 @@ export function showInsightNotification(insight: Insight, onDismiss?: () => void
   toast.custom(
     (_t) => (
       <div
-        className="relative overflow-hidden rounded-lg border shadow-lg max-w-md"
+        className="relative overflow-hidden rounded-lg border shadow-none max-w-md"
         style={{
           borderColor: sentimentColor,
           backgroundColor: 'oklch(0.98 0.01 220)',

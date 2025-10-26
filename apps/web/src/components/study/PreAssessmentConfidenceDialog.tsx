@@ -45,7 +45,7 @@ export const PreAssessmentConfidenceDialog: React.FC<
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-md bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]"
+        className="max-w-md bg-card  shadow-none"
       >
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">

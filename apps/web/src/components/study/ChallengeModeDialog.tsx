@@ -234,7 +234,7 @@ export function ChallengeModeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-card  shadow-none">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div

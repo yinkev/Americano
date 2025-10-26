@@ -100,7 +100,7 @@ export function ConflictTimeline({
   return (
     <div className={cn('space-y-6', className)}>
       {/* Timeline Chart */}
-      <Card className="p-4 bg-white/80 backdrop-blur-md border-border">
+      <Card className="p-4 bg-card  border-border">
         <h3 className="text-sm font-semibold mb-4">Status Progression</h3>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={timelineData}>
@@ -131,7 +131,7 @@ export function ConflictTimeline({
       </Card>
 
       {/* Detailed Event Timeline */}
-      <Card className="p-4 bg-white/80 backdrop-blur-md border-border">
+      <Card className="p-4 bg-card  border-border">
         <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
           <Clock className="h-4 w-4" />
           Event History
@@ -150,7 +150,7 @@ export function ConflictTimeline({
       </Card>
 
       {/* Current Status Summary */}
-      <Card className="p-4 bg-white/80 backdrop-blur-md border-border">
+      <Card className="p-4 bg-card  border-border">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted-foreground">Current Status</p>
@@ -223,7 +223,7 @@ function TimelineEvent({
         </div>
 
         {event.notes && (
-          <div className="mt-2 rounded-md bg-muted/50 p-3 text-sm">
+          <div className="mt-2 rounded-md bg-card p-3 text-sm">
             <div className="flex items-start gap-2">
               <FileText className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
               <p className="text-muted-foreground">{event.notes}</p>
@@ -243,7 +243,7 @@ function CustomTooltip({ active, payload }: any) {
 
   const data = payload[0].payload
   return (
-    <div className="rounded-lg border bg-white/95 backdrop-blur-md p-3 shadow-lg">
+    <div className="rounded-lg border bg-card  p-3 shadow-none">
       <p className="text-sm font-semibold mb-1">{data.name}</p>
       <p className="text-xs text-muted-foreground">
         {data.date} at {data.time}

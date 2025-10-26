@@ -129,7 +129,7 @@ export function PersonalizationEffectivenessChart() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+      <Card className="bg-card  border-border shadow-none rounded-xl">
         <CardContent className="p-6 h-96 flex items-center justify-center">
           <p className="text-[13px] text-muted-foreground">Loading effectiveness data...</p>
         </CardContent>
@@ -139,7 +139,7 @@ export function PersonalizationEffectivenessChart() {
 
   if (!data || !data.hasPersonalization) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+      <Card className="bg-card  border-border shadow-none rounded-xl">
         <CardContent className="p-6 h-96 flex flex-col items-center justify-center">
           <Info className="size-12 text-muted-foreground mb-3" />
           <p className="text-[13px] text-muted-foreground text-center">
@@ -171,7 +171,7 @@ export function PersonalizationEffectivenessChart() {
   const isPositiveTrend = avgImprovement > 0
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all">
+    <Card className="bg-card  border-border shadow-none rounded-xl hover:shadow-none transition-all">
       <CardHeader>
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
@@ -387,7 +387,7 @@ export function PersonalizationEffectivenessChart() {
         </div>
 
         {/* Statistical Significance */}
-        <div className="p-4 rounded-xl bg-muted/30 border border-border">
+        <div className="p-4 rounded-xl bg-card border border-border">
           <div className="flex items-start gap-3">
             <Info className="size-5 text-[oklch(0.7_0.15_230)] shrink-0 mt-0.5" />
             <div className="flex-1">

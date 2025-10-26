@@ -177,7 +177,7 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
                 ${isFutureDay ? 'cursor-not-allowed' : 'cursor-pointer'}
                 ${dayStatus.color}
                 ${isCurrentDay ? 'ring-2 ring-[oklch(0.7_0.15_230)] ring-offset-2' : ''}
-                ${dayStatus.missions.length > 0 ? 'hover:scale-105 hover:shadow-md' : ''}
+                ${dayStatus.missions.length > 0 ? 'hover:scale-105 hover:shadow-none' : ''}
                 disabled:cursor-default disabled:hover:scale-100
                 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[oklch(0.7_0.15_230)]
               `}
@@ -216,7 +216,7 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
               {/* Multiple Missions Indicator */}
               {dayStatus.missions.length > 1 && isCurrentMonth && (
                 <div className="absolute top-1 right-1">
-                  <span className="inline-flex items-center justify-center size-4 rounded-full bg-white/90 text-[8px] font-bold text-[oklch(0.145_0_0)]">
+                  <span className="inline-flex items-center justify-center size-4 rounded-full bg-card text-[8px] font-bold text-[oklch(0.145_0_0)]">
                     {dayStatus.missions.length}
                   </span>
                 </div>
@@ -306,11 +306,11 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
   }, [missions, currentMonth])
 
   return (
-    <div className="rounded-lg bg-white border shadow-sm p-4 hover:shadow-md transition-shadow duration-300">
+    <div className="rounded-lg bg-white border shadow-none p-4 hover:shadow-none transition-shadow-none duration-300">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="rounded-full bg-clinical/10 p-2">
+          <div className="rounded-full bg-card p-2">
             <Calendar className="size-5 text-clinical" />
           </div>
           <div>

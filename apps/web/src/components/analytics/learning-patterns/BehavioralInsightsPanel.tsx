@@ -104,7 +104,7 @@ export function BehavioralInsightsPanel() {
 
   if (error) {
     return (
-      <Alert className="bg-destructive/10 border-destructive/20">
+      <Alert className="bg-card border-destructive/20">
         <AlertDescription className="text-destructive">{error}</AlertDescription>
       </Alert>
     )
@@ -112,7 +112,7 @@ export function BehavioralInsightsPanel() {
 
   if (insufficientData) {
     return (
-      <Alert className="bg-warning/10 border-warning/20">
+      <Alert className="bg-card border-warning/20">
         <AlertDescription>
           <p className="font-medium mb-2 text-warning">
             No insights available yet
@@ -128,7 +128,7 @@ export function BehavioralInsightsPanel() {
 
   if (insights.length === 0) {
     return (
-      <Alert className="bg-success/10 border-success/20">
+      <Alert className="bg-card border-success/20">
         <AlertDescription>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-success" />
@@ -155,7 +155,7 @@ export function BehavioralInsightsPanel() {
         return (
           <Card
             key={insight.id}
-            className="p-4 space-y-4 shadow-sm hover:shadow-md transition-shadow animate-in fade-in slide-in-from-bottom-4 duration-500"
+            className="p-4 space-y-4 shadow-none hover:shadow-none transition-shadow-none animate-in fade-in slide-in- duration-500"
             style={{
               animationDelay: `${index * 100}ms`,
             }}
@@ -194,7 +194,7 @@ export function BehavioralInsightsPanel() {
 
             {/* Actionable Recommendation */}
             <div
-              className="p-3 rounded-md text-[13px] bg-success/10"
+              className="p-3 rounded-md text-[13px] bg-card"
             >
               <p className="font-medium text-xs mb-1 text-success">
                 Recommendation
@@ -219,7 +219,7 @@ export function BehavioralInsightsPanel() {
                 size="sm"
                 onClick={() => handleAcknowledge(insight.id, true)}
                 disabled={isProcessing}
-                className="flex-1 min-h-[44px] transition-transform hover:scale-105 active:scale-95 bg-success hover:bg-success/90"
+                className="flex-1 min-h-[44px] transition-transform hover:scale-105 active:scale-95 bg-success hover:bg-card"
                 aria-label={`Apply recommendation: ${insight.actionableRecommendation}`}
               >
                 Apply Recommendation

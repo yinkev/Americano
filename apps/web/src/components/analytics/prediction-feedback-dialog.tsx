@@ -154,7 +154,7 @@ export function PredictionFeedbackDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white/95 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.15)] max-w-md">
+      <DialogContent className="bg-card  border-border shadow-none max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading text-xl text-foreground">
             How did it go with {prediction.topicName}?
@@ -181,7 +181,7 @@ export function PredictionFeedbackDialog({
                   ${
                     selectedOption === option.value
                       ? 'border-[oklch(0.65_0.15_250)] bg-[oklch(0.65_0.15_250)]/5'
-                      : 'border-muted bg-muted/30 hover:bg-muted/50'
+                      : 'border-muted bg-card hover:bg-card'
                   }
                 `}
                 onClick={() => setSelectedOption(option.value)}
@@ -218,7 +218,7 @@ export function PredictionFeedbackDialog({
               placeholder="Any specific challenges or insights you'd like to share..."
               value={comments}
               onChange={(e) => setComments(e.target.value)}
-              className="min-h-[80px] resize-none bg-white/80 backdrop-blur-sm"
+              className="min-h-[80px] resize-none bg-card "
               maxLength={500}
               aria-label="Additional feedback comments"
             />

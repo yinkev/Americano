@@ -184,7 +184,7 @@ export default function ClinicalReasoningAnalyticsPage() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+      <Card className="bg-card  shadow-none">
         <CardHeader>
           <CardTitle>Filters</CardTitle>
         </CardHeader>
@@ -256,7 +256,7 @@ export default function ClinicalReasoningAnalyticsPage() {
 
       {/* Competency Radar Chart */}
       {metrics && metrics.recentScenarios.length > 0 && (
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="bg-card  shadow-none">
           <CardHeader>
             <CardTitle>Clinical Competency Profile</CardTitle>
             <CardDescription>
@@ -302,7 +302,7 @@ export default function ClinicalReasoningAnalyticsPage() {
 
       {/* Scenario Type Breakdown (Bar Chart) */}
       {metrics && barData.length > 0 && (
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="bg-card  shadow-none">
           <CardHeader>
             <CardTitle>Scenario Type Distribution</CardTitle>
             <CardDescription>
@@ -335,7 +335,7 @@ export default function ClinicalReasoningAnalyticsPage() {
 
       {/* Board Exam Coverage (Pie Chart) */}
       {metrics && pieData.length > 0 && (
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="bg-card  shadow-none">
           <CardHeader>
             <CardTitle>Board Exam Coverage</CardTitle>
             <CardDescription>
@@ -369,7 +369,7 @@ export default function ClinicalReasoningAnalyticsPage() {
 
       {/* Recent Scenarios List */}
       {filteredScenarios.length > 0 && (
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+        <Card className="bg-card  shadow-none">
           <CardHeader>
             <CardTitle>Recent Scenarios</CardTitle>
             <CardDescription>
@@ -381,7 +381,7 @@ export default function ClinicalReasoningAnalyticsPage() {
               {filteredScenarios.slice(0, 10).map((scenario) => (
                 <div
                   key={scenario.id}
-                  className="p-4 rounded-lg border border-[oklch(0.9_0.02_230)] bg-white/50 hover:bg-white/80 transition-colors"
+                  className="p-4 rounded-lg border border-[oklch(0.9_0.02_230)] bg-card hover:bg-card transition-colors"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 space-y-2">

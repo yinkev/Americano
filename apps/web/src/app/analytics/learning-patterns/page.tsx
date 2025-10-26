@@ -82,7 +82,7 @@ function ProfileSummaryCard({ profile }: { profile: UserLearningProfile }) {
   }
 
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow">
+    <Card className="shadow-none hover:shadow-none transition-shadow-none">
       <div className="p-4">
         <h2 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.05 230)' }}>
           Learning Profile Summary
@@ -135,7 +135,7 @@ function InsufficientDataMessage({
   requirements: { weeksNeeded: number; sessionsNeeded: number; reviewsNeeded: number }
 }) {
   return (
-    <Alert className="bg-warning/10 border-warning/20">
+    <Alert className="bg-card border-warning/20">
       <AlertDescription>
         <div className="space-y-4">
           <p className="font-medium text-warning">
@@ -210,7 +210,7 @@ export default async function LearningPatternsPage() {
           <ProfileSummaryCard profile={data.profile} />
 
           {/* Study Time Heatmap */}
-          <Card className="shadow-sm hover:shadow-md transition-shadow">
+          <Card className="shadow-none hover:shadow-none transition-shadow-none">
             <div className="p-4">
               <h3 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                 Optimal Study Times
@@ -223,7 +223,7 @@ export default async function LearningPatternsPage() {
 
           {/* Session Performance & Learning Style */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card className="shadow-sm hover:shadow-md transition-shadow">
+            <Card className="shadow-none hover:shadow-none transition-shadow-none">
               <div className="p-4">
                 <h3 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                   Session Performance Patterns
@@ -234,7 +234,7 @@ export default async function LearningPatternsPage() {
               </div>
             </Card>
 
-            <Card className="shadow-sm hover:shadow-md transition-shadow">
+            <Card className="shadow-none hover:shadow-none transition-shadow-none">
               <div className="p-4">
                 <h3 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                   Learning Style Profile (VARK)
@@ -247,7 +247,7 @@ export default async function LearningPatternsPage() {
           </div>
 
           {/* Forgetting Curve */}
-          <Card className="shadow-sm hover:shadow-md transition-shadow">
+          <Card className="shadow-none hover:shadow-none transition-shadow-none">
             <div className="p-4">
               <h3 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                 Personal Forgetting Curve
@@ -259,7 +259,7 @@ export default async function LearningPatternsPage() {
           </Card>
 
           {/* Behavioral Insights */}
-          <Card className="shadow-sm hover:shadow-md transition-shadow">
+          <Card className="shadow-none hover:shadow-none transition-shadow-none">
             <div className="p-4">
               <h3 className="text-[16px] font-semibold mb-4" style={{ color: 'oklch(0.3 0.08 230)' }}>
                 Actionable Insights

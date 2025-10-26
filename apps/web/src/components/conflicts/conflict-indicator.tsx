@@ -103,7 +103,7 @@ export function ConflictIndicator({
         'min-h-[44px]',
         compact ? 'min-w-[44px] p-2' : 'min-w-[44px] px-3 py-2',
         // Glassmorphism with backdrop blur (NO gradients)
-        'bg-white/80 backdrop-blur-md',
+        'bg-card ',
         // Hover effects
         'hover:scale-105 active:scale-95',
         // Focus ring color based on severity

@@ -72,7 +72,7 @@ export function ExperimentMetricsTable({ results, successMetric }: ExperimentMet
   }
 
   return (
-    <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-xl">
+    <Card className="bg-card  border-border shadow-none rounded-xl">
       <CardHeader>
         <CardTitle className="font-heading font-semibold text-[18px]">
           Detailed Metrics Analysis
@@ -209,7 +209,7 @@ export function ExperimentMetricsTable({ results, successMetric }: ExperimentMet
         </div>
 
         {/* Statistical Summary */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-xl bg-muted/20 border border-border">
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-xl bg-card border border-border">
           <div>
             <p className="text-xs text-muted-foreground mb-1">Sample Size</p>
             <p className="text-sm font-semibold text-foreground">
@@ -251,7 +251,7 @@ export function ExperimentMetricsTable({ results, successMetric }: ExperimentMet
         </div>
 
         {/* Notes */}
-        <div className="mt-4 p-4 rounded-xl bg-muted/10 border border-border">
+        <div className="mt-4 p-4 rounded-xl bg-card border border-border">
           <p className="text-xs text-muted-foreground">
             <span className="font-semibold">Statistical Note:</span> A p-value &lt; 0.05 indicates
             statistical significance at the 95% confidence level. The winning variant is determined

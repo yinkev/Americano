@@ -10,7 +10,7 @@
  * - Save preferences to UserSourcePreference model
  *
  * Design:
- * - Glassmorphism styling (bg-white/80 backdrop-blur-md)
+ * - Glassmorphism styling (bg-card )
  * - OKLCH colors (no gradients)
  * - Responsive layout
  * - Accessible controls
@@ -269,7 +269,7 @@ export default function SourcesPage() {
 
       {/* Error Message */}
       {error && (
-        <Card className="mb-6 bg-rose-50/80 backdrop-blur-md border-rose-200 shadow-md rounded-2xl">
+        <Card className="mb-6 bg-card  border-rose-200 shadow-none rounded-xl">
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 text-rose-700">
               <AlertCircle className="h-5 w-5" />
@@ -281,7 +281,7 @@ export default function SourcesPage() {
 
       {/* Success Message */}
       {successMessage && (
-        <Card className="mb-6 bg-emerald-50/80 backdrop-blur-md border-emerald-200 shadow-md rounded-2xl">
+        <Card className="mb-6 bg-card  border-emerald-200 shadow-none rounded-xl">
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 text-emerald-700">
               <Check className="h-5 w-5" />
@@ -292,7 +292,7 @@ export default function SourcesPage() {
       )}
 
       {/* Instructions Card */}
-      <Card className="mb-6 bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+      <Card className="mb-6 bg-card  border-border shadow-none rounded-xl">
         <CardHeader>
           <CardTitle className="text-xl font-semibold text-gray-800">How It Works</CardTitle>
         </CardHeader>
@@ -330,7 +330,7 @@ export default function SourcesPage() {
           return (
             <Card
               key={source.id}
-              className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-shadow duration-200"
+              className="bg-card  border-border shadow-none rounded-xl hover:shadow-none transition-shadow-none duration-200"
             >
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">
@@ -369,7 +369,7 @@ export default function SourcesPage() {
                         updatePreference(source.id, { trustLevel: value as TrustLevel })
                       }
                     >
-                      <SelectTrigger id={`trust-${source.id}`} className="bg-white/50 backdrop-blur-sm">
+                      <SelectTrigger id={`trust-${source.id}`} className="bg-card ">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -395,7 +395,7 @@ export default function SourcesPage() {
                       onChange={(e) =>
                         updatePreference(source.id, { priority: parseInt(e.target.value, 10) })
                       }
-                      className="w-full px-3 py-2 bg-white/50 backdrop-blur-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[oklch(0.6_0.15_260)] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-card  border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[oklch(0.6_0.15_260)] focus:border-transparent"
                     />
                   </div>
 
@@ -411,7 +411,7 @@ export default function SourcesPage() {
                       onChange={(e) =>
                         updatePreference(source.id, { notes: e.target.value })
                       }
-                      className="bg-white/50 backdrop-blur-sm min-h-[80px]"
+                      className="bg-card  min-h-[80px]"
                     />
                   </div>
                 </div>
@@ -427,7 +427,7 @@ export default function SourcesPage() {
           <Button
             onClick={savePreferences}
             disabled={saving || !hasChanges}
-            className="bg-[oklch(0.6_0.15_260)] hover:bg-[oklch(0.55_0.15_260)] text-white shadow-md hover:shadow-lg rounded-lg transition-all duration-200 px-6 py-2"
+            className="bg-[oklch(0.6_0.15_260)] hover:bg-[oklch(0.55_0.15_260)] text-white shadow-none hover:shadow-none rounded-lg transition-all duration-200 px-6 py-2"
           >
             {saving ? (
               <>
@@ -446,7 +446,7 @@ export default function SourcesPage() {
 
       {/* Empty State */}
       {sources.length === 0 && (
-        <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
+        <Card className="bg-card  border-border shadow-none rounded-xl">
           <CardContent className="py-12 text-center">
             <p className="text-gray-600">No sources found. Run the seed script to populate sources.</p>
             <code className="mt-4 inline-block px-4 py-2 bg-gray-100 rounded-md text-sm text-gray-700">

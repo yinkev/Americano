@@ -167,7 +167,7 @@ export default function ProgressTab() {
 
       {/* Regression Warnings (RED ALERT) */}
       {data.regressions.length > 0 && (
-        <Card className="bg-[oklch(0.98_0.02_25)]/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-2 border-[oklch(0.65_0.20_25)]">
+        <Card className="bg-[oklch(0.98_0.02_25)]/95  shadow-none rounded-xl border-2 border-[oklch(0.65_0.20_25)]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-[oklch(0.65_0.20_25)]">
               <AlertTriangle className="w-6 h-6" />
@@ -179,7 +179,7 @@ export default function ProgressTab() {
               {data.regressions.map((regression, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-3 p-4 bg-white/50 rounded-xl"
+                  className="flex items-start gap-3 p-4 bg-card rounded-xl"
                 >
                   <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: COLORS.negative }} />
                   <div>
@@ -199,7 +199,7 @@ export default function ProgressTab() {
       )}
 
       {/* Multi-Line Chart: All 6 Validation Dimensions */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <CardTitle className="text-[oklch(0.3_0.05_240)]">
             Understanding Metrics Over Time
@@ -333,7 +333,7 @@ export default function ProgressTab() {
       {/* Growth Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Week-over-Week Improvement */}
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+        <Card className="bg-card  shadow-none rounded-xl border-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-[oklch(0.6_0.05_240)]">
               Week-over-Week Growth
@@ -361,7 +361,7 @@ export default function ProgressTab() {
         </Card>
 
         {/* Month-over-Month Improvement */}
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+        <Card className="bg-card  shadow-none rounded-xl border-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-[oklch(0.6_0.05_240)]">
               Month-over-Month Growth
@@ -389,7 +389,7 @@ export default function ProgressTab() {
         </Card>
 
         {/* Overall Growth Rate */}
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+        <Card className="bg-card  shadow-none rounded-xl border-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-[oklch(0.6_0.05_240)]">
               Overall Growth Rate
@@ -415,7 +415,7 @@ export default function ProgressTab() {
 
       {/* Milestones Timeline */}
       {data.milestones.length > 0 && (
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+        <Card className="bg-card  shadow-none rounded-xl border-0">
           <CardHeader>
             <CardTitle className="text-[oklch(0.3_0.05_240)]">
               Achievement Milestones
@@ -539,7 +539,7 @@ function ProgressSkeleton() {
       </div>
 
       {/* Chart skeleton */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <div className="h-6 w-48 bg-[oklch(0.9_0.05_240)] rounded animate-pulse" />
         </CardHeader>
@@ -553,7 +553,7 @@ function ProgressSkeleton() {
         {[1, 2, 3].map((i) => (
           <Card
             key={i}
-            className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0"
+            className="bg-card  shadow-none rounded-xl border-0"
           >
             <CardHeader className="pb-2">
               <div className="h-4 w-32 bg-[oklch(0.9_0.05_240)] rounded animate-pulse" />

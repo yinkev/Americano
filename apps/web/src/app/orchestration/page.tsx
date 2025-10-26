@@ -104,7 +104,7 @@ export default function OrchestrationPage() {
     <div className="min-h-screen" style={{ backgroundColor: 'oklch(0.98 0.01 230)' }}>
       {/* Header */}
       <header
-        className="border-b sticky top-0 z-10 backdrop-blur-md"
+        className="border-b sticky top-0 z-10 "
         style={{
           backgroundColor: 'oklch(0.98 0.01 230)/0.8',
           borderColor: 'oklch(0.9 0.02 230)',
@@ -248,7 +248,7 @@ export default function OrchestrationPage() {
  */
 function QuickStatsCard() {
   return (
-    <div className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-lg p-6 space-y-4">
+    <div className="bg-card  border-border shadow-none rounded-lg p-6 space-y-4">
       <h3 className="font-heading font-semibold text-lg text-foreground flex items-center gap-2">
         <Brain className="size-5" style={{ color: 'oklch(0.6 0.05 230)' }} />
         Your Progress

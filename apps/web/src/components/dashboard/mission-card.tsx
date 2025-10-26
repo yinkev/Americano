@@ -1,12 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Target, ChevronRight, RefreshCw, Clock, CheckCircle2 } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { motion } from 'motion/react'
+import { ChevronRight, RefreshCw, Clock, CheckCircle2, Zap } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Section } from '@/components/ui/section'
 import type { MissionWithObjectives, MissionProgress } from '@/types/mission'
 import { getMissionObjectives } from '@/types/mission-helpers'
+import { springSmooth, springSubtle, listContainerVariants, listItemVariants, buttonPrimaryVariants } from '@/lib/design-system'
 
 export function MissionCard() {
   const [mission, setMission] = useState<MissionWithObjectives | null>(null)
@@ -14,7 +18,6 @@ export function MissionCard() {
   const [loading, setLoading] = useState(true)
   const [regenerating, setRegenerating] = useState(false)
 
-  // Fetch today's mission
   useEffect(() => {
     fetchMission()
   }, [])
@@ -50,8 +53,7 @@ export function MissionCard() {
 
       if (data.success) {
         setMission(data.data.mission)
-        // Recalculate progress
-        const objectives = data.data.objectives
+        const objectives = getMissionObjectives(data.data.mission)
         const completed = objectives.filter((obj: any) => obj.completed).length
         setProgress({
           total: objectives.length,
@@ -72,177 +74,161 @@ export function MissionCard() {
 
   if (loading) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-sm">
-        <CardContent className="p-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-6 bg-[oklch(0.922_0_0)] rounded w-1/3" />
-            <div className="h-4 bg-[oklch(0.922_0_0)] rounded w-full" />
-            <div className="h-4 bg-[oklch(0.922_0_0)] rounded w-2/3" />
-          </div>
-        </CardContent>
-      </Card>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={springSmooth}
+      >
+        <Card className="bg-muted shadow-none rounded-xl">
+          <CardContent className="p-8">
+            <div className="animate-pulse space-y-6">
+              <div className="h-8 bg-muted rounded-xl w-1/2" />
+              <div className="h-4 bg-muted rounded-xl w-full" />
+              <div className="h-4 bg-muted rounded-xl w-3/4" />
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     )
   }
 
   if (!mission || !progress) {
     return (
-      <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-sm">
-        <CardContent className="p-6">
-          <p className="text-sm text-muted-foreground">No mission available</p>
+      <Card className="bg-muted shadow-none rounded-xl">
+        <CardContent className="p-8">
+          <p className="text-md font-semibold text-muted-foreground">No mission available for today.</p>
         </CardContent>
       </Card>
     )
   }
 
-  // Extract objectives array directly from mission (already parsed)
   const objectives = getMissionObjectives(mission)
   const nextObjective = objectives.find((obj) => !obj.completed)
 
+  const formattedDate = new Date(mission.date).toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  })
+
   return (
-    <Card interactive="interactive" className="bg-white/80 backdrop-blur-md border-white/30">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="rounded-full bg-primary/10 p-2">
-              <Target className="size-5 text-primary" />
-            </div>
-            <div>
-              <h2 className="text-xl font-heading font-semibold text-foreground">
-                Today's Mission
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                {new Date(mission.date).toLocaleDateString('en-US', {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric',
-                })}
-              </p>
-            </div>
-          </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={springSmooth}
+      whileHover={{ y: -2, transition: springSubtle }}
+    >
+      <Card interactive="interactive" className="bg-transparent border-none shadow-none rounded-xl">
+      <Section
+        className="mb-2"
+        title="Today's Mission"
+        icon={<Zap className="size-5" />}
+        aside={
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
             onClick={handleRegenerate}
             disabled={regenerating}
             aria-label="Regenerate mission"
+            className="rounded-xl"
           >
-            <RefreshCw className={`size-4 ${regenerating ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`size-5 ${regenerating ? 'animate-spin' : ''}`} />
           </Button>
-        </div>
-      </CardHeader>
+        }
+      />
 
-      <CardContent className="space-y-4">
+      <CardContent className="p-0 space-y-4">
+        <p className="text-sm text-muted-foreground">{formattedDate}</p>
         <div>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-muted-foreground">Progress</p>
-            <span className="text-sm font-bold text-primary">
-              {progress.completed} / {progress.total} objectives
-            </span>
+            <p className="text-md font-semibold text-muted-foreground">Your Progress</p>
+            <motion.span
+              className="text-md font-bold text-primary tabular-nums"
+              key={`${progress.completed}-${progress.total}`}
+              initial={{ scale: 1.2, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={springSubtle}
+            >
+              {progress.completed} / {progress.total} done
+            </motion.span>
           </div>
-          {/* Progress Bar */}
-          <div className="h-2 w-full rounded-full bg-muted">
-            <div
-              className="h-full rounded-full bg-success transition-all duration-300"
-              style={{ width: `${progress.percentage}%` }}
-              role="progressbar"
-              aria-valuenow={progress.percentage}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            />
-          </div>
-          <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Clock className="size-3" />
-              {progress.estimatedMinutesRemaining} min remaining
-            </span>
-            {mission.status === 'COMPLETED' && (
-              <span className="flex items-center gap-1 text-success">
-                <CheckCircle2 className="size-3" />
-                Complete
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Objective List */}
-        <div className="space-y-2">
-          {objectives.slice(0, 3).map((obj, idx) => (
-            <div key={obj.id} className="flex items-start gap-2 text-sm">
-              <span
-                className={`flex-shrink-0 mt-0.5 ${
-                  obj.completed ? 'text-success' : 'text-muted-foreground'
-                }`}
-              >
-                {obj.completed ? '✅' : `${idx + 1}.`}
-              </span>
-              <div className="flex-1 min-w-0">
-                <p
-                  className={`font-medium leading-relaxed ${
-                    obj.completed
-                      ? 'text-muted-foreground line-through'
-                      : 'text-foreground'
-                  }`}
-                >
-                  {obj.objective?.objective || 'Loading...'}
-                </p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-xs text-muted-foreground">{obj.estimatedMinutes} min</span>
-                  {obj.objective?.isHighYield && <span className="text-xs">⭐ High-yield</span>}
-                  {obj.objective?.complexity && (
-                    <Badge
-                      variant="outline"
-                      className={`text-[10px] py-0 ${
-                        obj.objective.complexity === 'BASIC'
-                          ? 'bg-success/10 text-success border-success/20'
-                          : obj.objective.complexity === 'INTERMEDIATE'
-                            ? 'bg-warning/10 text-warning border-warning/20'
-                            : 'bg-energy/10 text-energy border-energy/20'
-                      }`}
-                    >
-                      {obj.objective.complexity}
-                    </Badge>
-                  )}
-                </div>
+          {progress.total > 0 && (
+            <>
+              <div className="py-1">
+                <Progress value={progress.percentage} />
               </div>
-            </div>
-          ))}
-          {objectives.length > 3 && (
-            <p className="text-xs text-muted-foreground pl-6">
-              +{objectives.length - 3} more objectives
-            </p>
+              <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <Clock className="size-4" />
+                  {progress.estimatedMinutesRemaining} min to go
+                </span>
+                {mission.status === 'COMPLETED' && (
+                  <span className="flex items-center gap-1.5 text-success font-semibold">
+                    <CheckCircle2 className="size-4" />
+                    All done!
+                  </span>
+                )}
+              </div>
+            </>
           )}
         </div>
 
-        {/* Next Task Preview / Actions */}
-        {nextObjective ? (
-          <div className="pt-4 border-t border-border">
-            <p className="text-xs font-medium text-muted-foreground mb-2">NEXT UP</p>
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground leading-relaxed">
-                  {nextObjective.objective?.objective}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {nextObjective.estimatedMinutes} min
-                </p>
+        <motion.div
+          className="space-y-3"
+          variants={listContainerVariants}
+          initial="initial"
+          animate="animate"
+        >
+          {objectives.slice(0, 3).map((obj, idx) => (
+            <motion.div
+              key={obj.id}
+              variants={listItemVariants}
+              whileHover={{ scale: 1.01, x: 4 }}
+              transition={springSubtle}
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted cursor-pointer"
+            >
+              <div className={`flex-shrink-0 size-7 rounded-full flex items-center justify-center font-semibold text-base ${obj.completed ? 'bg-card text-success' : 'bg-card text-primary'}`}>
+                {obj.completed ? <CheckCircle2 size={20} /> : idx + 1}
               </div>
-              <Button
-                size="icon"
-                onClick={() => {
-                  window.location.href = `/study?missionId=${mission.id}`
-                }}
-                aria-label="Start mission"
-              >
-                <ChevronRight className="size-5" />
+              <div className="flex-1 min-w-0">
+                <p className={`font-semibold leading-snug ${obj.completed ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
+                  {obj.objective?.objective || 'Loading...'}
+                </p>
+                <div className="flex items-center gap-3 mt-1.5">
+                  <span className="text-xs text-muted-foreground font-medium">{obj.estimatedMinutes} min</span>
+                  {obj.objective?.isHighYield && <Badge variant="secondary" className="text-xs">⭐ High-yield</Badge>}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+          {objectives.length > 3 && (
+            <p className="text-sm text-center text-muted-foreground pt-2">
+              + {objectives.length - 3} more objectives
+            </p>
+          )}
+        </motion.div>
+
+        {nextObjective ? (
+          <div className="pt-4">
+            <motion.div
+              variants={buttonPrimaryVariants}
+              initial="initial"
+              whileHover="hover"
+              whileTap="tap"
+            >
+              <Button size="md" className="w-full rounded-xl font-semibold text-base shadow-none" onClick={() => { window.location.href = `/study?missionId=${mission.id}` }}>
+                Start Next Objective
+                <ChevronRight className="size-5 ml-2" />
               </Button>
-            </div>
+            </motion.div>
           </div>
         ) : (
-          <div className="pt-4 border-t border-border text-center">
-            <p className="text-sm font-medium text-success">🎉 Mission complete!</p>
+          <div className="pt-4 text-center">
+            <p className="text-lg font-bold text-success">🎉 Mission complete. Great job!</p>
           </div>
         )}
       </CardContent>
     </Card>
+    </motion.div>
   )
 }

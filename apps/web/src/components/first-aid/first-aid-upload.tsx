@@ -121,7 +121,7 @@ export function FirstAidUpload({ open, onOpenChange, onUploadComplete }: FirstAi
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[550px] bg-white/80 backdrop-blur-md">
+      <DialogContent className="sm:max-w-[550px] bg-card ">
         <DialogHeader>
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" />
@@ -134,7 +134,7 @@ export function FirstAidUpload({ open, onOpenChange, onUploadComplete }: FirstAi
 
         <div className="grid gap-4 py-4">
           {/* Copyright Notice */}
-          <Alert className="border-amber-200 bg-amber-50/80 backdrop-blur-sm">
+          <Alert className="border-amber-200 bg-card ">
             <AlertCircle className="h-4 w-4" style={{ color: 'oklch(0.6 0.15 60)' }} />
             <AlertTitle className="text-amber-900">Copyright Notice</AlertTitle>
             <AlertDescription className="text-amber-800 text-xs space-y-1">
@@ -174,7 +174,7 @@ export function FirstAidUpload({ open, onOpenChange, onUploadComplete }: FirstAi
             <div
               className={cn(
                 'flex items-center gap-3 p-3 rounded-lg border transition-colors',
-                'bg-white/60 backdrop-blur-sm border-border/60'
+                'bg-card  border-border/60'
               )}
             >
               <FileText className="size-8 text-primary flex-shrink-0" />
@@ -218,7 +218,7 @@ export function FirstAidUpload({ open, onOpenChange, onUploadComplete }: FirstAi
 
           {/* Success State */}
           {uploadState === 'success' && (
-            <Alert className="border-green-200 bg-green-50/80 backdrop-blur-sm">
+            <Alert className="border-green-200 bg-card ">
               <CheckCircle2 className="h-4 w-4" style={{ color: 'oklch(0.6 0.15 150)' }} />
               <AlertTitle className="text-green-900">Upload Successful</AlertTitle>
               <AlertDescription className="text-green-800 text-xs">
@@ -229,7 +229,7 @@ export function FirstAidUpload({ open, onOpenChange, onUploadComplete }: FirstAi
 
           {/* Error State */}
           {uploadState === 'error' && errorMessage && (
-            <Alert className="border-red-200 bg-red-50/80 backdrop-blur-sm">
+            <Alert className="border-red-200 bg-card ">
               <AlertCircle className="h-4 w-4" style={{ color: 'oklch(0.6 0.2 20)' }} />
               <AlertTitle className="text-red-900">Upload Failed</AlertTitle>
               <AlertDescription className="text-red-800 text-xs">

@@ -60,10 +60,10 @@ export function TagInput({
   return (
     <div
       className={cn(
-        'flex min-h-[2.5rem] w-full flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2',
-        'focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500',
-        'transition-all duration-200',
-        disabled && 'opacity-50 cursor-not-allowed bg-gray-50',
+        'flex min-h-[2.5rem] w-full flex-wrap items-center gap-2 rounded-xl border border-border/50 bg-card  px-4 py-3',
+        'focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50',
+        'transition-all duration-200 shadow-none',
+        disabled && 'opacity-50 cursor-not-allowed bg-muted',
         className,
       )}
     >
@@ -73,10 +73,10 @@ export function TagInput({
           variant="secondary"
           className={cn(
             'px-2 py-1 text-xs font-medium',
-            'bg-blue-100/80 text-blue-700 border border-blue-200',
-            'backdrop-blur-sm rounded-full',
+            'bg-card text-blue-700 border border-blue-200',
+            ' rounded-full',
             'flex items-center gap-1',
-            'transition-all duration-200 hover:bg-blue-200/80',
+            'transition-all duration-200 hover:bg-card',
           )}
         >
           {tag}

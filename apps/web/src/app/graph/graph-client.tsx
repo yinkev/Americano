@@ -510,7 +510,7 @@ export default function GraphPageClient() {
               <button
                 onClick={handleLoadMore}
                 disabled={cacheLoading}
-                className="px-6 py-3 rounded-lg font-medium shadow-lg transition-all flex items-center gap-2"
+                className="px-6 py-3 rounded-lg font-medium shadow-none transition-all flex items-center gap-2"
                 style={{
                   backgroundColor: cacheLoading ? 'oklch(0.8 0.05 240)' : 'oklch(0.6 0.15 240)',
                   color: 'white',
@@ -529,7 +529,7 @@ export default function GraphPageClient() {
                 {cacheLoading ? (
                   <>
                     <div
-                      className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+                      className="w-4 h-4 border-2 border-border border-t-white rounded-full animate-spin"
                     />
                     <span>Loading...</span>
                   </>

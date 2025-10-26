@@ -93,8 +93,8 @@ export function FirstAidContextIndicator({
         variant="outline"
         className={cn(
           "cursor-pointer transition-all duration-200",
-          "hover:shadow-md hover:scale-105",
-          "bg-white/80 backdrop-blur-sm",
+          "hover:shadow-none hover:scale-105",
+          "bg-card ",
           isHighYield && "border-yellow-500/40",
           className
         )}
@@ -168,7 +168,7 @@ export function FirstAidContextIndicator({
         size="icon-sm"
         className={cn(
           "relative transition-all duration-200",
-          "hover:shadow-md hover:scale-110",
+          "hover:shadow-none hover:scale-110",
           className
         )}
         onClick={onExpand}
@@ -250,7 +250,7 @@ export function FirstAidContextIndicator({
       className={cn(
         "inline-flex items-center gap-1.5 px-2 py-1 rounded-md",
         "transition-all duration-200",
-        "hover:bg-white/60 hover:shadow-sm",
+        "hover:bg-card hover:shadow-none",
         "text-sm text-foreground",
         className
       )}
@@ -346,7 +346,7 @@ export function FirstAidContextIndicatorGroup({
       {remainingCount > 0 && (
         <Badge
           variant="secondary"
-          className="cursor-pointer hover:bg-secondary/80 transition-colors"
+          className="cursor-pointer hover:bg-card transition-colors"
           onClick={onViewAll}
           role="button"
           tabIndex={0}

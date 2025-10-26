@@ -2,19 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Search, Filter, ArrowUpDown } from 'lucide-react'
+import { Search, Filter, ArrowUpDown, PlusCircle, BookOpen } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'sonner'
 import { LectureList } from '@/components/library/lecture-list'
 import { LectureFilters } from '@/components/library/lecture-filters'
@@ -53,7 +43,7 @@ interface Pagination {
   hasPrevPage: boolean
 }
 
-export default function LibraryPage() {
+export default function NewLibraryPage() {
   const searchParams = useSearchParams()
   const [lectures, setLectures] = useState<Lecture[]>([])
   const [courses, setCourses] = useState<Course[]>([])
@@ -63,7 +53,6 @@ export default function LibraryPage() {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
   const [courseDialogOpen, setCourseDialogOpen] = useState(false)
 
-  // Filters
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCourse, setSelectedCourse] = useState<string>('all')
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
@@ -73,22 +62,9 @@ export default function LibraryPage() {
   const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
-    fetchCourses()
-  }, [])
-
-  useEffect(() => {
     fetchLectures()
-  }, [selectedCourse, selectedStatus, selectedTags, sortBy, sortOrder, currentPage])
-
-  // Open dialogs based on URL action parameter
-  useEffect(() => {
-    const action = searchParams.get('action')
-    if (action === 'upload') {
-      setUploadDialogOpen(true)
-    } else if (action === 'create-course') {
-      setCourseDialogOpen(true)
-    }
-  }, [searchParams])
+    fetchCourses()
+  }, [currentPage, selectedCourse, selectedStatus, sortBy, sortOrder])
 
   const fetchCourses = async () => {
     try {
@@ -109,20 +85,10 @@ export default function LibraryPage() {
         sortBy,
         sortOrder,
         page: currentPage.toString(),
-        limit: '50',
+        limit: '10',
+        courseId: selectedCourse,
+        status: selectedStatus,
       })
-
-      if (selectedCourse !== 'all') {
-        params.append('courseId', selectedCourse)
-      }
-
-      if (selectedStatus !== 'all') {
-        params.append('status', selectedStatus)
-      }
-
-      if (selectedTags.length > 0) {
-        params.append('tags', selectedTags.join(','))
-      }
 
       const response = await fetch(`/api/content/lectures?${params}`)
       const result = await response.json()
@@ -140,37 +106,6 @@ export default function LibraryPage() {
     }
   }
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      fetchLectures()
-      return
-    }
-
-    setLoading(true)
-    try {
-      const response = await fetch(
-        `/api/content/search?q=${encodeURIComponent(searchQuery)}&limit=50`,
-      )
-      const result = await response.json()
-
-      if (result.success) {
-        setLectures(result.data.lectures)
-        setPagination(null) // Search results don't have pagination
-      } else {
-        toast.error(result.error?.message || 'Search failed')
-      }
-    } catch (error) {
-      toast.error('Search failed')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleClearSearch = () => {
-    setSearchQuery('')
-    fetchLectures()
-  }
-
   const toggleLectureSelection = (lectureId: string) => {
     const newSelection = new Set(selectedLectures)
     if (newSelection.has(lectureId)) {
@@ -179,14 +114,6 @@ export default function LibraryPage() {
       newSelection.add(lectureId)
     }
     setSelectedLectures(newSelection)
-  }
-
-  const toggleSelectAll = () => {
-    if (selectedLectures.size === lectures.length && lectures.length > 0) {
-      setSelectedLectures(new Set())
-    } else {
-      setSelectedLectures(new Set(lectures.map((l) => l.id)))
-    }
   }
 
   const handleBulkActionComplete = () => {
@@ -201,140 +128,62 @@ export default function LibraryPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Library</h1>
-        </div>
-        <div className="flex gap-2">
-          <UploadDialog
-            open={uploadDialogOpen}
-            onOpenChange={setUploadDialogOpen}
-            onUploadComplete={fetchLectures}
-            courses={courses}
-          />
-          <Button className="compact-button" onClick={() => setCourseDialogOpen(true)}>Create Course</Button>
-        </div>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="flex items-center gap-2 mb-4 p-2 bg-muted/30 rounded-md">
-        <Search className="h-4 w-4 text-muted-foreground ml-2" />
-        <Input
-          placeholder="Search lectures..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          className="flex-1 bg-transparent border-none focus:ring-0"
-        />
-        <LectureFilters
-          courses={courses}
-          selectedCourse={selectedCourse}
-          selectedStatus={selectedStatus}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          onCourseChange={setSelectedCourse}
-          onStatusChange={setSelectedStatus}
-          onSortChange={(field, order) => {
-            setSortBy(field)
-            setSortOrder(order)
-          }}
-        />
-      </div>
-
-      {/* Bulk Action Toolbar */}
-      {selectedLectures.size > 0 && (
-        <div className="flex items-center justify-between p-2 mb-4 bg-muted/30 rounded-md">
-          <div className="flex items-center gap-2">
-            <Checkbox
-              checked={selectedLectures.size === lectures.length && lectures.length > 0}
-              onCheckedChange={toggleSelectAll}
-              id="select-all"
-            />
-            <label htmlFor="select-all" className="text-sm font-medium cursor-pointer">
-              {selectedLectures.size} selected
-            </label>
-          </div>
-          <BulkActionToolbar
-            selectedCount={selectedLectures.size}
-            selectedLectureIds={Array.from(selectedLectures)}
-            courses={courses}
-            onComplete={handleBulkActionComplete}
-            onCancel={() => setSelectedLectures(new Set())}
-          />
-        </div>
-      )}
-
-      {/* Lecture List */}
-      {loading ? (
-        <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">Loading lectures...</p>
-        </div>
-      ) : lectures.length === 0 ? (
-        <Card className="p-12">
-          <div className="text-center">
-            <p className="text-muted-foreground mb-4">
-              {searchQuery ? 'No lectures found' : 'No lectures yet'}
-            </p>
-            {!searchQuery && (
-              <p className="text-sm text-muted-foreground">
-                Upload your first lecture to get started
-              </p>
-            )}
-          </div>
-        </Card>
-      ) : (
-        <>
-          <LectureList
-            lectures={lectures}
-            selectedLectures={selectedLectures}
-            onToggleSelection={toggleLectureSelection}
-            onRefresh={fetchLectures}
-          />
-
-          {/* Pagination */}
-          {pagination && pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6">
-              <p className="text-sm text-muted-foreground">
-                Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.totalCount)} of{' '}
-                {pagination.totalCount} lectures
-              </p>
-              <div className="flex gap-2">
-                <Button
-                  className="compact-button"
-                  disabled={!pagination.hasPrevPage}
-                  onClick={() => setCurrentPage((p) => p - 1)}
-                >
-                  Previous
-                </Button>
-                <Button
-                  className="compact-button"
-                  disabled={!pagination.hasNextPage}
-                  onClick={() => setCurrentPage((p) => p + 1)}
-                >
-                  Next
-                </Button>
-              </div>
+      {/* I would add a motion.div here for a playful entrance animation */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+            <BookOpen className="w-10 h-10 text-primary" />
+            <div>
+                <h1 className="text-4xl font-heading font-bold">Your Library</h1>
+                <p className="text-lg text-muted-foreground">All your lectures and notes in one place.</p>
             </div>
-          )}
-        </>
-      )}
+        </div>
+        <div className="flex gap-4">
+          <Button size="lg" className="rounded-full font-bold text-lg shadow-none gap-2" onClick={() => setUploadDialogOpen(true)}><PlusCircle /> Upload</Button>
+          <Button size="lg" variant="outline" className="rounded-full font-bold text-lg shadow-none gap-2" onClick={() => setCourseDialogOpen(true)}><FolderPlus /> New Course</Button>
+        </div>
+      </div>
 
-      {/* Upload Dialog */}
-      <UploadDialog
-        open={uploadDialogOpen}
-        onOpenChange={setUploadDialogOpen}
-        onUploadComplete={fetchLectures}
-        courses={courses}
-      />
+      <div className="p-6 rounded-xl bg-card  border-border/50 shadow-none">
+        <div className="flex items-center gap-4 mb-6">
+            <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                placeholder="Search by title, topic, or content..."
+                className="pl-12 h-14 text-lg rounded-full bg-card border-none focus:ring-2 focus:ring-primary"
+                />
+            </div>
+            <LectureFilters
+              courses={courses}
+              selectedCourse={selectedCourse}
+              selectedStatus={selectedStatus}
+              sortBy={sortBy}
+              sortOrder={sortOrder}
+              onCourseChange={setSelectedCourse}
+              onStatusChange={setSelectedStatus}
+              onSortChange={(field, order) => {
+                setSortBy(field)
+                setSortOrder(order)
+              }}
+            />
+        </div>
 
-      {/* Course Dialog */}
-      <CourseDialog
-        open={courseDialogOpen}
-        onOpenChange={setCourseDialogOpen}
-        course={null}
-        onSuccess={handleCourseDialogSuccess}
-      />
+        {selectedLectures.size > 0 && (
+            <BulkActionToolbar
+                selectedCount={selectedLectures.size}
+                selectedLectureIds={Array.from(selectedLectures)}
+                courses={courses}
+                onComplete={handleBulkActionComplete}
+                onCancel={() => setSelectedLectures(new Set())}
+            />
+        )}
+
+        <LectureList lectures={lectures} selectedLectures={selectedLectures} onToggleSelection={toggleLectureSelection} onRefresh={fetchLectures} />
+
+      </div>
+
+        <UploadDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} onUploadComplete={fetchLectures} courses={courses} />
+        <CourseDialog open={courseDialogOpen} onOpenChange={setCourseDialogOpen} course={null} onSuccess={handleCourseDialogSuccess} />
+
     </div>
   )
 }

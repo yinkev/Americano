@@ -31,21 +31,21 @@ function getPriorityConfig(score: number): {
       level: 'CRITICAL',
       label: '🔴 CRITICAL',
       color: 'text-rose-700',
-      bgColor: 'bg-rose-100/80 border-rose-200',
+      bgColor: 'bg-card border-rose-200',
     }
   } else if (score >= 0.6) {
     return {
       level: 'HIGH',
       label: '🟠 HIGH',
       color: 'text-amber-700',
-      bgColor: 'bg-amber-100/80 border-amber-200',
+      bgColor: 'bg-card border-amber-200',
     }
   } else if (score >= 0.4) {
     return {
       level: 'MEDIUM',
       label: '🟡 MEDIUM',
       color: 'text-yellow-700',
-      bgColor: 'bg-yellow-100/80 border-yellow-200',
+      bgColor: 'bg-card border-yellow-200',
     }
   }
 
@@ -53,7 +53,7 @@ function getPriorityConfig(score: number): {
     level: 'LOW',
     label: '🟢 LOW',
     color: 'text-emerald-700',
-    bgColor: 'bg-emerald-100/80 border-emerald-200',
+    bgColor: 'bg-card border-emerald-200',
   }
 }
 
@@ -97,7 +97,7 @@ export function PriorityDot({ score, className }: { score: number; className?: s
 
   return (
     <div
-      className={cn('w-2 h-2 rounded-full', dotColors[config.level], 'shadow-sm', className)}
+      className={cn('w-2 h-2 rounded-full', dotColors[config.level], 'shadow-none', className)}
       title={`${config.label} - ${(score * 100).toFixed(0)}%`}
     />
   )

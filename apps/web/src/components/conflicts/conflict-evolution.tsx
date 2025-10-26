@@ -131,7 +131,7 @@ export function ConflictEvolution({
     <div className={cn('space-y-4', className)}>
       {/* Re-scan Alert */}
       {needsRescan && (
-        <Alert className="bg-amber-50/80 backdrop-blur-md border-amber-200">
+        <Alert className="bg-card  border-amber-200">
           <AlertTriangle className="h-4 w-4 text-amber-600" />
           <AlertDescription className="flex items-center justify-between gap-4">
             <span className="text-amber-900">
@@ -164,7 +164,7 @@ export function ConflictEvolution({
       )}
 
       {/* Evolution Summary */}
-      <Card className="p-4 bg-white/80 backdrop-blur-md border-border">
+      <Card className="p-4 bg-card  border-border">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold">Conflict Evolution</h3>
@@ -200,7 +200,7 @@ export function ConflictEvolution({
       </Card>
 
       {/* Change History */}
-      <Card className="p-4 bg-white/80 backdrop-blur-md border-border">
+      <Card className="p-4 bg-card  border-border">
         <h3 className="text-sm font-semibold mb-4">Change History</h3>
         <div className="space-y-4">
           {changes.length === 0 ? (
@@ -267,7 +267,7 @@ function StatCard({
   trend?: 'up' | 'down'
 }) {
   return (
-    <div className="rounded-lg border bg-muted/50 p-3">
+    <div className="rounded-lg border bg-card p-3">
       <div className="flex items-center justify-between mb-1">
         <span className="text-xs text-muted-foreground">{label}</span>
         {icon}

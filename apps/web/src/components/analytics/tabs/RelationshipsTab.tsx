@@ -51,7 +51,7 @@ export default function RelationshipsTab() {
   return (
     <div className="space-y-6">
       {/* Correlation Heatmap */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">Correlation Heatmap</CardTitle>
           <p className="text-sm text-[oklch(0.6_0.05_240)] mt-1">
@@ -93,7 +93,7 @@ export default function RelationshipsTab() {
       {/* Foundational & Bottleneck Objectives */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Foundational Objectives */}
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+        <Card className="bg-card  shadow-none rounded-xl border-0">
           <CardHeader>
             <div className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-[oklch(0.7_0.15_145)]" />
@@ -137,7 +137,7 @@ export default function RelationshipsTab() {
         </Card>
 
         {/* Bottleneck Objectives */}
-        <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+        <Card className="bg-card  shadow-none rounded-xl border-0">
           <CardHeader>
             <div className="flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-[oklch(0.65_0.20_25)]" />
@@ -182,7 +182,7 @@ export default function RelationshipsTab() {
       </div>
 
       {/* Network Graph Visualization */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Link2 className="w-5 h-5 text-[oklch(0.6_0.18_230)]" />
@@ -203,7 +203,7 @@ export default function RelationshipsTab() {
       </Card>
 
       {/* Strategic Study Sequence */}
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <div className="flex items-center gap-2">
             <ArrowRight className="w-5 h-5 text-[oklch(0.6_0.18_280)]" />
@@ -328,7 +328,7 @@ function CorrelationHeatmap({ matrix, labels, onCellClick }: CorrelationHeatmapP
               if (active && payload && payload.length) {
                 const data = payload[0].payload;
                 return (
-                  <div className="bg-white/95 backdrop-blur-xl px-3 py-2 rounded-lg shadow-lg border border-[oklch(0.85_0.05_240)]">
+                  <div className="bg-card  px-3 py-2 rounded-lg shadow-none border border-[oklch(0.85_0.05_240)]">
                     <p className="text-xs font-medium text-[oklch(0.4_0.05_240)]">
                       {labels[data.x]} ↔ {labels[data.y]}
                     </p>
@@ -578,7 +578,7 @@ function NetworkGraph({ matrix, labels, foundational, bottlenecks }: NetworkGrap
 function RelationshipsSkeleton() {
   return (
     <div className="space-y-6">
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <div className="h-6 w-48 bg-[oklch(0.9_0.05_240)] rounded animate-pulse" />
         </CardHeader>
@@ -591,7 +591,7 @@ function RelationshipsSkeleton() {
         {[1, 2].map((i) => (
           <Card
             key={i}
-            className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0"
+            className="bg-card  shadow-none rounded-xl border-0"
           >
             <CardHeader>
               <div className="h-6 w-40 bg-[oklch(0.9_0.05_240)] rounded animate-pulse" />
@@ -607,7 +607,7 @@ function RelationshipsSkeleton() {
         ))}
       </div>
 
-      <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
+      <Card className="bg-card  shadow-none rounded-xl border-0">
         <CardHeader>
           <div className="h-6 w-40 bg-[oklch(0.9_0.05_240)] rounded animate-pulse" />
         </CardHeader>
