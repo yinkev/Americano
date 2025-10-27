@@ -6,6 +6,7 @@ Provides async database session management for Story 4.6 analytics queries.
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
+from sqlalchemy import text
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
@@ -71,7 +72,7 @@ async def test_connection() -> bool:
     """
     try:
         async with get_db_session() as session:
-            await session.execute("SELECT 1")
+            await session.execute(text("SELECT 1"))
         return True
     except Exception as e:
         print(f"❌ Database connection failed: {e}")

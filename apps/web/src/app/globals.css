@@ -4,6 +4,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Ensure no gaps for sidebar layout */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+#__next {
+  height: 100%;
+}
+
 :root {
   /* Base Colors */
   --background: oklch(0.985 0 0);
@@ -54,6 +67,16 @@
   --clinical-foreground: oklch(0.97 0.02 230);
   --lab: oklch(0.65 0.12 160);
   --lab-foreground: oklch(0.97 0.02 160);
+
+  /* Streak & XP Colors (Figma Gamification) */
+  --streak-fire: oklch(0.75 0.22 40);
+  --streak-foreground: #ffffff;
+  --xp-purple: oklch(0.70 0.22 310);
+  --xp-foreground: #ffffff;
+  --mastery-green: oklch(0.75 0.20 145);
+  --mastery-foreground: #ffffff;
+  --accent-energy: oklch(0.68 0.21 25);
+  --accent-energy-foreground: #ffffff;
 
   /* Borders & Inputs */
   --border: oklch(0.922 0 0);

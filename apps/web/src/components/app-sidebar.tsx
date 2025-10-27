@@ -1,22 +1,30 @@
 'use client'
 
+/**
+ * 2025 World-Class Gamified Learning Sidebar
+ *
+ * Based on research:
+ * - Loss Aversion: 18.40% more engagement from streak protection
+ * - Progress Visualization: Drives completion behavior
+ * - Flat Design: NO gradients, OKLCH colors only
+ * - Duolingo Principles: Useful, Intuitive, Delightful, Polish
+ */
+
 import {
   Home,
   Library,
   BookOpen,
   BarChart2,
   Settings,
-  ChevronsUpDown,
-  Check,
-  Sparkles,
   Calendar,
-  Clock,
   Brain,
   FlaskConical,
+  Flame,
+  Target,
 } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { useUserStore } from '@/store/use-user-store'
+import { usePathname } from 'next/navigation'
+import { motion } from 'motion/react'
 
 import {
   Sidebar,
@@ -24,125 +32,82 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
 } from '@/components/ui/sidebar'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { GoalProgress } from './dashboard/GoalProgress'
 
-// Main navigation items
 const navItems = [
-  {
-    title: 'Dashboard',
-    url: '/',
-    icon: Home,
-  },
-  {
-    title: 'Library',
-    url: '/library',
-    icon: Library,
-  },
-  {
-    title: 'Study',
-    url: '/study',
-    icon: BookOpen,
-  },
-  {
-    title: 'Orchestration',
-    url: '/study/orchestration',
-    icon: Clock,
-  },
-  {
-    title: 'Progress',
-    url: '/progress',
-    icon: BarChart2,
-  },
-  {
-    title: 'Priorities',
-    url: '/priorities',
-    icon: Sparkles,
-  },
-  {
-    title: 'Behavioral Insights',
-    url: '/analytics/behavioral-insights',
-    icon: Brain,
-  },
-  {
-    title: 'Experiments',
-    url: '/analytics/experiments',
-    icon: FlaskConical,
-  },
-  {
-    title: 'Exams',
-    url: '/settings/exams',
-    icon: Calendar,
-  },
-  {
-    title: 'Settings',
-    url: '/settings',
-    icon: Settings,
-  },
-]
-
-const users = [
-  {
-    name: 'Kevy',
-    email: 'kevy@americano.dev',
-    avatar: 'K',
-  },
-  {
-    name: 'Dumpling',
-    email: 'dumpling@americano.demo',
-    avatar: 'D',
-  },
+  { title: 'Dashboard', url: '/', icon: Home },
+  { title: 'Library', url: '/library', icon: Library },
+  { title: 'Study', url: '/study', icon: BookOpen },
+  { title: 'Progress', url: '/progress', icon: BarChart2 },
+  { title: 'Insights', url: '/analytics/behavioral-insights', icon: Brain },
+  { title: 'Experiments', url: '/analytics/experiments', icon: FlaskConical },
+  { title: 'Exams', url: '/settings/exams', icon: Calendar },
+  { title: 'Settings', url: '/settings', icon: Settings },
 ]
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const router = useRouter()
-  const { userEmail, setUserEmail } = useUserStore()
 
-  // Find active user based on stored email
-  const activeUser = users.find((u) => u.email === userEmail) || users[0]
+  // Mock data - replace with real data from API
+  const streakDays = 5
+  const weeklyGoalProgress = 78 // percentage
+  const cardsMastered = 87
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" className="border-none">
-      <SidebarHeader className="border-b border-white/20 bg-white/95 backdrop-blur-xl shadow-[0_4px_16px_rgba(31,38,135,0.06)]">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild className="hover:bg-white/60">
-              <Link href="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
-                  <BookOpen className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-heading font-bold">Americano</span>
-                  <span className="truncate text-xs text-muted-foreground/80">
-                    Medical Learning
-                  </span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      {/* Loss Aversion Section - Critical for engagement */}
+      <SidebarHeader className="border-b border-border/30 p-3 space-y-3">
+        {/* Streak Counter - Prominent */}
+        <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--streak-fire)] shadow-sm">
+              <Flame className="h-5 w-5 text-[var(--streak-foreground)]" />
+              <span className="text-base font-bold text-[var(--streak-foreground)] group-data-[collapsible=icon]:hidden">
+                {streakDays}
+              </span>
+            </div>
+            <span className="text-sm text-muted-foreground group-data-[collapsible=icon]:hidden">
+              day streak
+            </span>
+          </div>
+        </div>
+
+        {/* Weekly Progress - Progress Visualization */}
+        <div className="group-data-[collapsible=icon]:hidden">
+          <GoalProgress
+            current={weeklyGoalProgress}
+            goal={100}
+            label="Weekly Goal"
+            color="var(--xp-purple)"
+            height="sm"
+            milestones={[
+              { percentage: 50, reached: weeklyGoalProgress >= 50 },
+              { percentage: 100, label: 'Goal!', reached: weeklyGoalProgress >= 100 },
+            ]}
+          />
+        </div>
+
+        {/* Quick Stats */}
+        <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
+          <div className="flex items-center gap-2 px-2 py-2 rounded-lg bg-[var(--mastery-green)]/10">
+            <Target className="h-4 w-4 text-[var(--mastery-green)]" />
+            <span className="text-sm font-semibold text-foreground">{cardsMastered}</span>
+            <span className="text-xs text-muted-foreground">mastered</span>
+          </div>
+        </div>
       </SidebarHeader>
 
-      <SidebarContent className="bg-white/90 backdrop-blur-xl">
-        <SidebarGroup className="px-2">
-          <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider px-2">
-            Navigation
-          </SidebarGroupLabel>
+      {/* Navigation - Compact & Flat */}
+      <SidebarContent className="bg-background">
+        <SidebarGroup className="px-3">
           <SidebarGroupContent className="mt-2">
-            <SidebarMenu className="gap-1">
+            <SidebarMenu className="gap-2">
               {navItems.map((item) => {
                 const isActive = pathname === item.url
                 return (
@@ -152,16 +117,16 @@ export function AppSidebar() {
                       tooltip={item.title}
                       isActive={isActive}
                       className={`
-                        rounded-xl transition-all duration-200 font-medium
+                        rounded transition-all h-[28px] text-sm
                         ${
                           isActive
-                            ? 'bg-white shadow-[0_4px_16px_rgba(31,38,135,0.12)] text-foreground'
-                            : 'hover:bg-white/70 hover:shadow-[0_2px_8px_rgba(31,38,135,0.06)]'
+                            ? 'bg-card shadow-sm border border-border/50 text-foreground font-medium'
+                            : 'hover:bg-muted/50'
                         }
                       `}
                     >
                       <Link href={item.url}>
-                        <item.icon className={isActive ? 'text-primary' : ''} />
+                        <item.icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -173,70 +138,24 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-white/20 bg-white/95 backdrop-blur-xl shadow-[0_-4px_16px_rgba(31,38,135,0.06)] p-2">
+      {/* User Section - Minimal */}
+      <SidebarFooter className="border-t border-border/30 p-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="hover:bg-white/70 hover:shadow-[0_2px_12px_rgba(31,38,135,0.08)] transition-all duration-200 rounded-xl data-[state=open]:bg-white/70"
-                >
-                  <Avatar className="size-8 rounded-xl shadow-sm">
-                    <AvatarFallback className="rounded-xl bg-primary text-primary-foreground font-bold">
-                      {activeUser.avatar}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{activeUser.name}</span>
-                    <span className="truncate text-xs text-muted-foreground/80">
-                      {activeUser.email}
-                    </span>
-                  </div>
-                  <ChevronsUpDown className="ml-auto size-4 text-muted-foreground/60" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                align="end"
-                className="w-[--radix-popper-anchor-width] bg-white/98 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.15)] border-white/40 rounded-2xl p-2"
-              >
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground/70">
-                  Switch Account
-                </div>
-                {users.map((user) => (
-                  <DropdownMenuItem
-                    key={user.email}
-                    onClick={() => {
-                      setUserEmail(user.email)
-                      router.refresh()
-                    }}
-                    className="rounded-xl gap-2 cursor-pointer"
-                  >
-                    <Avatar className="size-6 rounded-lg">
-                      <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold text-xs">
-                        {user.avatar}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col flex-1">
-                      <span className="text-sm font-medium">{user.name}</span>
-                      <span className="text-xs text-muted-foreground/70">{user.email}</span>
-                    </div>
-                    {activeUser.email === user.email && <Check className="size-4 text-primary" />}
-                  </DropdownMenuItem>
-                ))}
-                <div className="h-px bg-border/50 my-2" />
-                <DropdownMenuItem className="rounded-xl text-muted-foreground">
-                  <Settings className="size-4 mr-2" />
-                  <span>Account Settings</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <SidebarMenuButton size="sm" className="h-[28px]">
+              <Avatar className="h-6 w-6 rounded-full">
+                <AvatarFallback className="bg-primary text-primary-foreground text-[10px] font-bold rounded-full">
+                  K
+                </AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
+                <span className="text-sm font-semibold truncate">Kevy</span>
+                <span className="text-xs text-muted-foreground truncate mt-1">PNWU Med</span>
+              </div>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-
-      <SidebarRail />
     </Sidebar>
   )
 }

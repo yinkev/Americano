@@ -32,6 +32,12 @@ from pydantic import BaseModel
 # Add api root to path
 api_root = Path(__file__).parent.parent
 sys.path.insert(0, str(api_root))
+
+# Add ML service root to path (for Epic 5 models)
+ml_service_root = api_root.parent / "ml-service"
+if ml_service_root.exists():
+    sys.path.insert(0, str(ml_service_root))
+
 os.chdir(str(api_root))
 
 
@@ -219,10 +225,17 @@ def main():
 
     # Module paths to generate from
     model_modules = [
+        # Epic 4: Understanding Validation Engine
         "src.validation.models",       # Story 4.1: Validation models
         "src.challenge.models",        # Story 4.3: Challenge models
         "src.adaptive.models",         # Story 4.5: Adaptive models
         "src.analytics.models",        # Story 4.6: Analytics models
+
+        # Epic 5: ML Service (Behavioral Twin Engine)
+        "app.models.predictions",      # Struggle predictions, ML models
+        "app.models.feedback",         # User feedback models
+        "app.models.interventions",    # Intervention strategies
+        "app.models.analytics",        # Advanced analytics models
     ]
 
     print("Discovering Pydantic V2 models in:")

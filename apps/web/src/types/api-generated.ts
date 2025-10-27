@@ -9,8 +9,12 @@
  *   - src.challenge.models
  *   - src.adaptive.models
  *   - src.analytics.models
+ *   - app.models.predictions
+ *   - app.models.feedback
+ *   - app.models.interventions
+ *   - app.models.analytics
  *
- * Generated: 2025-10-21 23:05:42 UTC
+ * Generated: 2025-10-27 01:23:36 UTC
  * Generator: Custom Pydantic V2 → TypeScript converter
  *
  * To regenerate:
@@ -614,105 +618,48 @@ export interface FailurePattern {
   [k: string]: unknown;
 }
 
-export type ChallengeId = string;
+export type ActualStruggle = boolean;
 /**
- * User's incorrect answer
+ * Feedback type enum matching Prisma schema
  */
-export type UserAnswer = string;
+export type FeedbackType = "HELPFUL" | "NOT_HELPFUL" | "INACCURATE" | "INTERVENTION_GOOD" | "INTERVENTION_BAD";
 /**
- * The correct answer
+ * Optional feedback comments
  */
-export type CorrectAnswer = string;
-/**
- * Learning objective text
- */
-export type ObjectiveText = string;
-/**
- * Type of misconception (overconfidence, partial_understanding, recent_mistakes)
- */
-export type MisconceptionType = string;
+export type Comments = string | null;
 
 /**
- * Request model for generating corrective feedback.
+ * Request body for POST /predictions/{id}/feedback
  *
- * Attributes:
- *     challenge_id: ID of the challenge attempt
- *     user_answer: User's incorrect answer
- *     correct_answer: The correct answer
- *     objective_text: Learning objective being tested
- *     misconception_type: Optional hint about the type of error
+ * Records user feedback on prediction accuracy.
  */
 export interface FeedbackRequest {
-  challenge_id: ChallengeId;
-  user_answer: UserAnswer;
-  correct_answer: CorrectAnswer;
-  objective_text: ObjectiveText;
-  misconception_type?: MisconceptionType;
+  actual_struggle: ActualStruggle;
+  feedback_type: FeedbackType;
+  comments?: Comments;
   [k: string]: unknown;
 }
 
-export type ChallengeId = string;
+export type FeedbackRecorded = boolean;
+export type PredictionId = string;
+export type FeedbackId = string;
 /**
- * Clear explanation of why the user's answer was wrong (2-3 sentences)
+ * Updated model accuracy if calculated
  */
-export type MisconceptionExplained = string;
-/**
- * Clarification of the correct concept with clinical context (3-4 sentences)
- */
-export type CorrectConcept = string;
-/**
- * Real-world clinical scenario or patient example demonstrating the concept (2-3 sentences)
- */
-export type ClinicalContext = string;
-/**
- * Memorable mnemonic, visual analogy, or patient story to aid retention (1-2 sentences)
- */
-export type MemoryAnchor = string;
-/**
- * Type of memory anchor created
- */
-export type MemoryAnchorType = "mnemonic" | "visual_analogy" | "patient_story" | "clinical_pearl";
-/**
- * User-selected emotion tag (captured after feedback shown)
- */
-export type EmotionTag = "SURPRISE" | "CONFUSION" | "FRUSTRATION" | "AHA_MOMENT" | "";
-/**
- * User's personal notes about what clicked (captured in UI)
- */
-export type PersonalNotes = string;
-export type GeneratedAt = string;
+export type ModelAccuracyUpdate = number | null;
+export type Message = string;
+export type SubmittedAt = string;
 
 /**
- * Complete response with feedback and metadata for user interaction.
- *
- * Includes the structured feedback plus fields for emotion tagging
- * and personal notes (captured in UI, stored in database).
+ * Response for feedback submission.
  */
 export interface FeedbackResponse {
-  challenge_id: ChallengeId;
-  feedback: StructuredFeedback;
-  emotion_tag?: EmotionTag;
-  personal_notes?: PersonalNotes;
-  generated_at?: GeneratedAt;
-  [k: string]: unknown;
-}
-/**
- * Structured corrective feedback from ChatMock via instructor.
- *
- * This model enforces the rubric:
- * 1. Explain misconception
- * 2. Clarify correct concept
- * 3. Provide clinical context
- * 4. Create memorable anchor
- *
- * Used as response_model for instructor to ensure structured output.
- */
-export interface StructuredFeedback {
-  misconception_explained: MisconceptionExplained;
-  correct_concept: CorrectConcept;
-  clinical_context: ClinicalContext;
-  memory_anchor: MemoryAnchor;
-  memory_anchor_type: MemoryAnchorType;
+  feedback_recorded: FeedbackRecorded;
+  prediction_id: PredictionId;
+  feedback_id: FeedbackId;
+  model_accuracy_update?: ModelAccuracyUpdate;
+  message?: Message;
+  submitted_at?: SubmittedAt;
   [k: string]: unknown;
 }
 
@@ -2951,5 +2898,447 @@ export interface ModelAccuracy1 {
   r_squared: RSquared;
   sample_size: SampleSize;
   last_updated: LastUpdated;
+  [k: string]: unknown;
+}
+
+export type Id = string;
+/**
+ * Alert type for user notifications
+ */
+export type AlertType = "PROACTIVE_WARNING" | "PREREQUISITE_ALERT" | "REAL_TIME_ALERT" | "INTERVENTION_SUGGESTION";
+export type Title = string;
+export type Message = string;
+/**
+ * Indicator severity enum matching Prisma schema
+ */
+export type Severity = "LOW" | "MEDIUM" | "HIGH";
+export type Priority = number;
+export type PredictionId = string | null;
+export type InterventionId = string | null;
+export type CreatedAt = string;
+
+/**
+ * Alert notification for user.
+ */
+export interface AlertResponse {
+  id: Id;
+  type: AlertType;
+  title: Title;
+  message: Message;
+  severity: Severity;
+  priority: Priority;
+  prediction_id?: PredictionId;
+  intervention_id?: InterventionId;
+  created_at: CreatedAt;
+  [k: string]: unknown;
+}
+
+export type AlertType = "PROACTIVE_WARNING" | "PREREQUISITE_ALERT" | "REAL_TIME_ALERT" | "INTERVENTION_SUGGESTION";
+
+export type Severity = "LOW" | "MEDIUM" | "HIGH";
+
+export type Id = string;
+export type UserId = string;
+export type LearningObjectiveId = string | null;
+export type TopicId = string | null;
+export type PredictionDate = string;
+export type PredictedStruggleProbability = number;
+export type PredictionConfidence = number;
+/**
+ * Prediction status enum matching Prisma schema
+ */
+export type PredictionStatus = "PENDING" | "CONFIRMED" | "FALSE_POSITIVE" | "MISSED";
+/**
+ * LOW, MEDIUM, or HIGH
+ */
+export type RiskLevel = string;
+/**
+ * Human-readable explanation
+ */
+export type Reasoning = string;
+export type ObjectiveName = string | null;
+export type CourseName = string | null;
+export type Indicators = {
+  [k: string]: unknown;
+}[];
+
+/**
+ * Detailed prediction information for a single objective.
+ */
+export interface PredictionDetail {
+  id: Id;
+  user_id: UserId;
+  learning_objective_id?: LearningObjectiveId;
+  topic_id?: TopicId;
+  prediction_date: PredictionDate;
+  predicted_struggle_probability: PredictedStruggleProbability;
+  prediction_confidence: PredictionConfidence;
+  prediction_status: PredictionStatus;
+  feature_vector: FeatureVector;
+  risk_level: RiskLevel;
+  reasoning: Reasoning;
+  objective_name?: ObjectiveName;
+  course_name?: CourseName;
+  indicators?: Indicators;
+  [k: string]: unknown;
+}
+/**
+ * Features used for prediction
+ */
+export interface FeatureVector {
+  [k: string]: unknown;
+}
+
+export type PredictionStatus = "PENDING" | "CONFIRMED" | "FALSE_POSITIVE" | "MISSED";
+
+export type UserId = string;
+/**
+ * Days ahead to predict (1-30)
+ */
+export type DaysAhead = number;
+
+/**
+ * Request body for POST /predictions/generate
+ *
+ * Triggers prediction analysis for a user.
+ */
+export interface PredictionRequest {
+  user_id: UserId;
+  days_ahead?: DaysAhead;
+  [k: string]: unknown;
+}
+
+export type Id = string;
+export type UserId = string;
+export type LearningObjectiveId = string | null;
+export type TopicId = string | null;
+export type PredictionDate = string;
+export type PredictedStruggleProbability = number;
+export type PredictionConfidence = number;
+/**
+ * Prediction status enum matching Prisma schema
+ */
+export type PredictionStatus = "PENDING" | "CONFIRMED" | "FALSE_POSITIVE" | "MISSED";
+/**
+ * LOW, MEDIUM, or HIGH
+ */
+export type RiskLevel = string;
+/**
+ * Human-readable explanation
+ */
+export type Reasoning = string;
+export type ObjectiveName = string | null;
+export type CourseName = string | null;
+export type Indicators = {
+  [k: string]: unknown;
+}[];
+export type Predictions = PredictionDetail[];
+export type Alerts = AlertResponse[] | null;
+export type Id1 = string;
+/**
+ * Alert type for user notifications
+ */
+export type AlertType = "PROACTIVE_WARNING" | "PREREQUISITE_ALERT" | "REAL_TIME_ALERT" | "INTERVENTION_SUGGESTION";
+export type Title = string;
+export type Message = string;
+/**
+ * Indicator severity enum matching Prisma schema
+ */
+export type Severity = "LOW" | "MEDIUM" | "HIGH";
+export type Priority = number;
+export type PredictionId = string | null;
+export type InterventionId = string | null;
+export type CreatedAt = string;
+export type TotalCount = number;
+export type HighRiskCount = number;
+export type MediumRiskCount = number;
+export type LowRiskCount = number;
+export type GeneratedAt = string;
+
+/**
+ * Response for POST /predictions/generate and GET /predictions
+ */
+export interface PredictionResponse {
+  predictions: Predictions;
+  alerts?: Alerts;
+  total_count: TotalCount;
+  high_risk_count: HighRiskCount;
+  medium_risk_count: MediumRiskCount;
+  low_risk_count: LowRiskCount;
+  generated_at?: GeneratedAt;
+  [k: string]: unknown;
+}
+/**
+ * Detailed prediction information for a single objective.
+ */
+export interface PredictionDetail {
+  id: Id;
+  user_id: UserId;
+  learning_objective_id?: LearningObjectiveId;
+  topic_id?: TopicId;
+  prediction_date: PredictionDate;
+  predicted_struggle_probability: PredictedStruggleProbability;
+  prediction_confidence: PredictionConfidence;
+  prediction_status: PredictionStatus;
+  feature_vector: FeatureVector;
+  risk_level: RiskLevel;
+  reasoning: Reasoning;
+  objective_name?: ObjectiveName;
+  course_name?: CourseName;
+  indicators?: Indicators;
+  [k: string]: unknown;
+}
+/**
+ * Features used for prediction
+ */
+export interface FeatureVector {
+  [k: string]: unknown;
+}
+/**
+ * Alert notification for user.
+ */
+export interface AlertResponse {
+  id: Id1;
+  type: AlertType;
+  title: Title;
+  message: Message;
+  severity: Severity;
+  priority: Priority;
+  prediction_id?: PredictionId;
+  intervention_id?: InterventionId;
+  created_at: CreatedAt;
+  [k: string]: unknown;
+}
+
+export type FeedbackType = "HELPFUL" | "NOT_HELPFUL" | "INACCURATE" | "INTERVENTION_GOOD" | "INTERVENTION_BAD";
+
+export type MissionId = string | null;
+
+/**
+ * Request to apply an intervention to a mission.
+ */
+export interface InterventionApplyRequest {
+  mission_id?: MissionId;
+  [k: string]: unknown;
+}
+
+export type Success = boolean;
+export type InterventionId = string;
+export type MissionId = string;
+export type Message = string;
+export type AppliedAt = string;
+
+/**
+ * Response after applying an intervention.
+ */
+export interface InterventionApplyResponse {
+  success: Success;
+  intervention_id: InterventionId;
+  mission_id: MissionId;
+  message: Message;
+  applied_at?: AppliedAt;
+  [k: string]: unknown;
+}
+
+export type Id = string;
+export type PredictionId = string;
+export type UserId = string;
+/**
+ * Intervention type enum matching Prisma schema
+ */
+export type InterventionType =
+  | "PREREQUISITE_REVIEW"
+  | "DIFFICULTY_PROGRESSION"
+  | "CONTENT_FORMAT_ADAPT"
+  | "COGNITIVE_LOAD_REDUCE"
+  | "SPACED_REPETITION_BOOST"
+  | "BREAK_SCHEDULE_ADJUST";
+export type Description = string;
+export type Reasoning = string;
+export type Priority = number;
+/**
+ * Intervention status enum matching Prisma schema
+ */
+export type InterventionStatus = "PENDING" | "APPLIED" | "COMPLETED" | "DISMISSED";
+export type AppliedAt = string | null;
+export type AppliedToMissionId = string | null;
+export type Effectiveness = number | null;
+export type CreatedAt = string;
+
+/**
+ * Intervention recommendation response.
+ */
+export interface InterventionResponse {
+  id: Id;
+  prediction_id: PredictionId;
+  user_id: UserId;
+  intervention_type: InterventionType;
+  description: Description;
+  reasoning: Reasoning;
+  priority: Priority;
+  status: InterventionStatus;
+  applied_at?: AppliedAt;
+  applied_to_mission_id?: AppliedToMissionId;
+  effectiveness?: Effectiveness;
+  created_at: CreatedAt;
+  [k: string]: unknown;
+}
+
+export type InterventionStatus = "PENDING" | "APPLIED" | "COMPLETED" | "DISMISSED";
+
+export type InterventionType =
+  | "PREREQUISITE_REVIEW"
+  | "DIFFICULTY_PROGRESSION"
+  | "CONTENT_FORMAT_ADAPT"
+  | "COGNITIVE_LOAD_REDUCE"
+  | "SPACED_REPETITION_BOOST"
+  | "BREAK_SCHEDULE_ADJUST";
+
+export type Accuracy = number;
+/**
+ * Precision score
+ */
+export type Precision = number;
+/**
+ * Recall score
+ */
+export type Recall = number;
+/**
+ * F1 score
+ */
+export type F1Score = number;
+/**
+ * AUC-ROC score
+ */
+export type AucRoc = number | null;
+/**
+ * rule_based or logistic_regression
+ */
+export type ModelType = string;
+export type ModelVersion = string;
+export type LastUpdated = string;
+/**
+ * Number of training examples
+ */
+export type DataPoints = number;
+export type FeatureImportance = {
+  [k: string]: number;
+} | null;
+/**
+ * Accuracy over time
+ */
+export type AccuracyTrend =
+  | {
+      [k: string]: unknown;
+    }[]
+  | null;
+
+/**
+ * Response for GET /analytics/model-performance
+ *
+ * Returns comprehensive model metrics and performance data.
+ */
+export interface ModelPerformanceResponse {
+  accuracy: Accuracy;
+  precision: Precision;
+  recall: Recall;
+  f1_score: F1Score;
+  auc_roc?: AucRoc;
+  calibration: Calibration;
+  model_type: ModelType;
+  model_version: ModelVersion;
+  last_updated: LastUpdated;
+  data_points: DataPoints;
+  feature_importance?: FeatureImportance;
+  accuracy_trend?: AccuracyTrend;
+  [k: string]: unknown;
+}
+/**
+ * Calibration curve data
+ */
+export interface Calibration {
+  [k: string]: number[];
+}
+
+export type BaselineRate = number;
+/**
+ * Current struggle rate (0-1)
+ */
+export type CurrentRate = number;
+/**
+ * Percentage reduction (can be negative)
+ */
+export type ReductionPercentage = number;
+export type Date = string;
+export type StruggleRate = number;
+export type StrugglesCount = number;
+export type TopicsStudied = number;
+/**
+ * Struggle rate over time
+ */
+export type Timeline = TimelinePoint[];
+/**
+ * Effectiveness by intervention type
+ */
+export type InterventionEffectiveness = {
+  [k: string]: unknown;
+}[];
+/**
+ * Time period: week, month, or all
+ */
+export type Period = string;
+export type BaselinePeriodStart = string | null;
+export type BaselinePeriodEnd = string | null;
+export type CurrentPeriodStart = string;
+export type CurrentPeriodEnd = string;
+export type TotalPredictions = number;
+export type TotalInterventionsApplied = number;
+export type UserFeedbackCount = number;
+
+/**
+ * Response for GET /analytics/struggle-reduction
+ *
+ * Returns struggle reduction metrics and success data.
+ */
+export interface StruggleReductionResponse {
+  baseline_rate: BaselineRate;
+  current_rate: CurrentRate;
+  reduction_percentage: ReductionPercentage;
+  timeline: Timeline;
+  intervention_effectiveness: InterventionEffectiveness;
+  period: Period;
+  baseline_period_start?: BaselinePeriodStart;
+  baseline_period_end?: BaselinePeriodEnd;
+  current_period_start: CurrentPeriodStart;
+  current_period_end: CurrentPeriodEnd;
+  total_predictions: TotalPredictions;
+  total_interventions_applied: TotalInterventionsApplied;
+  user_feedback_count: UserFeedbackCount;
+  [k: string]: unknown;
+}
+/**
+ * Timeline data point for struggle reduction metrics.
+ */
+export interface TimelinePoint {
+  date: Date;
+  struggle_rate: StruggleRate;
+  struggles_count: StrugglesCount;
+  topics_studied: TopicsStudied;
+  [k: string]: unknown;
+}
+
+export type Date = string;
+export type StruggleRate = number;
+export type StrugglesCount = number;
+export type TopicsStudied = number;
+
+/**
+ * Timeline data point for struggle reduction metrics.
+ */
+export interface TimelinePoint {
+  date: Date;
+  struggle_rate: StruggleRate;
+  struggles_count: StrugglesCount;
+  topics_studied: TopicsStudied;
   [k: string]: unknown;
 }

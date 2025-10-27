@@ -11,9 +11,9 @@ from typing import Literal
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
-    # OpenAI Configuration
+    # OpenAI Configuration (Using ChatMock for development)
     openai_api_key: str
-    openai_model: str = "gpt-4"  # Will use GPT-5 when available
+    openai_model: str = "chatmock/gpt-5"  # ChatMock/GPT-5 for evaluation
     openai_temperature: float = 0.3  # Low temperature for consistent evaluation
     openai_max_tokens: int = 2000  # Detailed feedback
 
@@ -24,10 +24,10 @@ class Settings(BaseSettings):
     environment: Literal["development", "staging", "production"] = "development"
     log_level: Literal["debug", "info", "warning", "error"] = "info"
     api_host: str = "0.0.0.0"
-    api_port: int = 8001  # Epic 4 port (see CLAUDE.md port allocation)
+    api_port: int = 8000  # Main Python API port (see CLAUDE.md port allocation)
 
-    # CORS Configuration (for Next.js integration - Epic 4 uses port 3001)
-    cors_origins: list[str] = ["http://localhost:3001", "http://127.0.0.1:3001"]
+    # CORS Configuration (for Next.js integration - port 3000)
+    cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
     model_config = SettingsConfigDict(
         env_file=".env",
