@@ -1,281 +1,369 @@
 """
-Generate Synthetic ABAB Test Data
+Generate synthetic ABAB (reversal design) behavioral event data in DuckDB.
 
-Creates 60-day synthetic ABAB reversal design dataset for integration testing.
-Implements WWC-compliant single-case experimental design with realistic effect size.
+Design
+------
+- User: test-abab-user-001
+- Protocol (doc-only): abab_protocol_001
+- Phases (15 observations each, sequential days from 2025-09-01):
+  1) baseline_1        (B1)  mean≈65
+  2) intervention_A_1  (A1)  mean≈80  (+15 vs baseline)
+  3) baseline_2        (B2)  mean≈68  (baseline with slight carryover)
+  4) intervention_A_2  (A2)  mean≈82  (+14 vs B2)
 
-ABAB Phase Design:
-- Baseline 1 (days 1-15): mean=70, sd=3
-- Intervention A1 (days 16-30): mean=85, sd=3 (+15 point effect)
-- Baseline 2 (days 31-45): mean=70, sd=3 (return to baseline)
-- Intervention A2 (days 46-60): mean=85, sd=3 (replicate effect)
+Noise & Reproducibility
+-----------------------
+- Random seed: 42 for deterministic generation
+- Phase SDs in the 5–8 range to add realistic variability
+- Scores are clipped to [0, 100]
 
-Effect Size: Cohen's d ≈ 5.0 (very large, ideal for testing)
-Expected p-value: < 0.001 (highly significant)
+Storage
+-------
+Writes into apps/ml-service/data/behavioral_events.duckdb using the schema:
 
-Created: 2025-10-27T11:05:00-07:00
-Part of: Day 7-8 Research Analytics Implementation (ADR-006)
+    CREATE TABLE behavioral_events (
+        timestamp TIMESTAMP,
+        userId VARCHAR,
+        experimentPhase VARCHAR,
+        sessionPerformanceScore DOUBLE,
+        engagementLevel DOUBLE,
+        randomizationSeed INTEGER
+    );
 
-Usage:
-    python scripts/generate_abab_test_data.py
+Notes
+-----
+- Column names intentionally use camelCase to match existing analytics code.
+- The script is idempotent for the test user: it deletes prior rows for
+  userId='test-abab-user-001' before inserting exactly 60 new rows.
 """
 
+from __future__ import annotations
+
 import sys
-from pathlib import Path
 from datetime import datetime, timedelta
+from pathlib import Path
+import random
 
-import duckdb
-import numpy as np
-import pandas as pd
-
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from app.schemas.behavioral_events import BehavioralEventSchema
-
-
-def generate_abab_data(
-    user_id: str = "cabab00000000000000000001",  # CUID format (exactly 25 chars: c + 24 alphanumeric)
-    start_date: str = "2025-08-28",  # 60 days ago from Oct 27, ensuring all data is in past
-    seed: int = 42,
-) -> pd.DataFrame:
-    """
-    Generate synthetic ABAB reversal design data.
-
-    Args:
-        user_id: Test user ID
-        start_date: Start date for data generation (ISO 8601)
-        seed: Random seed for reproducibility
-
-    Returns:
-        DataFrame with 60 days of ABAB data
-    """
-    rng = np.random.default_rng(seed)
-
-    # Phase parameters
-    phases = [
-        {
-            "name": "baseline_1",
-            "days": range(1, 16),  # Days 1-15
-            "mean": 70,
-            "sd": 3,
-        },
-        {
-            "name": "intervention_A_1",
-            "days": range(16, 31),  # Days 16-30
-            "mean": 85,
-            "sd": 3,
-        },
-        {
-            "name": "baseline_2",
-            "days": range(31, 46),  # Days 31-45
-            "mean": 70,
-            "sd": 3,
-        },
-        {
-            "name": "intervention_A_2",
-            "days": range(46, 61),  # Days 46-60
-            "mean": 85,
-            "sd": 3,
-        },
-    ]
-
-    # Generate data
-    records = []
-    base_date = datetime.fromisoformat(start_date)
-
-    for phase in phases:
-        for day in phase["days"]:
-            # Generate performance score (normal distribution)
-            score = rng.normal(phase["mean"], phase["sd"])
-            score = np.clip(score, 0, 100)  # Clamp to 0-100 range
-
-            # Create behavioral event record
-            timestamp = base_date + timedelta(days=day - 1)
-
-            # Generate CUID-like ID (c + exactly 24 alphanumeric characters)
-            # Format: "c" + "abab" + 2-digit day + 18 zeros = 1 + 4 + 2 + 18 = 25 total
-            event_id = f"cabab{day:02d}{'0' * 18}"  # CUID format
-
-            record = {
-                "id": event_id,
-                "userId": user_id,
-                "eventType": "SESSION_ENDED",  # From EventType enum
-                "eventData": {"session_id": f"session_{day}"},
-                "timestamp": timestamp,
-                "completionQuality": "NORMAL",
-                "contentType": "mixed_review",
-                "contextMetadataId": "cmetaabab00000000000001",  # CUID format (required when experimentPhase is set)
-                "dayOfWeek": timestamp.weekday(),
-                "difficultyLevel": "intermediate",
-                "engagementLevel": "MEDIUM",
-                "sessionPerformanceScore": int(round(score)),
-                "timeOfDay": 14,  # 2 PM study time
-                "experimentPhase": phase["name"],
-                "randomizationSeed": seed,
-            }
-            records.append(record)
-
-    df = pd.DataFrame(records)
-    return df
+try:
+    import duckdb  # Verified against DuckDB Python API docs (parameters use $1, $2 ...)
+except Exception as e:  # pragma: no cover
+    sys.stderr.write(
+        "DuckDB Python package is required. Install with:\n"
+        "  python3 -m pip install duckdb\n"
+        f"Import error: {e}\n"
+    )
+    sys.exit(1)
 
 
-def validate_data(df: pd.DataFrame) -> bool:
-    """
-    Validate data against Pandera schema.
+DB_RELATIVE = Path(__file__).resolve().parents[1] / "data" / "behavioral_events.duckdb"
+TABLE_NAME = "behavioral_events"
 
-    Args:
-        df: DataFrame to validate
+TEST_USER_ID = "test-abab-user-001"
+RANDOM_SEED = 42
 
-    Returns:
-        True if validation passes
+# Phase configuration: (phase_name, mean_score, sd)
+PHASES = [
+    ("baseline_1", 65.0, 6.0),
+    ("intervention_A_1", 80.0, 5.5),
+    ("baseline_2", 68.0, 7.0),
+    ("intervention_A_2", 82.0, 6.0),
+]
 
-    Raises:
-        SchemaError: If validation fails
-    """
-    print("\n📋 Validating data against Pandera schema...")
-    validated_df = BehavioralEventSchema.validate(df)
-    print("✅ Validation passed!")
-    return True
-
-
-def save_to_parquet(df: pd.DataFrame, output_path: Path) -> None:
-    """
-    Save DataFrame to Parquet file.
-
-    Args:
-        df: DataFrame to save
-        output_path: Output file path
-    """
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(output_path, index=False)
-    print(f"\n💾 Saved to Parquet: {output_path}")
+N_PER_PHASE = 15
+START_DATE = datetime(2025, 9, 1)
 
 
-def sync_to_duckdb(df: pd.DataFrame, db_path: Path) -> None:
-    """
-    Sync DataFrame to DuckDB database.
+def ensure_db_dir_exists() -> None:
+    DB_RELATIVE.parent.mkdir(parents=True, exist_ok=True)
 
-    Args:
-        df: DataFrame to sync
-        db_path: DuckDB database path
-    """
-    conn = duckdb.connect(str(db_path))
 
-    # Create table if not exists
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS behavioral_events (
-            id VARCHAR PRIMARY KEY,
-            userId VARCHAR NOT NULL,
-            eventType VARCHAR NOT NULL,
-            eventData JSON NOT NULL,
-            timestamp TIMESTAMP NOT NULL,
-            completionQuality VARCHAR,
-            contentType VARCHAR,
-            contextMetadataId VARCHAR,
-            dayOfWeek INTEGER,
-            difficultyLevel VARCHAR,
-            engagementLevel VARCHAR,
-            sessionPerformanceScore INTEGER,
-            timeOfDay INTEGER,
+def connect_db():
+    """Connect to the DuckDB file and return a connection."""
+    return duckdb.connect(str(DB_RELATIVE))
+
+
+def ensure_table(conn) -> None:
+    """Create the table if it does not exist, matching the expected schema."""
+    conn.execute(
+        f"""
+        CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
+            timestamp TIMESTAMP,
+            userId VARCHAR,
             experimentPhase VARCHAR,
+            sessionPerformanceScore DOUBLE,
+            engagementLevel DOUBLE,
             randomizationSeed INTEGER
+        );
+        """
+    )
+
+
+def verify_schema(conn) -> None:
+    """Verify that the table has the required business columns.
+
+    Only checks presence of columns; allows different physical types so the
+    script can adapt to existing analytics schemas.
+    """
+    rows = conn.execute(
+        """
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = $1
+        """,
+        [TABLE_NAME],
+    ).fetchall()
+    have = {name.lower() for (name,) in rows}
+    required = {
+        "timestamp",
+        "userid",
+        "experimentphase",
+        "sessionperformancescore",
+        "engagementlevel",
+        "randomizationseed",
+    }
+    missing = [c for c in required if c not in have]
+    if missing:
+        raise RuntimeError(
+            "behavioral_events missing required columns: " + ", ".join(missing)
         )
-    """)
-
-    # Insert data (replace if exists)
-    conn.execute("DELETE FROM behavioral_events WHERE userId = ?", [df["userId"].iloc[0]])
-    conn.execute("INSERT INTO behavioral_events SELECT * FROM df")
-
-    conn.close()
-    print(f"\n🗄️  Synced to DuckDB: {db_path}")
 
 
-def print_summary(df: pd.DataFrame) -> None:
+def migrate_schema_if_needed(conn) -> list[str]:
+    """Attempt to add any missing required columns non-destructively.
+
+    Returns a list of applied ALTER statements.
     """
-    Print summary statistics by phase.
+    rows = conn.execute(
+        """
+        SELECT column_name, data_type
+        FROM information_schema.columns
+        WHERE table_name = $1
+        """,
+        [TABLE_NAME],
+    ).fetchall()
+    have = {name.lower() for name, _ in rows}
+    required_types = {
+        "timestamp": "TIMESTAMP",
+        "userid": "VARCHAR",
+        "experimentphase": "VARCHAR",
+        "sessionperformancescore": "DOUBLE",
+        "engagementlevel": "DOUBLE",
+        "randomizationseed": "INTEGER",
+    }
+    applied: list[str] = []
+    for col, dtype in required_types.items():
+        if col not in have:
+            sql = f"ALTER TABLE {TABLE_NAME} ADD COLUMN {col} {dtype}"
+            conn.execute(sql)
+            applied.append(sql)
+    return applied
 
-    Args:
-        df: DataFrame with ABAB data
+
+def clamp(v: float, lo: float, hi: float) -> float:
+    return max(lo, min(hi, v))
+
+
+def generate_rows() -> list[tuple]:
+    """Generate 60 rows (15 per phase) with sequential daily timestamps.
+
+    Returns a list of tuples matching the table column order:
+    (timestamp, userId, experimentPhase, sessionPerformanceScore, engagementLevel, randomizationSeed)
     """
-    print("\n" + "=" * 80)
-    print("📊 ABAB Test Data Summary".center(80))
-    print("=" * 80)
+    rng = random.Random(RANDOM_SEED)
+    rows: list[tuple] = []
+    day_index = 0
+    for phase_name, mean_score, sd in PHASES:
+        for _ in range(N_PER_PHASE):
+            ts = START_DATE + timedelta(days=day_index)
+            # Performance score with Gaussian noise
+            score = clamp(rng.gauss(mean_score, sd), 0.0, 100.0)
 
-    print(f"\nTotal observations: {len(df)}")
-    print(f"User ID: {df['userId'].iloc[0]}")
-    print(f"Date range: {df['timestamp'].min()} to {df['timestamp'].max()}")
+            # Engagement roughly correlated with performance, kept between 0 and 1
+            base_eng = 0.6 + 0.002 * (score - 70.0)  # around 0.6 at 70
+            eng_noise = rng.gauss(0.0, 0.06)
+            engagement = clamp(base_eng + eng_noise, 0.0, 1.0)
 
-    print("\n" + "-" * 80)
-    print("Phase Statistics".center(80))
-    print("-" * 80)
+            rows.append(
+                (
+                    ts,
+                    TEST_USER_ID,
+                    phase_name,
+                    float(round(score, 3)),
+                    float(round(engagement, 4)),
+                    RANDOM_SEED,
+                )
+            )
+            day_index += 1
+    return rows
 
-    phase_stats = df.groupby("experimentPhase")["sessionPerformanceScore"].agg(
-        ["count", "mean", "std", "min", "max"]
+
+def delete_existing_for_user(conn) -> int:
+    res = conn.execute(
+        f"DELETE FROM {TABLE_NAME} WHERE userId = $1",
+        [TEST_USER_ID],
+    )
+    # DuckDB execute() returns the connection; get affected rows via changes() pragma
+    # Using changes() is SQLite-specific; DuckDB exposes it via SELECT changes();
+    try:
+        n = conn.execute("SELECT changes()::INTEGER").fetchone()[0]
+    except Exception:
+        n = 0
+    return int(n)
+
+
+def introspect_table(conn):
+    """Return {lower_col_name: (type_str_upper, notnull_bool, pk_bool)}"""
+    info = {}
+    for cid, name, dtype, notnull, dflt, pk in conn.execute(
+        f"PRAGMA table_info('{TABLE_NAME}')"
+    ).fetchall():
+        info[name.lower()] = (str(dtype).upper(), bool(notnull), bool(pk))
+    return info
+
+
+def insert_rows(conn, rows: list[tuple]) -> None:
+    info = introspect_table(conn)
+
+    # Decide which columns to insert based on existing schema and NOT NULLs.
+    must_cols = [
+        "timestamp",
+        "userid",
+        "experimentphase",
+        "sessionperformancescore",
+        "engagementlevel",
+        "randomizationseed",
+    ]
+    optional_required = []
+    for cand in ("id", "eventtype", "eventdata"):
+        if cand in info and info[cand][1]:  # not null
+            optional_required.append(cand)
+
+    cols = optional_required + must_cols
+
+    # Build placeholder list with $1..$N
+    placeholders = [f"${i}" for i in range(1, len(cols) + 1)]
+    sql = (
+        f"INSERT INTO {TABLE_NAME} (" + ", ".join(cols) + ") VALUES (" + ", ".join(placeholders) + ")"
     )
 
-    print(phase_stats.to_string())
+    import json
+    from uuid import uuid5, NAMESPACE_URL
 
-    # Calculate observed effect
-    baseline_data = df[
-        df["experimentPhase"].isin(["baseline_1", "baseline_2"])
-    ]["sessionPerformanceScore"]
+    # Prepare type-aware row expansion
+    sps_type = info.get("sessionperformancescore", ("DOUBLE", False, False))[0]
+    eng_type = info.get("engagementlevel", ("DOUBLE", False, False))[0]
 
-    intervention_data = df[
-        df["experimentPhase"].isin(["intervention_A_1", "intervention_A_2"])
-    ]["sessionPerformanceScore"]
+    day_index = 0
+    for (ts, user_id, phase, score_f, eng_f, seed) in rows:
+        # Conform to existing column types where needed
+        score_val = int(round(score_f)) if sps_type.startswith("INT") else float(score_f)
+        eng_val = (
+            f"{eng_f:.4f}" if eng_type in {"VARCHAR", "STRING", "TEXT"} else float(eng_f)
+        )
 
-    observed_effect = intervention_data.mean() - baseline_data.mean()
-    pooled_sd = np.sqrt(
-        ((len(intervention_data) - 1) * intervention_data.var()
-         + (len(baseline_data) - 1) * baseline_data.var())
-        / (len(intervention_data) + len(baseline_data) - 2)
-    )
-    cohens_d = observed_effect / pooled_sd if pooled_sd > 0 else 0.0
+        params = []
+        # Optional required columns first (id, eventtype, eventdata)
+        for c in optional_required:
+            if c == "id":
+                # Deterministic but unique-ish ID from timestamp + user + phase
+                uid = str(
+                    uuid5(NAMESPACE_URL, f"abab:{user_id}:{phase}:{ts.isoformat()}:{day_index}")
+                )
+                params.append(uid)
+            elif c == "eventtype":
+                params.append("behavioral_session")
+            elif c == "eventdata":
+                payload = {
+                    "source": "synthetic_abab",
+                    "design": "ABAB",
+                    "protocol": "abab_protocol_001",
+                }
+                params.append(json.dumps(payload))
 
-    print("\n" + "-" * 80)
-    print("Expected Effect Size".center(80))
-    print("-" * 80)
-    print(f"Baseline mean: {baseline_data.mean():.2f}")
-    print(f"Intervention mean: {intervention_data.mean():.2f}")
-    print(f"Observed effect: {observed_effect:.2f}")
-    print(f"Cohen's d: {cohens_d:.2f} (very large)")
-    print(f"Expected p-value: < 0.001 (highly significant)")
+        # Then the canonical columns
+        params.extend([ts, user_id, phase, score_val, eng_val, seed])
 
-    print("\n" + "=" * 80)
+        conn.execute(sql, params)
 
 
-def main():
-    """Main execution function."""
-    print("=" * 80)
-    print("ABAB Test Data Generator".center(80))
-    print("=" * 80)
+def summarize(conn) -> list[tuple]:
+    return conn.execute(
+        f"""
+        SELECT
+          experimentPhase,
+          COUNT(*)                              AS n,
+          AVG(sessionPerformanceScore)          AS mean_score,
+          STDDEV_SAMP(sessionPerformanceScore)  AS sd_score,
+          MIN(timestamp)                        AS first_ts,
+          MAX(timestamp)                        AS last_ts
+        FROM {TABLE_NAME}
+        WHERE userId = $1
+        GROUP BY 1
+        ORDER BY 1
+        """,
+        [TEST_USER_ID],
+    ).fetchall()
 
-    # Paths
-    project_root = Path(__file__).parent.parent.parent
-    data_dir = project_root / "data"
-    parquet_path = data_dir / "test_abab_behavioral_events.parquet"
-    duckdb_path = data_dir / "behavioral_events.duckdb"
 
-    # Generate data
-    print("\n🎲 Generating 60-day ABAB data (seed=42)...")
-    df = generate_abab_data()
+def main() -> None:
+    ensure_db_dir_exists()
+    conn = connect_db()
+    try:
+        ensure_table(conn)
+        try:
+            verify_schema(conn)
+        except RuntimeError as e:
+            applied = migrate_schema_if_needed(conn)
+            if applied:
+                print("Applied schema migrations:")
+                for s in applied:
+                    print("  -", s)
+            # Re-verify after migration
+            verify_schema(conn)
+        removed = delete_existing_for_user(conn)
+        rows = generate_rows()
+        insert_rows(conn, rows)
 
-    # Validate
-    validate_data(df)
+        total = conn.execute(
+            f"SELECT COUNT(*) FROM {TABLE_NAME} WHERE userId = $1",
+            [TEST_USER_ID],
+        ).fetchone()[0]
 
-    # Save
-    save_to_parquet(df, parquet_path)
-    sync_to_duckdb(df, duckdb_path)
+        per_phase = conn.execute(
+            f"SELECT experimentPhase, COUNT(*) FROM {TABLE_NAME} WHERE userId=$1 GROUP BY 1 ORDER BY 1",
+            [TEST_USER_ID],
+        ).fetchall()
 
-    # Summary
-    print_summary(df)
+        # Basic verification
+        expected_phases = {p for p, *_ in PHASES}
+        got_phases = {p for p, _ in per_phase}
+        ok_counts = all(c == N_PER_PHASE for _, c in per_phase) and len(per_phase) == 4
+        ok_phases = got_phases == expected_phases
 
-    print("\n✅ ABAB test data generation complete!")
-    print(f"\n📁 Files created:")
-    print(f"  - Parquet: {parquet_path}")
-    print(f"  - DuckDB: {duckdb_path}")
-    print(f"\n🚀 Ready for integration testing!")
+        stats = summarize(conn)
+
+        print("=== ABAB Synthetic Data Generation ===")
+        print(f"Database: {DB_RELATIVE}")
+        print(f"Table: {TABLE_NAME}")
+        print(f"User: {TEST_USER_ID}")
+        print(f"Replaced prior rows for user: {removed}")
+        print(f"Inserted rows: {len(rows)}")
+        print(f"Current total rows for user: {total}")
+        print("\nPer-phase counts:")
+        for phase, cnt in per_phase:
+            print(f"  - {phase}: {cnt}")
+
+        print("\nSummary (means by phase):")
+        for phase, n, mean_score, sd_score, first_ts, last_ts in stats:
+            print(
+                f"  - {phase}: n={n}, mean={mean_score:.2f}, sd={sd_score:.2f}, "
+                f"range=[{first_ts.date()} … {last_ts.date()}]"
+            )
+
+        assert ok_counts and ok_phases, "Phase counts or names mismatch"
+        print("\nVerification: OK — data can be queried and matches expected 4×15 design.")
+    finally:
+        conn.close()
 
 
 if __name__ == "__main__":

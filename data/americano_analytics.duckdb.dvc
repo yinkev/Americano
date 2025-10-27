@@ -1,0 +1,5 @@
+outs:
+- md5: 6652c23f85c31fe80ca953a1440fbe4f
+  size: 12288
+  hash: md5
+  path: americano_analytics.duckdb
