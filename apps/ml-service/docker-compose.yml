@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:2.19.0
+    container_name: americano-mlflow
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      # Database connection pieces (compose will read from .env in this folder)
+      - MLFLOW_DB_USER=${MLFLOW_DB_USER}
+      - MLFLOW_DB_PASSWORD=${MLFLOW_DB_PASSWORD}
+      - MLFLOW_DB_HOST=${MLFLOW_DB_HOST:-host.docker.internal}
+      - MLFLOW_DB_PORT=${MLFLOW_DB_PORT:-5432}
+      - MLFLOW_DB_NAME=${MLFLOW_DB_NAME:-americano_mlflow}
+      # Artifact storage directory inside the container
+      - MLFLOW_ARTIFACTS_DIR=/mlflow/artifacts
+      - TZ=${TZ:-UTC}
+    volumes:
+      # Persist artifacts on the host for durability and easy access
+      - ./data/mlflow/artifacts:/mlflow/artifacts
+    command: >
+      sh -c "\
+      mlflow server \
+        --host 0.0.0.0 \
+        --port 5000 \
+        --backend-store-uri postgresql://${MLFLOW_DB_USER}:${MLFLOW_DB_PASSWORD}@${MLFLOW_DB_HOST}:${MLFLOW_DB_PORT}/${MLFLOW_DB_NAME} \
+        --artifacts-destination file://${MLFLOW_ARTIFACTS_DIR} \
+      "
+

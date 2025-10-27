@@ -22,6 +22,9 @@ Story: **5.2 - Predictive Analytics for Learning Struggles**
 - ✅ Health check endpoint (`/health`)
 - ✅ Research-grade ML models
 - ✅ Prisma ORM with type safety
+- ✅ **Data Pipeline:** Prisma → Parquet → DuckDB (ADR-006)
+- ✅ **Pandera Validation:** Fail-fast data quality checks
+- ✅ **DVC Integration:** Version-controlled datasets
 
 ## Endpoints
 
@@ -37,6 +40,11 @@ Story: **5.2 - Predictive Analytics for Learning Struggles**
 ### Analytics
 - `GET /analytics/model-performance` - Model metrics
 - `GET /analytics/struggle-reduction` - Success metrics
+
+### Data Export (ADR-006)
+- `python scripts/export_behavioral_events.py` - Export to Parquet
+- `python scripts/export_behavioral_events.py --sync-duckdb` - Export + DuckDB sync
+- See [Data Pipeline Documentation](./docs/DATA_PIPELINE_IMPLEMENTATION.md) for details
 
 ## Setup
 
@@ -198,6 +206,80 @@ Key variables:
 - **Concurrency:** Async/await + connection pooling
 - **Caching:** 3-tier strategy (profiles, patterns, metrics)
 - **Batch processing:** Daily predictions (11 PM)
+
+## Research Analytics: Day 4
+
+This service ships with MLflow tracking and DuckDB analytics helpers for research workflows.
+
+### MLflow Tracking Server
+
+- Compose file: `docker-compose.yml` (in this folder)
+- UI: http://localhost:5000
+
+Setup:
+- Copy env: `cp .env.example .env` and set the `MLFLOW_DB_*` vars to point at your existing PostgreSQL instance. On macOS use `host.docker.internal` for the host.
+
+Run:
+```bash
+docker compose up -d mlflow
+# Verify UI at http://localhost:5000
+```
+
+Python client configuration:
+```bash
+export MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-http://localhost:5000}
+export MLFLOW_EXPERIMENT_NAME="Americano/Research"
+```
+
+Example run:
+```bash
+python scripts/example_mlflow_analysis.py \
+  --run-name day4-research-demo \
+  --analysis-run-id ARN_12345   # optional: link to Prisma AnalysisRun.id
+```
+
+What it does:
+- Logs params, metrics (with steps), and artifacts
+- Tags the run with `git.commit`, `dvc.lock.sha256`, and `analysis_run_id`
+- Attempts to link the MLflow run back to your PostgreSQL `AnalysisRun` row
+
+Notes:
+- Artifacts are stored on the server’s local volume at `./data/mlflow/artifacts` (mounted into the container).
+- The MLflow metadata backend is PostgreSQL (not SQLite).
+
+### DuckDB Analytics
+
+Create/update the analytics database from Parquet exports (default) or directly from PostgreSQL using the `postgres_scanner` extension.
+
+Setup:
+```bash
+cp .env.example .env
+# Set DUCKDB_DB_PATH, and the Parquet paths if different
+```
+
+Build the analytics DB:
+```bash
+python scripts/setup_duckdb_analytics.py
+```
+
+Run example queries:
+```bash
+python scripts/example_duckdb_queries.py
+
+# Optional timing vs PostgreSQL on a comparable aggregation
+COMPARE_WITH_POSTGRES=true PG_EVENTS_TABLE='"BehavioralEvent"' \
+  python scripts/example_duckdb_queries.py
+```
+
+Implementation details:
+- Tables are created under the `analytics` schema inside the DuckDB file at `DUCKDB_DB_PATH`.
+- Parquet loads try to physically order by a timestamp column if one is present to improve compression and zone map pruning.
+- Helpful indexes are created when the expected columns exist (ART indexes in DuckDB).
+
+Recommended sync patterns:
+- Development: Parquet exports -> DuckDB (simple and fast)
+- Production/research: Direct `postgres_scanner` + periodic materialization into tables for query speed
+
 
 ## Quality Standards
 

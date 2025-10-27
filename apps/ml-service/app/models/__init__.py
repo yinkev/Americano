@@ -24,6 +24,12 @@ from app.models.analytics import (
     StruggleReductionResponse,
     TimelinePoint
 )
+from app.models.its_analysis import (
+    ITSAnalysisRequest,
+    ITSAnalysisResponse,
+    MCMCDiagnostics,
+    CausalEffect,
+)
 
 __all__ = [
     "PredictionRequest",
@@ -38,4 +44,8 @@ __all__ = [
     "ModelPerformanceResponse",
     "StruggleReductionResponse",
     "TimelinePoint",
+    "ITSAnalysisRequest",
+    "ITSAnalysisResponse",
+    "MCMCDiagnostics",
+    "CausalEffect",
 ]

@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
 
-from app.routes import predictions, interventions, analytics
+from app.routes import predictions, interventions, analytics, its_routes, abab_routes
 from app.services.database import prisma
 from app.utils.logging import setup_logging
 from app.utils.config import settings
@@ -83,6 +83,14 @@ app.include_router(
     analytics.router,
     prefix="/analytics",
     tags=["Analytics"]
+)
+app.include_router(
+    its_routes.router,
+    tags=["ITS Analysis"]
+)
+app.include_router(
+    abab_routes.router,
+    tags=["ABAB Analysis"]
 )
 
 

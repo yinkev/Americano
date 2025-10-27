@@ -14,7 +14,7 @@
  *   - app.models.interventions
  *   - app.models.analytics
  *
- * Generated: 2025-10-27 01:23:36 UTC
+ * Generated: 2025-10-27 11:15:09 UTC
  * Generator: Custom Pydantic V2 → TypeScript converter
  *
  * To regenerate:
