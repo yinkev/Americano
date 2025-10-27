@@ -17,6 +17,8 @@ from app.routes import predictions, interventions, analytics, its_routes, abab_r
 from app.services.database import prisma
 from app.utils.logging import setup_logging
 from app.utils.config import settings
+from app.utils.redis_cache import RedisCache
+from app.utils import redis_cache as redis_cache_module
 
 
 # Setup logging
@@ -28,7 +30,7 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """
     Lifespan context manager for startup/shutdown events.
-    Handles Prisma connection lifecycle.
+    Handles Prisma connection and Redis cache lifecycle.
     """
     # Startup
     logger.info("Starting ML Service...")
@@ -38,10 +40,24 @@ async def lifespan(app: FastAPI):
     await prisma.connect()
     logger.info("Prisma client connected")
 
+    # Initialize Redis cache (graceful degradation if unavailable)
+    redis_url = getattr(settings, 'REDIS_URL', 'redis://localhost:6379')
+    cache_ttl = getattr(settings, 'REDIS_TTL', 300)
+    cache_instance = RedisCache(url=redis_url, default_ttl=cache_ttl)
+    await cache_instance.connect()
+
+    # Set the module-level global variable (fixes caching bug)
+    redis_cache_module.redis_cache = cache_instance
+
     yield
 
     # Shutdown
     logger.info("Shutting down ML Service...")
+
+    if redis_cache_module.redis_cache:
+        await redis_cache_module.redis_cache.close()
+        logger.info("Redis cache disconnected")
+
     await prisma.disconnect()
     logger.info("Prisma client disconnected")
 
