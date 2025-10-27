@@ -41,6 +41,7 @@ model User {
 
   clinicalReasoningMetrics ClinicalReasoningMetric[]
   scenarioResponses        ScenarioResponse[]
+  experimentProtocols      ExperimentProtocol[]
 
   @@map("users")
 }
@@ -361,13 +362,205 @@ model BehavioralEvent {
   sessionPerformanceScore Int?
   timeOfDay               Int?
 
+  // Research Analytics: Experiment Tracking (ADR-006)
+  experimentPhase         String?            // Links to PhaseAssignment.phaseLabel (e.g., "baseline_1", "intervention_A_1")
+  randomizationSeed       Int?               // For SCED phase length randomization reproducibility
+  contextMetadataId       String?            // Link to self-reported + physiological context
+
+  // Relations
+  contextMetadata         ContextMetadata?   @relation(fields: [contextMetadataId], references: [id])
+
   @@index([userId])
   @@index([eventType])
   @@index([timestamp])
   @@index([userId, eventType, timestamp]) // Composite for user event queries
   @@index([userId, dayOfWeek])            // For day-of-week pattern analysis
   @@index([userId, timeOfDay])            // For time-of-day pattern analysis
+  @@index([experimentPhase])              // For SCED experiment queries
+  @@index([contextMetadataId])            // For context-aware analysis
   @@map("behavioral_events")
+}
+
+// ============================================
+// Research Analytics System (ADR-006)
+// N=1 Self-Experimentation & Causal Inference
+// ============================================
+
+model ExperimentProtocol {
+  id                String                @id @default(cuid())
+  userId            String
+  protocolName      String                // e.g., "Reward Probability 15% vs 20%"
+  hypothesis        String                @db.Text // Pre-registered hypothesis (CENT compliance)
+  startDate         DateTime
+  endDate           DateTime?
+
+  // CENT compliance fields
+  designType        ExperimentDesignType  // ABAB, MULTIPLE_BASELINE, etc.
+  primaryOutcome    String                // Primary metric to measure
+  sampleSizeTarget  Int                   // Target n for SCED (e.g., 30 sessions)
+  analysisPlan      String                @db.Text // Pre-registered analysis approach
+
+  // Protocol deviation tracking
+  deviations        Json                  // Array of {date, description, reason}
+
+  // CONSORT flow diagram data
+  screened          Int?
+  eligible          Int?
+  enrolled          Int?
+  completed         Int?
+
+  // Metadata
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  // Relations
+  user              User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phases            PhaseAssignment[]
+  analysisRuns      AnalysisRun[]
+
+  @@index([userId])
+  @@index([designType])
+  @@index([startDate, endDate])
+  @@map("experiment_protocols")
+}
+
+enum ExperimentDesignType {
+  ABAB                // Reversal design (baseline → intervention → baseline → intervention)
+  MULTIPLE_BASELINE   // Staggered intervention across behaviors/settings
+  ALTERNATING         // Rapid alternation between conditions
+  CHANGING_CRITERION  // Stepwise increases in behavior target
+}
+
+model PhaseAssignment {
+  id                  String                @id @default(cuid())
+  protocolId          String
+  phaseLabel          String                // "baseline_1", "intervention_A_1", "intervention_B_1"
+  phaseType           PhaseType
+  startDate           DateTime
+  endDate             DateTime?
+  plannedDuration     Int                   // Days (randomized for ABAB to prevent anticipation)
+  randomizationSeed   Int                   // For reproducibility of phase length randomization
+  interventionParams  Json                  // {rewardProbability: 0.20, streakBonus: true}
+
+  // Metadata
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+
+  // Relations
+  protocol            ExperimentProtocol    @relation(fields: [protocolId], references: [id], onDelete: Cascade)
+
+  @@index([protocolId])
+  @@index([phaseType])
+  @@index([startDate, endDate])
+  @@index([phaseLabel])                     // For linking BehavioralEvent.experimentPhase
+  @@map("phase_assignments")
+}
+
+enum PhaseType {
+  BASELINE        // No intervention (A phase)
+  INTERVENTION_A  // First intervention variant
+  INTERVENTION_B  // Second intervention variant (for alternating designs)
+  WITHDRAWAL      // Return to baseline (for ABAB)
+}
+
+model ContextMetadata {
+  id                String                @id @default(cuid())
+  userId            String
+  timestamp         DateTime              @default(now())
+
+  // Self-reported context
+  mood              MoodLevel?
+  energyLevel       Int?                  // 1-10 scale
+  location          LocationType?
+  stressLevel       Int?                  // 1-10 scale
+  notes             String?               @db.Text
+
+  // Physiological data (from wearables via OAuth)
+  sleepHours        Float?
+  sleepQuality      Int?                  // 1-100 from Oura/WHOOP
+  hrvScore          Int?                  // Heart rate variability (ms)
+  restingHeartRate  Int?                  // bpm
+  activityStrain    Float?                // WHOOP strain score
+  recoveryScore     Int?                  // 0-100 recovery score
+
+  // Metadata
+  dataSource        String?               // "manual", "oura", "whoop", "apple_health"
+
+  // Relations
+  behavioralEvents  BehavioralEvent[]
+
+  @@index([userId])
+  @@index([timestamp])
+  @@index([userId, timestamp])              // For time-series queries
+  @@map("context_metadata")
+}
+
+enum MoodLevel {
+  VERY_LOW
+  LOW
+  MEDIUM
+  HIGH
+  VERY_HIGH
+}
+
+enum LocationType {
+  HOME
+  LIBRARY
+  CAFE
+  CAMPUS
+  COMMUTE
+  OTHER
+}
+
+model AnalysisRun {
+  id                String                @id @default(cuid())
+  protocolId        String
+  runName           String                // e.g., "Bayesian ITS - Reward Probability Effect"
+  analysisType      AnalysisType          // BAYESIAN_ITS, ABAB_RANDOMIZATION, etc.
+
+  // Provenance tracking (full reproducibility)
+  codeCommitHash    String                // Git commit hash of analysis code
+  dataVersionHash   String                // DVC hash of input data
+  inputParams       Json                  // {priorMean: 0, priorSd: 10, mcmcSamples: 4000}
+
+  // Output tracking
+  mlflowRunId       String?               // MLflow experiment run ID
+  artifactPaths     String[]              // Paths to saved artifacts (plots, CSVs)
+  resultsSummary    Json                  // {causalEffect: {mean, hdi95}, diagnostics: {rhat}}
+
+  // Execution metadata
+  startedAt         DateTime              @default(now())
+  completedAt       DateTime?
+  durationSeconds   Int?
+  status            AnalysisStatus        @default(RUNNING)
+  errorMessage      String?               @db.Text
+
+  // Relations
+  protocol          ExperimentProtocol    @relation(fields: [protocolId], references: [id], onDelete: Cascade)
+
+  @@index([protocolId])
+  @@index([analysisType])
+  @@index([status])
+  @@index([startedAt])
+  @@map("analysis_runs")
+}
+
+enum AnalysisType {
+  BAYESIAN_ITS              // Bayesian Interrupted Time Series (CausalPy)
+  BAYESIAN_STRUCTURAL_TS    // Bayesian Structural Time Series (Orbit-ML)
+  SYNTHETIC_CONTROL         // Synthetic control method (DoWhy)
+  ABAB_RANDOMIZATION        // Randomization test for ABAB design
+  CHANGE_POINT_DETECTION    // PELT algorithm (ruptures library)
+  SEQUENTIAL_ANALYSIS       // Alpha-spending function monitoring
+  GRANGER_CAUSALITY         // Temporal predictiveness test
+  MIXED_EFFECTS             // Bayesian hierarchical model (Bambi)
+}
+
+enum AnalysisStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
 }
 
 // ============================================
