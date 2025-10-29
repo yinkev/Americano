@@ -1,0 +1,709 @@
+A  .code/agents/16b8170f-3bdb-435b-a4bf-def369294f6a/result.txt
+A  .code/agents/19b130b1-ec35-43d3-ae79-71c5ab4f3faf/result.txt
+A  .code/agents/2007b196-08c0-486f-952a-dfa48954e886/result.txt
+A  .code/agents/27dd253d-2b6c-417d-ac42-630a8d12c9bd/result.txt
+A  .code/agents/310e8b1f-7615-4036-bd83-d56d8409f691/result.txt
+A  .code/agents/3521d484-c043-47db-9705-6c4310d085ea/result.txt
+A  .code/agents/4/exec-call_wGX1W5VCgElkC5k5xqMRW66C.txt
+A  .code/agents/6/exec-call_B8z0iCPOxDt7B4ddtfsHTuXy.txt
+A  .code/agents/6/exec-call_LkoIKs0Xu6hDMDSLz5zM2UWC.txt
+A  .code/agents/6/exec-call_nqlWUzhl7TGclsDi88GD64uH.txt
+A  .code/agents/6/exec-call_slwdPovIJHYz6vz7gP3ul9S6.txt
+A  .code/agents/620d7b5a-d07f-402d-a0e7-1fea01527f42/error.txt
+A  .code/agents/6e7f960e-d55a-4550-9fe2-eebf0a68eb34/result.txt
+A  .code/agents/76bb6ff7-afdf-4bee-ba08-840eaa9395b5/result.txt
+A  .code/agents/c64f0250-2d8b-473d-b9b1-bfc8dfacebb4/result.txt
+A  .code/agents/eb452638-2d63-4375-8a59-d790a8364876/result.txt
+A  .github/workflows/docs.yml
+M  .gitignore
+A  .iflow/IFLOW.md
+A  .iflow/agents/analyst.md
+A  .iflow/agents/coordinator.md
+A  .iflow/agents/ppt-designer.md
+A  .iflow/agents/ppt-developer.md
+A  .iflow/agents/ux-expert.md
+A  .iflow/commands/excalidraw.md
+A  .iflow/commands/ppt-generator.md
+A  .iflow/core-config.yaml
+A  .iflow/data/ppt-development-cons.md
+A  .iflow/data/slides-technical.md
+A  .iflow/data/technical-preferences.md
+A  .iflow/tasks/create-deep-research-prompt.md
+A  .iflow/tasks/create-doc.md
+A  .iflow/tasks/document-project.md
+A  .iflow/tasks/execute-checklist.md
+A  .iflow/templates/competitor-analysis-tmpl.yaml
+A  .iflow/templates/front-end-spec-tmpl.yaml
+A  .iflow/templates/market-research-tmpl.yaml
+A  .iflow/templates/project-brief-tmpl.yaml
+M  .markdown-link-check.json
+M  .mcp.json
+D  CLAUDE.md
+D  COMPONENT_INTEGRATION_EXAMPLES.md
+D  FRONTEND_BACKEND_INTEGRATION_GUIDE.md
+D  INTEGRATION_FOUNDATION_SUMMARY.md
+D  agents.md
+A  apps/data/test_abab_behavioral_events.parquet
+D  apps/ml-service/app/__pycache__/__init__.cpython-313.pyc
+D  apps/ml-service/app/__pycache__/main.cpython-313.pyc
+D  apps/ml-service/app/models/__pycache__/__init__.cpython-313.pyc
+D  apps/ml-service/app/models/__pycache__/analytics.cpython-313.pyc
+D  apps/ml-service/app/models/__pycache__/feedback.cpython-313.pyc
+D  apps/ml-service/app/models/__pycache__/interventions.cpython-313.pyc
+D  apps/ml-service/app/models/__pycache__/predictions.cpython-313.pyc
+D  apps/ml-service/app/routes/__pycache__/__init__.cpython-313.pyc
+D  apps/ml-service/app/routes/__pycache__/analytics.cpython-313.pyc
+D  apps/ml-service/app/routes/__pycache__/interventions.cpython-313.pyc
+D  apps/ml-service/app/routes/__pycache__/predictions.cpython-313.pyc
+D  apps/ml-service/app/services/__pycache__/__init__.cpython-313.pyc
+D  apps/ml-service/app/services/__pycache__/database.cpython-313.pyc
+D  apps/ml-service/app/services/__pycache__/detection_engine.cpython-313.pyc
+D  apps/ml-service/app/services/__pycache__/multi_armed_bandit.cpython-313.pyc
+D  apps/ml-service/app/services/__pycache__/struggle_feature_extractor.cpython-313.pyc
+D  apps/ml-service/app/services/__pycache__/struggle_prediction_model.cpython-313.pyc
+D  apps/ml-service/app/utils/__pycache__/__init__.cpython-313.pyc
+D  apps/ml-service/app/utils/__pycache__/config.cpython-313.pyc
+D  apps/ml-service/app/utils/__pycache__/logging.cpython-313.pyc
+A  apps/ml-service/apps/ml-service/app/models/__init__.py
+A  apps/ml-service/apps/ml-service/app/routes/__init__.py
+A  apps/ml-service/apps/ml-service/app/services/__init__.py
+A  apps/ml-service/apps/ml-service/app/utils/__init__.py
+A  apps/ml-service/apps/ml-service/tests/__init__.py
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/meta.yaml
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/cohens_d
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/n_baseline_1
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/n_baseline_2
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/n_intervention_A_1
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/n_intervention_A_2
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/observed_effect
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/p_value
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/params/n_permutations
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/params/outcome_metric
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/params/protocol_id
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/params/seed
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/params/user_id
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/analysis_type
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/mlflow.runName
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/mlflow.source.name
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/mlflow.source.type
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/mlflow.user
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/passes_wwc
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/significant
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/user_id
+A  apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/wwc_rating
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/meta.yaml
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/cohens_d
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/n_baseline_1
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/n_baseline_2
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/n_intervention_A_1
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/n_intervention_A_2
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/observed_effect
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/p_value
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/params/n_permutations
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/params/outcome_metric
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/params/protocol_id
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/params/seed
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/params/user_id
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/analysis_type
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/mlflow.runName
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/mlflow.source.name
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/mlflow.source.type
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/mlflow.user
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/passes_wwc
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/significant
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/user_id
+A  apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/wwc_rating
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/meta.yaml
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/computation_time
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/counterfactual_effect
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/divergent_transitions
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/immediate_effect
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/max_rhat
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/n_observations_post
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/n_observations_pre
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/probability_of_benefit
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/sustained_effect
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/params/intervention_date
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/params/mcmc_chains
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/params/mcmc_samples
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/params/outcome_metric
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/params/user_id
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/tags/mlflow.runName
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/tags/mlflow.source.name
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/tags/mlflow.source.type
+A  apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/tags/mlflow.user
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/meta.yaml
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/cohens_d
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/n_baseline_1
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/n_baseline_2
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/n_intervention_A_1
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/n_intervention_A_2
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/observed_effect
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/p_value
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/params/n_permutations
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/params/outcome_metric
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/params/protocol_id
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/params/seed
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/params/user_id
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/analysis_type
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/mlflow.runName
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/mlflow.source.name
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/mlflow.source.type
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/mlflow.user
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/passes_wwc
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/significant
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/user_id
+A  apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/wwc_rating
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/meta.yaml
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/cohens_d
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/n_baseline_1
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/n_baseline_2
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/n_intervention_A_1
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/n_intervention_A_2
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/observed_effect
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/p_value
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/params/n_permutations
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/params/outcome_metric
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/params/protocol_id
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/params/seed
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/params/user_id
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/analysis_type
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/mlflow.runName
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/mlflow.source.git.commit
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/mlflow.source.name
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/mlflow.source.type
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/mlflow.user
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/passes_wwc
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/significant
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/user_id
+A  apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/wwc_rating
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/meta.yaml
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/cohens_d
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/n_baseline_1
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/n_baseline_2
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/n_intervention_A_1
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/n_intervention_A_2
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/observed_effect
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/p_value
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/params/n_permutations
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/params/outcome_metric
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/params/protocol_id
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/params/seed
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/params/user_id
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/analysis_type
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/mlflow.runName
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/mlflow.source.name
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/mlflow.source.type
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/mlflow.user
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/passes_wwc
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/significant
+A  apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/user_id
+[docs/prune-2025-10 85accbe5] docs: scaffold IA + migration mapping + docs CI + helper scripts + frontmatter checklist (no moves)
+ 510 files changed, 15100 insertions(+), 3747 deletions(-)
+ create mode 100644 .code/agents/16b8170f-3bdb-435b-a4bf-def369294f6a/result.txt
+ create mode 100644 .code/agents/19b130b1-ec35-43d3-ae79-71c5ab4f3faf/result.txt
+ create mode 100644 .code/agents/2007b196-08c0-486f-952a-dfa48954e886/result.txt
+ create mode 100644 .code/agents/27dd253d-2b6c-417d-ac42-630a8d12c9bd/result.txt
+ create mode 100644 .code/agents/310e8b1f-7615-4036-bd83-d56d8409f691/result.txt
+ create mode 100644 .code/agents/3521d484-c043-47db-9705-6c4310d085ea/result.txt
+ create mode 100644 .code/agents/4/exec-call_wGX1W5VCgElkC5k5xqMRW66C.txt
+ create mode 100644 .code/agents/6/exec-call_B8z0iCPOxDt7B4ddtfsHTuXy.txt
+ create mode 100644 .code/agents/6/exec-call_LkoIKs0Xu6hDMDSLz5zM2UWC.txt
+ create mode 100644 .code/agents/6/exec-call_nqlWUzhl7TGclsDi88GD64uH.txt
+ create mode 100644 .code/agents/6/exec-call_slwdPovIJHYz6vz7gP3ul9S6.txt
+ create mode 100644 .code/agents/620d7b5a-d07f-402d-a0e7-1fea01527f42/error.txt
+ create mode 100644 .code/agents/6e7f960e-d55a-4550-9fe2-eebf0a68eb34/result.txt
+ create mode 100644 .code/agents/76bb6ff7-afdf-4bee-ba08-840eaa9395b5/result.txt
+ create mode 100644 .code/agents/c64f0250-2d8b-473d-b9b1-bfc8dfacebb4/result.txt
+ create mode 100644 .code/agents/eb452638-2d63-4375-8a59-d790a8364876/result.txt
+ create mode 100644 .github/workflows/docs.yml
+ create mode 100644 .iflow/IFLOW.md
+ create mode 100644 .iflow/agents/analyst.md
+ create mode 100644 .iflow/agents/coordinator.md
+ create mode 100644 .iflow/agents/ppt-designer.md
+ create mode 100644 .iflow/agents/ppt-developer.md
+ create mode 100644 .iflow/agents/ux-expert.md
+ create mode 100644 .iflow/commands/excalidraw.md
+ create mode 100644 .iflow/commands/ppt-generator.md
+ create mode 100644 .iflow/core-config.yaml
+ create mode 100644 .iflow/data/ppt-development-cons.md
+ create mode 100644 .iflow/data/slides-technical.md
+ create mode 100644 .iflow/data/technical-preferences.md
+ create mode 100644 .iflow/tasks/create-deep-research-prompt.md
+ create mode 100644 .iflow/tasks/create-doc.md
+ create mode 100644 .iflow/tasks/document-project.md
+ create mode 100644 .iflow/tasks/execute-checklist.md
+ create mode 100644 .iflow/templates/competitor-analysis-tmpl.yaml
+ create mode 100644 .iflow/templates/front-end-spec-tmpl.yaml
+ create mode 100644 .iflow/templates/market-research-tmpl.yaml
+ create mode 100644 .iflow/templates/project-brief-tmpl.yaml
+ delete mode 100644 CLAUDE.md
+ delete mode 100644 COMPONENT_INTEGRATION_EXAMPLES.md
+ delete mode 100644 FRONTEND_BACKEND_INTEGRATION_GUIDE.md
+ delete mode 100644 INTEGRATION_FOUNDATION_SUMMARY.md
+ delete mode 100644 agents.md
+ create mode 100644 apps/data/test_abab_behavioral_events.parquet
+ delete mode 100644 apps/ml-service/app/__pycache__/__init__.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/__pycache__/main.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/models/__pycache__/__init__.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/models/__pycache__/analytics.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/models/__pycache__/feedback.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/models/__pycache__/interventions.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/models/__pycache__/predictions.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/routes/__pycache__/__init__.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/routes/__pycache__/analytics.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/routes/__pycache__/interventions.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/routes/__pycache__/predictions.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/services/__pycache__/__init__.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/services/__pycache__/database.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/services/__pycache__/detection_engine.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/services/__pycache__/multi_armed_bandit.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/services/__pycache__/struggle_feature_extractor.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/services/__pycache__/struggle_prediction_model.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/utils/__pycache__/__init__.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/utils/__pycache__/config.cpython-313.pyc
+ delete mode 100644 apps/ml-service/app/utils/__pycache__/logging.cpython-313.pyc
+ create mode 100644 apps/ml-service/apps/ml-service/app/models/__init__.py
+ create mode 100644 apps/ml-service/apps/ml-service/app/routes/__init__.py
+ create mode 100644 apps/ml-service/apps/ml-service/app/services/__init__.py
+ create mode 100644 apps/ml-service/apps/ml-service/app/utils/__init__.py
+ create mode 100644 apps/ml-service/apps/ml-service/tests/__init__.py
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/16b625983d1c49f883d9e9124c94b660/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/1b8efd49d4e24942a77ec9c983715e1d/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/computation_time
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/counterfactual_effect
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/divergent_transitions
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/immediate_effect
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/max_rhat
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/n_observations_post
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/n_observations_pre
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/probability_of_benefit
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/metrics/sustained_effect
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/params/intervention_date
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/params/mcmc_chains
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/params/mcmc_samples
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/20e8bfaf72a34343893966fa1768a84c/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/2304a67839514bc18bd352820943769e/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/mlflow.source.git.commit
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/4f030fe26737492cbb3631e70a0d5210/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/58cb72bd86b044a99420bc1b5efc01f7/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/metrics/computation_time
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/metrics/counterfactual_effect
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/metrics/divergent_transitions
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/metrics/immediate_effect
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/metrics/max_rhat
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/metrics/n_observations_post
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/metrics/n_observations_pre
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/metrics/probability_of_benefit
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/metrics/sustained_effect
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/params/intervention_date
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/params/mcmc_chains
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/params/mcmc_samples
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/69cadccd44df4454ad0e44023756dd70/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/tags/mlflow.source.git.commit
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/metrics/computation_time
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/metrics/counterfactual_effect
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/metrics/divergent_transitions
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/metrics/immediate_effect
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/metrics/max_rhat
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/metrics/n_observations_post
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/metrics/n_observations_pre
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/metrics/probability_of_benefit
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/metrics/sustained_effect
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/params/intervention_date
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/params/mcmc_chains
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/params/mcmc_samples
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/7bdf72929a2f494f8c26150adfed4244/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/c9800c3df57b42a9bb215756bb82e4fc/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/metrics/computation_time
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/metrics/counterfactual_effect
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/metrics/divergent_transitions
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/metrics/immediate_effect
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/metrics/max_rhat
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/metrics/n_observations_post
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/metrics/n_observations_pre
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/metrics/probability_of_benefit
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/metrics/sustained_effect
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/params/intervention_date
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/params/mcmc_chains
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/params/mcmc_samples
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/d42476425532494f98c845f41d331d85/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/d71caeea53ad46fa8cd57bd1e0e2d1e5/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/d9102f00489f41ef90744178cd7e72e4/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/metrics/computation_time
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/metrics/counterfactual_effect
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/metrics/divergent_transitions
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/metrics/immediate_effect
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/metrics/max_rhat
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/metrics/n_observations_post
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/metrics/n_observations_pre
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/metrics/probability_of_benefit
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/metrics/sustained_effect
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/params/intervention_date
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/params/mcmc_chains
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/params/mcmc_samples
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/dc6f430c83dd40309af124332dce1246/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/meta.yaml
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/metrics/cohens_d
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/metrics/n_baseline_1
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/metrics/n_baseline_2
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/metrics/n_intervention_A_1
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/metrics/n_intervention_A_2
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/metrics/observed_effect
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/metrics/p_value
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/params/n_permutations
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/params/outcome_metric
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/params/protocol_id
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/params/seed
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/params/user_id
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/tags/analysis_type
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/tags/mlflow.runName
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/tags/mlflow.source.name
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/tags/mlflow.source.type
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/tags/mlflow.user
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/tags/passes_wwc
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/tags/significant
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/tags/user_id
+ create mode 100644 apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/tags/wwc_rating
+ create mode 100644 apps/ml-service/mlruns/0/meta.yaml
+ delete mode 100644 apps/ml-service/src/orchestration/__pycache__/__init__.cpython-313.pyc
+ delete mode 100644 apps/ml-service/src/orchestration/__pycache__/cognitive_load_analyzer.cpython-313.pyc
+ delete mode 100644 apps/ml-service/src/orchestration/__pycache__/content_sequencer.cpython-313.pyc
+ delete mode 100644 apps/ml-service/src/orchestration/__pycache__/session_duration_optimizer.cpython-313.pyc
+ delete mode 100644 apps/ml-service/src/orchestration/__pycache__/study_time_recommender.cpython-313.pyc
+ delete mode 100644 apps/ml-service/tests/__pycache__/__init__.cpython-313.pyc
+ delete mode 100644 apps/ml-service/tests/__pycache__/conftest.cpython-313-pytest-8.3.4.pyc
+ delete mode 100644 apps/ml-service/tests/__pycache__/test_analytics.cpython-313-pytest-8.3.4.pyc
+ delete mode 100644 apps/ml-service/tests/__pycache__/test_detection_engine.cpython-313-pytest-8.3.4.pyc
+ delete mode 100644 apps/ml-service/tests/__pycache__/test_feature_extractor.cpython-313-pytest-8.3.4.pyc
+ delete mode 100644 apps/ml-service/tests/__pycache__/test_health.cpython-313-pytest-8.3.4.pyc
+ delete mode 100644 apps/ml-service/tests/__pycache__/test_integration.cpython-313-pytest-8.3.4.pyc
+ delete mode 100644 apps/ml-service/tests/__pycache__/test_interventions.cpython-313-pytest-8.3.4.pyc
+ delete mode 100644 apps/ml-service/tests/__pycache__/test_prediction_model.cpython-313-pytest-8.3.4.pyc
+ delete mode 100644 apps/ml-service/tests/__pycache__/test_predictions.cpython-313-pytest-8.3.4.pyc
+ create mode 100644 apps/ml-service/tests/test_its_engine.py
+ create mode 100644 apps/web/app/api/analytics/research/bayesian-its/route.ts
+ rename apps/web/public/{workbox-e9849328.js => workbox-4754cb34.js} (100%)
+ create mode 100644 apps/web/src/app/research/page.tsx
+ create mode 100644 apps/web/src/app/research/page.tsx.backup
+ create mode 100644 apps/web/src/components/research/BayesianITSDashboard.tsx
+ create mode 100644 apps/web/src/components/research/CounterfactualChart.tsx
+ create mode 100644 apps/web/src/components/research/MCMCDiagnosticsPanel.tsx
+ create mode 100644 data/raw/.gitignore
+ create mode 100644 data/raw/test.txt.dvc
+ create mode 100644 docs/_migration/docs-counts.csv
+ create mode 100644 docs/_migration/docs-inventory.txt
+ create mode 100644 docs/_migration/docs-summary.txt
+ create mode 100644 docs/_migration/path-map.agent.json
+ create mode 100644 docs/_migration/path-map.json
+ create mode 100644 docs/adr/ADR-INDEX.md
+ create mode 100644 docs/adr/adr-template.md
+ create mode 100644 docs/architecture/README.md
+ create mode 100644 docs/backend/README.md
+ create mode 100644 docs/deprecated/2025-10/README.md
+ create mode 100644 docs/frontend/README.md
+ create mode 100644 docs/model_selection_matrix.md
+ create mode 100644 docs/operations/README.md
+ create mode 100644 docs/overview/README.md
+ create mode 100644 docs/ppt-template.html
+ create mode 100644 docs/requirement-brief.md
+ create mode 100644 docs/research.md
+ create mode 100644 docs/setup/README.md
+ create mode 100644 docs/slides.md
+ create mode 100644 docs/ux-spec.md
+ create mode 100644 docs/veo/veo3-meta-framework.md
+ create mode 100644 scripts/docs/check-links.mjs
+ create mode 100644 scripts/docs/plan-prune.mjs
+ create mode 100644 scripts/docs_frontmatter_fix.mjs
+ create mode 100644 services/ml-service/app/config.py
+ create mode 100644 services/ml-service/app/main.py
+ create mode 100644 services/ml-service/app/routes/__init__.py
+ create mode 100644 services/ml-service/app/routes/health.py
+ create mode 100644 services/ml-service/requirements.txt
+85accbe5 docs: scaffold IA + migration mapping + docs CI + helper scripts + frontmatter checklist (no moves)
