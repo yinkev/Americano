@@ -1,17 +1,12 @@
 /* Query key helpers for TanStack Query */
-export const qk = {
+export const queryKeys = {
   health: () => ['health'] as const,
-  challenges: {
-    list: (params?: Record<string, unknown>) => ['challenges', 'list', params ?? null] as const,
-    byId: (id: string) => ['challenges', id] as const,
-  },
+  analytics: (id: string = 'summary') => ['analytics', id] as const,
+  predictions: (userId?: string) => ['predictions', userId ?? 'self'] as const,
+  interventions: (targetId?: string) => ['interventions', targetId ?? 'default'] as const,
   validation: {
     run: (id: string) => ['validation', 'run', id] as const,
   },
-  analytics: {
-    summary: (scope: string = 'default') => ['analytics', 'summary', scope] as const,
-  },
 }
 
-export type QueryKey = ReturnType<typeof qk.health>
-
+export type QueryKey = ReturnType<typeof queryKeys.health>
