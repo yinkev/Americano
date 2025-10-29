@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/kyin/Projects/Americano/apps/ml-service/mlruns/0/d6fee40a4b6f4bda964317b8115fef36/artifacts
+end_time: 1761579951429
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: d6fee40a4b6f4bda964317b8115fef36
+run_name: valuable-bee-590
+run_uuid: d6fee40a4b6f4bda964317b8115fef36
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1761579951418
+status: 3
+tags: []
+user_id: kyin

@@ -1,0 +1,1781 @@
+Now I have sufficient context. Let me create the comprehensive, staged plan:
+
+---
+
+# **Americano Frontend Integration + Docs Consolidation Plan**
+**Planning Agent Response | Read-Only Recommendation Mode**
+
+---
+
+## **EXECUTIVE SUMMARY**
+
+This plan delivers:
+1. **Frontend finalization** for Next.js 15 + FastAPI integration with clear IA, API client layer, design system, state management, and testing strategy
+2. **Aggressive docs pruning** reducing ~146 markdown files by 40–60% through consolidation, deletion, and archival
+3. **Tech debt mitigation** across 10 critical areas with concrete remediation actions
+
+**Timeline:** ~3–4 weeks (15–20 days) across 4 phases
+**Key Deliverables:** Runnable full-stack app, 60–90 consolidated docs, 0 broken links, CI enforcement
+
+---
+
+## **PHASE 1: DISCOVERY & BASELINE (Days 1–3, ~3 days)**
+
+### **1.1 Frontend Architecture Audit**
+
+**Goal:** Map existing Next.js 15 structure, identify gaps, and define final IA
+
+**Tasks:**
+```bash
+# Audit existing routes (38 pages identified)
+tree apps/web/src/app -L 3 -I '__tests__|*.test.tsx'
+
+# Audit components (100+ identified)
+find apps/web/src/components -name "*.tsx" | wc -l
+
+# Check API integration patterns
+grep -r "fetch\|axios\|@tanstack/react-query" apps/web/src --include="*.tsx" --include="*.ts"
+
+# Review generated types
+cat apps/web/src/types/api-generated.ts | grep "export interface" | wc -l
+```
+
+**Deliverable:** `docs/phase1-frontend-audit.md` with:
+- Current routing table (38 pages mapped)
+- Component inventory by domain (study, analytics, library, etc.)
+- Existing API integration patterns (TanStack Query usage)
+- Missing flows vs PRD requirements
+
+**Acceptance Criteria:**
+- [ ] All 38 existing routes documented with purpose
+- [ ] Component dependency graph for 5 core domains
+- [ ] API integration gaps identified (3–5 missing flows)
+
+---
+
+### **1.2 Docs Inventory & Categorization**
+
+**Goal:** Audit 146 markdown files, identify duplicates, and create deletion candidates
+
+**Tasks:**
+```bash
+# Full inventory with frontmatter status
+for file in docs/**/*.md; do
+  echo "=== $file ==="
+  head -20 "$file" | grep -A 10 "^---$" || echo "NO FRONTMATTER"
+done > docs/inventory-phase1.txt
+
+# Find duplicates by title similarity
+find docs -name "*.md" -exec basename {} \; | sort | uniq -d
+
+# Identify deprecated markers
+grep -r "deprecated\|outdated\|DEPRECATED" docs --include="*.md" | wc -l
+
+# Measure doc sizes
+find docs -name "*.md" -exec wc -w {} \; | sort -nr | head -20
+```
+
+**Deliverable:** `docs/phase1-docs-inventory.csv` with columns:
+| File Path | Type | Status | Frontmatter? | Word Count | Duplicate? | Action |
+|-----------|------|--------|--------------|------------|------------|--------|
+| docs/index.md | Index | Active | ✅ | 5,200 | No | Keep |
+| docs/epic-docs/epic-5-master-summary.md | Epic | Active | ❌ | 8,100 | Yes | Merge → epic-5-completion-report.md |
+
+**Acceptance Criteria:**
+- [ ] 146 files inventoried with metadata
+- [ ] 20–30 duplicate candidates flagged
+- [ ] 40–60 files marked for deletion/archive (40–60% target)
+
+---
+
+### **1.3 Dependency Mapping (Frontend ↔ Backend ↔ Docs)**
+
+**Goal:** Map critical dependencies to understand blast radius of changes
+
+**Tasks:**
+```bash
+# API endpoint usage in frontend
+grep -r "/api/\|http://localhost:8000" apps/web/src --include="*.ts" --include="*.tsx"
+
+# Find docs that reference implementation files
+grep -r "apps/web/src\|apps/api/src" docs --include="*.md"
+
+# Prisma schema referenced in docs
+grep -r "schema.prisma\|@prisma" docs --include="*.md"
+```
+
+**Deliverable:** `docs/phase1-dependency-map.mermaid` showing:
+- Frontend pages → API endpoints → Backend routers
+- Docs → Code references (which docs reference which files)
+- Critical paths: auth, study session, analytics dashboards
+
+**Acceptance Criteria:**
+- [ ] Dependency graph with 10–15 critical paths
+- [ ] Docs↔code references mapped (50+ links)
+- [ ] Breaking change impact analysis ready
+
+---
+
+## **PHASE 2: FRONTEND FINALIZATION (Days 4–10, ~7 days)**
+
+### **2.1 Information Architecture & Routing (Day 4–5)**
+
+**Goal:** Define final Next.js 15 App Router structure
+
+**Proposed Final IA:**
+
+```
+apps/web/src/app/
+├── (auth)/                          # Auth group (future)
+│   ├── login/page.tsx
+│   ├── signup/page.tsx
+│   └── layout.tsx                   # Auth layout
+├── (with-sidebar)/                  # Main app (existing)
+│   ├── page.tsx                     # Dashboard (keep)
+│   ├── layout.tsx                   # Sidebar layout
+│   ├── library/                     # Content management
+│   │   ├── page.tsx                 # Lecture list
+│   │   ├── [lectureId]/page.tsx    # Lecture detail
+│   │   ├── upload/page.tsx          # Upload flow
+│   │   └── courses/page.tsx         # Course management
+│   ├── study/                       # Study sessions (keep all)
+│   │   ├── page.tsx                 # Start session
+│   │   ├── sessions/[id]/page.tsx  # Active session
+│   │   └── orchestration/page.tsx  # ITS orchestration
+│   ├── missions/                    # Spaced repetition (keep all)
+│   │   ├── page.tsx                 # Mission list
+│   │   ├── [id]/page.tsx            # Mission detail
+│   │   ├── history/page.tsx         # Past missions
+│   │   └── compare/page.tsx         # Compare performance
+│   ├── analytics/                   # Behavioral analytics (consolidate)
+│   │   ├── page.tsx                 # Analytics hub (NEW)
+│   │   ├── behavioral-insights/page.tsx
+│   │   ├── cognitive-health/page.tsx
+│   │   ├── learning-patterns/page.tsx
+│   │   ├── struggle-predictions/page.tsx
+│   │   ├── personalization/page.tsx
+│   │   ├── experiments/page.tsx
+│   │   ├── missions/page.tsx        # CONSOLIDATE → analytics/page.tsx
+│   │   ├── reviews/page.tsx         # CONSOLIDATE → analytics/page.tsx
+│   │   └── understanding/page.tsx   # CONSOLIDATE → analytics/page.tsx
+│   ├── progress/                    # Validation engine (consolidate)
+│   │   ├── page.tsx                 # Progress hub (NEW)
+│   │   ├── comprehension/page.tsx
+│   │   ├── clinical-reasoning/page.tsx
+│   │   ├── calibration/page.tsx
+│   │   ├── adaptive-questioning/page.tsx
+│   │   └── pitfalls/page.tsx        # Keep
+│   ├── search/                      # Semantic search (keep)
+│   │   ├── page.tsx                 # Search UI
+│   │   ├── analytics/page.tsx       # Search analytics
+│   │   └── mobile/page.tsx          # Mobile variant
+│   ├── graph/page.tsx               # Knowledge graph (keep)
+│   ├── orchestration/page.tsx       # ITS orchestration (MOVE → study/orchestration)
+│   ├── priorities/page.tsx          # Study prioritization (keep)
+│   ├── settings/                    # User settings
+│   │   ├── page.tsx                 # Settings hub
+│   │   ├── sources/page.tsx         # Content sources
+│   │   └── exams/page.tsx           # Exam targeting
+│   └── research/page.tsx            # Research analytics (keep for now)
+├── api/                             # API routes (Next.js API routes, NOT FastAPI)
+│   └── ...                          # Minimal client-side API routes (auth, webhooks)
+└── layout.tsx                       # Root layout
+```
+
+**Changes:**
+- **Consolidate analytics:** Merge `analytics/missions`, `analytics/reviews`, `analytics/understanding` into single `analytics/page.tsx` with tabs
+- **Consolidate progress:** Create `progress/page.tsx` hub with sub-navigation
+- **Move orchestration:** `orchestration/page.tsx` → `study/orchestration/page.tsx`
+- **Add hubs:** `analytics/page.tsx` and `progress/page.tsx` as tabbed dashboards
+- **Auth routes:** Placeholder for future Supabase integration
+
+**Route Responsibilities Table:**
+
+| Route | Epic | Purpose | Data Source | Auth Required |
+|-------|------|---------|-------------|---------------|
+| `/` (dashboard) | All | Student dashboard, daily overview | Next.js API + FastAPI | ✅ |
+| `/library` | 1 | Lecture management, upload | Next.js API (Prisma) | ✅ |
+| `/study/sessions/[id]` | 2, 4 | Active study session | Next.js API + FastAPI validation | ✅ |
+| `/missions` | 2 | Spaced repetition tasks | Next.js API | ✅ |
+| `/search` | 3 | Semantic search + knowledge graph | Next.js API (Gemini embeddings) | ✅ |
+| `/analytics/*` | 5 | Behavioral insights, ML predictions | FastAPI `/ml/*` + Next.js API | ✅ |
+| `/progress/*` | 4 | Understanding validation analytics | FastAPI `/validation/*`, `/adaptive/*` | ✅ |
+| `/graph` | 3 | Knowledge graph visualization | Next.js API | ✅ |
+| `/settings` | All | User preferences, exam targeting | Next.js API | ✅ |
+
+**Acceptance Criteria:**
+- [ ] 25–30 final routes (down from 38)
+- [ ] Each route has documented data source
+- [ ] Consolidation reduces redundancy by 20%
+
+---
+
+### **2.2 API Client Layer (Day 6–7)**
+
+**Goal:** Define typed API client layer for FastAPI + Next.js API integration
+
+**Proposed Architecture:**
+
+```typescript
+// apps/web/src/lib/api/client.ts
+/**
+ * Centralized API client for Americano platform
+ * 
+ * Supports:
+ * - Next.js API routes (/api/*)
+ * - FastAPI backend (http://localhost:8000)
+ * - Auto-generated types from Pydantic models
+ * - TanStack Query integration
+ * - Error handling & retry logic
+ */
+
+import type { 
+  EvaluationRequest, 
+  EvaluationResult,
+  ChallengeRequest,
+  ChallengeResponse,
+  // ... 40+ types from api-generated.ts
+} from '@/types/api-generated'
+
+// Base clients
+export const nextApiClient = createClient({ baseURL: '/api' })
+export const fastApiClient = createClient({ 
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000' 
+})
+
+// Typed API methods
+export const api = {
+  // Epic 4: Understanding Validation Engine
+  validation: {
+    evaluate: (req: EvaluationRequest) => 
+      fastApiClient.post<EvaluationResult>('/validation/evaluate', req),
+    getClinicalScenario: (id: string) => 
+      fastApiClient.get<ClinicalScenario>(`/validation/scenarios/${id}`),
+  },
+  
+  // Epic 4: Challenge Generation
+  challenges: {
+    generate: (req: ChallengeRequest) => 
+      fastApiClient.post<ChallengeResponse>('/challenges/generate', req),
+    retry: (id: string) => 
+      fastApiClient.post<RetryResponse>(`/challenges/${id}/retry`),
+  },
+  
+  // Epic 4: Adaptive Questioning
+  adaptive: {
+    getNextQuestion: (sessionId: string) => 
+      fastApiClient.get<NextQuestionResponse>(`/adaptive/sessions/${sessionId}/next`),
+  },
+  
+  // Epic 4: Analytics
+  analytics: {
+    getCalibration: (userId: string) => 
+      fastApiClient.get<CalibrationMetrics>(`/analytics/users/${userId}/calibration`),
+    getValidationInsights: (userId: string) => 
+      fastApiClient.get<ValidationInsights>(`/analytics/users/${userId}/insights`),
+  },
+  
+  // Epic 5: ML Predictions (from ml-service)
+  predictions: {
+    predictStruggle: (req: StrugglePredictionRequest) => 
+      fastApiClient.post<StrugglePrediction>('/ml/predictions/struggle', req),
+    getRecommendations: (userId: string) => 
+      fastApiClient.get<InterventionRecommendations>(`/ml/interventions/${userId}`),
+  },
+  
+  // Next.js API routes (Prisma-backed)
+  lectures: {
+    list: () => nextApiClient.get<Lecture[]>('/lectures'),
+    upload: (formData: FormData) => nextApiClient.post('/lectures/upload', formData),
+  },
+  
+  // Add remaining 30+ endpoints...
+}
+```
+
+**TanStack Query Integration:**
+
+```typescript
+// apps/web/src/lib/api/queries.ts
+import { useQuery, useMutation } from '@tanstack/react-query'
+import { api } from './client'
+
+// Query hooks for server state
+export const useCalibrationMetrics = (userId: string) => {
+  return useQuery({
+    queryKey: ['calibration', userId],
+    queryFn: () => api.analytics.getCalibration(userId),
+    staleTime: 5 * 60 * 1000, // 5 min
+    cacheTime: 30 * 60 * 1000, // 30 min
+  })
+}
+
+export const useValidationEvaluate = () => {
+  return useMutation({
+    mutationFn: api.validation.evaluate,
+    onSuccess: (data) => {
+      // Invalidate related queries
+      queryClient.invalidateQueries(['calibration'])
+    },
+  })
+}
+
+// Add 40+ query/mutation hooks for all endpoints
+```
+
+**Error Handling Strategy:**
+
+```typescript
+// apps/web/src/lib/api/errors.ts
+import { toast } from 'sonner'
+
+export class ApiError extends Error {
+  constructor(
+    public status: number,
+    public code: string,
+    message: string,
+    public details?: any
+  ) {
+    super(message)
+  }
+}
+
+export const handleApiError = (error: unknown) => {
+  if (error instanceof ApiError) {
+    // User-facing errors
+    if (error.status === 400) {
+      toast.error(`Invalid request: ${error.message}`)
+    } else if (error.status === 401) {
+      // Redirect to login
+      window.location.href = '/login'
+    } else if (error.status === 500) {
+      toast.error('Server error. Please try again.')
+    }
+  } else {
+    // Network errors
+    toast.error('Network error. Check your connection.')
+  }
+}
+```
+
+**Retry Strategy:**
+
+```typescript
+// Exponential backoff for transient failures
+const retryConfig = {
+  retry: 3,
+  retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  retryCondition: (error: ApiError) => {
+    // Retry on 5xx or network errors, not 4xx
+    return error.status >= 500 || error.status === 0
+  },
+}
+```
+
+**Auth Strategy (Placeholder for Supabase):**
+
+```typescript
+// apps/web/src/lib/auth/client.ts
+/**
+ * Auth client - Supabase integration placeholder
+ * 
+ * MVP: Hardcoded user for development
+ * Phase 2: Supabase Auth + RLS
+ */
+
+export const getCurrentUser = async () => {
+  // TODO: Replace with Supabase auth
+  if (process.env.NODE_ENV === 'development') {
+    return { id: 'kevy@americano.dev', email: 'kevy@americano.dev' }
+  }
+  
+  // const { data: { user } } = await supabase.auth.getUser()
+  // return user
+}
+
+export const requireAuth = (Component: React.ComponentType) => {
+  return (props: any) => {
+    // TODO: Implement auth guard
+    return <Component {...props} />
+  }
+}
+```
+
+**Acceptance Criteria:**
+- [ ] Typed API client with 40+ methods matching FastAPI endpoints
+- [ ] TanStack Query hooks for 30+ endpoints
+- [ ] Error handling with user-friendly toasts
+- [ ] Retry logic with exponential backoff
+- [ ] Auth placeholder with Supabase migration notes
+
+---
+
+### **2.3 Design System & Shared UI (Day 8)**
+
+**Goal:** Document existing design system and establish consistency guidelines
+
+**Existing Stack:**
+- **Radix UI:** 20+ primitives (Accordion, Dialog, Dropdown, Select, etc.)
+- **shadcn/ui:** Pre-built components built on Radix
+- **Tailwind CSS 4:** Utility-first styling
+- **Framer Motion / Motion:** Animation library
+- **next-themes:** Dark/light mode support
+
+**Design System Structure:**
+
+```
+apps/web/src/components/ui/
+├── primitives/              # Radix UI wrappers (shadcn)
+│   ├── accordion.tsx
+│   ├── alert.tsx
+│   ├── avatar.tsx
+│   ├── button.tsx
+│   ├── dialog.tsx
+│   ├── dropdown-menu.tsx
+│   ├── form.tsx
+│   ├── input.tsx
+│   ├── select.tsx
+│   ├── separator.tsx
+│   ├── skeleton.tsx
+│   ├── tabs.tsx
+│   └── ... (20+ primitives)
+├── composed/                # Domain-specific composed components
+│   ├── card-variants.tsx    # Card with variants (elevated, flat, glassmorphic)
+│   ├── data-table.tsx       # Reusable table with sorting, filtering
+│   ├── empty-state.tsx      # Consistent empty states
+│   ├── stat-card.tsx        # Metric display card
+│   └── chart-wrapper.tsx    # Recharts wrapper with theming
+└── patterns/                # Layout patterns
+    ├── page-header.tsx      # Consistent page headers
+    ├── page-transition.tsx  # Route transitions
+    └── sidebar-layout.tsx   # Sidebar with responsive behavior
+```
+
+**Theming (OKLCH + Glassmorphism):**
+
+```typescript
+// apps/web/src/styles/theme.css
+:root {
+  /* OKLCH color space (Epic 5 design system) */
+  --color-primary: oklch(0.65 0.15 275);
+  --color-secondary: oklch(0.55 0.12 230);
+  --color-success: oklch(0.70 0.18 145);
+  --color-warning: oklch(0.75 0.15 85);
+  --color-error: oklch(0.60 0.20 25);
+  
+  /* Glassmorphism variables */
+  --glass-bg: oklch(0.95 0.01 275 / 0.7);
+  --glass-border: oklch(0.90 0.02 275 / 0.2);
+  --glass-blur: 12px;
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+}
+```
+
+**Accessibility Requirements:**
+- **WCAG 2.1 AA compliance:** Color contrast ≥4.5:1, focus indicators
+- **Keyboard navigation:** All interactive elements reachable via Tab
+- **Screen reader support:** Proper ARIA labels, semantic HTML
+- **Reduced motion:** Respect `prefers-reduced-motion`
+
+**Performance Budgets:**
+- **First Contentful Paint (FCP):** <1.5s
+- **Largest Contentful Paint (LCP):** <2.5s (desktop), <3.0s (mobile)
+- **Cumulative Layout Shift (CLS):** <0.1
+- **Time to Interactive (TTI):** <3.5s
+- **Bundle size:** <200KB gzipped per route chunk
+
+**Component Documentation:**
+
+```markdown
+# Button Component
+
+## Usage
+```tsx
+import { Button } from '@/components/ui/button'
+
+<Button variant="default" size="md" onClick={handleClick}>
+  Click me
+</Button>
+```
+
+## Variants
+- `default`: Primary action button
+- `secondary`: Secondary action
+- `outline`: Outlined button
+- `ghost`: Text-only button
+- `destructive`: Destructive action (red)
+
+## Props
+- `variant`: Button style variant
+- `size`: `sm` | `md` | `lg`
+- `disabled`: Disable button
+- `loading`: Show loading spinner
+- `leftIcon`: Icon on left
+- `rightIcon`: Icon on right
+
+## Accessibility
+- Uses `<button>` semantic element
+- Includes focus-visible ring
+- Supports keyboard navigation (Enter/Space)
+- ARIA attributes for loading state
+```
+
+**Acceptance Criteria:**
+- [ ] 30+ UI components documented with usage examples
+- [ ] Theming guide with OKLCH + glassmorphism patterns
+- [ ] Accessibility checklist with WCAG 2.1 AA requirements
+- [ ] Performance budgets defined per route
+
+---
+
+### **2.4 State Management Strategy (Day 9)**
+
+**Goal:** Define clear boundaries for server state (TanStack Query) vs client state (Zustand)
+
+**State Management Architecture:**
+
+```typescript
+// SERVER STATE (TanStack Query) - 90% of data
+// =============================================
+// Use for:
+// - Data from API endpoints (FastAPI, Next.js API)
+// - Database-backed data (lectures, study sessions, analytics)
+// - Any data that needs synchronization with server
+
+// Examples:
+// - User profile
+// - Lecture library
+// - Study session history
+// - Analytics metrics
+// - ML predictions
+
+// CLIENT STATE (Zustand) - 10% of data
+// =====================================
+// Use for:
+// - UI state (sidebar open/closed, modal visibility)
+// - Transient form state (before submission)
+// - User preferences (theme, language, sidebar collapsed)
+// - In-progress study session state (timer, current question)
+
+// apps/web/src/store/ui.ts
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+
+interface UIStore {
+  sidebarCollapsed: boolean
+  toggleSidebar: () => void
+  theme: 'light' | 'dark' | 'system'
+  setTheme: (theme: 'light' | 'dark' | 'system') => void
+}
+
+export const useUIStore = create<UIStore>()(
+  persist(
+    (set) => ({
+      sidebarCollapsed: false,
+      toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+      theme: 'system',
+      setTheme: (theme) => set({ theme }),
+    }),
+    { name: 'ui-store' }
+  )
+)
+
+// apps/web/src/store/study-session.ts
+interface StudySessionStore {
+  currentQuestionIndex: number
+  startTime: Date | null
+  elapsedSeconds: number
+  answers: Record<string, string>
+  
+  startSession: () => void
+  answerQuestion: (questionId: string, answer: string) => void
+  nextQuestion: () => void
+  resetSession: () => void
+}
+
+export const useStudySessionStore = create<StudySessionStore>((set) => ({
+  currentQuestionIndex: 0,
+  startTime: null,
+  elapsedSeconds: 0,
+  answers: {},
+  
+  startSession: () => set({ startTime: new Date(), elapsedSeconds: 0 }),
+  answerQuestion: (questionId, answer) => 
+    set((state) => ({ 
+      answers: { ...state.answers, [questionId]: answer } 
+    })),
+  nextQuestion: () => 
+    set((state) => ({ currentQuestionIndex: state.currentQuestionIndex + 1 })),
+  resetSession: () => 
+    set({ currentQuestionIndex: 0, startTime: null, elapsedSeconds: 0, answers: {} }),
+}))
+```
+
+**Data Fetching Patterns:**
+
+```typescript
+// PATTERN 1: Server-Side Rendering (SSR) for initial load
+// =========================================================
+// Use for: Public pages, SEO-critical pages, dashboard initial state
+
+// apps/web/src/app/dashboard/page.tsx
+export default async function DashboardPage() {
+  // Fetch data server-side
+  const user = await getCurrentUser()
+  const metrics = await fetchMetrics(user.id)
+  
+  return <Dashboard initialMetrics={metrics} />
+}
+
+// PATTERN 2: Client-Side Fetching with TanStack Query
+// ====================================================
+// Use for: Interactive pages, user-specific data, real-time updates
+
+// apps/web/src/components/analytics/calibration-chart.tsx
+'use client'
+export function CalibrationChart({ userId }: { userId: string }) {
+  const { data, isLoading, error } = useCalibrationMetrics(userId)
+  
+  if (isLoading) return <ChartSkeleton />
+  if (error) return <ErrorState error={error} />
+  
+  return <Chart data={data} />
+}
+
+// PATTERN 3: Optimistic Updates for mutations
+// ============================================
+// Use for: User interactions, form submissions
+
+const { mutate: savePreferences } = useMutation({
+  mutationFn: api.preferences.update,
+  onMutate: async (newPreferences) => {
+    // Cancel outgoing queries
+    await queryClient.cancelQueries(['preferences'])
+    
+    // Snapshot previous value
+    const previous = queryClient.getQueryData(['preferences'])
+    
+    // Optimistically update
+    queryClient.setQueryData(['preferences'], newPreferences)
+    
+    return { previous }
+  },
+  onError: (err, variables, context) => {
+    // Rollback on error
+    queryClient.setQueryData(['preferences'], context?.previous)
+  },
+  onSettled: () => {
+    // Refetch after mutation
+    queryClient.invalidateQueries(['preferences'])
+  },
+})
+
+// PATTERN 4: Infinite Queries for pagination
+// ===========================================
+// Use for: Large lists (lecture library, search results)
+
+const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
+  queryKey: ['lectures'],
+  queryFn: ({ pageParam = 0 }) => api.lectures.list({ page: pageParam }),
+  getNextPageParam: (lastPage) => lastPage.nextCursor,
+})
+```
+
+**Acceptance Criteria:**
+- [ ] Clear guidelines for server vs client state
+- [ ] 5+ Zustand stores for client state (UI, study session, preferences)
+- [ ] 4 data fetching patterns documented with examples
+- [ ] Optimistic updates for 5+ mutation types
+
+---
+
+### **2.5 Testing Strategy (Day 10)**
+
+**Goal:** Define testing approach with minimal viable coverage for critical paths
+
+**Testing Pyramid:**
+
+```
+       /\
+      /  \     E2E (Playwright)
+     /----\    ~5-10 smoke tests for critical flows
+    /------\
+   /--------\  Integration Tests (Jest + MSW)
+  /----------\ ~30-40 tests for API integration
+ /------------\
+/   Unit Tests  \  (Jest + React Testing Library)
+\--------------/  ~100-150 tests for components & hooks
+```
+
+**Test Coverage Targets:**
+- **Unit tests:** 70% coverage on components, 80% on utility functions
+- **Integration tests:** 50% coverage on API client layer
+- **E2E tests:** 5–10 critical user flows (login, study session, analytics view)
+
+**Unit Testing Setup:**
+
+```typescript
+// apps/web/jest.config.ts (already present)
+export default {
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+}
+
+// apps/web/__tests__/components/ui/button.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react'
+import { Button } from '@/components/ui/button'
+
+describe('Button', () => {
+  it('renders with text', () => {
+    render(<Button>Click me</Button>)
+    expect(screen.getByText('Click me')).toBeInTheDocument()
+  })
+  
+  it('handles click events', () => {
+    const handleClick = jest.fn()
+    render(<Button onClick={handleClick}>Click me</Button>)
+    fireEvent.click(screen.getByText('Click me'))
+    expect(handleClick).toHaveBeenCalledTimes(1)
+  })
+  
+  it('disables when disabled prop is true', () => {
+    render(<Button disabled>Click me</Button>)
+    expect(screen.getByText('Click me')).toBeDisabled()
+  })
+})
+
+// Add 100+ similar tests for components
+```
+
+**Integration Testing with MSW:**
+
+```typescript
+// apps/web/__tests__/integration/api/validation.test.ts
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
+import { renderHook, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useValidationEvaluate } from '@/lib/api/queries'
+
+const server = setupServer(
+  rest.post('http://localhost:8000/validation/evaluate', (req, res, ctx) => {
+    return res(ctx.json({
+      is_correct: true,
+      score: 0.92,
+      feedback: 'Great explanation!',
+    }))
+  })
+)
+
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
+
+describe('Validation API Integration', () => {
+  it('successfully evaluates answer', async () => {
+    const { result } = renderHook(() => useValidationEvaluate(), {
+      wrapper: ({ children }) => (
+        <QueryClientProvider client={new QueryClient()}>
+          {children}
+        </QueryClientProvider>
+      ),
+    })
+    
+    result.current.mutate({
+      user_answer: 'The heart pumps blood...',
+      expected_answer: 'The heart is responsible for...',
+    })
+    
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(result.current.data?.score).toBe(0.92)
+  })
+})
+
+// Add 30+ integration tests
+```
+
+**E2E Testing with Playwright:**
+
+```typescript
+// apps/web/__tests__/e2e/study-session.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('Study Session Flow', () => {
+  test('user can start and complete a study session', async ({ page }) => {
+    // Login (mock auth)
+    await page.goto('/dashboard')
+    
+    // Navigate to study
+    await page.click('text=Start Studying')
+    
+    // Select lecture
+    await page.click('text=Cardiovascular System')
+    
+    // Answer question
+    await page.fill('[data-testid="answer-input"]', 'The heart pumps blood through...')
+    await page.click('text=Submit Answer')
+    
+    // Verify feedback
+    await expect(page.locator('[data-testid="feedback"]')).toContainText('Great explanation')
+    
+    // Complete session
+    await page.click('text=Finish Session')
+    await expect(page).toHaveURL('/study/sessions/complete')
+  })
+})
+
+// Add 5-10 critical flow tests:
+// 1. Study session (start → answer questions → complete)
+// 2. Lecture upload (upload PDF → processing → view)
+// 3. Analytics dashboard (view metrics → filter by date)
+// 4. Spaced repetition (view due missions → complete mission)
+// 5. Semantic search (search query → view results → open lecture)
+```
+
+**CI Test Pipeline:**
+
+```yaml
+# .github/workflows/test.yml
+name: Test Suite
+on: [push, pull_request]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: cd apps/web && npm ci
+      - run: cd apps/web && npm run test:ci
+      - run: cd apps/web && npm run test:coverage
+      - uses: codecov/codecov-action@v3  # Upload coverage
+        
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: docker-compose up -d postgres  # Start test DB
+      - run: cd apps/web && npm run test:integration
+      
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: cd apps/web && npm ci
+      - run: npx playwright install --with-deps
+      - run: npm run dev &  # Start dev server
+      - run: npx playwright test
+      - uses: actions/upload-artifact@v3  # Upload test videos
+        if: failure()
+        with:
+          name: playwright-videos
+          path: apps/web/test-results/
+```
+
+**Acceptance Criteria:**
+- [ ] Unit tests: 100+ tests, 70% component coverage
+- [ ] Integration tests: 30+ tests, 50% API client coverage
+- [ ] E2E tests: 5–10 critical flows
+- [ ] CI pipeline runs all tests on PR
+- [ ] Test reports uploaded to CI artifacts
+
+---
+
+### **2.6 Build & CI Integration (Day 10)**
+
+**Goal:** Ensure reproducible builds with type generation, linting, and testing
+
+**Build Pipeline:**
+
+```json
+// apps/web/package.json (update scripts)
+{
+  "scripts": {
+    "prebuild": "npm run generate-types && npm run typecheck",
+    "build": "next build",
+    "generate-types": "cd ../api && python scripts/generate_types.py",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "jest",
+    "test:ci": "jest --ci --coverage --maxWorkers=2",
+    "test:integration": "RUN_DB_INTEGRATION=1 jest __tests__/integration --runInBand",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  }
+}
+```
+
+**CI/CD Workflow:**
+
+```yaml
+# .github/workflows/ci.yml
+name: CI Pipeline
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run lint
+      
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: cd apps/api && pip install -r requirements.txt
+      - run: cd apps/web && npm ci
+      - run: cd apps/web && npm run generate-types
+      - run: cd apps/web && npm run typecheck
+      
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck]
+    steps:
+      - uses: actions/checkout@v3
+      - run: cd apps/web && npm run build
+      
+  test:
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck]
+    strategy:
+      matrix:
+        test-type: [unit, integration, e2e]
+    steps:
+      - uses: actions/checkout@v3
+      - run: cd apps/web && npm run test:${{ matrix.test-type }}
+      
+  lighthouse:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+      - run: cd apps/web && npm run build
+      - run: npm run start &
+      - uses: treosh/lighthouse-ci-action@v9
+        with:
+          urls: |
+            http://localhost:3000
+            http://localhost:3000/dashboard
+            http://localhost:3000/study
+          uploadArtifacts: true
+          budgetPath: ./lighthouse-budget.json
+```
+
+**Performance Budget:**
+
+```json
+// apps/web/lighthouse-budget.json
+{
+  "budget": [
+    {
+      "path": "/*",
+      "timings": [
+        { "metric": "first-contentful-paint", "budget": 1500 },
+        { "metric": "largest-contentful-paint", "budget": 2500 },
+        { "metric": "interactive", "budget": 3500 }
+      ],
+      "resourceSizes": [
+        { "resourceType": "script", "budget": 200 },
+        { "resourceType": "stylesheet", "budget": 30 },
+        { "resourceType": "document", "budget": 50 },
+        { "resourceType": "total", "budget": 500 }
+      ]
+    }
+  ]
+}
+```
+
+**Acceptance Criteria:**
+- [ ] `npm run build` succeeds with 0 type errors
+- [ ] Type generation from Python runs pre-build
+- [ ] Biome lint passes with 0 errors
+- [ ] All tests pass in CI
+- [ ] Lighthouse CI enforces performance budgets
+
+---
+
+## **PHASE 3: DOCS CONSOLIDATION (Days 11–15, ~5 days)**
+
+### **3.1 Final Documentation IA (Day 11)**
+
+**Goal:** Design streamlined 5–7 top-level doc structure
+
+**Proposed Final Structure (60–90 docs, down from 146):**
+
+```
+docs/
+├── index.md                           # Central hub (keep, refine)
+├── frontmatter-standard.md            # Keep
+├── CHANGELOG.md                       # Keep
+│
+├── 1-getting-started/                 # New: Onboarding
+│   ├── README.md                      # Quick start guide
+│   ├── prerequisites.md               # System requirements
+│   ├── local-setup.md                 # Dev environment setup
+│   ├── first-contribution.md          # First PR guide
+│   └── troubleshooting.md             # Common setup issues
+│
+├── 2-architecture/                    # Consolidate from scattered arch docs
+│   ├── README.md                      # Architecture overview
+│   ├── solution-architecture.md       # Keep (master doc)
+│   ├── tech-stack.md                  # Extract from PRD
+│   ├── adr/                           # Architecture Decision Records
+│   │   ├── ADR-001-hybrid-typescript-python.md
+│   │   ├── ADR-002-tanstack-query.md  # NEW: State management ADR
+│   │   ├── ADR-003-two-tier-caching.md
+│   │   ├── ADR-004-oklch-glassmorphism.md
+│   │   └── ADR-005-testing-strategy.md  # NEW: Testing ADR
+│   ├── frontend-architecture.md       # NEW: From Phase 2 work
+│   ├── backend-architecture.md        # Consolidate FastAPI docs
+│   └── database-schema.md             # Consolidate Prisma docs
+│
+├── 3-api-reference/                   # Consolidate API docs
+│   ├── README.md                      # API overview
+│   ├── openapi.yaml                   # OpenAPI spec (symlink from apps/web/docs/api/openapi.yaml)
+│   ├── fastapi-endpoints.md           # FastAPI routes (4 routers)
+│   ├── nextjs-api-routes.md           # Next.js API routes
+│   ├── authentication.md              # Auth strategy
+│   └── type-generation.md             # Pydantic → TypeScript guide
+│
+├── 4-frontend-guide/                  # NEW: Frontend-specific
+│   ├── README.md                      # Frontend overview
+│   ├── routing.md                     # Next.js 15 App Router
+│   ├── components.md                  # Component library
+│   ├── design-system.md               # OKLCH + glassmorphism
+│   ├── state-management.md            # TanStack Query + Zustand
+│   ├── data-fetching.md               # SSR/CSR patterns
+│   └── performance.md                 # Optimization techniques
+│
+├── 5-database/                        # Consolidate DB docs
+│   ├── README.md                      # Database overview
+│   ├── schema.md                      # Prisma schema reference
+│   ├── migrations.md                  # Migration strategy (keep)
+│   └── indexes.md                     # Index strategy
+│
+├── 6-testing/                         # Consolidate testing docs
+│   ├── README.md                      # Testing overview (refine index.md)
+│   ├── unit-testing.md                # Jest + RTL guide
+│   ├── integration-testing.md         # MSW + API testing
+│   ├── e2e-testing.md                 # Playwright guide
+│   └── test-data.md                   # Test fixtures, factories
+│
+├── 7-deployment/                      # Consolidate deployment docs
+│   ├── README.md                      # Deployment overview
+│   ├── ci-cd.md                       # GitHub Actions pipeline
+│   ├── environment-variables.md       # Env var reference
+│   └── production-checklist.md        # Pre-deploy checklist
+│
+├── 8-epics/                           # Epic summaries (historical)
+│   ├── README.md                      # Epics overview
+│   ├── epic-1-content-management.md   # Consolidate E1 docs
+│   ├── epic-2-spaced-repetition.md    # Consolidate E2 docs
+│   ├── epic-3-knowledge-graph.md      # Keep completion report
+│   ├── epic-4-validation-engine.md    # Keep completion report
+│   └── epic-5-behavioral-twin.md      # Keep completion report
+│
+└── 9-deprecated/                      # Archive (read-only)
+    ├── README.md                      # Deprecation index
+    ├── worktree-workflows/            # Multi-worktree docs (deprecated Oct 2025)
+    ├── epic-status-tracking/          # Weekly status docs (epics complete)
+    └── old-architecture/              # Pre-Epic-4 architecture docs
+```
+
+**Consolidation Rules:**
+
+1. **DELETE** (40–50 files):
+   - Duplicate epic summaries (e.g., `epic-5-master-summary.md` → merge into `epic-5-completion-report.md`)
+   - Scattered story task docs (merge into story completion reports)
+   - Session handoff notes (move to `9-deprecated/`)
+   - Worktree-specific workflows (deprecated)
+   - Fix summaries (merge into CHANGELOG.md)
+
+2. **MERGE** (30–40 files → 15–20 files):
+   - All Epic 1 stories → `epics/epic-1-content-management.md`
+   - All Epic 2 stories → `epics/epic-2-spaced-repetition.md`
+   - Architecture docs → `2-architecture/` (5 docs)
+   - API docs → `3-api-reference/` (4 docs)
+   - Testing docs → `6-testing/` (5 docs)
+
+3. **ARCHIVE** (20–30 files → `9-deprecated/`):
+   - Worktree workflows
+   - Weekly epic status tracking
+   - Historical session summaries
+   - Old architecture docs (pre-Epic 4)
+
+4. **KEEP** (50–60 files):
+   - Epic completion reports (3–5)
+   - ADRs (5–7)
+   - Core guides (getting started, architecture, API, testing)
+   - Frontmatter standard
+   - CHANGELOG
+
+**Candidate Deletion List (Examples):**
+
+```bash
+# Duplicate epic docs
+docs/epic-docs/epic-5-master-summary.md         # MERGE → epic-5-completion-report.md
+docs/epic-docs/epic-5-retrospective-handoff.md  # MERGE → epic-5-completion-report.md
+
+# Scattered story docs
+docs/stories/story-1.1.md                       # MERGE → epic-1-content-management.md
+docs/stories/story-1.2.md                       # MERGE → epic-1-content-management.md
+docs/stories/story-2.1.md                       # MERGE → epic-2-spaced-repetition.md
+docs/STORY-5.2-TEST-RESULTS.md                  # MERGE → testing/epic-5-tests.md
+
+# Session summaries
+docs/SESSION-HANDOFF-2025-10-16.md              # ARCHIVE → deprecated/
+docs/SESSION-SUMMARY-2025-10-16-epic4-*.md      # ARCHIVE → deprecated/
+docs/FIX-SUMMARY-2025-10-15.md                  # MERGE → CHANGELOG.md
+
+# Worktree docs
+docs/deprecated/WORKTREE-DATABASE-STRATEGY.md   # ARCHIVE
+docs/MERGE-QUICKSTART.md                        # ARCHIVE
+docs/deprecated/MULTI-WORKTREE-MERGE-PLAN.md    # ARCHIVE
+
+# Specialized architecture (consolidate)
+docs/architecture/export-session-search-architecture.md  # MERGE → architecture/features.md
+docs/architecture/first-aid-cache-architecture.md        # MERGE → architecture/features.md
+docs/architecture/retry-strategy-architecture.md         # MERGE → api-reference/error-handling.md
+
+# Epic-specific implementation details (merge into epic summaries)
+docs/implementation/story-3.4-task-6-*.md       # MERGE → epic-3-completion-report.md
+docs/implementation/story-3.6-task-6-7-*.md     # MERGE → epic-3-completion-report.md
+
+# Redundant testing docs
+docs/testing/story-3.4-test-*.md (5 files)      # MERGE → testing/epic-3-tests.md
+docs/STORY-4.3-TEST-SUMMARY.md                  # MERGE → testing/epic-4-tests.md
+docs/STORY-5.2-QUICK-TEST-GUIDE.md              # MERGE → testing/epic-5-tests.md
+
+# Miscellaneous
+docs/analytics-dashboard-implementation-report.md  # MERGE → epic-docs/epic-4-*.md
+docs/performance-optimization-report.md            # MERGE → frontend-guide/performance.md
+```
+
+**File Count Reduction:**
+- **Before:** 146 markdown files
+- **After:** 60–90 markdown files
+- **Reduction:** 38–59% (target: 40–60%)
+
+**Acceptance Criteria:**
+- [ ] Final IA with 5–7 top-level directories
+- [ ] Deletion candidate list (40–50 files)
+- [ ] Merge plan (30–40 files → 15–20 consolidated docs)
+- [ ] Archive list (20–30 files → deprecated/)
+
+---
+
+### **3.2 Frontmatter Normalization (Day 12)**
+
+**Goal:** Apply frontmatter standard to 50–60 core docs
+
+**Automation Script:**
+
+```bash
+#!/bin/bash
+# scripts/normalize-frontmatter.sh
+
+for file in docs/{1-getting-started,2-architecture,3-api-reference,4-frontend-guide,5-database,6-testing,7-deployment,8-epics}/**/*.md; do
+  echo "Processing: $file"
+  
+  # Check if file has frontmatter
+  if ! head -1 "$file" | grep -q "^---$"; then
+    echo "⚠️  Missing frontmatter: $file"
+    
+    # Generate frontmatter template
+    TITLE=$(basename "$file" .md | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2));}1')
+    TYPE=$(echo "$file" | grep -oP '(?<=docs/)[^/]+' | sed 's/-/ /g')
+    
+    cat > "/tmp/frontmatter.yaml" <<EOF
+---
+title: "$TITLE"
+description: "TODO: Add description"
+type: "$(echo "$TYPE" | awk '{print toupper(substr($1,1,1)) tolower(substr($1,2))}')"
+status: "Active"
+version: "1.0"
+owner: "Kevy"
+review_cadence: "Per Change"
+created_date: "$(date -Iseconds)"
+last_updated: "$(date -Iseconds)"
+last_reviewed: "$(date -Iseconds)"
+lifecycle:
+  stage: "Active"
+---
+
+EOF
+    
+    # Prepend frontmatter
+    cat "/tmp/frontmatter.yaml" "$file" > "/tmp/temp.md"
+    mv "/tmp/temp.md" "$file"
+    echo "✅ Added frontmatter to: $file"
+  else
+    echo "✅ Has frontmatter: $file"
+  fi
+done
+```
+
+**Validation Script:**
+
+```bash
+#!/bin/bash
+# scripts/validate-frontmatter.sh
+
+REQUIRED_FIELDS=("title" "description" "type" "status" "version" "owner" "review_cadence" "created_date" "last_updated" "last_reviewed")
+
+for file in docs/**/*.md; do
+  # Extract frontmatter
+  FRONTMATTER=$(awk '/^---$/{f=!f;next}f' "$file")
+  
+  # Check required fields
+  for field in "${REQUIRED_FIELDS[@]}"; do
+    if ! echo "$FRONTMATTER" | grep -q "^$field:"; then
+      echo "❌ Missing $field in $file"
+    fi
+  done
+done
+```
+
+**Acceptance Criteria:**
+- [ ] 50–60 core docs have valid frontmatter
+- [ ] Automated validation script passes
+- [ ] Frontmatter includes: title, description, type, status, version, owner, timestamps
+
+---
+
+### **3.3 Consolidation Execution (Day 13–14)**
+
+**Goal:** Execute merges, deletions, and archival per plan
+
+**Consolidation Script (Dry Run):**
+
+```bash
+#!/bin/bash
+# scripts/consolidate-docs.sh --dry-run
+
+# MERGE operations
+echo "=== MERGE OPERATIONS ==="
+
+# Epic 1 stories
+cat docs/stories/story-1.{1..6}.md > docs/8-epics/epic-1-content-management.md
+echo "✅ Merged Epic 1 stories (6 files) → epic-1-content-management.md"
+
+# Epic 2 stories
+cat docs/stories/story-2.{1..6}.md > docs/8-epics/epic-2-spaced-repetition.md
+echo "✅ Merged Epic 2 stories (6 files) → epic-2-spaced-repetition.md"
+
+# Epic 5 summaries
+cat docs/epic-docs/epic-5-{master-summary,retrospective-handoff,tea-findings}.md \
+  > docs/8-epics/epic-5-behavioral-twin.md
+echo "✅ Merged Epic 5 summaries (3 files) → epic-5-behavioral-twin.md"
+
+# Testing docs (Epic 3)
+cat docs/testing/story-3.4-{test-summary,final-validation,test-plan,test-validation}.md \
+  > docs/6-testing/epic-3-tests.md
+echo "✅ Merged Epic 3 test docs (4 files) → epic-3-tests.md"
+
+# Architecture features
+cat docs/architecture/{export-session-search,first-aid-cache,retry-strategy}-architecture.md \
+  > docs/2-architecture/feature-patterns.md
+echo "✅ Merged specialized architecture (3 files) → feature-patterns.md"
+
+# DELETE operations
+echo ""
+echo "=== DELETE OPERATIONS ==="
+
+DELETED_FILES=(
+  "docs/SESSION-HANDOFF-2025-10-16.md"
+  "docs/SESSION-SUMMARY-2025-10-16-*.md"
+  "docs/FIX-SUMMARY-2025-10-15.md"
+  "docs/MERGE-QUICKSTART.md"
+  "docs/stories/story-1.{1..6}.md"
+  "docs/stories/story-2.{1..6}.md"
+  "docs/epic-docs/epic-5-master-summary.md"
+  "docs/testing/story-3.4-*.md"
+  # Add 30+ more files
+)
+
+for file in "${DELETED_FILES[@]}"; do
+  echo "🗑️  DELETE: $file"
+done
+
+# ARCHIVE operations
+echo ""
+echo "=== ARCHIVE OPERATIONS ==="
+
+ARCHIVED_DIRS=(
+  "docs/deprecated/WORKTREE-DATABASE-STRATEGY.md"
+  "docs/deprecated/MULTI-WORKTREE-MERGE-PLAN.md"
+  "docs/deprecated/bmm-workflow-status.md"
+)
+
+for file in "${ARCHIVED_DIRS[@]}"; do
+  echo "📦 ARCHIVE: $file → docs/9-deprecated/"
+done
+
+echo ""
+echo "=== SUMMARY ==="
+echo "Merged: 25 files → 8 consolidated docs"
+echo "Deleted: 45 files"
+echo "Archived: 15 files → deprecated/"
+echo "Remaining: ~60 docs (from 146)"
+```
+
+**Execution Steps:**
+
+```bash
+# 1. Dry run to preview changes
+./scripts/consolidate-docs.sh --dry-run > consolidation-preview.txt
+
+# 2. Review preview with stakeholders
+git add consolidation-preview.txt
+git commit -m "docs: consolidation preview"
+
+# 3. Execute consolidation
+./scripts/consolidate-docs.sh --execute
+
+# 4. Update index.md with new structure
+vim docs/index.md
+
+# 5. Run link checker
+npm run check:links
+
+# 6. Commit changes
+git add docs/
+git commit -m "docs: consolidate 146 → 60 docs (59% reduction)"
+```
+
+**Acceptance Criteria:**
+- [ ] 146 → 60–90 docs (40–60% reduction achieved)
+- [ ] All merges preserve essential content
+- [ ] Deleted files tracked in consolidation log
+- [ ] Archived files moved to `docs/9-deprecated/` with index
+
+---
+
+### **3.4 Link Health & Index Update (Day 15)**
+
+**Goal:** Fix broken links, update index.md, and enforce CI checks
+
+**Link Fixing Process:**
+
+```bash
+# 1. Run link checker
+npm run check:links > broken-links.txt
+
+# 2. Categorize broken links
+grep "✖" broken-links.txt | awk '{print $2}' | sort | uniq > links-to-fix.txt
+
+# 3. Fix common patterns (automated)
+#!/bin/bash
+# scripts/fix-broken-links.sh
+
+# Fix moved files (Epic stories → consolidated)
+find docs -name "*.md" -exec sed -i '' \
+  's|docs/stories/story-1\.[1-6]\.md|docs/8-epics/epic-1-content-management.md|g' {} +
+
+# Fix deleted architecture docs
+find docs -name "*.md" -exec sed -i '' \
+  's|docs/architecture/first-aid-cache-architecture\.md|docs/2-architecture/feature-patterns.md#first-aid-cache|g' {} +
+
+# Fix session summaries
+find docs -name "*.md" -exec sed -i '' \
+  's|docs/SESSION-HANDOFF-.*\.md|docs/9-deprecated/session-summaries/README.md|g' {} +
+
+# 4. Manual review of remaining broken links
+vim $(cat links-to-fix.txt)
+
+# 5. Re-run link checker
+npm run check:links
+```
+
+**Update index.md:**
+
+```markdown
+# Americano Documentation Index
+
+**Project:** Americano - AI-Powered Medical Education Platform
+**Last Updated:** 2025-11-XX
+**Total Documents:** 60 (down from 146, 59% reduction)
+
+---
+
+## 🎯 Quick Start
+
+**New to Americano?** Start here:
+1. [Prerequisites](./1-getting-started/prerequisites.md) - System requirements
+2. [Local Setup](./1-getting-started/local-setup.md) - Dev environment
+3. [Architecture Overview](./2-architecture/README.md) - System design
+4. [First Contribution](./1-getting-started/first-contribution.md) - Make your first PR
+
+**Looking for something specific?**
+- [API Reference](./3-api-reference/README.md) - REST endpoints (FastAPI + Next.js)
+- [Frontend Guide](./4-frontend-guide/README.md) - Next.js 15 + React 19
+- [Database Schema](./5-database/README.md) - Prisma schema (77 models)
+- [Testing](./6-testing/README.md) - Unit, integration, E2E tests
+
+---
+
+## 📚 Documentation Structure
+
+### 1️⃣ Getting Started
+- [Prerequisites](./1-getting-started/prerequisites.md) - Node 20+, Python 3.11+, PostgreSQL 15+
+- [Local Setup](./1-getting-started/local-setup.md) - Complete dev environment setup
+- [First Contribution](./1-getting-started/first-contribution.md) - Git workflow, PR guidelines
+- [Troubleshooting](./1-getting-started/troubleshooting.md) - Common setup issues
+
+### 2️⃣ Architecture
+- [Solution Architecture](./2-architecture/solution-architecture.md) - 🏆 Master architecture doc
+- [Tech Stack](./2-architecture/tech-stack.md) - Next.js 15, FastAPI, PostgreSQL + pgvector
+- [Frontend Architecture](./2-architecture/frontend-architecture.md) - ⭐ NEW: Next.js 15 App Router, TanStack Query
+- [Backend Architecture](./2-architecture/backend-architecture.md) - FastAPI service architecture
+- [Database Schema](./2-architecture/database-schema.md) - Prisma schema overview
+- [ADRs](./2-architecture/adr/) - 7 Architecture Decision Records
+
+### 3️⃣ API Reference
+- [OpenAPI Spec](./3-api-reference/openapi.yaml) - Canonical API contract
+- [FastAPI Endpoints](./3-api-reference/fastapi-endpoints.md) - 4 routers, 20+ endpoints
+- [Next.js API Routes](./3-api-reference/nextjs-api-routes.md) - Server-side routes
+- [Authentication](./3-api-reference/authentication.md) - Auth strategy (Supabase placeholder)
+- [Type Generation](./3-api-reference/type-generation.md) - Pydantic → TypeScript
+
+### 4️⃣ Frontend Guide
+- [Routing](./4-frontend-guide/routing.md) - ⭐ NEW: Next.js 15 App Router IA (25–30 routes)
+- [Components](./4-frontend-guide/components.md) - ⭐ NEW: UI component library
+- [Design System](./4-frontend-guide/design-system.md) - OKLCH + glassmorphism
+- [State Management](./4-frontend-guide/state-management.md) - ⭐ NEW: TanStack Query + Zustand
+- [Data Fetching](./4-frontend-guide/data-fetching.md) - ⭐ NEW: SSR/CSR patterns
+- [Performance](./4-frontend-guide/performance.md) - Optimization techniques
+
+### 5️⃣ Database
+- [Schema Reference](./5-database/schema.md) - 77 Prisma models, 55 enums
+- [Migrations](./5-database/migrations.md) - Migration strategy
+- [Indexes](./5-database/indexes.md) - 27 strategic indexes
+
+### 6️⃣ Testing
+- [Testing Overview](./6-testing/README.md) - Test pyramid, coverage targets
+- [Unit Testing](./6-testing/unit-testing.md) - Jest + React Testing Library
+- [Integration Testing](./6-testing/integration-testing.md) - MSW + API integration
+- [E2E Testing](./6-testing/e2e-testing.md) - Playwright critical flows
+- [Test Data](./6-testing/test-data.md) - Fixtures, factories, seeders
+
+### 7️⃣ Deployment
+- [CI/CD Pipeline](./7-deployment/ci-cd.md) - GitHub Actions workflow
+- [Environment Variables](./7-deployment/environment-variables.md) - Env var reference
+- [Production Checklist](./7-deployment/production-checklist.md) - Pre-deploy checklist
+
+### 8️⃣ Epics (Historical)
+- [Epic 1: Content Management](./8-epics/epic-1-content-management.md) - 6 stories consolidated
+- [Epic 2: Spaced Repetition](./8-epics/epic-2-spaced-repetition.md) - 6 stories consolidated
+- [Epic 3: Knowledge Graph](./8-epics/epic-3-knowledge-graph.md) - Semantic search + graph
+- [Epic 4: Validation Engine](./8-epics/epic-4-validation-engine.md) - AI-powered understanding
+- [Epic 5: Behavioral Twin](./8-epics/epic-5-behavioral-twin.md) - ML predictions, cognitive health
+
+### 9️⃣ Deprecated (Archive)
+- [Deprecation Index](./9-deprecated/README.md) - Historical docs
+- [Worktree Workflows](./9-deprecated/worktree-workflows/) - Multi-worktree dev (deprecated Oct 2025)
+- [Epic Status Tracking](./9-deprecated/epic-status-tracking/) - Weekly status (epics complete)
+
+---
+
+## 📊 Documentation Quality
+
+**Metrics:**
+- **Total Documents:** 60 (down from 146, **59% reduction** ✅)
+- **Broken Links:** 0 ✅
+- **Frontmatter Compliance:** 100% on core docs (50+ docs) ✅
+- **CI Enforcement:** ✅ Markdown lint, link check, frontmatter validation
+
+**Quality Gates:**
+- `npm run lint:docs` - Markdown linting (markdownlint)
+- `npm run check:links` - Broken link detection (markdown-link-check)
+- `npm run validate:frontmatter` - Frontmatter validation
+- CI pipeline fails PRs with doc quality issues
+
+---
+
+**Last Updated:** 2025-11-XX
+**Maintained By:** Americano Development Team
+**Status:** 🏆 Consolidated & Optimized (Phase 3 Complete)
+```
+
+**CI Enforcement:**
+
+```yaml
+# .github/workflows/docs-quality.yml
+name: Documentation Quality
+on:
+  push:
+    paths:
+      - 'docs/**'
+  pull_request:
+    paths:
+      - 'docs/**'
+
+jobs:
+  lint-markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm run lint:docs
+      
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm run check:links
+      
+  validate-frontmatter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm run validate:frontmatter
+      
+  enforce-standards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          # Fail if broken links found
+          BROKEN=$(npm run check:links 2>&1 | grep "✖" | wc -l)
+          if [ "$BROKEN" -gt 0 ]; then
+            echo "❌ Found $BROKEN broken links"
+            exit 1
+          fi
+          
+          # Fail if missing frontmatter in core docs
+          MISSING=$(npm run validate:frontmatter 2>&1 | grep "Missing" | wc -l)
+          if [ "$MISSING" -gt 0 ]; then
+            echo "❌ Found $MISSING docs with missing frontmatter"
+            exit 1
+          fi
+          
+          echo "✅ All documentation quality checks passed"
+```
+
+**Acceptance Criteria:**
+- [ ] 0 broken internal links
+- [ ] index.md reflects new 60-doc structure
+- [ ] CI enforces docs quality (lint, links, frontmatter)
+- [ ] All PRs must pass docs checks
+
+---
+
+## **PHASE 4: TECH DEBT & VALIDATION (Days 16–20, ~5 days)**
+
+### **4.1 Top 10 Tech Debt Items**
+
+**Goal:** Identify and prioritize tech debt with remediation actions
+
+| # | Tech Debt Item | Impact | Effort | Remediation Action | Owner | Timeline |
+|---|----------------|--------|--------|--------------------|-------|----------|
+| 1 | **Missing auth implementation** | High | M | Implement Supabase Auth + RLS | Backend | Week 4 |
+| 2 | **No E2E test coverage** | High | L | Add 5–10 Playwright smoke tests | Frontend | Week 3 |
+| 3 | **Type generation manual** | Medium | S | Add pre-commit hook for typegen | Backend | Week 2 |
+| 4 | **38 routes with redundancy** | Medium | M | Consolidate to 25–30 routes | Frontend | Week 2 |
+| 5 | **146 docs scattered** | High | M | Reduce to 60–90 docs (Phase 3) | Docs | Week 2–3 |
+| 6 | **No Lighthouse CI** | Medium | S | Add Lighthouse budget enforcement | DevOps | Week 3 |
+| 7 | **Hardcoded user IDs** | Medium | S | Replace with auth context | Frontend | Week 4 |
+| 8 | **Missing API error standards** | Medium | S | Define error codes + handling | Backend | Week 2 |
+| 9 | **No bundle size monitoring** | Low | S | Add @next/bundle-analyzer reports | Frontend | Week 3 |
+| 10 | **Prisma schema 77 models** | Low | XL | Future: consider splitting schemas | Backend | Backlog |
+
+**Effort:** S = <1 day, M = 2–3 days, L = 4–5 days, XL = >5 days
+
+---
+
+### **4.2 Migration Strategy & Risk Mitigation**
+
+**Directory Renames/Moves:**
+
+```bash
+# Docs consolidation (Phase 3)
+docs/stories/**/*.md                 → docs/8-epics/epic-{1,2}.md (merged)
+docs/epic-docs/**/*.md               → docs/8-epics/epic-{3,4,5}.md (consolidated)
+docs/testing/**/*.md                 → docs/6-testing/*.md (merged)
+docs/architecture/**/*.md            → docs/2-architecture/*.md (consolidated)
+docs/deprecated/**                   → docs/9-deprecated/ (moved)
+
+# Frontend routing consolidation (Phase 2)
+apps/web/src/app/orchestration/       → apps/web/src/app/study/orchestration/
+apps/web/src/app/analytics/missions/  → apps/web/src/app/analytics/ (merged)
+apps/web/src/app/analytics/reviews/   → apps/web/src/app/analytics/ (merged)
+```
+
+**Code Mods (Automated):**
+
+```bash
+#!/bin/bash
+# scripts/codemods.sh
+
+# Update import paths after route consolidation
+find apps/web/src -name "*.ts" -o -name "*.tsx" | xargs sed -i '' \
+  's|@/app/orchestration/|@/app/study/orchestration/|g'
+
+# Update API client imports
+find apps/web/src -name "*.ts" -o -name "*.tsx" | xargs sed -i '' \
+  's|@/lib/api/client|@/lib/api|g'
+
+# Update component imports
+find apps/web/src -name "*.ts" -o -name "*.tsx" | xargs sed -i '' \
+  's|@/components/analytics/missions|@/components/analytics|g'
+```
+
+**Risk Mitigation:**
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|------------|--------|------------|
+| Broken links after docs consolidation | High | Medium | Run `npm run check:links` before/after, automated link fixing |
+| Type errors after route changes | Medium | High | Run `npm run typecheck` after each change, CI enforcement |
+| Lost content during merges | Medium | High | Dry-run consolidation script, Git history preserved |
+| Broken imports after code mods | Medium | High | Test suite catches broken imports, automated codemods with validation |
+| Performance regression | Low | Medium | Lighthouse CI enforces budgets, monitor bundle size |
+| Auth issues in production | Medium | Critical | Hardcode bypass for MVP, Supabase migration in Phase 2 |
+
+**Rollback Plan:**
+
+```bash
+# If consolidation causes issues, rollback in stages
+
+# 1. Revert docs consolidation
+git log --grep="docs: consolidate" --oneline | head -5  # Find commits
+git revert <commit-sha>
+
+# 2. Revert frontend changes
+git log --grep="feat: consolidate routes" --oneline
+git revert <commit-sha>
+
+# 3. Restore from backup (worst case)
+git checkout main@{1.day.ago} -- docs/
+```
+
+---
+
+### **4.3 Verification Checklist**
+
+**Goal:** Define clear exit criteria for all phases
+
+**Phase 1: Discovery & Baseline**
+- [ ] Frontend audit complete (38 routes mapped)
+- [ ] Docs inventory complete (146 files categorized)
+- [ ] Dependency map created (10–15 critical paths)
+
+**Phase 2: Frontend Finalization**
+- [ ] Final IA defined (25–30 routes)
+- [ ] API client layer implemented (40+ typed methods)
+- [ ] Design system documented (30+ components)
+- [ ] State management strategy documented (TanStack Query + Zustand)
+- [ ] Testing strategy defined (70% unit, 50% integration, 5–10 E2E)
+- [ ] Build pipeline working (`npm run build` succeeds)
+- [ ] CI pipeline enforcing quality gates
+
+**Phase 3: Docs Consolidation**
+- [ ] Final docs IA designed (5–7 top-level dirs)
+- [ ] Frontmatter normalized (50–60 core docs)
+- [ ] Consolidation executed (146 → 60–90 docs, 40–60% reduction)
+- [ ] 0 broken links
+- [ ] index.md updated
+- [ ] CI enforcing docs quality
+
+**Phase 4: Tech Debt & Validation**
+- [ ] Top 10 tech debt items documented
+- [ ] Migration strategy defined
+- [ ] Risks mitigated
+- [ ] Rollback plan ready
+
+**Acceptance Criteria (Overall):**
+- [ ] **Frontend:** Runnable `npm run dev:web`, 25–30 routes, 0 type errors, 70%+ test coverage
+- [ ] **API Integration:** 3–5 core flows working (study session, analytics, validation)
+- [ ] **Performance:** Lighthouse score ≥90 (desktop) on dashboard, study, analytics pages
+- [ ] **Accessibility:** WCAG 2.1 AA compliance on 5 core pages
+- [ ] **Docs:** 60–90 docs (40–60% reduction), 0 broken links, 100% frontmatter compliance
+- [ ] **CI:** All quality gates passing (lint, typecheck, tests, docs checks)
+
+---
+
+## **TIMELINE SUMMARY**
+
+| Phase | Days | Key Deliverables |
+|-------|------|------------------|
+| **Phase 1: Discovery** | 1–3 (3d) | Frontend audit, docs inventory, dependency map |
+| **Phase 2: Frontend** | 4–10 (7d) | IA, API client, design system, testing, CI |
+| **Phase 3: Docs** | 11–15 (5d) | Consolidation (146→60), link fixes, CI enforcement |
+| **Phase 4: Debt & Validation** | 16–20 (5d) | Tech debt plan, migration strategy, verification |
+| **Total** | **15–20 days** (~3–4 weeks) | Full-stack integration + docs overhaul |
+
+---
+
+## **RISKS & DEPENDENCIES**
+
+**Critical Dependencies:**
+1. **Python API must be running** for type generation (`apps/api/scripts/generate_types.py`)
+2. **Database must be seeded** for integration tests
+3. **Stakeholder approval** for docs deletion (40–50 files)
+
+**Blocking Risks:**
+- **Auth implementation delayed** → Use hardcoded user for MVP
+- **Type generation breaks** → Manual TypeScript types as fallback
+- **Performance budget exceeded** → Defer non-critical routes
+
+---
+
+## **SUCCESS METRICS**
+
+**Quantitative:**
+- Frontend routes: 38 → 25–30 (20% reduction)
+- Docs: 146 → 60–90 (40–60% reduction)
+- Broken links: 0
+- Test coverage: 70% unit, 50% integration
+- Lighthouse score: ≥90 (desktop)
+- Build time: <5 min
+- Type errors: 0
+
+**Qualitative:**
+- Developers can onboard in <1 day using docs
+- API integration is self-documenting via types
+- Design system enables consistent UI
+- CI prevents regressions
+
+---
+
+## **NEXT STEPS (After Plan Approval)**
+
+1. **Stakeholder review** (1 day): Review this plan, approve deletions
+2. **Create Phase 1 branch** (Day 1): `git checkout -b phase1-discovery`
+3. **Execute Phase 1** (Days 1–3): Run audits, generate reports
+4. **Daily standups** (15 min): Track progress, unblock issues
+5. **Phase reviews** (1 hour): Demo deliverables, get approval
+6. **Final PR** (Day 20): Merge all changes to main
+
+---
+
+**CONFIRMATION: I have read and understood the CRITICAL requirement to use AGENTS.MD, CLAUDE.MD, and context7 for all subsequent agent work. This plan is ready for stakeholder review and execution.** 
+
+Would you like me to:
+1. **Deep dive into any specific phase** (e.g., expand API client implementation)
+2. **Generate specific codemods or scripts** (e.g., frontmatter automation)
+3. **Create a detailed Gantt chart** with dependencies
+4. **Propose alternative IA structures** (e.g., mono-doc vs multi-doc for epics)

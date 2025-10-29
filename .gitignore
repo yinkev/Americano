@@ -67,3 +67,10 @@ Thumbs.db
 # Temporary files
 .figma-temp/
 *.make
+
+# Data files (tracked with DVC)
+*.duckdb
+*.duckdb.wal
+*.db
+data/**/*.parquet
+!data/raw/test.txt

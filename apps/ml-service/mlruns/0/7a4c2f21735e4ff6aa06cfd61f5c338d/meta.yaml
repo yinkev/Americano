@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/kyin/Projects/Americano/apps/ml-service/mlruns/0/7a4c2f21735e4ff6aa06cfd61f5c338d/artifacts
+end_time: 1761563855635
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 7a4c2f21735e4ff6aa06cfd61f5c338d
+run_name: gaudy-flea-920
+run_uuid: 7a4c2f21735e4ff6aa06cfd61f5c338d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1761563855623
+status: 3
+tags: []
+user_id: kyin

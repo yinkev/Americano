@@ -1,0 +1,45 @@
+name: Docs CI
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+      - 'scripts/docs/**'
+      - '.markdown-link-check.json'
+  push:
+    branches: [ 'docs/prune-2025-10' ]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+      - 'scripts/docs/**'
+      - '.markdown-link-check.json'
+
+jobs:
+  docs:
+    name: Lint + Links + Frontmatter (dry-run)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Frontmatter check (dry-run)
+        run: node scripts/docs_frontmatter_fix.mjs || true
+      - name: Markdownlint (nosborn action)
+        uses: nosborn/github-action-markdown-cli@v3
+        with:
+          files: |
+            docs/ *.md
+          config_file: .markdownlint.json
+      - name: Link Check (gaurav-nelson, changed files)
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          check-modified-files-only: 'yes'
+          config-file: '.markdown-link-check.json'
+      - name: Vale (warn-only)
+        uses: errata-ai/vale-action@v2
+        with:
+          files: docs/
+          fail_on_error: false

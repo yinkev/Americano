@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/kyin/Projects/Americano/apps/ml-service/mlruns/0/cc7b89b47af04d8ca000522df4261d68/artifacts
+end_time: 1761570776966
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: cc7b89b47af04d8ca000522df4261d68
+run_name: ITS_test-its-user-001
+run_uuid: cc7b89b47af04d8ca000522df4261d68
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1761570776956
+status: 3
+tags: []
+user_id: kyin

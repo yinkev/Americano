@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "generatedAt": "2025-10-29T00:00:00-07:00",
+  "notes": "Reviewed draft mapping of planned moves (from -> to). No changes are executed yet.",
+  "plannedMoves": [
+    { "from": "docs/api/api-contracts.md", "to": "docs/backend/api-contracts.md", "reason": "Group API contracts under backend" },
+    { "from": "docs/api/api-endpoints.md", "to": "docs/backend/api-reference.md", "reason": "Consolidate API endpoints into a single reference" },
+    { "from": "docs/api/api-routes-task-11.md", "to": "docs/backend/api-reference.md", "reason": "Merge task-specific route notes into API reference" },
+    { "from": "docs/api/api-story-5.2-interventions.md", "to": "docs/backend/api-interventions-story-5.2.md", "reason": "Keep story-specific API under backend for now" },
+    { "from": "docs/api/api-story-5.5-preferences.md", "to": "docs/backend/api-preferences-story-5.5.md", "reason": "Keep story-specific API under backend for now" },
+
+    { "from": "docs/database/data-models.md", "to": "docs/backend/data-models.md", "reason": "Keep data models adjacent to API and Prisma" },
+    { "from": "docs/database/database-migration-strategy.md", "to": "docs/operations/migrations.md", "reason": "Operational guide belongs in operations" },
+    { "from": "docs/database/migrations.md", "to": "docs/operations/migrations.md", "reason": "Consolidate migrations docs" },
+
+    { "from": "docs/deployments/epic4-deployment-plan.md", "to": "docs/setup/deployment.md", "reason": "Consolidate deployment steps" },
+    { "from": "docs/deployments/epic4-pre-deploy-checklist.md", "to": "docs/setup/deployment.md", "reason": "Merge checklist into deployment doc" },
+    { "from": "docs/deployments/epic4-db-verification.md", "to": "docs/setup/deployment.md", "reason": "Fold DB verification into deployment doc" },
+    { "from": "docs/deployments/epic4-debt-hardening.md", "to": "docs/operations/performance.md", "reason": "Hardening/perf under operations" },
+
+    { "from": "docs/epic-docs/epic-5-performance-benchmarks.md", "to": "docs/operations/performance.md", "reason": "Single performance hub" },
+    { "from": "docs/epic-docs/epic-5-deployment-guide.md", "to": "docs/setup/deployment.md", "reason": "Single deployment hub" },
+    { "from": "docs/epic-docs/epic-5-design-system-guide.md", "to": "docs/frontend/design-system.md", "reason": "Consolidate design system guidance" },
+    { "from": "docs/epic-docs/epic-5-integration-contracts.md", "to": "docs/backend/api-contracts.md", "reason": "Keep contracts in backend" },
+    { "from": "docs/epic-docs/epic-5-master-summary.md", "to": "docs/adr/epic-5-summary.md", "reason": "Keep one-page epic summary as decision record" },
+
+    { "from": "docs/releases/epic4-release-notes.md", "to": "docs/deprecated/2025-10/epics/epic-4/release-notes.md", "reason": "Archive historical release notes" },
+    { "from": "docs/retrospectives/epic-4-retro-2025-10-17.md", "to": "docs/adr/epic-4-summary.md", "reason": "Consolidate retros into epic summary" },
+    { "from": "docs/retrospectives/epic-4-retro-2025-10-20.md", "to": "docs/adr/epic-4-summary.md", "reason": "Consolidate retros into epic summary" },
+    { "from": "docs/retrospectives/epic-5-retrospective-2025-10-20.md", "to": "docs/adr/epic-5-summary.md", "reason": "Consolidate retros into epic summary" },
+
+    { "from": "docs/architecture/ADR-INDEX.md", "to": "docs/adr/ADR-INDEX.md", "reason": "Centralize ADR index" },
+    { "from": "docs/architecture/adr-template.md", "to": "docs/adr/adr-template.md", "reason": "Centralize ADR template" },
+
+    { "from": "docs/backend/conflict-api-endpoints-summary.md", "to": "docs/backend/api-conflict-endpoints.md", "reason": "Make naming consistent under backend" },
+
+    { "from": "docs/design/animation-patterns-guide.md", "to": "docs/frontend/design-system.md", "reason": "Consolidate animation patterns into design system" },
+    { "from": "docs/design/animation-quick-start.md", "to": "docs/frontend/design-system.md", "reason": "Consolidate quick start into design system" },
+
+    { "from": "docs/developer-guides/first-aid-contextual-loading-guide.md", "to": "docs/frontend/app-features/first-aid-contextual-loading.md", "reason": "User-facing UI feature" },
+    { "from": "docs/developer-guides/first-aid-cache-usage.md", "to": "docs/architecture/first-aid-cache-architecture.md", "reason": "Belongs with architecture doc" },
+    { "from": "docs/developer-guides/export-and-session-search-guide.md", "to": "docs/architecture/export-session-search-architecture.md", "reason": "Consolidate guide with architecture" },
+
+    { "from": "docs/stories/story-*.md", "to": "docs/deprecated/2025-10/stories/", "reason": "Archive completed story docs" },
+    { "from": "docs/sessions/session-*.md", "to": "docs/deprecated/2025-10/sessions/", "reason": "Archive session logs" }
+  ]
+}

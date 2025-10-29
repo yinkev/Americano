@@ -1,0 +1,1012 @@
+# Documentation Pruning & Consolidation Plan
+
+## Executive Summary
+
+**Target:** 40–60% reduction in doc count (currently ~162 files → target ~65–95 files)  
+**Approach:** Archive completed epics, consolidate duplicates, normalize frontmatter, enforce via CI  
+**Risk Level:** Medium (archival is reversible, deletion is surgical)  
+**Timeline:** 3 phases over 2–3 days
+
+---
+
+## Phase 1: Information Architecture & Directory Layout
+
+### Final Top-Level IA (7 Sections)
+
+```
+docs/
+├── index.md                    # Master entry point (keep, update links)
+├── frontmatter-standard.md     # Normalization spec (keep)
+├── setup/                      # Getting started, local dev, deployment
+├── architecture/               # ADRs, solution architecture, design decisions
+├── frontend/                   # Next.js, React, UI patterns, Epic 3/5 UI guides
+├── backend/                    # FastAPI, API contracts, Epic 4/5 analytics, ML service
+├── operations/                 # Migrations, performance, troubleshooting, runbooks
+├── adr/                        # Alias/symlink to architecture/adrs/ (for discoverability)
+└── deprecated/                 # Archive for completed epics, old guides, session logs
+```
+
+**Rationale:**
+- **Setup:** New dev onboarding, environment config (merge scattered setup docs)
+- **Architecture:** High-level design, ADRs (consolidate solution-architecture.md variants)
+- **Frontend:** Next.js specifics, Epic 3 knowledge graph UI, Epic 5 dashboards
+- **Backend:** FastAPI routes, Epic 4 validation API, Epic 5 analytics, ML service integration
+- **Operations:** Day-2 concerns (migrations, perf tuning, troubleshooting)
+- **ADR:** Dedicated space for architectural decisions (move from architecture/ or create symlink)
+- **Deprecated:** Archive, not delete (preserves history for Epic 3/4/5 retros)
+
+---
+
+## Phase 2: Keep vs Archive vs Delete Rules
+
+### 2.1 Deletion Rules (High Confidence)
+
+**Delete if ALL true:**
+- Duplicate content exists in canonical location
+- No unique information (exact copy or outdated version)
+- Not referenced in CLAUDE.md or index.md
+- Created >90 days ago with `status: deprecated` in frontmatter
+
+**Globs to DELETE:**
+```bash
+# Duplicate session logs (exact copies in sessions/)
+docs/sessions/*-duplicate-*.md
+docs/sessions/*-copy-*.md
+docs/sessions/session-*-backup-*.md
+
+# Old versioned guides superseded by canonical
+docs/*-v1.md
+docs/*-old.md
+docs/*-backup-*.md
+docs/developer-guides/getting-started-old.md
+docs/development-environment-setup-v1.md
+
+# Empty or stub files (<50 words)
+docs/*-TODO.md
+docs/*-DRAFT.md
+docs/architecture/adr-template-example.md  # If content duplicates adr-template.md
+
+# Redundant test reports (consolidated in docs/testing/index.md)
+docs/testing/story-3.*-test-summary.md  # If 6+ files, keep latest 2, delete rest
+docs/testing/epic-4-smoke-test-report-*.md  # Keep latest, delete older dated versions
+```
+
+**Concrete Examples:**
+1. **DELETE:** `docs/development-environment-setup-old.md` → Superseded by `docs/setup/local-development.md`
+2. **DELETE:** `docs/sessions/session-2025-10-15-duplicate.md` → Exact copy of `docs/sessions/session-2025-10-15.md`
+3. **DELETE:** `docs/testing/story-3.1-test-summary.md` → Consolidated into `docs/testing/index.md`
+4. **DELETE:** `docs/ARCHITECTURE-DECISION-EPIC4-v1.md` → Canonical is ADR-001
+5. **DELETE:** `docs/solution-architecture-backup.md` → Duplicate of `docs/architecture/solution-architecture.md`
+
+**Estimated Deletions:** 15–25 files (~10–15% of total)
+
+---
+
+### 2.2 Archival Rules (Medium Confidence)
+
+**Archive to `docs/deprecated/` if:**
+- Epic-specific work product (stories, retros, session logs) for **completed** epics (3, 4, 5)
+- Historical value for retrospectives but not actively referenced
+- `last_updated >180 days` and `status: archived` in frontmatter
+
+**Globs to ARCHIVE:**
+```bash
+# Epic 3/4/5 story files (78+ files) - completed Oct 2025
+docs/stories/story-*.md
+docs/story-context-*.xml
+docs/context-manifest-*.md
+
+# Epic retros and completion reports (archive, link from index.md)
+docs/epic-*-completion-report.md
+docs/epic-*-retro-*.md
+docs/EPIC*-COMPLETION-SUMMARY.md
+docs/EPIC*-MASTER-SUMMARY.md
+
+# Session logs older than 90 days
+docs/sessions/session-2025-0[7-9]-*.md
+docs/sessions/session-2025-10-[01-15]-*.md
+
+# Old deployment plans (superseded by current guides)
+docs/deployments/epic4-deployment-plan.md  # If Epic 4 deployed, archive
+docs/deployments/epic5-deployment-plan.md  # If Epic 5 deployed, archive
+
+# Historical changelogs (consolidate into CHANGELOG.md)
+docs/CHANGELOG-2025-10-*.md
+```
+
+**Concrete Examples:**
+1. **ARCHIVE:** `docs/stories/story-4.1-comprehension-prompts.md` → `docs/deprecated/epics/epic-4/stories/story-4.1.md`
+2. **ARCHIVE:** `docs/epic-4-retro-2025-10-20.md` → `docs/deprecated/epics/epic-4/epic-4-retro.md`
+3. **ARCHIVE:** `docs/sessions/session-2025-10-15.md` → `docs/deprecated/sessions/2025-10/session-2025-10-15.md`
+4. **ARCHIVE:** `docs/EPIC5-COMPLETION-SUMMARY.md` → `docs/deprecated/epics/epic-5/completion-summary.md`
+5. **ARCHIVE:** `docs/CHANGELOG-2025-10-15.md` → `docs/deprecated/changelogs/CHANGELOG-2025-10-15.md`
+
+**Archive Structure:**
+```
+docs/deprecated/
+├── epics/
+│   ├── epic-3/
+│   │   ├── stories/         # All Epic 3 story files
+│   │   ├── retro.md
+│   │   └── completion-report.md
+│   ├── epic-4/
+│   └── epic-5/
+├── sessions/
+│   ├── 2025-10/             # Session logs by month
+│   └── 2025-09/
+├── changelogs/              # Old dated changelogs
+└── deployment-plans/        # Superseded deployment guides
+```
+
+**Estimated Archival:** 60–90 files (~37–55% of total)
+
+---
+
+### 2.3 Keep & Consolidate Rules
+
+**Keep in active docs/ if:**
+- Canonical reference (ADRs, solution-architecture.md, API contracts)
+- Actively maintained (last_updated <90 days)
+- Referenced in CLAUDE.md or docs/index.md
+- Required for onboarding or day-to-day development
+
+**Consolidation Targets:**
+```bash
+# Merge multiple setup guides into docs/setup/
+docs/development-environment-setup.md  }
+docs/developer-guides/getting-started.md } → docs/setup/local-development.md
+docs/developer-guides/local-setup.md    }
+
+# Merge testing guides into docs/testing/
+docs/STORY-4.3-TESTING-QUICK-START.md  }
+docs/testing/test-strategy.md          } → docs/testing/index.md (expand sections)
+docs/testing/coverage-targets.md       }
+
+# Merge migration docs into docs/operations/
+docs/DATABASE-MIGRATION-STRATEGY.md  }
+docs/migrations.md                   } → docs/operations/migrations.md
+docs/PRISMA-MIGRATION-GUIDE.md       }
+
+# Consolidate API docs into docs/backend/
+docs/api-contracts.md                    }
+docs/API-ROUTE-MAP.md                    } → docs/backend/api-reference.md
+docs/FASTAPI-ENDPOINTS.md                }
+apps/web/docs/api/openapi.yaml           } (symlink or reference)
+
+# Merge performance docs into docs/operations/
+docs/EPIC5-PERFORMANCE-BENCHMARKS.md     }
+docs/performance-optimization-report.md  } → docs/operations/performance.md
+docs/caching-strategy.md                 }
+```
+
+**Estimated Kept (Post-Consolidation):** 40–60 files (~25–37% of total)
+
+---
+
+### 2.4 Migration Map (Representative Examples)
+
+| Current Path | Action | New Path | Rationale |
+|--------------|--------|----------|-----------|
+| `docs/development-environment-setup.md` | **MERGE** | `docs/setup/local-development.md` | Consolidate setup guides |
+| `docs/stories/story-4.1-comprehension-prompts.md` | **ARCHIVE** | `docs/deprecated/epics/epic-4/stories/story-4.1.md` | Epic 4 completed Oct 2025 |
+| `docs/solution-architecture.md` | **KEEP** | `docs/architecture/solution-architecture.md` | Canonical architecture |
+| `docs/ADR-001-hybrid-typescript-python.md` | **MOVE** | `docs/adr/ADR-001-hybrid-typescript-python.md` | Dedicated ADR directory |
+| `docs/api-contracts.md` | **MERGE** | `docs/backend/api-reference.md` | Consolidate API docs |
+| `docs/EPIC5-PERFORMANCE-BENCHMARKS.md` | **MERGE** | `docs/operations/performance.md` | Consolidate perf docs |
+| `docs/sessions/session-2025-10-15.md` | **ARCHIVE** | `docs/deprecated/sessions/2025-10/session-2025-10-15.md` | Historical session log |
+| `docs/testing/story-3.1-test-summary.md` | **DELETE** | N/A | Duplicate, consolidated in `docs/testing/index.md` |
+| `docs/DATABASE-MIGRATION-STRATEGY.md` | **MERGE** | `docs/operations/migrations.md` | Consolidate migration guides |
+| `docs/epic-4-retro-2025-10-20.md` | **ARCHIVE** | `docs/deprecated/epics/epic-4/retro.md` | Completed epic retro |
+
+**Total Reduction:**
+- **Before:** ~162 files
+- **Delete:** ~20 files
+- **Archive:** ~75 files
+- **Consolidate:** ~30 files merged into ~10 files
+- **After:** ~67 active files + 75 archived (~59% reduction in active docs)
+
+---
+
+## Phase 3: Frontmatter Normalization
+
+### 3.1 Normalization Approach
+
+**Goal:** All active docs (post-consolidation ~67 files) have compliant YAML frontmatter per `docs/frontmatter-standard.md`
+
+**Required Fields (from frontmatter-standard.md):**
+```yaml
+---
+title: "Document Title"
+type: "Architecture | API | Guide | Testing | Operations | Epic | Story"
+status: "Active | Deprecated | Archived"
+owner: "Kevy | Amelia | Winston"
+created_date: "2025-10-23T10:45:00-07:00"  # ISO 8601 with timezone
+last_updated: "2025-10-23T10:45:00-07:00"
+---
+```
+
+**Optional but Recommended:**
+```yaml
+review_cadence: "Per Change | Monthly | Quarterly"
+depends_on: ["docs/architecture/solution-architecture.md"]
+tags: ["api", "epic-4", "fastapi"]
+```
+
+---
+
+### 3.2 Automation Script Outline
+
+**Script:** `scripts/normalize-frontmatter.py`
+
+**Responsibilities:**
+1. Scan all `.md` files in `docs/` (exclude `docs/deprecated/`)
+2. Parse existing YAML frontmatter (if any) using `python-frontmatter`
+3. Validate required fields
+4. Inject missing fields with defaults:
+   - `created_date`: From `git log --follow --diff-filter=A -- <file>` (first commit)
+   - `last_updated`: From `git log -1 --format=%cI -- <file>` (latest commit)
+   - `owner`: Infer from `git log` (most commits) or default to "Kevy"
+   - `type`: Infer from directory (`docs/architecture/` → "Architecture")
+   - `status`: Default to "Active" (unless in deprecated/)
+5. Write back updated frontmatter
+6. Dry-run mode: Print proposed changes without modifying files
+7. Report: Generate `frontmatter-compliance-report.md`
+
+**Pseudocode:**
+```python
+import frontmatter
+import subprocess
+from pathlib import Path
+from datetime import datetime
+
+def get_git_created_date(file_path):
+    """Get first commit date for file (ISO 8601)"""
+    result = subprocess.run(
+        ["git", "log", "--follow", "--diff-filter=A", "--format=%cI", "--", str(file_path)],
+        capture_output=True, text=True
+    )
+    return result.stdout.strip().split('\n')[-1] if result.stdout else None
+
+def get_git_last_updated(file_path):
+    """Get last commit date for file (ISO 8601)"""
+    result = subprocess.run(
+        ["git", "log", "-1", "--format=%cI", "--", str(file_path)],
+        capture_output=True, text=True
+    )
+    return result.stdout.strip() if result.stdout else None
+
+def infer_type(file_path):
+    """Infer doc type from directory structure"""
+    parts = Path(file_path).parts
+    if "architecture" in parts or "adr" in parts:
+        return "Architecture"
+    if "backend" in parts or "api" in parts:
+        return "API"
+    if "setup" in parts or "developer-guides" in parts:
+        return "Guide"
+    if "testing" in parts:
+        return "Testing"
+    if "operations" in parts:
+        return "Operations"
+    return "Guide"  # Default
+
+def normalize_frontmatter(file_path, dry_run=True):
+    """Normalize frontmatter for a single file"""
+    with open(file_path, 'r') as f:
+        post = frontmatter.load(f)
+    
+    # Required fields with defaults
+    defaults = {
+        "title": post.get("title", Path(file_path).stem.replace('-', ' ').title()),
+        "type": post.get("type", infer_type(file_path)),
+        "status": post.get("status", "Active"),
+        "owner": post.get("owner", "Kevy"),
+        "created_date": post.get("created_date", get_git_created_date(file_path)),
+        "last_updated": post.get("last_updated", get_git_last_updated(file_path)),
+    }
+    
+    # Merge with existing frontmatter
+    post.metadata.update({k: v for k, v in defaults.items() if v is not None})
+    
+    if dry_run:
+        print(f"[DRY RUN] {file_path}:")
+        print(f"  Current: {list(post.metadata.keys())}")
+        print(f"  Would add: {[k for k in defaults if k not in post.metadata]}")
+    else:
+        with open(file_path, 'w') as f:
+            f.write(frontmatter.dumps(post))
+        print(f"[UPDATED] {file_path}")
+
+# Main execution
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dry-run", action="store_true", help="Preview changes only")
+    parser.add_argument("--path", default="docs/", help="Root path to scan")
+    args = parser.parse_args()
+    
+    md_files = Path(args.path).rglob("*.md")
+    active_files = [f for f in md_files if "deprecated" not in f.parts]
+    
+    for file in active_files:
+        normalize_frontmatter(file, dry_run=args.dry_run)
+```
+
+---
+
+### 3.3 Commands
+
+```bash
+# 1. Install dependencies
+pip install python-frontmatter pyyaml
+
+# 2. Dry run (preview changes)
+python scripts/normalize-frontmatter.py --dry-run
+
+# 3. Review proposed changes
+less frontmatter-compliance-report.md
+
+# 4. Execute normalization
+python scripts/normalize-frontmatter.py
+
+# 5. Verify compliance
+python scripts/validate-frontmatter.py --strict
+# Outputs: frontmatter-validation-report.md (100% compliance expected)
+
+# 6. Commit changes
+git add docs/
+git commit -m "chore(docs): normalize frontmatter per frontmatter-standard.md"
+```
+
+---
+
+### 3.4 Validation Script
+
+**Script:** `scripts/validate-frontmatter.py`
+
+```python
+import frontmatter
+from pathlib import Path
+
+REQUIRED_FIELDS = ["title", "type", "status", "owner", "created_date", "last_updated"]
+
+def validate_frontmatter(file_path):
+    """Check if frontmatter has all required fields"""
+    with open(file_path, 'r') as f:
+        post = frontmatter.load(f)
+    
+    missing = [field for field in REQUIRED_FIELDS if field not in post.metadata]
+    if missing:
+        return {"file": file_path, "missing": missing, "compliant": False}
+    return {"file": file_path, "compliant": True}
+
+# Main execution
+if __name__ == "__main__":
+    results = []
+    for file in Path("docs/").rglob("*.md"):
+        if "deprecated" not in file.parts:
+            results.append(validate_frontmatter(file))
+    
+    compliant = sum(1 for r in results if r["compliant"])
+    total = len(results)
+    
+    print(f"Frontmatter Compliance: {compliant}/{total} ({compliant/total*100:.1f}%)")
+    
+    if compliant < total:
+        print("\nNon-Compliant Files:")
+        for r in results:
+            if not r["compliant"]:
+                print(f"  {r['file']}: Missing {r['missing']}")
+```
+
+---
+
+## Phase 4: Link Health & CI Integration
+
+### 4.1 Link Health Strategy
+
+**Objectives:**
+1. Update `docs/index.md` with new IA structure
+2. Fix broken internal links caused by moves/deletions/archives
+3. Add redirects for frequently referenced archived docs
+4. Integrate link checking into CI
+
+---
+
+### 4.2 Index Update Approach
+
+**Update `docs/index.md` structure:**
+
+```markdown
+# Americano Documentation
+
+Welcome! This is the **single source of truth** for Americano platform documentation.
+
+## Quick Start
+- [Local Development Setup](./setup/local-development.md) - Get started in 15 minutes
+- [Architecture Overview](./architecture/solution-architecture.md) - System design
+- [API Reference](./backend/api-reference.md) - REST endpoints
+
+## Core Documentation
+
+### 🏗️ Architecture
+- [Solution Architecture](./architecture/solution-architecture.md)
+- [ADR Index](./adr/ADR-INDEX.md) - Architectural Decision Records
+- [Technology Stack](./architecture/tech-stack.md)
+
+### 🚀 Setup & Development
+- [Local Development](./setup/local-development.md)
+- [Deployment Guide](./setup/deployment.md)
+- [Environment Configuration](./setup/environment.md)
+
+### 🎨 Frontend (Next.js + React)
+- [UI Patterns](./frontend/ui-patterns.md)
+- [Epic 3: Knowledge Graph UI](./frontend/knowledge-graph.md)
+- [Epic 5: Behavioral Dashboards](./frontend/behavioral-dashboards.md)
+- [Design System](./frontend/design-system.md)
+
+### ⚙️ Backend (FastAPI + PostgreSQL)
+- [API Reference](./backend/api-reference.md) - OpenAPI spec
+- [Epic 4: Validation Engine](./backend/validation-engine.md)
+- [Epic 5: Analytics & ML](./backend/analytics-ml.md)
+- [Database Models](./backend/data-models.md)
+
+### 🔧 Operations
+- [Migrations](./operations/migrations.md)
+- [Performance Tuning](./operations/performance.md)
+- [Troubleshooting](./operations/troubleshooting.md)
+- [Monitoring & Alerts](./operations/monitoring.md)
+
+### 🧪 Testing
+- [Testing Strategy](./testing/index.md)
+- [Coverage Reports](./testing/coverage.md)
+
+### 📦 Archive
+- [Epic 3/4/5 Completion Reports](./deprecated/epics/)
+- [Session Logs](./deprecated/sessions/)
+- [Old Deployment Plans](./deprecated/deployment-plans/)
+
+## Contributing
+- [Frontmatter Standard](./frontmatter-standard.md) - How to document
+- [ADR Template](./adr/adr-template.md) - Record decisions
+
+---
+**Last Updated:** 2025-10-29  
+**Maintained by:** Kevy
+```
+
+---
+
+### 4.3 Link Fixing Commands
+
+```bash
+# 1. Find all internal links in docs/
+grep -r "\[.*\](\.\./" docs/ --include="*.md" > links-to-fix.txt
+
+# 2. Use sed to bulk-update common patterns
+# Example: Update story links to archived location
+find docs/ -name "*.md" -type f -exec sed -i '' \
+  's|\(docs/stories/story-[0-9.]*\.md\)|docs/deprecated/epics/epic-\1|g' {} +
+
+# 3. Run markdown-link-check to find broken links
+npx markdown-link-check docs/**/*.md --config .markdown-link-check.json \
+  > link-check-report.txt
+
+# 4. Review and fix remaining broken links manually
+cat link-check-report.txt | grep "✖" | less
+
+# 5. Verify all links pass
+npx markdown-link-check docs/index.md --config .markdown-link-check.json
+# Expected: 0 broken links
+```
+
+---
+
+### 4.4 CI Integration Updates
+
+**Update `.github/workflows/docs-quality.yml`:**
+
+```yaml
+name: Documentation Quality Gate
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '*.md'
+      - 'scripts/normalize-frontmatter.py'
+      - 'scripts/validate-frontmatter.py'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '*.md'
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git log timestamps
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          pip install python-frontmatter pyyaml
+
+      - name: Validate Frontmatter
+        run: |
+          python scripts/validate-frontmatter.py --strict
+          # Fails if any active doc missing required fields
+
+      - name: Markdown Lint
+        uses: nosborn/github-action-markdown-cli@v3.3.0
+        with:
+          files: 'docs/ *.md'
+          config_file: '.markdownlint.json'
+          ignore_files: 'docs/deprecated/'  # Skip archived docs
+
+      - name: Link Check
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          config-file: '.markdown-link-check.json'
+          folder-path: 'docs/'
+          file-path: 'README.md, CHANGELOG.md'
+          check-modified-files-only: 'yes'  # Only check changed files in PRs
+
+      - name: Vale Linting
+        uses: errata-ai/vale-action@v2
+        with:
+          files: docs/
+          fail_on_error: false  # Warning only
+          reporter: github-pr-review
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Generate Doc Health Metrics
+        run: |
+          python scripts/generate-doc-metrics.py > doc-health-metrics.md
+          cat doc-health-metrics.md
+
+      - name: Upload Metrics Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: doc-health-metrics
+          path: doc-health-metrics.md
+```
+
+**New Script:** `scripts/generate-doc-metrics.py`
+
+```python
+from pathlib import Path
+import frontmatter
+
+def generate_metrics():
+    active_docs = [f for f in Path("docs/").rglob("*.md") if "deprecated" not in f.parts]
+    archived_docs = [f for f in Path("docs/deprecated/").rglob("*.md")]
+    
+    total = len(active_docs) + len(archived_docs)
+    
+    # Frontmatter compliance
+    compliant = sum(1 for f in active_docs if all(
+        field in frontmatter.load(f).metadata 
+        for field in ["title", "type", "status", "owner"]
+    ))
+    
+    print(f"# Documentation Health Metrics")
+    print(f"**Generated:** {datetime.now().isoformat()}\n")
+    print(f"- **Total Docs:** {total}")
+    print(f"- **Active Docs:** {len(active_docs)}")
+    print(f"- **Archived Docs:** {len(archived_docs)}")
+    print(f"- **Frontmatter Compliance:** {compliant}/{len(active_docs)} ({compliant/len(active_docs)*100:.1f}%)")
+    print(f"- **Reduction from Original:** {162-len(active_docs)} files ({(162-len(active_docs))/162*100:.1f}%)")
+
+if __name__ == "__main__":
+    from datetime import datetime
+    generate_metrics()
+```
+
+---
+
+## Phase 5: Migration Strategy & Rollback
+
+### 5.1 Migration Phases
+
+**Phase 5.1: Pre-Migration (Day 0)**
+```bash
+# 1. Create backup branch
+git checkout -b docs-consolidation-backup
+git push origin docs-consolidation-backup
+
+# 2. Create working branch
+git checkout main
+git checkout -b docs/consolidation-v2
+
+# 3. Baseline metrics
+python scripts/generate-doc-metrics.py > baseline-metrics.md
+find docs -name "*.md" | wc -l  # Record count: 162
+
+# 4. Run dry-run scripts
+python scripts/normalize-frontmatter.py --dry-run > frontmatter-dry-run.log
+python scripts/archive-epics.py --dry-run > archive-dry-run.log
+```
+
+**Phase 5.2: Execution (Day 1)**
+```bash
+# 1. Archive completed epics (safest operation)
+python scripts/archive-epics.py --epics 3,4,5
+# Creates docs/deprecated/epics/epic-{3,4,5}/ and moves ~75 files
+
+# 2. Delete duplicate/obsolete files (with confirmation)
+python scripts/delete-obsolete.py --confirm
+# Deletes ~20 files after user confirmation
+
+# 3. Consolidate overlapping guides
+python scripts/consolidate-guides.py
+# Merges setup guides → docs/setup/local-development.md
+# Merges API docs → docs/backend/api-reference.md
+# Merges perf docs → docs/operations/performance.md
+# ~30 files → ~10 files
+
+# 4. Move files to new IA
+python scripts/reorganize-ia.py
+# Moves architecture/ADRs to docs/adr/
+# Moves testing docs to docs/testing/
+# Moves operations docs to docs/operations/
+
+# 5. Normalize frontmatter
+python scripts/normalize-frontmatter.py
+```
+
+**Phase 5.3: Link Fixing (Day 1–2)**
+```bash
+# 1. Update docs/index.md with new structure (manual)
+# 2. Bulk-update common link patterns
+bash scripts/fix-common-links.sh
+# 3. Run link checker and fix remaining broken links
+npx markdown-link-check docs/**/*.md | grep "✖" > broken-links.txt
+# Fix manually or with additional sed scripts
+```
+
+**Phase 5.4: Validation (Day 2)**
+```bash
+# 1. Frontmatter compliance
+python scripts/validate-frontmatter.py --strict
+# Expected: 100% compliance
+
+# 2. Link health
+npx markdown-link-check docs/index.md
+# Expected: 0 broken links
+
+# 3. CI smoke test
+git add . && git commit -m "chore(docs): consolidate and normalize docs"
+git push origin docs/consolidation-v2
+# Open PR, verify CI passes
+
+# 4. Final metrics
+python scripts/generate-doc-metrics.py > final-metrics.md
+diff baseline-metrics.md final-metrics.md
+```
+
+---
+
+### 5.2 Rollback Plan
+
+**Scenario 1: Broken Links in PR**
+```bash
+# Identify broken links
+npx markdown-link-check docs/**/*.md > broken-links.txt
+
+# Option A: Fix links in PR
+sed -i 's|old-path|new-path|g' docs/**/*.md
+git add . && git commit --amend
+
+# Option B: Revert specific file moves
+git checkout HEAD~1 -- docs/setup/local-development.md
+git commit -m "fix: revert local-development.md reorganization"
+```
+
+**Scenario 2: Frontmatter Validation Failures**
+```bash
+# Identify non-compliant files
+python scripts/validate-frontmatter.py --strict > validation-report.txt
+
+# Fix automatically
+python scripts/normalize-frontmatter.py --files-from validation-report.txt
+
+# Or revert frontmatter changes
+git checkout HEAD~1 -- docs/
+git add docs/ && git commit -m "fix: revert frontmatter normalization"
+```
+
+**Scenario 3: Critical Doc Accidentally Deleted**
+```bash
+# Restore from backup branch
+git checkout docs-consolidation-backup -- docs/critical-doc.md
+git add docs/critical-doc.md
+git commit -m "fix: restore critical-doc.md from backup"
+```
+
+**Scenario 4: Full Rollback Needed**
+```bash
+# Hard reset to backup branch
+git checkout main
+git reset --hard docs-consolidation-backup
+git push origin main --force-with-lease
+
+# Or revert merge commit if already merged
+git revert -m 1 <merge-commit-sha>
+git push origin main
+```
+
+---
+
+### 5.3 Risk Areas & Mitigation
+
+| Risk | Impact | Probability | Mitigation |
+|------|--------|-------------|------------|
+| **Broken internal links** | High - Unusable docs | Medium | CI link check enforced, manual review of index.md |
+| **Lost unique content in consolidation** | High - Knowledge loss | Low | Manual review of merge targets, keep diff history |
+| **Accidental deletion of critical doc** | High - Ops disruption | Low | Backup branch, dry-run scripts, user confirmation |
+| **Frontmatter script bugs** | Medium - Manual fixup needed | Medium | Dry-run validation, git history preserves originals |
+| **CI false positives blocking PRs** | Medium - Slowed velocity | Low | Configurable thresholds, warnings vs errors |
+| **Archive docs not discoverable** | Low - Historical loss | Medium | Link from index.md, add README in deprecated/ |
+
+**Mitigation Commands:**
+```bash
+# Before execution:
+1. Create backup branch: git checkout -b docs-consolidation-backup
+2. Run all scripts in --dry-run mode
+3. Review proposed changes with: git diff --name-status
+
+# During execution:
+1. Commit after each phase (archive, delete, consolidate, move)
+2. Run link check after each commit
+3. Keep terminal logs of all script outputs
+
+# After execution:
+1. Full link check: npx markdown-link-check docs/**/*.md
+2. Frontmatter validation: python scripts/validate-frontmatter.py --strict
+3. CI smoke test: Open PR, verify all gates pass
+4. Manual review: Open docs/index.md in browser, click all links
+```
+
+---
+
+## Phase 6: Acceptance Criteria & Verification
+
+### 6.1 Acceptance Criteria
+
+**Must-Have (Blocking Merge):**
+1. ✅ **40–60% doc count reduction** (162 → 65–95 active files)
+2. ✅ **0 broken internal links** in active docs (CI enforced)
+3. ✅ **100% frontmatter compliance** on active docs (required fields present)
+4. ✅ **docs/index.md navigates to all 7 IA sections** (setup, architecture, frontend, backend, operations, testing, deprecated)
+5. ✅ **CI gates pass** (markdown-lint, link-check, frontmatter-validation)
+6. ✅ **No duplicate content** in active docs (consolidation complete)
+7. ✅ **Archive preserves Epic 3/4/5 history** (75+ files in docs/deprecated/epics/)
+
+**Nice-to-Have (Post-Merge):**
+1. 🎯 Vale grammar check warnings <10 per doc
+2. 🎯 All ADRs have `review_cadence` and `owner` assigned
+3. 🎯 docs/deprecated/README.md explains archive structure
+4. 🎯 Automated monthly link health check via cron job
+
+---
+
+### 6.2 Verification Checklist
+
+**Pre-Merge Checklist:**
+```bash
+# 1. Doc count reduction
+BEFORE=$(git show docs-consolidation-backup:docs/ | grep -c "\.md$")
+AFTER=$(find docs/ -name "*.md" ! -path "*/deprecated/*" | wc -l)
+REDUCTION=$(echo "scale=1; ($BEFORE - $AFTER) / $BEFORE * 100" | bc)
+echo "Reduction: $REDUCTION% (target: 40-60%)"
+# Expected: 50-60%
+
+# 2. Zero broken internal links
+npx markdown-link-check docs/**/*.md --config .markdown-link-check.json \
+  | grep "✖" | wc -l
+# Expected: 0
+
+# 3. Frontmatter compliance
+python scripts/validate-frontmatter.py --strict | grep "Compliance: 100%"
+# Expected: Match found
+
+# 4. Index navigation
+cat docs/index.md | grep -E "^\- \[.*\]\(\./(setup|architecture|frontend|backend|operations|testing|deprecated)/" | wc -l
+# Expected: 20+ links (7 sections × ~3 links each)
+
+# 5. CI gates
+git push origin docs/consolidation-v2
+# Open PR, verify:
+# - ✅ Markdown Lint
+# - ✅ Link Check
+# - ✅ Frontmatter Validation
+# - ✅ Vale (warnings OK)
+
+# 6. No duplicate content
+# Manual: Review consolidated files for unique information
+cat docs/setup/local-development.md | wc -w  # Should be >500 words (merged content)
+cat docs/backend/api-reference.md | wc -w   # Should be >800 words (merged content)
+
+# 7. Archive structure
+find docs/deprecated/epics/ -name "*.md" | wc -l
+# Expected: 75+ files (Epic 3/4/5 stories + retros)
+
+# 8. Git history preserved
+git log --oneline docs/stories/story-4.1-comprehension-prompts.md
+# Expected: Shows full history even after archive move (git log --follow)
+```
+
+**Post-Merge Verification:**
+```bash
+# 1. Production index loads correctly
+open http://localhost:3000/docs  # Or staging URL
+# Click through all 7 IA sections, verify no 404s
+
+# 2. Search functionality (if applicable)
+# Search for "Epic 4" in docs, verify archived results appear
+
+# 3. Monitoring
+# Check CI runs on next PR touching docs/
+# Verify doc-health-metrics artifact generated
+
+# 4. User feedback
+# Share new docs/index.md with team
+# Collect feedback on discoverability and navigation
+```
+
+---
+
+## Appendix: Script Catalog
+
+### A.1 Required Scripts (To Be Created)
+
+1. **`scripts/normalize-frontmatter.py`**
+   - Adds/updates YAML frontmatter per `docs/frontmatter-standard.md`
+   - Uses git log for timestamps
+   - Dry-run and execution modes
+
+2. **`scripts/validate-frontmatter.py`**
+   - Validates required fields present
+   - Generates compliance report
+   - CI integration (exit code 1 on failure)
+
+3. **`scripts/archive-epics.py`**
+   - Moves Epic 3/4/5 files to `docs/deprecated/epics/`
+   - Preserves git history with `git mv`
+   - Dry-run mode
+
+4. **`scripts/delete-obsolete.py`**
+   - Deletes files matching deletion globs
+   - Requires user confirmation (--confirm flag)
+   - Logs deleted files to `deleted-files.log`
+
+5. **`scripts/consolidate-guides.py`**
+   - Merges multiple guides into single canonical docs
+   - Uses python-frontmatter to preserve metadata
+   - Appends "Migrated from X" notes
+
+6. **`scripts/reorganize-ia.py`**
+   - Moves files to new IA structure
+   - Updates internal links automatically
+   - Uses `git mv` to preserve history
+
+7. **`scripts/fix-common-links.sh`**
+   - Bash script with sed commands for bulk link updates
+   - Targets common patterns (story links, API links, ADR links)
+
+8. **`scripts/generate-doc-metrics.py`**
+   - Generates doc health metrics for CI
+   - Outputs markdown report
+   - Tracks reduction %, compliance %, link health
+
+---
+
+### A.2 Example Archive Script
+
+```python
+#!/usr/bin/env python3
+"""
+archive-epics.py - Archive completed epic documentation to docs/deprecated/
+
+Usage:
+  python scripts/archive-epics.py --epics 3,4,5 --dry-run
+  python scripts/archive-epics.py --epics 3,4,5  # Execute
+"""
+
+import argparse
+import subprocess
+from pathlib import Path
+
+EPIC_GLOBS = {
+    "3": [
+        "docs/stories/story-3.*.md",
+        "docs/story-context-3.*.xml",
+        "docs/epic-3-*.md",
+    ],
+    "4": [
+        "docs/stories/story-4.*.md",
+        "docs/story-context-4.*.xml",
+        "docs/epic-4-*.md",
+        "docs/STORY-4.*.md",
+        "docs/ARCHITECTURE-DECISION-EPIC4.md",
+    ],
+    "5": [
+        "docs/stories/story-5.*.md",
+        "docs/story-context-5.*.xml",
+        "docs/epic-5-*.md",
+        "docs/EPIC5-*.md",
+    ],
+}
+
+def archive_epic(epic_num, dry_run=True):
+    """Archive all files for a given epic to docs/deprecated/epics/epic-{num}/"""
+    archive_root = Path(f"docs/deprecated/epics/epic-{epic_num}")
+    
+    if not dry_run:
+        archive_root.mkdir(parents=True, exist_ok=True)
+    
+    globs = EPIC_GLOBS.get(epic_num, [])
+    files_moved = 0
+    
+    for pattern in globs:
+        for file in Path(".").glob(pattern):
+            if file.exists():
+                # Determine subdirectory (stories/ vs root)
+                if "story-" in file.name or "story-context" in file.name:
+                    dest = archive_root / "stories" / file.name
+                else:
+                    dest = archive_root / file.name
+                
+                if dry_run:
+                    print(f"[DRY RUN] Would move: {file} → {dest}")
+                else:
+                    dest.parent.mkdir(parents=True, exist_ok=True)
+                    # Use git mv to preserve history
+                    subprocess.run(["git", "mv", str(file), str(dest)], check=True)
+                    print(f"[MOVED] {file} → {dest}")
+                
+                files_moved += 1
+    
+    print(f"\nEpic {epic_num}: {files_moved} files {'would be moved' if dry_run else 'moved'}")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Archive completed epic documentation")
+    parser.add_argument("--epics", required=True, help="Comma-separated epic numbers (e.g., 3,4,5)")
+    parser.add_argument("--dry-run", action="store_true", help="Preview changes without executing")
+    args = parser.parse_args()
+    
+    epic_nums = args.epics.split(",")
+    
+    for epic in epic_nums:
+        archive_epic(epic.strip(), dry_run=args.dry_run)
+```
+
+---
+
+## Summary
+
+**Estimated Outcomes:**
+- **Before:** 162 markdown files
+- **After:** ~67 active files + ~75 archived files
+- **Reduction:** ~59% in active docs (meets 40–60% target)
+- **Link Health:** 0 broken internal links (CI enforced)
+- **Frontmatter Compliance:** 100% on active docs
+- **CI Quality Gates:** Markdown lint, link check, frontmatter validation automated
+- **Rollback Safety:** Backup branch, git history preserved, reversible operations
+
+**Next Steps:**
+1. Review this plan with stakeholders
+2. Create scripts in `scripts/` directory
+3. Execute Phase 5.1 (Pre-Migration) to establish baseline
+4. Execute Phase 5.2 (Archive → Delete → Consolidate → Move → Normalize)
+5. Execute Phase 5.3 (Link Fixing)
+6. Execute Phase 5.4 (Validation & CI verification)
+7. Merge PR after all acceptance criteria met
