@@ -1,0 +1,81 @@
+```json
+{
+  "plannedMoves": [
+    {
+      "from": "docs/epic-docs/epic-5-deployment-guide.md",
+      "to": "docs/deployments/epic5-deployment-guide.md",
+      "reason": "Consolidate all deployment guides in docs/deployments/ for consistent discoverability"
+    },
+    {
+      "from": "docs/epic-docs/epic-4-implementation-guide.md",
+      "to": "docs/deployments/epic4-implementation-guide.md",
+      "reason": "Implementation guides are deployment artifacts, move to docs/deployments/"
+    },
+    {
+      "from": "docs/epic-docs/epic-5-performance-benchmarks.md",
+      "to": "docs/performance-reports/epic5-performance-benchmarks.md",
+      "reason": "Consolidate all performance docs in docs/performance-reports/"
+    },
+    {
+      "from": "docs/epic-docs/epic-5-master-summary.md",
+      "to": "docs/epics/epic-5/epic-5-master-summary.md",
+      "reason": "Epic summaries belong with epic documentation for archival coherence"
+    },
+    {
+      "from": "docs/epic-docs/epic-5-retrospective-handoff.md",
+      "to": "docs/retrospectives/epic-5-retrospective-handoff.md",
+      "reason": "All retrospectives centralized in docs/retrospectives/"
+    },
+    {
+      "from": "docs/epic-docs/architecture-decision-epic-4.md",
+      "to": "docs/architecture/epic-4-architecture-decisions.md",
+      "reason": "Architecture decisions belong in docs/architecture/ near ADRs"
+    },
+    {
+      "from": "docs/epic-docs/epic-5-design-system-guide.md",
+      "to": "docs/design/epic-5-design-system-guide.md",
+      "reason": "Design system docs belong in docs/design/ with other design guides"
+    },
+    {
+      "from": "docs/database/database-migration-strategy.md",
+      "to": "docs/database/migrations.md",
+      "reason": "Merge duplicate migration docs - migrations.md already exists as canonical source"
+    },
+    {
+      "from": "docs/DASHBOARD-HOOKS-DELIVERY.md",
+      "to": "docs/developer-guides/dashboard-hooks-delivery.md",
+      "reason": "Developer implementation guides belong in docs/developer-guides/, not root"
+    },
+    {
+      "from": "docs/DASHBOARD-HOOKS-QUICKSTART.md",
+      "to": "docs/developer-guides/dashboard-hooks-quickstart.md",
+      "reason": "Quickstart guides are developer resources, move to docs/developer-guides/"
+    },
+    {
+      "from": "docs/DASHBOARD-HOOKS-USAGE.md",
+      "to": "docs/developer-guides/dashboard-hooks-usage.md",
+      "reason": "Usage guides belong with developer documentation for discoverability"
+    },
+    {
+      "from": "docs/PLATFORM-ARCHITECTURE-DIAGRAM.md",
+      "to": "docs/architecture/platform-architecture-diagram.md",
+      "reason": "Architecture diagrams belong in docs/architecture/ for coherent structure"
+    },
+    {
+      "from": "docs/RESEARCH-ANALYTICS-IMPLEMENTATION-GUIDE.md",
+      "to": "docs/research-analytics/implementation-guide.md",
+      "reason": "Research analytics docs belong in dedicated docs/research-analytics/ directory"
+    },
+    {
+      "from": "docs/epic-docs/",
+      "to": "docs/epics/",
+      "reason": "After moving key files above, deprecate docs/epic-docs/ - remaining files move to docs/epics/ or appropriate subdirs"
+    },
+    {
+      "from": "docs/stories/",
+      "to": "docs/epics/stories-archive/",
+      "reason": "Archive 30 story files under epics for historical reference, reduce root clutter"
+    }
+  ]
+}
+```

@@ -1,0 +1,292 @@
+[2025-10-29T22:06:34] OpenAI Codex v0.0.0 (research preview)
+--------
+workdir: /Users/kyin/.code/working/Americano/branches/code-code-gpt-5-produce-docs-pruning
+model: gpt-5
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: auto
+--------
+[2025-10-29T22:06:34] User instructions:
+Produce the docs pruning and consolidation plan only. Include: 1) final IA and directory layout, 2) deletion/archival globs with examples, 3) frontmatter normalization approach (script outline + commands), 4) link health strategy and CI updates, 5) migration strategy and rollback plan, 6) acceptance criteria and a short verification checklist. Target 40–60% doc count reduction. Do not modify files.
+
+Context: You are a documentation consolidation planner for the Americano monorepo. Propose a plan only (no edits). Aim to reduce docs by 40–60% while preserving essential knowledge. Repo snapshot: - Frontend: Next.js 15 (React 19) at apps/web with Tailwind 4, Radix UI, shadcn, TanStack Query, Zustand, Prisma. - API: FastAPI at apps/api with routers under apps/api/src (validation, challenge, analytics, adaptive). Type generation via apps/api/scripts/generate_types.py -> apps/web/src/types/api-generated.ts. - ML: services/ml-service (FastAPI) for future integration. - Docs: Large, fragmented under docs/ with index at docs/index.md and frontmatter spec at docs/frontmatter-standard.md. There is docs/deprecated/ but many scattered deprecated/duplicated files.
+
+Deliverable focus (docs only): - Propose a final top-level docs IA (5–7 sections) and directory layout (e.g., docs/architecture, docs/setup, docs/frontend, docs/backend, docs/operations, docs/adr, docs/deprecated). - Define keep vs archive vs delete rules as explicit globs with rationale; include 5–10 concrete examples referencing likely filenames and a migration map (from -> to) for representative files. - Normalize YAML frontmatter per docs/frontmatter-standard.md. Provide a minimal automation approach (script outline + commands) to enforce and fix. - Link health and CI: approach to update docs/index.md, ensure link integrity, and integrate markdownlint + markdown-link-check. - Migration strategy and rollback plan; risk areas and KPIs.
+
+Output format: clear phases, bullets, explicit globs and commands, and a concise final checklist.
+[2025-10-29T22:06:34] OpenAI Codex v0.0.0 (research preview)
+--------
+workdir: /Users/kyin/.code/working/Americano/branches/code-code-gpt-5-produce-docs-pruning
+model: gpt-5
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: auto
+--------
+[2025-10-29T22:06:34] User instructions:
+Produce the docs pruning and consolidation plan only. Include: 1) final IA and directory layout, 2) deletion/archival globs with examples, 3) frontmatter normalization approach (script outline + commands), 4) link health strategy and CI updates, 5) migration strategy and rollback plan, 6) acceptance criteria and a short verification checklist. Target 40–60% doc count reduction. Do not modify files.
+
+Context: You are a documentation consolidation planner for the Americano monorepo. Propose a plan only (no edits). Aim to reduce docs by 40–60% while preserving essential knowledge. Repo snapshot: - Frontend: Next.js 15 (React 19) at apps/web with Tailwind 4, Radix UI, shadcn, TanStack Query, Zustand, Prisma. - API: FastAPI at apps/api with routers under apps/api/src (validation, challenge, analytics, adaptive). Type generation via apps/api/scripts/generate_types.py -> apps/web/src/types/api-generated.ts. - ML: services/ml-service (FastAPI) for future integration. - Docs: Large, fragmented under docs/ with index at docs/index.md and frontmatter spec at docs/frontmatter-standard.md. There is docs/deprecated/ but many scattered deprecated/duplicated files.
+
+Deliverable focus (docs only): - Propose a final top-level docs IA (5–7 sections) and directory layout (e.g., docs/architecture, docs/setup, docs/frontend, docs/backend, docs/operations, docs/adr, docs/deprecated). - Define keep vs archive vs delete rules as explicit globs with rationale; include 5–10 concrete examples referencing likely filenames and a migration map (from -> to) for representative files. - Normalize YAML frontmatter per docs/frontmatter-standard.md. Provide a minimal automation approach (script outline + commands) to enforce and fix. - Link health and CI: approach to update docs/index.md, ensure link integrity, and integrate markdownlint + markdown-link-check. - Migration strategy and rollback plan; risk areas and KPIs.
+
+Output format: clear phases, bullets, explicit globs and commands, and a concise final checklist.
+
+[2025-10-29T22:06:38] thinking
+
+**Creating a plan document**
+
+I’m focusing on producing a plan document without any code changes or shell commands. I’ll ensure the structure follows CLI formatting rules with headers and bullets as per developer guidelines. The user wants a planning document about document consolidation, so I won’t include any web.run unless absolutely necessary. The request mentions an "Agent Development Protocol," but for now, we're not implementing code, just outlining a plan and possibly including linting commands.
+**Drafting document consolidation plan**
+
+I need to create a final IA and directory layout for the docs folder, which will have about 5 to 7 sections. This includes outlining examples for deletion and archival globs, along with a frontmatter normalization approach, a migration strategy, and a link health strategy that ties into CI updates. I’ll suggest sections like Overview, Architecture, and Backend/API while aiming for a 40-60% reduction in docs. I should also include specific commands for link checking, like npm run lint:docs.
+**Proposing frontmatter normalization script**
+
+I can propose a minimal script for frontmatter normalization using either Node or Python, given that both are in the monorepo's common tools. I’ll consider a Node script that uses gray-matter and glob, but since I can't install packages, I might suggest using `npx`. Alternatively, a simple Python script with ruamel.yaml or PyYAML could be effective. I’ll also consider using the frontmatter library or just Python stdlib with regex for simplicity. I'll include an outline plus example commands.
+**Drafting documentation phases**
+
+I need to follow developer guidelines while planning to fetch the latest documents and clarify that we aren’t implementing any code changes now. I’ll keep the information concise and use Title Case for headings with double asterisks and bullets with hyphens. The outline will include phases like Inventory, Freeze and Index, Restructure, Normalize, Link and CI, Migrate and Archive, and Verify and Close. I'll specify KPIs such as a 40-60% reduction and include globs for Keep, Archive, and Delete.
+**Preparing documentation plan**
+
+For images in the docs, we’ll likely keep but optimize them. We’ll propose deleting generated files like `api-generated docs`, `docs/_site/**`, and `docs/**/*.html` or `docs/**/*.pdf` if built artifacts exist. I’ll provide examples such as `docs/frontend/tailwind-v3-animate.md`, which should be archived due to conflicts. 
+
+I’ll outline a frontmatter normalization script in Node, using dependencies like `gray-matter` and `js-yaml`. This will ensure required fields are added and set correctly. The migration strategy includes creating a mapping file to preserve history and a rollback plan for restoring from the archive. We’ll also update link health checks and incorporate performance metrics. 
+
+Finally, I’ll ensure to use structured bullet points and section headers for clarity while crafting the new doc system with sample commands to help measure doc counts.
+[2025-10-29T22:07:04] codex
+**Drafting document consolidation plan**
+
+I need to create a final IA and directory layout for the docs folder, which will have about 5 to 7 sections. This includes outlining examples for deletion and archival globs, along with a frontmatter normalization approach, a migration strategy, and a link health strategy that ties into CI updates. I’ll suggest sections like Overview, Architecture, and Backend/API while aiming for a 40-60% reduction in docs. I should also include specific commands for link checking, like npm run lint:docs.
+[2025-10-29T22:07:04] codex
+**Proposing frontmatter normalization script**
+
+I can propose a minimal script for frontmatter normalization using either Node or Python, given that both are in the monorepo's common tools. I’ll consider a Node script that uses gray-matter and glob, but since I can't install packages, I might suggest using `npx`. Alternatively, a simple Python script with ruamel.yaml or PyYAML could be effective. I’ll also consider using the frontmatter library or just Python stdlib with regex for simplicity. I'll include an outline plus example commands.
+[2025-10-29T22:07:04] codex
+**Drafting documentation phases**
+
+I need to follow developer guidelines while planning to fetch the latest documents and clarify that we aren’t implementing any code changes now. I’ll keep the information concise and use Title Case for headings with double asterisks and bullets with hyphens. The outline will include phases like Inventory, Freeze and Index, Restructure, Normalize, Link and CI, Migrate and Archive, and Verify and Close. I'll specify KPIs such as a 40-60% reduction and include globs for Keep, Archive, and Delete.
+[2025-10-29T22:07:04] codex
+**Preparing documentation plan**
+
+For images in the docs, we’ll likely keep but optimize them. We’ll propose deleting generated files like `api-generated docs`, `docs/_site/**`, and `docs/**/*.html` or `docs/**/*.pdf` if built artifacts exist. I’ll provide examples such as `docs/frontend/tailwind-v3-animate.md`, which should be archived due to conflicts. 
+
+I’ll outline a frontmatter normalization script in Node, using dependencies like `gray-matter` and `js-yaml`. This will ensure required fields are added and set correctly. The migration strategy includes creating a mapping file to preserve history and a rollback plan for restoring from the archive. We’ll also update link health checks and incorporate performance metrics. 
+
+Finally, I’ll ensure to use structured bullet points and section headers for clarity while crafting the new doc system with sample commands to help measure doc counts.
+[2025-10-29T22:07:04] codex
+
+Here’s a focused, zero‑touch consolidation plan to reduce docs by 40–60% while preserving essential knowledge. No file changes are performed; this is a proposal only.
+
+**Phases**
+
+- Phase 0: Inventory and freeze (baseline counts, freeze non-critical doc edits)
+- Phase 1: IA design and move plan (mapping + owner sign‑off)
+- Phase 2: Prune and archive (git mv + archive, delete build artefacts)
+- Phase 3: Frontmatter normalize (auto‑fix + report)
+- Phase 4: Link health + CI (fix internal links, enable checks)
+- Phase 5: Migrate references (update cross-links, indexes)
+- Phase 6: Verify, metrics, and unfreeze (acceptance gate)
+
+**1) Final IA And Directory Layout**
+
+- docs/overview
+  - What Americano is, principles, glossary, roadmap
+  - Entrypoint: docs/index.md (curated table of contents)
+- docs/architecture
+  - System diagrams, domain model, boundaries, scalability, security
+  - ADRs live in docs/architecture/adrs with index file
+- docs/frontend
+  - Next.js 15 (App Router), React 19 patterns, Tailwind v4, shadcn/Radix usage, data-fetching and state
+- docs/backend
+  - FastAPI (apps/api), routers overview, validation, typing pipeline, integration with apps/web (typegen)
+- docs/ml
+  - services/ml-service (FastAPI), roadmap and interfaces (placeholders until integration)
+- docs/operations
+  - Local setup, environment, runbooks, deployments, monitoring, troubleshooting, backup/restore, security ops
+- docs/archive
+  - Read‑only archive of prior content, time‑boxed by cohort (e.g., 2025Q4). Not indexed by default ToC
+
+Optional (if needed): docs/contributing (if content grows), else keep under docs/overview/contributing.md.
+
+Canonical top‑level files to keep:
+- docs/index.md (master index)
+- docs/frontmatter-standard.md (frontmatter template)
+- docs/architecture/ADR-INDEX.md (ADRs index)
+- docs/api-contracts.md, docs/data-models.md
+
+**2) Deletion/Archival Globs With Rationale And Examples**
+
+- Keep (authoritative)
+  - `docs/index.md`
+  - `docs/frontmatter-standard.md`
+  - `docs/architecture/**/*.md` (except drafts/notes)
+  - `docs/architecture/adrs/ADR-*.md`
+  - `docs/frontend/**/*.md` (current stack only: Next.js 15, React 19, Tailwind v4, shadcn/Radix, TanStack Query, Zustand, Prisma)
+  - `docs/backend/**/*.md`
+  - `docs/ml/**/*.md`
+  - `docs/operations/**/*.md`
+  - `docs/api-contracts.md`, `docs/data-models.md`
+- Archive (move to `docs/archive/2025Q4/…`), rationale: legacy, duplicated, superseded, obsolete tech
+  - `docs/**/deprecated/**`
+  - `docs/**/legacy/**`
+  - `docs/**/old/**`
+  - `docs/**/v1/**` when superseded by v2+ document
+  - `docs/**/proposals/**` older than 90 days and not promoted to ADR
+  - `docs/**/notes/**` and `docs/**/meeting-notes/**` not referenced by live docs
+  - `docs/frontend/**/tailwind-v3*.*`
+  - `docs/**/framer-motion/**` (Framer Motion is deprecated in favor of motion.dev)
+  - `docs/**/rfcs/**` accepted → map to ADR; rejected → archive
+- Delete (hard delete; generated/build artefacts, local caches, binary duplicates)
+  - `docs/**/_site/**`, `docs/**/.docusaurus/**`, `docs/**/.vitepress/**`, `docs/**/.next/**`
+  - `docs/**/*.html` (if generated from md and not source of truth)
+  - `docs/**/*.pdf` exports when the md source exists
+  - `docs/**/Thumbs.db`, `docs/**/.DS_Store`
+  - `docs/**/images/**/._*` AppleDouble artifacts
+  - `docs/**/~$*.md` temp files
+
+Concrete examples (representative migration map):
+- From: `docs/deprecated/nextjs-pages-router.md` → To: `docs/archive/2025Q4/frontend/nextjs-pages-router.md` (Archive: superseded by App Router)
+- From: `docs/frontend/tailwind-v3-animate.md` → To: `docs/archive/2025Q4/frontend/tailwind-v3-animate.md` (Archive: Tailwind v4 rules)
+- From: `docs/frontend/framer-motion/recipes.md` → To: `docs/archive/2025Q4/frontend/motion-framer-legacy.md` (Archive: replaced by motion.dev)
+- From: `docs/architecture/monolith-vs-microservices.md` → To: `docs/architecture/adrs/ADR-006-runtime-composition.md` (Promote to ADR with decision context)
+- From: `docs/backend/fastapi-router-layout.md` → To: `docs/backend/routing.md` (Consolidate naming)
+- From: `docs/api/typegen.md` → To: `docs/backend/type-generation.md` (Consolidate under backend)
+- From: `docs/ml/serving-sketch.md` → To: `docs/archive/2025Q4/ml/serving-sketch.md` (Archive until service integrates)
+- From: `docs/notes/shadcn-migration-notes.md` → To: `docs/archive/2025Q4/notes/shadcn-migration-notes.md` (Notes not referenced)
+- From: `docs/operations/k8s-deploy.md` → To: `docs/operations/deployments.md` (Merge overlapping deploy docs)
+- From: `docs/architecture/perf-tuning-fastapi.md` + `docs/backend/perf-fastapi.md` → To: `docs/backend/performance.md` (Deduplicate)
+
+Rationalization rules:
+- If two docs cover same subject, keep the newer with clearer examples, archive the other and link “Superseded by …”.
+- If a doc describes technology not in the current stack (Pages Router, Tailwind v3, Framer Motion), archive.
+- If a doc is a decision, convert to ADR; if brainstorming, archive as historical note.
+
+**3) Frontmatter Normalization Approach (Script Outline + Commands)**
+
+Normalization goals:
+- Enforce docs/frontmatter-standard.md across all `.md`.
+- Required fields: `title`, `description`, `status` (e.g., draft/active/deprecated), `last_updated` (ISO 8601 with timezone), `owners`, `tags`, `depends_on`, `affects`, `related_adrs`, `slug`.
+- Auto‑populate defaults where missing; preserve existing values; set `status: archived` for files moved under `docs/archive/**`.
+
+Minimal automation (Node option):
+- Script: `scripts/docs/normalize-frontmatter.mjs`
+- Outline:
+  - Read all `docs/**/*.md` excluding `docs/archive/**`.
+  - Use `gray-matter` to parse; `js-yaml` to serialize.
+  - Inject missing keys with defaults:
+    - `title`: from first H1 if missing; else from filename.
+    - `last_updated`: current timestamp at run; or preserve existing.
+    - `slug`: kebab-case of title.
+    - `status`: `active` outside archive; `archived` inside archive.
+  - Validate ISO 8601 with timezone for `last_updated`.
+  - Write file with normalized frontmatter and preserve body.
+  - Emit report (added/changed fields, files skipped).
+- Commands (plan):
+  - `pnpm add -D gray-matter js-yaml glob prettier`
+  - `node scripts/docs/normalize-frontmatter.mjs --write`
+  - `node scripts/docs/normalize-frontmatter.mjs --check` (non‑zero exit if drift)
+- Lint rule: add `npm run lint:docs:frontmatter` to run `--check` in CI.
+
+Minimal automation (Python option):
+- Script: `scripts/docs/normalize_frontmatter.py`
+- Outline:
+  - Iterate `Path('docs').rglob('*.md')`.
+  - Detect YAML frontmatter via `---` fence; parse with `yaml.safe_load`.
+  - Normalize same fields, write back with preserved order.
+- Commands (plan):
+  - `python3 scripts/docs/normalize_frontmatter.py --write`
+  - `python3 scripts/docs/normalize_frontmatter.py --check`
+
+Safety:
+- Dry‑run first (`--check`), back up changed files under `docs/.backups/YYYYMMDD/` on first write pass.
+
+**4) Link Health Strategy And CI Updates**
+
+- Index updates
+  - Curate `docs/index.md` to reflect the new IA sections only.
+  - Add “Archive index” entry pointing to `docs/archive/2025Q4/README.md` but exclude from main ToC.
+- Internal link policy
+  - Use relative links rooted from `docs/…` with stable slugs.
+  - For archived documents, prepend a banner: “Archived — superseded by [link]”.
+  - Maintain `docs/_migration/redirects.json` mapping old → new relative paths for search/replace and docs site (if any).
+- Automated link checking
+  - Tools: `markdown-link-check` for external links, `markdownlint-cli` for style.
+  - Commands (plan):
+    - `pnpm add -D markdown-link-check markdownlint-cli`
+    - `markdownlint "docs/**/*.md"`
+    - `markdown-link-check -q -p "docs/**/*.md"` (or run via small wrapper to parallelize)
+  - Retry policy: For flaky external links, allow up to 2 retries; mark known flaky hosts with `skipPatterns`.
+- CI workflow changes (plan, not applying):
+  - Job `docs-quality` in `.github/workflows/docs-quality.yml`
+    - Steps: checkout, pnpm setup, install dev deps, run:
+      - `npm run lint:docs` (markdownlint)
+      - `npm run check:links` (markdown-link-check)
+      - `npm run lint:docs:frontmatter -- --check`
+    - Artifacts: link report JSON, frontmatter drift report
+  - Failure gates: any broken internal link or frontmatter drift → fail.
+
+**5) Migration Strategy And Rollback Plan**
+
+- Branching and freeze
+  - Create branch `docs/prune-2025Q4`.
+  - Freeze new non-critical doc PRs; route urgent edits to the branch.
+- Mapping and owners
+  - Produce `docs/_migration/map-2025Q4.csv` with columns: `from_path,to_path,action,owner,reason`.
+  - Each move/deletion reviewed by owner of the area (frontend, backend, ops).
+- Execution sequence
+  - Step 1: Move keeps to final IA using `git mv`.
+  - Step 2: Move archives to `docs/archive/2025Q4/...` mirroring former structure.
+  - Step 3: Delete build artefacts per globs.
+  - Step 4: Normalize frontmatter (write mode).
+  - Step 5: Update links via `docs/_migration/redirects.json` search/replace.
+  - Step 6: Refresh `docs/index.md` and section READMEs.
+- Risk areas
+  - Loss of tacit knowledge in notes: mitigated by archiving, not deleting.
+  - Broken deep links in PRs/issues: mitigated by redirects map and link checker.
+  - Outdated tech guidance (Tailwind v3, Framer Motion): mitigated by explicit archive banner.
+- KPIs
+  - 40–60% reduction in `.md` count: `fd -e md docs | wc -l` before/after.
+  - 0 internal broken links; <2% external broken (excluding known flaky).
+  - 100% files pass frontmatter check.
+  - Time to find key docs (survey): ≤ 2 minutes for 5 tasks.
+- Rollback
+  - If critical issues: revert merge commit of `docs/prune-2025Q4`.
+  - Recovery: since moves use `git mv`, history preserved; archived docs can be restored by `git mv docs/archive/2025Q4/... <new-path>`.
+  - Keep `docs/_migration/map-2025Q4.csv` in repo for audit and easy roll‑forward.
+
+**6) Acceptance Criteria And Short Verification Checklist**
+
+- Acceptance criteria
+  - IA implemented exactly as specified with seven sections and archive.
+  - Doc count reduced by 40–60% versus baseline without losing required canonical docs: `docs/index.md`, `docs/frontmatter-standard.md`, `docs/architecture/ADR-INDEX.md`, `docs/api-contracts.md`, `docs/data-models.md`.
+  - All docs contain normalized frontmatter per standard; `npm run lint:docs:frontmatter -- --check` passes.
+  - `npm run lint:docs` and `npm run check:links` pass; 0 broken internal links.
+  - Archive banner present and redirects map exists for moved or superseded docs.
+  - CI `docs-quality` job green on the pruning PR and on main after merge.
+
+- Verification checklist (10 minutes)
+  - Run `fd -e md docs | wc -l` and confirm 40–60% reduction.
+  - Open `docs/index.md` and confirm new IA sections only.
+  - Spot‑check 1 file per section for frontmatter completeness and ISO timestamp.
+  - Run `markdownlint "docs/**/*.md"` → success.
+  - Run `markdown-link-check -q -p "docs/**/*.md"` → success; review report artifacts.
+  - Open 5 redirected links listed in `docs/_migration/redirects.json` and confirm they resolve.
+  - Confirm archive banner on an archived doc and absence from ToC.
+  - Confirm `apps/api/scripts/generate_types.py` referenced by exactly one doc under backend (no duplicates).
+  - Confirm Tailwind v3 and Framer Motion docs reside only under archive.
+  - Merge gate: all checks pass in CI; unfreeze doc edits.
+
+**Operational Commands (For Executors; reference only, no edits here)**
+
+- Baseline counts: `fd -e md docs | wc -l`
+- Size snapshot: `du -sh docs`
+- Move with history: `git mv "docs/frontend/framer-motion/recipes.md" "docs/archive/2025Q4/frontend/motion-framer-legacy.md"`
+- Delete artefacts: `git rm -r docs/**/_site || true`
+- Frontmatter normalize (Node): `node scripts/docs/normalize-frontmatter.mjs --check` then `--write`
+- Lint + links: `markdownlint "docs/**/*.md"` and `markdown-link-check -q -p "docs/**/*.md"`
+
+If you want, I can turn this plan into an executable migration map (`map-2025Q4.csv`) and draft the normalization/link-check scripts without touching repo files until you approve.
+[2025-10-29T22:07:50] tokens used: 22,364

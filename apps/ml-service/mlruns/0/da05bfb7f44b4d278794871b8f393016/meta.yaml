@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/kyin/Projects/Americano/apps/ml-service/mlruns/0/da05bfb7f44b4d278794871b8f393016/artifacts
+end_time: 1761576269468
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: da05bfb7f44b4d278794871b8f393016
+run_name: unique-trout-618
+run_uuid: da05bfb7f44b4d278794871b8f393016
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1761576269457
+status: 3
+tags: []
+user_id: kyin

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/kyin/Projects/Americano/apps/ml-service/mlruns/0/eda1d5e2c4a546b5949c51840bca6265/artifacts
+end_time: 1761578539546
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: eda1d5e2c4a546b5949c51840bca6265
+run_name: blushing-wren-769
+run_uuid: eda1d5e2c4a546b5949c51840bca6265
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1761578539536
+status: 3
+tags: []
+user_id: kyin

@@ -688,3 +688,17 @@ A: Yes, add custom fields as needed. Document them in this file if they're reusa
 **Maintained By:** Americano Documentation Team
 **Last Updated:** 2025-10-23T11:00:00-07:00
 **Version:** 1.0
+
+---
+
+## Frontmatter Checklist (PR Gate)
+
+- Title accurately reflects the document and matches H1
+- Description is present (1–2 sentences)
+- Type is one of: Architecture | API | Data | Guide | Testing | Epic | Story | Operations
+- Status is set (Active | Draft | Review | Deprecated | Archived)
+- Owner is assigned (team or individual)
+- created_date and last_updated are ISO 8601 with timezone
+- Tags/depends_on/affects/related_adrs populated when relevant
+- For archived docs under `docs/deprecated/**`, status is Archived
+- If consolidating/renaming, update inbound links and `docs/index.md`

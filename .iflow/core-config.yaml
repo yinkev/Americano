@@ -1,0 +1,10 @@
+markdownExploder: true
+requirements:
+  requirementFile: docs/requirement_brief.md
+analysis:
+  analysisFile: docs/research.md
+ux-spec:
+  uxSpecFile: docs/ux-spec.md
+  htmlTemplate: docs/ppt-template.html
+ppt-outline:
+  outlineFile: docs/slides.md

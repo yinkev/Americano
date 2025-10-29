@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Americano Platform - Medical Education Revolution</title>
+    
+    <!-- GSAP CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <style>
+        :root {
+            /* Colors */
+            --color-primary: #2563eb;
+            --color-primary-dark: #1e40af;
+            --color-primary-light: #dbeafe;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-info: #3b82f6;
+            --color-medical: #0d9488;
+            --color-analytics: #8b5cf6;
+            
+            /* Neutrals */
+            --color-bg: #ffffff;
+            --color-surface: #f8fafc;
+            --color-text-primary: #0f172a;
+            --color-text-secondary: #64748b;
+            --color-border: #e2e8f0;
+            
+            /* Dark Mode */
+            --color-bg-dark: #0f172a;
+            --color-surface-dark: #1e293b;
+            --color-text-primary-dark: #f1f5f9;
+            --color-text-secondary-dark: #94a3b8;
+            --color-border-dark: #334155;
+            
+            /* Typography */
+            --font-family-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-family-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+            
+            /* Font Sizes */
+            --font-size-display-xl: 3rem;
+            --font-size-display-lg: 2.25rem;
+            --font-size-display-md: 1.875rem;
+            --font-size-heading-xl: 1.5rem;
+            --font-size-heading-lg: 1.25rem;
+            --font-size-heading-md: 1.125rem;
+            --font-size-body-lg: 1rem;
+            --font-size-body-md: 0.875rem;
+            --font-size-body-sm: 0.75rem;
+            --font-size-caption: 0.6875rem;
+            
+            /* Font Weights */
+            --font-weight-light: 300;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            
+            /* Spacing */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 0.75rem;
+            --space-lg: 1rem;
+            --space-xl: 1.5rem;
+            --space-2xl: 2rem;
+            --space-3xl: 3rem;
+            --space-4xl: 4rem;
+            
+            /* Border Radius */
+            --radius-xs: 0.125rem;
+            --radius-sm: 0.25rem;
+            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;
+            --radius-xl: 0.75rem;
+            --radius-full: 9999px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            /* Transitions */
+            --transition-fast: 150ms;
+            --transition-normal: 300ms;
+            --transition-slow: 500ms;
+            --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-family-sans);
+            background: var(--color-bg);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Slide Container */
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-xl);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Slide Content */
+        .slide-content {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+        
+        /* Typography */
+        .display-xl {
+            font-size: var(--font-size-display-xl);
+            font-weight: var(--font-weight-bold);
+            line-height: 1.1;
+            margin-bottom: var(--space-lg);
+            color: var(--color-text-primary);
+        }
+        
+        .display-lg {
+            font-size: var(--font-size-display-lg);
+            font-weight: var(--font-weight-bold);
+            line-height: 1.2;
+            margin-bottom: var(--space-lg);
+            color: var(--color-text-primary);
+        }
+        
+        .heading-xl {
+            font-size: var(--font-size-heading-xl);
+            font-weight: var(--font-weight-bold);
+            line-height: 1.3;
+            margin-bottom: var(--space-md);
+            color: var(--color-text-primary);
+        }
+        
+        .body-lg {
+            font-size: var(--font-size-body-lg);
+            font-weight: var(--font-weight-normal);
+            line-height: 1.6;
+            margin-bottom: var(--space-lg);
+            color: var(--color-text-secondary);
+        }
+        
+        /* Primary Button */
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: var(--space-md) var(--space-xl);
+            font-size: var(--font-size-body-lg);
+            font-weight: var(--font-weight-semibold);
+            cursor: pointer;
+            transition: all var(--transition-fast) var(--transition-easing);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-xl);
+            margin: var(--space-2xl) 0;
+        }
+        
+        .feature-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            text-align: left;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--color-primary-light);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-md);
+            color: var(--color-primary);
+            font-size: 1.5rem;
+        }
+        
+        .feature-title {
+            font-size: var(--font-size-heading-lg);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-sm);
+            color: var(--color-text-primary);
+        }
+        
+        .feature-desc {
+            font-size: var(--font-size-body-md);
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        .slide-nav {
+            position: fixed;
+            bottom: var(--space-lg);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--space-md);
+            z-index: 1000;
+        }
+        
+        .nav-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: var(--radius-full);
+            background: var(--color-border);
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast) var(--transition-easing);
+        }
+        
+        .nav-btn.active {
+            background: var(--color-primary);
+            transform: scale(1.2);
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--color-border);
+            z-index: 1001;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--color-primary);
+            width: 0%;
+            transition: width var(--transition-normal) var(--transition-easing);
+        }
+        
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .slide-container {
+                padding: var(--space-lg);
+            }
+            
+            .display-xl {
+                font-size: 2.5rem;
+            }
+            
+            .display-lg {
+                font-size: 2rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-lg);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .display-xl {
+                font-size: 2rem;
+            }
+            
+            .display-lg {
+                font-size: 1.75rem;
+            }
+            
+            .heading-xl {
+                font-size: var(--font-size-heading-lg);
+            }
+        }
+        
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .fade-in,
+            .stagger-item {
+                opacity: 1 !important;
+                transform: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <!-- Slide Container -->
+    <div class="slide-container" id="slideContainer">
+        <div class="slide-content">
+            <!-- Title Slide -->
+            <h1 class="display-xl fade-in" id="titleSlide">Americano</h1>
+            <p class="body-lg fade-in" id="subtitleSlide" style="opacity: 0; transform: translateY(20px);">AI-Powered Medical Education Platform</p>
+            <p class="body-lg fade-in" id="taglineSlide" style="opacity: 0; transform: translateY(20px);">Revolutionizing medical student learning through adaptive AI and behavioral analytics</p>
+        </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="slide-nav" id="slideNav">
+        <button class="nav-btn active" data-slide="0"></button>
+        <button class="nav-btn" data-slide="1"></button>
+        <button class="nav-btn" data-slide="2"></button>
+        <button class="nav-btn" data-slide="3"></button>
+    </div>
+
+    <script>
+        // Initialize GSAP
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Slide data
+        const slides = [
+            {
+                title: "Americano",
+                subtitle: "AI-Powered Medical Education Platform",
+                tagline: "Revolutionizing medical student learning through adaptive AI and behavioral analytics"
+            },
+            {
+                title: "Adaptive Learning",
+                subtitle: "Personalized Study Paths",
+                features: [
+                    {
+                        icon: "🧠",
+                        title: "AI-Powered Recommendations",
+                        desc: "Intelligent content suggestions based on individual learning patterns and knowledge gaps"
+                    },
+                    {
+                        icon: "📊",
+                        title: "Behavioral Analytics",
+                        desc: "Real-time progress tracking with predictive modeling for early intervention"
+                    },
+                    {
+                        icon: "📚",
+                        title: "Multi-Modal Content",
+                        desc: "Integration of PDF processing, interactive sessions, and spaced repetition"
+                    }
+                ]
+            },
+            {
+                title: "Technical Architecture",
+                subtitle: "Modern Full-Stack Platform",
+                features: [
+                    {
+                        icon: "⚛️",
+                        title: "Next.js 15 Frontend",
+                        desc: "App Router architecture with Tailwind CSS and shadcn/ui components"
+                    },
+                    {
+                        icon: "🐍",
+                        title: "Python Microservices",
+                        desc: "FastAPI services for AI evaluation and ML-powered behavioral analytics"
+                    },
+                    {
+                        icon: "🗄️",
+                        title: "PostgreSQL + pgvector",
+                        desc: "77 Prisma models with vector embeddings for semantic search capabilities"
+                    }
+                ]
+            },
+            {
+                title: "Engineering Excellence",
+                subtitle: "Production-Ready Implementation",
+                features: [
+                    {
+                        icon: "📝",
+                        title: "World-Class Documentation",
+                        desc: "163+ markdown files following BMAD Method principles with automated quality gates"
+                    },
+                    {
+                        icon: "🧪",
+                        title: "Comprehensive Testing",
+                        desc: "Multi-layered testing strategy with 291+ tests and high coverage targets"
+                    },
+                    {
+                        icon: "🚀",
+                        title: "Scalable Deployment",
+                        desc: "Vercel + Neon + Upstash stack with detailed deployment guides and rollback procedures"
+                    }
+                ]
+            }
+        ];
+        
+        // Current slide index
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+        const progressBar = document.getElementById('progressBar');
+        const slideNav = document.getElementById('slideNav');
+        const navButtons = slideNav.querySelectorAll('.nav-btn');
+        
+        // Update progress bar
+        function updateProgress() {
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            gsap.to(progressBar, {
+                width: `${progress}%`,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        }
+        
+        // Update navigation buttons
+        function updateNav() {
+            navButtons.forEach((btn, index) => {
+                if (index === currentSlide) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+        
+        // Create slide content
+        function createSlideContent(slideData) {
+            const slideContainer = document.getElementById('slideContainer');
+            const slideContent = slideContainer.querySelector('.slide-content');
+            
+            if (slideData.features) {
+                // Feature slide
+                slideContent.innerHTML = `
+                    <h1 class="display-lg fade-in">${slideData.title}</h1>
+                    <p class="body-lg fade-in" style="opacity: 0; transform: translateY(20px);">${slideData.subtitle}</p>
+                    <div class="feature-grid">
+                        ${slideData.features.map(feature => `
+                            <div class="feature-card stagger-item" style="opacity: 0; transform: translateY(30px);">
+                                <div class="feature-icon">${feature.icon}</div>
+                                <h3 class="feature-title">${feature.title}</h3>
+                                <p class="feature-desc">${feature.desc}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                // Title slide
+                slideContent.innerHTML = `
+                    <h1 class="display-xl fade-in">${slideData.title}</h1>
+                    <p class="body-lg fade-in" style="opacity: 0; transform: translateY(20px);">${slideData.subtitle}</p>
+                    <p class="body-lg fade-in" style="opacity: 0; transform: translateY(20px);">${slideData.tagline}</p>
+                `;
+            }
+        }
+        
+        // Animate slide entrance
+        function animateSlideEntrance() {
+            const fadeIns = document.querySelectorAll('.fade-in');
+            const staggerItems = document.querySelectorAll('.stagger-item');
+            
+            // Animate fade-in elements
+            gsap.fromTo(fadeIns, {
+                opacity: 0,
+                y: 20
+            }, {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                ease: "power2.out",
+                stagger: 0.1
+            });
+            
+            // Animate stagger items (feature cards)
+            if (staggerItems.length > 0) {
+                gsap.fromTo(staggerItems, {
+                    opacity: 0,
+                    y: 30
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5,
+                    ease: "power2.out",
+                    stagger: 0.1,
+                    delay: 0.3
+                });
+            }
+        }
+        
+        // Go to specific slide
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            
+            currentSlide = index;
+            createSlideContent(slides[currentSlide]);
+            updateProgress();
+            updateNav();
+            
+            // Small delay to ensure DOM is updated before animation
+            setTimeout(() => {
+                animateSlideEntrance();
+            }, 50);
+        }
+        
+        // Next slide
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+        
+        // Previous slide
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+        
+        // Mouse wheel navigation
+        let wheelTimeout;
+        document.addEventListener('wheel', (e) => {
+            clearTimeout(wheelTimeout);
+            wheelTimeout = setTimeout(() => {
+                if (e.deltaY > 0) {
+                    nextSlide();
+                } else if (e.deltaY < 0) {
+                    prevSlide();
+                }
+            }, 150);
+        });
+        
+        // Navigation button click handlers
+        navButtons.forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                goToSlide(index);
+            });
+        });
+        
+        // Initialize first slide
+        goToSlide(0);
+        
+        // Add click handlers for mobile navigation
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.slide-content')) {
+                if (e.clientX < window.innerWidth / 2) {
+                    prevSlide();
+                } else {
+                    nextSlide();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

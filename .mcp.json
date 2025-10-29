@@ -16,7 +16,11 @@
       "command": "npx",
       "args": ["shadcn@latest", "mcp"],
       "timeout": 60
+    },
+    "zen_mcp_server": {
+      "command": "/Users/kyin/zen-mcp-server/zen-mcp-server",
+      "args": [],
+      "timeout": 60
     }
   }
 }
-

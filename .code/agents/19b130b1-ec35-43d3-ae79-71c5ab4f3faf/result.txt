@@ -1,0 +1,991 @@
+# Americano Docs Pruning & Consolidation Plan
+
+**Objective:** Reduce doc count by 40–60% while preserving essential knowledge, enforcing frontmatter standards, and establishing a sustainable maintenance model.
+
+**Current State:**
+- **Total Docs:** ~157 markdown files
+- **Target Reduction:** 63–94 files (40–60%)
+- **Final Target:** 63–94 essential docs
+- **Key Constraint:** Preserve Epic 3/4/5 completion artifacts, ADRs, and operational docs
+
+---
+
+## Phase 1: Top-Level Information Architecture (IA) & Directory Layout
+
+### Final IA (7 Core Sections)
+
+```
+docs/
+├── index.md                          # Master index (KEEP - single entry point)
+├── architecture/                     # ADRs, system design, tech decisions
+│   ├── ADR-INDEX.md
+│   ├── ADR-001-*.md ... ADR-005-*.md
+│   ├── solution-architecture.md
+│   └── system-context.md             # NEW: Consolidated high-level context
+├── setup/                            # Environment, local dev, deployment
+│   ├── local-development.md          # Consolidate all local setup docs
+│   ├── deployment.md                 # Merge Epic 4/5 deployment guides
+│   └── troubleshooting.md            # Common issues across all epics
+├── frontend/                         # Next.js, React, UI patterns
+│   ├── component-library.md          # Consolidate Epic 5 design system
+│   ├── state-management.md           # Zustand patterns
+│   └── api-integration.md            # TanStack Query + tRPC patterns
+├── backend/                          # FastAPI, Prisma, data models
+│   ├── api-contracts.md              # OpenAPI spec + route maps
+│   ├── data-models.md                # Prisma schema summary (77 models)
+│   └── python-services.md            # FastAPI + ML service patterns
+├── operations/                       # Testing, performance, migrations
+│   ├── testing.md                    # Consolidate all testing docs
+│   ├── performance.md                # Merge Epic 5 benchmarks
+│   ├── migrations.md                 # Database migration strategies
+│   └── monitoring.md                 # Analytics, observability
+├── deprecated/                       # Archive only (no links from index)
+│   ├── ARCHIVE-MANIFEST.md           # Index of all archived docs
+│   ├── epics/                        # Completed epic artifacts
+│   │   ├── epic-3/
+│   │   ├── epic-4/
+│   │   └── epic-5/
+│   └── stories/                      # All 78 story files
+└── frontmatter-standard.md           # KEEP - canonical spec
+
+ROOT/
+├── README.md                         # KEEP - project overview
+├── CHANGELOG.md                      # KEEP - release history
+└── CONTRIBUTING.md                   # NEW - contribution guidelines
+```
+
+### Directory Layout Rationale
+
+| Section | Purpose | File Count Target | Review Cadence |
+|---------|---------|-------------------|----------------|
+| **architecture/** | Immutable decisions (ADRs), system design | 8–10 files | Per ADR (rarely) |
+| **setup/** | Onboarding, deployment, troubleshooting | 3–5 files | Per change |
+| **frontend/** | Next.js/React patterns for engineers | 3–5 files | Monthly |
+| **backend/** | API/data layer for engineers | 3–5 files | Monthly |
+| **operations/** | Testing, perf, migrations for DevOps | 4–6 files | Per epic/release |
+| **deprecated/** | Archive (no active links) | ~80–100 files | Never (frozen) |
+
+**Total Active Docs:** ~30–40 files (75% reduction from ~157)
+
+---
+
+## Phase 2: Deletion/Archival Strategy
+
+### 2.1 Deletion Globs & Rationale
+
+#### **Category 1: Duplicate/Obsolete Setup Docs**
+**Rationale:** Multiple overlapping "getting started" guides scattered across docs/
+
+**Globs:**
+```bash
+docs/development-environment-setup.md
+docs/developer-guides/getting-started.md
+docs/developer-guides/local-setup.md
+docs/STORY-4.3-TESTING-QUICK-START.md
+docs/LOCAL-DEVELOPMENT-GUIDE.md
+```
+
+**Action:** **DELETE** (consolidate into `docs/setup/local-development.md`)
+
+**Migration Example:**
+```
+FROM: docs/development-environment-setup.md (Section: "Starting Next.js dev server")
+TO:   docs/setup/local-development.md (Section: "Quick Start")
+```
+
+---
+
+#### **Category 2: Story-Specific Context Files (78 files)**
+**Rationale:** Story context XMLs were used during Epic 3/4/5 development but have no operational value post-merge.
+
+**Globs:**
+```bash
+docs/stories/story-context-3.*.xml      # 6 Epic 3 stories
+docs/stories/story-context-4.*.xml      # 6 Epic 4 stories
+docs/stories/story-context-5.*.xml      # 6 Epic 5 stories
+docs/stories/story-*.md                 # Misc story notes
+docs/STORY-*.md                         # Uppercase story files
+```
+
+**Action:** **ARCHIVE** to `docs/deprecated/stories/` (preserve for historical reference)
+
+**Migration Example:**
+```
+FROM: docs/stories/story-context-4.1-comprehension-prompts.xml
+TO:   docs/deprecated/stories/epic-4/story-context-4.1-comprehension-prompts.xml
+```
+
+---
+
+#### **Category 3: Epic-Specific Completion Docs**
+**Rationale:** Epic retrospectives, completion summaries, and deployment plans are historical artifacts.
+
+**Globs:**
+```bash
+docs/epic-3-completion-report.md
+docs/EPIC-5-COMPLETION-SUMMARY.md
+docs/EPIC5-MASTER-SUMMARY.md
+docs/retrospectives/epic-4-retro-2025-10-20.md
+docs/retrospectives/epic-5-retrospective-2025-10-20.md
+docs/deployments/epic4-deployment-plan.md
+docs/EPIC5-DEPLOYMENT-GUIDE.md
+```
+
+**Action:** **ARCHIVE** to `docs/deprecated/epics/epic-{3,4,5}/` + **CONSOLIDATE** deployment info into `docs/setup/deployment.md`
+
+**Migration Example:**
+```
+FROM: docs/EPIC5-DEPLOYMENT-GUIDE.md (Section: "Database migrations")
+TO:   docs/setup/deployment.md (Section: "Production Deployment → Database Migrations")
+
+FROM: docs/EPIC5-DEPLOYMENT-GUIDE.md (entire file)
+TO:   docs/deprecated/epics/epic-5/EPIC5-DEPLOYMENT-GUIDE.md (archive)
+```
+
+---
+
+#### **Category 4: Duplicate Testing Docs**
+**Rationale:** Multiple test reports and guides with overlapping content.
+
+**Globs:**
+```bash
+docs/testing/story-3.4-test-summary.md
+docs/testing/story-3.6-test-report.md
+docs/testing/epic4-test-summary.md
+docs/EPIC5-TEST-COVERAGE.md
+docs/test-reports/
+```
+
+**Action:** **ARCHIVE** specific reports, **CONSOLIDATE** testing strategy into `docs/operations/testing.md`
+
+**Migration Example:**
+```
+FROM: docs/testing/epic4-test-summary.md (Section: "Coverage targets: 65+ tests")
+TO:   docs/operations/testing.md (Section: "Coverage Targets → Epic 4: 65+ tests passing")
+
+FROM: docs/testing/epic4-test-summary.md (entire file)
+TO:   docs/deprecated/epics/epic-4/epic4-test-summary.md (archive)
+```
+
+---
+
+#### **Category 5: Design System Fragmentation (Epic 5)**
+**Rationale:** Epic 5 created multiple design docs (OKLCH, glassmorphism, accessibility) that should be unified.
+
+**Globs:**
+```bash
+docs/EPIC5-DESIGN-SYSTEM-GUIDE.md
+docs/EPIC5-ACCESSIBILITY-WCAG.md
+docs/EPIC5-OKLCH-COLOR-SYSTEM.md
+docs/design/glassmorphism-patterns.md
+```
+
+**Action:** **CONSOLIDATE** into `docs/frontend/component-library.md` + **ARCHIVE** originals
+
+**Migration Example:**
+```
+FROM: docs/EPIC5-OKLCH-COLOR-SYSTEM.md (Section: "Color palette")
+TO:   docs/frontend/component-library.md (Section: "Design Tokens → Color System (OKLCH)")
+
+FROM: docs/EPIC5-DESIGN-SYSTEM-GUIDE.md (entire file)
+TO:   docs/deprecated/epics/epic-5/EPIC5-DESIGN-SYSTEM-GUIDE.md (archive)
+```
+
+---
+
+#### **Category 6: Performance & Benchmarks**
+**Rationale:** Epic 5 created detailed performance docs; merge into single operational guide.
+
+**Globs:**
+```bash
+docs/EPIC5-PERFORMANCE-BENCHMARKS.md
+docs/performance/performance-optimization-report.md
+docs/performance/epic5-cache-strategy.md
+docs/DATABASE-QUERY-OPTIMIZATION.md
+```
+
+**Action:** **CONSOLIDATE** into `docs/operations/performance.md`
+
+**Migration Example:**
+```
+FROM: docs/EPIC5-PERFORMANCE-BENCHMARKS.md (Section: "Two-tier caching: 65-85% hit rate")
+TO:   docs/operations/performance.md (Section: "Caching Strategy → Redis L1 + In-Memory L2")
+```
+
+---
+
+#### **Category 7: Deprecated Multi-Worktree Docs**
+**Rationale:** Multi-worktree workflow is deprecated (per CLAUDE.md), docs are obsolete.
+
+**Globs:**
+```bash
+docs/MULTI-WORKTREE-GUIDE.md
+docs/developer-guides/worktree-workflow.md
+```
+
+**Action:** **ARCHIVE** to `docs/deprecated/workflows/` (reference only)
+
+---
+
+#### **Category 8: Miscellaneous Deprecated**
+**Rationale:** One-off docs with no clear owner or active use.
+
+**Globs:**
+```bash
+docs/CHANGELOG-2025-10-15.md          # Superseded by root CHANGELOG.md
+docs/API-ROUTE-REFACTOR.md            # Completed refactor, no longer needed
+docs/MIGRATION-STRATEGY-TEMP.md       # Temp file, consolidated into migrations.md
+docs/QUICK-WINS-*.md                  # Ad-hoc lists, no longer relevant
+```
+
+**Action:** **DELETE** (no historical value)
+
+---
+
+### 2.2 Concrete Migration Examples (10 Examples)
+
+| # | From | To | Rationale |
+|---|------|-----|-----------|
+| 1 | `docs/development-environment-setup.md` | `docs/setup/local-development.md` (merge) | Consolidate all local setup |
+| 2 | `docs/stories/story-context-4.1-*.xml` | `docs/deprecated/stories/epic-4/` | Archive story artifacts |
+| 3 | `docs/EPIC5-DEPLOYMENT-GUIDE.md` (deployment steps) | `docs/setup/deployment.md` (merge) | Single deployment guide |
+| 4 | `docs/EPIC5-DEPLOYMENT-GUIDE.md` (full file) | `docs/deprecated/epics/epic-5/` | Archive epic-specific guide |
+| 5 | `docs/testing/epic4-test-summary.md` | `docs/operations/testing.md` (merge) + `docs/deprecated/epics/epic-4/` (archive) | Consolidate testing strategy |
+| 6 | `docs/EPIC5-DESIGN-SYSTEM-GUIDE.md` | `docs/frontend/component-library.md` (merge) + `docs/deprecated/epics/epic-5/` (archive) | Unified design system doc |
+| 7 | `docs/EPIC5-PERFORMANCE-BENCHMARKS.md` | `docs/operations/performance.md` (merge) + `docs/deprecated/epics/epic-5/` (archive) | Single performance guide |
+| 8 | `docs/DATABASE-MIGRATION-STRATEGY.md` | `docs/operations/migrations.md` (merge) | Consolidate migration docs |
+| 9 | `docs/CHANGELOG-2025-10-15.md` | **DELETE** | Superseded by root `CHANGELOG.md` |
+| 10 | `docs/MULTI-WORKTREE-GUIDE.md` | `docs/deprecated/workflows/` | Archive deprecated workflow |
+
+---
+
+### 2.3 Archive Manifest
+
+**Create:** `docs/deprecated/ARCHIVE-MANIFEST.md`
+
+**Content:**
+```markdown
+---
+title: "Deprecated Docs Archive Manifest"
+description: "Index of all archived documentation (no active links)"
+type: "Archive"
+status: "Frozen"
+owner: "Documentation Team"
+created_date: "2025-10-29"
+last_updated: "2025-10-29"
+review_cadence: "Never (frozen archive)"
+---
+
+# Archive Manifest
+
+This directory contains **historical documentation artifacts** from completed Epics 3, 4, and 5.
+These files are **frozen** and not actively maintained. Do not link to these files from active documentation.
+
+## Archive Structure
+
+- `epics/epic-3/` - Epic 3 completion artifacts (semantic search, knowledge graph)
+- `epics/epic-4/` - Epic 4 completion artifacts (understanding validation)
+- `epics/epic-5/` - Epic 5 completion artifacts (behavioral twin)
+- `stories/` - 78 story context files (XMLs + notes)
+- `workflows/` - Deprecated workflows (multi-worktree)
+
+## Accessing Archived Docs
+
+**If you need information from archived docs:**
+1. Check if the info exists in active docs (search `docs/index.md`)
+2. If not, consult this manifest to locate the archive
+3. Extract relevant info and add to active docs (with proper frontmatter)
+4. Do NOT link directly to archived files
+
+## File Count
+
+- **Epic 3:** 12 files
+- **Epic 4:** 18 files
+- **Epic 5:** 24 files
+- **Stories:** 78 files
+- **Workflows:** 4 files
+- **Total:** ~136 archived files
+```
+
+---
+
+## Phase 3: YAML Frontmatter Normalization
+
+### 3.1 Frontmatter Spec (Per `docs/frontmatter-standard.md`)
+
+**Minimal Required Fields for Active Docs:**
+```yaml
+---
+title: "Document Title"
+description: "Brief description (1-2 sentences)"
+type: "Architecture | Setup | Frontend | Backend | Operations"
+status: "Active | Draft | Review"
+owner: "Kevy | Amelia | Winston | Team Name"
+review_cadence: "Per Change | Monthly | Quarterly"
+created_date: "2025-10-29T10:00:00-07:00"  # ISO 8601 with timezone
+last_updated: "2025-10-29T10:00:00-07:00"
+---
+```
+
+**Optional Fields:**
+```yaml
+depends_on: ["docs/architecture/ADR-001-*.md"]
+affects: ["apps/web/src/components/"]
+tags: ["api", "authentication", "epic-5"]
+technical_level: "Beginner | Intermediate | Advanced"
+```
+
+---
+
+### 3.2 Automation Approach (Minimal Bash/Node)
+
+**Strategy:** Semi-automated validation + manual fixes (avoid over-engineering)
+
+#### Step 1: Validate Existing Frontmatter
+
+**Bash Script:** `scripts/validate-frontmatter.sh`
+
+```bash
+#!/bin/bash
+# Validate frontmatter in all active docs (excluding deprecated/)
+
+REQUIRED_FIELDS=("title" "description" "type" "status" "owner" "review_cadence" "created_date" "last_updated")
+
+for file in $(find docs -name "*.md" -not -path "docs/deprecated/*"); do
+  echo "Checking: $file"
+  
+  # Extract frontmatter (between first two --- delimiters)
+  frontmatter=$(awk '/^---$/{i++}i==1' "$file" | head -n -1)
+  
+  # Check required fields
+  for field in "${REQUIRED_FIELDS[@]}"; do
+    if ! echo "$frontmatter" | grep -q "^$field:"; then
+      echo "  ❌ Missing field: $field"
+    fi
+  done
+  
+  # Check ISO 8601 timestamp format
+  if ! echo "$frontmatter" | grep -E 'created_date: "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}'; then
+    echo "  ⚠️  Invalid created_date format (expected ISO 8601)"
+  fi
+done
+```
+
+**Usage:**
+```bash
+chmod +x scripts/validate-frontmatter.sh
+./scripts/validate-frontmatter.sh > frontmatter-report.txt
+```
+
+---
+
+#### Step 2: Auto-Add Missing Frontmatter (Conservative)
+
+**Node Script:** `scripts/add-frontmatter.js`
+
+```javascript
+#!/usr/bin/env node
+const fs = require('fs');
+const path = require('path');
+const glob = require('glob');
+
+// Default frontmatter template
+const defaultFrontmatter = `---
+title: "FIXME: Add Title"
+description: "FIXME: Add Description"
+type: "FIXME: Architecture | Setup | Frontend | Backend | Operations"
+status: "Draft"
+owner: "FIXME: Assign Owner"
+review_cadence: "Per Change"
+created_date: "${new Date().toISOString()}"
+last_updated: "${new Date().toISOString()}"
+---
+
+`;
+
+// Find all .md files excluding deprecated/
+const files = glob.sync('docs/**/*.md', { ignore: 'docs/deprecated/**' });
+
+files.forEach((file) => {
+  const content = fs.readFileSync(file, 'utf8');
+  
+  // Check if frontmatter exists (starts with ---)
+  if (!content.startsWith('---')) {
+    console.log(`Adding frontmatter to: ${file}`);
+    fs.writeFileSync(file, defaultFrontmatter + content, 'utf8');
+  }
+});
+
+console.log('✅ Frontmatter added to files missing it (with FIXME placeholders)');
+```
+
+**Usage:**
+```bash
+npm install glob  # Install dependency
+node scripts/add-frontmatter.js
+```
+
+**Result:** Files without frontmatter get a template with `FIXME:` placeholders for manual completion.
+
+---
+
+#### Step 3: Manual Review & Fixes
+
+**Process:**
+1. Run validation script: `./scripts/validate-frontmatter.sh`
+2. Search for `FIXME:` placeholders: `grep -r "FIXME:" docs/`
+3. Manually fill in correct values per file:
+   - `title`: Derive from H1 heading or filename
+   - `description`: Extract from first paragraph
+   - `type`: Map to IA section (Architecture, Setup, etc.)
+   - `owner`: Assign based on content area (Kevy, Amelia, Winston)
+   - `review_cadence`: Per Change (setup/ops), Monthly (frontend/backend), Quarterly (architecture)
+
+---
+
+### 3.3 CI Integration (Enforce on New Docs)
+
+**Add to `.github/workflows/docs-quality.yml`:**
+
+```yaml
+- name: Validate Frontmatter
+  run: |
+    ./scripts/validate-frontmatter.sh
+    if grep -r "FIXME:" docs/ --exclude-dir=deprecated; then
+      echo "❌ Found FIXME placeholders in frontmatter"
+      exit 1
+    fi
+```
+
+**Enforcement:**
+- All new/modified docs must have complete frontmatter (no `FIXME:`)
+- CI fails if validation errors found
+- Exclude `docs/deprecated/` from checks
+
+---
+
+## Phase 4: Link Health & CI Updates
+
+### 4.1 Link Health Strategy
+
+**Current State:**
+- `markdown-link-check` in CI
+- Config: `.markdown-link-check.json`
+
+**Updates Needed:**
+
+#### 1. Exclude Deprecated Docs from Link Checks
+
+**Update `.markdown-link-check.json`:**
+```json
+{
+  "ignorePatterns": [
+    { "pattern": "^http://localhost" },
+    { "pattern": "^https://github.com/.*#.*" },
+    { "pattern": "^/docs/deprecated/.*" }  // NEW: Ignore archived docs
+  ],
+  "timeout": "5s",
+  "retryOn429": true,
+  "retryCount": 3
+}
+```
+
+#### 2. Update CI Workflow
+
+**Modify `.github/workflows/docs-quality.yml`:**
+```yaml
+- name: Link Check (Active Docs Only)
+  uses: gaurav-nelson/github-action-markdown-link-check@v1
+  with:
+    config-file: '.markdown-link-check.json'
+    folder-path: 'docs/'
+    file-path: 'README.md, CHANGELOG.md, CONTRIBUTING.md'
+    exclude: 'docs/deprecated/**'  # NEW: Skip archived docs
+```
+
+#### 3. Pre-Migration Link Inventory
+
+**Bash Script:** `scripts/find-links-to-deprecated.sh`
+
+```bash
+#!/bin/bash
+# Find all links pointing to docs that will be archived/deleted
+
+DEPRECATED_PATHS=(
+  "docs/stories/"
+  "docs/EPIC5-DEPLOYMENT-GUIDE.md"
+  "docs/EPIC5-DESIGN-SYSTEM-GUIDE.md"
+  # Add all paths from Phase 2 globs
+)
+
+for path in "${DEPRECATED_PATHS[@]}"; do
+  echo "Searching for links to: $path"
+  grep -r "\]($path" docs/ --exclude-dir=deprecated
+  grep -r "\](./$path" docs/ --exclude-dir=deprecated
+done
+```
+
+**Action:**
+1. Run script before archival
+2. Update all found links to point to new consolidated docs
+3. If no new location exists, remove the link (content is archived)
+
+---
+
+### 4.2 CI Quality Gates (Updated)
+
+**Final `.github/workflows/docs-quality.yml`:**
+
+```yaml
+name: Documentation Quality Gate
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '*.md'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '*.md'
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Frontmatter
+        run: |
+          chmod +x scripts/validate-frontmatter.sh
+          ./scripts/validate-frontmatter.sh
+          if grep -r "FIXME:" docs/ --exclude-dir=deprecated; then
+            echo "❌ Found FIXME placeholders in frontmatter"
+            exit 1
+          fi
+
+      - name: Markdown Lint
+        uses: nosborn/github-action-markdown-cli@v3.3.0
+        with:
+          files: 'docs/ *.md'
+          config_file: '.markdownlint.json'
+          ignore_path: 'docs/deprecated/'
+
+      - name: Link Check (Active Docs Only)
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          config-file: '.markdown-link-check.json'
+          folder-path: 'docs/'
+          exclude: 'docs/deprecated/**'
+
+      - name: Vale Linting (Optional)
+        uses: errata-ai/vale-action@v2
+        with:
+          files: docs/
+          fail_on_error: false
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+```
+
+---
+
+## Phase 5: Migration Strategy & Rollback Plan
+
+### 5.1 Migration Process (3-Step Workflow)
+
+#### **Step 1: Pre-Migration Prep (No Edits)**
+1. **Create branch:** `git checkout -b docs/pruning-consolidation`
+2. **Inventory links:** Run `scripts/find-links-to-deprecated.sh > links-inventory.txt`
+3. **Review inventory:** Identify docs that need content extraction before archival
+4. **Create archive structure:**
+   ```bash
+   mkdir -p docs/deprecated/{epics/{epic-3,epic-4,epic-5},stories,workflows}
+   ```
+
+---
+
+#### **Step 2: Consolidation (Content Extraction)**
+
+**Process for Each Consolidation Target:**
+
+**Example: `docs/setup/local-development.md`** (consolidates 5 setup docs)
+
+```bash
+# 1. Create new consolidated doc with frontmatter
+cat > docs/setup/local-development.md << 'EOF'
+---
+title: "Local Development Setup"
+description: "Complete guide for setting up Americano development environment"
+type: "Setup"
+status: "Active"
+owner: "Winston"
+review_cadence: "Per Change"
+created_date: "2025-10-29T10:00:00-07:00"
+last_updated: "2025-10-29T10:00:00-07:00"
+depends_on:
+  - README.md
+  - apps/web/package.json
+affects:
+  - apps/web
+  - apps/api
+tags: ["setup", "development", "environment"]
+technical_level: "Beginner"
+---
+
+# Local Development Setup
+
+> **Last Verified:** 2025-10-29  
+> **Owner:** Winston (DevOps)
+
+## Quick Start
+
+... (extract from docs/development-environment-setup.md)
+
+## Prerequisites
+
+... (extract from docs/developer-guides/getting-started.md)
+
+## Starting Services
+
+### Next.js (Port 3000)
+... (extract from docs/LOCAL-DEVELOPMENT-GUIDE.md)
+
+### Python FastAPI (Port 8000)
+... (extract from docs/development-environment-setup.md)
+
+## Troubleshooting
+
+... (extract from docs/developer-guides/local-setup.md)
+
+---
+
+**Archived Sources:**
+- docs/development-environment-setup.md
+- docs/developer-guides/getting-started.md
+- docs/LOCAL-DEVELOPMENT-GUIDE.md
+EOF
+
+# 2. Archive source docs
+mv docs/development-environment-setup.md docs/deprecated/setup/
+mv docs/developer-guides/getting-started.md docs/deprecated/setup/
+mv docs/LOCAL-DEVELOPMENT-GUIDE.md docs/deprecated/setup/
+```
+
+**Repeat for all consolidation targets:**
+- `docs/setup/deployment.md` (merge Epic 4/5 deployment guides)
+- `docs/frontend/component-library.md` (merge Epic 5 design docs)
+- `docs/operations/testing.md` (merge test reports)
+- `docs/operations/performance.md` (merge Epic 5 benchmarks)
+- `docs/backend/api-contracts.md` (existing, update with API route maps)
+
+---
+
+#### **Step 3: Archive/Delete Execution**
+
+**Archive Story Files:**
+```bash
+# Move all 78 story context files
+mv docs/stories/story-context-*.xml docs/deprecated/stories/
+mv docs/STORY-*.md docs/deprecated/stories/
+```
+
+**Archive Epic Completion Docs:**
+```bash
+# Epic 3
+mv docs/epic-3-completion-report.md docs/deprecated/epics/epic-3/
+mv docs/stories/story-context-3.*.xml docs/deprecated/epics/epic-3/
+
+# Epic 4
+mv docs/retrospectives/epic-4-retro-2025-10-20.md docs/deprecated/epics/epic-4/
+mv docs/deployments/epic4-deployment-plan.md docs/deprecated/epics/epic-4/
+mv docs/testing/epic4-test-summary.md docs/deprecated/epics/epic-4/
+
+# Epic 5
+mv docs/EPIC5-*.md docs/deprecated/epics/epic-5/
+mv docs/retrospectives/epic-5-retrospective-2025-10-20.md docs/deprecated/epics/epic-5/
+```
+
+**Delete Obsolete Files:**
+```bash
+rm docs/CHANGELOG-2025-10-15.md
+rm docs/API-ROUTE-REFACTOR.md
+rm docs/MIGRATION-STRATEGY-TEMP.md
+rm docs/QUICK-WINS-*.md
+```
+
+**Create Archive Manifest:**
+```bash
+# Generate manifest with file counts
+cat > docs/deprecated/ARCHIVE-MANIFEST.md << 'EOF'
+# (content from Phase 2.3)
+EOF
+```
+
+**Update Master Index:**
+```bash
+# Edit docs/index.md to remove links to archived/deleted docs
+# Add new consolidated docs to relevant sections
+```
+
+---
+
+### 5.2 Rollback Plan
+
+**Scenario 1: Consolidation Error (Missing Critical Info)**
+
+**Symptoms:**
+- User reports missing information from consolidated doc
+- Original source doc had content not extracted
+
+**Rollback Steps:**
+1. Retrieve original from `docs/deprecated/` or git history
+2. Extract missing content
+3. Add to consolidated doc with proper attribution
+4. Update `last_updated` timestamp
+
+**Example:**
+```bash
+# Retrieve original
+git show origin/main:docs/EPIC5-DEPLOYMENT-GUIDE.md > /tmp/original.md
+
+# Extract missing section (manually)
+# Add to docs/setup/deployment.md
+
+# Commit fix
+git add docs/setup/deployment.md
+git commit -m "docs: Add missing EPIC5 deployment info to consolidated guide"
+```
+
+---
+
+**Scenario 2: Broken Links Post-Migration**
+
+**Symptoms:**
+- CI link check fails
+- Users report 404s on links
+
+**Rollback Steps:**
+1. Identify broken links: `npm run check:links`
+2. For each broken link:
+   - **Option A:** Update to point to new consolidated doc (preferred)
+   - **Option B:** Restore archived file temporarily to `docs/deprecated/` (not ideal)
+3. Add redirect comment in consolidated doc:
+   ```markdown
+   <!-- Replaces: docs/EPIC5-DEPLOYMENT-GUIDE.md (archived 2025-10-29) -->
+   ```
+
+---
+
+**Scenario 3: Full Rollback (Nuclear Option)**
+
+**If migration causes widespread issues:**
+
+```bash
+# Revert branch
+git checkout main
+git branch -D docs/pruning-consolidation
+
+# Restore from backup commit
+git reset --hard <commit-before-migration>
+
+# Document failure
+echo "Migration failed on $(date): <reason>" >> docs/MIGRATION-FAILURES.md
+```
+
+---
+
+### 5.3 Git Workflow
+
+**Best Practice: Atomic Commits Per Consolidation**
+
+```bash
+# Commit 1: Create consolidated setup docs
+git add docs/setup/
+git commit -m "docs: Consolidate local dev setup into docs/setup/local-development.md"
+
+# Commit 2: Archive source docs
+git add docs/deprecated/setup/
+git commit -m "docs: Archive 5 setup docs to deprecated/setup/"
+
+# Commit 3: Update index
+git add docs/index.md
+git commit -m "docs: Update index to link to consolidated setup docs"
+
+# ... repeat for each consolidation target
+```
+
+**Why Atomic Commits:**
+- Easy to revert individual consolidations if issues found
+- Clear git history for future audits
+- Simplifies rollback (cherry-pick specific commits)
+
+---
+
+## Phase 6: Acceptance Criteria & Verification
+
+### 6.1 Acceptance Criteria
+
+| # | Criterion | Measurement | Target |
+|---|-----------|-------------|--------|
+| 1 | **Doc Count Reduction** | `find docs -name "*.md" \| wc -l` (exclude deprecated/) | **≤ 40 files** (75% reduction from ~157) |
+| 2 | **Frontmatter Compliance** | All active docs have 8 required fields | **100%** |
+| 3 | **Link Health** | Zero broken links in active docs | **0 broken links** |
+| 4 | **CI Passing** | docs-quality.yml workflow passes | **✅ Green** |
+| 5 | **Index Coverage** | docs/index.md links to all 7 IA sections | **7/7 sections** |
+| 6 | **Archive Manifest** | All archived files listed in ARCHIVE-MANIFEST.md | **100% coverage** |
+| 7 | **No Active Links to Deprecated** | `grep -r "docs/deprecated" docs/ --exclude-dir=deprecated` returns 0 | **0 matches** |
+| 8 | **Review Cadence Assigned** | All active docs have `review_cadence` field | **100%** |
+
+---
+
+### 6.2 Verification Checklist
+
+**Pre-Migration:**
+- [ ] Branch created: `docs/pruning-consolidation`
+- [ ] Link inventory generated: `scripts/find-links-to-deprecated.sh > links-inventory.txt`
+- [ ] Archive structure created: `docs/deprecated/{epics,stories,workflows}/`
+- [ ] Backup commit tagged: `git tag docs-pre-prune-backup`
+
+**During Migration:**
+- [ ] Consolidated docs created with complete frontmatter (8 files):
+  - [ ] `docs/setup/local-development.md`
+  - [ ] `docs/setup/deployment.md`
+  - [ ] `docs/setup/troubleshooting.md`
+  - [ ] `docs/frontend/component-library.md`
+  - [ ] `docs/operations/testing.md`
+  - [ ] `docs/operations/performance.md`
+  - [ ] `docs/backend/api-contracts.md` (updated)
+  - [ ] `docs/backend/data-models.md` (updated)
+- [ ] Story files archived: `docs/deprecated/stories/` (78 files)
+- [ ] Epic docs archived: `docs/deprecated/epics/epic-{3,4,5}/` (~54 files)
+- [ ] Obsolete files deleted (4+ files)
+- [ ] Archive manifest created: `docs/deprecated/ARCHIVE-MANIFEST.md`
+
+**Post-Migration:**
+- [ ] Doc count verified: `find docs -name "*.md" -not -path "docs/deprecated/*" | wc -l` ≤ 40
+- [ ] Frontmatter validated: `./scripts/validate-frontmatter.sh` (0 errors)
+- [ ] Links checked: `npm run check:links` (0 broken)
+- [ ] Master index updated: `docs/index.md` links to 7 IA sections
+- [ ] CI passing: All checks green on PR
+- [ ] No links to deprecated: `grep -r "docs/deprecated" docs/ --exclude-dir=deprecated` (0 matches)
+
+**Rollback Readiness:**
+- [ ] Atomic commits verified (1 commit per consolidation target)
+- [ ] Backup tag exists: `git tag -l docs-pre-prune-backup`
+- [ ] Rollback procedure documented (Phase 5.2)
+
+---
+
+### 6.3 Final Metrics Report Template
+
+**Generate After Migration:**
+
+```markdown
+# Docs Pruning & Consolidation - Final Report
+
+**Date:** 2025-10-29  
+**Branch:** docs/pruning-consolidation  
+**Status:** ✅ Complete
+
+## Metrics
+
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| **Total Docs** | 157 | 38 | **-76%** ✅ |
+| **Active Docs** | 157 | 38 | -119 files |
+| **Archived Docs** | 0 | 136 | +136 files |
+| **Deleted Docs** | 0 | 4 | +4 files |
+| **Frontmatter Compliance** | ~40% | 100% | **+60%** ✅ |
+| **Broken Links** | 12 | 0 | **-12** ✅ |
+| **IA Sections** | N/A | 7 | **7/7** ✅ |
+
+## File Count by IA Section
+
+| Section | File Count |
+|---------|-----------|
+| architecture/ | 8 |
+| setup/ | 3 |
+| frontend/ | 4 |
+| backend/ | 3 |
+| operations/ | 5 |
+| deprecated/ | 136 (frozen) |
+| Root (index, frontmatter spec) | 2 |
+| **Total Active** | **25** |
+
+## Consolidation Summary
+
+| Consolidated Doc | Sources Merged | Lines Added |
+|------------------|----------------|-------------|
+| setup/local-development.md | 5 | ~450 |
+| setup/deployment.md | 3 | ~320 |
+| frontend/component-library.md | 4 | ~580 |
+| operations/testing.md | 6 | ~420 |
+| operations/performance.md | 4 | ~380 |
+
+## Quality Gates
+
+- ✅ Markdown Lint: 0 errors
+- ✅ Link Check: 0 broken links
+- ✅ Frontmatter: 100% compliance
+- ✅ Vale: 0 critical issues
+
+## Rollback Plan
+
+- Backup tag: `docs-pre-prune-backup` (commit: abc1234)
+- Rollback command: `git reset --hard docs-pre-prune-backup`
+- Atomic commits: 15 (1 per consolidation target)
+
+---
+
+**Sign-Off:**
+- [ ] Technical Review: Winston (DevOps)
+- [ ] Content Review: Kevy (Documentation)
+- [ ] QA: CI Passing ✅
+```
+
+---
+
+## Summary
+
+### Key Deliverables
+
+1. **7-Section IA:** architecture, setup, frontend, backend, operations, deprecated, root
+2. **40-file target:** 75% reduction from ~157 to ~40 active docs
+3. **136 files archived:** Epic 3/4/5 artifacts + 78 story files preserved in `docs/deprecated/`
+4. **8 consolidated docs:** Local dev, deployment, testing, performance, component library, etc.
+5. **100% frontmatter compliance:** All active docs with 8 required fields (ISO 8601 timestamps)
+6. **0 broken links:** CI enforces link health (excluding deprecated/)
+7. **Automated validation:** Bash scripts + CI workflow for ongoing quality
+8. **Rollback plan:** Atomic commits + backup tag for safe migration
+
+### Commands Reference
+
+```bash
+# Validation
+./scripts/validate-frontmatter.sh
+npm run check:links
+npm run lint:docs
+
+# Migration
+git checkout -b docs/pruning-consolidation
+./scripts/find-links-to-deprecated.sh > links-inventory.txt
+# (manual consolidation + archival)
+git tag docs-pre-prune-backup
+
+# Rollback
+git reset --hard docs-pre-prune-backup
+```
+
+### Next Steps After Approval
+
+1. **User approval:** Review this plan, propose changes
+2. **Execute Phase 1-6:** Create branch, consolidate, archive, validate
+3. **Submit PR:** docs-quality.yml will enforce quality gates
+4. **Merge to main:** After CI passes + manual review
+5. **Monitor:** Track broken link reports, frontmatter drift over next sprint
+
+---
+
+**Plan Status:** ✅ **Ready for Review**  
+**Estimated Effort:** 4-6 hours (manual consolidation is the bottleneck)  
+**Risk Level:** Low (rollback plan + atomic commits)
