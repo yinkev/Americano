@@ -1,7 +1,7 @@
 /* Minimal API client wrapper (scaffold). Safe to merge. */
 import { toApiError } from './errors'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api'
 
 export type JsonValue = unknown
 export type Query = Record<string, string | number | boolean | null | undefined>
@@ -35,7 +35,8 @@ async function request<T = JsonValue>(
     ...init,
     headers,
   })
-  if (!resp.ok) throw await toApiError(resp)
+  if (!resp.ok) throw await toApiError(resp, { method })
+  if (resp.status === 204) return undefined as T
   const ct = resp.headers.get('Content-Type') || ''
   if (ct.includes('application/json')) return (await resp.json()) as T
   // @ts-expect-error allow text fallback for generic
