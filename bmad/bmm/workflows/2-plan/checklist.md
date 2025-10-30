@@ -164,7 +164,7 @@
 
 ---
 
-# Cohesion Validation (All Levels)
+## Cohesion Validation (All Levels)
 
 **Purpose**: Validate alignment between planning artifacts and readiness for implementation
 

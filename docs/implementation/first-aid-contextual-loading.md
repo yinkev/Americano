@@ -568,10 +568,10 @@ console.timeEnd('reference-load')
 
 ## Related Documentation
 
-- [Story 3.3 Requirements](/docs/stories/story-3.3.md)
-- [First Aid Mapper Architecture](/docs/architecture/first-aid-mapper.md)
-- [Semantic Search Implementation](/docs/implementation/semantic-search.md)
-- [API Documentation](/docs/api/first-aid-endpoints.md)
+`../stories/story-3.3.md`
+`../architecture/first-aid-mapper.md`
+`../implementation/semantic-search.md`
+`../api/first-aid-endpoints.md`
 
 ---
 

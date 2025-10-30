@@ -62,14 +62,14 @@ This index provides:
 ## Quick Links
 
 **For New Developers:**
-- [Getting Started](./development-environment-setup.md) - Set up your local environment
-- [Project Overview](./PRD-Americano-2025-10-14.md) - What is Americano?
-- [Solution Architecture](./solution-architecture.md) - System design overview
+- [Getting Started](./technical/development-environment-setup.md) - Set up your local environment
+- [Project Overview](./overview/PRD-Americano-2025-10-14.md) - What is Americano?
+- [Solution Architecture](./overview/solution-architecture.md) - System design overview
 
 **For Experienced Developers:**
 - [ADR Index](./architecture/ADR-INDEX.md) - Architecture Decision Records
-- [API Contracts](./api-contracts.md) - All endpoints documented
-- [Data Models](./data-models.md) - Database schema reference
+- [API Contracts](./backend/api-contracts.md) - All endpoints documented
+- [Data Models](./backend/data-models.md) - Database schema reference
 
 **Documentation Quality:**
 - [Documentation Excellence Report](./DOCUMENTATION-EXCELLENCE-REPORT.md) - 🏆 World-class achievement
@@ -77,8 +77,8 @@ This index provides:
 - [Frontmatter Standard](./frontmatter-standard.md) - Metadata guidelines
 
 **For AI Agents:**
-- [AGENTS.MD](../AGENTS.MD) - Agent development protocol
-- [CLAUDE.md](../CLAUDE.md) - Project instructions for Claude Code
+- `../AGENTS.MD` - Agent development protocol
+- `../CLAUDE.md` - Project instructions for Claude Code
 
 ---
 
@@ -130,7 +130,7 @@ docs/
 1. **Start at the index:** [docs/index.md](./index.md)
 2. **For setup issues:** [Troubleshooting](./troubleshooting/database-issues.md)
 3. **For architecture questions:** [ADR Index](./architecture/ADR-INDEX.md)
-4. **For AI agents:** [AGENTS.MD](../AGENTS.MD) and [CLAUDE.md](../CLAUDE.md)
+4. **For AI agents:** `../AGENTS.MD` and `../CLAUDE.md`
 
 ---
 

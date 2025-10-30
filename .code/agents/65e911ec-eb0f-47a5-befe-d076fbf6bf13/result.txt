@@ -1,0 +1,16 @@
+## Summary
+
+**8 duplicate destinations** found with the following resolutions:
+
+1. **docs/setup/deployment.md** (4→1) - Use epic4-deployment-plan as base, add 3 redirect stubs
+2. **docs/frontend/design-system.md** (3→1) - Use epic-5 guide as base, add 2 redirect stubs  
+3. **docs/operations/performance.md** (2→1) - Use benchmarks doc, add 1 redirect stub
+4. **docs/operations/migrations.md** (2→1) - Use strategy doc, add 1 redirect stub
+5. **docs/backend/api-reference.md** (2→1) - Use endpoints doc, add 1 redirect stub
+6. **docs/backend/api-contracts.md** (2→1) - Use contracts doc, add 1 redirect stub
+7. **docs/adr/epic-5-summary.md** (2→1) - Use master-summary, add 1 redirect stub
+8. **docs/adr/epic-4-summary.md** (2→1) - Use first retro, add 1 redirect stub
+
+**Total**: 8 `git mv` commands + 11 redirect stub files
+
+All commands preserve git history via `git mv`. Redirect stubs prevent broken internal links and guide users to the consolidated content.

@@ -211,12 +211,12 @@ apps/web/
 **Dependencies to Verify:**
 
 ```bash
-# Already installed (from Story 1.2)
-# - ChatMock client utilities
-# - Gemini client utilities
-# - Prisma ORM
+## Already installed (from Story 1.2)
+## - ChatMock client utilities
+## - Gemini client utilities
+## - Prisma ORM
 
-# May need to add:
+## May need to add:
 pnpm add zod                  # Already installed
 ```
 
@@ -425,7 +425,7 @@ None - All components already existed from previous stories
 
 ---
 
-# Senior Developer Review (AI)
+## Senior Developer Review (AI)
 
 **Reviewer:** Kevy  
 **Date:** 2025-10-15  

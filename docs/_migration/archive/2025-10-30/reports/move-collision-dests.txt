@@ -1,0 +1,8 @@
+docs/setup/deployment.md
+docs/frontend/design-system.md
+docs/operations/performance.md
+docs/operations/migrations.md
+docs/backend/api-reference.md
+docs/backend/api-contracts.md
+docs/adr/epic-5-summary.md
+docs/adr/epic-4-summary.md

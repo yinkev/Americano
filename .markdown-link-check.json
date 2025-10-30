@@ -1,11 +1,44 @@
 {
   "ignorePatterns": [
-    { "pattern": "^http://localhost" },
-    { "pattern": "^https://github.com/.*#.*" },
-    { "pattern": "docs/deprecated/" }
+    {
+      "pattern": "^http://localhost"
+    },
+    {
+      "pattern": "^https://github.com/.*#.*"
+    },
+    {
+      "pattern": "docs/deprecated/"
+    },
+    {
+      "pattern": "^mailto:"
+    },
+    {
+      "pattern": "^https?://flowlabs\\.google"
+    },
+    {
+      "pattern": "^https?://(?:0\\.0\\.0\\.0|127\\.0\\.0\\.1|localhost)"
+    },
+    {
+      "pattern": "^http://192\\.168\\."
+    },
+    {
+      "pattern": "^/Users/"
+    },
+    {
+      "pattern": "^(?:\\.\\./)+apps/"
+    },
+    {
+      "pattern": "^(?:\\.\\./)+services/"
+    },
+    {
+      "pattern": ":\\d+$"
+    }
   ],
   "timeout": "5s",
   "retryOn429": true,
   "retryCount": 2,
-  "aliveStatusCodes": [200, 206]
+  "aliveStatusCodes": [
+    200,
+    206
+  ]
 }

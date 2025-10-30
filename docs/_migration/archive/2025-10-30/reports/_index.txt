@@ -1,0 +1,9 @@
+
+== Summary ==
+Baseline lint: docs/_migration/reports/lint.baseline.log
+Baseline links: docs/_migration/reports/links.baseline.log
+Move preview: docs/_migration/reports/move.preview.log
+Move safety: docs/_migration/reports/move.safety.txt
+Rewrite counts: docs/_migration/reports/link.rewrites.counts.tsv
+Rewrite script snapshot: docs/_migration/reports/link.rewrites.script.txt
+MD018 preview: docs/_migration/reports/story-5.5.preview.md018.log

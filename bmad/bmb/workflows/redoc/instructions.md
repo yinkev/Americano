@@ -193,7 +193,7 @@
    - Add frontmatter: `---\nlast-redoc-date: {{date}}\n---\n`
 
    Structure:
-   - # Module Name
+- `# Module Name`
    - **Purpose**: 2-3 sentence high-level module purpose
    - **Overview**: 1-2 paragraphs describing what this module provides
 

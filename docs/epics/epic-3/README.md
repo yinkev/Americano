@@ -39,7 +39,7 @@ See [docs/stories/](../../stories/) for individual story specifications:
 
 ## Related Documentation
 
-- [ADR-005: Gemini Embeddings](../../architecture/ADR-005-embeddings-strategy.md)
-- [ADR-003: Two-Tier Caching](../../architecture/ADR-003-caching-strategy.md)
-- [API Contracts](../../api-contracts.md#epic-3-endpoints)
-- [Data Models](../../data-models.md#knowledge-graph)
+- [ADR-005: Gemini Embeddings](../../architecture/ADR-005-gemini-embeddings-1536.md)
+- [ADR-003: Two-Tier Caching](../../architecture/ADR-003-two-tier-caching.md)
+- [API Contracts](../../backend/api-contracts.md)
+- [Data Models](../../backend/data-models.md)

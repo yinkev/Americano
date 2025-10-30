@@ -139,5 +139,5 @@ npx prisma migrate status
 ```
 
 ## Related Documentation
-- [Database Troubleshooting Guide](./troubleshooting/database-issues.md)
-- [Database Schema Fix - Oct 20, 2025](../DATABASE-SCHEMA-FIX-2025-10-20.md)
+- [Database Troubleshooting Guide](../troubleshooting/database-issues.md)
+- `../DATABASE-SCHEMA-FIX-2025-10-20.md`

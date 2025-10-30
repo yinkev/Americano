@@ -1,0 +1,411 @@
+[2025-10-30T01:55:34] OpenAI Codex v0.0.0 (research preview)
+--------
+workdir: /Users/kyin/Projects/Americano
+model: gpt-5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: high
+reasoning summaries: auto
+--------
+[2025-10-30T01:55:34] User instructions:
+Context: Americano monorepo; docs IA migration in October 2025; fix docs errors.
+
+Agent: You are one of several planning agents. Produce a concrete, step-by-step plan to “fix the error” in this repo. Error context: documentation IA migration partially applied; markdown lint and link checks are failing. Goal: propose the best approach to resolve all docs errors safely and predictably, with minimal churn, and ensure CI passes. Provide rationale and alternatives where useful. Include verification steps. Keep plan actionable for a single engineer to execute in ~2–4 hours.
+
+Repository summary (monorepo):
+- Root `package.json` scripts:
+  - `lint:docs`: runs `markdownlint` on `docs/**/*.md` and root/bmad. Current run fails with multiple MD024/MD025, MD052 and one MD018.
+  - `check:links`: runs `markdown-link-check` against all docs; currently shows many dead links.
+- Frontend: `apps/web` (Next.js 15 + React 19) with Prisma 6.
+- ML service: `services/ml-service` (FastAPI). Not directly relevant to current docs errors.
+
+Current branch: docs/moves-2025-10 (modified: `docs/index.md`).
+
+Reproduction (just ran locally):
+- `npm run lint:docs` → non-zero exit with examples:
+  - MD025 single H1 violations in: `docs/stories/story-2.6.md` etc.
+  - MD024 duplicate headings in several files (siblings_only=true in config).
+  - MD018 missing space after `###` in `docs/stories/story-5.5.md` line ~927.
+  - MD052 reference links use undefined labels in `docs/stories/story-2.4.md`.
+- `npm run check:links` → non-zero; representative failures:
+  - Many 400s to internal files that are being moved, e.g. `docs/database/migrations.md` references `../apps/web/prisma/schema.prisma`, `./EPIC5-DEPLOYMENT-GUIDE.md`, `./development-environment-setup.md`, and `../apps/web/docs/api/openapi.yaml`.
+  - External: `https://flowlabs.google/` (Status 0).
+  - Absolute repo paths like `/apps/web/components/...` (should be relative `../apps/web/...` or fenced code blocks instead of links).
+
+Migration scaffolding present:
+- `docs/_migration/move-commands.sh` (dry-run git mv generator)
+- `docs/_migration/link-rewrites.proposed.sh` (sed-based rewriter). It consumes mapping from:
+- `docs/_migration/.move-list-active.tmp` (FROM|TO pairs). Examples:
+  - `docs/api/api-contracts.md|docs/backend/api-contracts.md`
+  - `docs/database/migrations.md|docs/operations/migrations.md`
+  - `docs/design/animation-quick-start.md|docs/frontend/design-system.md`
+
+Lint configs:
+- `.markdownlint.json` → Many rules disabled; MD024 set `siblings_only: true`, MD025 `front_matter_title: ""`.
+- `.markdown-link-check.json` → ignores localhost, in-fragment GitHub, and `docs/deprecated/`; timeout 5s; retries enabled.
+
+Constraints & objectives:
+- Avoid mass churn outside of moved/impacted files.
+- Preserve `git` history where possible (`git mv`).
+- After changes, `npm run lint:docs` and `npm run check:links` must pass locally.
+- Provide a rollback plan.
+
+Deliverables for your plan:
+1) A phased plan with concrete commands to run (bash), ordered by safety (dry runs → commits), including how to preview changes.
+2) Guidance on updating link targets vs. adding redirect stubs vs. adjusting the checker config.
+3) A small set of targeted content fixes for MD024/MD025/MD052/MD018 (patterns + examples) without excessive rewriting.
+4) A verification matrix and exit criteria.
+5) Risks and mitigations.
+
+Key files for reference:
+- `.markdownlint.json` (root)
+- `.markdown-link-check.json` (root)
+- `docs/_migration/move-commands.sh`
+- `docs/_migration/link-rewrites.proposed.sh`
+- `docs/_migration/.move-list-active.tmp`
+- Example failing files mentioned above.
+
+Assume a macOS dev shell with `git`, `sed` (BSD), Node 20+, and no extra tools. Avoid heavy, custom scripts unless truly needed. Prefer surgical changes and idempotent scripts.
+
+Desired output: A concrete, stepwise plan + rationale + verification checklist + risk notes
+
+[Running in read-only mode - no modifications allowed]
+[2025-10-30T01:55:34] OpenAI Codex v0.0.0 (research preview)
+--------
+workdir: /Users/kyin/Projects/Americano
+model: gpt-5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: high
+reasoning summaries: auto
+--------
+[2025-10-30T01:55:34] User instructions:
+Context: Americano monorepo; docs IA migration in October 2025; fix docs errors.
+
+Agent: You are one of several planning agents. Produce a concrete, step-by-step plan to “fix the error” in this repo. Error context: documentation IA migration partially applied; markdown lint and link checks are failing. Goal: propose the best approach to resolve all docs errors safely and predictably, with minimal churn, and ensure CI passes. Provide rationale and alternatives where useful. Include verification steps. Keep plan actionable for a single engineer to execute in ~2–4 hours.
+
+Repository summary (monorepo):
+- Root `package.json` scripts:
+  - `lint:docs`: runs `markdownlint` on `docs/**/*.md` and root/bmad. Current run fails with multiple MD024/MD025, MD052 and one MD018.
+  - `check:links`: runs `markdown-link-check` against all docs; currently shows many dead links.
+- Frontend: `apps/web` (Next.js 15 + React 19) with Prisma 6.
+- ML service: `services/ml-service` (FastAPI). Not directly relevant to current docs errors.
+
+Current branch: docs/moves-2025-10 (modified: `docs/index.md`).
+
+Reproduction (just ran locally):
+- `npm run lint:docs` → non-zero exit with examples:
+  - MD025 single H1 violations in: `docs/stories/story-2.6.md` etc.
+  - MD024 duplicate headings in several files (siblings_only=true in config).
+  - MD018 missing space after `###` in `docs/stories/story-5.5.md` line ~927.
+  - MD052 reference links use undefined labels in `docs/stories/story-2.4.md`.
+- `npm run check:links` → non-zero; representative failures:
+  - Many 400s to internal files that are being moved, e.g. `docs/database/migrations.md` references `../apps/web/prisma/schema.prisma`, `./EPIC5-DEPLOYMENT-GUIDE.md`, `./development-environment-setup.md`, and `../apps/web/docs/api/openapi.yaml`.
+  - External: `https://flowlabs.google/` (Status 0).
+  - Absolute repo paths like `/apps/web/components/...` (should be relative `../apps/web/...` or fenced code blocks instead of links).
+
+Migration scaffolding present:
+- `docs/_migration/move-commands.sh` (dry-run git mv generator)
+- `docs/_migration/link-rewrites.proposed.sh` (sed-based rewriter). It consumes mapping from:
+- `docs/_migration/.move-list-active.tmp` (FROM|TO pairs). Examples:
+  - `docs/api/api-contracts.md|docs/backend/api-contracts.md`
+  - `docs/database/migrations.md|docs/operations/migrations.md`
+  - `docs/design/animation-quick-start.md|docs/frontend/design-system.md`
+
+Lint configs:
+- `.markdownlint.json` → Many rules disabled; MD024 set `siblings_only: true`, MD025 `front_matter_title: ""`.
+- `.markdown-link-check.json` → ignores localhost, in-fragment GitHub, and `docs/deprecated/`; timeout 5s; retries enabled.
+
+Constraints & objectives:
+- Avoid mass churn outside of moved/impacted files.
+- Preserve `git` history where possible (`git mv`).
+- After changes, `npm run lint:docs` and `npm run check:links` must pass locally.
+- Provide a rollback plan.
+
+Deliverables for your plan:
+1) A phased plan with concrete commands to run (bash), ordered by safety (dry runs → commits), including how to preview changes.
+2) Guidance on updating link targets vs. adding redirect stubs vs. adjusting the checker config.
+3) A small set of targeted content fixes for MD024/MD025/MD052/MD018 (patterns + examples) without excessive rewriting.
+4) A verification matrix and exit criteria.
+5) Risks and mitigations.
+
+Key files for reference:
+- `.markdownlint.json` (root)
+- `.markdown-link-check.json` (root)
+- `docs/_migration/move-commands.sh`
+- `docs/_migration/link-rewrites.proposed.sh`
+- `docs/_migration/.move-list-active.tmp`
+- Example failing files mentioned above.
+
+Assume a macOS dev shell with `git`, `sed` (BSD), Node 20+, and no extra tools. Avoid heavy, custom scripts unless truly needed. Prefer surgical changes and idempotent scripts.
+
+Desired output: A concrete, stepwise plan + rationale + verification checklist + risk notes
+
+[Running in read-only mode - no modifications allowed]
+
+[2025-10-30T01:55:42] thinking
+
+**Proposing migration plan**
+
+I'm thinking about how we can use the existing migration tools like move-commands.sh, link-rewrites.proposed.sh, and .move-list-active.tmp. I need to keep in mind markdownlint issues, such as duplicate headings and missing spaces after hashes. The link check is failing due to internal references and dead links. I'll suggest some commands like "git status," "npm run lint:docs," and "npm run check:links." It’s crucial to use BSD sed carefully and propose a dry-run generator approach for the migration moves.
+**Planning migration execution**
+
+I’m considering how to execute the migration with a preview step. I’ll suggest running "bash -x docs/_migration/move-commands.sh --apply" if the interface supports it, but I need to ensure it prints commands correctly. My plan is to capture the output to a script for review before running it with "bash -e." I'll also propose generating link rewrite sed commands and adjusting .markdownlint.json to temporarily ignore MD025 for known files with multiple H1 headings, though I prefer content fixes instead of loosening rules. I'll provide clear find-and-fix commands for specific files too.
+**Proposing script adjustments**
+
+I’m planning to run a script to find instances where H1 counts exceed 1 using awk or sed, but I’ll only propose a manual fix for a small set of files to avoid excessive changes. The goal is to minimize churn and focus on flagged files rather than a global fix. For the link check, I’ll suggest adjusting the mapping in .move-list-active.tmp to include all necessary moves. We’ll also want to convert absolute paths to relative ones, using inline code for better clarity.
+**Validating local file links**
+
+I’m thinking about how the link-check will validate local file links and ensure those files actually exist. For files that have moved, I need to make sure I have correct mappings. One idea is to create redirect stub pages, like Markdown files at old locations that link to the new ones. However, I want to keep churn minimal, so maybe I can use stubs in docs/_redirects. It seems "git mv" is the preferred option to preserve history while updating links effectively.
+**Proposing rollback and migration plan**
+
+I need to outline a rollback plan using commands like "git restore" or "git reset," ensuring we approach this carefully since destructive actions are not advised. A safer method might be to tag a commit and create a separate branch, possibly "moves-2025-10," though we need to clarify this. The remediation plan will have a structured format including objectives and phases for moving files, rewriting links, and fixing markdown issues. For link paths, I’ll propose converting absolute paths to relative ones, utilizing sed or the link-rewrites script while being cautious about the environment tools available.
+**Planning link check and verification process**
+
+I propose implementing a link check that allows for 10-second timeouts instead of the current 5 seconds. If that's a config change, we could instead focus on host-level ignores for specific domains. I'll create a verification matrix with tools and expected results, ensuring we limit fixes to manage within 2–4 hours. The plan will involve phases for file moves, rewriting links, and addressing markdownlint issues. I'll include detailed commands for macOS, focusing on a safe approach without running commands due to read-only restrictions. Content fixes for various markdown issues will also be outlined clearly.
+**Crafting a comprehensive migration plan**
+
+I’m planning to make some link-check adjustments, specifically for internal references in moved files. For instance, I’ll update paths in `docs/database/migrations.md` to reflect its new location in `docs/operations/migrations.md`. I'll also ensure that links to relative paths are checked for existence with `test -f`, and I’ll outline how to create stubs at old paths to handle moved files. 
+
+I've structured the plan with phases that cover everything from baseline checks to link rewrites and markdownlint fixes, ensuring thoroughness while keeping the details concise.
+[2025-10-30T01:57:07] codex
+**Planning migration execution**
+
+I’m considering how to execute the migration with a preview step. I’ll suggest running "bash -x docs/_migration/move-commands.sh --apply" if the interface supports it, but I need to ensure it prints commands correctly. My plan is to capture the output to a script for review before running it with "bash -e." I'll also propose generating link rewrite sed commands and adjusting .markdownlint.json to temporarily ignore MD025 for known files with multiple H1 headings, though I prefer content fixes instead of loosening rules. I'll provide clear find-and-fix commands for specific files too.
+[2025-10-30T01:57:07] codex
+**Proposing script adjustments**
+
+I’m planning to run a script to find instances where H1 counts exceed 1 using awk or sed, but I’ll only propose a manual fix for a small set of files to avoid excessive changes. The goal is to minimize churn and focus on flagged files rather than a global fix. For the link check, I’ll suggest adjusting the mapping in .move-list-active.tmp to include all necessary moves. We’ll also want to convert absolute paths to relative ones, using inline code for better clarity.
+[2025-10-30T01:57:07] codex
+**Validating local file links**
+
+I’m thinking about how the link-check will validate local file links and ensure those files actually exist. For files that have moved, I need to make sure I have correct mappings. One idea is to create redirect stub pages, like Markdown files at old locations that link to the new ones. However, I want to keep churn minimal, so maybe I can use stubs in docs/_redirects. It seems "git mv" is the preferred option to preserve history while updating links effectively.
+[2025-10-30T01:57:07] codex
+**Proposing rollback and migration plan**
+
+I need to outline a rollback plan using commands like "git restore" or "git reset," ensuring we approach this carefully since destructive actions are not advised. A safer method might be to tag a commit and create a separate branch, possibly "moves-2025-10," though we need to clarify this. The remediation plan will have a structured format including objectives and phases for moving files, rewriting links, and fixing markdown issues. For link paths, I’ll propose converting absolute paths to relative ones, utilizing sed or the link-rewrites script while being cautious about the environment tools available.
+[2025-10-30T01:57:07] codex
+**Planning link check and verification process**
+
+I propose implementing a link check that allows for 10-second timeouts instead of the current 5 seconds. If that's a config change, we could instead focus on host-level ignores for specific domains. I'll create a verification matrix with tools and expected results, ensuring we limit fixes to manage within 2–4 hours. The plan will involve phases for file moves, rewriting links, and addressing markdownlint issues. I'll include detailed commands for macOS, focusing on a safe approach without running commands due to read-only restrictions. Content fixes for various markdown issues will also be outlined clearly.
+[2025-10-30T01:57:07] codex
+**Crafting a comprehensive migration plan**
+
+I’m planning to make some link-check adjustments, specifically for internal references in moved files. For instance, I’ll update paths in `docs/database/migrations.md` to reflect its new location in `docs/operations/migrations.md`. I'll also ensure that links to relative paths are checked for existence with `test -f`, and I’ll outline how to create stubs at old paths to handle moved files. 
+
+I've structured the plan with phases that cover everything from baseline checks to link rewrites and markdownlint fixes, ensuring thoroughness while keeping the details concise.
+[2025-10-30T01:57:07] codex
+
+Here’s a concrete, low‑churn plan to get docs lint and link checks green after the IA move. It’s sequenced as dry‑runs → controlled edits → verification, and scoped to the flagged files so one engineer can finish in ~2–4 hours.
+
+**Assumptions**
+- You’re on branch `moves-2025-10` and want to preserve history with `git mv`.
+- The migration mapping in `docs/_migration/.move-list-active.tmp` is authoritative for this pass.
+- macOS shell with BSD `sed` (`-i ''`) and Node 20+.
+
+**Goals**
+- Resolve current `markdownlint` failures (MD025, MD024, MD018, MD052).
+- Rewrite internal links to the new IA and fix a handful of external/absolute path issues.
+- Keep changes surgical: move mapped files, update affected links, make minimal content edits.
+- Make both `npm run lint:docs` and `npm run check:links` pass locally.
+
+---
+
+**Phase 0: Baseline + Dry Runs**
+- Confirm branch and gather failing files for a focused queue.
+  - `git status`
+  - `npm run lint:docs || true`
+  - `npm run check:links || true`
+- Snapshot current state for easy comparison.
+  - `git diff > /tmp/docs-pre-migration.diff`
+  - `git rev-parse --short HEAD > /tmp/docs-pre-migration.sha`
+
+Why: Creates a local baseline and a known commit anchor to rollback if needed.
+
+---
+
+**Phase 1: File Moves With History (Dry‑Run → Apply)**
+- Preview the move operations produced by the scaffolding.
+  - `bash -x docs/_migration/move-commands.sh | tee docs/_migration/move-preview.sh`
+  - Inspect `docs/_migration/move-preview.sh` and verify it is only `git mv` commands derived from `docs/_migration/.move-list-active.tmp`.
+- Apply the moves (only after the preview looks right).
+  - `bash -e docs/_migration/move-preview.sh`
+- Stage a focused move commit.
+  - `git add -A`
+  - `git commit -m "docs(ia): move files per active mapping"`
+
+Why: Keep moves in a dedicated commit to preserve blame and simplify later review.
+
+---
+
+**Phase 2: Rewrite Internal Links (Dry‑Run → Apply)**
+- Preview link rewrites using the provided script.
+  - `DRY_RUN=1 bash -x docs/_migration/link-rewrites.proposed.sh | tee docs/_migration/link-rewrites.preview`
+  - If the script has no `DRY_RUN`, keep `-x` and redirect output to review the intended `sed` commands.
+- Apply the link rewrites.
+  - `bash -e docs/_migration/link-rewrites.proposed.sh`
+- Fix absolute repo paths in docs (turn into working relative paths from `docs/`).
+  - For the common case under `apps/web`:  
+    `grep -Rnl "](/apps/web/" docs | xargs -I{} sed -E -i '' 's#\]\(/apps/web/#\]\(\.\./apps/web/#g' {}`
+- Quick existence spot‑check for a few representative internal targets that were failing before:
+  - `test -f apps/web/prisma/schema.prisma && echo OK || echo MISSING apps/web/prisma/schema.prisma`
+  - `test -f apps/web/docs/api/openapi.yaml && echo OK || echo MISSING apps/web/docs/api/openapi.yaml`
+  - If a target is missing and there’s a mapped new location, update the link to that new path; if it’s not meant to be linked, convert the reference to inline code (see guidance below).
+
+- Stage a focused “links only” commit.
+  - `git add -A`
+  - `git commit -m "docs: rewrite internal links for IA; fix absolute paths"`
+
+Why: Keep link churn separate from content edits to make diffs easy to audit and roll back.
+
+---
+
+**Phase 3: Fix Markdown Lint Issues (Targeted)**
+Address only the flagged files to minimize churn. Re‑run lints after each small cluster of fixes.
+
+- MD025 — single H1 per file (e.g., `docs/stories/story-2.6.md`, others)
+  - Convert extra `# ` headings (beyond the first) to `## ` while preserving text.
+  - Safe one‑liner per file:
+    - `awk 'BEGIN{s=0} /^# /{if(s){sub(/^# /,"## ")} else {s=1}} {print}' docs/stories/story-2.6.md > /tmp/s26 && mv /tmp/s26 docs/stories/story-2.6.md`
+  - Repeat the same pattern only for the specific MD025 offenders from the lint output.
+
+- MD024 — duplicate headings at the same level (siblings_only=true)
+  - For each file flagged, append a short disambiguator to the 2nd+ duplicate at the same level, e.g., “(continued)”, “— Setup”, “— Usage”.
+  - Example (second “Installation” occurrence in a file): change `## Installation` → `## Installation — Usage Env`
+  - Keep text minimal; do not reorganize sections.
+
+- MD018 — missing space after `###` (e.g., `docs/stories/story-5.5.md` around line ~927)
+  - Preview around the line:
+    - `nl -ba docs/stories/story-5.5.md | sed -n '920,935p'`
+  - Fix headings without a space after the hashes:
+    - `sed -E -i '' 's/^([#]{1,6})([^# ])/\\1 \\2/' docs/stories/story-5.5.md`
+  - Re‑preview the same window to confirm.
+
+- MD052 — reference links use undefined labels (e.g., `docs/stories/story-2.4.md`)
+  - Detect undefined reference labels in the file:
+    - Uses: `grep -En '\[[^]]+\]\[([A-Za-z0-9_-]+)\]' docs/stories/story-2.4.md`
+    - Defs: `grep -En '^\[([A-Za-z0-9_-]+)\]: ' docs/stories/story-2.4.md`
+  - For each missing `[label]: URL`:
+    - If the target is internal and moved, add a local definition at bottom, for example:  
+      `[api-contracts]: ../backend/api-contracts.md`
+    - If the content is just naming, convert to inline link or plain text. Example:  
+      Change `[Spec][api-spec]` → `[Spec](../backend/api-contracts.md)` or just ``Spec`` if no valid URL.
+  - Keep fixes within the same files that lint flagged.
+
+- Re‑run lints after each mini‑batch (every 3–5 edits).
+  - `npm run lint:docs || true`
+  - Stage commit: `git add -A && git commit -m "docs: fix MD025/MD024/MD018/MD052 (targeted)"`
+
+Why: These changes are tightly scoped and content‑preserving; they avoid sweeping style changes.
+
+---
+
+**Phase 4: External + Hard Link Cases**
+- `npm run check:links || true` and focus on the remaining red items:
+  - External flaky/offline link e.g., `https://flowlabs.google/`:
+    - If you know the correct URL, update it once (preferred). If unknown or behind auth, add a temporary ignore in `.markdown-link-check.json`:
+      - Add to `ignorePatterns`: `"https?://(www\\.)?flowlabs\\.google(/.*)?"`
+      - Commit: `git add .markdown-link-check.json && git commit -m "chore(link-check): ignore flaky flowlabs.google"`
+  - Links to non-doc source files (`/apps/web/components/...`):
+    - Prefer non‑clickable code references for source paths to avoid link‑checker noise: change `[apps/web/components/...](…)` → ``apps/web/components/...``.
+    - Alternative (if you want working links): convert to correct relative file paths from the current doc, e.g., `../apps/web/components/...` only when the file exists in repo.
+
+Why: External flakiness should not block CI; code path references are more readable as code than as file links.
+
+---
+
+**Phase 5: Full Verification + CI Prep**
+- Run both checks until green:
+  - `npm run lint:docs`
+  - `npm run check:links`
+- Final sweep:
+  - `git diff --stat` (should show only moves, link rewrites, and small text fixes)
+  - `git add -A && git commit -m "docs: final pass — lints + links green"`
+- Push branch and open PR.
+  - `git push -u origin moves-2025-10`
+
+---
+
+**Guidance: Update Links vs Redirect Stubs vs Config**
+- Update link targets (preferred):
+  - For any doc that moved and has internal inbound links, rewrite the links to the new canonical path. This keeps the repo consistent and avoids long‑term stubs.
+- Redirect stubs (use sparingly):
+  - If an old path is widely referenced externally (wiki/blogs), add a light stub file at the old location with a single H1 and a pointer:  
+    `# Moved` + “This page moved to [New Location](…)"  
+    This satisfies link‑check and helps human readers. Keep stub count minimal to avoid churn.
+- Checker config adjustments:
+  - Only add specific ignores for flaky/behind‑auth hosts or intentionally non‑resolving examples.
+  - Avoid broad disables; prefer tightening content and links so lints continue to add value.
+
+---
+
+**Targeted Fix Patterns (Copy‑Paste Ready)**
+- Convert extra H1s to H2s in one file (MD025):
+  ```
+  awk 'BEGIN{s=0} /^# /{if(s){sub(/^# /,"## ")} else {s=1}} {print}' IN.md > /tmp/in && mv /tmp/in IN.md
+  ```
+- Add space after heading hashes in one file (MD018):
+  ```
+  sed -E -i '' 's/^([#]{1,6})([^# ])/\\1 \\2/' docs/stories/story-5.5.md
+  ```
+- Find reference link uses and definitions (MD052 triage):
+  ```
+  grep -En '\[[^]]+\]\[([A-Za-z0-9_-]+)\]' docs/stories/story-2.4.md
+  grep -En '^\[([A-Za-z0-9_-]+)\]: ' docs/stories/story-2.4.md
+  ```
+- Fix absolute repo links to `apps/web` under `docs/`:
+  ```
+  grep -Rnl "](/apps/web/" docs | xargs -I{} sed -E -i '' 's#\]\(/apps/web/#\]\(\.\./apps/web/#g' {}
+  ```
+- Preview around a suspect line to edit manually:
+  ```
+  nl -ba docs/stories/story-5.5.md | sed -n '920,935p'
+  ```
+
+---
+
+**Verification Matrix**
+- Docs lint: `npm run lint:docs`
+  - Expect 0 errors for MD025, MD024, MD018, MD052.
+- Link check: `npm run check:links`
+  - Internal: all `docs/**` links resolve after moves.
+  - Absolute path fixes: no `](/apps/web/...)` remain in `docs/**`.
+  - External: either valid HTTP 200/3xx or host is explicitly ignored with rationale.
+- Spot checks:
+  - Open changed “story” files to confirm headings still render logically.
+  - Check 2–3 moved docs that had many inbounds to ensure landing at the right place.
+
+**Exit Criteria**
+- Both scripts return exit code 0 locally.
+- Diffs limited to: `git mv` changes, link rewrites, and precise heading/link edits.
+- No blanket config relaxations; any ignore is specific and justified.
+
+---
+
+**Risks & Mitigations**
+- Over‑broad sed rewrites touching code blocks or front‑matter:
+  - Mitigation: run on flagged files only; preview windows with `nl … | sed -n 'a,bp'`.
+- Missing files after IA move causing lingering 404s:
+  - Mitigation: quick `test -f` spot checks; for unresolved cases, convert to inline code or add a narrow ignore until the asset exists.
+- External site flakiness making CI red:
+  - Mitigation: add host‑specific ignore with a TODO; re‑enable after site stabilizes.
+- Large diffs obscuring review:
+  - Mitigation: three commits (moves, link rewrites, lint fixes) keep changes auditable.
+
+---
+
+**Rollback Plan**
+- To revert the last commit group:
+  - `git log --oneline -n 5` (identify commit range)
+  - `git reset --hard <pre-migration-sha>` (use `/tmp/docs-pre-migration.sha`)
+- To revert only link rewrites or lint fixes:
+  - `git revert <commit-sha>` (non‑destructive revert per commit)
+- To re‑run safely:
+  - Recreate previews (`move-preview.sh`, link rewrite preview) and re‑apply.
+
+---
+
+This plan keeps the migration controlled and reviewable: moves in one commit, link rewrites in another, and small, targeted content edits to satisfy MD025/MD024/MD018/MD052 without broad config changes. Once both checks pass locally, push the branch and open the PR. If you want, I can tailor the sed/awk commands to the exact list of files from your latest lint output to make it copy‑paste ready.
+[2025-10-30T01:57:50] tokens used: 18,951

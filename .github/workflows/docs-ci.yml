@@ -1,0 +1,33 @@
+name: Docs CI
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '.markdownlint.json'
+      - '.markdown-link-check.json'
+  push:
+    branches: ['**']
+    paths:
+      - 'docs/**'
+      - '.markdownlint.json'
+      - '.markdown-link-check.json'
+
+concurrency:
+  group: docs-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint docs
+        run: npm run lint:docs
+      - name: Check links
+        run: npm run check:links
