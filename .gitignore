@@ -74,3 +74,7 @@ Thumbs.db
 *.db
 data/**/*.parquet
 !data/raw/test.txt
+
+# Tooling artifacts
+.code/agents/
+.iflow/
