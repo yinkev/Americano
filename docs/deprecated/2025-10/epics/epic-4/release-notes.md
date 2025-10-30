@@ -14,7 +14,7 @@ Owner: PM (Kevy)
   - [Story 4.4](../stories/story-4.4.md:1): Confidence Calibration and Metacognitive Assessment
   - [Story 4.5](../stories/story-4.5.md:1): Adaptive Questioning and Progressive Assessment
   - [Story 4.6](../stories/story-4.6.md:1): Comprehensive Understanding Analytics
-- Implementation Guide reference: [EPIC4-IMPLEMENTATION-GUIDE.md](../EPIC4-IMPLEMENTATION-GUIDE.md:1)
+- Implementation Guide reference: [Epic 4 Implementation Guide](../../../../epic-docs/epic-4-implementation-guide.md)
 - Deployment runbook: [epic4-deployment-plan.md](../deployments/epic4-deployment-plan.md:1)
 
 2. Highlights by Story
@@ -83,7 +83,7 @@ Owner: PM (Kevy)
 8. Performance and NFRs
 - Dashboard load target < 2s (Epic 4.6) per [story-4.6.md](../stories/story-4.6.md:31)
 - IRT calc < 500ms (Epic 4.5) per [story-4.5.md](../stories/story-4.5.md:1877)
-- API latency < 200ms typical (TS routes) per [EPIC4-IMPLEMENTATION-GUIDE.md](../EPIC4-IMPLEMENTATION-GUIDE.md:248)
+- API latency < 200ms typical (TS routes) per [Epic 4 Implementation Guide](../../../../epic-docs/epic-4-implementation-guide.md)
 
 9. Known Risks and Mitigations
 - Embedding dimensions mismatch (fixed at 1536) — verify indexes prior to deploy ([bmm-workflow-status.md](../bmm-workflow-status.md:283))

@@ -52,15 +52,15 @@ See [docs/stories/](../../stories/) for individual story specifications:
 
 ## Related Documentation
 
-- [Epic 5 Implementation Plan](../../EPIC-5-IMPLEMENTATION-PLAN.md)
-- [Epic 5 Retrospective Handoff](../../EPIC-5-RETROSPECTIVE-HANDOFF.md)
-- [Epic 5 TEA Findings](../../EPIC-5-TEA-FINDINGS-SUMMARY.md)
-- [Epic 5 Integration Contracts](../../epic-5-integration-contracts.md)
-- [Performance Benchmarks](../../EPIC5-PERFORMANCE-BENCHMARKS.md)
-- [Deployment Guide](../../EPIC5-DEPLOYMENT-GUIDE.md)
-- [Design System Guide](../../EPIC5-DESIGN-SYSTEM-GUIDE.md)
-- [API Contracts](../../api-contracts.md#epic-5-endpoints)
-- [Data Models](../../data-models.md#behavioral-analytics)
+- [Epic 5 Implementation Plan](../../epic-docs/epic-5-implementation-plan.md)
+- [Epic 5 Retrospective Handoff](../../epic-docs/epic-5-retrospective-handoff.md)
+- [Epic 5 TEA Findings](../../epic-docs/epic-5-tea-findings.md)
+- [Epic 5 Integration Contracts](../../backend/api-contracts-epic-5-integration.md)
+- [Performance Benchmarks](../../operations/performance.md)
+- [Deployment Guide](../../setup/deployment.md)
+- [Design System Guide](../../frontend/design-system.md)
+- [API Contracts](../../backend/api-contracts.md)
+- [Data Models](../../backend/data-models.md)
 
 ## Quality Assurance
 

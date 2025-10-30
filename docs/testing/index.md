@@ -303,8 +303,8 @@ describe('Semantic Search', () => {
 - Clinical scenario evaluation
 
 #### Test Reports
-- [Story 4.1 Testing Checklist](../stories/story-4.1-testing-checklist.md)
-- [Story 4.3 Testing Quick Start](../STORY-4.3-TESTING-QUICK-START.md)
+- `../stories/story-4.1-testing-checklist.md`
+- `../STORY-4.3-TESTING-QUICK-START.md`
 
 #### Critical Test Cases
 
@@ -352,7 +352,7 @@ describe('POST /api/validation/evaluate', () => {
 - Personalization A/B testing
 
 #### Test Reports
-- [Story 5.5 A/B Testing Implementation](../STORY-5.5-AB-TESTING-IMPLEMENTATION.md)
+- `../STORY-5.5-AB-TESTING-IMPLEMENTATION.md`
 
 #### Critical Test Cases
 
@@ -726,9 +726,9 @@ open coverage/lcov-report/index.html
 ## Cross-References
 
 ### Related Documentation
-- [API Contracts](../api-contracts.md) - API endpoints to test
-- [Data Models](../data-models.md) - Database models to test
-- [Solution Architecture](../solution-architecture.md) - System overview
+- [API Contracts](../backend/api-contracts.md) - API endpoints to test
+- [Data Models](../backend/data-models.md) - Database models to test
+- [Solution Architecture](../overview/solution-architecture.md) - System overview
 
 ### Test Reports
 - [Epic 3 Test Reports](#epic-3-adaptive-content-delivery)

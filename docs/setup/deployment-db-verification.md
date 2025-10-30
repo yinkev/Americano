@@ -2,7 +2,7 @@
 
 Status: Ready to execute (staging first), then production
 Owners: PM (Kevy), BE Dev
-Related: [epic4-deployment-plan.md](./epic4-deployment-plan.md), [epic4-release-notes.md](../releases/epic4-release-notes.md)
+Related: [deployment-epic4-plan.md](./deployment-epic4-plan.md), [release-notes](../deprecated/2025-10/epics/epic-4/release-notes.md)
 
 1. Objectives
 - Verify schema compatibility and vector dimensions (1536) before rollout
@@ -12,9 +12,9 @@ Related: [epic4-deployment-plan.md](./epic4-deployment-plan.md), [epic4-release-
 
 2. Inputs and References
 - Prisma schema: [schema.prisma](../../apps/web/prisma/schema.prisma)
-- API analytics routes: [routes.py](../../apps/api/src/analytics/routes.py:1)
-- Validation calibrator: [calibrator.py](../../apps/api/src/validation/calibrator.py:1)
-- Status doc evidence: 1536-dim correction in [bmm-workflow-status.md](../bmm-workflow-status.md:283)
+- API analytics routes: `../../apps/api/src/analytics/routes.py`
+- Validation calibrator: `../../apps/api/src/validation/calibrator.py`
+- Status doc evidence: 1536-dim correction in `../bmm-workflow-status.md`
 
 3. Environment Prerequisites
 - PostgreSQL client tools installed (`psql`, `pg_dump`, `pg_restore`)
@@ -55,8 +55,8 @@ Related: [epic4-deployment-plan.md](./epic4-deployment-plan.md), [epic4-release-
 - Vector index presence (IVFFlat/HNSW) matches 1536 dimensions:
   - Inspect indexes via `\d+ "ContentChunk"` or catalog queries
 - Critical query latencies:
-  - Analytics endpoints in [routes.py](../../apps/api/src/analytics/routes.py:1) < 200ms typical
-  - Calibration queries in [calibrator.py](../../apps/api/src/validation/calibrator.py:1) < 100ms typical
+  - Analytics endpoints in `../../apps/api/src/analytics/routes.py` < 200ms typical
+  - Calibration queries in `../../apps/api/src/validation/calibrator.py` < 100ms typical
 - Add EXPLAIN ANALYZE sampling for top queries (store outputs in release artifacts)
 
 9. Data Integrity Checks
@@ -68,7 +68,7 @@ Related: [epic4-deployment-plan.md](./epic4-deployment-plan.md), [epic4-release-
 10. Rollback Readiness
 - Confirm last good backup exists and is restorable (proved in restore drill)
 - Document rollback commands:
-  - Web/API/Services: revert to previous tag (documented in [epic4-deployment-plan.md](./epic4-deployment-plan.md:13))
+  - Web/API/Services: revert to previous tag (documented in [deployment-epic4-plan.md](./deployment-epic4-plan.md))
   - DB: restore from backup (`pg_restore --clean --if-exists ...`)
 - Keep rollback instruction snippet in deployment channel
 

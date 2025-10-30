@@ -130,9 +130,9 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 
 ### Test Strategy & Reports
 - **[Testing Documentation Hub](./testing/index.md)** - Testing hub with run commands, coverage targets, conventions
-- [Story 4.3 Testing Quick Start](./STORY-4.3-TESTING-QUICK-START.md) - Challenge generation tests
-- [Story 4.3 Test Summary](./STORY-4.3-TEST-SUMMARY.md) - Test results
-- [Story 4.4 Final Report](./STORY-4.4-FINAL-COMPLETION-REPORT.md) - Calibration analytics tests
+- `STORY-4.3-TESTING-QUICK-START.md` - Challenge generation tests
+- `STORY-4.3-TEST-SUMMARY.md` - Test results
+- `STORY-4.4-FINAL-COMPLETION-REPORT.md` - Calibration analytics tests
 
 ### Epic 3 Testing
 - [Story 3.4 Test Summary](./testing/story-3.4-test-summary.md) - Conflict detection tests
@@ -144,16 +144,16 @@ Americano is a Level 3 greenfield adaptive learning platform for medical student
 - [Story 3.6 Task 4 Integration](./testing/story-3.6-task-4-integration-report.md) - Integration test results
 
 ### Epic 5 Testing
-- [Story 5.2 Test Results](./STORY-5.2-TEST-RESULTS.md) - Predictive analytics tests
-- [Story 5.2 Quick Test Guide](./STORY-5.2-QUICK-TEST-GUIDE.md) - Quick testing reference
-- [Story 5.5 Task 15 Integration](./STORY-5.5-TASK-15-INTEGRATION-TESTS.md) - A/B testing integration
+- `STORY-5.2-TEST-RESULTS.md` - Predictive analytics tests
+- `STORY-5.2-QUICK-TEST-GUIDE.md` - Quick testing reference
+- `STORY-5.5-TASK-15-INTEGRATION-TESTS.md` - A/B testing integration
 
 ### Validation Reports
 - [Cache Validation Summary](./validation/CACHE-VALIDATION-SUMMARY.md) - First Aid cache validation
 - [Story 3.6 Cache Validation](./validation/story-3.6-cache-validation-report.md) - Cache performance validation
 
 ### Performance Testing
-- [Epic 5 Performance Benchmarks](./EPIC5-PERFORMANCE-BENCHMARKS.md) - API performance (98.5% improvement)
+- [Performance Benchmarks](./operations/performance.md) - API performance (98.5% improvement)
 - [Performance Optimization Report](./performance-optimization-report.md) - Optimization strategies
 - [Story 3.6 Autocomplete Performance](./performance-reports/story-3.6-autocomplete-performance-report.md) - Search performance
 

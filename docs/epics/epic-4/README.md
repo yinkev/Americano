@@ -54,11 +54,11 @@ See [docs/stories/](../../stories/) for individual story specifications:
 
 ## Related Documentation
 
-- [Architecture Decision](../../ARCHITECTURE-DECISION-EPIC4.md) - Hybrid TypeScript + Python rationale
-- [Implementation Guide](../../EPIC4-IMPLEMENTATION-GUIDE.md)
-- [API Contracts](../../api-contracts.md#epic-4-endpoints)
-- [Data Models](../../data-models.md#validation-engine)
-- [Retrospectives](../../retrospectives/epic-4-retro-2025-10-20.md)
+- [Architecture Decision](../../epic-docs/architecture-decision-epic-4.md) - Hybrid TypeScript + Python rationale
+- [Implementation Guide](../../epic-docs/epic-4-implementation-guide.md)
+- [API Contracts](../../backend/api-contracts.md)
+- [Data Models](../../backend/data-models.md)
+- [Retrospectives](../../adr/epic-4-summary.md)
 
 ## Performance Metrics
 

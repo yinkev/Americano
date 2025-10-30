@@ -485,7 +485,7 @@ The Americano project has achieved **world-class documentation excellence** thro
 - [ADR Index](./architecture/ADR-INDEX.md) - Architecture decisions catalog
 - [Frontmatter Standard](./frontmatter-standard.md) - Metadata template
 - [Doc Health Metrics](./DOC-HEALTH-METRICS.md) - Quantitative metrics
-- [Solution Architecture](./solution-architecture.md) - System design
+- [Solution Architecture](./overview/solution-architecture.md) - System design
 
 **Quality Gates:**
 - `.markdownlint.json` - Markdown linting rules

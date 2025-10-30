@@ -17,7 +17,7 @@ next_review_due: "2025-11-23"
 
 depends_on:
   - apps/web/docs/api/openapi.yaml
-  - docs/solution-architecture.md
+  - docs/overview/solution-architecture.md
 affects:
   - All frontend-backend integrations
   - API client implementations
@@ -67,7 +67,7 @@ This document serves as the **canonical API contract reference** for the America
 ## 📚 Canonical Sources
 
 ### OpenAPI 3.1 Specification (PRIMARY SOURCE)
-**File:** [`apps/web/docs/api/openapi.yaml`](../apps/web/docs/api/openapi.yaml)
+**File:** `../../apps/web/docs/api/openapi.yaml`
 
 The OpenAPI spec is the **single source of truth** for API contracts. All endpoints, request/response schemas, and authentication requirements are formally defined here.
 
@@ -482,25 +482,25 @@ export async function authenticateRequest(req: Request) {
 - Query denormalization
 - Progressive loading
 
-See [ADR-003: Two-Tier Caching](./architecture/ADR-003-two-tier-caching.md) for details.
+See [ADR-003: Two-Tier Caching](../architecture/ADR-003-two-tier-caching.md) for details.
 
 ---
 
 ## 🔗 Cross-References
 
 ### Architecture Documentation
-- [Solution Architecture](./solution-architecture.md) - Overall system design
-- [ADR-001: Hybrid TypeScript + Python](./architecture/ADR-001-hybrid-typescript-python.md)
-- [ADR-003: Two-Tier Caching](./architecture/ADR-003-two-tier-caching.md)
+- [Solution Architecture](../overview/solution-architecture.md) - Overall system design
+- [ADR-001: Hybrid TypeScript + Python](../architecture/ADR-001-hybrid-typescript-python.md)
+- [ADR-003: Two-Tier Caching](../architecture/ADR-003-two-tier-caching.md)
 
 ### Data Models
 - [Data Models Summary](./data-models.md) - Prisma schema overview
-- [Prisma Schema](../apps/web/prisma/schema.prisma) - Full schema definition
+- [Prisma Schema](../../apps/web/prisma/schema.prisma) - Full schema definition
 
 ### Epic Documentation
-- [Epic 3: Adaptive Content Delivery](./EPIC3-COMPLETION-SUMMARY.md)
-- [Epic 4: Understanding Validation](./ARCHITECTURE-DECISION-EPIC4.md)
-- [Epic 5: Behavioral Twin](./EPIC5-MASTER-SUMMARY.md)
+- [Epic 3: Adaptive Content Delivery](../epics/epic-3/epic-3-completion-report.md)
+- [Epic 4: Understanding Validation](../epic-docs/architecture-decision-epic-4.md)
+- [Epic 5: Behavioral Twin](../adr/epic-5-summary.md)
 
 ---
 
@@ -634,7 +634,7 @@ const evaluation = await apiClient.validation.evaluate({
 **Questions or Issues:**
 - **API Bugs:** File issue in GitHub repo
 - **Documentation Gaps:** Update this document (PRs welcome)
-- **Architecture Questions:** Consult [solution-architecture.md](./solution-architecture.md)
+- **Architecture Questions:** Consult [solution-architecture.md](../overview/solution-architecture.md)
 
 ---
 

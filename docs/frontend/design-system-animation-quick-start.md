@@ -337,8 +337,8 @@ const transition = { duration: 0.3 };
 
 ## Next Steps
 
-1. **Read full guide:** [animation-patterns-guide.md](./animation-patterns-guide.md)
-2. **Study examples:** [AnimatedDashboardCard.tsx](/apps/web/components/examples/AnimatedDashboardCard.tsx)
+1. **Read full guide:** [design-system-animation-patterns.md](./design-system-animation-patterns.md)
+2. **Study examples:** `../apps/web/components/examples/AnimatedDashboardCard.tsx`
 3. **Explore Motion docs:** https://motion.dev
 4. **Check Material Design:** https://m3.material.io/styles/motion
 
@@ -360,7 +360,7 @@ const transition = { duration: 0.3 };
 
 ## Support
 
-**Questions?** Check [animation-patterns-guide.md](./animation-patterns-guide.md) or ask in #engineering-frontend
+**Questions?** Check [design-system-animation-patterns.md](./design-system-animation-patterns.md) or ask in #engineering-frontend
 
 **Found a bug?** Create an issue with "animation" label
 

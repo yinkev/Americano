@@ -121,7 +121,7 @@ Prisma Client was out of sync with database schema, causing all Epic 5 API endpo
 4. All APIs returned to 200 OK status
 
 ### Full Details
-See [DATABASE-SCHEMA-FIX-2025-10-20.md](../../DATABASE-SCHEMA-FIX-2025-10-20.md)
+See `../../DATABASE-SCHEMA-FIX-2025-10-20.md`
 
 ## Prevention Checklist
 
@@ -137,6 +137,6 @@ When making schema changes:
 - [ ] Commit schema + migration files together
 
 ## Additional Resources
-- [Development Environment Setup](../development-environment-setup.md)
+- [Development Environment Setup](../technical/development-environment-setup.md)
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [Epic 5 Database Schema](../../apps/web/prisma/schema.prisma)

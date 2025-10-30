@@ -17,8 +17,8 @@ next_review_due: "2025-11-23"
 
 depends_on:
   - apps/web/prisma/schema.prisma
-  - docs/DATABASE-MIGRATION-STRATEGY.md
-  - docs/EPIC5-DEPLOYMENT-GUIDE.md
+  - docs/operations/migration-strategy.md
+  - docs/setup/deployment.md
 affects:
   - All database schema changes
   - Deployment procedures
@@ -63,7 +63,7 @@ changelog:
 
 This guide covers database migration management for the Americano adaptive learning platform using Prisma ORM with PostgreSQL.
 
-**Schema Source:** [`apps/web/prisma/schema.prisma`](../apps/web/prisma/schema.prisma) (77 models)
+**Schema Source:** [`apps/web/prisma/schema.prisma`](../../apps/web/prisma/schema.prisma) (77 models)
 **Migration Count:** 40+ migrations across Epic 3, 4, 5
 
 ---
@@ -269,7 +269,7 @@ DATABASE_URL=$PROD_DATABASE_URL npx prisma validate
 psql $PROD_DATABASE_URL -c "SELECT COUNT(*) FROM \"User\";"
 ```
 
-**See Also:** [EPIC5-DEPLOYMENT-GUIDE.md](./EPIC5-DEPLOYMENT-GUIDE.md#6-database-migration-execution)
+**See Also:** [Deployment Guide](../setup/deployment.md)
 
 ---
 
@@ -451,7 +451,7 @@ psql $PROD_DATABASE_URL < backup-previous.sql
 psql $PROD_DATABASE_URL -c "SELECT COUNT(*) FROM \"User\";"
 ```
 
-**See Also:** [EPIC5-DEPLOYMENT-GUIDE.md - Rollback Procedure](./EPIC5-DEPLOYMENT-GUIDE.md#9-rollback-procedure)
+**See Also:** [Deployment Guide](../setup/deployment.md)
 
 ---
 
@@ -469,7 +469,7 @@ The Americano project previously used Git worktrees for parallel epic developmen
 
 **Current Workflow:** Standard single-branch development on `main`
 
-**See:** [DATABASE-MIGRATION-STRATEGY.md](./DATABASE-MIGRATION-STRATEGY.md) for historical reference
+**See:** [Migration Strategy](./migration-strategy.md) for historical reference
 
 ---
 
@@ -709,12 +709,12 @@ ORDER BY finished_at DESC;
 ## Related Documentation
 
 ### Migration Strategies
-- [DATABASE-MIGRATION-STRATEGY.md](./DATABASE-MIGRATION-STRATEGY.md) - Comprehensive migration strategy (includes deprecated multi-worktree approach)
-- [Data Models Summary](./data-models.md) - All 77 Prisma models documented
+- [Migration Strategy](./migration-strategy.md) - Comprehensive migration strategy (includes deprecated multi-worktree approach)
+- [Data Models Summary](../backend/data-models.md) - All 77 Prisma models documented
 
 ### Deployment
-- [EPIC5-DEPLOYMENT-GUIDE.md](./EPIC5-DEPLOYMENT-GUIDE.md) - Production deployment guide
-- [Development Environment Setup](./development-environment-setup.md) - Local setup guide
+- [Deployment Guide](../setup/deployment.md) - Production deployment guide
+- [Development Environment Setup](../technical/development-environment-setup.md) - Local setup guide
 
 ### Schema
 - [Prisma Schema](../apps/web/prisma/schema.prisma) - Canonical schema definition
@@ -740,12 +740,12 @@ ORDER BY finished_at DESC;
 
 **Migration Issues:**
 - Check [Troubleshooting](#troubleshooting) section first
-- Review [DATABASE-MIGRATION-STRATEGY.md](./DATABASE-MIGRATION-STRATEGY.md)
+- Review [Migration Strategy](./migration-strategy.md)
 - Consult [Prisma Discord](https://pris.ly/discord) for complex issues
 
 **Schema Design:**
-- Review [Data Models Summary](./data-models.md)
-- Consult [Solution Architecture](./solution-architecture.md)
+- Review [Data Models Summary](../backend/data-models.md)
+- Consult [Solution Architecture](../overview/solution-architecture.md)
 
 ---
 

@@ -862,7 +862,7 @@ volumes:
 
 **Questions? Refer to:**
 - [ADR-006](./architecture/ADR-006-research-grade-analytics-system.md) - Architecture decisions
-- [Codex Consultation](../sessions/transcripts/2025-10-26-codex-consultation.md) - Detailed feedback
+- Codex Consultation: `../sessions/transcripts/2025-10-26-codex-consultation.md` - Detailed feedback
 - [CENT 2015 Guidelines](https://pubmed.ncbi.nlm.nih.gov/26272792/) - N-of-1 reporting standards
 
 **Contributors:**

@@ -64,7 +64,7 @@ changelog:
 
 The Americano adaptive learning platform uses **77 Prisma models** stored in PostgreSQL, with **27 strategic indexes** for performance optimization and **pgvector** extension for semantic search.
 
-**Canonical Source:** [`apps/web/prisma/schema.prisma`](../apps/web/prisma/schema.prisma)
+**Canonical Source:** [`apps/web/prisma/schema.prisma`](../../apps/web/prisma/schema.prisma)
 
 ---
 
@@ -245,7 +245,7 @@ model Embedding {
 - **Distance Metric:** Cosine similarity
 - **Query Performance:** <500ms for 50K vectors
 
-See [ADR-005: Gemini Embeddings](./architecture/ADR-005-gemini-embeddings-1536.md)
+See [ADR-005: Gemini Embeddings](../architecture/ADR-005-gemini-embeddings-1536.md)
 
 ---
 
@@ -778,7 +778,7 @@ USING ivfflat (vector vector_cosine_ops)
 WITH (lists = 100);
 ```
 
-See [ADR-005: Gemini Embeddings](./architecture/ADR-005-gemini-embeddings-1536.md)
+See [ADR-005: Gemini Embeddings](../architecture/ADR-005-gemini-embeddings-1536.md)
 
 ---
 
@@ -810,7 +810,7 @@ npx prisma generate
 npx prisma migrate status
 ```
 
-See [DATABASE-MIGRATION-STRATEGY.md](./DATABASE-MIGRATION-STRATEGY.md)
+See [DATABASE-MIGRATION-STRATEGY.md](../operations/migration-strategy.md)
 
 ---
 
@@ -914,15 +914,15 @@ const predictions = await prisma.strugglePrediction.findMany({
 ## Cross-References
 
 ### Related Documentation
-- [Prisma Schema](../apps/web/prisma/schema.prisma) - Canonical schema
+- [Prisma Schema](../../apps/web/prisma/schema.prisma) - Canonical schema
 - [API Contracts](./api-contracts.md) - API endpoints using these models
-- [Migration Strategy](./DATABASE-MIGRATION-STRATEGY.md) - Migration management
-- [ADR-005: Gemini Embeddings](./architecture/ADR-005-gemini-embeddings-1536.md) - pgvector config
+- [Migration Strategy](../operations/migration-strategy.md) - Migration management
+- [ADR-005: Gemini Embeddings](../architecture/ADR-005-gemini-embeddings-1536.md) - pgvector config
 
 ### Epic Documentation
-- [Epic 3: Semantic Search](./EPIC3-COMPLETION-SUMMARY.md) - Knowledge graph models
-- [Epic 4: Understanding Validation](./ARCHITECTURE-DECISION-EPIC4.md) - Validation models
-- [Epic 5: Behavioral Twin](./EPIC5-MASTER-SUMMARY.md) - Behavioral models
+- [Epic 3: Semantic Search](../epics/epic-3/epic-3-completion-report.md) - Knowledge graph models
+- [Epic 4: Understanding Validation](../epic-docs/architecture-decision-epic-4.md) - Validation models
+- [Epic 5: Behavioral Twin](../adr/epic-5-summary.md) - Behavioral models
 
 ---
 
