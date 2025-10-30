@@ -1,3 +1,4 @@
+<!-- Docs IA Migration (Oct 2025): moves per docs/_migration/path-map.json; links will be rewritten after move. -->
 # Americano Documentation Index
 
 **Project:** Americano - AI-Powered Medical Education Platform

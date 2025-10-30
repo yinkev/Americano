@@ -1,0 +1,1639 @@
+
+FILE: docs/RESEARCH-ANALYTICS-IMPLEMENTATION-GUIDE.md
+  [✓] ./architecture/ADR-006-research-grade-analytics-system.md
+  [✓] #overview
+  [✓] #architecture
+  [✓] #database-schema-changes
+  [✓] #python-analytics-stack
+  [✓] #implementation-timeline
+  [✓] #api-endpoints
+  [✓] #frontend-integration
+  [✓] #testing-strategy
+  [✓] #deployment
+  [✖] ../sessions/transcripts/2025-10-26-codex-consultation.md
+  [✓] https://pubmed.ncbi.nlm.nih.gov/26272792/
+
+  12 links checked.
+  [✖] ../sessions/transcripts/2025-10-26-codex-consultation.md → Status: 400
+
+FILE: docs/frontmatter-standard.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/veo/veo3-meta-framework.md
+  [✓] https://github.com/snubroot/Veo-3-Meta-Framework
+  [✓] #fundamentals
+  [✓] #core-components
+  [✓] #cinematic--camera
+  [✓] #characters--directing
+  [✓] #advanced-techniques
+  [✓] #common-mistakes--troubleshooting
+  [✓] #prompt-templates--examples
+  [✓] https://cloud.google.com/vertex-ai/generative-ai/docs/video/video-gen-prompt-guide
+  [✓] https://cloud.google.com/vertex-ai/generative-ai/docs/learn/prompts/introduction-prompt-design
+  [✖] https://flowlabs.google/
+
+  11 links checked.
+  [✖] https://flowlabs.google/ → Status: 0
+
+FILE: docs/database/migrations.md
+  [✖] ../apps/web/prisma/schema.prisma
+  [✖] ./EPIC5-DEPLOYMENT-GUIDE.md#6-database-migration-execution
+  [✖] ./EPIC5-DEPLOYMENT-GUIDE.md#9-rollback-procedure
+  [✓] ./DATABASE-MIGRATION-STRATEGY.md
+  [✓] #adding-not-null-column-to-existing-table
+  [✓] ./data-models.md
+  [✖] ./EPIC5-DEPLOYMENT-GUIDE.md
+  [✖] ./development-environment-setup.md
+  [✖] ../apps/web/docs/api/openapi.yaml
+  [✓] https://www.prisma.io/docs/concepts/components/prisma-migrate
+  [✓] https://www.prisma.io/docs/guides/migrate/developing-with-prisma-migrate
+  [✓] https://www.prisma.io/docs/guides/migrate/production-troubleshooting
+  [✓] https://www.postgresql.org/docs/current/sql-altertable.html
+  [✓] https://www.postgresql.org/docs/current/sql-createindex.html
+  [✓] https://www.postgresql.org/docs/current/app-pgdump.html
+  [✓] #troubleshooting
+  [✓] https://pris.ly/discord
+  [✖] ./solution-architecture.md
+
+  18 links checked.
+  [✖] ../apps/web/prisma/schema.prisma → Status: 400
+  [✖] ./EPIC5-DEPLOYMENT-GUIDE.md#6-database-migration-execution → Status: 400
+  [✖] ./EPIC5-DEPLOYMENT-GUIDE.md#9-rollback-procedure → Status: 400
+  [✖] ./EPIC5-DEPLOYMENT-GUIDE.md → Status: 400
+  [✖] ./development-environment-setup.md → Status: 400
+  [✖] ../apps/web/docs/api/openapi.yaml → Status: 400
+  [✖] ./solution-architecture.md → Status: 400
+
+FILE: docs/database/data-models.md
+  [✖] ../apps/web/prisma/schema.prisma
+  [✖] ./architecture/ADR-005-gemini-embeddings-1536.md
+  [✓] ./DATABASE-MIGRATION-STRATEGY.md
+  [✖] ./api-contracts.md
+  [✖] ./EPIC3-COMPLETION-SUMMARY.md
+  [✖] ./ARCHITECTURE-DECISION-EPIC4.md
+  [✖] ./EPIC5-MASTER-SUMMARY.md
+
+  7 links checked.
+  [✖] ../apps/web/prisma/schema.prisma → Status: 400
+  [✖] ./architecture/ADR-005-gemini-embeddings-1536.md → Status: 400
+  [✖] ./api-contracts.md → Status: 400
+  [✖] ./EPIC3-COMPLETION-SUMMARY.md → Status: 400
+  [✖] ./ARCHITECTURE-DECISION-EPIC4.md → Status: 400
+  [✖] ./EPIC5-MASTER-SUMMARY.md → Status: 400
+
+FILE: docs/database/database-migration-strategy.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/developer-guides/first-aid-contextual-loading-guide.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/developer-guides/export-and-session-search-guide.md
+  [✓] #export-functionality
+  [✓] #study-session-search
+  [✓] #api-reference
+  [✓] #common-patterns
+  [✓] #troubleshooting
+
+  5 links checked.
+
+FILE: docs/developer-guides/first-aid-cache-usage.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/design/animation-patterns-guide.md
+  [✓] #animation-philosophy
+  [✓] #timing-standards
+  [✓] #framer-motion-patterns
+  [✓] #micro-interactions
+  [✓] #page-transitions
+  [✓] #performance-optimization
+  [✓] #accessibility
+  [✓] #component-library-examples
+  [✓] https://motion.dev
+  [✓] https://m3.material.io/styles/motion
+  [✓] https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API
+  [✓] https://blog.maximeheckel.com/posts/the-physics-behind-spring-animations/
+  [✓] https://www.smashingmagazine.com/2016/12/gpu-animation-doing-it-right/
+  [✓] https://motion.dev/examples
+
+  14 links checked.
+
+FILE: docs/design/animation-quick-start.md
+  [✓] ./animation-patterns-guide.md
+  [✖] /apps/web/components/examples/AnimatedDashboardCard.tsx
+  [✓] https://motion.dev
+  [✓] https://m3.material.io/styles/motion
+
+  4 links checked.
+  [✖] /apps/web/components/examples/AnimatedDashboardCard.tsx → Status: 400
+
+FILE: docs/slides.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/releases/epic4-release-notes.md
+  [✖] ../bmm-workflow-status.md:13
+  [✖] ../bmm-workflow-status.md:59
+  [✖] ../stories/story-4.1.md:1
+  [✖] ../stories/story-4.2.md:1
+  [✖] ../stories/story-4.3.md:1
+  [✖] ../stories/story-4.4.md:1
+  [✖] ../stories/story-4.5.md:1
+  [✖] ../stories/story-4.6.md:1
+  [✖] ../EPIC4-IMPLEMENTATION-GUIDE.md:1
+  [✖] ../deployments/epic4-deployment-plan.md:1
+  [✖] ../stories/story-4.1.md:21
+  [✖] ../../apps/api/src/validation/routes.py:1
+  [✖] ../../apps/web/src/components/study/ComprehensionPromptDialog.tsx:1
+  [✖] ../stories/story-4.2.md:21
+  [✖] ../../apps/web/src/components/study/ClinicalCaseDialog.tsx:1
+  [✖] ../../apps/web/src/lib/clinical-reasoning-evaluator.ts:1
+  [✖] ../stories/story-4.3.md:21
+  [✖] ../../apps/web/src/lib/challenge/retry-scheduler.ts:1
+  [✖] ../../apps/api/src/challenge/routes.py:1
+  [✖] ../stories/story-4.4.md:21
+  [✖] ../../apps/api/src/validation/calibrator.py:1
+  [✖] ../../apps/web/src/lib/confidence-calibrator.ts:1
+  [✖] ../stories/story-4.5.md:21
+  [✖] ../../apps/web/src/lib/adaptive/irt-engine.ts:1
+  [✖] ../../apps/web/src/lib/adaptive-session-orchestrator.ts:1
+  [✖] ../stories/story-4.6.md:21
+  [✖] ../../apps/api/src/analytics/routes.py:1
+  [✖] ../../apps/web/src/lib/mission-analytics-engine.ts:1
+  [✖] ../../apps/api/src/validation/evaluator.py:1
+  [✖] ../../apps/api/src/validation/scenario_generator.py:1
+  [✖] ../../apps/api/src/challenge/retry_scheduler.py:1
+  [✖] ../../apps/api/src/challenge/failure_pattern_detector.py:1
+  [✖] ../../apps/api/src/analytics/models.py:1
+  [✖] ../../apps/api/src/analytics/progress_tracker.py:1
+  [✖] ../../apps/api/src/adaptive/irt_engine.py:1
+  [✖] ../../apps/api/tests/test_e2e_epic4.py:1
+  [✖] ../../apps/api/tests/test_calibrator.py:1
+  [✖] ../../apps/api/tests/test_dashboard.py:1
+  [✖] ../../apps/web/src/lib/challenge/corrective-feedback-engine.ts:1
+  [✖] ../../apps/web/src/lib/semantic-search-service.ts:1
+  [✖] ../../apps/web/src/components/study/CalibrationFeedbackPanel.tsx:1
+  [✖] ../../apps/web/src/jobs/first-aid-updater.ts:1
+  [✖] ../../apps/web/src/lib/__tests__/semantic-search-service.test.ts:1
+  [✖] ../../apps/web/src/lib/__tests__/embedding-service.test.ts:1
+  [✖] ../../services/chatmock/README.md:1
+  [✖] ../../services/chatmock/chatmock/routes_openai.py:1
+  [✖] ../../services/ocr-service/README.md:1
+  [✖] ../bmm-workflow-status.md:283
+  [✖] ../../apps/web/src/lib/db.ts:1
+  [✖] ../stories/story-4.5.md:1938
+  [✖] ../../apps/api/.env.example:1
+  [✖] ../../services/chatmock/.env.example:1
+  [✖] ../../apps/web/src/lib/rate-limiter.ts:1
+  [✖] ../stories/story-4.6.md:709
+  [✖] ../stories/story-4.4.md:400
+  [✖] ../stories/story-4.6.md:31
+  [✖] ../stories/story-4.5.md:1877
+  [✖] ../EPIC4-IMPLEMENTATION-GUIDE.md:248
+  [✖] ../../apps/web/src/lib/ai/gemini-client.ts:1
+  [✖] ../deployments/epic4-deployment-plan.md:16
+  [✖] ../bmm-workflow-status.md:1
+
+  61 links checked.
+  [✖] ../bmm-workflow-status.md:13 → Status: 400
+  [✖] ../bmm-workflow-status.md:59 → Status: 400
+  [✖] ../stories/story-4.1.md:1 → Status: 400
+  [✖] ../stories/story-4.2.md:1 → Status: 400
+  [✖] ../stories/story-4.3.md:1 → Status: 400
+  [✖] ../stories/story-4.4.md:1 → Status: 400
+  [✖] ../stories/story-4.5.md:1 → Status: 400
+  [✖] ../stories/story-4.6.md:1 → Status: 400
+  [✖] ../EPIC4-IMPLEMENTATION-GUIDE.md:1 → Status: 400
+  [✖] ../deployments/epic4-deployment-plan.md:1 → Status: 400
+  [✖] ../stories/story-4.1.md:21 → Status: 400
+  [✖] ../../apps/api/src/validation/routes.py:1 → Status: 400
+  [✖] ../../apps/web/src/components/study/ComprehensionPromptDialog.tsx:1 → Status: 400
+  [✖] ../stories/story-4.2.md:21 → Status: 400
+  [✖] ../../apps/web/src/components/study/ClinicalCaseDialog.tsx:1 → Status: 400
+  [✖] ../../apps/web/src/lib/clinical-reasoning-evaluator.ts:1 → Status: 400
+  [✖] ../stories/story-4.3.md:21 → Status: 400
+  [✖] ../../apps/web/src/lib/challenge/retry-scheduler.ts:1 → Status: 400
+  [✖] ../../apps/api/src/challenge/routes.py:1 → Status: 400
+  [✖] ../stories/story-4.4.md:21 → Status: 400
+  [✖] ../../apps/api/src/validation/calibrator.py:1 → Status: 400
+  [✖] ../../apps/web/src/lib/confidence-calibrator.ts:1 → Status: 400
+  [✖] ../stories/story-4.5.md:21 → Status: 400
+  [✖] ../../apps/web/src/lib/adaptive/irt-engine.ts:1 → Status: 400
+  [✖] ../../apps/web/src/lib/adaptive-session-orchestrator.ts:1 → Status: 400
+  [✖] ../stories/story-4.6.md:21 → Status: 400
+  [✖] ../../apps/api/src/analytics/routes.py:1 → Status: 400
+  [✖] ../../apps/web/src/lib/mission-analytics-engine.ts:1 → Status: 400
+  [✖] ../../apps/api/src/validation/evaluator.py:1 → Status: 400
+  [✖] ../../apps/api/src/validation/scenario_generator.py:1 → Status: 400
+  [✖] ../../apps/api/src/challenge/retry_scheduler.py:1 → Status: 400
+  [✖] ../../apps/api/src/challenge/failure_pattern_detector.py:1 → Status: 400
+  [✖] ../../apps/api/src/analytics/models.py:1 → Status: 400
+  [✖] ../../apps/api/src/analytics/progress_tracker.py:1 → Status: 400
+  [✖] ../../apps/api/src/adaptive/irt_engine.py:1 → Status: 400
+  [✖] ../../apps/api/tests/test_e2e_epic4.py:1 → Status: 400
+  [✖] ../../apps/api/tests/test_calibrator.py:1 → Status: 400
+  [✖] ../../apps/api/tests/test_dashboard.py:1 → Status: 400
+  [✖] ../../apps/web/src/lib/challenge/corrective-feedback-engine.ts:1 → Status: 400
+  [✖] ../../apps/web/src/lib/semantic-search-service.ts:1 → Status: 400
+  [✖] ../../apps/web/src/components/study/CalibrationFeedbackPanel.tsx:1 → Status: 400
+  [✖] ../../apps/web/src/jobs/first-aid-updater.ts:1 → Status: 400
+  [✖] ../../apps/web/src/lib/__tests__/semantic-search-service.test.ts:1 → Status: 400
+  [✖] ../../apps/web/src/lib/__tests__/embedding-service.test.ts:1 → Status: 400
+  [✖] ../../services/chatmock/README.md:1 → Status: 400
+  [✖] ../../services/chatmock/chatmock/routes_openai.py:1 → Status: 400
+  [✖] ../../services/ocr-service/README.md:1 → Status: 400
+  [✖] ../bmm-workflow-status.md:283 → Status: 400
+  [✖] ../../apps/web/src/lib/db.ts:1 → Status: 400
+  [✖] ../stories/story-4.5.md:1938 → Status: 400
+  [✖] ../../apps/api/.env.example:1 → Status: 400
+  [✖] ../../services/chatmock/.env.example:1 → Status: 400
+  [✖] ../../apps/web/src/lib/rate-limiter.ts:1 → Status: 400
+  [✖] ../stories/story-4.6.md:709 → Status: 400
+  [✖] ../stories/story-4.4.md:400 → Status: 400
+  [✖] ../stories/story-4.6.md:31 → Status: 400
+  [✖] ../stories/story-4.5.md:1877 → Status: 400
+  [✖] ../EPIC4-IMPLEMENTATION-GUIDE.md:248 → Status: 400
+  [✖] ../../apps/web/src/lib/ai/gemini-client.ts:1 → Status: 400
+  [✖] ../deployments/epic4-deployment-plan.md:16 → Status: 400
+  [✖] ../bmm-workflow-status.md:1 → Status: 400
+
+FILE: docs/doc-health-metrics.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/adr/ADR-INDEX.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/adr/adr-template.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/frontend/README.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/DASHBOARD-HOOKS-DELIVERY.md
+  [✖] mailto:kevy@americano.dev
+
+  1 link checked.
+  [✖] mailto:kevy@americano.dev → Status: 400
+
+FILE: docs/plan/consolidated-plan-2025-10.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/integration/task-6-7-integration-checklist.md
+  [✓] ../implementation/story-3.6-task-6-7-summary.md
+  [✓] ../developer-guides/export-and-session-search-guide.md
+  [✓] ../architecture/export-session-search-architecture.md
+
+  3 links checked.
+
+FILE: docs/DASHBOARD-HOOKS-QUICKSTART.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/PLATFORM-ARCHITECTURE-DIAGRAM.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epic-docs/epic-5-stories-architecture-review.md
+  [✖] mailto:kevy@americano.dev
+
+  1 link checked.
+  [✖] mailto:kevy@americano.dev → Status: 400
+
+FILE: docs/epic-docs/story-5.2-data-pipeline-architecture.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epic-docs/epic-5-implementation-plan.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epic-docs/task-8-workflow-diagram.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epic-docs/epic-5-integration-contracts.md
+  [✓] #1-shared-typescript-interfaces
+  [✓] #2-api-integration-points
+  [✓] #3-database-schema-integration
+  [✓] #4-event-flow--data-pipeline
+  [✓] #5-defensive-coding-patterns
+  [✓] #6-testing-strategy
+  [✓] #7-implementation-guidelines
+
+  7 links checked.
+
+FILE: docs/epic-docs/epic-5-design-system-guide.md
+  [✓] https://oklch.com/
+  [✓] https://www.color-blindness.com/coblis-color-blindness-simulator/
+  [✓] https://tailwindcss.com/
+  [✓] https://motion.dev/
+  [✓] https://ui.shadcn.com/
+  [✓] https://recharts.org/
+  [✓] https://www.w3.org/WAI/WCAG21/quickref/
+
+  7 links checked.
+
+FILE: docs/epic-docs/task-8-feedback-loop-components.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epic-docs/epic-5-deployment-guide.md
+  [✓] https://console.neon.tech/
+  [✓] https://console.upstash.com/
+  [✓] https://vercel.com/
+
+  3 links checked.
+
+FILE: docs/epic-docs/epic-5-performance-benchmarks.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epic-docs/epic-4-implementation-guide.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epic-docs/epic-5-master-summary.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epic-docs/epic-5-retrospective-handoff.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epic-docs/epic-5-tea-findings.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epic-docs/architecture-decision-epic-4.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/setup/README.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/planning/authentication-mvp.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/planning/wireframes-study-session-ui.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/planning/mobile-search-implementation.md
+  [✖] /Users/kyin/Projects/Americano-epic3/docs/stories/story-context-3.6.xml
+  [✖] /Users/kyin/Projects/Americano-epic3/docs/solution-architecture.md
+  [✓] https://web.dev/progressive-web-apps/
+  [✓] https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API
+
+  4 links checked.
+  [✖] /Users/kyin/Projects/Americano-epic3/docs/stories/story-context-3.6.xml → Status: 400
+  [✖] /Users/kyin/Projects/Americano-epic3/docs/solution-architecture.md → Status: 400
+
+FILE: docs/planning/backlog.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/planning/epics-Americano-2025-10-14.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/planning/brainstorming-session-results-2025-10-14.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/model_selection_matrix.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/backend/conflict-api-endpoints-summary.md
+  [✖] mailto:kevy@americano.dev
+
+  1 link checked.
+  [✖] mailto:kevy@americano.dev → Status: 400
+
+FILE: docs/backend/README.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/performance-reports/story-3.6-autocomplete-performance-report.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/troubleshooting/database-issues.md
+  [✖] ../../DATABASE-SCHEMA-FIX-2025-10-20.md
+  [✖] ../development-environment-setup.md
+  [✓] https://www.prisma.io/docs
+  [✓] ../../apps/web/prisma/schema.prisma
+
+  4 links checked.
+  [✖] ../../DATABASE-SCHEMA-FIX-2025-10-20.md → Status: 400
+  [✖] ../development-environment-setup.md → Status: 400
+
+FILE: docs/operations/README.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/requirement-brief.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/README.md
+  [✓] ./index.md
+  [✖] ./development-environment-setup.md
+  [✖] ./PRD-Americano-2025-10-14.md
+  [✖] ./solution-architecture.md
+  [✓] ./architecture/ADR-INDEX.md
+  [✖] ./api-contracts.md
+  [✖] ./data-models.md
+  [✓] ./DOCUMENTATION-EXCELLENCE-REPORT.md
+  [✓] ./DOC-HEALTH-METRICS.md
+  [✓] ./frontmatter-standard.md
+  [✖] ../AGENTS.MD
+  [✖] ../CLAUDE.md
+  [✓] ./troubleshooting/database-issues.md
+
+  13 links checked.
+  [✖] ./development-environment-setup.md → Status: 400
+  [✖] ./PRD-Americano-2025-10-14.md → Status: 400
+  [✖] ./solution-architecture.md → Status: 400
+  [✖] ./api-contracts.md → Status: 400
+  [✖] ./data-models.md → Status: 400
+  [✖] ../AGENTS.MD → Status: 400
+  [✖] ../CLAUDE.md → Status: 400
+
+FILE: docs/testing/story-3.4-final-validation-plan.md
+  [✖] mailto:kevy@americano.dev
+
+  1 link checked.
+  [✖] mailto:kevy@americano.dev → Status: 400
+
+FILE: docs/testing/story-3.6-task-4-integration-report.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/testing/story-3.4-test-summary.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/testing/story-3.4-FINAL-VALIDATION-REPORT.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/testing/story-3.4-test-validation-report.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/testing/index.md
+  [✓] ./story-3.4-test-summary.md
+  [✓] ./story-3.4-FINAL-VALIDATION-REPORT.md
+  [✓] ./story-3.6-test-report.md
+  [✓] ./story-3.6-task-4-integration-report.md
+  [✖] ../stories/story-4.1-testing-checklist.md
+  [✖] ../STORY-4.3-TESTING-QUICK-START.md
+  [✖] ../STORY-5.5-AB-TESTING-IMPLEMENTATION.md
+  [✖] ../api-contracts.md
+  [✖] ../data-models.md
+  [✖] ../solution-architecture.md
+  [✓] #epic-3-adaptive-content-delivery
+  [✓] #epic-4-understanding-validation-engine
+  [✓] #epic-5-behavioral-twin-engine
+  [✓] #common-issues--solutions
+  [✓] #coverage-targets
+  [✓] #testing-conventions
+
+  16 links checked.
+  [✖] ../stories/story-4.1-testing-checklist.md → Status: 400
+  [✖] ../STORY-4.3-TESTING-QUICK-START.md → Status: 400
+  [✖] ../STORY-5.5-AB-TESTING-IMPLEMENTATION.md → Status: 400
+  [✖] ../api-contracts.md → Status: 400
+  [✖] ../data-models.md → Status: 400
+  [✖] ../solution-architecture.md → Status: 400
+
+FILE: docs/testing/story-3.6-test-execution-guide.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/testing/story-3.6-test-report.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-5.6.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-4.3.md
+  [✖] ../PRD-Americano-2025-10-14.md
+  [✖] ../epics-Americano-2025-10-14.md
+  [✖] ../solution-architecture.md
+
+  3 links checked.
+  [✖] ../PRD-Americano-2025-10-14.md → Status: 400
+  [✖] ../epics-Americano-2025-10-14.md → Status: 400
+  [✖] ../solution-architecture.md → Status: 400
+
+FILE: docs/stories/story-5.2.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-4.2.md
+  [✖] ../PRD-Americano-2025-10-14.md
+  [✖] ../epics-Americano-2025-10-14.md
+  [✖] ../solution-architecture.md
+  [✖] ../../AGENTS.MD
+
+  4 links checked.
+  [✖] ../PRD-Americano-2025-10-14.md → Status: 400
+  [✖] ../epics-Americano-2025-10-14.md → Status: 400
+  [✖] ../solution-architecture.md → Status: 400
+  [✖] ../../AGENTS.MD → Status: 400
+
+FILE: docs/stories/story-5.3.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-4.6.md
+  [✖] ../PRD-Americano-2025-10-14.md
+  [✖] ../epics-Americano-2025-10-14.md
+  [✖] ../solution-architecture.md
+  [✖] ../../AGENTS.MD
+
+  4 links checked.
+  [✖] ../PRD-Americano-2025-10-14.md → Status: 400
+  [✖] ../epics-Americano-2025-10-14.md → Status: 400
+  [✖] ../solution-architecture.md → Status: 400
+  [✖] ../../AGENTS.MD → Status: 400
+
+FILE: docs/stories/story-2.3.md
+  [/] http://localhost:3000
+
+  1 link checked.
+
+FILE: docs/stories/story-1.4.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-3.2.md
+  [✓] https://reactflow.dev/
+  [✓] https://d3js.org/
+  [✓] https://d3js.org/d3-force
+  [✓] https://github.com/dagrejs/dagre
+
+  4 links checked.
+
+FILE: docs/stories/story-3.6.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-1.1.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-2.6.md
+  [✖] mailto:kevy@americano.dev
+  [✓] https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+  [✓] https://en.wikipedia.org/wiki/P-value
+  [✓] https://nextjs.org/docs/app
+  [✓] https://www.prisma.io/docs/guides/performance-and-optimization
+  [✓] https://zod.dev/
+
+  6 links checked.
+  [✖] mailto:kevy@americano.dev → Status: 400
+
+FILE: docs/stories/story-2.2.md
+  [✖] mailto:kevy@americano.dev
+
+  1 link checked.
+  [✖] mailto:kevy@americano.dev → Status: 400
+
+FILE: docs/stories/story-1.5.md
+  [✖] mailto:kevy@americano.local
+  [✖] mailto:kevy@americano.dev
+
+  2 links checked.
+  [✖] mailto:kevy@americano.local → Status: 400
+  [✖] mailto:kevy@americano.dev → Status: 400
+
+FILE: docs/stories/story-3.3.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-1.2.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-2.5.md
+  [✓] https://github.com/vercel/next.js/blob/canary/docs/01-app/03-api-reference/03-file-conventions/page.mdx
+  [✖] https://github.com/vercel/next.js/blob/canary/docs/01-app/01-getting-started/15-route-handlers-and-middleware.mdx
+  [✓] https://github.com/vercel/next.js/blob/canary/errors/sync-dynamic-apis.mdx
+  [/] https://github.com/pmndrs/zustand#persist-middleware
+  [✓] https://oklch.com/
+
+  5 links checked.
+  [✖] https://github.com/vercel/next.js/blob/canary/docs/01-app/01-getting-started/15-route-handlers-and-middleware.mdx → Status: 404
+
+FILE: docs/stories/story-3.4.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-2.1.md
+  [✖] https://www.aamc.org/what-we-do/mission-areas/medical-education/curriculum-inventory/establish-your-ci/competency-framework
+  [✓] https://nextjs.org/docs
+  [✓] https://zod.dev/
+  [✓] https://www.prisma.io/docs
+  [✓] https://ui.shadcn.com
+
+  5 links checked.
+  [✖] https://www.aamc.org/what-we-do/mission-areas/medical-education/curriculum-inventory/establish-your-ci/competency-framework → Status: 404
+
+FILE: docs/stories/story-1.6.md
+  [✖] mailto:zustand@5.0.8
+  [✖] mailto:date-fns@4.1.0
+  [✖] mailto:recharts@3.2.1
+  [✓] https://nextjs.org/docs/app/api-reference/file-conventions/page#params
+  [✓] https://zod.dev/?id=nullable-optional-and-nullish
+  [✓] https://owasp.org/www-project-api-security/
+
+  6 links checked.
+  [✖] mailto:zustand@5.0.8 → Status: 400
+  [✖] mailto:date-fns@4.1.0 → Status: 400
+  [✖] mailto:recharts@3.2.1 → Status: 400
+
+FILE: docs/stories/story-3.1.md
+  [✓] ./story-context-3.1.xml
+
+  1 link checked.
+
+FILE: docs/stories/story-1.3.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-2.4.md
+  [/] http://localhost:3000
+
+  1 link checked.
+
+FILE: docs/stories/story-3.5.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-4.1.md
+  [✖] ../PRD-Americano-2025-10-14.md
+  [✖] ../epics-Americano-2025-10-14.md
+  [✖] ../solution-architecture.md
+  [✖] ../../AGENTS.MD
+  [/] http://localhost:8000
+
+  5 links checked.
+  [✖] ../PRD-Americano-2025-10-14.md → Status: 400
+  [✖] ../epics-Americano-2025-10-14.md → Status: 400
+  [✖] ../solution-architecture.md → Status: 400
+  [✖] ../../AGENTS.MD → Status: 400
+
+FILE: docs/stories/story-4.5.md
+  [✖] mailto:kevy@americano.dev
+  [✖] ../PRD-Americano-2025-10-14.md
+  [✖] ../epics-Americano-2025-10-14.md
+  [✖] ../solution-architecture.md
+  [✖] ../../AGENTS.MD
+
+  5 links checked.
+  [✖] mailto:kevy@americano.dev → Status: 400
+  [✖] ../PRD-Americano-2025-10-14.md → Status: 400
+  [✖] ../epics-Americano-2025-10-14.md → Status: 400
+  [✖] ../solution-architecture.md → Status: 400
+  [✖] ../../AGENTS.MD → Status: 400
+
+FILE: docs/stories/story-5.4.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-4.4.md
+  [✖] ../PRD-Americano-2025-10-14.md
+  [✖] ../epics-Americano-2025-10-14.md
+  [✖] ../solution-architecture.md
+  [✖] ../../AGENTS.MD
+
+  4 links checked.
+  [✖] ../PRD-Americano-2025-10-14.md → Status: 400
+  [✖] ../epics-Americano-2025-10-14.md → Status: 400
+  [✖] ../solution-architecture.md → Status: 400
+  [✖] ../../AGENTS.MD → Status: 400
+
+FILE: docs/stories/story-5.5.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/stories/story-5.1.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/architecture/retry-strategy-architecture.md
+  [✓] https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
+  [✓] https://martinfowler.com/bliki/CircuitBreaker.html
+  [✓] https://cloud.google.com/iot/docs/how-tos/exponential-backoff
+
+  3 links checked.
+
+FILE: docs/architecture/ADR-001-hybrid-typescript-python.md
+  [✖] ../ARCHITECTURE-DECISION-EPIC4.md
+  [✓] https://fastapi.tiangolo.com/
+  [✓] https://docs.scipy.org/doc/scipy/reference/optimize.html
+  [✓] https://nextjs.org/docs/app/building-your-application/routing/route-handlers
+  [✖] ../../CLAUDE.md#epic-4-context
+
+  5 links checked.
+  [✖] ../ARCHITECTURE-DECISION-EPIC4.md → Status: 400
+  [✖] ../../CLAUDE.md#epic-4-context → Status: 400
+
+FILE: docs/architecture/first-aid-cache-architecture.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/architecture/ADR-002-multi-worktree-deprecated.md
+  [✖] ../DATABASE-MIGRATION-STRATEGY.md
+  [✓] https://git-scm.com/docs/git-worktree
+  [✖] ../../CLAUDE.md#multi-worktree-development-strategy
+
+  3 links checked.
+  [✖] ../DATABASE-MIGRATION-STRATEGY.md → Status: 400
+  [✖] ../../CLAUDE.md#multi-worktree-development-strategy → Status: 400
+
+FILE: docs/architecture/ADR-004-oklch-glassmorphism.md
+  [✖] ../EPIC5-DESIGN-SYSTEM-GUIDE.md
+  [✓] https://oklch.com/
+  [✓] https://www.w3.org/TR/css-color-4/
+  [✓] https://uxdesign.cc/glassmorphism-in-user-interfaces-1f39bb1308c9
+  [✓] https://www.w3.org/WAI/WCAG21/quickref/
+  [✓] https://oklch.com/#70,0.1,250,100
+  [✓] https://webaim.org/resources/contrastchecker/
+  [✓] https://www.deque.com/axe/devtools/
+
+  8 links checked.
+  [✖] ../EPIC5-DESIGN-SYSTEM-GUIDE.md → Status: 400
+
+FILE: docs/architecture/ADR-005-gemini-embeddings-1536.md
+  [✖] ../solution-architecture.md#epic-3-semantic-search
+  [✓] https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings/get-text-embeddings
+  [✓] https://github.com/pgvector/pgvector
+  [/] https://github.com/pgvector/pgvector#ivfflat
+  [✓] https://huggingface.co/spaces/mteb/leaderboard
+  [✓] https://arxiv.org/abs/2312.11805
+
+  6 links checked.
+  [✖] ../solution-architecture.md#epic-3-semantic-search → Status: 400
+
+FILE: docs/architecture/technical-decisions-template.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/architecture/README.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/architecture/ADR-006-research-grade-analytics-system.md
+  [✓] https://pubmed.ncbi.nlm.nih.gov/26272792/
+  [✓] https://pubmed.ncbi.nlm.nih.gov/32501496/
+  [✖] https://ies.ed.gov/ncee/wwc/Document/229
+  [✓] https://causalpy.readthedocs.io/en/latest/notebooks/its_pymc.html
+  [✓] https://pypi.org/project/causalimpact/
+  [✓] https://en.wikipedia.org/wiki/Synthetic_control_method
+  [✓] https://pubmed.ncbi.nlm.nih.gov/18522057/
+  [✓] https://duckdb.org/science/motherduck/
+  [✓] https://docs.getdbt.com/
+  [✓] https://docs.dagster.io/
+  [✓] https://pandera.readthedocs.io/
+  [✓] https://docs.evidentlyai.com/
+  [✓] https://mlflow.org/docs/latest/
+  [✓] https://dvc.org/
+
+  14 links checked.
+  [✖] https://ies.ed.gov/ncee/wwc/Document/229 → Status: 0
+
+FILE: docs/architecture/export-session-search-architecture.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/architecture/ADR-INDEX.md
+  [✓] ./adr-template.md
+  [✓] ./ADR-001-hybrid-typescript-python.md
+  [✓] ./ADR-002-multi-worktree-deprecated.md
+  [✓] ./ADR-003-two-tier-caching.md
+  [✓] ./ADR-004-oklch-glassmorphism.md
+  [✓] ./ADR-005-gemini-embeddings-1536.md
+  [✖] ../solution-architecture.md
+  [✖] /CLAUDE.md
+  [✓] https://adr.github.io/
+  [✓] https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+
+  10 links checked.
+  [✖] ../solution-architecture.md → Status: 400
+  [✖] /CLAUDE.md → Status: 400
+
+FILE: docs/architecture/adr-template.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/architecture/ADR-003-two-tier-caching.md
+  [✖] ../EPIC5-MASTER-SUMMARY.md
+  [✓] https://docs.upstash.com/redis
+  [✖] ../EPIC5-PERFORMANCE-BENCHMARKS.md
+  [✓] https://aws.amazon.com/caching/best-practices/
+
+  4 links checked.
+  [✖] ../EPIC5-MASTER-SUMMARY.md → Status: 400
+  [✖] ../EPIC5-PERFORMANCE-BENCHMARKS.md → Status: 400
+
+FILE: docs/research.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/index.md
+  [✖] #project-overview
+  [✓] #getting-started
+  [✖] #architecture
+  [✖] #developer-guides
+  [✖] #api-contracts
+  [✖] #data-models
+  [✖] #testing
+  [✖] #troubleshooting
+  [✓] ./overview/PRD-Americano-2025-10-14.md
+  [✓] ./overview/ux-specification.md
+  [✓] ./overview/product-brief-Americano-2025-10-14.md
+  [✓] ./overview/competitive-intelligence-2025-10-14.md
+  [✓] ./overview/innovation-strategy-2025-10-15.md
+  [✓] epics/epic-3/epic-3-completion-report.md
+  [✓] epics/epic-4/EPIC-4-COMPLETION-REPORT.md
+  [✓] epics/epic-5/EPIC-5-MERGE-COMPLETION-FINAL.md
+  [✓] ./overview/solution-architecture.md
+  [✓] ./overview/architecture-brief.md
+  [✓] ./architecture/ADR-INDEX.md
+  [✓] ./epic-docs/architecture-decision-epic-4.md
+  [✓] ./epic-docs/epic-5-stories-architecture-review.md
+  [✓] ./epic-docs/story-5.2-data-pipeline-architecture.md
+  [✖] ./STORY-5.5-BACKEND-ARCHITECTURE-REVIEW.md
+  [✓] ./architecture/export-session-search-architecture.md
+  [✓] ./architecture/first-aid-cache-architecture.md
+  [✓] ./architecture/retry-strategy-architecture.md
+  [✓] ./api/api-contracts.md
+  [✓] ../apps/web/docs/api/openapi.yaml
+  [✓] ./api/api-endpoints.md
+  [✓] ./api/api-routes-task-11.md
+  [✓] ./api/api-contracts.md#epic-3-semantic-search
+  [✓] ./api/api-story-5.2-interventions.md
+  [✓] ./api/api-story-5.5-preferences.md
+  [✖] ./STORY-5.6-API-QUICK-REFERENCE.md
+  [✓] ./backend/conflict-api-endpoints-summary.md
+  [✓] ./planning/authentication-mvp.md
+  [✓] ../apps/web/prisma/schema.prisma
+  [✓] ./database/data-models.md
+  [✓] ./database/database-migration-strategy.md
+  [✓] ./deprecated/WORKTREE-DATABASE-STRATEGY.md
+  [✓] ./troubleshooting/database-issues.md
+  [✓] ./technical/development-environment-setup.md
+  [✓] ./technical/services-setup.md
+  [✓] ./technical/development-warnings.md
+  [✓] ./developer-guides/first-aid-contextual-loading-guide.md
+  [✓] ./developer-guides/first-aid-cache-usage.md
+  [✓] ./developer-guides/export-and-session-search-guide.md
+  [✓] ./implementation/first-aid-contextual-loading.md
+  [✓] ./implementation/story-3.4-task-6-historical-tracking-ui.md
+  [✓] ./implementation/story-3.6-task-6-7-summary.md
+  [✓] ./technical/git-workflow-guide.md
+  [✓] ./technical/rate-limiting-deferred.md
+  [✓] ./technical/gemini-api-rate-limits.md
+  [✓] ./architecture/technical-decisions-template.md
+  [✓] ./testing/index.md
+  [✖] ./STORY-4.3-TESTING-QUICK-START.md
+  [✖] ./STORY-4.3-TEST-SUMMARY.md
+  [✖] ./STORY-4.4-FINAL-COMPLETION-REPORT.md
+  [✓] ./testing/story-3.4-test-summary.md
+  [✓] ./testing/story-3.4-FINAL-VALIDATION-REPORT.md
+  [✓] ./testing/story-3.4-final-validation-plan.md
+  [✓] ./testing/story-3.4-test-validation-report.md
+  [✓] ./testing/story-3.6-test-report.md
+  [✓] ./testing/story-3.6-test-execution-guide.md
+  [✓] ./testing/story-3.6-task-4-integration-report.md
+  [✖] ./STORY-5.2-TEST-RESULTS.md
+  [✖] ./STORY-5.2-QUICK-TEST-GUIDE.md
+  [✖] ./STORY-5.5-TASK-15-INTEGRATION-TESTS.md
+  [✓] ./validation/CACHE-VALIDATION-SUMMARY.md
+  [✓] ./validation/story-3.6-cache-validation-report.md
+  [✖] ./EPIC5-PERFORMANCE-BENCHMARKS.md
+  [✖] ./performance-optimization-report.md
+  [✓] ./performance-reports/story-3.6-autocomplete-performance-report.md
+  [✓] ./database/migrations.md
+  [✓] ../CHANGELOG.md
+  [✖] ./CHANGELOG-2025-10-15.md
+  [✓] ./deployments/epic4-deployment-plan.md
+  [✓] ./deployments/epic4-pre-deploy-checklist.md
+  [✓] ./deployments/epic4-db-verification.md
+  [✓] ./deployments/epic4-debt-hardening.md
+  [✓] ./epic-docs/epic-5-deployment-guide.md
+  [✓] ./epic-docs/epic-5-design-system-guide.md
+  [✖] ./MERGE-QUICKSTART.md
+  [✓] ./deprecated/MULTI-WORKTREE-MERGE-PLAN.md
+  [✓] ./releases/epic4-release-notes.md
+  [✓] ./technical/troubleshooting-lecture-upload.md
+  [✖] ./SESSION-HANDOFF-2025-10-16.md
+  [✖] ./SESSION-SUMMARY-2025-10-16-epic4-build-verification.md
+  [✖] ./SESSION-SUMMARY-2025-10-16-epic4-pause.md
+  [✖] ./FIX-SUMMARY-2025-10-15.md
+  [✓] ./epic-docs/epic-4-implementation-guide.md
+  [✓] ./stories/story-4.1.md
+  [✓] ./stories/story-4.2.md
+  [✓] ./stories/story-4.3.md
+  [✓] ./stories/story-4.4.md
+  [✓] ./stories/story-4.5.md
+  [✓] ./stories/story-4.6.md
+  [✓] ./retrospectives/epic-4-retro-2025-10-17.md
+  [✓] ./retrospectives/epic-4-retro-2025-10-20.md
+  [✓] ./epic-docs/epic-5-implementation-plan.md
+  [✓] ./epic-docs/epic-5-retrospective-handoff.md
+  [✓] ./epic-docs/epic-5-tea-findings.md
+  [✓] ./epic-docs/epic-5-integration-contracts.md
+  [✓] ./stories/story-5.1.md
+  [✓] ./stories/story-5.2.md
+  [✓] ./stories/story-5.3.md
+  [✓] ./stories/story-5.4.md
+  [✓] ./stories/story-5.5.md
+  [✓] ./stories/story-5.6.md
+  [✓] ./epic-docs/epic-5-performance-benchmarks.md
+  [✓] ./retrospectives/epic-5-retrospective-2025-10-20.md
+  [✓] ./stories/story-3.1.md
+  [✓] ./stories/story-3.2.md
+  [✓] ./stories/story-3.3.md
+  [✓] ./stories/story-3.4.md
+  [✓] ./stories/story-3.5.md
+  [✓] ./stories/story-3.6.md
+  [✓] ./stories/story-1.1.md
+  [✓] ./stories/story-1.2.md
+  [✓] ./stories/story-1.3.md
+  [✓] ./stories/story-1.4.md
+  [✓] ./stories/story-1.5.md
+  [✓] ./stories/story-1.6.md
+  [✖] ./stories/story-1.6-bug-fixes-session.md
+  [✖] ./stories/story-1.6-implementation-log.md
+  [✓] ./stories/story-2.1.md
+  [✓] ./stories/story-2.2.md
+  [✓] ./stories/story-2.3.md
+  [✓] ./stories/story-2.4.md
+  [✓] ./stories/story-2.5.md
+  [✓] ./stories/story-2.6.md
+  [✖] ./stories/story-2.6-validation-checklist.md
+  [✓] ./planning/epics-Americano-2025-10-14.md
+  [✓] ./planning/backlog.md
+  [✓] ./deprecated/bmm-workflow-status.md
+  [✓] ./planning/brainstorming-session-results-2025-10-14.md
+  [✓] ./planning/wireframes-study-session-ui.md
+  [✓] ./planning/mobile-search-implementation.md
+  [✖] ./analytics-dashboard-implementation-report.md
+  [✓] ./technical/search-analytics-privacy-compliance.md
+  [✓] ./epic-docs/task-8-feedback-loop-components.md
+  [✓] ./epic-docs/task-8-workflow-diagram.md
+  [✓] ./integration/task-6-7-integration-checklist.md
+  [✓] ./documentation-excellence-report.md
+  [✓] ./doc-health-metrics.md
+  [✓] ./documentation-best-practices-audit.md
+  [✓] ./frontmatter-standard.md
+  [✓] ./deprecated/README.md
+
+  148 links checked.
+  [✖] #project-overview → Status: 404
+  [✖] #architecture → Status: 404
+  [✖] #developer-guides → Status: 404
+  [✖] #api-contracts → Status: 404
+  [✖] #data-models → Status: 404
+  [✖] #testing → Status: 404
+  [✖] #troubleshooting → Status: 404
+  [✖] ./STORY-5.5-BACKEND-ARCHITECTURE-REVIEW.md → Status: 400
+  [✖] ./STORY-5.6-API-QUICK-REFERENCE.md → Status: 400
+  [✖] ./STORY-4.3-TESTING-QUICK-START.md → Status: 400
+  [✖] ./STORY-4.3-TEST-SUMMARY.md → Status: 400
+  [✖] ./STORY-4.4-FINAL-COMPLETION-REPORT.md → Status: 400
+  [✖] ./STORY-5.2-TEST-RESULTS.md → Status: 400
+  [✖] ./STORY-5.2-QUICK-TEST-GUIDE.md → Status: 400
+  [✖] ./STORY-5.5-TASK-15-INTEGRATION-TESTS.md → Status: 400
+  [✖] ./EPIC5-PERFORMANCE-BENCHMARKS.md → Status: 400
+  [✖] ./performance-optimization-report.md → Status: 400
+  [✖] ./CHANGELOG-2025-10-15.md → Status: 400
+  [✖] ./MERGE-QUICKSTART.md → Status: 400
+  [✖] ./SESSION-HANDOFF-2025-10-16.md → Status: 400
+  [✖] ./SESSION-SUMMARY-2025-10-16-epic4-build-verification.md → Status: 400
+  [✖] ./SESSION-SUMMARY-2025-10-16-epic4-pause.md → Status: 400
+  [✖] ./FIX-SUMMARY-2025-10-15.md → Status: 400
+  [✖] ./stories/story-1.6-bug-fixes-session.md → Status: 400
+  [✖] ./stories/story-1.6-implementation-log.md → Status: 400
+  [✖] ./stories/story-2.6-validation-checklist.md → Status: 400
+  [✖] ./analytics-dashboard-implementation-report.md → Status: 400
+
+FILE: docs/retrospectives/epic-4-retro-2025-10-20.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/retrospectives/epic-4-retro-2025-10-17.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/retrospectives/epic-5-retrospective-2025-10-20.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/documentation-best-practices-audit.md
+  [✓] ./DOCUMENTATION-EXCELLENCE-REPORT.md
+  [✓] ./DOC-HEALTH-METRICS.md
+  [✓] ./index.md
+  [✓] ./frontmatter-standard.md
+  [✓] ../bmad/bmb/workflows/redoc/README.md
+
+  5 links checked.
+
+FILE: docs/implementation/story-3.6-task-6-7-summary.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/implementation/first-aid-contextual-loading.md
+  [✖] /docs/stories/story-3.3.md
+  [✖] /docs/architecture/first-aid-mapper.md
+  [✖] /docs/implementation/semantic-search.md
+  [✖] /docs/api/first-aid-endpoints.md
+
+  4 links checked.
+  [✖] /docs/stories/story-3.3.md → Status: 400
+  [✖] /docs/architecture/first-aid-mapper.md → Status: 400
+  [✖] /docs/implementation/semantic-search.md → Status: 400
+  [✖] /docs/api/first-aid-endpoints.md → Status: 400
+
+FILE: docs/implementation/story-3.4-task-6-historical-tracking-ui.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/documentation-excellence-report.md
+  [✓] ./index.md
+  [✓] ./architecture/ADR-INDEX.md
+  [✓] ./frontmatter-standard.md
+  [✓] ./DOC-HEALTH-METRICS.md
+  [✖] ./solution-architecture.md
+
+  5 links checked.
+  [✖] ./solution-architecture.md → Status: 400
+
+FILE: docs/api/api-story-5.2-interventions.md
+  [✓] #1-post-apianalyticspredictionsgenerate
+  [✓] #2-get-apianalyticspredictions
+  [✓] #3-get-apianalyticsinterventions
+  [✓] #4-post-apianalyticsinterventionsidapply
+  [✓] #5-post-apianalyticspredictionsidfeedback
+  [✓] #6-get-apianalyticsmodel-performance
+  [✓] #7-get-apianalyticsstruggle-reduction
+  [✖] mailto:kevy@americano.dev
+
+  8 links checked.
+  [✖] mailto:kevy@americano.dev → Status: 400
+
+FILE: docs/api/api-routes-task-11.md
+  [✖] mailto:kevy@americano.dev
+
+  1 link checked.
+  [✖] mailto:kevy@americano.dev → Status: 400
+
+FILE: docs/api/api-story-5.5-preferences.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/api/api-endpoints.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/api/api-contracts.md
+  [✖] ../apps/web/docs/api/openapi.yaml
+  [/] http://localhost:8000/docs
+  [/] http://localhost:8000/redoc
+  [✖] ./architecture/ADR-003-two-tier-caching.md
+  [✖] ./solution-architecture.md
+  [✖] ./architecture/ADR-001-hybrid-typescript-python.md
+  [✖] ./data-models.md
+  [✖] ../apps/web/prisma/schema.prisma
+  [✖] ./EPIC3-COMPLETION-SUMMARY.md
+  [✖] ./ARCHITECTURE-DECISION-EPIC4.md
+  [✖] ./EPIC5-MASTER-SUMMARY.md
+
+  11 links checked.
+  [✖] ../apps/web/docs/api/openapi.yaml → Status: 400
+  [✖] ./architecture/ADR-003-two-tier-caching.md → Status: 400
+  [✖] ./solution-architecture.md → Status: 400
+  [✖] ./architecture/ADR-001-hybrid-typescript-python.md → Status: 400
+  [✖] ./data-models.md → Status: 400
+  [✖] ../apps/web/prisma/schema.prisma → Status: 400
+  [✖] ./EPIC3-COMPLETION-SUMMARY.md → Status: 400
+  [✖] ./ARCHITECTURE-DECISION-EPIC4.md → Status: 400
+  [✖] ./EPIC5-MASTER-SUMMARY.md → Status: 400
+
+FILE: docs/research-analytics/DAY-3-4-IMPLEMENTATION-LOG.md
+  [✖] http://127.0.0.1:5000
+  [✓] https://dvc.org/doc
+  [✓] https://pandera.readthedocs.io/
+  [✓] https://mlflow.org/docs/latest/
+  [✓] https://duckdb.org/docs/
+
+  5 links checked.
+  [✖] http://127.0.0.1:5000 → Status: 403
+
+FILE: docs/research-analytics/DAY-7-8-COMPLETION.md
+  [✖] https://ies.ed.gov/ncee/wwc/Document/229
+  [✓] https://recharts.org/
+  [✓] https://www.pymc.io/
+
+  3 links checked.
+  [✖] https://ies.ed.gov/ncee/wwc/Document/229 → Status: 0
+
+FILE: docs/research-analytics/DAY-7-8-IMPLEMENTATION-LOG.md
+  [✖] https://ies.ed.gov/ncee/wwc/Document/229
+  [✓] https://recharts.org/
+
+  2 links checked.
+  [✖] https://ies.ed.gov/ncee/wwc/Document/229 → Status: 0
+
+FILE: docs/research-analytics/DAY-5-6-IMPLEMENTATION-LOG.md
+  [✓] https://www.pymc.io/
+  [✓] https://causalpy.readthedocs.io/
+  [✓] https://arviz-devs.github.io/arviz/
+
+  3 links checked.
+
+FILE: docs/DASHBOARD-HOOKS-USAGE.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epics/epic-5/EPIC-5-MERGE-COMPLETION-FINAL.md
+  [✓] https://github.com/yinkev/Americano/pull/new/epic-5-main-reconciliation
+
+  1 link checked.
+
+FILE: docs/epics/epic-5/README.md
+  [✓] ./EPIC-5-MERGE-COMPLETION-FINAL.md
+  [✓] ../../stories/
+  [✖] ../../EPIC-5-IMPLEMENTATION-PLAN.md
+  [✖] ../../EPIC-5-RETROSPECTIVE-HANDOFF.md
+  [✖] ../../EPIC-5-TEA-FINDINGS-SUMMARY.md
+  [✖] ../../epic-5-integration-contracts.md
+  [✖] ../../EPIC5-PERFORMANCE-BENCHMARKS.md
+  [✖] ../../EPIC5-DEPLOYMENT-GUIDE.md
+  [✖] ../../EPIC5-DESIGN-SYSTEM-GUIDE.md
+  [✖] ../../api-contracts.md#epic-5-endpoints
+  [✖] ../../data-models.md#behavioral-analytics
+
+  11 links checked.
+  [✖] ../../EPIC-5-IMPLEMENTATION-PLAN.md → Status: 400
+  [✖] ../../EPIC-5-RETROSPECTIVE-HANDOFF.md → Status: 400
+  [✖] ../../EPIC-5-TEA-FINDINGS-SUMMARY.md → Status: 400
+  [✖] ../../epic-5-integration-contracts.md → Status: 400
+  [✖] ../../EPIC5-PERFORMANCE-BENCHMARKS.md → Status: 400
+  [✖] ../../EPIC5-DEPLOYMENT-GUIDE.md → Status: 400
+  [✖] ../../EPIC5-DESIGN-SYSTEM-GUIDE.md → Status: 400
+  [✖] ../../api-contracts.md#epic-5-endpoints → Status: 400
+  [✖] ../../data-models.md#behavioral-analytics → Status: 400
+
+FILE: docs/epics/epic-4/EPIC-4-COMPLETION-REPORT.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/epics/epic-4/README.md
+  [✓] ./EPIC-4-COMPLETION-REPORT.md
+  [✓] ../../stories/
+  [✖] ../../ARCHITECTURE-DECISION-EPIC4.md
+  [✖] ../../EPIC4-IMPLEMENTATION-GUIDE.md
+  [✖] ../../api-contracts.md#epic-4-endpoints
+  [✖] ../../data-models.md#validation-engine
+  [✓] ../../retrospectives/epic-4-retro-2025-10-20.md
+
+  7 links checked.
+  [✖] ../../ARCHITECTURE-DECISION-EPIC4.md → Status: 400
+  [✖] ../../EPIC4-IMPLEMENTATION-GUIDE.md → Status: 400
+  [✖] ../../api-contracts.md#epic-4-endpoints → Status: 400
+  [✖] ../../data-models.md#validation-engine → Status: 400
+
+FILE: docs/epics/epic-3/README.md
+  [✓] ./epic-3-completion-report.md
+  [✓] ../../stories/
+  [✖] ../../architecture/ADR-005-embeddings-strategy.md
+  [✖] ../../architecture/ADR-003-caching-strategy.md
+  [✖] ../../api-contracts.md#epic-3-endpoints
+  [✖] ../../data-models.md#knowledge-graph
+
+  6 links checked.
+  [✖] ../../architecture/ADR-005-embeddings-strategy.md → Status: 400
+  [✖] ../../architecture/ADR-003-caching-strategy.md → Status: 400
+  [✖] ../../api-contracts.md#epic-3-endpoints → Status: 400
+  [✖] ../../data-models.md#knowledge-graph → Status: 400
+
+FILE: docs/epics/epic-3/epic-3-completion-report.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/overview/PRD-Americano-2025-10-14.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/overview/innovation-strategy-2025-10-15.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/overview/README.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/overview/solution-architecture.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/overview/competitive-intelligence-2025-10-14.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/overview/architecture-brief.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/overview/product-brief-Americano-2025-10-14.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/overview/ux-specification.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/ux-spec.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/technical/git-workflow-guide.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/technical/gemini-api-rate-limits.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/technical/rate-limiting-deferred.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/technical/development-warnings.md
+  [✓] https://github.com/vercel/next.js/issues
+
+  1 link checked.
+
+FILE: docs/technical/services-setup.md
+  [/] http://localhost:3000
+  [✖] http://192.168.4.125:3000
+  [✖] http://0.0.0.0:8000
+  [/] http://localhost:8000/health
+  [/] http://localhost:8801
+  [/] http://localhost:8801/v1
+  [/] http://localhost:8801/v1/chat/completions
+  [✓] mailto:kevinpyin@gmail.com
+
+  8 links checked.
+  [✖] http://192.168.4.125:3000 → Status: 0
+  [✖] http://0.0.0.0:8000 → Status: 0
+
+FILE: docs/technical/development-environment-setup.md
+  [✖] ./troubleshooting/database-issues.md
+  [✖] ../DATABASE-SCHEMA-FIX-2025-10-20.md
+
+  2 links checked.
+  [✖] ./troubleshooting/database-issues.md → Status: 400
+  [✖] ../DATABASE-SCHEMA-FIX-2025-10-20.md → Status: 400
+
+FILE: docs/technical/troubleshooting-lecture-upload.md
+  [/] http://localhost:3000
+
+  1 link checked.
+
+FILE: docs/technical/search-analytics-privacy-compliance.md
+  [✓] https://gdpr.eu/
+  [✓] https://oag.ca.gov/privacy/ccpa
+  [✓] https://www.prisma.io/docs
+
+  3 links checked.
+
+FILE: docs/validation/CACHE-VALIDATION-SUMMARY.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/validation/story-3.6-cache-validation-report.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/deployments/epic4-db-verification.md
+  [✓] ./epic4-deployment-plan.md
+  [✓] ../releases/epic4-release-notes.md
+  [✓] ../../apps/web/prisma/schema.prisma
+  [✖] ../../apps/api/src/analytics/routes.py:1
+  [✖] ../../apps/api/src/validation/calibrator.py:1
+  [✖] ../bmm-workflow-status.md:283
+  [✖] ./epic4-deployment-plan.md:13
+
+  7 links checked.
+  [✖] ../../apps/api/src/analytics/routes.py:1 → Status: 400
+  [✖] ../../apps/api/src/validation/calibrator.py:1 → Status: 400
+  [✖] ../bmm-workflow-status.md:283 → Status: 400
+  [✖] ./epic4-deployment-plan.md:13 → Status: 400
+
+FILE: docs/deployments/epic4-debt-hardening.md
+  [✖] ../../apps/web/src/lib/ai/gemini-client.ts:1
+  [✖] ../../apps/web/src/lib/semantic-search-service.ts:1
+  [✖] ./epic4-db-verification.md:1
+  [✖] ../../apps/api/src/analytics/routes.py:1
+  [✖] ./epic4-db-verification.md:4
+  [✖] ../../apps/web/src/lib/confidence-calibrator.ts:1
+  [✖] ../../apps/api/src/validation/calibrator.py:1
+  [✖] ../../apps/web/src/lib/adaptive-session-orchestrator.ts:1
+  [✖] ../../apps/web/src/lib/adaptive/irt-engine.ts:1
+  [✖] ../../apps/web/src/lib/embedding-service.ts:1
+  [✖] ./epic4-db-verification.md:6
+  [✖] ../../apps/web/src/lib/rate-limiter.ts:1
+  [✖] ../../apps/web/src/lib/logger-pii-redaction.ts:1
+  [✖] ../stories/story-4.1.md:21
+  [✖] ../stories/story-4.4.md:36
+  [✖] ../stories/story-4.5.md:30
+  [✖] ./epic4-pre-deploy-checklist.md:6
+  [✖] ./epic4-db-verification.md:7
+  [✖] ../../apps/web/src/lib/logger.ts:1
+  [✖] ../releases/epic4-release-notes.md:1
+  [✖] ../../apps/web/src/lib/adaptive/adaptive-engine.ts:1
+
+  21 links checked.
+  [✖] ../../apps/web/src/lib/ai/gemini-client.ts:1 → Status: 400
+  [✖] ../../apps/web/src/lib/semantic-search-service.ts:1 → Status: 400
+  [✖] ./epic4-db-verification.md:1 → Status: 400
+  [✖] ../../apps/api/src/analytics/routes.py:1 → Status: 400
+  [✖] ./epic4-db-verification.md:4 → Status: 400
+  [✖] ../../apps/web/src/lib/confidence-calibrator.ts:1 → Status: 400
+  [✖] ../../apps/api/src/validation/calibrator.py:1 → Status: 400
+  [✖] ../../apps/web/src/lib/adaptive-session-orchestrator.ts:1 → Status: 400
+  [✖] ../../apps/web/src/lib/adaptive/irt-engine.ts:1 → Status: 400
+  [✖] ../../apps/web/src/lib/embedding-service.ts:1 → Status: 400
+  [✖] ./epic4-db-verification.md:6 → Status: 400
+  [✖] ../../apps/web/src/lib/rate-limiter.ts:1 → Status: 400
+  [✖] ../../apps/web/src/lib/logger-pii-redaction.ts:1 → Status: 400
+  [✖] ../stories/story-4.1.md:21 → Status: 400
+  [✖] ../stories/story-4.4.md:36 → Status: 400
+  [✖] ../stories/story-4.5.md:30 → Status: 400
+  [✖] ./epic4-pre-deploy-checklist.md:6 → Status: 400
+  [✖] ./epic4-db-verification.md:7 → Status: 400
+  [✖] ../../apps/web/src/lib/logger.ts:1 → Status: 400
+  [✖] ../releases/epic4-release-notes.md:1 → Status: 400
+  [✖] ../../apps/web/src/lib/adaptive/adaptive-engine.ts:1 → Status: 400
+
+FILE: docs/deployments/epic4-pre-deploy-checklist.md
+  [✖] ./epic4-deployment-plan.md:1
+  [✖] ./epic4-db-verification.md:1
+  [✖] ../releases/epic4-release-notes.md:1
+  [✖] ../../apps/web/src/lib/__tests__/embedding-service.test.ts:1
+  [✖] ../../apps/api/tests/test_e2e_epic4.py:1
+  [✖] ../../apps/api/tests/test_dashboard.py:1
+  [✖] ../../apps/api/.env.example:1
+  [✖] ../../services/chatmock/.env.example:1
+  [✖] ../../apps/web/src/lib/rate-limiter.ts:1
+  [✖] ../../apps/web/src/lib/logger-pii-redaction.ts:1
+  [✖] ./epic4-db-verification.md:4
+  [✖] ../bmm-workflow-status.md:283
+  [✖] ../../apps/api/src/analytics/routes.py:1
+  [✖] ../../services/chatmock/README.md:1
+  [✖] ../../services/ocr-service/README.md:1
+  [✖] ../stories/story-4.1.md:21
+  [✖] ../stories/story-4.2.md:29
+  [✖] ../stories/story-4.4.md:36
+  [✖] ../stories/story-4.5.md:30
+  [✖] ../stories/story-4.6.md:31
+  [✖] ./epic4-db-verification.md:5
+  [✖] ./epic4-deployment-plan.md:16
+  [✖] ./epic4-deployment-plan.md:5
+  [✖] ../bmm-workflow-status.md:52
+
+  24 links checked.
+  [✖] ./epic4-deployment-plan.md:1 → Status: 400
+  [✖] ./epic4-db-verification.md:1 → Status: 400
+  [✖] ../releases/epic4-release-notes.md:1 → Status: 400
+  [✖] ../../apps/web/src/lib/__tests__/embedding-service.test.ts:1 → Status: 400
+  [✖] ../../apps/api/tests/test_e2e_epic4.py:1 → Status: 400
+  [✖] ../../apps/api/tests/test_dashboard.py:1 → Status: 400
+  [✖] ../../apps/api/.env.example:1 → Status: 400
+  [✖] ../../services/chatmock/.env.example:1 → Status: 400
+  [✖] ../../apps/web/src/lib/rate-limiter.ts:1 → Status: 400
+  [✖] ../../apps/web/src/lib/logger-pii-redaction.ts:1 → Status: 400
+  [✖] ./epic4-db-verification.md:4 → Status: 400
+  [✖] ../bmm-workflow-status.md:283 → Status: 400
+  [✖] ../../apps/api/src/analytics/routes.py:1 → Status: 400
+  [✖] ../../services/chatmock/README.md:1 → Status: 400
+  [✖] ../../services/ocr-service/README.md:1 → Status: 400
+  [✖] ../stories/story-4.1.md:21 → Status: 400
+  [✖] ../stories/story-4.2.md:29 → Status: 400
+  [✖] ../stories/story-4.4.md:36 → Status: 400
+  [✖] ../stories/story-4.5.md:30 → Status: 400
+  [✖] ../stories/story-4.6.md:31 → Status: 400
+  [✖] ./epic4-db-verification.md:5 → Status: 400
+  [✖] ./epic4-deployment-plan.md:16 → Status: 400
+  [✖] ./epic4-deployment-plan.md:5 → Status: 400
+  [✖] ../bmm-workflow-status.md:52 → Status: 400
+
+FILE: docs/deployments/epic4-deployment-plan.md
+  [✖] docs/bmm-workflow-status.md:13
+  [✖] apps/web/src/lib/README.md:1
+  [✖] apps/api/README.md:1
+  [✖] services/chatmock/README.md:1
+  [✖] services/ocr-service/README.md:1
+  [✖] apps/api/src/validation/routes.py:1
+  [✖] apps/api/src/validation/scenario_generator.py:1
+  [✖] apps/api/src/validation/scenario_evaluator.py:1
+  [✖] apps/api/src/challenge/routes.py:1
+  [✖] apps/api/src/validation/calibrator.py:1
+  [✖] apps/api/src/analytics/routes.py:1
+  [✖] apps/api/src/adaptive/irt_engine.py:1
+  [✖] apps/api/src/adaptive/question_selector.py:1
+  [✖] apps/api/src/analytics/QUICK_REFERENCE.md:1
+  [✖] apps/web/src/lib/mission-analytics-engine.ts:1
+  [✖] apps/web/src/lib/__tests__/embedding-service.test.ts:1
+  [✖] apps/api/tests/test_e2e_epic4.py:1
+  [✖] docs/bmm-workflow-status.md:283
+  [✖] apps/api/.env.example:1
+  [✖] services/chatmock/.env.example:1
+  [✖] apps/web/src/lib/rate-limiter.ts:1
+  [✖] apps/web/src/lib/logger-pii-redaction.ts:1
+  [✖] apps/web/src/lib/semantic-search-service.ts:1
+  [✖] apps/web/src/lib/ai/chatmock-client.ts:1
+  [✖] apps/web/src/lib/adaptive/irt-engine.ts:1
+  [✖] apps/web/src/lib/logger.ts:1
+  [✖] docs/bmm-workflow-status.md:94
+  [✖] docs/EPIC4-IMPLEMENTATION-GUIDE.md:1
+  [✖] apps/api/src/challenge/retry_scheduler.py:1
+  [✖] apps/api/src/analytics/progress_tracker.py:1
+  [✖] docs/ux-specification.md:1
+
+  31 links checked.
+  [✖] docs/bmm-workflow-status.md:13 → Status: 400
+  [✖] apps/web/src/lib/README.md:1 → Status: 400
+  [✖] apps/api/README.md:1 → Status: 400
+  [✖] services/chatmock/README.md:1 → Status: 400
+  [✖] services/ocr-service/README.md:1 → Status: 400
+  [✖] apps/api/src/validation/routes.py:1 → Status: 400
+  [✖] apps/api/src/validation/scenario_generator.py:1 → Status: 400
+  [✖] apps/api/src/validation/scenario_evaluator.py:1 → Status: 400
+  [✖] apps/api/src/challenge/routes.py:1 → Status: 400
+  [✖] apps/api/src/validation/calibrator.py:1 → Status: 400
+  [✖] apps/api/src/analytics/routes.py:1 → Status: 400
+  [✖] apps/api/src/adaptive/irt_engine.py:1 → Status: 400
+  [✖] apps/api/src/adaptive/question_selector.py:1 → Status: 400
+  [✖] apps/api/src/analytics/QUICK_REFERENCE.md:1 → Status: 400
+  [✖] apps/web/src/lib/mission-analytics-engine.ts:1 → Status: 400
+  [✖] apps/web/src/lib/__tests__/embedding-service.test.ts:1 → Status: 400
+  [✖] apps/api/tests/test_e2e_epic4.py:1 → Status: 400
+  [✖] docs/bmm-workflow-status.md:283 → Status: 400
+  [✖] apps/api/.env.example:1 → Status: 400
+  [✖] services/chatmock/.env.example:1 → Status: 400
+  [✖] apps/web/src/lib/rate-limiter.ts:1 → Status: 400
+  [✖] apps/web/src/lib/logger-pii-redaction.ts:1 → Status: 400
+  [✖] apps/web/src/lib/semantic-search-service.ts:1 → Status: 400
+  [✖] apps/web/src/lib/ai/chatmock-client.ts:1 → Status: 400
+  [✖] apps/web/src/lib/adaptive/irt-engine.ts:1 → Status: 400
+  [✖] apps/web/src/lib/logger.ts:1 → Status: 400
+  [✖] docs/bmm-workflow-status.md:94 → Status: 400
+  [✖] docs/EPIC4-IMPLEMENTATION-GUIDE.md:1 → Status: 400
+  [✖] apps/api/src/challenge/retry_scheduler.py:1 → Status: 400
+  [✖] apps/api/src/analytics/progress_tracker.py:1 → Status: 400
+  [✖] docs/ux-specification.md:1 → Status: 400
+
+FILE: docs/deprecated/WORKTREE-DATABASE-STRATEGY.md
+  [✖] ./development-environment-setup.md
+
+  1 link checked.
+  [✖] ./development-environment-setup.md → Status: 400
+
+FILE: docs/deprecated/bmm-workflow-status.md
+  [✖] mailto:kevy@americano.dev
+  [✖] mailto:dumpling@americano.demo
+
+  2 links checked.
+  [✖] mailto:kevy@americano.dev → Status: 400
+  [✖] mailto:dumpling@americano.demo → Status: 400
+
+FILE: docs/deprecated/README.md
+  [✓] ./MULTI-WORKTREE-MERGE-PLAN.md
+  [✓] ./WORKTREE-DATABASE-STRATEGY.md
+  [✖] ../development-environment-setup.md
+  [✓] ./bmm-workflow-status.md
+  [✓] ../epics/
+  [✖] ../DATABASE-MIGRATION-STRATEGY.md
+  [✓] ../technical/git-workflow-guide.md
+  [✓] ../epics/epic-3/epic-3-completion-report.md
+  [✓] ../epics/epic-4/EPIC-4-COMPLETION-REPORT.md
+  [✓] ../epics/epic-5/EPIC-5-MERGE-COMPLETION-FINAL.md
+  [✓] ../index.md
+  [✓] ../architecture/ADR-INDEX.md
+
+  12 links checked.
+  [✖] ../development-environment-setup.md → Status: 400
+  [✖] ../DATABASE-MIGRATION-STRATEGY.md → Status: 400
+
+FILE: docs/deprecated/2025-10/README.md
+  No hyperlinks found!
+
+  0 links checked.
+
+FILE: docs/deprecated/MULTI-WORKTREE-MERGE-PLAN.md
+  No hyperlinks found!
+
+  0 links checked.

@@ -898,7 +898,7 @@ Extend existing Settings page with "Mission Adaptation" section:
 **Chart Library Configuration:**
 Use existing Recharts installation (Task 3.2-3.4):
 ```bash
-# Already in package.json from Story 2.2
+## Already in package.json from Story 2.2
 recharts: ^2.x
 ```
 
@@ -1447,7 +1447,7 @@ Story 2.6 implements a production-ready backend infrastructure for mission perfo
 ### Change Log
 
 - **2025-10-16:** Senior Developer Review notes appended. Outcome: Changes Requested. Action items created for dashboard integration, mission history page, feedback dialog, mission vs. free-study comparison, and manual adaptation controls.
-# Mission Analytics Services
+## Mission Analytics Services
 
 **Created**: 2025-10-15  
 **Story**: 2.6 - Mission Performance Analytics and Adaptation  
@@ -1782,19 +1782,19 @@ await generateWeeklyReview(userId)
 
 ### Manual API Testing
 ```bash
-# Get mission summary
+## Get mission summary
 curl http://localhost:3000/api/analytics/missions/summary?period=7d
 
-# Get trends
+## Get trends
 curl "http://localhost:3000/api/analytics/missions/trends?metric=completion_rate&granularity=daily"
 
-# Get correlation analysis
+## Get correlation analysis
 curl http://localhost:3000/api/analytics/missions/correlation
 
-# Get recommendations
+## Get recommendations
 curl http://localhost:3000/api/analytics/missions/recommendations
 
-# Submit feedback
+## Submit feedback
 curl -X POST http://localhost:3000/api/missions/:missionId/feedback \
   -H "Content-Type: application/json" \
   -d '{
@@ -1878,16 +1878,16 @@ const improvements = await insights.identifyImprovementAreas(userId)
 
 ---
 
-# Frontend Implementation
+## Frontend Implementation
 
 
-# Story 2.6 Frontend Implementation Summary
+## Story 2.6 Frontend Implementation Summary
 
 **Status**: Complete
 **Date**: 2025-10-15
 **Tasks Completed**: 3, 4, 6, 11.3-11.4
 
-## Overview
+## Overview — Frontend
 
 Implemented all frontend UI components for the Mission Performance Analytics dashboard. All backend APIs were already functional, so this implementation focused solely on the user interface and visualization components.
 
@@ -2155,7 +2155,7 @@ apps/web/src/
    - [ ] Test queue system with multiple insights
    - [ ] Check action link navigation
 
-## Integration Points
+## Integration Points — Frontend
 
 ### With Study Session Flow
 The feedback dialog should be integrated into the session completion flow:
@@ -2267,7 +2267,7 @@ useEffect(() => {
 ✅ All components pass TypeScript compilation with 0 errors:
 ```bash
 pnpm tsc --noEmit
-# No output = success
+## No output = success
 ```
 
 ## Dependencies
@@ -2291,10 +2291,10 @@ All frontend UI components for Story 2.6 Tasks 3, 4, 6, 11.3-11.4 are complete a
 
 ---
 
-# Testing Summary
+## Testing Summary
 
 
-# Story 2.6: Mission Performance Analytics Testing Summary
+## Story 2.6: Mission Performance Analytics Testing Summary
 
 **Date:** 2025-10-16
 **Status:** READY FOR VALIDATION
@@ -2522,8 +2522,8 @@ All frontend UI components for Story 2.6 Tasks 3, 4, 6, 11.3-11.4 are complete a
 
 ```bash
 $ cd apps/web && pnpm tsc --noEmit
-# Production code: 0 errors
-# Test files: Excluded from production build
+## Production code: 0 errors
+## Test files: Excluded from production build
 ```
 
 **Verified Files:**
@@ -2806,7 +2806,7 @@ pnpm test mission-analytics-performance --verbose
 
 ---
 
-## Conclusion
+## Conclusion — Frontend
 
 **Story 2.6 Testing Status: READY FOR VALIDATION**
 
@@ -2834,7 +2834,7 @@ Partial implementations (AC#6, AC#8) have backend infrastructure complete and ar
 
 ---
 
-# Senior Developer Review (AI)
+## Senior Developer Review (AI) — Frontend
 
 **Reviewer:** Kevy (via Amelia - Claude Code)  
 **Date:** 2025-10-16  
@@ -2861,7 +2861,7 @@ Story 2.6 (Mission Performance Analytics and Adaptation) demonstrates excellent 
 
 5. **Test Coverage - 5 Edge Cases Flagged** - Require product owner decisions on business logic (96.8% pass rate)
 
-## Acceptance Criteria Coverage
+## Acceptance Criteria Coverage — Frontend
 
 - **AC #1:** ⚠️ PARTIAL - Components exist but dashboard integration pending
 - **AC #2:** ✅ PASS - Correlation analysis fully functional

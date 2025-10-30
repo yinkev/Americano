@@ -326,7 +326,7 @@ npm run dev
 
 None (only new files created)
 
-## Files Created
+## Files Created — Dashboard Hooks
 
 1. `/apps/web/src/hooks/use-dashboard-data.ts`
 2. `/apps/web/src/hooks/use-mission-data.ts`

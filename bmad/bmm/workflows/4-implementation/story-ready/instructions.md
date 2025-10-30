@@ -51,7 +51,7 @@ Read the BACKLOG section to get the next story. If BACKLOG is empty:
 
 If BACKLOG has stories, move the first BACKLOG story to TODO:
 
-#### TODO (Needs Drafting)
+#### TODO (Needs Drafting) — Backlog
 
 - **Story ID:** {{next_backlog_story_id}}
 - **Story Title:** {{next_backlog_story_title}}

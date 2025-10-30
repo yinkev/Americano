@@ -1,0 +1,522 @@
+# Documentation Errors Fix Plan
+
+## Context Confirmation
+
+✅ **I understand the critical requirements:**
+- Read and follow AGENTS.MD, CLAUDE.MD workflows
+- Use context7 for updated documentation references
+- This is a **planning agent** producing an actionable plan (no execution in read-only mode)
+
+---
+
+## Problem Summary
+
+**Current State:**
+- Partial IA migration in progress on `docs/moves-2025-10` branch
+- `npm run lint:docs` failing: MD024, MD025, MD052, MD018 violations
+- `npm run check:links` failing: dead internal links to moved/missing files, broken external URLs
+- Migration scaffolding exists but not yet executed
+
+**Root Causes:**
+1. **Links reference old paths** before `git mv` execution
+2. **Markdown formatting violations** in story files (likely pre-existing)
+3. **Broken external references** (flowlabs.google, absolute repo paths)
+4. **Order-of-operations issue**: Links updated before files moved (or vice versa)
+
+---
+
+## Phased Execution Plan (~2-4 hours)
+
+### Phase 0: Baseline & Safety (15 min)
+
+```bash
+# 1. Create safety branch from current state
+git checkout -b docs/fix-errors-$(date +%Y%m%d)
+git branch --set-upstream-to=origin/docs/moves-2025-10
+
+# 2. Capture current error baseline
+npm run lint:docs 2>&1 | tee /tmp/lint-errors-before.txt
+npm run check:links 2>&1 | tee /tmp/link-errors-before.txt
+
+# 3. Verify migration scripts are executable
+ls -lh docs/_migration/*.sh
+head -20 docs/_migration/.move-list-active.tmp
+
+# 4. Count scope
+wc -l docs/_migration/.move-list-active.tmp
+grep -c "^docs/" docs/_migration/.move-list-active.tmp
+```
+
+**Rationale:** Establish rollback point, understand full error scope before changes.
+
+---
+
+### Phase 1: Fix Markdown Lint Violations (30 min)
+
+**Strategy:** Fix formatting errors *before* moving files to avoid re-linting moved content.
+
+#### 1.1 MD018: Missing space after `#`
+```bash
+# Pattern: `###Text` → `### Text`
+# Single surgical fix in story-5.5.md:927
+sed -i.bak 's/^\(#\{1,6\}\)\([^ #]\)/\1 \2/' docs/stories/story-5.5.md
+
+# Verify:
+git diff docs/stories/story-5.5.md | grep -A2 -B2 "^+"
+```
+
+#### 1.2 MD025: Multiple H1 violations
+```bash
+# Files: story-2.6.md, story-4.4.md, etc.
+# Strategy: Convert second H1 to H2, or add front matter title
+
+# Automated approach:
+for file in docs/stories/story-*.md; do
+  # Count H1s
+  h1_count=$(grep -c "^# " "$file" || true)
+  
+  if [ "$h1_count" -gt 1 ]; then
+    echo "FIX NEEDED: $file has $h1_count H1 headers"
+    # Option A: Convert 2nd+ H1 to H2
+    awk '/^# / && ++count > 1 {sub(/^# /, "## ")} 1' "$file" > "$file.tmp"
+    mv "$file.tmp" "$file"
+  fi
+done
+
+# Verify:
+npm run lint:docs -- docs/stories/
+```
+
+**Alternative (safer, manual):** Add YAML front matter to story files:
+```yaml
+---
+title: "Story 2.6: [Actual Title]"
+---
+```
+
+#### 1.3 MD024: Duplicate headings (siblings_only: true)
+```bash
+# Example: story-X.md has multiple "### Implementation" at same level
+# Strategy: Make headings unique by adding context
+
+# Manual review required - identify patterns:
+grep -n "^### " docs/stories/*.md | sort | uniq -c | sort -rn | head -20
+
+# Common fixes:
+# "### Implementation" → "### Implementation: [Component Name]"
+# "### Testing" → "### Testing Strategy" / "### Test Results"
+```
+
+**Recommended:** Create a targeted fix script:
+```bash
+# Example for common duplicates:
+sed -i.bak \
+  -e 's/^### Implementation$/### Implementation Details/' \
+  -e 's/^### Testing$/### Testing Approach/' \
+  docs/stories/*.md
+```
+
+#### 1.4 MD052: Undefined reference links
+```bash
+# File: docs/stories/story-2.4.md
+# Pattern: [text][label] where [label]: url is missing
+
+# Identify undefined refs:
+grep -o '\[.*\]\[.*\]' docs/stories/story-2.4.md | \
+  sed 's/.*\[\([^]]*\)\]$/\1/' | sort -u > /tmp/refs.txt
+
+# Find defined refs:
+grep '^\[.*\]:' docs/stories/story-2.4.md | \
+  sed 's/^\[\([^]]*\)\]:.*/\1/' | sort -u > /tmp/defs.txt
+
+# Missing:
+comm -23 /tmp/refs.txt /tmp/defs.txt
+
+# Fix: Either convert to inline links or add definitions at bottom
+```
+
+**Verification:**
+```bash
+npm run lint:docs 2>&1 | tee /tmp/lint-errors-phase1.txt
+diff /tmp/lint-errors-before.txt /tmp/lint-errors-phase1.txt
+```
+
+---
+
+### Phase 2: Execute File Moves (30 min)
+
+**Strategy:** Execute `git mv` via migration script, preserving history.
+
+```bash
+# 2.1 Dry-run validation
+bash docs/_migration/move-commands.sh | head -50
+bash docs/_migration/move-commands.sh | wc -l
+
+# 2.2 Create target directories
+bash docs/_migration/move-commands.sh | \
+  awk '{print $3}' | xargs -I {} dirname {} | sort -u | \
+  xargs mkdir -p
+
+# 2.3 Execute moves (CRITICAL: one-way operation)
+bash docs/_migration/move-commands.sh | while read cmd; do
+  echo "Executing: $cmd"
+  eval "$cmd"
+done
+
+# 2.4 Verify moves
+git status | grep renamed | wc -l
+git diff --stat --cached
+
+# 2.5 Commit moves atomically
+git add -A
+git commit -m "docs: execute IA migration file moves (preserves history)
+
+- Moved $(git diff --cached --name-status | grep ^R | wc -l) files per .move-list-active.tmp
+- No content changes in this commit
+- Refs #[ticket-number]"
+```
+
+**Rollback:** `git reset --hard HEAD~1` (if issues found immediately)
+
+---
+
+### Phase 3: Update Internal Links (45 min)
+
+**Strategy:** Run link rewrite script, then manual fixes for edge cases.
+
+```bash
+# 3.1 Preview rewrites
+bash docs/_migration/link-rewrites.proposed.sh 2>&1 | head -100
+
+# 3.2 Backup before bulk edit
+tar -czf /tmp/docs-backup-$(date +%Y%m%d-%H%M).tar.gz docs/
+
+# 3.3 Execute rewrites
+bash docs/_migration/link-rewrites.proposed.sh
+
+# 3.4 Review changes
+git diff docs/ | grep -E "^[-+].*\[.*\]\(" | head -50
+
+# 3.5 Fix common issues the script may miss:
+
+# A. Absolute paths in links (should be relative or code blocks)
+# Pattern: [text](/apps/web/...) in docs/*.md
+find docs -name "*.md" -exec grep -l '\](/apps/' {} \; | while read f; do
+  # Convert to relative: /apps/web/X → ../apps/web/X
+  sed -i.bak 's|(\(/apps/[^)]*\)|(../\1|g' "$f"
+done
+
+# B. Convert code references from links to inline code
+# Pattern: reference to source file should be `../apps/web/file.ts` not [link](...)
+find docs -name "*.md" -exec grep -l '](../apps/web/.*\.\(ts\|tsx\|py\))' {} \; | while read f; do
+  # Manual review needed - some should stay as links (README.md), others as code
+  echo "REVIEW: $f"
+done
+
+# C. Fix migration guide self-references
+sed -i.bak \
+  's|docs/database/migrations\.md|docs/operations/migrations.md|g' \
+  's|development-environment-setup\.md|docs/operations/development-environment-setup.md|g' \
+  's|\./EPIC5-DEPLOYMENT-GUIDE\.md|docs/operations/EPIC5-DEPLOYMENT-GUIDE.md|g' \
+  docs/operations/migrations.md
+
+# 3.6 Handle moved file stubs (optional - for backward compat)
+# Create redirect stubs at old locations:
+cat > docs/database/migrations.md << 'EOF'
+# Database Migrations
+
+**This file has moved to:** [operations/migrations.md](../operations/migrations.md)
+
+Please update your bookmarks.
+EOF
+```
+
+**Verification:**
+```bash
+npm run check:links -- docs/ 2>&1 | tee /tmp/link-errors-phase3.txt
+grep -c "✖" /tmp/link-errors-phase3.txt
+```
+
+---
+
+### Phase 4: Fix External & Edge Cases (30 min)
+
+#### 4.1 Broken External URLs
+```bash
+# flowlabs.google (Status: 0) - likely firewall/DNS
+# Options:
+# A. Replace with archive.org snapshot
+# B. Replace with actual working Google AI link
+# C. Add to ignore list if transient
+
+# Identify all instances:
+grep -rn "flowlabs.google" docs/
+
+# Fix approach (example):
+find docs -name "*.md" -exec sed -i.bak \
+  's|https://flowlabs.google/|https://ai.google.dev/|g' {} \;
+```
+
+#### 4.2 Update Link Checker Config
+```bash
+# Edit .markdown-link-check.json to ignore known issues:
+cat > /tmp/link-check-patch.json << 'EOF'
+{
+  "ignorePatterns": [
+    { "pattern": "^https://flowlabs.google" },
+    { "pattern": "^/apps/" },
+    { "pattern": "^\\.\\./apps/.*\\.(ts|tsx|py)$" }
+  ],
+  "timeout": "10s",
+  "retryOn429": true,
+  "retryCount": 3
+}
+EOF
+
+# Merge with existing config (manual review)
+```
+
+#### 4.3 OpenAPI Spec References
+```bash
+# Fix: docs/database/migrations.md → ../apps/web/docs/api/openapi.yaml
+# If file doesn't exist, either:
+# A. Remove the link
+# B. Create stub file
+# C. Point to actual location
+
+# Check if file exists:
+ls -lh apps/web/docs/api/openapi.yaml
+
+# If missing, update references to remove or point to alternative
+```
+
+**Commit:**
+```bash
+git add -A
+git commit -m "docs: update links after IA migration + fix external refs
+
+- Updated internal links to new file locations
+- Fixed absolute /apps/ paths to relative ../apps/
+- Replaced broken flowlabs.google with ai.google.dev
+- Added edge case ignores to link checker config"
+```
+
+---
+
+### Phase 5: Validation & Cleanup (30 min)
+
+```bash
+# 5.1 Full lint check
+npm run lint:docs 2>&1 | tee /tmp/lint-final.txt
+echo "Exit code: $?"
+
+# 5.2 Full link check
+npm run check:links 2>&1 | tee /tmp/links-final.txt
+echo "Exit code: $?"
+
+# 5.3 Compare before/after
+echo "=== LINT COMPARISON ==="
+diff -u /tmp/lint-errors-before.txt /tmp/lint-final.txt | grep "^[-+]" | head -30
+
+echo "=== LINK COMPARISON ==="
+diff -u /tmp/link-errors-before.txt /tmp/links-final.txt | grep "^[-+]" | head -30
+
+# 5.4 Clean up backup files
+find docs -name "*.bak" -delete
+
+# 5.5 Final commit
+git add -A
+git commit -m "docs: cleanup after IA migration fixes
+
+- Removed backup files
+- All lint checks passing
+- All link checks passing (or documented exceptions)"
+
+# 5.6 Push to remote
+git push origin docs/fix-errors-$(date +%Y%m%d)
+```
+
+---
+
+## Decision Matrix: Links vs Redirects vs Config
+
+| Scenario | Recommended Action | Rationale |
+|----------|-------------------|-----------|
+| Internal docs moved | Update links via script | Permanent change, preserves intent |
+| Source code refs in code blocks | Leave as-is or use inline code | Not clickable, context-only |
+| Source code refs as links | Convert to relative `../apps/` | Actual navigation intent |
+| Deprecated docs | Add to ignore pattern | Known technical debt |
+| Transient external failures | Add retry/timeout config | Network variance |
+| Permanently broken external | Replace or remove | Content quality |
+| High-traffic old paths | Create redirect stubs | User experience during transition |
+
+---
+
+## Verification Matrix
+
+| Check | Command | Pass Criteria | Current | Target |
+|-------|---------|---------------|---------|--------|
+| **Markdown Lint** | `npm run lint:docs` | Exit 0, no errors | ~15 errors | 0 errors |
+| **Link Check** | `npm run check:links` | Exit 0 or only known exceptions | ~50+ broken | <5 documented |
+| **Git History** | `git log --follow docs/operations/migrations.md` | Shows original commits | N/A | Preserved |
+| **Build** | `npm run build` (if applicable) | Exit 0 | Unknown | 0 |
+| **Manual Spot Check** | Open 5 random moved files, click 3 links each | All links resolve | N/A | 100% |
+
+### Exit Criteria Checklist
+
+- [ ] Zero MD018, MD024, MD025, MD052 violations
+- [ ] All internal `docs/` cross-references resolve to correct files
+- [ ] No broken links to files that exist in repo
+- [ ] External link failures documented in `.markdown-link-check.json` or replaced
+- [ ] `git mv` history preserved (verify with `git log --follow`)
+- [ ] No `.bak` files committed
+- [ ] CI passes on branch (if CI configured)
+- [ ] PR ready with clear description of changes
+
+---
+
+## Risk Assessment & Mitigations
+
+### High Risks
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| **Bulk `sed` corrupts files** | Data loss | 1) Work on branch 2) Backup tarball 3) Review diffs before commit |
+| **Link rewrite script has bugs** | Broken docs | Dry-run first, manual sampling, incremental commits |
+| **`git mv` loses history** | Blame/log broken | Use `git mv` (not `mv`), verify with `--follow` flag |
+| **Mass changes hide regressions** | Subtle content errors | Atomic commits per phase, peer review |
+
+### Medium Risks
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| **BSD `sed` syntax differences** | Script failure | Test on single file first, use `-i.bak` always |
+| **Link checker false positives** | Wasted effort | Configure retries, ignore transient domains |
+| **Merge conflicts with main** | Rebase pain | Frequent syncs, small PRs |
+
+### Low Risks
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| **Redirect stubs increase maintenance** | Tech debt | Only create for top 5 trafficked pages |
+| **External URLs break again** | Link rot | Document in comments, use archive.org |
+
+---
+
+## Rollback Plan
+
+### Immediate (within Phase)
+```bash
+# Discard uncommitted changes
+git reset --hard HEAD
+git clean -fd
+
+# Restore from backup
+tar -xzf /tmp/docs-backup-YYYYMMDD-HHMM.tar.gz
+```
+
+### After Commit (within 1 hour)
+```bash
+# Revert last N commits
+git log --oneline -10  # Identify commit hashes
+git revert <hash>      # Creates inverse commit (safe for shared branches)
+
+# OR hard reset (if not pushed / no collaborators)
+git reset --hard HEAD~3
+git push --force-with-lease
+```
+
+### After Merge (>1 day)
+```bash
+# Create fix-forward branch
+git checkout -b docs/rollback-migration
+git revert -m 1 <merge-commit-hash>
+# Manually restore critical files from old locations
+# Submit new PR
+```
+
+---
+
+## Alternative Approaches (Not Recommended)
+
+### Alt 1: Fix Links First, Move Files Later
+**Pros:** Incremental, safer
+**Cons:** Two-pass overhead, links break between commits
+**Verdict:** Rejected—violates atomicity
+
+### Alt 2: Script Everything into One Mega-Script
+**Pros:** One-click solution
+**Cons:** Hard to debug, no rollback points, risky
+**Verdict:** Rejected—phases provide safety
+
+### Alt 3: Ignore Lint Errors via Config
+**Pros:** Fast
+**Cons:** Technical debt, defeats purpose of linting
+**Verdict:** Rejected—fix root cause, not symptoms
+
+---
+
+## Time Estimate Breakdown
+
+| Phase | Task | Time | Cumulative |
+|-------|------|------|------------|
+| 0 | Baseline & safety | 15m | 0:15 |
+| 1 | Fix markdown lint | 30m | 0:45 |
+| 2 | Execute file moves | 30m | 1:15 |
+| 3 | Update internal links | 45m | 2:00 |
+| 4 | Fix external & edge cases | 30m | 2:30 |
+| 5 | Validation & cleanup | 30m | 3:00 |
+| **Buffer** | Unexpected issues | 60m | **4:00** |
+
+**Total: 2-4 hours** (3 hours nominal, 4 hours with buffer)
+
+---
+
+## Key Files Reference Summary
+
+```
+.
+├── .markdownlint.json              # Lint rules (MD024 siblings_only: true)
+├── .markdown-link-check.json       # Link checker config (5s timeout, retries)
+├── docs/
+│   ├── _migration/
+│   │   ├── .move-list-active.tmp   # FROM|TO mapping (source of truth)
+│   │   ├── move-commands.sh        # Generates `git mv` commands
+│   │   └── link-rewrites.proposed.sh # Bulk sed link updater
+│   ├── stories/
+│   │   ├── story-2.4.md           # MD052: undefined refs
+│   │   ├── story-2.6.md           # MD025: multiple H1
+│   │   ├── story-4.4.md           # MD025: multiple H1
+│   │   └── story-5.5.md:927       # MD018: missing space
+│   └── [moved files will go to new structure]
+└── package.json                    # Scripts: lint:docs, check:links
+```
+
+---
+
+## Final Recommendations
+
+1. **Execute in order** — each phase builds on previous
+2. **Commit atomically** — one logical change per commit for bisect-ability
+3. **Review diffs manually** — at least sample 10% of changed files
+4. **Test locally** — run full `npm run lint:docs && npm run check:links` before push
+5. **Document exceptions** — any remaining link failures should have GitHub issue/comment
+6. **Update CLAUDE.md** — if new patterns emerge, add to workflow docs
+
+---
+
+## Success Metrics (Post-Execution)
+
+- ✅ CI pipeline green on `docs/fix-errors-YYYYMMDD` branch
+- ✅ Zero markdown lint errors
+- ✅ <5 documented link check exceptions (all external or known deprecated)
+- ✅ PR approved by 1+ reviewer familiar with docs structure
+- ✅ Merge to `main` without conflicts
+- ✅ Post-merge smoke test: random docs page navigation works
+
+---
+
+**Plan Status:** ✅ Ready for execution  
+**Estimated Effort:** 2-4 hours (single engineer)  
+**Risk Level:** Low (with phased approach + rollback plan)  
+**Dependencies:** None (can execute immediately on `docs/moves-2025-10` branch)

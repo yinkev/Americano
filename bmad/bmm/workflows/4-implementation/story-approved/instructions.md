@@ -95,7 +95,7 @@ Add the completed story to the table:
 <check if="todo_story does NOT exist">
   Mark IN PROGRESS as empty:
 
-#### IN PROGRESS (Approved for Development)
+#### IN PROGRESS (Approved for Development) — Secondary
 
 (No story currently in progress - all stories complete!)
 </check>
@@ -117,7 +117,7 @@ Add the completed story to the table:
 <check if="next_backlog_story does NOT exist">
   Mark TODO as empty:
 
-#### TODO (Needs Drafting)
+#### TODO (Needs Drafting) — Secondary
 
 (No more stories to draft - all stories are drafted or complete)
 </check>

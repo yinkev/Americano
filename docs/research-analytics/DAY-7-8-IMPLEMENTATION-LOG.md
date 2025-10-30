@@ -680,7 +680,7 @@ After Day 7-8 complete:
 
 ---
 
-## Next Steps (Day 9-10)
+## Next Steps (Day 9-10) — Continued
 
 **Sequential Analysis Implementation:**
 1. Sequential Bayesian ITS with alpha-spending functions
@@ -699,7 +699,7 @@ After Day 7-8 complete:
 
 ---
 
-## References
+## References — Continued
 
 - ADR-006: Research-Grade Analytics System
 - WWC SCED Standards: https://ies.ed.gov/ncee/wwc/Document/229

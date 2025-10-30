@@ -238,15 +238,15 @@ So that I can start studying immediately without planning time.
   - Respect user preferences
 
 ### Review Follow-ups (AI)
-- [ ] [AI-Review][Medium] Extract magic numbers to constants in MissionGenerator (mission-generator.ts:162-199) - Est. 30min
-- [ ] [AI-Review][Medium] Add JSDoc documentation for MissionGenerator class methods (AC#1, AC#2) - Est. 1hr
-- [ ] [AI-Review][Medium] Implement regeneration limit enforcement (max 3/day) with regenerationCount tracking (Task 3.5) - Est. 1-2hrs
-- [ ] [AI-Review][Low] Implement authentication to replace X-User-Email header (Dependencies: Story 1.1)
-- [ ] [AI-Review][Low] Add rate limiting on mission generate/regenerate endpoints
-- [ ] [AI-Review][Low] Create comprehensive unit tests for mission generation algorithm
-- [ ] [AI-Review][Low] Create E2E tests for mission workflow (Dependencies: Story 2.5)
-- [ ] [AI-Review][Low] Add mission preview caching (1-hour cache for performance optimization)
-- [ ] [AI-Review][Low] Add monitoring and analytics for mission success/completion rates (Story 2.6)
+- [ ] AI-Review (Medium) Extract magic numbers to constants in MissionGenerator (mission-generator.ts:162-199) - Est. 30min
+- [ ] AI-Review (Medium) Add JSDoc documentation for MissionGenerator class methods (AC#1, AC#2) - Est. 1hr
+- [ ] AI-Review (Medium) Implement regeneration limit enforcement (max 3/day) with regenerationCount tracking (Task 3.5) - Est. 1-2hrs
+- [ ] AI-Review (Low) Implement authentication to replace X-User-Email header (Dependencies: Story 1.1)
+- [ ] AI-Review (Low) Add rate limiting on mission generate/regenerate endpoints
+- [ ] AI-Review (Low) Create comprehensive unit tests for mission generation algorithm
+- [ ] AI-Review (Low) Create E2E tests for mission workflow (Dependencies: Story 2.5)
+- [ ] AI-Review (Low) Add mission preview caching (1-hour cache for performance optimization)
+- [ ] AI-Review (Low) Add monitoring and analytics for mission success/completion rates (Story 2.6)
 
 ### Task 11: Testing and Validation (AC: All)
 - [ ] 11.1: Test mission generation with various scenarios
@@ -517,7 +517,7 @@ const mission = await prisma.mission.create({
 
 ---
 
-# Senior Developer Review (AI)
+## Senior Developer Review (AI)
 
 **Reviewer**: Kevy
 **Date**: 2025-10-15
@@ -639,18 +639,18 @@ Story 2.4 demonstrates **strong engineering quality** with all 8 acceptance crit
 
 **Short-Term (2-4 hours total):**
 
-- [ ] [AI-Review][Medium] Extract magic numbers to constants in MissionGenerator (mission-generator.ts:162-199)
-- [ ] [AI-Review][Medium] Add JSDoc documentation for MissionGenerator class methods (AC#1, AC#2)
-- [ ] [AI-Review][Medium] Implement regeneration limit enforcement (max 3/day) with regenerationCount tracking (Task 3.5)
+- [ ] AI-Review (Medium) Extract magic numbers to constants in MissionGenerator (mission-generator.ts:162-199)
+- [ ] AI-Review (Medium) Add JSDoc documentation for MissionGenerator class methods (AC#1, AC#2)
+- [ ] AI-Review (Medium) Implement regeneration limit enforcement (max 3/day) with regenerationCount tracking (Task 3.5)
 
 **Long-Term (Pre-Production):**
 
-- [ ] [AI-Review][Low] Implement authentication to replace X-User-Email header (Dependencies: Story 1.1)
-- [ ] [AI-Review][Low] Add rate limiting on mission generate/regenerate endpoints
-- [ ] [AI-Review][Low] Create comprehensive unit tests for mission generation algorithm
-- [ ] [AI-Review][Low] Create E2E tests for mission workflow (Dependencies: Story 2.5)
-- [ ] [AI-Review][Low] Add mission preview caching (1-hour cache for performance optimization)
-- [ ] [AI-Review][Low] Add monitoring and analytics for mission success/completion rates (Story 2.6)
+- [ ] AI-Review (Low) Implement authentication to replace X-User-Email header (Dependencies: Story 1.1)
+- [ ] AI-Review (Low) Add rate limiting on mission generate/regenerate endpoints
+- [ ] AI-Review (Low) Create comprehensive unit tests for mission generation algorithm
+- [ ] AI-Review (Low) Create E2E tests for mission workflow (Dependencies: Story 2.5)
+- [ ] AI-Review (Low) Add mission preview caching (1-hour cache for performance optimization)
+- [ ] AI-Review (Low) Add monitoring and analytics for mission success/completion rates (Story 2.6)
 
 ---
 
