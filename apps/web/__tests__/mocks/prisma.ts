@@ -3,8 +3,8 @@
  * Comprehensive mock for Epic 5 API route testing
  */
 
+import { type DeepMockProxy, mockDeep, mockReset } from 'jest-mock-extended'
 import type { PrismaClient } from '@/generated/prisma'
-import { mockDeep, mockReset, type DeepMockProxy } from 'jest-mock-extended'
 
 // Create deep mock of Prisma Client
 const prismaMock = mockDeep<PrismaClient>()

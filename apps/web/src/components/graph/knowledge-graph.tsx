@@ -16,25 +16,28 @@
 
 'use client'
 
-import { useCallback, useMemo, useState, useEffect } from 'react'
 import {
-  ReactFlow,
-  Controls,
-  Background,
-  useNodesState,
-  useEdgesState,
   addEdge,
-  type Node,
-  type Edge,
-  type Connection,
-  type NodeMouseHandler,
+  Background,
   BackgroundVariant,
+  type Connection,
+  Controls,
+  type Edge,
+  type Node,
+  type NodeMouseHandler,
   Panel,
+  ReactFlow,
+  useEdgesState,
+  useNodesState,
 } from '@xyflow/react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import '@xyflow/react/dist/style.css'
 
 import ConceptNode, { type ConceptNodeData } from './concept-node'
-import RelationshipEdge, { type RelationshipEdgeData, prerequisiteMarker } from './relationship-edge'
+import RelationshipEdge, {
+  prerequisiteMarker,
+  type RelationshipEdgeData,
+} from './relationship-edge'
 
 /**
  * Graph data types
@@ -95,7 +98,10 @@ const defaultEdgeOptions = {
  * Simple physics-based layout for initial positioning
  * For production: consider using dagre or elk for better layouts
  */
-function calculateNodePositions(nodes: GraphNode[], edges: GraphEdge[]): Map<string, { x: number; y: number }> {
+function calculateNodePositions(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+): Map<string, { x: number; y: number }> {
   const positions = new Map<string, { x: number; y: number }>()
 
   // Simple circular layout for MVP
@@ -144,7 +150,7 @@ export default function KnowledgeGraph({
       // Find direct relationships for focus mode
       const directRelationships = new Set<string>()
       if (isFocused) {
-        graphEdges.forEach(edge => {
+        graphEdges.forEach((edge) => {
           if (edge.fromConceptId === node.id) {
             directRelationships.add(edge.toConceptId)
           }
@@ -164,13 +170,15 @@ export default function KnowledgeGraph({
           category: node.category,
           relationshipCount: node.relationshipCount,
         },
-        style: shouldDim ? {
-          opacity: 0.2,
-          transition: 'opacity 0.3s ease-in-out',
-        } : {
-          opacity: isFocused ? 1 : 1,
-          transition: 'opacity 0.3s ease-in-out',
-        },
+        style: shouldDim
+          ? {
+              opacity: 0.2,
+              transition: 'opacity 0.3s ease-in-out',
+            }
+          : {
+              opacity: isFocused ? 1 : 1,
+              transition: 'opacity 0.3s ease-in-out',
+            },
         className: isFocused ? 'animate-pulse' : '',
       }
     })
@@ -178,18 +186,20 @@ export default function KnowledgeGraph({
 
   // Convert graph data to React Flow edges
   const initialEdges = useMemo(() => {
-    return graphEdges.map((edge): Edge<RelationshipEdgeData> => ({
-      id: edge.id,
-      source: edge.fromConceptId,
-      target: edge.toConceptId,
-      type: 'relationship',
-      data: {
-        relationship: edge.relationship,
-        strength: edge.strength,
-        isUserDefined: edge.isUserDefined,
-        userNote: edge.userNote,
-      },
-    }))
+    return graphEdges.map(
+      (edge): Edge<RelationshipEdgeData> => ({
+        id: edge.id,
+        source: edge.fromConceptId,
+        target: edge.toConceptId,
+        type: 'relationship',
+        data: {
+          relationship: edge.relationship,
+          strength: edge.strength,
+          isUserDefined: edge.isUserDefined,
+          userNote: edge.userNote,
+        },
+      }),
+    )
   }, [graphEdges])
 
   // React Flow state management
@@ -214,7 +224,7 @@ export default function KnowledgeGraph({
       setSelectedNode(node.id)
       onNodeClick?.(node.id)
     },
-    [onNodeClick]
+    [onNodeClick],
   )
 
   /**
@@ -225,7 +235,7 @@ export default function KnowledgeGraph({
     (event, node) => {
       onNodeDoubleClick?.(node.id)
     },
-    [onNodeDoubleClick]
+    [onNodeDoubleClick],
   )
 
   /**
@@ -235,7 +245,7 @@ export default function KnowledgeGraph({
     (params: Connection) => {
       setEdges((eds) => addEdge(params, eds))
     },
-    [setEdges]
+    [setEdges],
   )
 
   /**
@@ -287,21 +297,16 @@ export default function KnowledgeGraph({
         />
 
         {/* Info panel with instructions */}
-        <Panel position="top-left" className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg">
+        <Panel
+          position="top-left"
+          className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg"
+        >
           <div className="text-xs space-y-1">
             <div className="font-semibold text-gray-900">Knowledge Graph</div>
-            <div className="text-gray-600">
-              • Click: Select concept
-            </div>
-            <div className="text-gray-600">
-              • Double-click: Drill down
-            </div>
-            <div className="text-gray-600">
-              • Scroll: Zoom in/out
-            </div>
-            <div className="text-gray-600">
-              • Drag: Pan view
-            </div>
+            <div className="text-gray-600">• Click: Select concept</div>
+            <div className="text-gray-600">• Double-click: Drill down</div>
+            <div className="text-gray-600">• Scroll: Zoom in/out</div>
+            <div className="text-gray-600">• Drag: Pan view</div>
             {isFocusMode && onResetFocus && (
               <button
                 onClick={onResetFocus}
@@ -325,7 +330,10 @@ export default function KnowledgeGraph({
 
         {/* Selected node info panel */}
         {selectedNode && (
-          <Panel position="top-right" className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg max-w-xs">
+          <Panel
+            position="top-right"
+            className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg max-w-xs"
+          >
             <div className="text-xs space-y-1">
               <div className="font-semibold text-gray-900">
                 {nodes.find((n) => n.id === selectedNode)?.data.name}
@@ -343,17 +351,17 @@ export default function KnowledgeGraph({
         )}
 
         {/* Graph statistics panel */}
-        <Panel position="bottom-left" className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg">
+        <Panel
+          position="bottom-left"
+          className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg"
+        >
           <div className="text-xs space-y-1">
             <div className="font-semibold text-gray-900">Graph Stats</div>
+            <div className="text-gray-600">Concepts: {nodes.length}</div>
+            <div className="text-gray-600">Relationships: {edges.length}</div>
             <div className="text-gray-600">
-              Concepts: {nodes.length}
-            </div>
-            <div className="text-gray-600">
-              Relationships: {edges.length}
-            </div>
-            <div className="text-gray-600">
-              Avg connections: {nodes.length > 0 ? (edges.length * 2 / nodes.length).toFixed(1) : 0}
+              Avg connections:{' '}
+              {nodes.length > 0 ? ((edges.length * 2) / nodes.length).toFixed(1) : 0}
             </div>
           </div>
         </Panel>

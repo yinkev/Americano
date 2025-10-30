@@ -1,24 +1,28 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { Wifi, WifiOff, ArrowLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { SearchBarMobile } from "@/components/search/search-bar-mobile"
-import { SearchFiltersMobile, type SearchFilters } from "@/components/search/search-filters-mobile"
-import { SearchResultsMobile } from "@/components/search/search-results-mobile"
-import { useOnlineStatus } from "@/lib/offline-search"
-import { getCachedSearchResults, cacheSearchResults, getRecentSearches } from "@/lib/offline-search"
-import { registerSearchServiceWorker, setupOfflineSync } from "@/lib/search-sw-integration"
-import type { SearchResult } from "@/components/search/search-result-item"
+import { ArrowLeft, Wifi, WifiOff } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import * as React from 'react'
+import { SearchBarMobile } from '@/components/search/search-bar-mobile'
+import { type SearchFilters, SearchFiltersMobile } from '@/components/search/search-filters-mobile'
+import type { SearchResult } from '@/components/search/search-result-item'
+import { SearchResultsMobile } from '@/components/search/search-results-mobile'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  cacheSearchResults,
+  getCachedSearchResults,
+  getRecentSearches,
+  useOnlineStatus,
+} from '@/lib/offline-search'
+import { registerSearchServiceWorker, setupOfflineSync } from '@/lib/search-sw-integration'
 
 export default function MobileSearchPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const isOnline = useOnlineStatus()
 
-  const [query, setQuery] = React.useState(searchParams.get("q") || "")
+  const [query, setQuery] = React.useState(searchParams.get('q') || '')
   const [results, setResults] = React.useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
   const [filters, setFilters] = React.useState<SearchFilters>({})
@@ -63,24 +67,24 @@ export default function MobileSearchPage() {
           const params = new URLSearchParams({
             q: searchQuery,
             page: pageNum.toString(),
-            limit: "20",
+            limit: '20',
           })
 
           if (searchFilters.courses?.length) {
-            params.set("courses", searchFilters.courses.join(","))
+            params.set('courses', searchFilters.courses.join(','))
           }
           if (searchFilters.tags?.length) {
-            params.set("tags", searchFilters.tags.join(","))
+            params.set('tags', searchFilters.tags.join(','))
           }
           if (searchFilters.difficulty?.length) {
-            params.set("difficulty", searchFilters.difficulty.join(","))
+            params.set('difficulty', searchFilters.difficulty.join(','))
           }
           if (searchFilters.highYieldOnly) {
-            params.set("highYield", "true")
+            params.set('highYield', 'true')
           }
 
           const response = await fetch(`/api/search?${params}`)
-          if (!response.ok) throw new Error("Search failed")
+          if (!response.ok) throw new Error('Search failed')
 
           const data = await response.json()
           const newResults = pageNum === 1 ? data.results : [...results, ...data.results]
@@ -94,10 +98,10 @@ export default function MobileSearchPage() {
           // Use cached results if offline
           setResults(cached)
         } else {
-          throw new Error("No cached results available offline")
+          throw new Error('No cached results available offline')
         }
       } catch (error) {
-        console.error("Search error:", error)
+        console.error('Search error:', error)
 
         // Try cache as fallback
         const cached = await getCachedSearchResults(searchQuery, searchFilters)
@@ -110,7 +114,7 @@ export default function MobileSearchPage() {
         setIsLoading(false)
       }
     },
-    [isOnline, results]
+    [isOnline, results],
   )
 
   // Handle search submission
@@ -121,7 +125,7 @@ export default function MobileSearchPage() {
 
     // Update URL
     const params = new URLSearchParams()
-    if (searchQuery) params.set("q", searchQuery)
+    if (searchQuery) params.set('q', searchQuery)
     router.push(`?${params}`, { scroll: false })
   }
 
@@ -155,7 +159,7 @@ export default function MobileSearchPage() {
 
   // Load initial search from URL
   React.useEffect(() => {
-    const urlQuery = searchParams.get("q")
+    const urlQuery = searchParams.get('q')
     if (urlQuery && urlQuery !== query) {
       setQuery(urlQuery)
       performSearch(urlQuery, filters, 1)
@@ -183,9 +187,9 @@ export default function MobileSearchPage() {
 
             {/* Online/Offline Indicator */}
             <Badge
-              variant={isOnline ? "default" : "secondary"}
+              variant={isOnline ? 'default' : 'secondary'}
               className="gap-1.5 h-8 px-3"
-              aria-label={isOnline ? "Online" : "Offline"}
+              aria-label={isOnline ? 'Online' : 'Offline'}
             >
               {isOnline ? (
                 <>

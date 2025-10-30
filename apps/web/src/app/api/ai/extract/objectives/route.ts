@@ -1,8 +1,8 @@
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { ChatMockClient, type ExtractedObjective } from '@/lib/ai/chatmock-client'
+import { ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
 
 // Zod validation schema for extraction request
 const ExtractionRequestSchema = z.object({

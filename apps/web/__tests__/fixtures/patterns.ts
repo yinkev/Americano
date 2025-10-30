@@ -51,7 +51,7 @@ export const mockPatterns = [
     createdAt: new Date('2025-10-08'),
     updatedAt: new Date('2025-10-20'),
   },
-]
+] as any[]
 
 export const mockPatternAnalysisResult = {
   patterns: mockPatterns,

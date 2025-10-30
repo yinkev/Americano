@@ -93,37 +93,37 @@ export function redactPII(text: string, preserveLength = false): string {
 
   // Redact emails
   redacted = redacted.replace(PII_PATTERNS.email, (match) =>
-    preserveLength ? '*'.repeat(match.length) : '[EMAIL_REDACTED]'
+    preserveLength ? '*'.repeat(match.length) : '[EMAIL_REDACTED]',
   )
 
   // Redact phone numbers
   redacted = redacted.replace(PII_PATTERNS.phone, (match) =>
-    preserveLength ? '*'.repeat(match.length) : '[PHONE_REDACTED]'
+    preserveLength ? '*'.repeat(match.length) : '[PHONE_REDACTED]',
   )
 
   // Redact SSN
   redacted = redacted.replace(PII_PATTERNS.ssn, (match) =>
-    preserveLength ? '*'.repeat(match.length) : '[SSN_REDACTED]'
+    preserveLength ? '*'.repeat(match.length) : '[SSN_REDACTED]',
   )
 
   // Redact credit cards
   redacted = redacted.replace(PII_PATTERNS.creditCard, (match) =>
-    preserveLength ? '*'.repeat(match.length) : '[CARD_REDACTED]'
+    preserveLength ? '*'.repeat(match.length) : '[CARD_REDACTED]',
   )
 
   // Redact IP addresses (may reveal location)
   redacted = redacted.replace(PII_PATTERNS.ipAddress, (match) =>
-    preserveLength ? '*'.repeat(match.length) : '[IP_REDACTED]'
+    preserveLength ? '*'.repeat(match.length) : '[IP_REDACTED]',
   )
 
   // Redact MRN
   redacted = redacted.replace(PII_PATTERNS.mrn, (match) =>
-    preserveLength ? '*'.repeat(match.length) : '[MRN_REDACTED]'
+    preserveLength ? '*'.repeat(match.length) : '[MRN_REDACTED]',
   )
 
   // Redact patient IDs
   redacted = redacted.replace(PII_PATTERNS.patientId, (match) =>
-    preserveLength ? '*'.repeat(match.length) : '[PATIENT_ID_REDACTED]'
+    preserveLength ? '*'.repeat(match.length) : '[PATIENT_ID_REDACTED]',
   )
 
   return redacted
@@ -183,7 +183,7 @@ export function redactMedicalPHI(text: string): string {
   if (!text) return text
 
   // First apply standard PII redaction
-  let redacted = redactPII(text)
+  const redacted = redactPII(text)
 
   // If contains medical PHI keywords, hash the entire text
   if (containsMedicalPHI(redacted)) {

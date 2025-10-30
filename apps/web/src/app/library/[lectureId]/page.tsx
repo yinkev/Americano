@@ -1,27 +1,27 @@
 'use client'
 
-import { use, useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   ArrowLeft,
-  Pencil,
-  Trash2,
-  FileText,
-  Target,
   BookOpen,
-  RefreshCw,
+  FileText,
   Loader2,
+  Pencil,
+  RefreshCw,
+  Target,
+  Trash2,
 } from 'lucide-react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useRouter } from 'next/navigation'
+import { use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { DeleteConfirmation } from '@/components/library/delete-confirmation'
 import { LectureEditDialog } from '@/components/library/lecture-edit-dialog'
 import { ObjectiveEditDialog } from '@/components/library/objective-edit-dialog'
 import { PDFViewer } from '@/components/library/pdf-viewer'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface Course {
   id: string

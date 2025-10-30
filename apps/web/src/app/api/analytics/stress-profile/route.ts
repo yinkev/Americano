@@ -5,7 +5,7 @@
  * Story 5.4 Task 6.6
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
 import type { LearningStyleProfile } from '@/types/prisma-json'
 
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
         orderBy: { occurrenceCount: 'desc' },
         take: 5,
       })
-      stressPatterns = patterns.map(p => ({
+      stressPatterns = patterns.map((p) => ({
         patternType: p.patternType,
         occurrenceCount: p.occurrenceCount,
         confidence: p.confidence,

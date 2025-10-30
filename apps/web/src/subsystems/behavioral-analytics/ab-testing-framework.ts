@@ -103,8 +103,8 @@ export class ABTestingFramework {
     // Create experiment with required Prisma fields
     const experiment = await prisma.personalizationExperiment.create({
       data: {
-        userId: '',  // Placeholder - will be set when user is assigned
-        preferencesId: '',  // Placeholder - will be set when user preferences exist
+        userId: '', // Placeholder - will be set when user is assigned
+        preferencesId: '', // Placeholder - will be set when user preferences exist
         experimentName: config.name,
         context: 'MISSION',
         experimentType: 'AB_TEST',
@@ -567,7 +567,10 @@ export class ABTestingFramework {
           experimentId: a.experimentId,
           experimentName: experiment.experimentName,
           variant: a.variantId as VariantType,
-          variantConfig: a.variantId === 'A' ? (experiment.variants as any).variants[0].config : (experiment.variants as any).variants[1].config,
+          variantConfig:
+            a.variantId === 'A'
+              ? (experiment.variants as any).variants[0].config
+              : (experiment.variants as any).variants[1].config,
         }
       })
   }
@@ -592,7 +595,7 @@ export class ABTestingFramework {
     if (values.length === 0) return 0
 
     const avg = this.mean(values)
-    const squareDiffs = values.map((v) => Math.pow(v - avg, 2))
+    const squareDiffs = values.map((v) => (v - avg) ** 2)
     const avgSquareDiff = this.mean(squareDiffs)
 
     return Math.sqrt(avgSquareDiff)

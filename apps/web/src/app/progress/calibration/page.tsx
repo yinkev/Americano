@@ -1,77 +1,77 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { Card } from '@/components/ui/card';
 import {
-  ScatterChart,
-  Scatter,
-  LineChart,
-  Line,
-  BarChart,
+  AlertCircle,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  CheckCircle2,
+  Filter,
+  Lightbulb,
+  Minus,
+  Target,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import {
   Bar,
-  XAxis,
-  YAxis,
+  BarChart,
   CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
+  Cell,
   Label,
   Legend,
-  Cell,
-} from 'recharts';
-import {
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  AlertCircle,
-  CheckCircle2,
-  Target,
-  Lightbulb,
-  Filter,
-  ArrowUpCircle,
-  ArrowDownCircle,
-} from 'lucide-react';
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
+import { Card } from '@/components/ui/card'
 
 /**
  * Calibration data point
  */
 interface CalibrationPoint {
-  confidence: number; // 1-5 scale (normalized to 0-100 for chart)
-  score: number; // 0-100 scale
-  conceptName: string;
-  date: string;
-  isOverconfident: boolean;
-  isUnderconfident: boolean;
+  confidence: number // 1-5 scale (normalized to 0-100 for chart)
+  score: number // 0-100 scale
+  conceptName: string
+  date: string
+  isOverconfident: boolean
+  isUnderconfident: boolean
 }
 
 /**
  * Calibration metrics
  */
 interface CalibrationMetrics {
-  meanAbsoluteError: number; // Average |confidence - score|
-  correlationCoefficient: number; // -1 to 1
-  overconfidentCount: number;
-  underconfidentCount: number;
-  calibratedCount: number;
-  trend: 'IMPROVING' | 'STABLE' | 'WORSENING';
+  meanAbsoluteError: number // Average |confidence - score|
+  correlationCoefficient: number // -1 to 1
+  overconfidentCount: number
+  underconfidentCount: number
+  calibratedCount: number
+  trend: 'IMPROVING' | 'STABLE' | 'WORSENING'
 }
 
 /**
  * Example calibration issue
  */
 interface CalibrationExample {
-  conceptName: string;
-  confidence: string; // e.g., "Very Confident"
-  score: number;
-  type: 'OVERCONFIDENT' | 'UNDERCONFIDENT';
+  conceptName: string
+  confidence: string // e.g., "Very Confident"
+  score: number
+  type: 'OVERCONFIDENT' | 'UNDERCONFIDENT'
 }
 
 /**
  * Trend data point for line chart
  */
 interface TrendPoint {
-  date: string;
-  calibrationAccuracy: number; // 0-100 (100 = perfect calibration)
+  date: string
+  calibrationAccuracy: number // 0-100 (100 = perfect calibration)
 }
 
 /**
@@ -92,41 +92,41 @@ interface TrendPoint {
  * @see Story 4.4 AC#6 (Calibration Trends Dashboard)
  */
 export default function CalibrationDashboardPage() {
-  const [calibrationData, setCalibrationData] = useState<CalibrationPoint[]>([]);
-  const [metrics, setMetrics] = useState<CalibrationMetrics | null>(null);
-  const [trendData, setTrendData] = useState<TrendPoint[]>([]);
-  const [examples, setExamples] = useState<CalibrationExample[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [dateRange, setDateRange] = useState<'7days' | '30days' | '90days'>('30days');
-  const [showFilters, setShowFilters] = useState(false);
+  const [calibrationData, setCalibrationData] = useState<CalibrationPoint[]>([])
+  const [metrics, setMetrics] = useState<CalibrationMetrics | null>(null)
+  const [trendData, setTrendData] = useState<TrendPoint[]>([])
+  const [examples, setExamples] = useState<CalibrationExample[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [dateRange, setDateRange] = useState<'7days' | '30days' | '90days'>('30days')
+  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
-    fetchCalibrationData();
-  }, [dateRange]);
+    fetchCalibrationData()
+  }, [dateRange])
 
   const fetchCalibrationData = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
-      const response = await fetch(`/api/validation/calibration?dateRange=${dateRange}`);
+      const response = await fetch(`/api/validation/calibration?dateRange=${dateRange}`)
       if (!response.ok) {
-        throw new Error('Failed to fetch calibration data');
+        throw new Error('Failed to fetch calibration data')
       }
-      const result = await response.json();
-      const data = result.data;
+      const result = await response.json()
+      const data = result.data
 
-      setCalibrationData(data.calibrationPoints || []);
-      setMetrics(data.metrics || null);
-      setTrendData(data.trendData || []);
-      setExamples(data.examples || []);
+      setCalibrationData(data.calibrationPoints || [])
+      setMetrics(data.metrics || null)
+      setTrendData(data.trendData || [])
+      setExamples(data.examples || [])
     } catch (error) {
-      console.error('Error fetching calibration data:', error);
+      console.error('Error fetching calibration data:', error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Convert confidence (1-5) to 0-100 scale for charting
-  const normalizeConfidence = (confidence: number) => (confidence - 1) * 25;
+  const normalizeConfidence = (confidence: number) => (confidence - 1) * 25
 
   // Prepare scatter plot data
   const scatterData = calibrationData.map((point) => ({
@@ -136,18 +136,18 @@ export default function CalibrationDashboardPage() {
     fill: point.isOverconfident
       ? 'oklch(0.65 0.20 25)' // Red for overconfidence
       : point.isUnderconfident
-      ? 'oklch(0.65 0.18 230)' // Blue for underconfidence
-      : 'oklch(0.7 0.15 145)', // Green for calibrated
-  }));
+        ? 'oklch(0.65 0.18 230)' // Blue for underconfidence
+        : 'oklch(0.7 0.15 145)', // Green for calibrated
+  }))
 
   // Interpret correlation coefficient (constraint #4)
   const interpretCorrelation = (r: number): { label: string; color: string } => {
-    if (r > 0.7) return { label: 'Strong', color: 'oklch(0.7 0.15 145)' };
-    if (r >= 0.4) return { label: 'Moderate', color: 'oklch(0.75 0.12 85)' };
-    return { label: 'Weak', color: 'oklch(0.65 0.20 25)' };
-  };
+    if (r > 0.7) return { label: 'Strong', color: 'oklch(0.7 0.15 145)' }
+    if (r >= 0.4) return { label: 'Moderate', color: 'oklch(0.75 0.12 85)' }
+    return { label: 'Weak', color: 'oklch(0.65 0.20 25)' }
+  }
 
-  const correlation = metrics ? interpretCorrelation(metrics.correlationCoefficient) : null;
+  const correlation = metrics ? interpretCorrelation(metrics.correlationCoefficient) : null
 
   // Calculate category breakdown for bar chart
   const categoryBreakdown = metrics
@@ -157,8 +157,10 @@ export default function CalibrationDashboardPage() {
           value: metrics.calibratedCount,
           percentage: Math.round(
             (metrics.calibratedCount /
-              (metrics.calibratedCount + metrics.overconfidentCount + metrics.underconfidentCount)) *
-              100
+              (metrics.calibratedCount +
+                metrics.overconfidentCount +
+                metrics.underconfidentCount)) *
+              100,
           ),
         },
         {
@@ -166,8 +168,10 @@ export default function CalibrationDashboardPage() {
           value: metrics.overconfidentCount,
           percentage: Math.round(
             (metrics.overconfidentCount /
-              (metrics.calibratedCount + metrics.overconfidentCount + metrics.underconfidentCount)) *
-              100
+              (metrics.calibratedCount +
+                metrics.overconfidentCount +
+                metrics.underconfidentCount)) *
+              100,
           ),
         },
         {
@@ -175,16 +179,18 @@ export default function CalibrationDashboardPage() {
           value: metrics.underconfidentCount,
           percentage: Math.round(
             (metrics.underconfidentCount /
-              (metrics.calibratedCount + metrics.overconfidentCount + metrics.underconfidentCount)) *
-              100
+              (metrics.calibratedCount +
+                metrics.overconfidentCount +
+                metrics.underconfidentCount)) *
+              100,
           ),
         },
       ]
-    : [];
+    : []
 
   // Determine trend icon and color
   const getTrendIndicator = () => {
-    if (!metrics) return null;
+    if (!metrics) return null
 
     switch (metrics.trend) {
       case 'IMPROVING':
@@ -192,23 +198,23 @@ export default function CalibrationDashboardPage() {
           icon: <TrendingUp className="w-5 h-5" />,
           color: 'oklch(0.7 0.15 145)',
           text: 'Improving',
-        };
+        }
       case 'WORSENING':
         return {
           icon: <TrendingDown className="w-5 h-5" />,
           color: 'oklch(0.65 0.20 25)',
           text: 'Declining',
-        };
+        }
       default:
         return {
           icon: <Minus className="w-5 h-5" />,
           color: 'oklch(0.75 0.12 85)',
           text: 'Stable',
-        };
+        }
     }
-  };
+  }
 
-  const trendIndicator = getTrendIndicator();
+  const trendIndicator = getTrendIndicator()
 
   if (isLoading) {
     return (
@@ -220,7 +226,7 @@ export default function CalibrationDashboardPage() {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -228,9 +234,7 @@ export default function CalibrationDashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="space-y-2">
-          <h1 className="text-3xl font-heading font-bold text-foreground">
-            Calibration Trends
-          </h1>
+          <h1 className="text-3xl font-heading font-bold text-foreground">Calibration Trends</h1>
           <p className="text-base text-muted-foreground">
             Track how well your confidence matches your actual performance
           </p>
@@ -314,9 +318,7 @@ export default function CalibrationDashboardPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Trend</span>
-                  <span style={{ color: trendIndicator.color }}>
-                    {trendIndicator.icon}
-                  </span>
+                  <span style={{ color: trendIndicator.color }}>{trendIndicator.icon}</span>
                 </div>
                 <p
                   className="text-3xl font-heading font-bold"
@@ -387,9 +389,7 @@ export default function CalibrationDashboardPage() {
 
       {/* Calibration Scatter Plot */}
       <Card className="p-6 bg-white/95 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
-        <h2 className="text-xl font-heading font-semibold mb-6">
-          Calibration Accuracy
-        </h2>
+        <h2 className="text-xl font-heading font-semibold mb-6">Calibration Accuracy</h2>
         <ResponsiveContainer width="100%" height={500}>
           <ScatterChart margin={{ top: 20, right: 20, bottom: 60, left: 60 }}>
             <CartesianGrid stroke="oklch(0.9 0.02 240)" strokeDasharray="5 5" />
@@ -426,7 +426,7 @@ export default function CalibrationDashboardPage() {
               cursor={{ strokeDasharray: '3 3' }}
               content={({ active, payload }) => {
                 if (active && payload && payload.length > 0) {
-                  const data = payload[0].payload;
+                  const data = payload[0].payload
                   return (
                     <div className="bg-white/95 backdrop-blur-xl border border-white/30 shadow-lg p-3 rounded-lg">
                       <p className="font-semibold text-sm mb-1">{data.name}</p>
@@ -434,14 +434,17 @@ export default function CalibrationDashboardPage() {
                         Confidence: {data.x}% | Score: {data.y}%
                       </p>
                     </div>
-                  );
+                  )
                 }
-                return null;
+                return null
               }}
             />
             {/* Perfect calibration line (diagonal) */}
             <ReferenceLine
-              segment={[{ x: 0, y: 0 }, { x: 100, y: 100 }]}
+              segment={[
+                { x: 0, y: 0 },
+                { x: 100, y: 100 },
+              ]}
               stroke="oklch(0.556 0 0)"
               strokeDasharray="3 3"
               strokeWidth={2}
@@ -455,7 +458,7 @@ export default function CalibrationDashboardPage() {
                 value: 'Overconfidence Zone',
                 position: 'insideTopRight',
                 fill: 'oklch(0.65 0.20 25)',
-                fontSize: 11
+                fontSize: 11,
               }}
             />
             {/* Underconfidence zone (below diagonal) */}
@@ -467,14 +470,10 @@ export default function CalibrationDashboardPage() {
                 value: 'Underconfidence Zone',
                 position: 'insideBottomRight',
                 fill: 'oklch(0.65 0.18 230)',
-                fontSize: 11
+                fontSize: 11,
               }}
             />
-            <Scatter
-              name="Attempts"
-              data={scatterData}
-              fill="oklch(0.7 0.15 145)"
-            />
+            <Scatter name="Attempts" data={scatterData} fill="oklch(0.7 0.15 145)" />
           </ScatterChart>
         </ResponsiveContainer>
         <div className="mt-4 flex items-center justify-center gap-6 text-xs">
@@ -511,16 +510,8 @@ export default function CalibrationDashboardPage() {
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={categoryBreakdown} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
               <CartesianGrid stroke="oklch(0.9 0.02 240)" strokeDasharray="5 5" />
-              <XAxis
-                dataKey="name"
-                stroke="#666"
-                tick={{ fill: '#666', fontSize: 12 }}
-              />
-              <YAxis
-                stroke="#666"
-                tick={{ fill: '#666', fontSize: 12 }}
-                aria-label="Count"
-              />
+              <XAxis dataKey="name" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
+              <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} aria-label="Count" />
               <Tooltip
                 contentStyle={{
                   backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -630,7 +621,6 @@ export default function CalibrationDashboardPage() {
         </Card>
       </div>
 
-
       {/* Recalibration Tips */}
       <Card
         className="p-6 border"
@@ -645,36 +635,34 @@ export default function CalibrationDashboardPage() {
             style={{ color: 'oklch(0.68 0.16 280)' }}
           />
           <div className="flex-1">
-            <h3 className="text-lg font-heading font-semibold mb-3">
-              Tips for Better Calibration
-            </h3>
+            <h3 className="text-lg font-heading font-semibold mb-3">Tips for Better Calibration</h3>
             <ul className="space-y-2 text-sm text-foreground">
               <li className="flex items-start gap-2">
                 <span style={{ color: 'oklch(0.68 0.16 280)' }}>•</span>
                 <span>
-                  <strong>If overconfident:</strong> Take more time to review concepts
-                  before answering. Ask yourself "What am I missing?"
+                  <strong>If overconfident:</strong> Take more time to review concepts before
+                  answering. Ask yourself "What am I missing?"
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <span style={{ color: 'oklch(0.68 0.16 280)' }}>•</span>
                 <span>
-                  <strong>If underconfident:</strong> Trust your preparation! You likely
-                  know more than you think.
+                  <strong>If underconfident:</strong> Trust your preparation! You likely know more
+                  than you think.
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <span style={{ color: 'oklch(0.68 0.16 280)' }}>•</span>
                 <span>
-                  <strong>Track your gut feeling:</strong> After each question, note whether
-                  you felt confident or uncertain. Compare with actual results.
+                  <strong>Track your gut feeling:</strong> After each question, note whether you
+                  felt confident or uncertain. Compare with actual results.
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <span style={{ color: 'oklch(0.68 0.16 280)' }}>•</span>
                 <span>
-                  <strong>Perfect calibration (diagonal line):</strong> Your confidence
-                  matches your performance. This is the goal!
+                  <strong>Perfect calibration (diagonal line):</strong> Your confidence matches your
+                  performance. This is the goal!
                 </span>
               </li>
             </ul>
@@ -682,5 +670,5 @@ export default function CalibrationDashboardPage() {
         </div>
       </Card>
     </div>
-  );
+  )
 }

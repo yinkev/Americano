@@ -11,23 +11,23 @@
 
 'use client'
 
-import { useState } from 'react'
+import { format } from 'date-fns'
 import {
+  BookOpen,
+  Brain,
+  CheckCircle,
   Clock,
   Coffee,
-  Brain,
-  Sparkles,
+  FileText,
+  FlaskConical,
   Moon,
   Settings,
-  BookOpen,
-  FlaskConical,
-  FileText,
-  CheckCircle,
+  Sparkles,
 } from 'lucide-react'
-import { format } from 'date-fns'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -163,15 +163,25 @@ export function SessionPlanPreview({ plan, loading, onCustomize, className = '' 
       <CardHeader className="p-4 pb-0">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1">
-            <h3 className="font-heading font-semibold text-foreground text-[16px] mb-2">Session Plan Preview</h3>
+            <h3 className="font-heading font-semibold text-foreground text-[16px] mb-2">
+              Session Plan Preview
+            </h3>
             <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[13px] text-muted-foreground">
-              <div className="flex items-center gap-1" role="text" aria-label={`Session time: ${format(startTime, 'h:mm a')} to ${format(endTime, 'h:mm a')}`}>
+              <div
+                className="flex items-center gap-1"
+                role="text"
+                aria-label={`Session time: ${format(startTime, 'h:mm a')} to ${format(endTime, 'h:mm a')}`}
+              >
                 <Clock className="size-4" aria-hidden="true" />
                 <span>
                   {format(startTime, 'h:mm a')} - {format(endTime, 'h:mm a')}
                 </span>
               </div>
-              <div className="flex items-center gap-1" role="text" aria-label={`Duration: ${plan.duration} minutes`}>
+              <div
+                className="flex items-center gap-1"
+                role="text"
+                aria-label={`Duration: ${plan.duration} minutes`}
+              >
                 <span className="font-medium">{plan.duration} min</span>
               </div>
               <Badge
@@ -208,12 +218,19 @@ export function SessionPlanPreview({ plan, loading, onCustomize, className = '' 
       <CardContent className="p-4 pt-4 space-y-6">
         {/* Timeline Visualization */}
         <section className="space-y-3" aria-labelledby="timeline-heading">
-          <h4 id="timeline-heading" className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+          <h4
+            id="timeline-heading"
+            className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide"
+          >
             Session Timeline
           </h4>
 
           {/* Desktop: Horizontal Timeline */}
-          <div className="hidden md:block" role="img" aria-label={`Session timeline: ${phases.warmUp} minute warmup, ${phases.peak} minute peak focus, ${phases.windDown} minute wind-down`}>
+          <div
+            className="hidden md:block"
+            role="img"
+            aria-label={`Session timeline: ${phases.warmUp} minute warmup, ${phases.peak} minute peak focus, ${phases.windDown} minute wind-down`}
+          >
             <div className="relative h-24 rounded-lg overflow-hidden">
               {/* Warm-up Phase */}
               <div
@@ -324,10 +341,17 @@ export function SessionPlanPreview({ plan, loading, onCustomize, className = '' 
 
         {/* Break Schedule */}
         <section className="space-y-2" aria-labelledby="breaks-heading">
-          <h4 id="breaks-heading" className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+          <h4
+            id="breaks-heading"
+            className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide"
+          >
             Scheduled Breaks
           </h4>
-          <div className="flex flex-wrap gap-2" role="list" aria-label={`${plan.breaks.breakIntervals.length} scheduled breaks`}>
+          <div
+            className="flex flex-wrap gap-2"
+            role="list"
+            aria-label={`${plan.breaks.breakIntervals.length} scheduled breaks`}
+          >
             {plan.breaks.breakIntervals.map((interval, idx) => (
               <div
                 key={idx}
@@ -341,7 +365,9 @@ export function SessionPlanPreview({ plan, loading, onCustomize, className = '' 
                 <Coffee className="size-4 text-info" aria-hidden="true" />
                 <span className="text-[13px]">
                   <span className="font-medium">{interval} min</span>
-                  <span className="text-muted-foreground mx-1" aria-hidden="true">•</span>
+                  <span className="text-muted-foreground mx-1" aria-hidden="true">
+                    •
+                  </span>
                   <span className="text-muted-foreground">
                     {plan.breaks.breakDurations[idx]} min break
                   </span>
@@ -349,7 +375,9 @@ export function SessionPlanPreview({ plan, loading, onCustomize, className = '' 
               </div>
             ))}
           </div>
-          <p className="text-[11px] text-muted-foreground italic" role="note">{plan.breaks.reasoning}</p>
+          <p className="text-[11px] text-muted-foreground italic" role="note">
+            {plan.breaks.reasoning}
+          </p>
         </section>
 
         {/* Content Preview */}

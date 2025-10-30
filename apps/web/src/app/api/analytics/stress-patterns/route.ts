@@ -5,7 +5,7 @@
  * Story 5.4 Task 6.5
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
 
 const prisma = new PrismaClient()

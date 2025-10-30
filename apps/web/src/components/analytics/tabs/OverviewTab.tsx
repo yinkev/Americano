@@ -14,18 +14,18 @@
  * Design: Glassmorphism cards with OKLCH colors, responsive 3-column grid
  */
 
-'use client';
+'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useUnderstandingDashboard } from '@/hooks/use-understanding-analytics';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { LineChart, Line, ResponsiveContainer } from 'recharts';
+import { Minus, TrendingDown, TrendingUp } from 'lucide-react'
+import { Line, LineChart, ResponsiveContainer } from 'recharts'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useUnderstandingDashboard } from '@/hooks/use-understanding-analytics'
 
 export default function OverviewTab() {
-  const { data, isLoading, error } = useUnderstandingDashboard();
+  const { data, isLoading, error } = useUnderstandingDashboard()
 
   if (isLoading) {
-    return <OverviewSkeleton />;
+    return <OverviewSkeleton />
   }
 
   if (error) {
@@ -35,10 +35,10 @@ export default function OverviewTab() {
           Failed to load dashboard metrics. Please try again.
         </p>
       </div>
-    );
+    )
   }
 
-  if (!data) return null;
+  if (!data) return null
 
   const metrics = [
     {
@@ -91,7 +91,7 @@ export default function OverviewTab() {
       subtitle: `${data.mastery.count}/${data.mastery.total} objectives`,
       change: 0,
     },
-  ];
+  ]
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -99,18 +99,18 @@ export default function OverviewTab() {
         <MetricCard key={metric.title} {...metric} />
       ))}
     </div>
-  );
+  )
 }
 
 interface MetricCardProps {
-  title: string;
-  value: number;
-  trend: 'up' | 'down' | 'stable';
-  sparkline: number[];
-  color: string;
-  suffix?: string;
-  subtitle?: string;
-  change: number;
+  title: string
+  value: number
+  trend: 'up' | 'down' | 'stable'
+  sparkline: number[]
+  color: string
+  suffix?: string
+  subtitle?: string
+  change: number
 }
 
 function MetricCard({
@@ -123,20 +123,18 @@ function MetricCard({
   subtitle,
   change,
 }: MetricCardProps) {
-  const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus;
+  const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus
   const trendColor =
     trend === 'up'
       ? 'oklch(0.7 0.15 145)' // Green for up
       : trend === 'down'
         ? 'oklch(0.65 0.20 25)' // Red for down
-        : 'oklch(0.6 0.05 240)'; // Gray for stable
+        : 'oklch(0.6 0.05 240)' // Gray for stable
 
   return (
     <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0 motion-safe:transition-all motion-safe:duration-150 hover:translate-y-[-2px] hover:shadow-[0_16px_48px_rgba(31,38,135,0.15)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-reduce:animate-none">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-[oklch(0.6_0.05_240)]">
-          {title}
-        </CardTitle>
+        <CardTitle className="text-sm font-medium text-[oklch(0.6_0.05_240)]">{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-baseline justify-between">
@@ -145,9 +143,7 @@ function MetricCard({
               {value.toFixed(1)}
               {suffix || ''}
             </p>
-            {subtitle && (
-              <p className="text-xs text-[oklch(0.6_0.05_240)] mt-1">{subtitle}</p>
-            )}
+            {subtitle && <p className="text-xs text-[oklch(0.6_0.05_240)] mt-1">{subtitle}</p>}
           </div>
           <div className="flex flex-col items-end gap-1">
             <div className="flex items-center gap-1" style={{ color: trendColor }}>
@@ -182,7 +178,7 @@ function MetricCard({
         )}
       </CardContent>
     </Card>
-  );
+  )
 }
 
 function OverviewSkeleton() {
@@ -203,5 +199,5 @@ function OverviewSkeleton() {
         </Card>
       ))}
     </div>
-  );
+  )
 }

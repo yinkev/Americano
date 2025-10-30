@@ -1,5 +1,6 @@
 'use client'
 
+import { Star } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,7 +11,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { Star } from 'lucide-react'
 
 interface ObjectiveCompletionDialogProps {
   open: boolean

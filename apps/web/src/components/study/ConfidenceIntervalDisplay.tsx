@@ -1,20 +1,15 @@
-'use client';
+'use client'
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { TrendingUp } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { TrendingUp } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 
 interface ConfidenceIntervalDisplayProps {
-  estimate: number; // Knowledge estimate (theta from IRT)
-  confidenceInterval: number; // ±X at 95% confidence
-  showDetails?: boolean;
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
+  estimate: number // Knowledge estimate (theta from IRT)
+  confidenceInterval: number // ±X at 95% confidence
+  showDetails?: boolean
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
 }
 
 /**
@@ -59,35 +54,35 @@ export function ConfidenceIntervalDisplay({
   className,
 }: ConfidenceIntervalDisplayProps) {
   // Calculate bounds
-  const lowerBound = Math.max(0, estimate - confidenceInterval);
-  const upperBound = Math.min(100, estimate + confidenceInterval);
+  const lowerBound = Math.max(0, estimate - confidenceInterval)
+  const upperBound = Math.min(100, estimate + confidenceInterval)
 
   // Determine precision level
   const getPrecisionLevel = () => {
-    if (confidenceInterval < 10) return 'High';
-    if (confidenceInterval <= 15) return 'Medium';
-    return 'Low';
-  };
+    if (confidenceInterval < 10) return 'High'
+    if (confidenceInterval <= 15) return 'Medium'
+    return 'Low'
+  }
 
   const getPrecisionColor = () => {
-    if (confidenceInterval < 10) return 'oklch(0.7 0.15 145)'; // Green
-    if (confidenceInterval <= 15) return 'oklch(0.75 0.12 85)'; // Yellow
-    return 'oklch(0.65 0.20 25)'; // Red
-  };
+    if (confidenceInterval < 10) return 'oklch(0.7 0.15 145)' // Green
+    if (confidenceInterval <= 15) return 'oklch(0.75 0.12 85)' // Yellow
+    return 'oklch(0.65 0.20 25)' // Red
+  }
 
   const getPrecisionDescription = () => {
-    const level = getPrecisionLevel();
+    const level = getPrecisionLevel()
     switch (level) {
       case 'High':
-        return 'Your knowledge level has been measured with high precision. The assessment can stop soon with confidence.';
+        return 'Your knowledge level has been measured with high precision. The assessment can stop soon with confidence.'
       case 'Medium':
-        return 'Your knowledge level is reasonably well estimated. A few more questions will increase precision.';
+        return 'Your knowledge level is reasonably well estimated. A few more questions will increase precision.'
       case 'Low':
-        return 'More questions are needed to accurately assess your knowledge level. Continue for better precision.';
+        return 'More questions are needed to accurately assess your knowledge level. Continue for better precision.'
       default:
-        return '';
+        return ''
     }
-  };
+  }
 
   // Size variants
   const sizeClasses = {
@@ -106,9 +101,9 @@ export function ConfidenceIntervalDisplay({
       detail: 'text-base',
       icon: 'h-5 w-5',
     },
-  };
+  }
 
-  const sizes = sizeClasses[size];
+  const sizes = sizeClasses[size]
 
   return (
     <TooltipProvider>
@@ -119,7 +114,7 @@ export function ConfidenceIntervalDisplay({
               'inline-flex items-center gap-3 px-4 py-2 rounded-lg',
               'bg-white/95 backdrop-blur-xl border',
               'hover:shadow-md transition-all duration-200 cursor-help',
-              className
+              className,
             )}
             style={{
               borderColor: getPrecisionColor(),
@@ -159,7 +154,9 @@ export function ConfidenceIntervalDisplay({
             {/* Optional Details */}
             {showDetails && (
               <div className={cn('text-muted-foreground', sizes.detail)}>
-                <p>Range: {Math.round(lowerBound)}-{Math.round(upperBound)}</p>
+                <p>
+                  Range: {Math.round(lowerBound)}-{Math.round(upperBound)}
+                </p>
               </div>
             )}
           </div>
@@ -175,9 +172,7 @@ export function ConfidenceIntervalDisplay({
           <div className="space-y-3">
             {/* Header */}
             <div>
-              <p className="font-semibold text-base mb-1">
-                IRT Knowledge Estimate
-              </p>
+              <p className="font-semibold text-base mb-1">IRT Knowledge Estimate</p>
               <p className="text-sm opacity-90">
                 {estimate.toFixed(1)} ± {confidenceInterval.toFixed(1)} (95% confidence)
               </p>
@@ -217,17 +212,15 @@ export function ConfidenceIntervalDisplay({
               <p className="text-xs opacity-90 mb-2">
                 <span className="font-semibold">{getPrecisionLevel()} Precision</span>
               </p>
-              <p className="text-xs opacity-80">
-                {getPrecisionDescription()}
-              </p>
+              <p className="text-xs opacity-80">{getPrecisionDescription()}</p>
             </div>
 
             {/* IRT Context */}
             <div className="pt-2 border-t border-white/20">
               <p className="text-xs opacity-80">
-                <span className="font-semibold">What is IRT?</span> Item Response Theory
-                estimates your knowledge level using fewer questions by adapting difficulty
-                based on your responses. The confidence interval shows measurement precision.
+                <span className="font-semibold">What is IRT?</span> Item Response Theory estimates
+                your knowledge level using fewer questions by adapting difficulty based on your
+                responses. The confidence interval shows measurement precision.
               </p>
             </div>
 
@@ -259,5 +252,5 @@ export function ConfidenceIntervalDisplay({
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
+  )
 }

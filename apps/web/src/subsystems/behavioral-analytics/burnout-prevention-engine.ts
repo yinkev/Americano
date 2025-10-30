@@ -9,8 +9,8 @@
  *           + (irregularity * 0.15) + (engagementDecay * 0.1) + (recoveryDeficit * 0.05)
  */
 
-import { PrismaClient, BurnoutRiskLevel, Prisma } from '@/generated/prisma'
-import { subDays, differenceInDays } from 'date-fns'
+import { differenceInDays, subDays } from 'date-fns'
+import { type BurnoutRiskLevel, type Prisma, PrismaClient } from '@/generated/prisma'
 import type { ContributingFactor as ContributingFactorType } from '@/types/prisma-json'
 
 const prisma = new PrismaClient()

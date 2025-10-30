@@ -1,10 +1,10 @@
 'use client'
 
-import React from 'react'
+import type { LucideIcon } from 'lucide-react'
 import { motion } from 'motion/react'
-import { LucideIcon } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import React from 'react'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 
 type StatsVariant = 'xp' | 'mastery' | 'study'
 
@@ -65,12 +65,8 @@ export function StatsCard({
             <div className="space-y-1 flex-1">
               <p className="text-xs font-medium text-muted-foreground leading-tight">{label}</p>
               <div className="flex items-baseline gap-1 mt-1">
-                <p className={`text-lg font-bold ${styles.text} leading-none`}>
-                  {value}
-                </p>
-                {subtext && (
-                  <span className="text-xs text-muted-foreground">{subtext}</span>
-                )}
+                <p className={`text-lg font-bold ${styles.text} leading-none`}>{value}</p>
+                {subtext && <span className="text-xs text-muted-foreground">{subtext}</span>}
               </div>
               {badge && (
                 <Badge

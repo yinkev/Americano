@@ -9,23 +9,28 @@
 
 'use client'
 
-import { useState } from 'react'
 import {
-  Clock,
-  TrendingUp,
-  Brain,
-  Target,
-  Battery,
-  CheckCircle,
-  XCircle,
-  PlusCircle,
-  Flag,
-  BarChart3,
-  Calendar,
-  Zap,
   AlertTriangle,
+  BarChart3,
+  Battery,
+  Brain,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Flag,
   Lightbulb,
+  PlusCircle,
+  Target,
+  TrendingUp,
+  XCircle,
+  Zap,
 } from 'lucide-react'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -34,19 +39,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
-import {
-  type SessionRecommendation,
-  realtimeOrchestrationService,
-} from '@/services/realtime-orchestration'
-import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import {
+  realtimeOrchestrationService,
+  type SessionRecommendation,
+} from '@/services/realtime-orchestration'
 
 interface SessionRecommendationDialogProps {
   open: boolean

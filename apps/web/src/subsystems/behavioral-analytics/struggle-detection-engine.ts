@@ -12,24 +12,25 @@
  * Runs as daily batch job (11 PM) or on-demand
  */
 
-import { PrismaClient, Prisma } from '@/generated/prisma'
-import {
-  StrugglePrediction,
-  StruggleIndicator,
-  InterventionRecommendation,
-  PredictionStatus,
-  IndicatorType,
-  Severity,
-  InterventionType,
-  InterventionStatus,
-  MasteryLevel,
-  ReviewRating,
-} from '@/generated/prisma'
 import { addDays, subDays } from 'date-fns'
-import { StruggleFeatureExtractor } from './struggle-feature-extractor'
-import { StrugglePredictionModel } from './struggle-prediction-model'
+import {
+  IndicatorType,
+  type InterventionRecommendation,
+  InterventionStatus,
+  InterventionType,
+  MasteryLevel,
+  PredictionStatus,
+  type Prisma,
+  PrismaClient,
+  ReviewRating,
+  Severity,
+  type StruggleIndicator,
+  type StrugglePrediction,
+} from '@/generated/prisma'
 import { getMissionObjectives, getSessionMissionObjectives } from '@/types/mission-helpers'
 import type { FeatureVector } from '@/types/prisma-json'
+import { StruggleFeatureExtractor } from './struggle-feature-extractor'
+import { StrugglePredictionModel } from './struggle-prediction-model'
 
 const prisma = new PrismaClient()
 
@@ -346,13 +347,17 @@ export class StruggleDetectionEngine {
 
     // Extract top features from feature vector (simplified for MVP)
     const featureVec = features as unknown as FeatureVector
-    const topFeatureNames: Array<keyof FeatureVector> = ['retentionScore', 'prerequisiteGap', 'complexityMismatch']
+    const topFeatureNames: Array<keyof FeatureVector> = [
+      'retentionScore',
+      'prerequisiteGap',
+      'complexityMismatch',
+    ]
     const topFeatures = topFeatureNames
-      .map(name => ({
+      .map((name) => ({
         name: String(name),
         value: featureVec[name] ?? 0.5,
       }))
-      .filter(f => f.value > 0.5)
+      .filter((f) => f.value > 0.5)
       .slice(0, 3)
 
     for (const feature of topFeatures) {
@@ -391,7 +396,7 @@ export class StruggleDetectionEngine {
         predictionConfidence: prediction.confidence,
         featureVector: features as unknown as Prisma.InputJsonValue,
         strugglingFactors: {
-          indicators: createdIndicators.map(i => i.indicatorType),
+          indicators: createdIndicators.map((i) => i.indicatorType),
           confidence: prediction.confidence,
         } as unknown as Prisma.InputJsonValue,
         predictionStatus: PredictionStatus.PENDING,
@@ -518,11 +523,11 @@ export class StruggleDetectionEngine {
    */
   private mapFeatureToIndicatorType(featureName: string): IndicatorType | null {
     const mapping: Record<string, IndicatorType> = {
-      'retentionScore': IndicatorType.LOW_RETENTION,
-      'prerequisiteGapCount': IndicatorType.PREREQUISITE_GAP,
-      'complexityMismatch': IndicatorType.COMPLEXITY_MISMATCH,
-      'cognitiveLoadIndicator': IndicatorType.COGNITIVE_OVERLOAD,
-      'historicalStruggleScore': IndicatorType.HISTORICAL_STRUGGLE_PATTERN,
+      retentionScore: IndicatorType.LOW_RETENTION,
+      prerequisiteGapCount: IndicatorType.PREREQUISITE_GAP,
+      complexityMismatch: IndicatorType.COMPLEXITY_MISMATCH,
+      cognitiveLoadIndicator: IndicatorType.COGNITIVE_OVERLOAD,
+      historicalStruggleScore: IndicatorType.HISTORICAL_STRUGGLE_PATTERN,
       'Low retention': IndicatorType.LOW_RETENTION,
       'Moderate retention': IndicatorType.LOW_RETENTION,
       'Prerequisite gaps': IndicatorType.PREREQUISITE_GAP,
@@ -754,9 +759,7 @@ export class StruggleDetectionEngine {
     // Find mission containing this objective
     for (const mission of missions) {
       const objectives = getMissionObjectives(mission)
-      const hasObjective = objectives.some(
-        (o) => o.id === prediction.learningObjectiveId,
-      )
+      const hasObjective = objectives.some((o) => o.id === prediction.learningObjectiveId)
 
       if (hasObjective) {
         const daysDiff = Math.ceil(

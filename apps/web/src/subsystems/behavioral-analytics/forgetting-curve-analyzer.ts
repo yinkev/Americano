@@ -148,7 +148,11 @@ export class ForgettingCurveAnalyzer {
         const currentReview = cardReviews[i]
 
         for (const interval of SAMPLE_INTERVALS) {
-          const nextReview = this.getNextReviewAfterInterval(cardReviews, i, interval)
+          const nextReview = ForgettingCurveAnalyzer.getNextReviewAfterInterval(
+            cardReviews,
+            i,
+            interval,
+          )
 
           if (nextReview) {
             const daysSinceReview =
@@ -181,14 +185,15 @@ export class ForgettingCurveAnalyzer {
     }
 
     // Step 4: Fit exponential decay curve using linearized regression
-    const { R0, k } = this.fitExponentialCurve(dataPoints)
+    const { R0, k } = ForgettingCurveAnalyzer.fitExponentialCurve(dataPoints)
 
     // Step 5: Calculate half-life
     const halfLifeRaw = Math.log(2) / k
-    const halfLife = Number.isFinite(halfLifeRaw) && halfLifeRaw > 0 ? halfLifeRaw : Math.log(2) / EBBINGHAUS_K
+    const halfLife =
+      Number.isFinite(halfLifeRaw) && halfLifeRaw > 0 ? halfLifeRaw : Math.log(2) / EBBINGHAUS_K
 
     // Step 6: Compare to standard Ebbinghaus curve
-    const deviation = this.calculateDeviation(k, halfLife)
+    const deviation = ForgettingCurveAnalyzer.calculateDeviation(k, halfLife)
 
     // Step 7: Calculate confidence based on total review count (not interval matches)
     const confidence = Math.min(1.0, totalReviews / MIN_REVIEWS)
@@ -250,7 +255,11 @@ export class ForgettingCurveAnalyzer {
         const currentReview = cardReviews[i]
 
         for (const interval of SAMPLE_INTERVALS) {
-          const nextReview = this.getNextReviewAfterInterval(cardReviews, i, interval)
+          const nextReview = ForgettingCurveAnalyzer.getNextReviewAfterInterval(
+            cardReviews,
+            i,
+            interval,
+          )
 
           if (nextReview) {
             const retentionScore = PerformanceCalculator.calculateRetentionScore([nextReview])
@@ -293,7 +302,7 @@ export class ForgettingCurveAnalyzer {
     objectiveId: string,
   ): Promise<RetentionPrediction> {
     // Get personalized forgetting curve
-    const curve = await this.calculatePersonalizedForgettingCurve(userId)
+    const curve = await ForgettingCurveAnalyzer.calculatePersonalizedForgettingCurve(userId)
 
     // Get last review date for this objective
     const lastReview = await prisma.review.findFirst({
@@ -339,7 +348,8 @@ export class ForgettingCurveAnalyzer {
 
     // Recommend review when retention is expected to drop to 0.7 (optimal spacing)
     const optimalRetention = 0.7
-    const daysUntilOptimalReviewRaw = -Math.log(optimalRetention / curve.R0) / curve.k - daysSinceReview
+    const daysUntilOptimalReviewRaw =
+      -Math.log(optimalRetention / curve.R0) / curve.k - daysSinceReview
     const daysUntilOptimalReview = Number.isFinite(daysUntilOptimalReviewRaw)
       ? Math.max(0, daysUntilOptimalReviewRaw)
       : 0

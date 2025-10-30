@@ -1,13 +1,21 @@
 'use client'
 
+import {
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  Loader2,
+  RefreshCw,
+  Star,
+} from 'lucide-react'
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, Star, BookOpen, ExternalLink, RefreshCw, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
 import { useFirstAidContext } from '@/hooks/use-first-aid-context'
+import { cn } from '@/lib/utils'
 
 interface FirstAidReference {
   id: string
@@ -73,7 +81,7 @@ export function FirstAidCrossReference({
   const isLoading = enableContextualLoading ? contextualLoading : legacyIsLoading
 
   const toggleExpand = (id: string) => {
-    setExpandedIds(prev => {
+    setExpandedIds((prev) => {
       const next = new Set(prev)
       if (next.has(id)) {
         next.delete(id)
@@ -179,7 +187,7 @@ export function FirstAidCrossReference({
             className={cn(
               'rounded-lg border transition-all duration-200',
               'bg-white/60 backdrop-blur-sm border-border/60',
-              'hover:bg-white/80 hover:border-border/80 hover:shadow-sm'
+              'hover:bg-white/80 hover:border-border/80 hover:shadow-sm',
             )}
           >
             <div className="p-4">
@@ -194,14 +202,10 @@ export function FirstAidCrossReference({
                         fill="oklch(0.7 0.2 60)"
                       />
                     )}
-                    <h4 className="text-sm font-semibold truncate">
-                      {reference.section}
-                    </h4>
+                    <h4 className="text-sm font-semibold truncate">{reference.section}</h4>
                   </div>
                   {reference.subsection && (
-                    <p className="text-xs text-muted-foreground truncate">
-                      {reference.subsection}
-                    </p>
+                    <p className="text-xs text-muted-foreground truncate">{reference.subsection}</p>
                   )}
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -233,7 +237,7 @@ export function FirstAidCrossReference({
                 <p
                   className={cn(
                     'text-sm text-foreground/90',
-                    !expandedIds.has(reference.id) && 'line-clamp-2'
+                    !expandedIds.has(reference.id) && 'line-clamp-2',
                   )}
                 >
                   {reference.snippet}

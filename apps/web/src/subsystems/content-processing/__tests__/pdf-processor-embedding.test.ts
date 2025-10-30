@@ -6,11 +6,11 @@
  * Epic 3 - Story 3.1 - Task 2
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals"
-import { PDFProcessor } from '../pdf-processor'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
+import { contentChunker } from '@/lib/content-chunker'
 import { prisma } from '@/lib/db'
 import { embeddingService } from '@/lib/embedding-service'
-import { contentChunker } from '@/lib/content-chunker'
+import { PDFProcessor } from '../pdf-processor'
 
 // Mock dependencies
 jest.mock('@/lib/db', () => ({
@@ -109,10 +109,7 @@ describe('PDFProcessor - Embedding Generation', () => {
         },
       ]
 
-      const mockEmbeddings = [
-        new Array(1536).fill(0.1),
-        new Array(1536).fill(0.2),
-      ]
+      const mockEmbeddings = [new Array(1536).fill(0.1), new Array(1536).fill(0.2)]
 
       // Mock Prisma calls
       prismaMock.lecture.findUnique.mockResolvedValue(mockLecture as any)
@@ -279,9 +276,7 @@ describe('PDFProcessor - Embedding Generation', () => {
         },
       }))
 
-      const mockEmbeddings = Array.from({ length: 25 }, () =>
-        new Array(1536).fill(0.1)
-      )
+      const mockEmbeddings = Array.from({ length: 25 }, () => new Array(1536).fill(0.1))
 
       prismaMock.lecture.findUnique.mockResolvedValue(mockLecture as any)
       prismaMock.lecture.update.mockResolvedValue(mockLecture as any)
@@ -296,17 +291,15 @@ describe('PDFProcessor - Embedding Generation', () => {
       })
 
       // Mock batched embedding generation
-      prismaMock.contentChunk.findMany.mockImplementation(
-        ({ where }: any) => {
-          const ids = where.id.in
-          return Promise.resolve(
-            ids.map((id: string, idx: number) => ({
-              id,
-              content: `Chunk ${idx + 1} content`,
-            }))
-          )
-        }
-      )
+      prismaMock.contentChunk.findMany.mockImplementation(({ where }: any) => {
+        const ids = where.id.in
+        return Promise.resolve(
+          ids.map((id: string, idx: number) => ({
+            id,
+            content: `Chunk ${idx + 1} content`,
+          })),
+        )
+      })
 
       embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: Array(10).fill(new Array(1536).fill(0.1)),
@@ -325,8 +318,9 @@ describe('PDFProcessor - Embedding Generation', () => {
       // Verify progress was updated multiple times (once per batch)
       const progressCalls = prismaMock.lecture.update.mock.calls.filter(
         (call: any[]) =>
-          call[0].data && 'embeddingProgress' in call[0].data &&
-          call[0].data.embeddingProgress !== 1.0
+          call[0].data &&
+          'embeddingProgress' in call[0].data &&
+          call[0].data.embeddingProgress !== 1.0,
       )
 
       expect(progressCalls.length).toBeGreaterThan(0)

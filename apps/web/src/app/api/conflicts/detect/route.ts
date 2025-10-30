@@ -27,10 +27,10 @@
  * }
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { PrismaClient, ConflictStatus, ChangeType } from '@/generated/prisma'
-import { successResponse, errorResponse, ErrorCodes, withErrorHandler } from '@/lib/api-response'
+import { ChangeType, ConflictStatus, PrismaClient } from '@/generated/prisma'
+import { ErrorCodes, errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
 import { conflictDetector } from '@/subsystems/knowledge-graph/conflict-detector'
 
 const prisma = new PrismaClient()
@@ -43,7 +43,7 @@ const detectRequestSchema = z.object({
   sourceIds: z.array(z.string()).optional(),
   minSimilarity: z.number().min(0).max(1).optional().default(0.85),
   maxConflicts: z.number().min(1).max(1000).optional().default(100),
-  skipAIAnalysis: z.boolean().optional().default(false)
+  skipAIAnalysis: z.boolean().optional().default(false),
 })
 
 type DetectRequest = z.infer<typeof detectRequestSchema>
@@ -65,9 +65,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       errorResponse(
         ErrorCodes.VALIDATION_ERROR,
         'Invalid request body',
-        validationResult.error.format()
+        validationResult.error.format(),
       ),
-      { status: 400 }
+      { status: 400 },
     )
   }
 
@@ -76,11 +76,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   // Validate at least one of conceptId or sourceIds is provided
   if (!params.conceptId && (!params.sourceIds || params.sourceIds.length === 0)) {
     return Response.json(
-      errorResponse(
-        ErrorCodes.VALIDATION_ERROR,
-        'Either conceptId or sourceIds must be provided'
-      ),
-      { status: 400 }
+      errorResponse(ErrorCodes.VALIDATION_ERROR, 'Either conceptId or sourceIds must be provided'),
+      { status: 400 },
     )
   }
 
@@ -91,7 +88,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       sourceIds: params.sourceIds,
       minSimilarity: params.minSimilarity,
       maxConflicts: params.maxConflicts,
-      skipAIAnalysis: params.skipAIAnalysis
+      skipAIAnalysis: params.skipAIAnalysis,
     })
 
     // Persist conflicts to database
@@ -105,9 +102,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
             AND: [
               { sourceAChunkId: detected.sourceAChunkId },
               { sourceBChunkId: detected.sourceBChunkId },
-              { status: { not: ConflictStatus.DISMISSED } }
-            ]
-          }
+              { status: { not: ConflictStatus.DISMISSED } },
+            ],
+          },
         })
 
         if (existing) {
@@ -126,8 +123,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
             conflictType: detected.conflictType,
             severity: detected.severity,
             description: detected.description,
-            status: ConflictStatus.ACTIVE
-          }
+            status: ConflictStatus.ACTIVE,
+          },
         })
 
         // Create history entry
@@ -137,8 +134,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
             changeType: ChangeType.DETECTED,
             newStatus: ConflictStatus.ACTIVE,
             changedBy: 'system',
-            notes: `Auto-detected conflict (similarity: ${(detected.similarity * 100).toFixed(1)}%, confidence: ${(detected.confidence * 100).toFixed(1)}%)`
-          }
+            notes: `Auto-detected conflict (similarity: ${(detected.similarity * 100).toFixed(1)}%, confidence: ${(detected.confidence * 100).toFixed(1)}%)`,
+          },
         })
 
         savedConflicts.push(conflict)
@@ -159,20 +156,18 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         performance: {
           timeMs: scanTime,
           targetMs: 500,
-          withinTarget: scanTime < 500
-        }
-      })
+          withinTarget: scanTime < 500,
+        },
+      }),
     )
   } catch (error: any) {
     console.error('Conflict detection error:', error)
 
     return Response.json(
-      errorResponse(
-        ErrorCodes.INTERNAL_ERROR,
-        'Failed to detect conflicts',
-        { message: error.message }
-      ),
-      { status: 500 }
+      errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to detect conflicts', {
+        message: error.message,
+      }),
+      { status: 500 },
     )
   } finally {
     await prisma.$disconnect()

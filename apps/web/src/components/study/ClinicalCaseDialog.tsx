@@ -1,33 +1,33 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useMemo } from 'react';
+import { Activity, ChevronRight, Clock, User } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import { ChevronRight, Clock, User, Activity } from 'lucide-react';
-import type { CaseStructure } from '@/types/clinical-scenarios';
+} from '@/components/ui/dialog'
+import type { CaseStructure } from '@/types/clinical-scenarios'
 
 interface ClinicalCaseDialogProps {
   scenario: {
-    id: string;
-    objectiveId: string;
-    scenarioType: 'DIAGNOSIS' | 'MANAGEMENT' | 'DIFFERENTIAL' | 'COMPLICATIONS';
-    difficulty: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
-    caseText: CaseStructure;
-    boardExamTopic?: string;
-  };
-  open: boolean;
-  onClose: () => void;
-  onSubmit: (choices: Record<string, any>, reasoning: string) => Promise<void>;
+    id: string
+    objectiveId: string
+    scenarioType: 'DIAGNOSIS' | 'MANAGEMENT' | 'DIFFERENTIAL' | 'COMPLICATIONS'
+    difficulty: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
+    caseText: CaseStructure
+    boardExamTopic?: string
+  }
+  open: boolean
+  onClose: () => void
+  onSubmit: (choices: Record<string, any>, reasoning: string) => Promise<void>
 }
 
-type Stage = 'chiefComplaint' | 'history' | 'physicalExam' | 'workup' | 'questions';
+type Stage = 'chiefComplaint' | 'history' | 'physicalExam' | 'workup' | 'questions'
 
-const STAGE_ORDER: Stage[] = ['chiefComplaint', 'history', 'physicalExam', 'workup', 'questions'];
+const STAGE_ORDER: Stage[] = ['chiefComplaint', 'history', 'physicalExam', 'workup', 'questions']
 
 const STAGE_LABELS: Record<Stage, string> = {
   chiefComplaint: 'Chief Complaint',
@@ -35,7 +35,7 @@ const STAGE_LABELS: Record<Stage, string> = {
   physicalExam: 'Physical Exam',
   workup: 'Workup',
   questions: 'Clinical Questions',
-};
+}
 
 // OKLCH color palette for competency types (from context)
 const COMPETENCY_COLORS = {
@@ -43,83 +43,78 @@ const COMPETENCY_COLORS = {
   diagnosis: 'oklch(0.7 0.15 145)', // Green
   management: 'oklch(0.68 0.16 280)', // Purple
   clinicalReasoning: 'oklch(0.72 0.12 45)', // Orange
-};
+}
 
-export function ClinicalCaseDialog({
-  scenario,
-  open,
-  onClose,
-  onSubmit,
-}: ClinicalCaseDialogProps) {
-  const [currentStage, setCurrentStage] = useState<Stage>('chiefComplaint');
-  const [userChoices, setUserChoices] = useState<Record<string, any>>({});
-  const [timeStarted, setTimeStarted] = useState<number>(Date.now());
-  const [reasoning, setReasoning] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+export function ClinicalCaseDialog({ scenario, open, onClose, onSubmit }: ClinicalCaseDialogProps) {
+  const [currentStage, setCurrentStage] = useState<Stage>('chiefComplaint')
+  const [userChoices, setUserChoices] = useState<Record<string, any>>({})
+  const [timeStarted, setTimeStarted] = useState<number>(Date.now())
+  const [reasoning, setReasoning] = useState<string>('')
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
-  const caseData = scenario.caseText;
+  const caseData = scenario.caseText
 
   // Reset state when dialog opens
   useEffect(() => {
     if (open) {
-      setCurrentStage('chiefComplaint');
-      setUserChoices({});
-      setTimeStarted(Date.now());
-      setReasoning('');
-      setIsSubmitting(false);
+      setCurrentStage('chiefComplaint')
+      setUserChoices({})
+      setTimeStarted(Date.now())
+      setReasoning('')
+      setIsSubmitting(false)
     }
-  }, [open]);
+  }, [open])
 
   // Calculate time elapsed
   const timeElapsed = useMemo(() => {
-    const seconds = Math.floor((Date.now() - timeStarted) / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  }, [timeStarted]);
+    const seconds = Math.floor((Date.now() - timeStarted) / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+  }, [timeStarted])
 
   const handleNextStage = () => {
-    const currentIndex = STAGE_ORDER.indexOf(currentStage);
+    const currentIndex = STAGE_ORDER.indexOf(currentStage)
     if (currentIndex < STAGE_ORDER.length - 1) {
-      setCurrentStage(STAGE_ORDER[currentIndex + 1]);
+      setCurrentStage(STAGE_ORDER[currentIndex + 1])
     }
-  };
+  }
 
   const handlePreviousStage = () => {
-    const currentIndex = STAGE_ORDER.indexOf(currentStage);
+    const currentIndex = STAGE_ORDER.indexOf(currentStage)
     if (currentIndex > 0) {
-      setCurrentStage(STAGE_ORDER[currentIndex - 1]);
+      setCurrentStage(STAGE_ORDER[currentIndex - 1])
     }
-  };
+  }
 
   const handleQuestionChoice = (questionIndex: number, choice: string) => {
     setUserChoices((prev) => ({
       ...prev,
       [`question_${questionIndex}`]: choice,
-    }));
-  };
+    }))
+  }
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      await onSubmit(userChoices, reasoning);
-      onClose();
+      await onSubmit(userChoices, reasoning)
+      onClose()
     } catch (error) {
-      console.error('Failed to submit scenario:', error);
+      console.error('Failed to submit scenario:', error)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const canProceed = () => {
     if (currentStage === 'questions') {
       // Check if all questions are answered
-      const questionCount = caseData.questions.length;
-      const answeredCount = Object.keys(userChoices).filter((k) => k.startsWith('question_')).length;
-      return answeredCount === questionCount && reasoning.trim().length >= 50;
+      const questionCount = caseData.questions.length
+      const answeredCount = Object.keys(userChoices).filter((k) => k.startsWith('question_')).length
+      return answeredCount === questionCount && reasoning.trim().length >= 50
     }
-    return true;
-  };
+    return true
+  }
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -173,10 +168,7 @@ export function ClinicalCaseDialog({
         </div>
 
         {/* Stage title */}
-        <h3
-          className="text-lg font-semibold mb-4"
-          style={{ color: COMPETENCY_COLORS.diagnosis }}
-        >
+        <h3 className="text-lg font-semibold mb-4" style={{ color: COMPETENCY_COLORS.diagnosis }}>
           {STAGE_LABELS[currentStage]}
         </h3>
 
@@ -503,5 +495,5 @@ export function ClinicalCaseDialog({
         )}
       </DialogContent>
     </Dialog>
-  );
+  )
 }

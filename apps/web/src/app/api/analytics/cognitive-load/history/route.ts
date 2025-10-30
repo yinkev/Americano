@@ -30,9 +30,9 @@
  * - Long-term burnout risk assessment
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@/generated/prisma'
 import { subDays } from 'date-fns'
+import { type NextRequest, NextResponse } from 'next/server'
+import { PrismaClient } from '@/generated/prisma'
 
 const prisma = new PrismaClient()
 
@@ -104,14 +104,11 @@ export async function GET(request: NextRequest) {
     // Calculate summary statistics for trend analysis
     const avgLoad =
       dataPoints.length > 0
-        ? dataPoints.reduce((sum: number, d: DataPoint) => sum + d.loadScore, 0) /
-          dataPoints.length
+        ? dataPoints.reduce((sum: number, d: DataPoint) => sum + d.loadScore, 0) / dataPoints.length
         : 0
 
     const maxLoad =
-      dataPoints.length > 0
-        ? Math.max(...dataPoints.map((d: DataPoint) => d.loadScore))
-        : 0
+      dataPoints.length > 0 ? Math.max(...dataPoints.map((d: DataPoint) => d.loadScore)) : 0
 
     const overloadEpisodes = dataPoints.filter((d: DataPoint) => d.loadScore > 80).length
 

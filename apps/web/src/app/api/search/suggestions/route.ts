@@ -98,11 +98,11 @@
  */
 
 import { withErrorHandler } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
-import { withRateLimit, searchRateLimiter } from '@/lib/rate-limiter'
-import { parseQueryParams, suggestionsRequestSchema } from '@/subsystems/knowledge-graph/validation'
+import { errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
+import { searchRateLimiter, withRateLimit } from '@/lib/rate-limiter'
 import type { SearchSuggestion } from '@/subsystems/knowledge-graph/types'
+import { parseQueryParams, suggestionsRequestSchema } from '@/subsystems/knowledge-graph/validation'
 
 /**
  * GET /api/search/suggestions handler
@@ -116,20 +116,16 @@ async function handler(request: Request) {
   })
 
   if (!user) {
-    return Response.json(
-      errorResponse('USER_NOT_FOUND', 'User not found'),
-      { status: 404 }
-    )
+    return Response.json(errorResponse('USER_NOT_FOUND', 'User not found'), { status: 404 })
   }
 
   // Parse and validate query parameters
   const validation = parseQueryParams(request.url, suggestionsRequestSchema)
 
   if (!validation.success) {
-    return Response.json(
-      errorResponse('VALIDATION_ERROR', validation.error, validation.details),
-      { status: 400 }
-    )
+    return Response.json(errorResponse('VALIDATION_ERROR', validation.error, validation.details), {
+      status: 400,
+    })
   }
 
   const { q: query, limit, courseId } = validation.data
@@ -142,7 +138,11 @@ async function handler(request: Request) {
     suggestions.push(...recentSearches)
 
     // 2. Get matching learning objectives
-    const objectiveSuggestions = await getObjectiveSuggestions(query, limit - suggestions.length, courseId)
+    const objectiveSuggestions = await getObjectiveSuggestions(
+      query,
+      limit - suggestions.length,
+      courseId,
+    )
     suggestions.push(...objectiveSuggestions)
 
     // 3. Get matching concepts
@@ -153,7 +153,11 @@ async function handler(request: Request) {
 
     // 4. Get matching lecture titles
     if (suggestions.length < limit) {
-      const lectureSuggestions = await getLectureSuggestions(query, limit - suggestions.length, courseId)
+      const lectureSuggestions = await getLectureSuggestions(
+        query,
+        limit - suggestions.length,
+        courseId,
+      )
       suggestions.push(...lectureSuggestions)
     }
 
@@ -162,7 +166,7 @@ async function handler(request: Request) {
       successResponse({
         suggestions: suggestions.slice(0, limit),
         query,
-      })
+      }),
     )
   } catch (error) {
     console.error('Failed to get suggestions:', error)
@@ -170,12 +174,10 @@ async function handler(request: Request) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
 
     return Response.json(
-      errorResponse(
-        'SUGGESTIONS_FAILED',
-        'Failed to get search suggestions. Please try again.',
-        { error: errorMessage }
-      ),
-      { status: 500 }
+      errorResponse('SUGGESTIONS_FAILED', 'Failed to get search suggestions. Please try again.', {
+        error: errorMessage,
+      }),
+      { status: 500 },
     )
   }
 }
@@ -192,7 +194,7 @@ async function getRecentSearches(
   userId: string,
   query: string,
   limit: number,
-  courseId?: string
+  courseId?: string,
 ): Promise<SearchSuggestion[]> {
   try {
     // Get recent searches that start with or contain the query
@@ -216,7 +218,7 @@ async function getRecentSearches(
       distinct: ['query'], // Avoid duplicate queries
     })
 
-    return searches.map(search => ({
+    return searches.map((search) => ({
       text: search.query,
       category: 'recent' as const,
       resultCount: search.resultCount,
@@ -238,7 +240,7 @@ async function getRecentSearches(
 async function getObjectiveSuggestions(
   query: string,
   limit: number,
-  courseId?: string
+  courseId?: string,
 ): Promise<SearchSuggestion[]> {
   try {
     const objectives = await prisma.learningObjective.findMany({
@@ -271,10 +273,8 @@ async function getObjectiveSuggestions(
       },
     })
 
-    return objectives.map(obj => ({
-      text: obj.objective.length > 80
-        ? obj.objective.substring(0, 80) + '...'
-        : obj.objective,
+    return objectives.map((obj) => ({
+      text: obj.objective.length > 80 ? obj.objective.substring(0, 80) + '...' : obj.objective,
       category: 'concept' as const,
       context: `${obj.lecture.course.name}${obj.isHighYield ? ' • High-Yield' : ''}`,
     }))
@@ -290,10 +290,7 @@ async function getObjectiveSuggestions(
  * @param query - Partial search query
  * @param limit - Maximum suggestions
  */
-async function getConceptSuggestions(
-  query: string,
-  limit: number
-): Promise<SearchSuggestion[]> {
+async function getConceptSuggestions(query: string, limit: number): Promise<SearchSuggestion[]> {
   try {
     const concepts = await prisma.concept.findMany({
       where: {
@@ -321,7 +318,7 @@ async function getConceptSuggestions(
       },
     })
 
-    return concepts.map(concept => ({
+    return concepts.map((concept) => ({
       text: concept.name,
       category: 'concept' as const,
       context: concept.category || concept.description?.substring(0, 50),
@@ -342,7 +339,7 @@ async function getConceptSuggestions(
 async function getLectureSuggestions(
   query: string,
   limit: number,
-  courseId?: string
+  courseId?: string,
 ): Promise<SearchSuggestion[]> {
   try {
     const lectures = await prisma.lecture.findMany({
@@ -371,7 +368,7 @@ async function getLectureSuggestions(
       },
     })
 
-    return lectures.map(lecture => ({
+    return lectures.map((lecture) => ({
       text: lecture.title,
       category: 'lecture' as const,
       resultCount: lecture._count.learningObjectives,
@@ -407,7 +404,4 @@ function formatRelativeTime(date: Date): string {
  * Export GET handler with rate limiting and error handling
  * Shares rate limit with POST /api/search (20 requests per minute per user)
  */
-export const GET = withRateLimit(
-  searchRateLimiter,
-  withErrorHandler(handler)
-)
+export const GET = withRateLimit(searchRateLimiter, withErrorHandler(handler))

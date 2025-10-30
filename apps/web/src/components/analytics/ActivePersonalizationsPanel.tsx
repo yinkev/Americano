@@ -7,22 +7,22 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import {
-  Clock,
   Activity,
   BookOpen,
-  Target,
   Brain,
-  Info,
   CheckCircle2,
-  XCircle,
+  Clock,
+  Info,
   Sparkles,
+  Target,
+  XCircle,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 
 interface PersonalizationConfig {
   context: string
@@ -206,9 +206,10 @@ export function ActivePersonalizationsPanel() {
           if (personalization.key === 'mission') {
             const optimalTimes = config.parameters.optimalStudyTimes || []
             const duration = config.parameters.recommendedDuration || 45
-            explanation = optimalTimes.length > 0
-              ? `Recommending missions during ${optimalTimes.slice(0, 2).join(', ')} (${duration} min sessions)`
-              : `Recommending ${duration}-minute missions`
+            explanation =
+              optimalTimes.length > 0
+                ? `Recommending missions during ${optimalTimes.slice(0, 2).join(', ')} (${duration} min sessions)`
+                : `Recommending ${duration}-minute missions`
             dataUsed = [
               `${Math.round(data.dataQualityScore * 100)} data points`,
               'Performance by time-of-day',
@@ -216,8 +217,9 @@ export function ActivePersonalizationsPanel() {
             ]
           } else if (personalization.key === 'content') {
             const learningStyle = config.parameters.learningStyleProfile || {}
-            const primaryStyle = Object.entries(learningStyle)
-              .sort(([, a], [, b]) => (b as number) - (a as number))[0]
+            const primaryStyle = Object.entries(learningStyle).sort(
+              ([, a], [, b]) => (b as number) - (a as number),
+            )[0]
             explanation = primaryStyle
               ? `Prioritizing ${primaryStyle[0]} content (${Math.round((primaryStyle[1] as number) * 100)}% affinity)`
               : 'Adapting content based on your learning style'
@@ -283,10 +285,7 @@ export function ActivePersonalizationsPanel() {
                       </div>
                       <p className="text-sm text-foreground mb-2">{explanation}</p>
                       <div className="flex items-start gap-2">
-                        <CheckCircle2
-                          className="size-4 shrink-0 mt-0.5"
-                          style={{ color }}
-                        />
+                        <CheckCircle2 className="size-4 shrink-0 mt-0.5" style={{ color }} />
                         <div className="flex-1">
                           <p className="text-xs font-medium text-muted-foreground mb-1">
                             Data Sources:

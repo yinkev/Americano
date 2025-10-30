@@ -33,11 +33,11 @@
  * - Paas, F., & Van Merriënboer, J. J. (2020). Cognitive-load theory. Current Directions in Psychological Science.
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import {
   cognitiveLoadMonitor,
-  SessionBehavioralData,
+  type SessionBehavioralData,
 } from '@/subsystems/behavioral-analytics/cognitive-load-monitor'
 
 const calculateRequestSchema = z.object({

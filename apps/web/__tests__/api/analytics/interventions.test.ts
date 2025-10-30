@@ -5,9 +5,9 @@
  * Tests Next.js → FastAPI proxy layer for interventions retrieval
  */
 
-import { GET } from '@/app/api/analytics/interventions/route'
 import { NextRequest } from 'next/server'
-import { server, createErrorHandler, create503Handler } from '../../setup'
+import { GET } from '@/app/api/analytics/interventions/route'
+import { create503Handler, createErrorHandler, server } from '../../setup'
 
 describe('GET /api/analytics/interventions', () => {
   describe('Success Cases', () => {

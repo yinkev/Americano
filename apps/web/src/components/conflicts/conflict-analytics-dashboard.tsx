@@ -1,32 +1,32 @@
 'use client'
 
-import * as React from 'react'
 import {
-  PieChart,
-  Pie,
-  BarChart,
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  CheckCircle2,
+  PieChart as PieChartIcon,
+  TrendingUp,
+} from 'lucide-react'
+import type * as React from 'react'
+import {
   Bar,
-  LineChart,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
   Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Cell,
 } from 'recharts'
-import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle2,
-  BarChart3,
-  PieChart as PieChartIcon,
-  Activity,
-} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface ConflictAnalyticsData {
@@ -110,10 +110,7 @@ interface ConflictAnalyticsDashboardProps {
  * />
  * ```
  */
-export function ConflictAnalyticsDashboard({
-  data,
-  className,
-}: ConflictAnalyticsDashboardProps) {
+export function ConflictAnalyticsDashboard({ data, className }: ConflictAnalyticsDashboardProps) {
   return (
     <div className={cn('space-y-6', className)}>
       {/* Summary Cards */}
@@ -227,10 +224,7 @@ export function ConflictAnalyticsDashboard({
                   tick={{ fontSize: 12, fill: 'oklch(0.556 0 0)' }}
                   stroke="oklch(0.75 0 0)"
                 />
-                <YAxis
-                  tick={{ fontSize: 12, fill: 'oklch(0.556 0 0)' }}
-                  stroke="oklch(0.75 0 0)"
-                />
+                <YAxis tick={{ fontSize: 12, fill: 'oklch(0.556 0 0)' }} stroke="oklch(0.75 0 0)" />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
                 <Line
@@ -422,10 +416,7 @@ function CustomTooltip({ active, payload, label }: any) {
       {label && <p className="text-sm font-semibold mb-1">{label}</p>}
       {payload.map((entry: any, index: number) => (
         <div key={index} className="flex items-center gap-2">
-          <div
-            className="h-3 w-3 rounded"
-            style={{ backgroundColor: entry.color || entry.fill }}
-          />
+          <div className="h-3 w-3 rounded" style={{ backgroundColor: entry.color || entry.fill }} />
           <p className="text-sm">
             <span className="text-muted-foreground">{entry.name}:</span>{' '}
             <span className="font-semibold">{entry.value}</span>

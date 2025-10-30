@@ -18,9 +18,9 @@
 
 'use client'
 
-import { useState, useCallback } from 'react'
-import { toPng } from 'html-to-image'
-import type { GraphNode, GraphEdge } from '@/components/graph/knowledge-graph'
+import { toPng, toSvg } from 'html-to-image'
+import { useCallback, useState } from 'react'
+import type { GraphEdge, GraphNode } from '@/components/graph/knowledge-graph'
 
 export interface GraphExportProps {
   nodes: GraphNode[]
@@ -127,6 +127,44 @@ export default function GraphExport({ nodes, edges }: GraphExportProps) {
   }, [])
 
   /**
+   * Export as SVG
+   * Captures current graph visualization as scalable vector
+   */
+  const exportAsSVG = useCallback(async () => {
+    setIsExporting(true)
+    setExportingFormat('SVG')
+
+    try {
+      // Find the React Flow container
+      const graphElement = document.querySelector('.react-flow') as HTMLElement
+
+      if (!graphElement) {
+        throw new Error('Graph container not found')
+      }
+
+      // Capture as SVG
+      const dataUrl = await toSvg(graphElement, {
+        backgroundColor: '#ffffff',
+      })
+
+      // Download
+      const link = document.createElement('a')
+      link.href = dataUrl
+      link.download = `knowledge-graph-${new Date().toISOString().slice(0, 10)}.svg`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } catch (error) {
+      console.error('Failed to export SVG:', error)
+      alert('Failed to export graph as SVG. Please try again.')
+    } finally {
+      setIsExporting(false)
+      setExportingFormat(null)
+      setIsOpen(false)
+    }
+  }, [])
+
+  /**
    * Export as CSV
    * Two files: nodes.csv and edges.csv
    */
@@ -225,12 +263,7 @@ export default function GraphExport({ nodes, edges }: GraphExportProps) {
           </>
         ) : (
           <>
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -335,6 +368,42 @@ export default function GraphExport({ nodes, edges }: GraphExportProps) {
             </div>
           </button>
 
+          {/* SVG export */}
+          <button
+            onClick={exportAsSVG}
+            className="w-full px-4 py-3 text-left transition-colors flex items-start gap-3 border-t"
+            style={{
+              color: 'oklch(0.3 0.05 240)',
+              borderColor: 'oklch(0.9 0.05 240)',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = 'oklch(0.95 0.05 240)'
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent'
+            }}
+          >
+            <svg
+              className="w-5 h-5 mt-0.5 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+              />
+            </svg>
+            <div>
+              <div className="font-semibold text-sm">Export as SVG</div>
+              <div className="text-xs" style={{ color: 'oklch(0.5 0.05 240)' }}>
+                Scalable vector graphics
+              </div>
+            </div>
+          </button>
+
           {/* CSV export */}
           <button
             onClick={exportAsCSV}
@@ -374,12 +443,7 @@ export default function GraphExport({ nodes, edges }: GraphExportProps) {
       )}
 
       {/* Click outside to close */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-[-1]"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 z-[-1]" onClick={() => setIsOpen(false)} />}
     </div>
   )
 }

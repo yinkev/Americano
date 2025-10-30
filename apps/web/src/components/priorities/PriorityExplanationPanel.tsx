@@ -7,13 +7,13 @@
 
 'use client'
 
+import { ChevronDown, ChevronUp, Info } from 'lucide-react'
 import React from 'react'
 import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { PriorityBadge } from './PriorityBadge'
-import type { PriorityExplanation } from '@/types/prioritization'
-import { ChevronDown, ChevronUp, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import type { PriorityExplanation } from '@/types/prioritization'
+import { PriorityBadge } from './PriorityBadge'
 
 interface PriorityExplanationPanelProps {
   explanation: PriorityExplanation
@@ -49,7 +49,9 @@ export function PriorityExplanationPanel({
             <PriorityBadge score={explanation.priorityScore} showScore />
           </div>
 
-          <p className="text-[13px] text-muted-foreground leading-relaxed">{explanation.reasoning}</p>
+          <p className="text-[13px] text-muted-foreground leading-relaxed">
+            {explanation.reasoning}
+          </p>
         </div>
 
         <div className="flex-shrink-0">
@@ -80,7 +82,9 @@ export function PriorityExplanationPanel({
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-medium text-muted-foreground">#{index + 1}</span>
+                        <span className="text-[11px] font-medium text-muted-foreground">
+                          #{index + 1}
+                        </span>
                         <span className="text-[13px] font-semibold">{factor.name}</span>
                       </div>
                       <div className="flex items-center gap-3">
@@ -96,7 +100,9 @@ export function PriorityExplanationPanel({
 
                     <Progress value={factor.contribution * 100} className="h-2" />
 
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">{factor.explanation}</p>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      {factor.explanation}
+                    </p>
                   </div>
                 ))}
             </div>
@@ -144,11 +150,7 @@ export function PriorityExplanationCompact({
 
   return (
     <div
-      className={cn(
-        'space-y-2 p-4 rounded-lg',
-        'bg-secondary/30 border border-border',
-        className,
-      )}
+      className={cn('space-y-2 p-4 rounded-lg', 'bg-secondary/30 border border-border', className)}
     >
       <div className="flex items-center gap-2">
         <PriorityBadge score={explanation.priorityScore} />

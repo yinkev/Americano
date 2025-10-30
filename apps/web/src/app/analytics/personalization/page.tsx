@@ -8,27 +8,27 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { PersonalizationEffectivenessChart } from '@/components/analytics/PersonalizationEffectivenessChart'
-import { ActivePersonalizationsPanel } from '@/components/analytics/ActivePersonalizationsPanel'
-import { PersonalizationHistoryTimeline } from '@/components/analytics/PersonalizationHistoryTimeline'
-import { PersonalizationSettings } from '@/components/settings/PersonalizationSettings'
 import {
-  Sparkles,
-  TrendingUp,
   Activity,
-  Clock,
   BookOpen,
-  Target,
   Brain,
-  Settings,
+  Clock,
   Info,
+  Settings,
+  Sparkles,
+  Target,
+  TrendingUp,
 } from 'lucide-react'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { ActivePersonalizationsPanel } from '@/components/analytics/ActivePersonalizationsPanel'
+import { PersonalizationEffectivenessChart } from '@/components/analytics/PersonalizationEffectivenessChart'
+import { PersonalizationHistoryTimeline } from '@/components/analytics/PersonalizationHistoryTimeline'
+import { PersonalizationSettings } from '@/components/settings/PersonalizationSettings'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 
 interface PersonalizationPreferences {
   personalizationLevel: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH'
@@ -100,7 +100,9 @@ export default function PersonalizationDashboardPage() {
       ].filter(Boolean).length
     : 0
 
-  const levelColor = preferences ? LEVEL_COLORS[preferences.personalizationLevel] : LEVEL_COLORS.MEDIUM
+  const levelColor = preferences
+    ? LEVEL_COLORS[preferences.personalizationLevel]
+    : LEVEL_COLORS.MEDIUM
 
   return (
     <div className="container mx-auto py-8 max-w-7xl">
@@ -152,7 +154,9 @@ export default function PersonalizationDashboardPage() {
                   {preferences?.personalizationLevel}
                 </Badge>
               </div>
-              <p className="text-[11px] text-muted-foreground font-medium mb-1">Personalization Level</p>
+              <p className="text-[11px] text-muted-foreground font-medium mb-1">
+                Personalization Level
+              </p>
               <p className="text-[24px] font-heading font-bold text-foreground">
                 {preferences?.personalizationLevel}
               </p>
@@ -188,8 +192,12 @@ export default function PersonalizationDashboardPage() {
                 </Badge>
               </div>
               <p className="text-[11px] text-muted-foreground font-medium mb-1">Active Features</p>
-              <p className="text-[24px] font-heading font-bold text-foreground">{activeFeatures} of 4</p>
-              <p className="text-[11px] text-muted-foreground mt-1">Personalization features enabled</p>
+              <p className="text-[24px] font-heading font-bold text-foreground">
+                {activeFeatures} of 4
+              </p>
+              <p className="text-[11px] text-muted-foreground mt-1">
+                Personalization features enabled
+              </p>
             </CardContent>
           </Card>
 
@@ -208,7 +216,9 @@ export default function PersonalizationDashboardPage() {
                 </div>
                 <p className="text-xs text-muted-foreground mb-1">Mission Timing</p>
                 <p className="text-2xl font-bold text-foreground">Analyzing...</p>
-                <p className="text-xs text-muted-foreground mt-1">Detecting optimal study windows</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Detecting optimal study windows
+                </p>
               </CardContent>
             </Card>
           )}
@@ -277,8 +287,8 @@ export default function PersonalizationDashboardPage() {
                   <div>
                     <p className="font-medium text-foreground mb-1">Data Collection</p>
                     <p>
-                      We analyze your study sessions, performance metrics, and learning patterns over
-                      6+ weeks to build your behavioral profile.
+                      We analyze your study sessions, performance metrics, and learning patterns
+                      over 6+ weeks to build your behavioral profile.
                     </p>
                   </div>
                   <div>
@@ -291,8 +301,8 @@ export default function PersonalizationDashboardPage() {
                   <div>
                     <p className="font-medium text-foreground mb-1">Continuous Improvement</p>
                     <p>
-                      Your feedback helps refine personalization accuracy. We track effectiveness and
-                      adjust strategies to maximize learning outcomes.
+                      Your feedback helps refine personalization accuracy. We track effectiveness
+                      and adjust strategies to maximize learning outcomes.
                     </p>
                   </div>
                   <div>

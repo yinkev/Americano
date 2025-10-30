@@ -9,7 +9,7 @@
 
 'use client'
 
-import { useCallback, useRef, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useSessionStore } from '@/store/use-session-store'
 
 interface PerformanceEvent {

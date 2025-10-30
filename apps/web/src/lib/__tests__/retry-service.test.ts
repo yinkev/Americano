@@ -12,16 +12,16 @@
  * - Async operation retry handling
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import {
-  TransientErrorSimulator,
-  PermanentErrorSimulator,
-  ExponentialBackoffCalculator,
   CircuitBreakerStateTracker,
-  RetryAttemptTracker,
-  TransientErrorType,
+  ExponentialBackoffCalculator,
+  PermanentErrorSimulator,
   PermanentErrorType,
+  RetryAttemptTracker,
   retryAssertions,
+  TransientErrorSimulator,
+  TransientErrorType,
 } from '../../__tests__/test-utils/retry-test-helpers'
 
 /**
@@ -37,14 +37,16 @@ class RetryService {
   private circuitBreakerResetTimeMs: number
   private circuitBreakers = new Map<string, CircuitBreakerStateTracker>()
 
-  constructor(config: {
-    maxRetries?: number
-    initialDelayMs?: number
-    backoffMultiplier?: number
-    maxDelayMs?: number
-    circuitBreakerThreshold?: number
-    circuitBreakerResetTimeMs?: number
-  } = {}) {
+  constructor(
+    config: {
+      maxRetries?: number
+      initialDelayMs?: number
+      backoffMultiplier?: number
+      maxDelayMs?: number
+      circuitBreakerThreshold?: number
+      circuitBreakerResetTimeMs?: number
+    } = {},
+  ) {
     this.maxRetries = config.maxRetries ?? 3
     this.initialDelayMs = config.initialDelayMs ?? 100
     this.backoffMultiplier = config.backoffMultiplier ?? 2
@@ -59,7 +61,7 @@ class RetryService {
   async execute<T>(
     operationId: string,
     operation: () => Promise<T>,
-    shouldRetry: (error: Error) => boolean = this.isRetriableError.bind(this)
+    shouldRetry: (error: Error) => boolean = this.isRetriableError.bind(this),
   ): Promise<T> {
     const breaker = this.getCircuitBreaker(operationId)
 
@@ -123,7 +125,7 @@ class RetryService {
    * Calculate exponential backoff delay
    */
   private calculateBackoff(retryAttempt: number): number {
-    const exponentialDelay = this.initialDelayMs * Math.pow(this.backoffMultiplier, retryAttempt)
+    const exponentialDelay = this.initialDelayMs * this.backoffMultiplier ** retryAttempt
     const cappedDelay = Math.min(exponentialDelay, this.maxDelayMs)
 
     // Add full jitter
@@ -135,7 +137,7 @@ class RetryService {
    * Deterministic backoff (for testing)
    */
   calculateBackoffDeterministic(retryAttempt: number): number {
-    const exponentialDelay = this.initialDelayMs * Math.pow(this.backoffMultiplier, retryAttempt)
+    const exponentialDelay = this.initialDelayMs * this.backoffMultiplier ** retryAttempt
     return Math.min(exponentialDelay, this.maxDelayMs)
   }
 
@@ -146,7 +148,10 @@ class RetryService {
     if (!this.circuitBreakers.has(operationId)) {
       this.circuitBreakers.set(
         operationId,
-        new CircuitBreakerStateTracker(this.circuitBreakerThreshold, this.circuitBreakerResetTimeMs)
+        new CircuitBreakerStateTracker(
+          this.circuitBreakerThreshold,
+          this.circuitBreakerResetTimeMs,
+        ),
       )
     }
     return this.circuitBreakers.get(operationId)!
@@ -170,7 +175,7 @@ class RetryService {
    * Delay helper
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 }
 
@@ -233,7 +238,7 @@ describe('RetryService', () => {
       expect(uniqueDelays.size).toBeGreaterThan(5) // Most should be unique
 
       // All delays should be within reasonable range
-      delays.forEach(delay => {
+      delays.forEach((delay) => {
         expect(delay).toBeGreaterThanOrEqual(100)
         expect(delay).toBeLessThanOrEqual(100 * 1.1) // 100 + 10% jitter
       })
@@ -327,7 +332,7 @@ describe('RetryService', () => {
       const shouldRetry = () => false
 
       await expect(service.execute('test-op', operation, shouldRetry)).rejects.toThrow(
-        'Invalid input'
+        'Invalid input',
       )
 
       // Should only be called once, no retries
@@ -370,7 +375,7 @@ describe('RetryService', () => {
         delays.push(backoff.calculate(0))
       }
 
-      delays.forEach(delay => {
+      delays.forEach((delay) => {
         // Base delay is 100, jitter can add up to 20
         expect(delay).toBeGreaterThanOrEqual(100)
         expect(delay).toBeLessThanOrEqual(100 * 1.2)
@@ -415,7 +420,7 @@ describe('RetryService', () => {
       // Next attempt should fail immediately without calling operation
       const callCountBefore = mockFunction.mock.calls.length
       await expect(service.execute('test-op-circuit', operation)).rejects.toThrow(
-        'Circuit breaker open'
+        'Circuit breaker open',
       )
 
       // Operation should not have been called again
@@ -431,7 +436,7 @@ describe('RetryService', () => {
       expect(circuitBreaker.isOpen()).toBe(true)
 
       // Wait for timeout
-      await new Promise(resolve => setTimeout(resolve, 150))
+      await new Promise((resolve) => setTimeout(resolve, 150))
 
       // Circuit should be able to attempt reset
       expect(circuitBreaker.canAttemptReset()).toBe(true)
@@ -473,7 +478,9 @@ describe('RetryService', () => {
       const error = new Error('Request timeout')
       ;(error as any).code = 'ECONNABORTED'
 
-      const isRetriable = ['ECONNREFUSED', 'ECONNABORTED', 'ETIMEDOUT'].includes((error as any).code)
+      const isRetriable = ['ECONNREFUSED', 'ECONNABORTED', 'ETIMEDOUT'].includes(
+        (error as any).code,
+      )
       expect(isRetriable).toBe(true)
     })
 
@@ -504,7 +511,7 @@ describe('RetryService', () => {
       }
 
       await expect(service.execute('test-op', operation)).rejects.toThrow(
-        'Service temporarily unavailable'
+        'Service temporarily unavailable',
       )
 
       // Should retry based on message
@@ -581,7 +588,7 @@ describe('RetryService', () => {
       const shouldRetry = () => false
 
       await expect(service.execute('test-op', operation, shouldRetry)).rejects.toThrow(
-        'Invalid input'
+        'Invalid input',
       )
 
       expect(mockFunction).toHaveBeenCalledTimes(1) // No retries

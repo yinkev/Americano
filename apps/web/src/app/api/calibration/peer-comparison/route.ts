@@ -21,14 +21,11 @@
  * @see story-context-4.4.xml constraint #9 (privacy requirements)
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { getUserId } from '@/lib/auth';
-import {
-  calculateCorrelation,
-  normalizeConfidence,
-} from '@/lib/confidence-calibrator';
+import { type NextRequest, NextResponse } from 'next/server'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getUserId } from '@/lib/auth'
+import { calculateCorrelation, normalizeConfidence } from '@/lib/confidence-calibrator'
+import { prisma } from '@/lib/db'
 
 /**
  * Calculate percentile ranking of user within peer distribution
@@ -38,11 +35,11 @@ import {
  */
 function calculatePercentile(userValue: number, peerValues: number[]): number {
   if (peerValues.length === 0) {
-    return 50; // Default to 50th percentile if no peers
+    return 50 // Default to 50th percentile if no peers
   }
 
-  const valuesBelow = peerValues.filter(v => v < userValue).length;
-  return Math.round((valuesBelow / peerValues.length) * 100);
+  const valuesBelow = peerValues.filter((v) => v < userValue).length
+  return Math.round((valuesBelow / peerValues.length) * 100)
 }
 
 /**
@@ -51,44 +48,41 @@ function calculatePercentile(userValue: number, peerValues: number[]): number {
  * @returns [Q1, Q2 (median), Q3]
  */
 function calculateQuartiles(sortedValues: number[]): [number, number, number] {
-  const n = sortedValues.length;
+  const n = sortedValues.length
   if (n === 0) {
-    return [0, 0, 0];
+    return [0, 0, 0]
   }
 
-  const q1Index = Math.floor(n * 0.25);
-  const q2Index = Math.floor(n * 0.5);
-  const q3Index = Math.floor(n * 0.75);
+  const q1Index = Math.floor(n * 0.25)
+  const q2Index = Math.floor(n * 0.5)
+  const q3Index = Math.floor(n * 0.75)
 
-  return [sortedValues[q1Index], sortedValues[q2Index], sortedValues[q3Index]];
+  return [sortedValues[q1Index], sortedValues[q2Index], sortedValues[q3Index]]
 }
 
 export async function GET(request: NextRequest) {
   try {
     // Get user ID (hardcoded for MVP per CLAUDE.md)
-    const userId = await getUserId();
+    const userId = await getUserId()
 
     // Check if user has opted-in to peer comparison (constraint #9)
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { sharePeerCalibrationData: true },
-    });
+    })
 
     if (!user) {
-      return NextResponse.json(
-        errorResponse('USER_NOT_FOUND', 'User not found'),
-        { status: 404 }
-      );
+      return NextResponse.json(errorResponse('USER_NOT_FOUND', 'User not found'), { status: 404 })
     }
 
     if (!user.sharePeerCalibrationData) {
       return NextResponse.json(
         errorResponse(
           'PEER_COMPARISON_DISABLED',
-          'Please enable peer comparison in settings to access this feature'
+          'Please enable peer comparison in settings to access this feature',
         ),
-        { status: 403 }
-      );
+        { status: 403 },
+      )
     }
 
     // Fetch all users who have opted-in to peer comparison
@@ -99,27 +93,27 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
       },
-    });
+    })
 
     // Enforce minimum peer pool size (constraint #9: 20 users minimum)
-    const MINIMUM_PEER_POOL_SIZE = 20;
+    const MINIMUM_PEER_POOL_SIZE = 20
     if (optedInUsers.length < MINIMUM_PEER_POOL_SIZE) {
       return NextResponse.json(
         errorResponse(
           'INSUFFICIENT_PEER_DATA',
-          `Insufficient peer data for comparison - need ${MINIMUM_PEER_POOL_SIZE}+ participants (currently ${optedInUsers.length})`
+          `Insufficient peer data for comparison - need ${MINIMUM_PEER_POOL_SIZE}+ participants (currently ${optedInUsers.length})`,
         ),
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
     // Calculate correlation coefficient for each opted-in user
-    const peerCorrelations: Array<{ userId: string; correlation: number }> = [];
+    const peerCorrelations: Array<{ userId: string; correlation: number }> = []
 
     for (const peer of optedInUsers) {
       // Fetch peer's validation responses with calibration data (last 90 days)
-      const ninetyDaysAgo = new Date();
-      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+      const ninetyDaysAgo = new Date()
+      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90)
 
       const peerResponses = await prisma.validationResponse.findMany({
         where: {
@@ -135,18 +129,18 @@ export async function GET(request: NextRequest) {
           preAssessmentConfidence: true,
           score: true,
         },
-      });
+      })
 
       // Calculate correlation for this peer
       if (peerResponses.length >= 5) {
         const confidenceArray = peerResponses
-          .filter(r => r.preAssessmentConfidence !== null)
-          .map(r => normalizeConfidence(r.preAssessmentConfidence!));
-        const scoreArray = peerResponses.map(r => r.score * 100);
+          .filter((r) => r.preAssessmentConfidence !== null)
+          .map((r) => normalizeConfidence(r.preAssessmentConfidence!))
+        const scoreArray = peerResponses.map((r) => r.score * 100)
 
-        const correlation = calculateCorrelation(confidenceArray, scoreArray);
+        const correlation = calculateCorrelation(confidenceArray, scoreArray)
         if (correlation !== null) {
-          peerCorrelations.push({ userId: peer.id, correlation });
+          peerCorrelations.push({ userId: peer.id, correlation })
         }
       }
     }
@@ -172,43 +166,43 @@ export async function GET(request: NextRequest) {
         },
         calibrationDelta: true,
       },
-    });
+    })
 
     const userConfidenceArray = userResponses
-      .filter(r => r.preAssessmentConfidence !== null)
-      .map(r => normalizeConfidence(r.preAssessmentConfidence!));
-    const userScoreArray = userResponses.map(r => r.score * 100);
+      .filter((r) => r.preAssessmentConfidence !== null)
+      .map((r) => normalizeConfidence(r.preAssessmentConfidence!))
+    const userScoreArray = userResponses.map((r) => r.score * 100)
 
-    const userCorrelation = calculateCorrelation(userConfidenceArray, userScoreArray);
+    const userCorrelation = calculateCorrelation(userConfidenceArray, userScoreArray)
 
     if (userCorrelation === null) {
       return NextResponse.json(
         errorResponse(
           'INSUFFICIENT_USER_DATA',
-          'You need at least 5 assessments with confidence data to see peer comparison'
+          'You need at least 5 assessments with confidence data to see peer comparison',
         ),
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
     // Extract peer correlation values (anonymized)
-    const peerCorrelationValues = peerCorrelations.map(p => p.correlation);
+    const peerCorrelationValues = peerCorrelations.map((p) => p.correlation)
 
     // Calculate peer distribution statistics
-    const sortedPeerValues = [...peerCorrelationValues].sort((a, b) => a - b);
-    const [q1, median, q3] = calculateQuartiles(sortedPeerValues);
+    const sortedPeerValues = [...peerCorrelationValues].sort((a, b) => a - b)
+    const [q1, median, q3] = calculateQuartiles(sortedPeerValues)
     const mean =
-      peerCorrelationValues.reduce((sum, val) => sum + val, 0) / peerCorrelationValues.length;
+      peerCorrelationValues.reduce((sum, val) => sum + val, 0) / peerCorrelationValues.length
 
     // Calculate user's percentile ranking
-    const userPercentile = calculatePercentile(userCorrelation, peerCorrelationValues);
+    const userPercentile = calculatePercentile(userCorrelation, peerCorrelationValues)
 
     // Identify common overconfident topics across peer group
     // Fetch all opted-in users' validation responses
     const allPeerResponses = await prisma.validationResponse.findMany({
       where: {
         userId: {
-          in: optedInUsers.map(u => u.id),
+          in: optedInUsers.map((u) => u.id),
         },
         respondedAt: {
           gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), // Last 90 days
@@ -226,40 +220,40 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-    });
+    })
 
     // Group by topic and count users with overconfidence pattern
-    const topicOverconfidenceCount: Record<string, Set<string>> = {};
+    const topicOverconfidenceCount: Record<string, Set<string>> = {}
 
-    allPeerResponses.forEach(response => {
-      const conceptName = response.prompt.conceptName;
-      const delta = response.calibrationDelta!;
+    allPeerResponses.forEach((response) => {
+      const conceptName = response.prompt.conceptName
+      const delta = response.calibrationDelta!
 
       if (delta > 15) {
         // Overconfident threshold
         if (!topicOverconfidenceCount[conceptName]) {
-          topicOverconfidenceCount[conceptName] = new Set();
+          topicOverconfidenceCount[conceptName] = new Set()
         }
-        topicOverconfidenceCount[conceptName].add(response.userId);
+        topicOverconfidenceCount[conceptName].add(response.userId)
       }
-    });
+    })
 
     // Identify topics where 50%+ of peers show overconfidence
-    const commonOverconfidentTopics: string[] = [];
-    const halfPeerCount = optedInUsers.length / 2;
+    const commonOverconfidentTopics: string[] = []
+    const halfPeerCount = optedInUsers.length / 2
 
     for (const [topic, userSet] of Object.entries(topicOverconfidenceCount)) {
       if (userSet.size >= halfPeerCount) {
-        commonOverconfidentTopics.push(topic);
+        commonOverconfidentTopics.push(topic)
       }
     }
 
     // Sort by prevalence
     commonOverconfidentTopics.sort((a, b) => {
-      const countA = topicOverconfidenceCount[a].size;
-      const countB = topicOverconfidenceCount[b].size;
-      return countB - countA;
-    });
+      const countA = topicOverconfidenceCount[a].size
+      const countB = topicOverconfidenceCount[b].size
+      return countB - countA
+    })
 
     return NextResponse.json(
       successResponse({
@@ -273,16 +267,16 @@ export async function GET(request: NextRequest) {
         commonOverconfidentTopics,
         peerAvgCorrelation: mean,
         peerPoolSize: optedInUsers.length,
-      })
-    );
+      }),
+    )
   } catch (error) {
-    console.error('Error fetching peer comparison data:', error);
+    console.error('Error fetching peer comparison data:', error)
     return NextResponse.json(
       errorResponse(
         'INTERNAL_ERROR',
-        error instanceof Error ? error.message : 'Failed to fetch peer comparison data'
+        error instanceof Error ? error.message : 'Failed to fetch peer comparison data',
       ),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

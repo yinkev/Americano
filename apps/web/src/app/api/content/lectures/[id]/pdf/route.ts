@@ -1,10 +1,10 @@
 // /api/content/lectures/[id]/pdf
 // GET: Serve PDF file for a lecture
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
 import { readFile } from 'fs/promises'
+import type { NextRequest } from 'next/server'
 import { resolve } from 'path'
+import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {

@@ -16,9 +16,9 @@
 
 'use client'
 
-import { motion, AnimatePresence } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import { usePathname } from 'next/navigation'
-import { pageVariants, getAnimationConfig } from '@/lib/animation-variants'
+import { getAnimationConfig, pageVariants } from '@/lib/animation-variants'
 
 interface PageTransitionProps {
   children: React.ReactNode
@@ -65,7 +65,13 @@ export function PageTransition({ children }: PageTransitionProps) {
  * - Fade only, no slide
  * - Faster transition (200ms)
  */
-export function SectionTransition({ children, show = true }: { children: React.ReactNode; show?: boolean }) {
+export function SectionTransition({
+  children,
+  show = true,
+}: {
+  children: React.ReactNode
+  show?: boolean
+}) {
   return (
     <AnimatePresence mode="wait">
       {show && (
@@ -87,7 +93,13 @@ export function SectionTransition({ children, show = true }: { children: React.R
  * - Items fade + slide in with stagger
  * - Use for lists, grids, etc.
  */
-export function StaggeredList({ children, className }: { children: React.ReactNode; className?: string }) {
+export function StaggeredList({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
   return (
     <motion.div
       className={className}
@@ -111,7 +123,13 @@ export function StaggeredList({ children, className }: { children: React.ReactNo
 /**
  * Individual list item component for StaggeredList
  */
-export function StaggeredListItem({ children, className }: { children: React.ReactNode; className?: string }) {
+export function StaggeredListItem({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
   return (
     <motion.div
       className={className}

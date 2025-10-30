@@ -12,9 +12,9 @@
 
 import type {
   Concept as PrismaConcept,
-  Lecture as PrismaLecture,
+  ContentChunk as PrismaContentChunk,
   LearningObjective as PrismaLearningObjective,
-  ContentChunk as PrismaContentChunk
+  Lecture as PrismaLecture,
 } from '@/generated/prisma'
 
 /**
@@ -60,6 +60,8 @@ export function hasEmbedding(concept: Concept): concept is Concept & { embedding
 /**
  * Type guard for lectures with embeddings
  */
-export function lectureHasEmbedding(lecture: Lecture): lecture is Lecture & { embedding: number[] } {
+export function lectureHasEmbedding(
+  lecture: Lecture,
+): lecture is Lecture & { embedding: number[] } {
   return Array.isArray(lecture.embedding) && lecture.embedding.length > 0
 }

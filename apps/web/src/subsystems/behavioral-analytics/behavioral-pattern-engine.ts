@@ -9,28 +9,29 @@
  * @location apps/web/src/subsystems/behavioral-analytics/behavioral-pattern-engine.ts
  */
 
-import { prisma } from '@/lib/db'
-import { Prisma } from '@/generated/prisma'
 import type {
-  BehavioralPattern,
   BehavioralInsight,
-  UserLearningProfile,
+  BehavioralPattern,
   BehavioralPatternType,
   InsightType,
+  Prisma,
+  UserLearningProfile,
 } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 type JsonValue = Prisma.JsonValue
+
 import type {
   BehavioralPatternData,
-  LearningStyleProfile,
   ContentPreferences,
+  LearningStyleProfile,
   PersonalizedForgettingCurve,
   PreferredStudyTime,
 } from '@/types/prisma-json'
-import { StudyTimeAnalyzer } from './study-time-analyzer'
-import { SessionDurationAnalyzer } from './session-duration-analyzer'
 import { ContentPreferenceAnalyzer } from './content-preference-analyzer'
 import { ForgettingCurveAnalyzer } from './forgetting-curve-analyzer'
+import { SessionDurationAnalyzer } from './session-duration-analyzer'
+import { StudyTimeAnalyzer } from './study-time-analyzer'
 
 /**
  * Data sufficiency requirements for pattern analysis
@@ -113,13 +114,13 @@ export class BehavioralPatternEngine {
    */
   static async runFullAnalysis(userId: string): Promise<AnalysisResults> {
     // Step 1: Check data sufficiency
-    const sufficiencyCheck = await this.checkDataSufficiency(userId)
+    const sufficiencyCheck = await BehavioralPatternEngine.checkDataSufficiency(userId)
 
     if (!sufficiencyCheck.sufficient) {
       return {
         patterns: [],
         insights: [],
-        profile: await this.getOrCreateProfile(userId),
+        profile: await BehavioralPatternEngine.getOrCreateProfile(userId),
         insufficientData: true,
         requirements: sufficiencyCheck.requirements,
       }
@@ -136,7 +137,7 @@ export class BehavioralPatternEngine {
       ])
 
     // Step 4: Aggregate results into BehavioralPattern records
-    const patterns = await this.aggregatePatternsFromAnalysis(userId, {
+    const patterns = await BehavioralPatternEngine.aggregatePatternsFromAnalysis(userId, {
       studyTimePatterns,
       durationPattern,
       contentPrefs,
@@ -145,13 +146,13 @@ export class BehavioralPatternEngine {
     })
 
     // Step 5: Save patterns with confidence >= 0.6
-    const savedPatterns = await this.savePatternsWithEvolution(userId, patterns)
+    const savedPatterns = await BehavioralPatternEngine.savePatternsWithEvolution(userId, patterns)
 
     // Step 6: Generate insights
-    const insights = await this.generateInsights(userId)
+    const insights = await BehavioralPatternEngine.generateInsights(userId)
 
     // Step 7: Update UserLearningProfile
-    const profile = await this.updateUserLearningProfile(userId, {
+    const profile = await BehavioralPatternEngine.updateUserLearningProfile(userId, {
       studyTimePatterns,
       durationPattern,
       contentPrefs,
@@ -180,7 +181,7 @@ export class BehavioralPatternEngine {
 
     if (!profile?.lastAnalyzedAt) {
       // No previous analysis, run full analysis
-      const results = await this.runFullAnalysis(userId)
+      const results = await BehavioralPatternEngine.runFullAnalysis(userId)
       return results.patterns
     }
 
@@ -198,7 +199,7 @@ export class BehavioralPatternEngine {
     }
 
     // Run analyzers and compare with existing patterns
-    const results = await this.runFullAnalysis(userId)
+    const results = await BehavioralPatternEngine.runFullAnalysis(userId)
     const existingPatternTypes = await prisma.behavioralPattern.findMany({
       where: { userId },
       select: { patternType: true, patternName: true },
@@ -224,7 +225,7 @@ export class BehavioralPatternEngine {
    * @returns Update results summary
    */
   static async updateExistingPatterns(userId: string): Promise<UpdateResults> {
-    const results = await this.runFullAnalysis(userId)
+    const results = await BehavioralPatternEngine.runFullAnalysis(userId)
 
     if (results.insufficientData) {
       return {
@@ -278,7 +279,9 @@ export class BehavioralPatternEngine {
     for (const existing of existingPatterns) {
       if (!seenPatternIds.has(existing.id)) {
         const evidenceArray = existing.evidence as string[]
-        const evidenceData = existing.patternData as BehavioralPatternData & { consecutiveNonOccurrences?: number }
+        const evidenceData = existing.patternData as BehavioralPatternData & {
+          consecutiveNonOccurrences?: number
+        }
         const consecutiveNonOccurrences = (evidenceData?.consecutiveNonOccurrences || 0) + 1
 
         if (consecutiveNonOccurrences >= MAX_CONSECUTIVE_NON_OCCURRENCES) {
@@ -363,7 +366,7 @@ export class BehavioralPatternEngine {
     }> = []
 
     for (const pattern of patterns) {
-      const insight = this.createInsightFromPattern(pattern)
+      const insight = BehavioralPatternEngine.createInsightFromPattern(pattern)
       if (insight) {
         insights.push(insight)
       }
@@ -771,9 +774,9 @@ export class BehavioralPatternEngine {
 
     switch (pattern.patternType) {
       case 'OPTIMAL_STUDY_TIME': {
-        const timeOfDayScore = patternData.timeOfDayScore as number || 80
-        const hourOfDay = patternData.hourOfDay as number || 9
-        const sessionCount = patternData.sessionCount as number || 0
+        const timeOfDayScore = (patternData.timeOfDayScore as number) || 80
+        const hourOfDay = (patternData.hourOfDay as number) || 9
+        const sessionCount = (patternData.sessionCount as number) || 0
 
         return {
           insightType: 'STUDY_TIME_OPTIMIZATION' as InsightType,
@@ -787,8 +790,8 @@ export class BehavioralPatternEngine {
       }
 
       case 'SESSION_DURATION_PREFERENCE': {
-        const recommendedDuration = patternData.recommendedDuration as number || 45
-        const totalSessionsAnalyzed = patternData.totalSessionsAnalyzed as number || 0
+        const recommendedDuration = (patternData.recommendedDuration as number) || 45
+        const totalSessionsAnalyzed = (patternData.totalSessionsAnalyzed as number) || 0
 
         return {
           insightType: 'SESSION_LENGTH_ADJUSTMENT' as InsightType,
@@ -802,8 +805,8 @@ export class BehavioralPatternEngine {
       }
 
       case 'CONTENT_TYPE_PREFERENCE': {
-        const topContentType = patternData.topContentType as string || 'flashcards'
-        const effectiveness = patternData.effectiveness as number || 0.5
+        const topContentType = (patternData.topContentType as string) || 'flashcards'
+        const effectiveness = (patternData.effectiveness as number) || 0.5
 
         return {
           insightType: 'CONTENT_PREFERENCE' as InsightType,
@@ -817,12 +820,10 @@ export class BehavioralPatternEngine {
       }
 
       case 'FORGETTING_CURVE': {
-        const halfLife = patternData.halfLife as number || 5
-        const k = patternData.k as number || 0.14
+        const halfLife = (patternData.halfLife as number) || 5
+        const k = (patternData.k as number) || 0.14
         const standardHalfLife = Math.log(2) / 0.14
-        const deviationPercent = Math.abs(
-          ((halfLife - standardHalfLife) / standardHalfLife) * 100,
-        )
+        const deviationPercent = Math.abs(((halfLife - standardHalfLife) / standardHalfLife) * 100)
         const fasterSlower = k > 0.14 ? 'faster' : 'slower'
         const recommendedDays = Math.round(halfLife * 0.7) // Review before 50% decay
 

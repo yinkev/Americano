@@ -7,20 +7,20 @@
 
 'use client'
 
-import { useState } from 'react'
 import {
-  BookOpen,
   BarChart3,
-  Layers,
+  BookOpen,
   Brain,
   Calendar,
-  Coffee,
   CheckCircle2,
+  Coffee,
+  Layers,
   Loader2,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 type InterventionType =
   | 'PREREQUISITE_REVIEW'
@@ -207,11 +207,7 @@ function InterventionCard({
             intervention.applied ? 'bg-success/20' : 'bg-info/10'
           }`}
         >
-          <Icon
-            className={`size-5 ${
-              intervention.applied ? 'text-success' : 'text-info'
-            }`}
-          />
+          <Icon className={`size-5 ${intervention.applied ? 'text-success' : 'text-info'}`} />
         </div>
 
         {/* Content */}

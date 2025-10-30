@@ -75,7 +75,7 @@ export class PerformanceMonitor {
 
   constructor(
     maxMetrics: number = 1000,
-    slowQueryThreshold: number = 1000 // 1 second
+    slowQueryThreshold: number = 1000, // 1 second
   ) {
     this.metrics = []
     this.maxMetrics = maxMetrics
@@ -98,10 +98,7 @@ export class PerformanceMonitor {
     }
 
     // Log slow queries
-    if (
-      metric.type === 'search' &&
-      metric.durationMs > this.slowQueryThreshold
-    ) {
+    if (metric.type === 'search' && metric.durationMs > this.slowQueryThreshold) {
       this.logSlowQuery({
         query: metric.metadata?.query || 'unknown',
         durationMs: metric.durationMs,
@@ -148,9 +145,7 @@ export class PerformanceMonitor {
    * @returns Performance statistics
    */
   getStats(type?: 'search' | 'autocomplete' | 'export'): PerformanceStats {
-    const filteredMetrics = type
-      ? this.metrics.filter((m) => m.type === type)
-      : this.metrics
+    const filteredMetrics = type ? this.metrics.filter((m) => m.type === type) : this.metrics
 
     if (filteredMetrics.length === 0) {
       return {
@@ -167,8 +162,7 @@ export class PerformanceMonitor {
     // Calculate statistics
     const durations = filteredMetrics.map((m) => m.durationMs).sort((a, b) => a - b)
     const totalRequests = filteredMetrics.length
-    const avgResponseTimeMs =
-      durations.reduce((sum, d) => sum + d, 0) / totalRequests
+    const avgResponseTimeMs = durations.reduce((sum, d) => sum + d, 0) / totalRequests
 
     // Percentiles
     const p50ResponseTimeMs = this.percentile(durations, 0.5)
@@ -177,7 +171,7 @@ export class PerformanceMonitor {
 
     // Slow query count
     const slowQueryCount = filteredMetrics.filter(
-      (m) => m.durationMs > this.slowQueryThreshold
+      (m) => m.durationMs > this.slowQueryThreshold,
     ).length
 
     // Error rate
@@ -285,7 +279,7 @@ export const performanceMonitor = new PerformanceMonitor()
 export function withPerformanceTracking<T extends (...args: any[]) => Promise<Response>>(
   type: 'search' | 'autocomplete' | 'export' | 'other',
   operation: string,
-  handler: T
+  handler: T,
 ): T {
   return (async (...args: any[]) => {
     const startTime = Date.now()

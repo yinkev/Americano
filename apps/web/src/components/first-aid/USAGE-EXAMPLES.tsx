@@ -8,15 +8,15 @@
  * Created: 2025-10-17
  */
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import {
-  FirstAidReferenceCard,
-  FirstAidCrossReferencePanel,
   FirstAidContextIndicator,
   FirstAidContextIndicatorGroup,
+  FirstAidCrossReferencePanel,
   FirstAidCrossReferencePanelCompact,
   type FirstAidReference,
+  FirstAidReferenceCard,
 } from '@/components/first-aid'
 
 // ============================================================================
@@ -38,7 +38,8 @@ export function ExampleLecturePage() {
       subsection: 'Cardiovascular > Pathology',
       isHighYield: true,
       system: 'Cardiology',
-      snippet: 'Acute coronary syndrome caused by thrombotic occlusion of coronary arteries leading to myocardial necrosis. Presents with crushing substernal chest pain...',
+      snippet:
+        'Acute coronary syndrome caused by thrombotic occlusion of coronary arteries leading to myocardial necrosis. Presents with crushing substernal chest pain...',
     },
     {
       guidelineId: 'fa-section-299',
@@ -49,7 +50,8 @@ export function ExampleLecturePage() {
       subsection: 'Cardiovascular > Pathology',
       isHighYield: false,
       system: 'Cardiology',
-      snippet: 'Inability of heart to meet metabolic demands of body. Can be left-sided or right-sided, systolic or diastolic...',
+      snippet:
+        'Inability of heart to meet metabolic demands of body. Can be left-sided or right-sided, systolic or diastolic...',
     },
     {
       guidelineId: 'fa-section-301',
@@ -60,7 +62,8 @@ export function ExampleLecturePage() {
       subsection: 'Cardiovascular > Pathology',
       isHighYield: true,
       system: 'Cardiology',
-      snippet: 'Spectrum of conditions including unstable angina, NSTEMI, and STEMI. All caused by decreased blood flow to myocardium...',
+      snippet:
+        'Spectrum of conditions including unstable angina, NSTEMI, and STEMI. All caused by decreased blood flow to myocardium...',
     },
   ]
 
@@ -83,26 +86,27 @@ export function ExampleLecturePage() {
               onExpand={() => router.push('/first-aid/sections/fa-section-297')}
               className="mr-2"
             />
-            is a life-threatening medical emergency characterized by the death of cardiac muscle tissue.
+            is a life-threatening medical emergency characterized by the death of cardiac muscle
+            tissue.
           </p>
 
           <h2>Pathophysiology</h2>
           <p>
-            The underlying cause is typically atherosclerotic plaque rupture leading to
-            thrombotic occlusion of a coronary artery.
+            The underlying cause is typically atherosclerotic plaque rupture leading to thrombotic
+            occlusion of a coronary artery.
           </p>
 
           <h2>Clinical Presentation</h2>
           <p>
-            Patients typically present with severe substernal chest pain, often described
-            as crushing or pressure-like, radiating to the left arm, jaw, or back.
+            Patients typically present with severe substernal chest pain, often described as
+            crushing or pressure-like, radiating to the left arm, jaw, or back.
           </p>
 
           {/* Context Indicator Group Example */}
           <div className="my-4 p-4 bg-blue-50/50 rounded-lg border border-blue-200/50">
             <p className="text-sm font-medium mb-2">Related First Aid Topics:</p>
             <FirstAidContextIndicatorGroup
-              indicators={references.map(ref => ({
+              indicators={references.map((ref) => ({
                 guidelineId: ref.guidelineId,
                 title: ref.title,
                 pageNumber: ref.pageNumber,
@@ -119,14 +123,14 @@ export function ExampleLecturePage() {
 
           <h2>Diagnosis</h2>
           <p>
-            Diagnosis is confirmed through ECG changes (ST-segment elevation or depression)
-            and elevated cardiac biomarkers (troponin, CK-MB).
+            Diagnosis is confirmed through ECG changes (ST-segment elevation or depression) and
+            elevated cardiac biomarkers (troponin, CK-MB).
           </p>
 
           <h2>Treatment</h2>
           <p>
-            Immediate treatment includes MONA (Morphine, Oxygen, Nitroglycerin, Aspirin)
-            followed by reperfusion therapy (PCI or thrombolytics).
+            Immediate treatment includes MONA (Morphine, Oxygen, Nitroglycerin, Aspirin) followed by
+            reperfusion therapy (PCI or thrombolytics).
           </p>
         </article>
       </main>
@@ -252,8 +256,8 @@ export function ExampleContextIndicatorVariants() {
             showTooltip
             previewSnippet="Spectrum of conditions including unstable angina, NSTEMI, and STEMI."
             onExpand={() => setShowPanel(true)}
-          />
-          {' '}require immediate medical attention.
+          />{' '}
+          require immediate medical attention.
         </p>
       </div>
     </div>
@@ -293,9 +297,7 @@ export function ExampleMobileView() {
 
       {/* Lecture content */}
       <div className="mb-6">
-        <p className="text-sm">
-          Acute coronary syndrome caused by thrombotic occlusion...
-        </p>
+        <p className="text-sm">Acute coronary syndrome caused by thrombotic occlusion...</p>
       </div>
 
       {/* Compact panel for mobile */}
@@ -400,12 +402,12 @@ function useFirstAidReferences(conceptId: string) {
 
     // Replace with actual fetch
     fetch(`/api/first-aid/mappings/${conceptId}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setReferences(data.references)
         setIsLoading(false)
       })
-      .catch(err => {
+      .catch((err) => {
         setError(err.message)
         setIsLoading(false)
       })
@@ -541,9 +543,7 @@ export function ExampleDashboardWidget() {
             onClick={() => router.push(`/first-aid/sections/${ref.guidelineId}`)}
           >
             <div className="flex items-center gap-2">
-              {ref.isHighYield && (
-                <span className="text-yellow-600">⭐</span>
-              )}
+              {ref.isHighYield && <span className="text-yellow-600">⭐</span>}
               <div>
                 <p className="text-sm font-medium">{ref.title}</p>
                 <p className="text-xs text-muted-foreground">

@@ -11,14 +11,14 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Calendar, Clock, Star, AlertCircle, Info, CheckCircle } from 'lucide-react'
 import { format } from 'date-fns'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { AlertCircle, Calendar, CheckCircle, Clock, Info, Star } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 
 interface TimeSlot {
   startTime: string
@@ -69,7 +69,9 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot, className = '' }: 
     return (
       <Card className={`shadow-sm ${className}`}>
         <CardHeader className="p-4 pb-0">
-          <h3 className="font-heading font-semibold text-foreground text-[16px]">Optimal Study Times</h3>
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">
+            Optimal Study Times
+          </h3>
         </CardHeader>
         <CardContent className="p-4 pt-4 space-y-3">
           {[1, 2, 3].map((i) => (
@@ -84,7 +86,9 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot, className = '' }: 
     return (
       <Card className={`shadow-sm ${className}`}>
         <CardHeader className="p-4 pb-0">
-          <h3 className="font-heading font-semibold text-foreground text-[16px]">Optimal Study Times</h3>
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">
+            Optimal Study Times
+          </h3>
         </CardHeader>
         <CardContent className="p-4 pt-4">
           <Alert>
@@ -103,8 +107,13 @@ export function OptimalTimeSlotsPanel({ userId, onSelectSlot, className = '' }: 
     <Card className={`shadow-sm ${className}`}>
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
-          <h3 className="font-heading font-semibold text-foreground text-[16px]">Optimal Study Times</h3>
-          <button className="p-1 hover:bg-muted rounded-md transition-colors" aria-label="Time recommendations info">
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">
+            Optimal Study Times
+          </h3>
+          <button
+            className="p-1 hover:bg-muted rounded-md transition-colors"
+            aria-label="Time recommendations info"
+          >
             <Info className="size-4 text-info" />
           </button>
         </div>
@@ -176,7 +185,10 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
           <div
             className="flex items-center justify-center size-8 rounded-full font-semibold text-[13px] shrink-0"
             style={{
-              backgroundColor: rank === 1 ? 'color-mix(in oklch, oklch(0.7 0.15 145), transparent 80%)' : 'color-mix(in oklch, oklch(0.5 0 0), transparent 90%)',
+              backgroundColor:
+                rank === 1
+                  ? 'color-mix(in oklch, oklch(0.7 0.15 145), transparent 80%)'
+                  : 'color-mix(in oklch, oklch(0.5 0 0), transparent 90%)',
               color: rank === 1 ? 'oklch(0.5 0.20 145)' : 'oklch(0.5 0 0)',
             }}
           >
@@ -241,9 +253,7 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
             size="sm"
             className="min-w-24"
             style={{
-              backgroundColor: slot.calendarConflict
-                ? 'oklch(0.9 0 0)'
-                : 'oklch(0.7 0.15 145)',
+              backgroundColor: slot.calendarConflict ? 'oklch(0.9 0 0)' : 'oklch(0.7 0.15 145)',
               color: slot.calendarConflict ? 'oklch(0.6 0 0)' : 'white',
             }}
           >
@@ -282,9 +292,7 @@ function TimeSlotCard({ slot, rank, onSelect }: TimeSlotCardProps) {
           aria-expanded={showDetails}
           aria-label="Toggle reasoning details"
         >
-          <span className="font-medium text-foreground">
-            Why this recommendation?
-          </span>
+          <span className="font-medium text-foreground">Why this recommendation?</span>
           <Info className="size-4 text-info" />
         </button>
 

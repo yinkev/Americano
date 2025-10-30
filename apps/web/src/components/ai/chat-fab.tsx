@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { MessageCircle, X, Minimize2, Maximize2, Send } from 'lucide-react'
+import { Maximize2, MessageCircle, Minimize2, Send, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export function ChatFAB() {
   const [isOpen, setIsOpen] = useState(false)

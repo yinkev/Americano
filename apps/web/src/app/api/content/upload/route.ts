@@ -1,7 +1,7 @@
 // app/api/content/upload/route.ts
 // PDF Upload API endpoint with multipart/form-data handling
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getStorageProvider } from '@/lib/storage'
 import { ProcessingOrchestrator } from '@/subsystems/content-processing/processing-orchestrator'

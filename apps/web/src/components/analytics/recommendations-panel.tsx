@@ -8,12 +8,12 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Lightbulb, Clock, Target, TrendingUp, X, Check, Sparkles } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Check, Clock, Lightbulb, Sparkles, Target, TrendingUp, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface Recommendation {
   id: string

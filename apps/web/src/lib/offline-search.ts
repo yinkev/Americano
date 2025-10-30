@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { openDB, DBSchema, IDBPDatabase } from "idb"
+import { type DBSchema, type IDBPDatabase, openDB } from 'idb'
 
 /**
  * Offline Search Database Schema
@@ -14,7 +14,7 @@ interface OfflineSearchDB extends DBSchema {
       timestamp: number
       filters?: any
     }
-    indexes: { "by-timestamp": number }
+    indexes: { 'by-timestamp': number }
   }
   recentSearches: {
     key: number // auto-increment
@@ -23,11 +23,11 @@ interface OfflineSearchDB extends DBSchema {
       timestamp: number
       filters?: any
     }
-    indexes: { "by-timestamp": number }
+    indexes: { 'by-timestamp': number }
   }
 }
 
-const DB_NAME = "americano-search-offline"
+const DB_NAME = 'americano-search-offline'
 const DB_VERSION = 1
 const CACHE_DURATION = 1000 * 60 * 60 * 24 // 24 hours
 const MAX_RECENT_SEARCHES = 50
@@ -39,20 +39,20 @@ async function getDB(): Promise<IDBPDatabase<OfflineSearchDB>> {
   return openDB<OfflineSearchDB>(DB_NAME, DB_VERSION, {
     upgrade(db) {
       // Search results cache
-      if (!db.objectStoreNames.contains("searchResults")) {
-        const searchResultsStore = db.createObjectStore("searchResults", {
-          keyPath: "query",
+      if (!db.objectStoreNames.contains('searchResults')) {
+        const searchResultsStore = db.createObjectStore('searchResults', {
+          keyPath: 'query',
         })
-        searchResultsStore.createIndex("by-timestamp", "timestamp")
+        searchResultsStore.createIndex('by-timestamp', 'timestamp')
       }
 
       // Recent searches history
-      if (!db.objectStoreNames.contains("recentSearches")) {
-        const recentSearchesStore = db.createObjectStore("recentSearches", {
-          keyPath: "id",
+      if (!db.objectStoreNames.contains('recentSearches')) {
+        const recentSearchesStore = db.createObjectStore('recentSearches', {
+          keyPath: 'id',
           autoIncrement: true,
         })
-        recentSearchesStore.createIndex("by-timestamp", "timestamp")
+        recentSearchesStore.createIndex('by-timestamp', 'timestamp')
       }
     },
   })
@@ -63,7 +63,7 @@ async function getDB(): Promise<IDBPDatabase<OfflineSearchDB>> {
  */
 function generateCacheKey(query: string, filters?: any): string {
   const normalized = query.toLowerCase().trim()
-  const filterStr = filters ? JSON.stringify(filters) : ""
+  const filterStr = filters ? JSON.stringify(filters) : ''
   return `${normalized}::${filterStr}`
 }
 
@@ -73,13 +73,13 @@ function generateCacheKey(query: string, filters?: any): string {
 export async function cacheSearchResults(
   query: string,
   results: any[],
-  filters?: any
+  filters?: any,
 ): Promise<void> {
   try {
     const db = await getDB()
     const key = generateCacheKey(query, filters)
 
-    await db.put("searchResults", {
+    await db.put('searchResults', {
       query: key,
       results,
       timestamp: Date.now(),
@@ -89,21 +89,18 @@ export async function cacheSearchResults(
     // Also save to recent searches
     await saveRecentSearch(query, filters)
   } catch (error) {
-    console.error("Failed to cache search results:", error)
+    console.error('Failed to cache search results:', error)
   }
 }
 
 /**
  * Get cached search results from IndexedDB
  */
-export async function getCachedSearchResults(
-  query: string,
-  filters?: any
-): Promise<any[] | null> {
+export async function getCachedSearchResults(query: string, filters?: any): Promise<any[] | null> {
   try {
     const db = await getDB()
     const key = generateCacheKey(query, filters)
-    const cached = await db.get("searchResults", key)
+    const cached = await db.get('searchResults', key)
 
     if (!cached) return null
 
@@ -111,13 +108,13 @@ export async function getCachedSearchResults(
     const isExpired = Date.now() - cached.timestamp > CACHE_DURATION
     if (isExpired) {
       // Remove expired cache
-      await db.delete("searchResults", key)
+      await db.delete('searchResults', key)
       return null
     }
 
     return cached.results
   } catch (error) {
-    console.error("Failed to get cached search results:", error)
+    console.error('Failed to get cached search results:', error)
     return null
   }
 }
@@ -130,36 +127,38 @@ export async function saveRecentSearch(query: string, filters?: any): Promise<vo
     const db = await getDB()
 
     // Add new search
-    await db.add("recentSearches", {
+    await db.add('recentSearches', {
       query,
       timestamp: Date.now(),
       filters,
     } as any)
 
     // Clean up old searches (keep only last 50)
-    const allSearches = await db.getAllFromIndex("recentSearches", "by-timestamp")
+    const allSearches = await db.getAllFromIndex('recentSearches', 'by-timestamp')
     if (allSearches.length > MAX_RECENT_SEARCHES) {
       const toDelete = allSearches.slice(0, allSearches.length - MAX_RECENT_SEARCHES)
       for (const search of toDelete) {
-        await db.delete("recentSearches", (search as any).id)
+        await db.delete('recentSearches', (search as any).id)
       }
     }
   } catch (error) {
-    console.error("Failed to save recent search:", error)
+    console.error('Failed to save recent search:', error)
   }
 }
 
 /**
  * Get recent searches from history
  */
-export async function getRecentSearches(limit = 10): Promise<Array<{
-  query: string
-  timestamp: number
-  filters?: any
-}>> {
+export async function getRecentSearches(limit = 10): Promise<
+  Array<{
+    query: string
+    timestamp: number
+    filters?: any
+  }>
+> {
   try {
     const db = await getDB()
-    const searches = await db.getAllFromIndex("recentSearches", "by-timestamp")
+    const searches = await db.getAllFromIndex('recentSearches', 'by-timestamp')
 
     // Return most recent searches first
     return searches
@@ -167,7 +166,7 @@ export async function getRecentSearches(limit = 10): Promise<Array<{
       .slice(0, limit)
       .map(({ query, timestamp, filters }) => ({ query, timestamp, filters }))
   } catch (error) {
-    console.error("Failed to get recent searches:", error)
+    console.error('Failed to get recent searches:', error)
     return []
   }
 }
@@ -178,10 +177,10 @@ export async function getRecentSearches(limit = 10): Promise<Array<{
 export async function clearOfflineSearchData(): Promise<void> {
   try {
     const db = await getDB()
-    await db.clear("searchResults")
-    await db.clear("recentSearches")
+    await db.clear('searchResults')
+    await db.clear('recentSearches')
   } catch (error) {
-    console.error("Failed to clear offline search data:", error)
+    console.error('Failed to clear offline search data:', error)
   }
 }
 
@@ -189,7 +188,7 @@ export async function clearOfflineSearchData(): Promise<void> {
  * Check if user is online
  */
 export function isOnline(): boolean {
-  return typeof navigator !== "undefined" ? navigator.onLine : true
+  return typeof navigator !== 'undefined' ? navigator.onLine : true
 }
 
 /**
@@ -202,12 +201,12 @@ export function useOnlineStatus() {
     const handleOnline = () => setOnline(true)
     const handleOffline = () => setOnline(false)
 
-    window.addEventListener("online", handleOnline)
-    window.addEventListener("offline", handleOffline)
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
 
     return () => {
-      window.removeEventListener("online", handleOnline)
-      window.removeEventListener("offline", handleOffline)
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
     }
   }, [])
 
@@ -215,4 +214,4 @@ export function useOnlineStatus() {
 }
 
 // Import React for the hook
-import * as React from "react"
+import * as React from 'react'

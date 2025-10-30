@@ -508,9 +508,9 @@ describe('BurnoutPreventionEngine', () => {
 
       expect(intervention.interventionType).toBe('WORKLOAD_REDUCTION')
       expect(intervention.urgency).toBe('HIGH')
-      expect(intervention.recommendedActions.some((a) => a.includes('Reduce study hours by 50%'))).toBe(
-        true,
-      )
+      expect(
+        intervention.recommendedActions.some((a) => a.includes('Reduce study hours by 50%')),
+      ).toBe(true)
     })
 
     it('should recommend SCHEDULE_ADJUSTMENT for MEDIUM risk', () => {
@@ -528,9 +528,9 @@ describe('BurnoutPreventionEngine', () => {
 
       expect(intervention.interventionType).toBe('SCHEDULE_ADJUSTMENT')
       expect(intervention.urgency).toBe('MEDIUM')
-      expect(intervention.recommendedActions.some((a) => a.includes('Reduce study hours by 30%'))).toBe(
-        true,
-      )
+      expect(
+        intervention.recommendedActions.some((a) => a.includes('Reduce study hours by 30%')),
+      ).toBe(true)
     })
 
     it('should recommend CONTENT_SIMPLIFICATION for LOW risk', () => {
@@ -548,9 +548,9 @@ describe('BurnoutPreventionEngine', () => {
 
       expect(intervention.interventionType).toBe('CONTENT_SIMPLIFICATION')
       expect(intervention.urgency).toBe('LOW')
-      expect(intervention.recommendedActions.some((a) => a.includes('Continue current routine'))).toBe(
-        true,
-      )
+      expect(
+        intervention.recommendedActions.some((a) => a.includes('Continue current routine')),
+      ).toBe(true)
     })
 
     it('should add factor-specific recommendations for high-scoring factors', () => {
@@ -585,12 +585,12 @@ describe('BurnoutPreventionEngine', () => {
 
       const intervention = engine.recommendIntervention(assessment)
 
-      expect(
-        intervention.recommendedActions.some((a) => a.includes('High study intensity')),
-      ).toBe(true)
-      expect(
-        intervention.recommendedActions.some((a) => a.includes('Persistent high load')),
-      ).toBe(true)
+      expect(intervention.recommendedActions.some((a) => a.includes('High study intensity'))).toBe(
+        true,
+      )
+      expect(intervention.recommendedActions.some((a) => a.includes('Persistent high load'))).toBe(
+        true,
+      )
     })
   })
 
@@ -697,9 +697,7 @@ describe('BurnoutPreventionEngine', () => {
             userId: 'user-1',
             durationMs: 60 * 60 * 1000,
             startedAt: new Date(twoWeeksAgo.getTime() + i * 24 * 60 * 60 * 1000),
-            completedAt: new Date(
-              twoWeeksAgo.getTime() + i * 24 * 60 * 60 * 1000 + 60 * 60 * 1000,
-            ),
+            completedAt: new Date(twoWeeksAgo.getTime() + i * 24 * 60 * 60 * 1000 + 60 * 60 * 1000),
           })),
       )
 

@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { Search, X, Loader2 } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { Loader2, Search, X } from 'lucide-react'
+import * as React from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 
 interface SearchBarProps {
   value: string
@@ -21,7 +21,7 @@ export function SearchBar({
   onChange,
   onSearch,
   isLoading = false,
-  placeholder = "Search lectures, concepts, and medical terms...",
+  placeholder = 'Search lectures, concepts, and medical terms...',
   className,
   autoFocus = true,
 }: SearchBarProps) {
@@ -58,7 +58,7 @@ export function SearchBar({
   }
 
   return (
-    <div className={cn("relative w-full", className)}>
+    <div className={cn('relative w-full', className)}>
       <div className="relative flex items-center">
         <div className="absolute left-3 flex items-center pointer-events-none">
           {isLoading ? (
@@ -75,10 +75,10 @@ export function SearchBar({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className={cn(
-            "h-11 pl-9 pr-20 rounded-xl",
-            "bg-white/80 backdrop-blur-md border-white/40",
-            "focus-visible:ring-2 focus-visible:ring-primary/20",
-            "placeholder:text-muted-foreground/60"
+            'h-11 pl-9 pr-20 rounded-xl',
+            'bg-white/80 backdrop-blur-md border-white/40',
+            'focus-visible:ring-2 focus-visible:ring-primary/20',
+            'placeholder:text-muted-foreground/60',
           )}
         />
 

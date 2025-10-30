@@ -5,9 +5,9 @@
  * Export all performance data for a user (FERPA compliance)
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { ErrorCodes, errorResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { errorResponse, ErrorCodes } from '@/lib/api-response'
 
 export async function GET(request: NextRequest) {
   try {

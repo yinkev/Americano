@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { getCurrentUserId } from '@/lib/auth';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { validateQuery, getNextChallengeQuerySchema } from '@/lib/validation';
+import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getCurrentUserId } from '@/lib/auth'
+import { prisma } from '@/lib/db'
+import { getNextChallengeQuerySchema, validateQuery } from '@/lib/validation'
 
 /**
  * GET /api/validation/challenges/next
@@ -34,44 +34,46 @@ import { validateQuery, getNextChallengeQuerySchema } from '@/lib/validation';
  */
 export async function GET(request: NextRequest) {
   try {
-    const userId = await getCurrentUserId();
-    const { searchParams } = new URL(request.url);
+    const userId = await getCurrentUserId()
+    const { searchParams } = new URL(request.url)
 
     // Validate query parameters
-    const { sessionId } = validateQuery(searchParams, getNextChallengeQuerySchema);
+    const { sessionId } = validateQuery(searchParams, getNextChallengeQuerySchema)
 
     // Step 1: Check for pending retries (retestSchedule contains today's date)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Start of day
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // Start of day
 
     // Note: Since retestSchedule is stored as JSON array of date strings,
     // we need to fetch all failures and check in-memory
     // This is acceptable for MVP; for production, consider a dedicated retry tracking table
-    const pendingRetries = await prisma.$queryRaw<Array<{
-      id: string;
-      objectiveId: string;
-      attemptNumber: number;
-      score: number | null;
-      createdAt: Date;
-      retestSchedule: string; // JSON string
-    }>>`
+    const pendingRetries = await prisma.$queryRaw<
+      Array<{
+        id: string
+        objectiveId: string
+        attemptNumber: number
+        score: number | null
+        createdAt: Date
+        retestSchedule: string // JSON string
+      }>
+    >`
       SELECT id, "objectiveId", "attemptNumber", score, "createdAt", "retestSchedule"
       FROM "controlled_failures"
       WHERE "userId" = ${userId}
         AND "isCorrect" = false
         AND "retestSchedule" IS NOT NULL
-    `;
+    `
 
     // Filter retries that have today in their schedule
-    const todayISO = today.toISOString().split('T')[0];
-    const dueRetry = pendingRetries.find(retry => {
+    const todayISO = today.toISOString().split('T')[0]
+    const dueRetry = pendingRetries.find((retry) => {
       try {
-        const schedule = JSON.parse(retry.retestSchedule) as string[];
-        return schedule.some(date => date.startsWith(todayISO));
+        const schedule = JSON.parse(retry.retestSchedule) as string[]
+        return schedule.some((date) => date.startsWith(todayISO))
       } catch {
-        return false;
+        return false
       }
-    });
+    })
 
     if (dueRetry) {
       // Return retry challenge
@@ -84,17 +86,17 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-      });
+      })
 
       if (!objective) {
         return NextResponse.json(
           errorResponse('OBJECTIVE_NOT_FOUND', 'Objective for retry not found'),
-          { status: 404 }
-        );
+          { status: 404 },
+        )
       }
 
       // Call Python service to generate retry challenge (varied format to prevent memorization)
-      const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000';
+      const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000'
 
       const pythonResponse = await fetch(`${pythonServiceUrl}/validation/generate-challenge`, {
         method: 'POST',
@@ -110,21 +112,21 @@ export async function GET(request: NextRequest) {
           is_retry: true,
           attempt_number: dueRetry.attemptNumber + 1,
         }),
-      });
+      })
 
       if (!pythonResponse.ok) {
-        const errorText = await pythonResponse.text();
-        console.error('Python service error (retry challenge):', errorText);
+        const errorText = await pythonResponse.text()
+        console.error('Python service error (retry challenge):', errorText)
         return NextResponse.json(
           errorResponse(
             'PYTHON_SERVICE_ERROR',
-            'Failed to generate retry challenge from Python service'
+            'Failed to generate retry challenge from Python service',
           ),
-          { status: 500 }
-        );
+          { status: 500 },
+        )
       }
 
-      const pythonData = await pythonResponse.json();
+      const pythonData = await pythonResponse.json()
 
       // Save challenge prompt
       const savedPrompt = await prisma.validationPrompt.create({
@@ -142,7 +144,7 @@ export async function GET(request: NextRequest) {
             variation: pythonData.variation || 'retry',
           },
         },
-      });
+      })
 
       return NextResponse.json(
         successResponse({
@@ -161,13 +163,13 @@ export async function GET(request: NextRequest) {
             previousScore: dueRetry.score || 0,
             originalFailureDate: dueRetry.createdAt,
           },
-        })
-      );
+        }),
+      )
     }
 
     // Step 2: No retry due, generate new challenge based on vulnerability
     // Call Python service to identify vulnerable concepts
-    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000';
+    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000'
 
     const vulnerabilityResponse = await fetch(
       `${pythonServiceUrl}/validation/identify-vulnerable-concepts?user_id=${userId}`,
@@ -176,33 +178,36 @@ export async function GET(request: NextRequest) {
         headers: {
           'Content-Type': 'application/json',
         },
-      }
-    );
+      },
+    )
 
     if (!vulnerabilityResponse.ok) {
-      const errorText = await vulnerabilityResponse.text();
-      console.error('Python service error (vulnerability identification):', errorText);
+      const errorText = await vulnerabilityResponse.text()
+      console.error('Python service error (vulnerability identification):', errorText)
       return NextResponse.json(
         errorResponse(
           'PYTHON_SERVICE_ERROR',
-          'Failed to identify vulnerable concepts from Python service'
+          'Failed to identify vulnerable concepts from Python service',
         ),
-        { status: 500 }
-      );
+        { status: 500 },
+      )
     }
 
-    const vulnerabilityData = await vulnerabilityResponse.json();
+    const vulnerabilityData = await vulnerabilityResponse.json()
 
     // vulnerabilityData.concepts: Array<{ conceptId, vulnerabilityScore, vulnerabilityType }>
     if (!vulnerabilityData.concepts || vulnerabilityData.concepts.length === 0) {
       return NextResponse.json(
-        errorResponse('NO_VULNERABLE_CONCEPTS', 'No vulnerable concepts found for challenge generation'),
-        { status: 404 }
-      );
+        errorResponse(
+          'NO_VULNERABLE_CONCEPTS',
+          'No vulnerable concepts found for challenge generation',
+        ),
+        { status: 404 },
+      )
     }
 
     // Pick the top vulnerable concept
-    const topVulnerableConcept = vulnerabilityData.concepts[0];
+    const topVulnerableConcept = vulnerabilityData.concepts[0]
 
     // Fetch objective details
     const objective = await prisma.learningObjective.findUnique({
@@ -214,13 +219,13 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-    });
+    })
 
     if (!objective) {
       return NextResponse.json(
         errorResponse('OBJECTIVE_NOT_FOUND', 'Vulnerable objective not found'),
-        { status: 404 }
-      );
+        { status: 404 },
+      )
     }
 
     // Call Python service to generate challenge
@@ -237,21 +242,18 @@ export async function GET(request: NextRequest) {
         vulnerability_type: topVulnerableConcept.vulnerability_type,
         is_retry: false,
       }),
-    });
+    })
 
     if (!challengeResponse.ok) {
-      const errorText = await challengeResponse.text();
-      console.error('Python service error (challenge generation):', errorText);
+      const errorText = await challengeResponse.text()
+      console.error('Python service error (challenge generation):', errorText)
       return NextResponse.json(
-        errorResponse(
-          'PYTHON_SERVICE_ERROR',
-          'Failed to generate challenge from Python service'
-        ),
-        { status: 500 }
-      );
+        errorResponse('PYTHON_SERVICE_ERROR', 'Failed to generate challenge from Python service'),
+        { status: 500 },
+      )
     }
 
-    const challengeData = await challengeResponse.json();
+    const challengeData = await challengeResponse.json()
 
     // Save challenge prompt
     const savedPrompt = await prisma.validationPrompt.create({
@@ -268,7 +270,7 @@ export async function GET(request: NextRequest) {
           isRetry: false,
         },
       },
-    });
+    })
 
     return NextResponse.json(
       successResponse({
@@ -282,23 +284,23 @@ export async function GET(request: NextRequest) {
           createdAt: savedPrompt.createdAt,
         },
         vulnerabilityType: topVulnerableConcept.vulnerability_type,
-      })
-    );
+      }),
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', 'Invalid query parameters', error.issues),
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    console.error('Error generating next challenge:', error);
+    console.error('Error generating next challenge:', error)
     return NextResponse.json(
       errorResponse(
         'INTERNAL_ERROR',
-        error instanceof Error ? error.message : 'Failed to generate next challenge'
+        error instanceof Error ? error.message : 'Failed to generate next challenge',
       ),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

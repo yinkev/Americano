@@ -1,7 +1,7 @@
 'use client'
 
+import { ChevronRight, Home } from 'lucide-react'
 import Link from 'next/link'
-import { Home, ChevronRight } from 'lucide-react'
 
 export interface BreadcrumbItem {
   label: string

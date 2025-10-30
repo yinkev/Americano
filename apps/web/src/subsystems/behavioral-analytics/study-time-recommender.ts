@@ -69,7 +69,7 @@ export class StudyTimeRecommender {
 
     if (patterns.length === 0) {
       // No historical data - return default recommendations
-      return this.getDefaultRecommendations(date)
+      return StudyTimeRecommender.getDefaultRecommendations(date)
     }
 
     // 2. Get calendar integration status
@@ -78,7 +78,7 @@ export class StudyTimeRecommender {
     })
 
     const calendarEvents: CalendarEvent[] = calendarIntegration?.syncEnabled
-      ? await this.fetchCalendarEvents(userId, date)
+      ? await StudyTimeRecommender.fetchCalendarEvents(userId, date)
       : []
 
     // 3. Get user preferences
@@ -119,12 +119,16 @@ export class StudyTimeRecommender {
       endTime.setHours(hourOfDay + 1, 0, 0, 0)
 
       // Check calendar availability
-      const conflicts = this.checkCalendarConflicts(startTime, endTime, calendarEvents)
+      const conflicts = StudyTimeRecommender.checkCalendarConflicts(
+        startTime,
+        endTime,
+        calendarEvents,
+      )
       const availabilityScore = conflicts.length > 0 ? 0 : 100
 
       // Check preference match
       const dayOfWeek = date.getDay()
-      const preferenceScore = this.calculatePreferenceScore(
+      const preferenceScore = StudyTimeRecommender.calculatePreferenceScore(
         hourOfDay,
         dayOfWeek,
         preferredStudyTimes,
@@ -287,6 +291,6 @@ export class StudyTimeRecommender {
     })
 
     // Generate new recommendations based on updated context
-    return this.generateRecommendations(userId, new Date())
+    return StudyTimeRecommender.generateRecommendations(userId, new Date())
   }
 }

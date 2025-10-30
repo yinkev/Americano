@@ -26,17 +26,17 @@ import React from 'react'
  */
 export const chartColors = {
   // Primary data series (light mode)
-  primary: 'oklch(0.65 0.2 240)',      // Blue
-  secondary: 'oklch(0.7 0.15 145)',    // Green
-  tertiary: 'oklch(0.7 0.15 50)',      // Orange
-  quaternary: 'oklch(0.65 0.2 280)',   // Purple
-  quinary: 'oklch(0.75 0.18 30)',      // Red
+  primary: 'oklch(0.65 0.2 240)', // Blue
+  secondary: 'oklch(0.7 0.15 145)', // Green
+  tertiary: 'oklch(0.7 0.15 50)', // Orange
+  quaternary: 'oklch(0.65 0.2 280)', // Purple
+  quinary: 'oklch(0.75 0.18 30)', // Red
 
   // Chart UI elements
-  grid: 'oklch(0.9 0.02 230)',         // Light blue-gray grid
-  axis: 'oklch(0.6 0.03 230)',         // Medium gray axis
-  text: 'oklch(0.5 0.05 230)',         // Dark gray text
-  background: 'oklch(1 0 0)',          // White background
+  grid: 'oklch(0.9 0.02 230)', // Light blue-gray grid
+  axis: 'oklch(0.6 0.03 230)', // Medium gray axis
+  text: 'oklch(0.5 0.05 230)', // Dark gray text
+  background: 'oklch(1 0 0)', // White background
   tooltip: {
     background: 'oklch(0.95 0.01 230)',
     border: 'oklch(0.85 0.02 230)',
@@ -45,10 +45,10 @@ export const chartColors = {
 
   // Chart color palette (extends base colors)
   chart1: 'oklch(0.646 0.222 41.116)', // Warm orange
-  chart2: 'oklch(0.6 0.118 184.704)',  // Teal
+  chart2: 'oklch(0.6 0.118 184.704)', // Teal
   chart3: 'oklch(0.398 0.07 227.392)', // Blue
   chart4: 'oklch(0.828 0.189 84.429)', // Yellow-green
-  chart5: 'oklch(0.769 0.188 70.08)',  // Yellow
+  chart5: 'oklch(0.769 0.188 70.08)', // Yellow
 } as const
 
 /**
@@ -57,17 +57,17 @@ export const chartColors = {
  */
 export const chartColorsDark = {
   // Primary data series (dark mode)
-  primary: 'oklch(0.7 0.22 240)',      // Brighter blue
-  secondary: 'oklch(0.75 0.18 145)',   // Brighter green
-  tertiary: 'oklch(0.75 0.18 50)',     // Brighter orange
-  quaternary: 'oklch(0.7 0.22 280)',   // Brighter purple
-  quinary: 'oklch(0.8 0.2 30)',        // Brighter red
+  primary: 'oklch(0.7 0.22 240)', // Brighter blue
+  secondary: 'oklch(0.75 0.18 145)', // Brighter green
+  tertiary: 'oklch(0.75 0.18 50)', // Brighter orange
+  quaternary: 'oklch(0.7 0.22 280)', // Brighter purple
+  quinary: 'oklch(0.8 0.2 30)', // Brighter red
 
   // Chart UI elements
-  grid: 'oklch(0.3 0.02 230)',         // Dark blue-gray grid
-  axis: 'oklch(0.5 0.03 230)',         // Medium gray axis
-  text: 'oklch(0.7 0.05 230)',         // Light gray text
-  background: 'oklch(0.145 0 0)',      // Dark background
+  grid: 'oklch(0.3 0.02 230)', // Dark blue-gray grid
+  axis: 'oklch(0.5 0.03 230)', // Medium gray axis
+  text: 'oklch(0.7 0.05 230)', // Light gray text
+  background: 'oklch(0.145 0 0)', // Dark background
   tooltip: {
     background: 'oklch(0.2 0.01 230)',
     border: 'oklch(0.3 0.02 230)',
@@ -76,10 +76,10 @@ export const chartColorsDark = {
 
   // Chart color palette (dark mode)
   chart1: 'oklch(0.488 0.243 264.376)', // Indigo
-  chart2: 'oklch(0.696 0.17 162.48)',   // Green-cyan
-  chart3: 'oklch(0.769 0.188 70.08)',   // Yellow
-  chart4: 'oklch(0.627 0.265 303.9)',   // Purple
-  chart5: 'oklch(0.645 0.246 16.439)',  // Rose
+  chart2: 'oklch(0.696 0.17 162.48)', // Green-cyan
+  chart3: 'oklch(0.769 0.188 70.08)', // Yellow
+  chart4: 'oklch(0.627 0.265 303.9)', // Purple
+  chart5: 'oklch(0.645 0.246 16.439)', // Rose
 } as const
 
 /**
@@ -336,13 +336,7 @@ export function applyChartTheme(customMargin?: typeof chartContainerDefaults.mar
  */
 export function getDataColors(isDark = false, count = 5): string[] {
   const colors = isDark ? chartColorsDark : chartColors
-  return [
-    colors.chart1,
-    colors.chart2,
-    colors.chart3,
-    colors.chart4,
-    colors.chart5,
-  ].slice(0, count)
+  return [colors.chart1, colors.chart2, colors.chart3, colors.chart4, colors.chart5].slice(0, count)
 }
 
 /**
@@ -369,19 +363,13 @@ export function CustomChartTooltip({ active, payload, label }: any) {
       }}
     >
       {label && (
-        <p
-          className="font-semibold mb-2"
-          style={{ color: chartColors.tooltip.text, fontSize: 13 }}
-        >
+        <p className="font-semibold mb-2" style={{ color: chartColors.tooltip.text, fontSize: 13 }}>
           {label}
         </p>
       )}
       {payload.map((entry: any, index: number) => (
         <div key={`item-${index}`} className="flex items-center gap-2 text-xs">
-          <div
-            className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: entry.color }}
-          />
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
           <span style={{ color: chartColors.tooltip.text }}>
             {entry.name}: <strong>{entry.value}</strong>
           </span>
@@ -401,7 +389,7 @@ export function CustomChartTooltip({ active, payload, label }: any) {
 export function generateChartAriaLabel(
   chartType: string,
   dataPoints: number,
-  description: string
+  description: string,
 ): string {
   return `${chartType} chart with ${dataPoints} data points showing ${description}`
 }
@@ -419,7 +407,7 @@ export function generateChartAriaLabel(
 export function getChartAccessibilityProps(
   chartType: string,
   dataPoints: number,
-  description: string
+  description: string,
 ) {
   return {
     role: 'img',

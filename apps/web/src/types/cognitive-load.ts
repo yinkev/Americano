@@ -204,25 +204,28 @@ export function getLoadLevelIcon(loadLevel: LoadLevel): string {
 // ============================================
 
 export function isErrorResponse(
-  response: CalculateCognitiveLoadResponse | GetCurrentCognitiveLoadResponse | GetCognitiveLoadHistoryResponse
+  response:
+    | CalculateCognitiveLoadResponse
+    | GetCurrentCognitiveLoadResponse
+    | GetCognitiveLoadHistoryResponse,
 ): response is ErrorResponse {
   return response.success === false
 }
 
 export function isCognitiveLoadScore(
-  response: CalculateCognitiveLoadResponse
+  response: CalculateCognitiveLoadResponse,
 ): response is CognitiveLoadScore {
   return response.success === true && 'loadScore' in response
 }
 
 export function isCurrentCognitiveLoadResponse(
-  response: GetCurrentCognitiveLoadResponse
+  response: GetCurrentCognitiveLoadResponse,
 ): response is CurrentCognitiveLoadResponse {
   return response.success === true
 }
 
 export function isCognitiveLoadHistoryResponse(
-  response: GetCognitiveLoadHistoryResponse
+  response: GetCognitiveLoadHistoryResponse,
 ): response is CognitiveLoadHistoryResponse {
   return response.success === true && 'dataPoints' in response
 }

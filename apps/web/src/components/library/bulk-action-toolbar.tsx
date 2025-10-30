@@ -1,7 +1,8 @@
 'use client'
 
+import { FolderInput, Tag, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
-import { Trash2, FolderInput, Tag, X } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -10,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { toast } from 'sonner'
 import { DeleteConfirmation } from './delete-confirmation'
 
 interface Course {

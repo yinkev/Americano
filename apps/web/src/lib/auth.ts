@@ -57,7 +57,7 @@ export async function getCurrentUser() {
 export async function getUserId(): Promise<string> {
   // MVP: Hardcoded user ID per CLAUDE.md constraint #12
   // TODO: Replace with actual auth when implemented (JWT, session, etc.)
-  return 'kevy@americano.dev';
+  return 'kevy@americano.dev'
 }
 
 /**
@@ -70,5 +70,5 @@ export async function getUserId(): Promise<string> {
  */
 export async function getUserEmail(): Promise<string> {
   // MVP: Hardcoded user email
-  return 'kevy@americano.dev';
+  return 'kevy@americano.dev'
 }

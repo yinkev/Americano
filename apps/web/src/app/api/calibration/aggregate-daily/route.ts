@@ -14,12 +14,12 @@
  * 3. Manual invocation for testing
  */
 
-import { NextRequest, NextResponse } from 'next';
-import { prisma } from '@/lib/db';
-import { subDays, startOfDay, endOfDay } from 'date-fns';
+import { endOfDay, startOfDay, subDays } from 'date-fns'
+import { type NextRequest, NextResponse } from 'next'
+import { prisma } from '@/lib/db'
 
 // Hardcoded user for MVP (as per Story 4.4 constraint #14)
-const MVP_USER_ID = 'kevy@americano.dev';
+const MVP_USER_ID = 'kevy@americano.dev'
 
 /**
  * Calculate Pearson correlation coefficient between two arrays
@@ -30,24 +30,24 @@ const MVP_USER_ID = 'kevy@americano.dev';
  * @returns Pearson's r correlation coefficient (-1 to 1)
  */
 function calculateCorrelation(confidenceArray: number[], scoreArray: number[]): number {
-  const n = confidenceArray.length;
+  const n = confidenceArray.length
 
   // Require minimum 5 assessments for meaningful correlation (Story 4.4 constraint #4)
   if (n < 5) {
-    return 0;
+    return 0
   }
 
-  const sumX = confidenceArray.reduce((a, b) => a + b, 0);
-  const sumY = scoreArray.reduce((a, b) => a + b, 0);
-  const sumXY = confidenceArray.reduce((sum, x, i) => sum + x * scoreArray[i], 0);
-  const sumX2 = confidenceArray.reduce((sum, x) => sum + x * x, 0);
-  const sumY2 = scoreArray.reduce((sum, y) => sum + y * y, 0);
+  const sumX = confidenceArray.reduce((a, b) => a + b, 0)
+  const sumY = scoreArray.reduce((a, b) => a + b, 0)
+  const sumXY = confidenceArray.reduce((sum, x, i) => sum + x * scoreArray[i], 0)
+  const sumX2 = confidenceArray.reduce((sum, x) => sum + x * x, 0)
+  const sumY2 = scoreArray.reduce((sum, y) => sum + y * y, 0)
 
-  const numerator = n * sumXY - sumX * sumY;
-  const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+  const numerator = n * sumXY - sumX * sumY
+  const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY))
 
   // Handle divide by zero (all same values = no variance)
-  return denominator === 0 ? 0 : numerator / denominator;
+  return denominator === 0 ? 0 : numerator / denominator
 }
 
 /**
@@ -56,7 +56,7 @@ function calculateCorrelation(confidenceArray: number[], scoreArray: number[]): 
  * Maps: 1→0, 2→25, 3→50, 4→75, 5→100
  */
 function normalizeConfidence(confidence: number): number {
-  return (confidence - 1) * 25;
+  return (confidence - 1) * 25
 }
 
 /**
@@ -68,9 +68,9 @@ function normalizeConfidence(confidence: number): number {
  * - CALIBRATED: -15 <= delta <= 15
  */
 function categorizeCalibration(delta: number): 'OVERCONFIDENT' | 'UNDERCONFIDENT' | 'CALIBRATED' {
-  if (delta > 15) return 'OVERCONFIDENT';
-  if (delta < -15) return 'UNDERCONFIDENT';
-  return 'CALIBRATED';
+  if (delta > 15) return 'OVERCONFIDENT'
+  if (delta < -15) return 'UNDERCONFIDENT'
+  return 'CALIBRATED'
 }
 
 /**
@@ -81,15 +81,15 @@ function categorizeCalibration(delta: number): 'OVERCONFIDENT' | 'UNDERCONFIDENT
  */
 function determineTrend(
   currentCorrelation: number,
-  previousCorrelation: number | null
+  previousCorrelation: number | null,
 ): 'IMPROVING' | 'STABLE' | 'DECLINING' {
-  if (previousCorrelation === null) return 'STABLE';
+  if (previousCorrelation === null) return 'STABLE'
 
-  const delta = currentCorrelation - previousCorrelation;
+  const delta = currentCorrelation - previousCorrelation
 
-  if (delta > 0.1) return 'IMPROVING';
-  if (delta < -0.1) return 'DECLINING';
-  return 'STABLE';
+  if (delta > 0.1) return 'IMPROVING'
+  if (delta < -0.1) return 'DECLINING'
+  return 'STABLE'
 }
 
 /**
@@ -97,10 +97,10 @@ function determineTrend(
  * Groups by user and optionally by learning objective
  */
 async function aggregateCalibrationMetrics(date: Date) {
-  const startDate = startOfDay(date);
-  const endDate = endOfDay(date);
+  const startDate = startOfDay(date)
+  const endDate = endOfDay(date)
 
-  console.log(`Aggregating calibration metrics for ${date.toISOString()}`);
+  console.log(`Aggregating calibration metrics for ${date.toISOString()}`)
 
   // Fetch all ValidationResponse records with confidence data from the target day
   const responses = await prisma.validationResponse.findMany({
@@ -133,94 +133,94 @@ async function aggregateCalibrationMetrics(date: Date) {
     orderBy: {
       respondedAt: 'asc',
     },
-  });
+  })
 
-  console.log(`Found ${responses.length} validation responses with confidence data`);
+  console.log(`Found ${responses.length} validation responses with confidence data`)
 
   if (responses.length === 0) {
-    console.log('No responses to aggregate');
-    return { aggregated: 0, metrics: [] };
+    console.log('No responses to aggregate')
+    return { aggregated: 0, metrics: [] }
   }
 
   // Group responses by userId and objectiveId (per-user per-objective aggregation)
-  const groupedResponses = new Map<string, typeof responses>();
+  const groupedResponses = new Map<string, typeof responses>()
 
   for (const response of responses) {
     // Create separate metrics for:
     // 1. User-level (all objectives combined)
     // 2. User + Objective level (specific objective)
 
-    const userKey = response.userId;
+    const userKey = response.userId
     const userObjectiveKey = response.prompt.objectiveId
       ? `${response.userId}:${response.prompt.objectiveId}`
-      : null;
+      : null
 
     // Add to user-level group
     if (!groupedResponses.has(userKey)) {
-      groupedResponses.set(userKey, []);
+      groupedResponses.set(userKey, [])
     }
-    groupedResponses.get(userKey)!.push(response);
+    groupedResponses.get(userKey)!.push(response)
 
     // Add to user+objective-level group if objectiveId exists
     if (userObjectiveKey) {
       if (!groupedResponses.has(userObjectiveKey)) {
-        groupedResponses.set(userObjectiveKey, []);
+        groupedResponses.set(userObjectiveKey, [])
       }
-      groupedResponses.get(userObjectiveKey)!.push(response);
+      groupedResponses.get(userObjectiveKey)!.push(response)
     }
   }
 
-  console.log(`Grouped into ${groupedResponses.size} unique user/objective combinations`);
+  console.log(`Grouped into ${groupedResponses.size} unique user/objective combinations`)
 
   // Calculate metrics for each group
-  const metricsToCreate = [];
+  const metricsToCreate = []
 
   for (const [key, groupResponses] of groupedResponses.entries()) {
-    const [userId, objectiveId] = key.includes(':') ? key.split(':') : [key, null];
+    const [userId, objectiveId] = key.includes(':') ? key.split(':') : [key, null]
 
     // Extract confidence and score arrays for correlation calculation
-    const confidenceArray: number[] = [];
-    const scoreArray: number[] = [];
-    let sumDelta = 0;
-    let overconfidentCount = 0;
-    let underconfidentCount = 0;
-    let calibratedCount = 0;
+    const confidenceArray: number[] = []
+    const scoreArray: number[] = []
+    let sumDelta = 0
+    let overconfidentCount = 0
+    let underconfidentCount = 0
+    let calibratedCount = 0
 
     for (const response of groupResponses) {
-      const confidence = response.preAssessmentConfidence!;
-      const score = response.score! * 100; // Normalize score from 0-1 to 0-100
+      const confidence = response.preAssessmentConfidence!
+      const score = response.score! * 100 // Normalize score from 0-1 to 0-100
 
-      const confidenceNormalized = normalizeConfidence(confidence);
-      confidenceArray.push(confidenceNormalized);
-      scoreArray.push(score);
+      const confidenceNormalized = normalizeConfidence(confidence)
+      confidenceArray.push(confidenceNormalized)
+      scoreArray.push(score)
 
       // Calculate delta (may differ slightly from stored calibrationDelta due to rounding)
-      const delta = confidenceNormalized - score;
-      sumDelta += delta;
+      const delta = confidenceNormalized - score
+      sumDelta += delta
 
       // Count calibration categories
-      const category = categorizeCalibration(delta);
-      if (category === 'OVERCONFIDENT') overconfidentCount++;
-      else if (category === 'UNDERCONFIDENT') underconfidentCount++;
-      else calibratedCount++;
+      const category = categorizeCalibration(delta)
+      if (category === 'OVERCONFIDENT') overconfidentCount++
+      else if (category === 'UNDERCONFIDENT') underconfidentCount++
+      else calibratedCount++
     }
 
-    const sampleSize = groupResponses.length;
-    const avgDelta = sumDelta / sampleSize;
-    const correlationCoeff = calculateCorrelation(confidenceArray, scoreArray);
+    const sampleSize = groupResponses.length
+    const avgDelta = sumDelta / sampleSize
+    const correlationCoeff = calculateCorrelation(confidenceArray, scoreArray)
 
     // Calculate Mean Absolute Error (MAE) for calibration quality
     const sumAbsoluteDelta = groupResponses.reduce((sum, r) => {
-      const confidence = r.preAssessmentConfidence!;
-      const score = r.score! * 100;
-      const delta = normalizeConfidence(confidence) - score;
-      return sum + Math.abs(delta);
-    }, 0);
-    const meanAbsoluteError = sumAbsoluteDelta / sampleSize;
+      const confidence = r.preAssessmentConfidence!
+      const score = r.score! * 100
+      const delta = normalizeConfidence(confidence) - score
+      return sum + Math.abs(delta)
+    }, 0)
+    const meanAbsoluteError = sumAbsoluteDelta / sampleSize
 
     // Determine trend by comparing to previous day's metric
-    const previousDayStart = startOfDay(subDays(date, 1));
-    const previousDayEnd = endOfDay(subDays(date, 1));
+    const previousDayStart = startOfDay(subDays(date, 1))
+    const previousDayEnd = endOfDay(subDays(date, 1))
 
     const previousMetric = await prisma.calibrationMetric.findFirst({
       where: {
@@ -234,12 +234,9 @@ async function aggregateCalibrationMetrics(date: Date) {
       select: {
         correlationCoeff: true,
       },
-    });
+    })
 
-    const trend = determineTrend(
-      correlationCoeff,
-      previousMetric?.correlationCoeff ?? null
-    );
+    const trend = determineTrend(correlationCoeff, previousMetric?.correlationCoeff ?? null)
 
     metricsToCreate.push({
       userId,
@@ -253,10 +250,10 @@ async function aggregateCalibrationMetrics(date: Date) {
       underconfidentCount,
       calibratedCount,
       meanAbsoluteError,
-    });
+    })
   }
 
-  console.log(`Creating ${metricsToCreate.length} calibration metrics`);
+  console.log(`Creating ${metricsToCreate.length} calibration metrics`)
 
   // Upsert metrics (update if exists, create if not)
   // This handles re-running aggregation for the same day
@@ -281,11 +278,11 @@ async function aggregateCalibrationMetrics(date: Date) {
           meanAbsoluteError: metric.meanAbsoluteError,
         },
         create: metric,
-      })
-    )
-  );
+      }),
+    ),
+  )
 
-  console.log(`Successfully aggregated ${results.length} calibration metrics`);
+  console.log(`Successfully aggregated ${results.length} calibration metrics`)
 
   return {
     aggregated: results.length,
@@ -297,7 +294,7 @@ async function aggregateCalibrationMetrics(date: Date) {
       sampleSize: m.sampleSize,
       trend: m.trend,
     })),
-  };
+  }
 }
 
 /**
@@ -320,33 +317,36 @@ async function aggregateCalibrationMetrics(date: Date) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json().catch(() => ({}));
+    const body = await request.json().catch(() => ({}))
 
     // Default to yesterday (typical use case for daily aggregation)
-    const targetDate = body.date
-      ? new Date(body.date)
-      : subDays(new Date(), 1);
+    const targetDate = body.date ? new Date(body.date) : subDays(new Date(), 1)
 
-    console.log(`Starting calibration aggregation for ${targetDate.toISOString()}`);
+    console.log(`Starting calibration aggregation for ${targetDate.toISOString()}`)
 
-    const result = await aggregateCalibrationMetrics(targetDate);
+    const result = await aggregateCalibrationMetrics(targetDate)
 
-    return NextResponse.json({
-      success: true,
-      date: startOfDay(targetDate),
-      aggregated: result.aggregated,
-      metrics: result.metrics,
-      message: `Successfully aggregated ${result.aggregated} calibration metrics`,
-    }, { status: 200 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        date: startOfDay(targetDate),
+        aggregated: result.aggregated,
+        metrics: result.metrics,
+        message: `Successfully aggregated ${result.aggregated} calibration metrics`,
+      },
+      { status: 200 },
+    )
   } catch (error) {
-    console.error('Calibration aggregation failed:', error);
+    console.error('Calibration aggregation failed:', error)
 
-    return NextResponse.json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      message: 'Failed to aggregate calibration metrics',
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        message: 'Failed to aggregate calibration metrics',
+      },
+      { status: 500 },
+    )
   }
 }
 
@@ -370,13 +370,16 @@ export async function GET() {
         sampleSize: true,
         correlationCoeff: true,
       },
-    });
+    })
 
     if (!latestMetric) {
-      return NextResponse.json({
-        message: 'No calibration metrics found. Run POST to aggregate data.',
-        hasData: false,
-      }, { status: 200 });
+      return NextResponse.json(
+        {
+          message: 'No calibration metrics found. Run POST to aggregate data.',
+          hasData: false,
+        },
+        { status: 200 },
+      )
     }
 
     // Count total metrics for the latest aggregation date
@@ -384,29 +387,34 @@ export async function GET() {
       where: {
         date: latestMetric.date,
       },
-    });
+    })
 
-    return NextResponse.json({
-      message: 'Calibration aggregation service is healthy',
-      hasData: true,
-      latestAggregation: {
-        date: latestMetric.date,
-        createdAt: latestMetric.createdAt,
-        metricsCount,
-        sampleMetric: {
-          userId: latestMetric.userId,
-          sampleSize: latestMetric.sampleSize,
-          correlationCoeff: latestMetric.correlationCoeff,
+    return NextResponse.json(
+      {
+        message: 'Calibration aggregation service is healthy',
+        hasData: true,
+        latestAggregation: {
+          date: latestMetric.date,
+          createdAt: latestMetric.createdAt,
+          metricsCount,
+          sampleMetric: {
+            userId: latestMetric.userId,
+            sampleSize: latestMetric.sampleSize,
+            correlationCoeff: latestMetric.correlationCoeff,
+          },
         },
       },
-    }, { status: 200 });
-
+      { status: 200 },
+    )
   } catch (error) {
-    console.error('Health check failed:', error);
+    console.error('Health check failed:', error)
 
-    return NextResponse.json({
-      message: 'Health check failed',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        message: 'Health check failed',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 },
+    )
   }
 }

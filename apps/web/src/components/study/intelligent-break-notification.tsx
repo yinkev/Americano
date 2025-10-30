@@ -12,21 +12,25 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
 import {
-  Coffee,
-  Brain,
-  Battery,
-  TrendingDown,
   AlertTriangle,
-  Clock,
+  Battery,
+  Brain,
   CheckCircle,
-  X,
+  Clock,
+  Coffee,
   SkipForward,
   Timer,
+  TrendingDown,
+  X,
   Zap,
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -35,20 +39,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Card, CardContent } from '@/components/ui/card'
-import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import { Progress } from '@/components/ui/progress'
+import { Switch } from '@/components/ui/switch'
+import { buttonVariants, modalVariants, progressVariants } from '@/lib/animation-variants'
+import { borderRadius, colors, typography } from '@/lib/design-tokens'
+import { cn } from '@/lib/utils'
 import {
   type BreakRecommendation,
   realtimeOrchestrationService,
 } from '@/services/realtime-orchestration'
-import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
-import { typography, colors, borderRadius } from '@/lib/design-tokens'
-import { modalVariants, buttonVariants, progressVariants } from '@/lib/animation-variants'
 
 interface IntelligentBreakNotificationProps {
   open: boolean
@@ -318,17 +318,21 @@ export function IntelligentBreakNotification({
                           <div className={`${typography.body.small} font-medium`}>
                             Session Progress
                           </div>
-                          <div className={`flex items-center justify-between ${typography.body.small}`}>
+                          <div
+                            className={`flex items-center justify-between ${typography.body.small}`}
+                          >
                             <span>Objectives</span>
                             <span>
-                              {sessionProgress.objectivesCompleted}/{sessionProgress.totalObjectives}
+                              {sessionProgress.objectivesCompleted}/
+                              {sessionProgress.totalObjectives}
                             </span>
                           </div>
                           <motion.div
                             initial="initial"
                             animate="animate"
                             custom={
-                              (sessionProgress.objectivesCompleted / sessionProgress.totalObjectives) *
+                              (sessionProgress.objectivesCompleted /
+                                sessionProgress.totalObjectives) *
                               100
                             }
                             variants={progressVariants}
@@ -342,7 +346,9 @@ export function IntelligentBreakNotification({
                               className="h-2"
                             />
                           </motion.div>
-                          <div className={`flex items-center justify-between ${typography.body.small}`}>
+                          <div
+                            className={`flex items-center justify-between ${typography.body.small}`}
+                          >
                             <span>Duration</span>
                             <span>{sessionProgress.sessionDuration} minutes</span>
                           </div>
@@ -488,10 +494,7 @@ export function IntelligentBreakNotification({
                           <div className={`${typography.body.tiny} space-y-1`}>
                             <div className="flex justify-between">
                               <span>Performance Recovery:</span>
-                              <span
-                                className="font-medium"
-                                style={{ color: colors.success }}
-                              >
+                              <span className="font-medium" style={{ color: colors.success }}>
                                 +{Math.round(breakEffectiveness.recoveryScore)}%
                               </span>
                             </div>

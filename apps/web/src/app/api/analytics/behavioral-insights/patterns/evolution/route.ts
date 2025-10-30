@@ -6,11 +6,11 @@
  * Story 5.6: Behavioral Insights Dashboard - Task 12.2 (Patterns Evolution API)
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
+import { CACHE_TTL, withCache } from '@/lib/cache'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
-import { withCache, CACHE_TTL } from '@/lib/cache'
 
 // Zod validation schema for query parameters
 const EvolutionQuerySchema = z.object({
@@ -123,7 +123,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     // OPTIMIZED: Single pass over patterns for all weeks
     const weeklyData = weekBoundaries.map((week) => {
       const weekPatterns = processedPatterns
-        .filter((p) => p.detectedAtTime <= week.weekEndTime && p.lastSeenAtTime >= week.weekStartTime)
+        .filter(
+          (p) => p.detectedAtTime <= week.weekEndTime && p.lastSeenAtTime >= week.weekStartTime,
+        )
         .map((p) => {
           // Determine status efficiently
           let status: 'new' | 'existing' | 'disappeared' = 'existing'

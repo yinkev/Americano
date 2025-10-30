@@ -6,11 +6,11 @@
  * Updates CalendarIntegration.lastSyncAt timestamp
  */
 
+import { addDays } from 'date-fns'
 import { prisma } from '@/lib/db'
-import { createGoogleCalendarProvider } from './google-calendar-provider'
 import { decryptToken } from '../crypto/token-encryption'
 import type { CalendarProvider } from './calendar-provider'
-import { addDays } from 'date-fns'
+import { createGoogleCalendarProvider } from './google-calendar-provider'
 
 /**
  * Calendar conflict detection result
@@ -105,7 +105,9 @@ export async function refreshUserCalendarToken(userId: string): Promise<string |
   try {
     // CalendarIntegration model not yet implemented in Prisma schema
     // Story 5.3: Calendar integration placeholder - to be implemented
-    console.warn(`Calendar token refresh requested for user ${userId} but feature not yet implemented`)
+    console.warn(
+      `Calendar token refresh requested for user ${userId} but feature not yet implemented`,
+    )
     return null
   } catch (error) {
     console.error(`Token refresh failed for user ${userId}:`, error)

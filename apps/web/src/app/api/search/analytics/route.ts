@@ -118,24 +118,18 @@
  *         description: Server error
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { z } from 'zod'
 import { withErrorHandler } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
+import { errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 import { searchAnalyticsService } from '@/lib/search-analytics-service'
-import { z } from 'zod'
 
 /**
  * Validation schema for analytics request
  */
 const analyticsRequestSchema = z.object({
-  timeWindowDays: z.coerce
-    .number()
-    .int()
-    .min(1)
-    .max(365)
-    .optional()
-    .default(30),
+  timeWindowDays: z.coerce.number().int().min(1).max(365).optional().default(30),
   userId: z.string().optional(),
 })
 
@@ -170,9 +164,9 @@ async function handler(request: NextRequest) {
       errorResponse(
         'VALIDATION_ERROR',
         'Invalid query parameters',
-        validation.error.flatten().fieldErrors
+        validation.error.flatten().fieldErrors,
       ),
-      { status: 400 }
+      { status: 400 },
     )
   }
 
@@ -186,9 +180,9 @@ async function handler(request: NextRequest) {
     return Response.json(
       errorResponse(
         'FORBIDDEN',
-        'You can only view your own analytics (admin features not yet implemented)'
+        'You can only view your own analytics (admin features not yet implemented)',
       ),
-      { status: 403 }
+      { status: 403 },
     )
   }
 
@@ -196,7 +190,7 @@ async function handler(request: NextRequest) {
     // Get comprehensive analytics summary
     const analytics = await searchAnalyticsService.getSearchAnalyticsSummary(
       targetUserId,
-      timeWindowDays
+      timeWindowDays,
     )
 
     return Response.json(
@@ -204,21 +198,18 @@ async function handler(request: NextRequest) {
         ...analytics,
         timeWindowDays,
         generatedAt: new Date().toISOString(),
-      })
+      }),
     )
   } catch (error) {
     console.error('Failed to get search analytics:', error)
 
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error occurred'
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
 
     return Response.json(
-      errorResponse(
-        'ANALYTICS_FAILED',
-        'Failed to get search analytics. Please try again.',
-        { error: errorMessage }
-      ),
-      { status: 500 }
+      errorResponse('ANALYTICS_FAILED', 'Failed to get search analytics. Please try again.', {
+        error: errorMessage,
+      }),
+      { status: 500 },
     )
   }
 }

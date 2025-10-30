@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 
 export function CognitiveHealthEmpty() {
   return (
@@ -71,18 +71,16 @@ export function CognitiveHealthEmpty() {
         </svg>
       </div>
 
-      <h3 className="text-xl font-semibold mb-2">
-        Building Your Profile...
-      </h3>
+      <h3 className="text-xl font-semibold mb-2">Building Your Profile...</h3>
 
       <p className="text-muted-foreground mb-6 max-w-md">
-        Your cognitive health dashboard will appear once we've gathered enough data
-        about your learning patterns, stress levels, and cognitive load.
+        Your cognitive health dashboard will appear once we've gathered enough data about your
+        learning patterns, stress levels, and cognitive load.
       </p>
 
       <Button asChild size="lg">
         <Link href="/study">Start Learning</Link>
       </Button>
     </Card>
-  );
+  )
 }

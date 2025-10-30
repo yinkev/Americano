@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 
 export function StrugglePredictionsEmpty() {
   return (
@@ -45,19 +45,16 @@ export function StrugglePredictionsEmpty() {
         </svg>
       </div>
 
-      <h3 className="text-xl font-semibold mb-2">
-        No Struggles Detected
-      </h3>
+      <h3 className="text-xl font-semibold mb-2">No Struggles Detected</h3>
 
       <p className="text-muted-foreground mb-6 max-w-md">
-        Great news! Our AI hasn't identified any learning struggles yet.
-        Keep studying, and we'll monitor your progress to provide early
-        intervention if needed.
+        Great news! Our AI hasn't identified any learning struggles yet. Keep studying, and we'll
+        monitor your progress to provide early intervention if needed.
       </p>
 
       <Button asChild size="lg" variant="outline">
         <Link href="/study">Continue Learning</Link>
       </Button>
     </Card>
-  );
+  )
 }

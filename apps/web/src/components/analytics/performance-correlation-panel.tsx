@@ -8,21 +8,21 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Info, TrendingUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import {
-  ScatterChart,
+  CartesianGrid,
+  ReferenceLine,
+  ResponsiveContainer,
   Scatter,
+  ScatterChart,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
 } from 'recharts'
-import { TrendingUp, Info } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface CorrelationData {
   correlationCoefficient: number
@@ -150,8 +150,9 @@ export function PerformanceCorrelationPanel() {
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
               This chart shows the relationship between how often you complete missions and how much
-              your mastery improves. Each dot represents a time period. A strong positive correlation
-              means completing more missions typically leads to better learning outcomes.
+              your mastery improves. Each dot represents a time period. A strong positive
+              correlation means completing more missions typically leads to better learning
+              outcomes.
             </p>
             <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
               <strong>Note:</strong> Correlation does not imply causation. Statistical significance
@@ -179,7 +180,10 @@ export function PerformanceCorrelationPanel() {
           <Card>
             <CardContent className="p-4">
               <p className="text-xs text-muted-foreground mb-1">Confidence</p>
-              <p className="text-2xl font-bold" style={{ color: getConfidenceColor(data.confidence) }}>
+              <p
+                className="text-2xl font-bold"
+                style={{ color: getConfidenceColor(data.confidence) }}
+              >
                 {data.confidence}
               </p>
               <Badge variant="secondary" className="text-xs mt-1">
@@ -197,82 +201,82 @@ export function PerformanceCorrelationPanel() {
           </Card>
         </div>
 
-      {/* Scatter Plot */}
-      <ResponsiveContainer width="100%" height={300}>
-        <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" vertical={false} />
-          <XAxis
-            type="number"
-            dataKey="completionRate"
-            name="Completion Rate"
-            unit="%"
-            domain={[0, 100]}
-            stroke="oklch(0.556 0 0)"
-            style={{ fontSize: '12px' }}
-            tick={{ fill: 'oklch(0.556 0 0)' }}
-            label={{
-              value: 'Mission Completion Rate (%)',
-              position: 'insideBottom',
-              offset: -10,
-              style: { fontSize: '12px', fill: 'oklch(0.556 0 0)' },
-            }}
-          />
-          <YAxis
-            type="number"
-            dataKey="masteryImprovement"
-            name="Mastery Improvement"
-            unit="%"
-            domain={[0, 'auto']}
-            stroke="oklch(0.556 0 0)"
-            style={{ fontSize: '12px' }}
-            tick={{ fill: 'oklch(0.556 0 0)' }}
-            label={{
-              value: 'Mastery Improvement (%)',
-              angle: -90,
-              position: 'insideLeft',
-              style: { fontSize: '12px', fill: 'oklch(0.556 0 0)' },
-            }}
-          />
-          <Tooltip
-            cursor={{ strokeDasharray: '3 3' }}
-            contentStyle={{
-              backgroundColor: 'oklch(1 0 0 / 0.95)',
-              backdropFilter: 'blur(12px)',
-              border: 'none',
-              borderRadius: '12px',
-              boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
-              padding: '12px',
-            }}
-            labelStyle={{
-              color: 'oklch(0.145 0 0)',
-              fontWeight: 600,
-              marginBottom: '4px',
-            }}
-            formatter={(value: number, name: string) => [
-              `${value.toFixed(1)}%`,
-              name === 'completionRate' ? 'Completion' : 'Improvement',
-            ]}
-          />
-          {/* Trend line approximation */}
-          {data.correlationCoefficient > 0.3 && (
-            <ReferenceLine
-              segment={[
-                { x: 0, y: 0 },
-                { x: 100, y: 100 * Math.abs(data.correlationCoefficient) },
-              ]}
-              stroke="oklch(0.7 0.15 230)"
-              strokeDasharray="5 5"
-              strokeWidth={2}
+        {/* Scatter Plot */}
+        <ResponsiveContainer width="100%" height={300}>
+          <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" vertical={false} />
+            <XAxis
+              type="number"
+              dataKey="completionRate"
+              name="Completion Rate"
+              unit="%"
+              domain={[0, 100]}
+              stroke="oklch(0.556 0 0)"
+              style={{ fontSize: '12px' }}
+              tick={{ fill: 'oklch(0.556 0 0)' }}
+              label={{
+                value: 'Mission Completion Rate (%)',
+                position: 'insideBottom',
+                offset: -10,
+                style: { fontSize: '12px', fill: 'oklch(0.556 0 0)' },
+              }}
             />
-          )}
-          <Scatter
-            name="Data Points"
-            data={scatterData}
-            fill="oklch(0.7 0.15 230)"
-            fillOpacity={0.6}
-          />
-        </ScatterChart>
-      </ResponsiveContainer>
+            <YAxis
+              type="number"
+              dataKey="masteryImprovement"
+              name="Mastery Improvement"
+              unit="%"
+              domain={[0, 'auto']}
+              stroke="oklch(0.556 0 0)"
+              style={{ fontSize: '12px' }}
+              tick={{ fill: 'oklch(0.556 0 0)' }}
+              label={{
+                value: 'Mastery Improvement (%)',
+                angle: -90,
+                position: 'insideLeft',
+                style: { fontSize: '12px', fill: 'oklch(0.556 0 0)' },
+              }}
+            />
+            <Tooltip
+              cursor={{ strokeDasharray: '3 3' }}
+              contentStyle={{
+                backgroundColor: 'oklch(1 0 0 / 0.95)',
+                backdropFilter: 'blur(12px)',
+                border: 'none',
+                borderRadius: '12px',
+                boxShadow: '0 8px 32px rgba(31, 38, 135, 0.1)',
+                padding: '12px',
+              }}
+              labelStyle={{
+                color: 'oklch(0.145 0 0)',
+                fontWeight: 600,
+                marginBottom: '4px',
+              }}
+              formatter={(value: number, name: string) => [
+                `${value.toFixed(1)}%`,
+                name === 'completionRate' ? 'Completion' : 'Improvement',
+              ]}
+            />
+            {/* Trend line approximation */}
+            {data.correlationCoefficient > 0.3 && (
+              <ReferenceLine
+                segment={[
+                  { x: 0, y: 0 },
+                  { x: 100, y: 100 * Math.abs(data.correlationCoefficient) },
+                ]}
+                stroke="oklch(0.7 0.15 230)"
+                strokeDasharray="5 5"
+                strokeWidth={2}
+              />
+            )}
+            <Scatter
+              name="Data Points"
+              data={scatterData}
+              fill="oklch(0.7 0.15 230)"
+              fillOpacity={0.6}
+            />
+          </ScatterChart>
+        </ResponsiveContainer>
 
         {/* Insight Card */}
         <div className="mt-6 p-4 bg-[oklch(0.75_0.15_160)]/10 rounded-xl border border-[oklch(0.75_0.15_160)]/20">

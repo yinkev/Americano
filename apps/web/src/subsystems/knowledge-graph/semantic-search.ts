@@ -11,7 +11,7 @@
  */
 
 import { prisma } from '@/lib/db'
-import type { SearchFilters, SearchResult, RawSearchResult } from './types'
+import type { RawSearchResult, SearchFilters, SearchResult } from './types'
 
 /**
  * SemanticSearchEngine class
@@ -38,7 +38,7 @@ export class SemanticSearchEngine {
       limit?: number
       offset?: number
       filters?: SearchFilters
-    } = {}
+    } = {},
   ): Promise<{ results: SearchResult[]; total: number; latency: number }> {
     const startTime = Date.now()
     const { limit = 20, offset = 0, filters } = options
@@ -67,10 +67,7 @@ export class SemanticSearchEngine {
    * @param limit - Maximum results
    * @returns Lecture search results
    */
-  async searchLectures(
-    query: string,
-    limit: number = 20
-  ): Promise<SearchResult[]> {
+  async searchLectures(query: string, limit: number = 20): Promise<SearchResult[]> {
     // PLACEHOLDER: Will be implemented in Task 3
     return []
   }
@@ -82,10 +79,7 @@ export class SemanticSearchEngine {
    * @param limit - Maximum results
    * @returns Chunk search results
    */
-  async searchChunks(
-    query: string,
-    limit: number = 20
-  ): Promise<SearchResult[]> {
+  async searchChunks(query: string, limit: number = 20): Promise<SearchResult[]> {
     // PLACEHOLDER: Will be implemented in Task 3
     return []
   }
@@ -97,10 +91,7 @@ export class SemanticSearchEngine {
    * @param limit - Maximum results
    * @returns Objective search results
    */
-  async searchObjectives(
-    query: string,
-    limit: number = 20
-  ): Promise<SearchResult[]> {
+  async searchObjectives(query: string, limit: number = 20): Promise<SearchResult[]> {
     // PLACEHOLDER: Will be implemented in Task 3
     return []
   }
@@ -139,7 +130,7 @@ export class SemanticSearchEngine {
     const queryTerms = query.toLowerCase().split(/\s+/)
     let highlighted = text
 
-    queryTerms.forEach(term => {
+    queryTerms.forEach((term) => {
       if (term.length < 2) return
       const regex = new RegExp(`\\b(${this.escapeRegex(term)})\\b`, 'gi')
       highlighted = highlighted.replace(regex, '<mark>$1</mark>')
@@ -178,12 +169,7 @@ export class SemanticSearchEngine {
     const similarity = this.distanceToSimilarity(raw.distance)
 
     // Extract content text based on type
-    const contentText =
-      raw.content ||
-      raw.objective ||
-      raw.title ||
-      raw.name ||
-      ''
+    const contentText = raw.content || raw.objective || raw.title || raw.name || ''
 
     const snippet = this.generateSnippet(contentText, query)
 

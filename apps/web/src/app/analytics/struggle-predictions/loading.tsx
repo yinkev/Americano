@@ -6,8 +6,8 @@
  * Shows immediately upon navigation while page data loads
  */
 
+import { AlertTriangle, Calendar, MessageSquare, Target, TrendingUp } from 'lucide-react'
 import { AnalyticsCardSkeleton, ChartSkeleton, TimelineSkeleton } from '@/components/skeletons'
-import { AlertTriangle, TrendingUp, Target, MessageSquare, Calendar } from 'lucide-react'
 
 export default function Loading() {
   return (

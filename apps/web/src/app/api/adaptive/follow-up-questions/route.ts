@@ -13,12 +13,12 @@
  * - Performance target: < 1s
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { getUserId } from '@/lib/auth'
+import { type NextRequest, NextResponse } from 'next/server'
 import { ApiError } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
-import { validateRequest, followUpQuestionsSchema } from '@/lib/validation'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getUserId } from '@/lib/auth'
+import { prisma } from '@/lib/db'
+import { followUpQuestionsSchema, validateRequest } from '@/lib/validation'
 
 export async function POST(request: NextRequest) {
   try {
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
         successResponse({
           hasFollowUp: false,
           reason: 'Score in target range (60-85%) - no follow-up needed',
-        })
+        }),
       )
     }
 
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
       successResponse({
         hasFollowUp: false,
         reason: `Follow-up questions temporarily disabled - schema migration needed`,
-      })
+      }),
     )
   } catch (error) {
     console.error('[API] POST /api/adaptive/follow-up-questions error:', error)
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       errorResponse(ApiError.internal('Failed to generate follow-up questions')),
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

@@ -2,8 +2,8 @@
 // Manages difficulty calculations, adjustments, and question selection
 // Implements Item Response Theory (IRT) simplified Rasch model (1PL)
 
-import { prisma } from './db'
 import { ObjectiveComplexity } from '@/generated/prisma'
+import { prisma } from './db'
 
 /**
  * Difficulty adjustment result
@@ -127,10 +127,7 @@ export class AdaptiveDifficultyEngine {
    * // Returns: 65 (based on average performance around 65%)
    * ```
    */
-  async calculateInitialDifficulty(
-    userId: string,
-    objectiveId?: string
-  ): Promise<number> {
+  async calculateInitialDifficulty(userId: string, objectiveId?: string): Promise<number> {
     // Query last N assessments for user
     const recentResponses = await prisma.validationResponse.findMany({
       where: {
@@ -171,13 +168,14 @@ export class AdaptiveDifficultyEngine {
 
       // Weight: more recent responses weighted higher (exponential decay)
       // Most recent = weight 1.0, oldest = weight 0.5
-      const weight = 1.0 - (index / (AdaptiveDifficultyEngine.HISTORY_WINDOW * 2))
+      const weight = 1.0 - index / (AdaptiveDifficultyEngine.HISTORY_WINDOW * 2)
 
       weightedSum += scorePercentage * weight
       totalWeight += weight
     })
 
-    const averageScore = totalWeight > 0 ? weightedSum / totalWeight : AdaptiveDifficultyEngine.DEFAULT_DIFFICULTY
+    const averageScore =
+      totalWeight > 0 ? weightedSum / totalWeight : AdaptiveDifficultyEngine.DEFAULT_DIFFICULTY
 
     // Map score to difficulty (score of 80+ suggests current difficulty is appropriate)
     // Score 90+ → increase initial difficulty slightly
@@ -193,7 +191,7 @@ export class AdaptiveDifficultyEngine {
     // Clamp to valid range
     return Math.max(
       AdaptiveDifficultyEngine.MIN_DIFFICULTY,
-      Math.min(AdaptiveDifficultyEngine.MAX_DIFFICULTY, Math.round(initialDifficulty))
+      Math.min(AdaptiveDifficultyEngine.MAX_DIFFICULTY, Math.round(initialDifficulty)),
     )
   }
 
@@ -215,10 +213,7 @@ export class AdaptiveDifficultyEngine {
    * // Returns: { newDifficulty: 65, adjustment: 15, reason: "Excellent performance..." }
    * ```
    */
-  adjustDifficulty(
-    currentScore: number,
-    currentDifficulty: number
-  ): DifficultyAdjustment {
+  adjustDifficulty(currentScore: number, currentDifficulty: number): DifficultyAdjustment {
     let adjustment = 0
     let reason = ''
 
@@ -247,7 +242,7 @@ export class AdaptiveDifficultyEngine {
     // Calculate new difficulty with clamping
     const newDifficulty = Math.max(
       AdaptiveDifficultyEngine.MIN_DIFFICULTY,
-      Math.min(AdaptiveDifficultyEngine.MAX_DIFFICULTY, currentDifficulty + adjustment)
+      Math.min(AdaptiveDifficultyEngine.MAX_DIFFICULTY, currentDifficulty + adjustment),
     )
 
     // Update reason if clamped
@@ -287,9 +282,7 @@ export class AdaptiveDifficultyEngine {
    * });
    * ```
    */
-  async getQuestionByDifficulty(
-    criteria: QuestionCriteria
-  ): Promise<QuestionMetadata | null> {
+  async getQuestionByDifficulty(criteria: QuestionCriteria): Promise<QuestionMetadata | null> {
     const { difficulty, complexity, userId, objectiveId } = criteria
 
     // Calculate difficulty range (±10 points)

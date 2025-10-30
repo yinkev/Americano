@@ -7,11 +7,11 @@
  * Story 2.6: Mission Performance Analytics and Adaptation - Task 4
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
 import { PaceRating } from '@/generated/prisma'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
 // Zod validation schema for feedback submission
 const FeedbackSchema = z.object({

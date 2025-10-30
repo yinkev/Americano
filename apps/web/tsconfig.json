@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["@testing-library/jest-dom"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,11 +20,26 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/__tests__/*": ["./__tests__/*"],
+      "@americano/api-client": ["../../packages/api-client/src/index.ts"],
+      "@americano/api-client/*": ["../../packages/api-client/src/*"],
+      "@features/*": ["./src/features/*"],
+      "@features/analytics": ["./src/features/analytics/index.ts"],
+      "@features/analytics/*": ["./src/features/analytics/*"],
+      "@features/validation": ["./src/features/validation/index.ts"],
+      "@features/validation/*": ["./src/features/validation/*"],
+      "@features/adaptive": ["./src/features/adaptive/index.ts"],
+      "@features/adaptive/*": ["./src/features/adaptive/*"],
+      "@features/study": ["./src/features/study/index.ts"],
+      "@features/study/*": ["./src/features/study/*"],
+      "@features/graph": ["./src/features/graph/index.ts"],
+      "@features/graph/*": ["./src/features/graph/*"]
     }
   },
   "include": [
     "next-env.d.ts",
+    "jest.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     ".next/types/**/*.ts",

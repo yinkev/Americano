@@ -1,7 +1,7 @@
 'use client'
 
-import React from 'react'
 import { Heart } from 'lucide-react'
+import React from 'react'
 
 /**
  * Dashboard Footer
@@ -22,28 +22,16 @@ export function DashboardFooter() {
           </div>
 
           <div className="flex items-center gap-6">
-            <a
-              href="/about"
-              className="hover:text-foreground transition-colors"
-            >
+            <a href="/about" className="hover:text-foreground transition-colors">
               About
             </a>
-            <a
-              href="/privacy"
-              className="hover:text-foreground transition-colors"
-            >
+            <a href="/privacy" className="hover:text-foreground transition-colors">
               Privacy
             </a>
-            <a
-              href="/terms"
-              className="hover:text-foreground transition-colors"
-            >
+            <a href="/terms" className="hover:text-foreground transition-colors">
               Terms
             </a>
-            <a
-              href="/support"
-              className="hover:text-foreground transition-colors"
-            >
+            <a href="/support" className="hover:text-foreground transition-colors">
               Support
             </a>
           </div>

@@ -16,48 +16,46 @@
 // Jest globals (describe, it, expect, beforeEach) are available without imports
 
 interface ValidationResponse {
-  id: string;
-  promptId: string;
-  userId: string;
-  userAnswer: string;
-  aiEvaluation: string;
-  score: number;
-  confidenceLevel: number | null;
-  calibrationDelta: number | null;
-  respondedAt: Date;
-  skipped: boolean;
+  id: string
+  promptId: string
+  userId: string
+  userAnswer: string
+  aiEvaluation: string
+  score: number
+  confidenceLevel: number | null
+  calibrationDelta: number | null
+  respondedAt: Date
+  skipped: boolean
   prompt: {
-    id: string;
-    conceptName: string;
-  };
+    id: string
+    conceptName: string
+  }
 }
 
 interface CalibrationMetrics {
-  calibrationScore: number;
-  meanAbsoluteError: number;
-  correlationCoefficient: number;
+  calibrationScore: number
+  meanAbsoluteError: number
+  correlationCoefficient: number
   overconfidentExamples: Array<{
-    promptId: string;
-    conceptName: string;
-    confidence: number;
-    score: number;
-    delta: number;
-  }>;
+    promptId: string
+    conceptName: string
+    confidence: number
+    score: number
+    delta: number
+  }>
   underconfidentExamples: Array<{
-    promptId: string;
-    conceptName: string;
-    confidence: number;
-    score: number;
-    delta: number;
-  }>;
-  trend: 'IMPROVING' | 'STABLE' | 'WORSENING';
-  totalAttempts: number;
+    promptId: string
+    conceptName: string
+    confidence: number
+    score: number
+    delta: number
+  }>
+  trend: 'IMPROVING' | 'STABLE' | 'WORSENING'
+  totalAttempts: number
 }
 
 // Mock implementation of calibration calculation
-function calculateCalibrationMetrics(
-  responses: ValidationResponse[]
-): CalibrationMetrics {
+function calculateCalibrationMetrics(responses: ValidationResponse[]): CalibrationMetrics {
   if (responses.length === 0) {
     return {
       calibrationScore: 0,
@@ -67,7 +65,7 @@ function calculateCalibrationMetrics(
       underconfidentExamples: [],
       trend: 'STABLE',
       totalAttempts: 0,
-    };
+    }
   }
 
   // Convert to data points for analysis
@@ -77,43 +75,40 @@ function calculateCalibrationMetrics(
     confidence: r.confidenceLevel ? (r.confidenceLevel - 1) * 25 : 0,
     score: r.score * 100,
     respondedAt: r.respondedAt,
-  }));
+  }))
 
   // Calculate Mean Absolute Error
-  const absoluteErrors = dataPoints.map((d) =>
-    Math.abs(d.confidence - d.score)
-  );
+  const absoluteErrors = dataPoints.map((d) => Math.abs(d.confidence - d.score))
   const meanAbsoluteError =
-    absoluteErrors.reduce((sum, err) => sum + err, 0) / absoluteErrors.length;
+    absoluteErrors.reduce((sum, err) => sum + err, 0) / absoluteErrors.length
 
   // Calculate Pearson correlation
-  const confidences = dataPoints.map((d) => d.confidence);
-  const scores = dataPoints.map((d) => d.score);
+  const confidences = dataPoints.map((d) => d.confidence)
+  const scores = dataPoints.map((d) => d.score)
 
-  const meanConfidence =
-    confidences.reduce((sum, c) => sum + c, 0) / confidences.length;
-  const meanScore = scores.reduce((sum, s) => sum + s, 0) / scores.length;
+  const meanConfidence = confidences.reduce((sum, c) => sum + c, 0) / confidences.length
+  const meanScore = scores.reduce((sum, s) => sum + s, 0) / scores.length
 
   const numerator = dataPoints.reduce((sum, d) => {
-    return sum + (d.confidence - meanConfidence) * (d.score - meanScore);
-  }, 0);
+    return sum + (d.confidence - meanConfidence) * (d.score - meanScore)
+  }, 0)
 
   const denominator = Math.sqrt(
-    confidences.reduce((sum, c) => sum + Math.pow(c - meanConfidence, 2), 0) *
-      scores.reduce((sum, s) => sum + Math.pow(s - meanScore, 2), 0)
-  );
+    confidences.reduce((sum, c) => sum + (c - meanConfidence) ** 2, 0) *
+      scores.reduce((sum, s) => sum + (s - meanScore) ** 2, 0),
+  )
 
-  const correlationCoefficient = denominator === 0 ? 0 : numerator / denominator;
+  const correlationCoefficient = denominator === 0 ? 0 : numerator / denominator
 
   // Calibration score
-  const maeScore = Math.max(0, 100 - meanAbsoluteError);
-  const correlationScore = (correlationCoefficient + 1) * 50;
-  const calibrationScore = maeScore * 0.7 + correlationScore * 0.3;
+  const maeScore = Math.max(0, 100 - meanAbsoluteError)
+  const correlationScore = (correlationCoefficient + 1) * 50
+  const calibrationScore = maeScore * 0.7 + correlationScore * 0.3
 
   // Find overconfident and underconfident examples
   const overconfidentExamples = dataPoints
     .filter((d) => d.confidence - d.score > 15)
-    .sort((a, b) => (b.confidence - b.score) - (a.confidence - a.score))
+    .sort((a, b) => b.confidence - b.score - (a.confidence - a.score))
     .slice(0, 5)
     .map((d) => ({
       promptId: d.promptId,
@@ -121,11 +116,11 @@ function calculateCalibrationMetrics(
       confidence: Math.round(d.confidence),
       score: Math.round(d.score),
       delta: Math.round(d.confidence - d.score),
-    }));
+    }))
 
   const underconfidentExamples = dataPoints
     .filter((d) => d.score - d.confidence > 15)
-    .sort((a, b) => (b.score - b.confidence) - (a.score - a.confidence))
+    .sort((a, b) => b.score - b.confidence - (a.score - a.confidence))
     .slice(0, 5)
     .map((d) => ({
       promptId: d.promptId,
@@ -133,32 +128,30 @@ function calculateCalibrationMetrics(
       confidence: Math.round(d.confidence),
       score: Math.round(d.score),
       delta: Math.round(d.score - d.confidence),
-    }));
+    }))
 
   // Calculate trend
-  const midpoint = Math.floor(dataPoints.length / 2);
-  const recentData = dataPoints.slice(0, midpoint);
-  const olderData = dataPoints.slice(midpoint);
+  const midpoint = Math.floor(dataPoints.length / 2)
+  const recentData = dataPoints.slice(0, midpoint)
+  const olderData = dataPoints.slice(midpoint)
 
   const recentMAE =
     recentData.length > 0
-      ? recentData.reduce((sum, d) => sum + Math.abs(d.confidence - d.score), 0) /
-        recentData.length
-      : meanAbsoluteError;
+      ? recentData.reduce((sum, d) => sum + Math.abs(d.confidence - d.score), 0) / recentData.length
+      : meanAbsoluteError
 
   const olderMAE =
     olderData.length > 0
-      ? olderData.reduce((sum, d) => sum + Math.abs(d.confidence - d.score), 0) /
-        olderData.length
-      : meanAbsoluteError;
+      ? olderData.reduce((sum, d) => sum + Math.abs(d.confidence - d.score), 0) / olderData.length
+      : meanAbsoluteError
 
-  let trend: 'IMPROVING' | 'STABLE' | 'WORSENING' = 'STABLE';
-  const maeDiff = olderMAE - recentMAE;
+  let trend: 'IMPROVING' | 'STABLE' | 'WORSENING' = 'STABLE'
+  const maeDiff = olderMAE - recentMAE
 
   if (maeDiff > 5) {
-    trend = 'IMPROVING';
+    trend = 'IMPROVING'
   } else if (maeDiff < -5) {
-    trend = 'WORSENING';
+    trend = 'WORSENING'
   }
 
   return {
@@ -169,20 +162,20 @@ function calculateCalibrationMetrics(
     underconfidentExamples,
     trend,
     totalAttempts: responses.length,
-  };
+  }
 }
 
 describe('GET /api/validation/calibration', () => {
-  const mockUserId = 'test-user-123';
+  const mockUserId = 'test-user-123'
 
   describe('Calibration Metrics Calculation', () => {
     it('should return empty metrics when no responses exist', () => {
-      const metrics = calculateCalibrationMetrics([]);
-      expect(metrics.calibrationScore).toBe(0);
-      expect(metrics.meanAbsoluteError).toBe(0);
-      expect(metrics.correlationCoefficient).toBe(0);
-      expect(metrics.totalAttempts).toBe(0);
-    });
+      const metrics = calculateCalibrationMetrics([])
+      expect(metrics.calibrationScore).toBe(0)
+      expect(metrics.meanAbsoluteError).toBe(0)
+      expect(metrics.correlationCoefficient).toBe(0)
+      expect(metrics.totalAttempts).toBe(0)
+    })
 
     it('should calculate mean absolute error', () => {
       const responses: ValidationResponse[] = [
@@ -212,12 +205,12 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p2', conceptName: 'Concept B' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
+      const metrics = calculateCalibrationMetrics(responses)
       // MAE = (|100-75| + |50-60|) / 2 = (25 + 10) / 2 = 17.5
-      expect(metrics.meanAbsoluteError).toBe(17.5);
-    });
+      expect(metrics.meanAbsoluteError).toBe(17.5)
+    })
 
     it('should calculate correlation coefficient', () => {
       const responses: ValidationResponse[] = [
@@ -286,12 +279,12 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p5', conceptName: 'Concept E' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
+      const metrics = calculateCalibrationMetrics(responses)
       // Perfect correlation (confidence matches score exactly)
-      expect(metrics.correlationCoefficient).toBeCloseTo(1.0, 2);
-    });
+      expect(metrics.correlationCoefficient).toBeCloseTo(1.0, 2)
+    })
 
     it('should identify overconfident examples (delta > 15)', () => {
       const responses: ValidationResponse[] = [
@@ -308,15 +301,15 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p1', conceptName: 'Cardiology' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
-      expect(metrics.overconfidentExamples.length).toBe(1);
-      expect(metrics.overconfidentExamples[0].conceptName).toBe('Cardiology');
-      expect(metrics.overconfidentExamples[0].delta).toBe(55);
-      expect(metrics.overconfidentExamples[0].confidence).toBe(100);
-      expect(metrics.overconfidentExamples[0].score).toBe(45);
-    });
+      const metrics = calculateCalibrationMetrics(responses)
+      expect(metrics.overconfidentExamples.length).toBe(1)
+      expect(metrics.overconfidentExamples[0].conceptName).toBe('Cardiology')
+      expect(metrics.overconfidentExamples[0].delta).toBe(55)
+      expect(metrics.overconfidentExamples[0].confidence).toBe(100)
+      expect(metrics.overconfidentExamples[0].score).toBe(45)
+    })
 
     it('should identify underconfident examples (delta < -15)', () => {
       const responses: ValidationResponse[] = [
@@ -333,15 +326,15 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p1', conceptName: 'Pharmacology' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
-      expect(metrics.underconfidentExamples.length).toBe(1);
-      expect(metrics.underconfidentExamples[0].conceptName).toBe('Pharmacology');
-      expect(metrics.underconfidentExamples[0].delta).toBe(65);
-      expect(metrics.underconfidentExamples[0].confidence).toBe(25);
-      expect(metrics.underconfidentExamples[0].score).toBe(90);
-    });
+      const metrics = calculateCalibrationMetrics(responses)
+      expect(metrics.underconfidentExamples.length).toBe(1)
+      expect(metrics.underconfidentExamples[0].conceptName).toBe('Pharmacology')
+      expect(metrics.underconfidentExamples[0].delta).toBe(65)
+      expect(metrics.underconfidentExamples[0].confidence).toBe(25)
+      expect(metrics.underconfidentExamples[0].score).toBe(90)
+    })
 
     it('should return up to 5 overconfident examples sorted by delta', () => {
       const responses: ValidationResponse[] = Array.from({ length: 10 }, (_, i) => ({
@@ -356,15 +349,15 @@ describe('GET /api/validation/calibration', () => {
         respondedAt: new Date(),
         skipped: false,
         prompt: { id: `p${i}`, conceptName: `Concept ${i}` },
-      }));
+      }))
 
-      const metrics = calculateCalibrationMetrics(responses);
-      expect(metrics.overconfidentExamples.length).toBe(5); // Max 5
+      const metrics = calculateCalibrationMetrics(responses)
+      expect(metrics.overconfidentExamples.length).toBe(5) // Max 5
       // Should be sorted by highest delta first
       expect(metrics.overconfidentExamples[0].delta).toBeGreaterThanOrEqual(
-        metrics.overconfidentExamples[1].delta
-      );
-    });
+        metrics.overconfidentExamples[1].delta,
+      )
+    })
 
     it('should not include borderline calibrated items in overconfident', () => {
       const responses: ValidationResponse[] = [
@@ -381,12 +374,12 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p1', conceptName: 'Concept' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
-      expect(metrics.overconfidentExamples.length).toBe(0); // Delta = 15 is not > 15
-    });
-  });
+      const metrics = calculateCalibrationMetrics(responses)
+      expect(metrics.overconfidentExamples.length).toBe(0) // Delta = 15 is not > 15
+    })
+  })
 
   describe('Trend Calculation', () => {
     it('should calculate IMPROVING trend when recent MAE < older MAE', () => {
@@ -445,11 +438,11 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p4', conceptName: 'Concept' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
-      expect(metrics.trend).toBe('IMPROVING');
-    });
+      const metrics = calculateCalibrationMetrics(responses)
+      expect(metrics.trend).toBe('IMPROVING')
+    })
 
     it('should calculate WORSENING trend when recent MAE > older MAE', () => {
       const responses: ValidationResponse[] = [
@@ -507,34 +500,31 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p4', conceptName: 'Concept' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
-      expect(metrics.trend).toBe('WORSENING');
-    });
+      const metrics = calculateCalibrationMetrics(responses)
+      expect(metrics.trend).toBe('WORSENING')
+    })
 
     it('should calculate STABLE trend when difference is within threshold', () => {
-      const responses: ValidationResponse[] = Array.from(
-        { length: 10 },
-        (_, i) => ({
-          id: `${i}`,
-          promptId: `p${i}`,
-          userId: mockUserId,
-          userAnswer: `answer${i}`,
-          aiEvaluation: `eval${i}`,
-          score: 0.5 + Math.random() * 0.1,
-          confidenceLevel: 3,
-          calibrationDelta: Math.random() * 5 - 2.5,
-          respondedAt: new Date(),
-          skipped: false,
-          prompt: { id: `p${i}`, conceptName: `Concept` },
-        })
-      );
+      const responses: ValidationResponse[] = Array.from({ length: 10 }, (_, i) => ({
+        id: `${i}`,
+        promptId: `p${i}`,
+        userId: mockUserId,
+        userAnswer: `answer${i}`,
+        aiEvaluation: `eval${i}`,
+        score: 0.5 + Math.random() * 0.1,
+        confidenceLevel: 3,
+        calibrationDelta: Math.random() * 5 - 2.5,
+        respondedAt: new Date(),
+        skipped: false,
+        prompt: { id: `p${i}`, conceptName: `Concept` },
+      }))
 
-      const metrics = calculateCalibrationMetrics(responses);
-      expect(['IMPROVING', 'STABLE', 'WORSENING']).toContain(metrics.trend);
-    });
-  });
+      const metrics = calculateCalibrationMetrics(responses)
+      expect(['IMPROVING', 'STABLE', 'WORSENING']).toContain(metrics.trend)
+    })
+  })
 
   describe('AC#3 Compliance: Confidence vs. Performance Tracking', () => {
     it('should track calibration accuracy per concept', () => {
@@ -565,11 +555,11 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p2', conceptName: 'Pharmacology' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
-      expect(metrics.overconfidentExamples[0].conceptName).toBe('Pharmacology');
-    });
+      const metrics = calculateCalibrationMetrics(responses)
+      expect(metrics.overconfidentExamples[0].conceptName).toBe('Pharmacology')
+    })
 
     it('should calculate calibration delta correctly (confidence normalized - score)', () => {
       // Example from AC#3
@@ -587,35 +577,32 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p1', conceptName: 'Concept' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
-      expect(metrics.overconfidentExamples[0].delta).toBe(40);
-    });
+      const metrics = calculateCalibrationMetrics(responses)
+      expect(metrics.overconfidentExamples[0].delta).toBe(40)
+    })
 
     it('should calculate Pearson correlation coefficient for 10+ assessments', () => {
-      const responses: ValidationResponse[] = Array.from(
-        { length: 15 },
-        (_, i) => ({
-          id: `${i}`,
-          promptId: `p${i}`,
-          userId: mockUserId,
-          userAnswer: `answer${i}`,
-          aiEvaluation: `eval${i}`,
-          score: 0.3 + i * 0.04,
-          confidenceLevel: 1 + Math.floor((i % 5) * 1.25),
-          calibrationDelta: 0,
-          respondedAt: new Date(),
-          skipped: false,
-          prompt: { id: `p${i}`, conceptName: `Concept` },
-        })
-      );
+      const responses: ValidationResponse[] = Array.from({ length: 15 }, (_, i) => ({
+        id: `${i}`,
+        promptId: `p${i}`,
+        userId: mockUserId,
+        userAnswer: `answer${i}`,
+        aiEvaluation: `eval${i}`,
+        score: 0.3 + i * 0.04,
+        confidenceLevel: 1 + Math.floor((i % 5) * 1.25),
+        calibrationDelta: 0,
+        respondedAt: new Date(),
+        skipped: false,
+        prompt: { id: `p${i}`, conceptName: `Concept` },
+      }))
 
-      const metrics = calculateCalibrationMetrics(responses);
-      expect(metrics.totalAttempts).toBe(15);
-      expect(metrics.correlationCoefficient >= -1 && metrics.correlationCoefficient <= 1).toBe(true);
-    });
-  });
+      const metrics = calculateCalibrationMetrics(responses)
+      expect(metrics.totalAttempts).toBe(15)
+      expect(metrics.correlationCoefficient >= -1 && metrics.correlationCoefficient <= 1).toBe(true)
+    })
+  })
 
   describe('AC#6 Compliance: Calibration Trends Dashboard', () => {
     it('should identify consistently overconfident topics', () => {
@@ -660,17 +647,15 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p3', conceptName: 'Cardiology' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
+      const metrics = calculateCalibrationMetrics(responses)
       // All should be identified as overconfident
-      expect(metrics.overconfidentExamples.length).toBe(3);
+      expect(metrics.overconfidentExamples.length).toBe(3)
       expect(
-        metrics.overconfidentExamples.every(
-          (e) => e.conceptName === 'Cardiology' && e.delta > 15
-        )
-      ).toBe(true);
-    });
+        metrics.overconfidentExamples.every((e) => e.conceptName === 'Cardiology' && e.delta > 15),
+      ).toBe(true)
+    })
 
     it('should identify consistently underconfident topics', () => {
       // AC#6: "Identify consistently underconfident topics (delta < -15 across 3+ assessments)"
@@ -714,18 +699,18 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p3', conceptName: 'Pharmacology' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
+      const metrics = calculateCalibrationMetrics(responses)
       // All should be identified as underconfident
-      expect(metrics.underconfidentExamples.length).toBe(3);
+      expect(metrics.underconfidentExamples.length).toBe(3)
       expect(
         metrics.underconfidentExamples.every(
-          (e) => e.conceptName === 'Pharmacology' && e.delta > 15
-        )
-      ).toBe(true);
-    });
-  });
+          (e) => e.conceptName === 'Pharmacology' && e.delta > 15,
+        ),
+      ).toBe(true)
+    })
+  })
 
   describe('Error Handling and Validation', () => {
     it('should handle null confidenceLevel gracefully', () => {
@@ -743,11 +728,11 @@ describe('GET /api/validation/calibration', () => {
           skipped: false,
           prompt: { id: 'p1', conceptName: 'Concept' },
         },
-      ];
+      ]
 
-      const metrics = calculateCalibrationMetrics(responses);
-      expect(metrics.calibrationScore).toBe(0);
-    });
+      const metrics = calculateCalibrationMetrics(responses)
+      expect(metrics.calibrationScore).toBe(0)
+    })
 
     it('should skip responses with skipped=true flag', () => {
       const responses: ValidationResponse[] = [
@@ -764,12 +749,12 @@ describe('GET /api/validation/calibration', () => {
           skipped: true, // Should be excluded
           prompt: { id: 'p1', conceptName: 'Concept' },
         },
-      ];
+      ]
 
       // Assuming the API filters skipped responses
-      const filteredResponses = responses.filter((r) => !r.skipped);
-      const metrics = calculateCalibrationMetrics(filteredResponses);
-      expect(metrics.totalAttempts).toBe(0);
-    });
-  });
-});
+      const filteredResponses = responses.filter((r) => !r.skipped)
+      const metrics = calculateCalibrationMetrics(filteredResponses)
+      expect(metrics.totalAttempts).toBe(0)
+    })
+  })
+})

@@ -5,9 +5,9 @@
  * Story 5.2: Predictive Analytics - Integration Tests
  */
 
-import { http, HttpResponse } from 'msw'
+import { TextDecoder, TextEncoder } from 'node:util'
+import { HttpResponse, http } from 'msw'
 import { setupServer } from 'msw/node'
-import { TextEncoder, TextDecoder } from 'node:util'
 
 // Polyfill for Node.js environment
 global.TextEncoder = TextEncoder as typeof global.TextEncoder

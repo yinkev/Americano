@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 /**
  * Peer Calibration Opt-In Dialog
@@ -9,14 +9,14 @@
  * Story 4.4 Task 9: Peer Calibration Comparison - Privacy Opt-In
  */
 
-import React, { useState } from 'react';
-import { Shield, Users, Eye, X, Check } from 'lucide-react';
+import { Check, Eye, Shield, Users, X } from 'lucide-react'
+import React, { useState } from 'react'
 
 interface PeerCalibrationOptInDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onOptIn: () => Promise<void>;
-  userId?: string;
+  isOpen: boolean
+  onClose: () => void
+  onOptIn: () => Promise<void>
+  userId?: string
 }
 
 export function PeerCalibrationOptInDialog({
@@ -25,15 +25,15 @@ export function PeerCalibrationOptInDialog({
   onOptIn,
   userId,
 }: PeerCalibrationOptInDialogProps) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   const handleOptIn = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
 
       const response = await fetch('/api/user/preferences', {
         method: 'PATCH',
@@ -44,24 +44,24 @@ export function PeerCalibrationOptInDialog({
           userId,
           sharePeerCalibrationData: true,
         }),
-      });
+      })
 
-      const result = await response.json();
+      const result = await response.json()
 
       if (!result.success) {
-        setError(result.message || 'Failed to enable peer comparison');
-        return;
+        setError(result.message || 'Failed to enable peer comparison')
+        return
       }
 
-      await onOptIn();
-      onClose();
+      await onOptIn()
+      onClose()
     } catch (err) {
-      console.error('Opt-in error:', err);
-      setError('Failed to enable peer comparison');
+      console.error('Opt-in error:', err)
+      setError('Failed to enable peer comparison')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -87,8 +87,8 @@ export function PeerCalibrationOptInDialog({
         <div className="p-6 space-y-6" style={{ fontFamily: 'Inter, sans-serif' }}>
           {/* Introduction */}
           <p className="text-[oklch(0.4_0.05_240)]">
-            Compare your confidence calibration accuracy with other students to better understand your metacognitive
-            skills.
+            Compare your confidence calibration accuracy with other students to better understand
+            your metacognitive skills.
           </p>
 
           {/* What You'll Share Section */}
@@ -104,7 +104,9 @@ export function PeerCalibrationOptInDialog({
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-4 h-4 text-[oklch(0.7_0.15_145)] flex-shrink-0 mt-0.5" />
-                <span>Topics where you show overconfidence/underconfidence patterns (anonymized)</span>
+                <span>
+                  Topics where you show overconfidence/underconfidence patterns (anonymized)
+                </span>
               </li>
             </ul>
           </div>
@@ -182,5 +184,5 @@ export function PeerCalibrationOptInDialog({
         </div>
       </div>
     </div>
-  );
+  )
 }

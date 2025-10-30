@@ -20,42 +20,42 @@
  * Response data for IRT calculation
  */
 export interface IRTResponse {
-  itemDifficulty: number; // beta parameter (0-100 scale, normalized to -3 to +3 for IRT)
-  correct: boolean; // 1 if correct, 0 if incorrect
-  discriminationIndex?: number; // Optional, for future 2PL/3PL models
+  itemDifficulty: number // beta parameter (0-100 scale, normalized to -3 to +3 for IRT)
+  correct: boolean // 1 if correct, 0 if incorrect
+  discriminationIndex?: number // Optional, for future 2PL/3PL models
 }
 
 /**
  * IRT estimation result
  */
 export interface IRTEstimationResult {
-  theta: number; // Ability estimate (-3 to +3, typical IRT scale)
-  standardError: number; // Standard error of theta estimate
-  confidenceInterval: number; // 95% CI width in points (0-100 scale)
-  iterations: number; // Number of Newton-Raphson iterations
-  converged: boolean; // Whether estimation converged
+  theta: number // Ability estimate (-3 to +3, typical IRT scale)
+  standardError: number // Standard error of theta estimate
+  confidenceInterval: number // 95% CI width in points (0-100 scale)
+  iterations: number // Number of Newton-Raphson iterations
+  converged: boolean // Whether estimation converged
 }
 
 /**
  * Discrimination index calculation result
  */
 export interface DiscriminationResult {
-  discriminationIndex: number; // D = (% correct top 27%) - (% correct bottom 27%)
-  topGroupCorrectRate: number; // Percentage (0-1)
-  bottomGroupCorrectRate: number; // Percentage (0-1)
-  sampleSize: number; // Number of responses used
-  isStatisticallyValid: boolean; // True if sample size >= 20
+  discriminationIndex: number // D = (% correct top 27%) - (% correct bottom 27%)
+  topGroupCorrectRate: number // Percentage (0-1)
+  bottomGroupCorrectRate: number // Percentage (0-1)
+  sampleSize: number // Number of responses used
+  isStatisticallyValid: boolean // True if sample size >= 20
 }
 
 /**
  * Early termination criteria result
  */
 export interface EarlyStoppingResult {
-  shouldStop: boolean; // True if ready to terminate
-  reason: string; // Human-readable reason
-  questionsAsked: number; // Current question count
-  confidenceInterval: number; // Current CI width (0-100 scale)
-  minimumQuestionsReached: boolean; // True if >= 3 questions asked
+  shouldStop: boolean // True if ready to terminate
+  reason: string // Human-readable reason
+  questionsAsked: number // Current question count
+  confidenceInterval: number // Current CI width (0-100 scale)
+  minimumQuestionsReached: boolean // True if >= 3 questions asked
 }
 
 /**
@@ -65,9 +65,9 @@ export interface EarlyStoppingResult {
  */
 function normalizeDifficultyToIRT(difficulty: number): number {
   if (difficulty < 0 || difficulty > 100) {
-    throw new Error('Difficulty must be between 0 and 100');
+    throw new Error('Difficulty must be between 0 and 100')
   }
-  return ((difficulty - 50) / 50) * 3;
+  return ((difficulty - 50) / 50) * 3
 }
 
 /**
@@ -76,7 +76,7 @@ function normalizeDifficultyToIRT(difficulty: number): number {
  * Formula: (theta / 3 * 50) + 50
  */
 function denormalizeThetaToPercentage(theta: number): number {
-  return (theta / 3) * 50 + 50;
+  return (theta / 3) * 50 + 50
 }
 
 /**
@@ -85,7 +85,7 @@ function denormalizeThetaToPercentage(theta: number): number {
  * We multiply by 50/3 to convert to percentage scale
  */
 function denormalizeCI(ciIRT: number): number {
-  return ciIRT * (50 / 3);
+  return ciIRT * (50 / 3)
 }
 
 /**
@@ -99,9 +99,9 @@ function denormalizeCI(ciIRT: number): number {
  * @returns Probability of correct response (0 to 1)
  */
 export function logisticFunction(theta: number, difficulty: number): number {
-  const exponent = theta - difficulty;
-  const expValue = Math.exp(exponent);
-  return expValue / (1 + expValue);
+  const exponent = theta - difficulty
+  const expValue = Math.exp(exponent)
+  return expValue / (1 + expValue)
 }
 
 /**
@@ -113,18 +113,18 @@ export function logisticFunction(theta: number, difficulty: number): number {
  * @returns First derivative value
  */
 function calculateFirstDerivative(theta: number, responses: IRTResponse[]): number {
-  let derivative = 0;
+  let derivative = 0
 
   for (const response of responses) {
-    const beta = normalizeDifficultyToIRT(response.itemDifficulty);
-    const probability = logisticFunction(theta, beta);
-    const correct = response.correct ? 1 : 0;
+    const beta = normalizeDifficultyToIRT(response.itemDifficulty)
+    const probability = logisticFunction(theta, beta)
+    const correct = response.correct ? 1 : 0
 
     // First derivative: Σ[correct - P(theta, beta)]
-    derivative += correct - probability;
+    derivative += correct - probability
   }
 
-  return derivative;
+  return derivative
 }
 
 /**
@@ -136,17 +136,17 @@ function calculateFirstDerivative(theta: number, responses: IRTResponse[]): numb
  * @returns Second derivative value (negative information)
  */
 function calculateSecondDerivative(theta: number, responses: IRTResponse[]): number {
-  let derivative = 0;
+  let derivative = 0
 
   for (const response of responses) {
-    const beta = normalizeDifficultyToIRT(response.itemDifficulty);
-    const probability = logisticFunction(theta, beta);
+    const beta = normalizeDifficultyToIRT(response.itemDifficulty)
+    const probability = logisticFunction(theta, beta)
 
     // Second derivative: -Σ[P(theta, beta) * (1 - P(theta, beta))]
-    derivative -= probability * (1 - probability);
+    derivative -= probability * (1 - probability)
   }
 
-  return derivative;
+  return derivative
 }
 
 /**
@@ -165,63 +165,63 @@ function calculateSecondDerivative(theta: number, responses: IRTResponse[]): num
  */
 export function estimateTheta(responses: IRTResponse[]): IRTEstimationResult {
   if (responses.length === 0) {
-    throw new Error('At least one response is required for IRT estimation');
+    throw new Error('At least one response is required for IRT estimation')
   }
 
   // Validate responses
   for (const response of responses) {
     if (response.itemDifficulty < 0 || response.itemDifficulty > 100) {
-      throw new Error('Item difficulty must be between 0 and 100');
+      throw new Error('Item difficulty must be between 0 and 100')
     }
   }
 
   // Configuration
-  const MAX_ITERATIONS = 10;
-  const CONVERGENCE_TOLERANCE = 0.01;
+  const MAX_ITERATIONS = 10
+  const CONVERGENCE_TOLERANCE = 0.01
 
   // Initialize theta at 0 (average ability)
-  let theta = 0;
-  let iterations = 0;
-  let converged = false;
+  let theta = 0
+  let iterations = 0
+  let converged = false
 
   // Newton-Raphson iteration
   for (let i = 0; i < MAX_ITERATIONS; i++) {
-    iterations++;
+    iterations++
 
-    const firstDerivative = calculateFirstDerivative(theta, responses);
-    const secondDerivative = calculateSecondDerivative(theta, responses);
+    const firstDerivative = calculateFirstDerivative(theta, responses)
+    const secondDerivative = calculateSecondDerivative(theta, responses)
 
     // Prevent division by zero
     if (Math.abs(secondDerivative) < 1e-10) {
       // Information is too low, stop iteration
-      break;
+      break
     }
 
     // Newton-Raphson update: theta_new = theta_old - f'(theta) / f''(theta)
-    const thetaNew = theta - firstDerivative / secondDerivative;
+    const thetaNew = theta - firstDerivative / secondDerivative
 
     // Check convergence
     if (Math.abs(thetaNew - theta) < CONVERGENCE_TOLERANCE) {
-      theta = thetaNew;
-      converged = true;
-      break;
+      theta = thetaNew
+      converged = true
+      break
     }
 
-    theta = thetaNew;
+    theta = thetaNew
 
     // Clamp theta to reasonable bounds (-5 to +5)
-    theta = Math.max(-5, Math.min(5, theta));
+    theta = Math.max(-5, Math.min(5, theta))
   }
 
   // Calculate standard error: SE = sqrt(-1 / f''(theta))
-  const information = -calculateSecondDerivative(theta, responses);
-  const standardError = information > 0 ? Math.sqrt(1 / information) : 1.0;
+  const information = -calculateSecondDerivative(theta, responses)
+  const standardError = information > 0 ? Math.sqrt(1 / information) : 1.0
 
   // Calculate 95% confidence interval width (1.96 * SE)
-  const confidenceIntervalIRT = 1.96 * standardError;
+  const confidenceIntervalIRT = 1.96 * standardError
 
   // Convert CI to 0-100 scale
-  const confidenceInterval = denormalizeCI(confidenceIntervalIRT);
+  const confidenceInterval = denormalizeCI(confidenceIntervalIRT)
 
   return {
     theta,
@@ -229,7 +229,7 @@ export function estimateTheta(responses: IRTResponse[]): IRTEstimationResult {
     confidenceInterval,
     iterations,
     converged,
-  };
+  }
 }
 
 /**
@@ -243,16 +243,16 @@ export function estimateTheta(responses: IRTResponse[]): IRTEstimationResult {
 export function calculateConfidenceInterval(theta: number, n: number): number {
   // For Rasch model, information is approximately n * P(1-P)
   // Assuming average P = 0.5 (optimal information point), information ≈ n * 0.25
-  const information = n * 0.25;
+  const information = n * 0.25
 
   // Standard error: SE = sqrt(1 / information)
-  const standardError = information > 0 ? Math.sqrt(1 / information) : 1.0;
+  const standardError = information > 0 ? Math.sqrt(1 / information) : 1.0
 
   // 95% CI width: 1.96 * SE
-  const confidenceIntervalIRT = 1.96 * standardError;
+  const confidenceIntervalIRT = 1.96 * standardError
 
   // Convert to 0-100 scale
-  return denormalizeCI(confidenceIntervalIRT);
+  return denormalizeCI(confidenceIntervalIRT)
 }
 
 /**
@@ -267,24 +267,24 @@ export function calculateConfidenceInterval(theta: number, n: number): number {
  */
 export function shouldTerminateEarly(
   confidenceInterval: number,
-  questionsAsked: number
+  questionsAsked: number,
 ): EarlyStoppingResult {
-  const CI_THRESHOLD = 10; // Points on 0-100 scale
-  const MIN_QUESTIONS = 3; // Minimum questions for reliability
+  const CI_THRESHOLD = 10 // Points on 0-100 scale
+  const MIN_QUESTIONS = 3 // Minimum questions for reliability
 
-  const minimumQuestionsReached = questionsAsked >= MIN_QUESTIONS;
-  const confidencePrecise = confidenceInterval < CI_THRESHOLD;
+  const minimumQuestionsReached = questionsAsked >= MIN_QUESTIONS
+  const confidencePrecise = confidenceInterval < CI_THRESHOLD
 
-  let shouldStop = false;
-  let reason = '';
+  let shouldStop = false
+  let reason = ''
 
   if (minimumQuestionsReached && confidencePrecise) {
-    shouldStop = true;
-    reason = `Assessment complete - knowledge level estimated with ${confidenceInterval.toFixed(1)} point confidence (< ${CI_THRESHOLD} threshold) after ${questionsAsked} questions`;
+    shouldStop = true
+    reason = `Assessment complete - knowledge level estimated with ${confidenceInterval.toFixed(1)} point confidence (< ${CI_THRESHOLD} threshold) after ${questionsAsked} questions`
   } else if (!minimumQuestionsReached) {
-    reason = `Continue assessment - minimum ${MIN_QUESTIONS} questions required (currently ${questionsAsked})`;
+    reason = `Continue assessment - minimum ${MIN_QUESTIONS} questions required (currently ${questionsAsked})`
   } else if (!confidencePrecise) {
-    reason = `Continue assessment - confidence interval ${confidenceInterval.toFixed(1)} points (target: < ${CI_THRESHOLD} points)`;
+    reason = `Continue assessment - confidence interval ${confidenceInterval.toFixed(1)} points (target: < ${CI_THRESHOLD} points)`
   }
 
   return {
@@ -293,7 +293,7 @@ export function shouldTerminateEarly(
     questionsAsked,
     confidenceInterval,
     minimumQuestionsReached,
-  };
+  }
 }
 
 /**
@@ -314,34 +314,34 @@ export function shouldTerminateEarly(
  */
 export function calculateDiscriminationIndex(
   topScores: number[],
-  bottomScores: number[]
+  bottomScores: number[],
 ): DiscriminationResult {
   if (topScores.length === 0 || bottomScores.length === 0) {
-    throw new Error('Both top and bottom score arrays must contain at least one value');
+    throw new Error('Both top and bottom score arrays must contain at least one value')
   }
 
   // Validate scores are binary (0 or 1)
   for (const score of [...topScores, ...bottomScores]) {
     if (score !== 0 && score !== 1) {
-      throw new Error('Scores must be binary (0 or 1)');
+      throw new Error('Scores must be binary (0 or 1)')
     }
   }
 
   // Calculate correct rates
-  const topCorrect = topScores.filter((s) => s === 1).length;
-  const bottomCorrect = bottomScores.filter((s) => s === 1).length;
+  const topCorrect = topScores.filter((s) => s === 1).length
+  const bottomCorrect = bottomScores.filter((s) => s === 1).length
 
-  const topGroupCorrectRate = topCorrect / topScores.length;
-  const bottomGroupCorrectRate = bottomCorrect / bottomScores.length;
+  const topGroupCorrectRate = topCorrect / topScores.length
+  const bottomGroupCorrectRate = bottomCorrect / bottomScores.length
 
   // Discrimination index: D = top rate - bottom rate
-  const discriminationIndex = topGroupCorrectRate - bottomGroupCorrectRate;
+  const discriminationIndex = topGroupCorrectRate - bottomGroupCorrectRate
 
   // Total sample size
-  const sampleSize = topScores.length + bottomScores.length;
+  const sampleSize = topScores.length + bottomScores.length
 
   // Statistical validity check (minimum 20 responses recommended)
-  const isStatisticallyValid = sampleSize >= 20;
+  const isStatisticallyValid = sampleSize >= 20
 
   return {
     discriminationIndex,
@@ -349,7 +349,7 @@ export function calculateDiscriminationIndex(
     bottomGroupCorrectRate,
     sampleSize,
     isStatisticallyValid,
-  };
+  }
 }
 
 /**
@@ -359,15 +359,15 @@ export function calculateDiscriminationIndex(
  */
 export function interpretDiscrimination(D: number): string {
   if (D >= 0.4) {
-    return 'Excellent - item strongly differentiates high/low ability';
+    return 'Excellent - item strongly differentiates high/low ability'
   } else if (D >= 0.3) {
-    return 'Good - item effectively differentiates ability levels';
+    return 'Good - item effectively differentiates ability levels'
   } else if (D >= 0.2) {
-    return 'Acceptable - item provides modest differentiation';
+    return 'Acceptable - item provides modest differentiation'
   } else if (D >= 0.1) {
-    return 'Marginal - item weakly differentiates ability';
+    return 'Marginal - item weakly differentiates ability'
   } else {
-    return 'Poor - item fails to differentiate ability (flag for review)';
+    return 'Poor - item fails to differentiate ability (flag for review)'
   }
 }
 
@@ -381,24 +381,24 @@ export function interpretDiscrimination(D: number): string {
  */
 export function calculateEfficiencyGain(
   adaptiveQuestions: number,
-  baselineQuestions: number = 15
+  baselineQuestions: number = 15,
 ): {
-  questionsAsked: number;
-  baselineQuestions: number;
-  questionsSaved: number;
-  efficiencyScore: number; // Percentage improvement
-  timeSaved: string; // Human-readable estimate
+  questionsAsked: number
+  baselineQuestions: number
+  questionsSaved: number
+  efficiencyScore: number // Percentage improvement
+  timeSaved: string // Human-readable estimate
 } {
   if (adaptiveQuestions <= 0 || baselineQuestions <= 0) {
-    throw new Error('Question counts must be positive');
+    throw new Error('Question counts must be positive')
   }
 
-  const questionsSaved = Math.max(0, baselineQuestions - adaptiveQuestions);
-  const efficiencyScore = (questionsSaved / baselineQuestions) * 100;
+  const questionsSaved = Math.max(0, baselineQuestions - adaptiveQuestions)
+  const efficiencyScore = (questionsSaved / baselineQuestions) * 100
 
   // Estimate time saved (assume 2 minutes per question)
-  const minutesSaved = questionsSaved * 2;
-  const timeSaved = `${minutesSaved} minutes`;
+  const minutesSaved = questionsSaved * 2
+  const timeSaved = `${minutesSaved} minutes`
 
   return {
     questionsAsked: adaptiveQuestions,
@@ -406,7 +406,7 @@ export function calculateEfficiencyGain(
     questionsSaved,
     efficiencyScore: Math.round(efficiencyScore),
     timeSaved,
-  };
+  }
 }
 
 /**
@@ -416,15 +416,15 @@ export function calculateEfficiencyGain(
  */
 export function describeKnowledgeLevel(theta: number): string {
   if (theta >= 2.0) {
-    return 'Expert - mastery demonstrated across all difficulty levels';
+    return 'Expert - mastery demonstrated across all difficulty levels'
   } else if (theta >= 1.0) {
-    return 'Advanced - strong understanding with few gaps';
+    return 'Advanced - strong understanding with few gaps'
   } else if (theta >= 0.0) {
-    return 'Intermediate - solid foundation with room for growth';
+    return 'Intermediate - solid foundation with room for growth'
   } else if (theta >= -1.0) {
-    return 'Developing - basic understanding with significant gaps';
+    return 'Developing - basic understanding with significant gaps'
   } else {
-    return 'Novice - foundational knowledge still developing';
+    return 'Novice - foundational knowledge still developing'
   }
 }
 
@@ -435,7 +435,7 @@ export function describeKnowledgeLevel(theta: number): string {
  * @returns Ability as percentage (0-100)
  */
 export function thetaToPercentage(theta: number): number {
-  return denormalizeThetaToPercentage(theta);
+  return denormalizeThetaToPercentage(theta)
 }
 
 /**
@@ -445,26 +445,26 @@ export function thetaToPercentage(theta: number): number {
  */
 export function validateIRTResponses(responses: IRTResponse[]): void {
   if (!Array.isArray(responses)) {
-    throw new Error('Responses must be an array');
+    throw new Error('Responses must be an array')
   }
 
   if (responses.length === 0) {
-    throw new Error('At least one response is required');
+    throw new Error('At least one response is required')
   }
 
   for (let i = 0; i < responses.length; i++) {
-    const response = responses[i];
+    const response = responses[i]
 
     if (typeof response.itemDifficulty !== 'number') {
-      throw new Error(`Response ${i}: itemDifficulty must be a number`);
+      throw new Error(`Response ${i}: itemDifficulty must be a number`)
     }
 
     if (response.itemDifficulty < 0 || response.itemDifficulty > 100) {
-      throw new Error(`Response ${i}: itemDifficulty must be between 0 and 100`);
+      throw new Error(`Response ${i}: itemDifficulty must be between 0 and 100`)
     }
 
     if (typeof response.correct !== 'boolean') {
-      throw new Error(`Response ${i}: correct must be a boolean`);
+      throw new Error(`Response ${i}: correct must be a boolean`)
     }
   }
 }

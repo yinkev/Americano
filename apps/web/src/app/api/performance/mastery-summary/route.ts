@@ -5,10 +5,10 @@
  * Returns aggregate mastery level counts across all objectives
  */
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
+import type { NextRequest } from 'next/server'
 import { MasteryLevel } from '@/generated/prisma'
+import { ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {

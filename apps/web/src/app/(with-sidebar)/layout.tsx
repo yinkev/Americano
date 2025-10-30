@@ -1,11 +1,7 @@
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 
-export default function WithSidebarLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function WithSidebarLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider className="flex h-screen w-full overflow-hidden">
       <AppSidebar />
@@ -20,4 +16,3 @@ export default function WithSidebarLayout({
     </SidebarProvider>
   )
 }
-

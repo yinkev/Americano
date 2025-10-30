@@ -1,15 +1,15 @@
 'use client'
 
-import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { MissionPreferences } from '@/components/settings/mission-preferences'
-import { MissionAdaptation } from '@/components/settings/mission-adaptation'
-import { PerformancePrivacySettings } from '@/components/settings/performance-privacy-settings'
+import * as React from 'react'
 import { BehavioralPrivacySettings } from '@/components/settings/behavioral-privacy-settings'
 import { CalendarIntegrationSettings } from '@/components/settings/calendar-integration-settings'
+import { MissionAdaptation } from '@/components/settings/mission-adaptation'
+import { MissionPreferences } from '@/components/settings/mission-preferences'
 import { PersonalizationSettings } from '@/components/settings/PersonalizationSettings'
+import { PerformancePrivacySettings } from '@/components/settings/performance-privacy-settings'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function SettingsPage() {
   const router = useRouter()

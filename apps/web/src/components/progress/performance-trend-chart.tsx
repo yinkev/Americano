@@ -7,18 +7,18 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { format, subDays } from 'date-fns'
+import { useEffect, useState } from 'react'
 import {
-  LineChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
 } from 'recharts'
-import { format, subDays } from 'date-fns'
 
 interface PerformanceMetric {
   date: string
@@ -149,7 +149,9 @@ export function PerformanceTrendChart({
       <div className="flex flex-wrap gap-4 mb-6">
         {/* Time Range Selector */}
         <div>
-          <label className="block text-[11px] font-medium text-foreground mb-2 uppercase tracking-wide">Time Range</label>
+          <label className="block text-[11px] font-medium text-foreground mb-2 uppercase tracking-wide">
+            Time Range
+          </label>
           <div className="flex gap-2">
             {(['7d', '30d', '90d', 'all'] as const).map((range) => (
               <button
@@ -169,7 +171,9 @@ export function PerformanceTrendChart({
 
         {/* Metric Type Selector */}
         <div>
-          <label className="block text-[11px] font-medium text-foreground mb-2 uppercase tracking-wide">Metric</label>
+          <label className="block text-[11px] font-medium text-foreground mb-2 uppercase tracking-wide">
+            Metric
+          </label>
           <div className="flex gap-2">
             {(['retention', 'studyTime', 'reviewCount'] as const).map((metric) => (
               <button

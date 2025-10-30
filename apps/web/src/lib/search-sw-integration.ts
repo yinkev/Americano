@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 /**
  * Service Worker Integration for Search
@@ -11,29 +11,29 @@
  * Register service worker (if not already registered by next-pwa)
  */
 export async function registerSearchServiceWorker(): Promise<void> {
-  if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
-    console.warn("Service Worker not supported in this browser")
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    console.warn('Service Worker not supported in this browser')
     return
   }
 
   try {
     const registration = await navigator.serviceWorker.ready
-    console.log("Service Worker registered for search caching")
+    console.log('Service Worker registered for search caching')
 
     // Listen for updates
-    registration.addEventListener("updatefound", () => {
+    registration.addEventListener('updatefound', () => {
       const newWorker = registration.installing
       if (newWorker) {
-        newWorker.addEventListener("statechange", () => {
-          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
             // New service worker available
-            console.log("New service worker available. Please refresh.")
+            console.log('New service worker available. Please refresh.')
           }
         })
       }
     })
   } catch (error) {
-    console.error("Service Worker registration failed:", error)
+    console.error('Service Worker registration failed:', error)
   }
 }
 
@@ -47,13 +47,13 @@ export async function isSearchAvailable(): Promise<boolean> {
   }
 
   // Check if service worker has cached search API
-  if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
     try {
-      const cache = await caches.open("apis")
-      const cachedResponse = await cache.match("/api/search")
+      const cache = await caches.open('apis')
+      const cachedResponse = await cache.match('/api/search')
       return cachedResponse !== undefined
     } catch (error) {
-      console.error("Failed to check cache:", error)
+      console.error('Failed to check cache:', error)
       return false
     }
   }
@@ -64,18 +64,15 @@ export async function isSearchAvailable(): Promise<boolean> {
 /**
  * Add search results to cache for offline access
  */
-export async function cacheSearchResponse(
-  query: string,
-  response: Response
-): Promise<void> {
-  if (!("caches" in window)) return
+export async function cacheSearchResponse(query: string, response: Response): Promise<void> {
+  if (!('caches' in window)) return
 
   try {
-    const cache = await caches.open("search-results-v1")
+    const cache = await caches.open('search-results-v1')
     const cacheKey = `/api/search?q=${encodeURIComponent(query)}`
     await cache.put(cacheKey, response.clone())
   } catch (error) {
-    console.error("Failed to cache search response:", error)
+    console.error('Failed to cache search response:', error)
   }
 }
 
@@ -83,15 +80,15 @@ export async function cacheSearchResponse(
  * Get cached search response for offline access
  */
 export async function getCachedSearchResponse(query: string): Promise<Response | null> {
-  if (!("caches" in window)) return null
+  if (!('caches' in window)) return null
 
   try {
-    const cache = await caches.open("search-results-v1")
+    const cache = await caches.open('search-results-v1')
     const cacheKey = `/api/search?q=${encodeURIComponent(query)}`
     const cachedResponse = await cache.match(cacheKey)
     return cachedResponse || null
   } catch (error) {
-    console.error("Failed to get cached search response:", error)
+    console.error('Failed to get cached search response:', error)
     return null
   }
 }
@@ -100,17 +97,17 @@ export async function getCachedSearchResponse(query: string): Promise<Response |
  * Clear old search cache entries
  */
 export async function clearOldSearchCache(maxAge = 24 * 60 * 60 * 1000): Promise<void> {
-  if (!("caches" in window)) return
+  if (!('caches' in window)) return
 
   try {
-    const cache = await caches.open("search-results-v1")
+    const cache = await caches.open('search-results-v1')
     const requests = await cache.keys()
     const now = Date.now()
 
     for (const request of requests) {
       const response = await cache.match(request)
       if (response) {
-        const dateHeader = response.headers.get("date")
+        const dateHeader = response.headers.get('date')
         if (dateHeader) {
           const cacheDate = new Date(dateHeader).getTime()
           if (now - cacheDate > maxAge) {
@@ -120,7 +117,7 @@ export async function clearOldSearchCache(maxAge = 24 * 60 * 60 * 1000): Promise
       }
     }
   } catch (error) {
-    console.error("Failed to clear old search cache:", error)
+    console.error('Failed to clear old search cache:', error)
   }
 }
 
@@ -129,7 +126,7 @@ export async function clearOldSearchCache(maxAge = 24 * 60 * 60 * 1000): Promise
  */
 export async function preloadPopularSearches(queries: string[]): Promise<void> {
   if (!navigator.onLine) {
-    console.warn("Cannot preload searches while offline")
+    console.warn('Cannot preload searches while offline')
     return
   }
 
@@ -149,10 +146,10 @@ export async function preloadPopularSearches(queries: string[]): Promise<void> {
  * Sync pending searches when coming back online
  */
 export function setupOfflineSync(): void {
-  if (typeof window === "undefined") return
+  if (typeof window === 'undefined') return
 
-  window.addEventListener("online", async () => {
-    console.log("Back online - syncing search data...")
+  window.addEventListener('online', async () => {
+    console.log('Back online - syncing search data...')
 
     // Clear old cache entries
     await clearOldSearchCache()
@@ -161,7 +158,7 @@ export function setupOfflineSync(): void {
     // This could be implemented with IndexedDB integration
   })
 
-  window.addEventListener("offline", () => {
-    console.log("Offline - using cached search results")
+  window.addEventListener('offline', () => {
+    console.log('Offline - using cached search results')
   })
 }

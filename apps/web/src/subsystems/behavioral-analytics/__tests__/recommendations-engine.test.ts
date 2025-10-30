@@ -4,9 +4,9 @@
  * Story 5.6 Task 5
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { RecommendationsEngine } from '../recommendations-engine'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '@/lib/db'
+import { RecommendationsEngine } from '../recommendations-engine'
 
 // Mock Prisma
 vi.mock('@/lib/db', () => ({

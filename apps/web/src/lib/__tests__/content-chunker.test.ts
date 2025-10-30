@@ -12,8 +12,8 @@
  * - Performance and optimization
  */
 
-import { describe, it, expect, beforeEach } from '@jest/globals'
-import { ContentChunker, type ContentChunk, type ChunkingConfig } from '../content-chunker'
+import { beforeEach, describe, expect, it } from '@jest/globals'
+import { type ChunkingConfig, type ContentChunk, ContentChunker } from '../content-chunker'
 
 describe('ContentChunker', () => {
   let chunker: ContentChunker
@@ -29,7 +29,8 @@ describe('ContentChunker', () => {
 
   describe('Basic Chunking', () => {
     it('should chunk simple text into appropriate sizes', async () => {
-      const text = 'The cardiac conduction system is responsible for controlling heart rhythm. '.repeat(20)
+      const text =
+        'The cardiac conduction system is responsible for controlling heart rhythm. '.repeat(20)
 
       const chunks = await chunker.chunkText({
         text,
@@ -110,7 +111,7 @@ describe('ContentChunker', () => {
         lectureId: 'lecture-001',
       })
 
-      chunks.forEach(chunk => {
+      chunks.forEach((chunk) => {
         // Each chunk should end with sentence-ending punctuation or be truncated
         const trimmed = chunk.content.trim()
         if (trimmed.length > 0) {
@@ -121,7 +122,8 @@ describe('ContentChunker', () => {
     })
 
     it('should handle abbreviations correctly', async () => {
-      const text = 'Dr. Smith explained vs. the previous theory. The patient had approx. 2 hours remaining.'
+      const text =
+        'Dr. Smith explained vs. the previous theory. The patient had approx. 2 hours remaining.'
 
       const chunks = await chunker.chunkText({
         text,
@@ -136,14 +138,15 @@ describe('ContentChunker', () => {
     })
 
     it('should preserve medical abbreviations', async () => {
-      const text = 'The patient presented with Fig. 1 showing ECG abnormalities. Dr. Johnson reviewed Vol. 3, No. 2 of the journal.'
+      const text =
+        'The patient presented with Fig. 1 showing ECG abnormalities. Dr. Johnson reviewed Vol. 3, No. 2 of the journal.'
 
       const chunks = await chunker.chunkText({
         text,
         lectureId: 'lecture-001',
       })
 
-      const allContent = chunks.map(c => c.content).join(' ')
+      const allContent = chunks.map((c) => c.content).join(' ')
       expect(allContent).toContain('Fig.')
       expect(allContent).toContain('Vol.')
       expect(allContent).toContain('No.')
@@ -169,9 +172,7 @@ describe('ContentChunker', () => {
         const overlapStart = firstChunkWords.slice(-5).join(' ')
 
         // Second chunk should start with some overlap from first
-        expect(secondChunk.toLowerCase()).toContain(
-          overlapStart.slice(0, 20).toLowerCase()
-        )
+        expect(secondChunk.toLowerCase()).toContain(overlapStart.slice(0, 20).toLowerCase())
       }
     })
 
@@ -276,7 +277,7 @@ describe('ContentChunker', () => {
         lectureId: 'lecture-001',
       })
 
-      chunks.forEach(chunk => {
+      chunks.forEach((chunk) => {
         expect(chunk.metadata.tokenCount).toBeGreaterThanOrEqual(10) // minChunkSizeTokens
       })
     })
@@ -311,7 +312,7 @@ describe('ContentChunker', () => {
         lectureId: 'cardio-lecture',
       })
 
-      const allContent = chunks.map(c => c.content).join(' ')
+      const allContent = chunks.map((c) => c.content).join(' ')
 
       expect(allContent).toContain('sinoatrial')
       expect(allContent).toContain('atrioventricular')
@@ -333,7 +334,7 @@ describe('ContentChunker', () => {
 
       expect(chunks.length).toBeGreaterThan(0)
 
-      chunks.forEach(chunk => {
+      chunks.forEach((chunk) => {
         expect(chunk.content.length).toBeGreaterThan(0)
         expect(chunk.metadata.charCount).toBe(chunk.content.length)
       })
@@ -342,7 +343,8 @@ describe('ContentChunker', () => {
 
   describe('Edge Cases', () => {
     it('should handle text with no sentence boundaries', async () => {
-      const text = 'This is one long sentence without any periods or other endings that goes on and on'
+      const text =
+        'This is one long sentence without any periods or other endings that goes on and on'
 
       const chunks = await chunker.chunkText({
         text,

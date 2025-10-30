@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
 import { Volume2, VolumeX } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 
 // Sound effect URLs (these would be hosted assets)
@@ -14,7 +14,7 @@ const SOUNDS = {
 }
 
 // Global sound player
-let audioContext: AudioContext | null = null
+const audioContext: AudioContext | null = null
 let soundEnabled = true
 
 /**
@@ -72,11 +72,7 @@ export function SoundToggle() {
       className="fixed bottom-20 right-6 z-40 rounded-full h-12 w-12 shadow-lg bg-background/80 backdrop-blur-md border border-border/50 hover:bg-background/90"
       aria-label={enabled ? 'Disable sound effects' : 'Enable sound effects'}
     >
-      {enabled ? (
-        <Volume2 className="h-5 w-5" />
-      ) : (
-        <VolumeX className="h-5 w-5" />
-      )}
+      {enabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
     </Button>
   )
 }

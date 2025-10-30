@@ -11,12 +11,12 @@
 
 'use client'
 
-import { useState } from 'react'
 import { Brain, Calendar, Clock, Sparkles } from 'lucide-react'
+import { useState } from 'react'
+import { CalendarStatusWidget } from '@/components/orchestration/CalendarStatusWidget'
+import { CognitiveLoadIndicator } from '@/components/orchestration/CognitiveLoadIndicator'
 import { OptimalTimeSlotsPanel } from '@/components/orchestration/OptimalTimeSlotsPanel'
 import { SessionPlanPreview } from '@/components/orchestration/SessionPlanPreview'
-import { CognitiveLoadIndicator } from '@/components/orchestration/CognitiveLoadIndicator'
-import { CalendarStatusWidget } from '@/components/orchestration/CalendarStatusWidget'
 
 // Temporary mock user ID - replace with actual auth
 const MOCK_USER_ID = 'test-user-123'

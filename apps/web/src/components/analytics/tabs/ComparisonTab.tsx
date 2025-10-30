@@ -1,11 +1,21 @@
-'use client';
+'use client'
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { useComparisonData } from '@/hooks/use-understanding-analytics';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { AlertTriangle, TrendingUp, TrendingDown, Info } from 'lucide-react';
+import { AlertTriangle, Info, TrendingDown, TrendingUp } from 'lucide-react'
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useComparisonData } from '@/hooks/use-understanding-analytics'
 
 /**
  * Story 4.6 Task 3: Understanding vs. Memorization Comparison Tab
@@ -41,10 +51,10 @@ import { AlertTriangle, TrendingUp, TrendingDown, Info } from 'lucide-react';
  * @see docs/stories/story-4.6.md (Task 3.1-3.16)
  */
 export default function ComparisonTab() {
-  const { data, isLoading, error } = useComparisonData();
+  const { data, isLoading, error } = useComparisonData()
 
   if (isLoading) {
-    return <LoadingSkeleton />;
+    return <LoadingSkeleton />
   }
 
   if (error) {
@@ -56,11 +66,11 @@ export default function ComparisonTab() {
           {error instanceof Error ? error.message : 'Failed to load comparison analytics'}
         </AlertDescription>
       </Alert>
-    );
+    )
   }
 
   if (!data) {
-    return null;
+    return null
   }
 
   // Merge time-series data for dual-axis chart
@@ -68,12 +78,12 @@ export default function ComparisonTab() {
     date: memPoint.date,
     memorization: memPoint.score,
     understanding: data.understanding[idx]?.score || 0,
-  }));
+  }))
 
   // Calculate gap severity distribution
-  const highGaps = data.gaps.filter((g) => g.gap > 30).length;
-  const mediumGaps = data.gaps.filter((g) => g.gap > 20 && g.gap <= 30).length;
-  const lowGaps = data.gaps.filter((g) => g.gap <= 20).length;
+  const highGaps = data.gaps.filter((g) => g.gap > 30).length
+  const mediumGaps = data.gaps.filter((g) => g.gap > 20 && g.gap <= 30).length
+  const lowGaps = data.gaps.filter((g) => g.gap <= 20).length
 
   return (
     <div className="space-y-6">
@@ -87,7 +97,10 @@ export default function ComparisonTab() {
           </CardHeader>
           <CardContent>
             <div className="flex items-end gap-2">
-              <span className="text-4xl font-bold font-['DM_Sans']" style={{ color: getCorrelationColor(data.correlation) }}>
+              <span
+                className="text-4xl font-bold font-['DM_Sans']"
+                style={{ color: getCorrelationColor(data.correlation) }}
+              >
                 {(data.correlation * 100).toFixed(0)}%
               </span>
               {data.correlation >= 0.5 ? (
@@ -96,7 +109,9 @@ export default function ComparisonTab() {
                 <TrendingDown className="h-6 w-6 mb-1" style={{ color: 'oklch(0.65 0.20 25)' }} />
               )}
             </div>
-            <p className="text-sm text-[oklch(0.6_0.05_240)] mt-2">{getCorrelationInterpretation(data.correlation)}</p>
+            <p className="text-sm text-[oklch(0.6_0.05_240)] mt-2">
+              {getCorrelationInterpretation(data.correlation)}
+            </p>
           </CardContent>
         </Card>
 
@@ -116,13 +131,21 @@ export default function ComparisonTab() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Medium Risk (20-30 points)</span>
-                <Badge variant="secondary" style={{ backgroundColor: 'oklch(0.75 0.12 85)', color: 'oklch(0.3 0.05 85)' }} className="min-h-[28px]">
+                <Badge
+                  variant="secondary"
+                  style={{ backgroundColor: 'oklch(0.75 0.12 85)', color: 'oklch(0.3 0.05 85)' }}
+                  className="min-h-[28px]"
+                >
                   {mediumGaps}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Low Risk (&lt;20 points)</span>
-                <Badge variant="secondary" style={{ backgroundColor: 'oklch(0.7 0.15 145)', color: 'white' }} className="min-h-[28px]">
+                <Badge
+                  variant="secondary"
+                  style={{ backgroundColor: 'oklch(0.7 0.15 145)', color: 'white' }}
+                  className="min-h-[28px]"
+                >
                   {lowGaps}
                 </Badge>
               </div>
@@ -141,28 +164,40 @@ export default function ComparisonTab() {
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium">Memorization</span>
-                  <span className="text-lg font-bold font-['DM_Sans']" style={{ color: 'oklch(0.6 0.18 230)' }}>
+                  <span
+                    className="text-lg font-bold font-['DM_Sans']"
+                    style={{ color: 'oklch(0.6 0.18 230)' }}
+                  >
                     {calculateAverage(data.memorization)}%
                   </span>
                 </div>
                 <div className="w-full h-2 bg-gray-200 rounded-full">
                   <div
                     className="h-full rounded-full"
-                    style={{ width: `${calculateAverage(data.memorization)}%`, backgroundColor: 'oklch(0.6 0.18 230)' }}
+                    style={{
+                      width: `${calculateAverage(data.memorization)}%`,
+                      backgroundColor: 'oklch(0.6 0.18 230)',
+                    }}
                   />
                 </div>
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium">Understanding</span>
-                  <span className="text-lg font-bold font-['DM_Sans']" style={{ color: 'oklch(0.7 0.15 45)' }}>
+                  <span
+                    className="text-lg font-bold font-['DM_Sans']"
+                    style={{ color: 'oklch(0.7 0.15 45)' }}
+                  >
                     {calculateAverage(data.understanding)}%
                   </span>
                 </div>
                 <div className="w-full h-2 bg-gray-200 rounded-full">
                   <div
                     className="h-full rounded-full"
-                    style={{ width: `${calculateAverage(data.understanding)}%`, backgroundColor: 'oklch(0.7 0.15 45)' }}
+                    style={{
+                      width: `${calculateAverage(data.understanding)}%`,
+                      backgroundColor: 'oklch(0.7 0.15 45)',
+                    }}
                   />
                 </div>
               </div>
@@ -174,9 +209,12 @@ export default function ComparisonTab() {
       {/* Dual-Axis Line Chart */}
       <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
         <CardHeader>
-          <CardTitle className="text-xl font-['DM_Sans']">Understanding vs. Memorization Over Time</CardTitle>
+          <CardTitle className="text-xl font-['DM_Sans']">
+            Understanding vs. Memorization Over Time
+          </CardTitle>
           <CardDescription>
-            Blue line = Flashcard performance (quick recall), Orange line = Deep comprehension (validation assessments)
+            Blue line = Flashcard performance (quick recall), Orange line = Deep comprehension
+            (validation assessments)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -192,7 +230,9 @@ export default function ComparisonTab() {
                 <XAxis
                   dataKey="date"
                   stroke="oklch(0.6 0.05 240)"
-                  tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  tickFormatter={(date) =>
+                    new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                  }
                   style={{ fontSize: '12px' }}
                 />
                 <YAxis
@@ -216,7 +256,12 @@ export default function ComparisonTab() {
                   y={80}
                   stroke="oklch(0.7 0.15 145)"
                   strokeDasharray="5 5"
-                  label={{ value: 'Mastery (80%)', position: 'insideTopRight', fill: 'oklch(0.7 0.15 145)', fontSize: 12 }}
+                  label={{
+                    value: 'Mastery (80%)',
+                    position: 'insideTopRight',
+                    fill: 'oklch(0.7 0.15 145)',
+                    fontSize: 12,
+                  }}
                 />
 
                 {/* Memorization Line (Blue) */}
@@ -283,7 +328,10 @@ export default function ComparisonTab() {
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle className="flex items-center justify-between">
                       <span className="font-['DM_Sans']">{gap.objectiveName}</span>
-                      <Badge variant={gap.gap > 30 ? 'destructive' : 'secondary'} className="min-h-[28px]">
+                      <Badge
+                        variant={gap.gap > 30 ? 'destructive' : 'secondary'}
+                        className="min-h-[28px]"
+                      >
                         {gap.gap.toFixed(0)} point gap
                       </Badge>
                     </AlertTitle>
@@ -301,7 +349,10 @@ export default function ComparisonTab() {
                             {gap.understandingScore.toFixed(0)}%
                           </span>
                         </div>
-                        <div className="mt-3 p-3 rounded-md" style={{ backgroundColor: 'oklch(0.95 0.02 45)' }}>
+                        <div
+                          className="mt-3 p-3 rounded-md"
+                          style={{ backgroundColor: 'oklch(0.95 0.02 45)' }}
+                        >
                           <p className="text-sm font-medium mb-1">Recommended Action:</p>
                           <p className="text-sm text-[oklch(0.6_0.05_240)]">
                             {getGapRecommendation(gap.gap)}
@@ -318,17 +369,20 @@ export default function ComparisonTab() {
 
       {/* No Gaps - Positive Feedback */}
       {highGaps === 0 && mediumGaps === 0 && (
-        <Alert className="bg-white/95 backdrop-blur-xl border-2" style={{ borderColor: 'oklch(0.7 0.15 145)' }}>
+        <Alert
+          className="bg-white/95 backdrop-blur-xl border-2"
+          style={{ borderColor: 'oklch(0.7 0.15 145)' }}
+        >
           <TrendingUp className="h-4 w-4" style={{ color: 'oklch(0.7 0.15 145)' }} />
           <AlertTitle className="font-['DM_Sans']">Excellent Alignment!</AlertTitle>
           <AlertDescription>
-            Your memorization and understanding scores are well aligned across all objectives. This indicates genuine
-            comprehension, not just surface-level recall. Keep up the great work!
+            Your memorization and understanding scores are well aligned across all objectives. This
+            indicates genuine comprehension, not just surface-level recall. Keep up the great work!
           </AlertDescription>
         </Alert>
       )}
     </div>
-  );
+  )
 }
 
 /**
@@ -336,13 +390,17 @@ export default function ComparisonTab() {
  */
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload || payload.length === 0) {
-    return null;
+    return null
   }
 
   return (
     <div className="bg-white/95 backdrop-blur-xl shadow-lg rounded-lg p-3 border border-gray-200">
       <p className="text-sm font-medium mb-2">
-        {new Date(label).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        {new Date(label).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}
       </p>
       {payload.map((entry: any, index: number) => (
         <div key={index} className="flex items-center justify-between gap-4 text-sm">
@@ -361,7 +419,7 @@ function CustomTooltip({ active, payload, label }: any) {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 /**
@@ -389,7 +447,7 @@ function LoadingSkeleton() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 /**
@@ -397,54 +455,58 @@ function LoadingSkeleton() {
  */
 
 function calculateAverage(dataPoints: { score: number }[]): number {
-  if (dataPoints.length === 0) return 0;
-  const sum = dataPoints.reduce((acc, point) => acc + point.score, 0);
-  return Math.round(sum / dataPoints.length);
+  if (dataPoints.length === 0) return 0
+  const sum = dataPoints.reduce((acc, point) => acc + point.score, 0)
+  return Math.round(sum / dataPoints.length)
 }
 
 function getCorrelationColor(correlation: number): string {
-  if (correlation >= 0.7) return 'oklch(0.7 0.15 145)'; // Green - Strong positive
-  if (correlation >= 0.4) return 'oklch(0.6 0.18 230)'; // Blue - Moderate positive
-  if (correlation >= 0) return 'oklch(0.75 0.12 85)'; // Yellow - Weak positive
-  return 'oklch(0.65 0.20 25)'; // Red - Negative
+  if (correlation >= 0.7) return 'oklch(0.7 0.15 145)' // Green - Strong positive
+  if (correlation >= 0.4) return 'oklch(0.6 0.18 230)' // Blue - Moderate positive
+  if (correlation >= 0) return 'oklch(0.75 0.12 85)' // Yellow - Weak positive
+  return 'oklch(0.65 0.20 25)' // Red - Negative
 }
 
 function getCorrelationInterpretation(correlation: number): string {
   if (correlation >= 0.7) {
-    return 'Strong alignment between memorization and understanding. Your learning is integrated and genuine.';
+    return 'Strong alignment between memorization and understanding. Your learning is integrated and genuine.'
   }
   if (correlation >= 0.4) {
-    return 'Moderate alignment. Some areas may benefit from deeper comprehension practice.';
+    return 'Moderate alignment. Some areas may benefit from deeper comprehension practice.'
   }
   if (correlation >= 0) {
-    return 'Weak alignment. Focus on connecting memorized facts to deeper understanding.';
+    return 'Weak alignment. Focus on connecting memorized facts to deeper understanding.'
   }
-  return 'Negative correlation. This is unusual—review your study approach with an advisor.';
+  return 'Negative correlation. This is unusual—review your study approach with an advisor.'
 }
 
-function getChartInterpretation(data: { memorization: any[]; understanding: any[]; correlation: number }): string {
-  const memAvg = calculateAverage(data.memorization);
-  const undAvg = calculateAverage(data.understanding);
-  const gap = memAvg - undAvg;
+function getChartInterpretation(data: {
+  memorization: any[]
+  understanding: any[]
+  correlation: number
+}): string {
+  const memAvg = calculateAverage(data.memorization)
+  const undAvg = calculateAverage(data.understanding)
+  const gap = memAvg - undAvg
 
   if (gap > 20) {
-    return `Your memorization (${memAvg}%) significantly exceeds understanding (${undAvg}%). This suggests an "Illusion of Knowledge"—you can recall facts but may struggle with application. Increase comprehension prompts and clinical scenarios.`;
+    return `Your memorization (${memAvg}%) significantly exceeds understanding (${undAvg}%). This suggests an "Illusion of Knowledge"—you can recall facts but may struggle with application. Increase comprehension prompts and clinical scenarios.`
   }
   if (gap < -10) {
-    return `Your understanding (${undAvg}%) exceeds memorization (${memAvg}%). You grasp concepts well but might benefit from spaced repetition to strengthen quick recall for exams.`;
+    return `Your understanding (${undAvg}%) exceeds memorization (${memAvg}%). You grasp concepts well but might benefit from spaced repetition to strengthen quick recall for exams.`
   }
   if (data.correlation >= 0.7) {
-    return `Excellent balance! Your memorization (${memAvg}%) and understanding (${undAvg}%) are well-aligned with strong correlation (${(data.correlation * 100).toFixed(0)}%). This indicates integrated, exam-ready knowledge.`;
+    return `Excellent balance! Your memorization (${memAvg}%) and understanding (${undAvg}%) are well-aligned with strong correlation (${(data.correlation * 100).toFixed(0)}%). This indicates integrated, exam-ready knowledge.`
   }
-  return `Your scores are balanced (Mem: ${memAvg}%, Und: ${undAvg}%), but correlation is moderate (${(data.correlation * 100).toFixed(0)}%). Focus on consistent study across topics to strengthen connections.`;
+  return `Your scores are balanced (Mem: ${memAvg}%, Und: ${undAvg}%), but correlation is moderate (${(data.correlation * 100).toFixed(0)}%). Focus on consistent study across topics to strengthen connections.`
 }
 
 function getGapRecommendation(gap: number): string {
   if (gap > 40) {
-    return 'CRITICAL: This large gap indicates surface-level learning. Immediately pivot to deep comprehension strategies: explain concepts to peers, work through clinical cases, and use the Feynman technique (teach-back). Reduce flashcard time temporarily.';
+    return 'CRITICAL: This large gap indicates surface-level learning. Immediately pivot to deep comprehension strategies: explain concepts to peers, work through clinical cases, and use the Feynman technique (teach-back). Reduce flashcard time temporarily.'
   }
   if (gap > 30) {
-    return 'HIGH PRIORITY: Increase validation assessments (explain-in-plain-English prompts) and clinical reasoning scenarios. Allocate 70% study time to comprehension, 30% to recall practice. Schedule controlled failure challenges.';
+    return 'HIGH PRIORITY: Increase validation assessments (explain-in-plain-English prompts) and clinical reasoning scenarios. Allocate 70% study time to comprehension, 30% to recall practice. Schedule controlled failure challenges.'
   }
-  return 'MODERATE: Supplement flashcards with deeper practice. For every 10 flashcards, complete 1 comprehension prompt or clinical case. Focus on "why" and "how" questions, not just "what".';
+  return 'MODERATE: Supplement flashcards with deeper practice. For every 10 flashcards, complete 1 comprehension prompt or clinical case. Focus on "why" and "how" questions, not just "what".'
 }

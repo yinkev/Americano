@@ -121,12 +121,12 @@
  *         description: Server error
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { z } from 'zod'
 import { withErrorHandler } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
+import { errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 import { searchAnalyticsService } from '@/lib/search-analytics-service'
-import { z } from 'zod'
 
 /**
  * Validation schema for analytics request
@@ -167,9 +167,9 @@ async function handler(request: NextRequest) {
       errorResponse(
         'VALIDATION_ERROR',
         'Invalid query parameters',
-        validation.error.flatten().fieldErrors
+        validation.error.flatten().fieldErrors,
       ),
-      { status: 400 }
+      { status: 400 },
     )
   }
 
@@ -177,10 +177,7 @@ async function handler(request: NextRequest) {
 
   try {
     // Get comprehensive dashboard analytics
-    const analytics = await searchAnalyticsService.getDashboardAnalytics(
-      currentUser.id,
-      period
-    )
+    const analytics = await searchAnalyticsService.getDashboardAnalytics(currentUser.id, period)
 
     // Filter response based on metric parameter
     let responseData
@@ -221,21 +218,18 @@ async function handler(request: NextRequest) {
         ...responseData,
         period,
         generatedAt: new Date().toISOString(),
-      })
+      }),
     )
   } catch (error) {
     console.error('Failed to get analytics:', error)
 
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error occurred'
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
 
     return Response.json(
-      errorResponse(
-        'ANALYTICS_FAILED',
-        'Failed to get search analytics. Please try again.',
-        { error: errorMessage }
-      ),
-      { status: 500 }
+      errorResponse('ANALYTICS_FAILED', 'Failed to get search analytics. Please try again.', {
+        error: errorMessage,
+      }),
+      { status: 500 },
     )
   }
 }

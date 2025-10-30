@@ -12,27 +12,26 @@
  * ```
  */
 
-// Core retry service
-export {
-  RetryService,
-  retryService,
-  DEFAULT_POLICIES,
-  ErrorCategory,
-  CircuitState,
-  RetriableError,
-  PermanentError,
-  type RetryPolicy,
-  type RetryAttempt,
-  type RetryResult,
-  type CircuitBreakerState,
-} from './retry-service'
-
 // Database retry wrappers
 export {
+  DATABASE_RETRY_POLICY,
+  isDatabasePermanentError,
+  isDatabaseTransientError,
+  withDatabaseBatch,
   withDatabaseRetry,
   withDatabaseTransaction,
-  withDatabaseBatch,
-  isDatabaseTransientError,
-  isDatabasePermanentError,
-  DATABASE_RETRY_POLICY,
 } from './database-retry'
+// Core retry service
+export {
+  type CircuitBreakerState,
+  CircuitState,
+  DEFAULT_POLICIES,
+  ErrorCategory,
+  PermanentError,
+  RetriableError,
+  type RetryAttempt,
+  type RetryPolicy,
+  type RetryResult,
+  RetryService,
+  retryService,
+} from './retry-service'

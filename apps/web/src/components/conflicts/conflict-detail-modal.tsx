@@ -1,6 +1,18 @@
 'use client'
 
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Flag,
+  History,
+  Lightbulb,
+  Loader2,
+  XCircle,
+} from 'lucide-react'
 import * as React from 'react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -9,33 +21,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ConflictComparisonView } from './conflict-comparison-view'
-import { ConflictTimeline } from './conflict-timeline'
-import { ConflictEvolution } from './conflict-evolution'
-import {
-  Conflict,
-  ConflictResolution,
-  ConflictAnalysis,
-  ConflictStatus,
-  Source,
-  ConflictHistory,
-} from '@/types/conflicts'
-import {
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  Flag,
-  Lightbulb,
-  History,
-  Loader2,
-} from 'lucide-react'
 import { cn } from '@/lib/utils'
+import {
+  type Conflict,
+  type ConflictAnalysis,
+  type ConflictHistory,
+  ConflictResolution,
+  ConflictStatus,
+  type Source,
+} from '@/types/conflicts'
+import { ConflictComparisonView } from './conflict-comparison-view'
+import { ConflictEvolution } from './conflict-evolution'
+import { ConflictTimeline } from './conflict-timeline'
 
 interface ConflictDetailModalProps {
   /**
@@ -109,7 +109,9 @@ export function ConflictDetailModal({
   const [analysis, setAnalysis] = React.useState<ConflictAnalysis | null>(null)
   const [history, setHistory] = React.useState<ConflictHistory[]>([])
   const [loading, setLoading] = React.useState(false)
-  const [actionLoading, setActionLoading] = React.useState<'flag' | 'resolve' | 'dismiss' | null>(null)
+  const [actionLoading, setActionLoading] = React.useState<'flag' | 'resolve' | 'dismiss' | null>(
+    null,
+  )
   const [error, setError] = React.useState<string | null>(null)
 
   // Fetch conflict data when modal opens
@@ -165,7 +167,7 @@ export function ConflictDetailModal({
       await onResolve(
         conflict.id,
         analysis.resolutionSuggestion.preferredSourceId,
-        analysis.clinicalImplications
+        analysis.clinicalImplications,
       )
       await fetchConflictData() // Refresh data
     } catch (err) {
@@ -223,10 +225,18 @@ export function ConflictDetailModal({
         ) : conflict && sourceAMeta && sourceBMeta ? (
           <Tabs defaultValue="comparison" className="mt-4">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="comparison" className="min-h-[44px]">Comparison</TabsTrigger>
-              <TabsTrigger value="analysis" className="min-h-[44px]">AI Analysis</TabsTrigger>
-              <TabsTrigger value="history" className="min-h-[44px]">History</TabsTrigger>
-              <TabsTrigger value="evolution" className="min-h-[44px]">Evolution</TabsTrigger>
+              <TabsTrigger value="comparison" className="min-h-[44px]">
+                Comparison
+              </TabsTrigger>
+              <TabsTrigger value="analysis" className="min-h-[44px]">
+                AI Analysis
+              </TabsTrigger>
+              <TabsTrigger value="history" className="min-h-[44px]">
+                History
+              </TabsTrigger>
+              <TabsTrigger value="evolution" className="min-h-[44px]">
+                Evolution
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="comparison" className="mt-4">
@@ -260,10 +270,7 @@ export function ConflictDetailModal({
             </TabsContent>
 
             <TabsContent value="history" className="mt-4">
-              <ConflictTimeline
-                history={history}
-                currentStatus={conflict.status}
-              />
+              <ConflictTimeline history={history} currentStatus={conflict.status} />
             </TabsContent>
 
             <TabsContent value="evolution" className="mt-4">
@@ -429,10 +436,14 @@ function AnalysisPanel({ analysis }: { analysis: ConflictAnalysis }) {
                 variant="outline"
                 className="text-xs"
                 style={{
-                  borderColor: diff.significance === 'CRITICAL' ? 'oklch(0.60 0.22 25)' :
-                              diff.significance === 'HIGH' ? 'oklch(0.65 0.18 40)' :
-                              diff.significance === 'MEDIUM' ? 'oklch(0.70 0.15 60)' :
-                              'oklch(0.75 0.12 85)',
+                  borderColor:
+                    diff.significance === 'CRITICAL'
+                      ? 'oklch(0.60 0.22 25)'
+                      : diff.significance === 'HIGH'
+                        ? 'oklch(0.65 0.18 40)'
+                        : diff.significance === 'MEDIUM'
+                          ? 'oklch(0.70 0.15 60)'
+                          : 'oklch(0.75 0.12 85)',
                 }}
               >
                 {diff.significance}
@@ -453,8 +464,10 @@ function AnalysisPanel({ analysis }: { analysis: ConflictAnalysis }) {
       </div>
 
       {/* AI resolution suggestion */}
-      <div className="rounded-lg border-2 bg-white/80 backdrop-blur-md p-4"
-           style={{ borderColor: 'oklch(0.65 0.18 240)' }}>
+      <div
+        className="rounded-lg border-2 bg-white/80 backdrop-blur-md p-4"
+        style={{ borderColor: 'oklch(0.65 0.18 240)' }}
+      >
         <div className="mb-3 flex items-center gap-2">
           <Lightbulb className="h-5 w-5" style={{ color: 'oklch(0.65 0.18 240)' }} />
           <h3 className="font-semibold">AI Resolution Suggestion</h3>
@@ -472,7 +485,9 @@ function AnalysisPanel({ analysis }: { analysis: ConflictAnalysis }) {
           <p className="text-xs font-medium text-muted-foreground">Contributing Factors:</p>
           <ul className="list-inside list-disc space-y-1">
             {analysis.resolutionSuggestion.factors.map((factor, index) => (
-              <li key={index} className="text-sm">{factor}</li>
+              <li key={index} className="text-sm">
+                {factor}
+              </li>
             ))}
           </ul>
         </div>
@@ -537,9 +552,12 @@ function HistoryPanel({ conflict }: { conflict: Conflict }) {
               <div
                 className="flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background"
                 style={{
-                  borderColor: event.type === 'RESOLVED' ? 'oklch(0.60 0.15 145)' :
-                              event.type === 'FLAGGED' ? 'oklch(0.65 0.18 40)' :
-                              'oklch(0.65 0.18 240)',
+                  borderColor:
+                    event.type === 'RESOLVED'
+                      ? 'oklch(0.60 0.15 145)'
+                      : event.type === 'FLAGGED'
+                        ? 'oklch(0.65 0.18 40)'
+                        : 'oklch(0.65 0.18 240)',
                 }}
               >
                 {event.type === 'RESOLVED' ? (
@@ -550,9 +568,7 @@ function HistoryPanel({ conflict }: { conflict: Conflict }) {
                   <AlertTriangle className="h-4 w-4" style={{ color: 'oklch(0.65 0.18 240)' }} />
                 )}
               </div>
-              {index < events.length - 1 && (
-                <div className="h-full w-0.5 bg-border" />
-              )}
+              {index < events.length - 1 && <div className="h-full w-0.5 bg-border" />}
             </div>
             <div className="flex-1 pb-4">
               <p className="font-medium text-sm">{event.description}</p>

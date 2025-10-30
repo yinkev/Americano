@@ -6,9 +6,9 @@
  * Must return 200 with empty defaults, NOT 500 errors
  */
 
-import { GET } from '@/app/api/analytics/stress-profile/route'
 import { NextRequest } from 'next/server'
-import { mockStressProfile, mockNewUserStressProfile } from '@/__tests__/fixtures/cognitive-health'
+import { mockNewUserStressProfile, mockStressProfile } from '@/__tests__/fixtures/cognitive-health'
+import { GET } from '@/app/api/analytics/stress-profile/route'
 
 // Mock Prisma
 const mockPrisma = {

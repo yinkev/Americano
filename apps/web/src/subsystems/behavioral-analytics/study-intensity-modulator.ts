@@ -79,12 +79,12 @@ export class StudyIntensityModulator {
 
     // Fallback: Local calculation
     // 1. Recent study volume
-    const recentHours = await this.getStudyHours(userId, 7)
-    const baselineHours = await this.getBaselineStudyHours(userId)
+    const recentHours = await StudyIntensityModulator.getStudyHours(userId, 7)
+    const baselineHours = await StudyIntensityModulator.getBaselineStudyHours(userId)
     const volumeLoad = baselineHours > 0 ? Math.min(100, (recentHours / baselineHours) * 50) : 0
 
     // 2. Performance trend
-    const recentSessions = await this.getRecentSessions(userId, 5)
+    const recentSessions = await StudyIntensityModulator.getRecentSessions(userId, 5)
     const avgPerformance =
       recentSessions.length > 0
         ? recentSessions.reduce((sum, s) => sum + (s.performanceScore || 50), 0) /
@@ -93,7 +93,7 @@ export class StudyIntensityModulator {
     const performanceLoad = 100 - avgPerformance
 
     // 3. Validation scores
-    const validationScores = await this.getRecentValidationScores(userId, 7)
+    const validationScores = await StudyIntensityModulator.getRecentValidationScores(userId, 7)
     const avgValidation =
       validationScores.length > 0
         ? validationScores.reduce((sum, s) => sum + s, 0) / validationScores.length
@@ -101,8 +101,8 @@ export class StudyIntensityModulator {
     const comprehensionLoad = (1 - avgValidation) * 100
 
     // 4. Stress indicators
-    const abandonmentRate = await this.getAbandonmentRate(userId, 7)
-    const pauseFrequency = await this.getPauseFrequency(userId, 7)
+    const abandonmentRate = await StudyIntensityModulator.getAbandonmentRate(userId, 7)
+    const pauseFrequency = await StudyIntensityModulator.getPauseFrequency(userId, 7)
     const stressLoad = abandonmentRate * 50 + pauseFrequency * 50
 
     // Weighted cognitive load
@@ -137,8 +137,8 @@ export class StudyIntensityModulator {
    * @returns IntensityRecommendation with session adjustments
    */
   static async recommendIntensity(userId: string): Promise<IntensityRecommendation> {
-    const cognitiveLoad = await this.assessCognitiveLoad(userId)
-    const intensity = this.calculateIntensityLevel(cognitiveLoad)
+    const cognitiveLoad = await StudyIntensityModulator.assessCognitiveLoad(userId)
+    const intensity = StudyIntensityModulator.calculateIntensityLevel(cognitiveLoad)
 
     const reasoning: string[] = []
     let durationAdjustment = 0
@@ -172,7 +172,7 @@ export class StudyIntensityModulator {
     }
 
     // Calculate confidence based on data quality
-    const dataQuality = await this.getDataQualityScore(userId)
+    const dataQuality = await StudyIntensityModulator.getDataQualityScore(userId)
 
     return {
       intensity,
@@ -206,7 +206,7 @@ export class StudyIntensityModulator {
     contentDifficultyLevel: 'easy' | 'medium' | 'hard'
     reasoning: string
   }> {
-    const recommendation = await this.recommendIntensity(userId)
+    const recommendation = await StudyIntensityModulator.recommendIntensity(userId)
 
     const adjustedDuration = Math.round(
       baseDuration * (1 + recommendation.sessionModulation.durationAdjustment / 100),
@@ -238,7 +238,7 @@ export class StudyIntensityModulator {
   static async recommendRecoveryPeriod(
     userId: string,
   ): Promise<{ required: boolean; daysOff: number; lightReviewOnly: boolean; message: string }> {
-    const cognitiveLoad = await this.assessCognitiveLoad(userId)
+    const cognitiveLoad = await StudyIntensityModulator.assessCognitiveLoad(userId)
 
     if (cognitiveLoad > 80) {
       // Critical load - mandatory recovery

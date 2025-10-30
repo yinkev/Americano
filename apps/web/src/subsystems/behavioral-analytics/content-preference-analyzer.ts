@@ -9,8 +9,8 @@
  * @location apps/web/src/subsystems/behavioral-analytics/content-preference-analyzer.ts
  */
 
+import type { BehavioralEvent, StudySession, ValidationResponse } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
-import type { BehavioralEvent, ValidationResponse, StudySession } from '@/generated/prisma'
 
 /**
  * Content preference distribution across different content types.

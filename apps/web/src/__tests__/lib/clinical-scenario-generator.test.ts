@@ -98,7 +98,9 @@ describe('ClinicalScenarioGenerator', () => {
         createdAt: new Date(),
       }
 
-      jest.spyOn(mockPrisma.clinicalScenario, 'create').mockResolvedValue(mockCreatedScenario as any)
+      jest
+        .spyOn(mockPrisma.clinicalScenario, 'create')
+        .mockResolvedValue(mockCreatedScenario as any)
 
       // Mock ChatMock client
       const mockChatMockResponse = {
@@ -157,7 +159,9 @@ describe('ClinicalScenarioGenerator', () => {
       }
 
       jest.spyOn(mockPrisma.learningObjective, 'findUnique').mockResolvedValue(mockObjective as any)
-      jest.spyOn(mockPrisma.clinicalScenario, 'findFirst').mockResolvedValue(mockExistingScenario as any)
+      jest
+        .spyOn(mockPrisma.clinicalScenario, 'findFirst')
+        .mockResolvedValue(mockExistingScenario as any)
 
       const result = await generator.generateScenario({
         objectiveId: mockObjective.id,
@@ -170,9 +174,9 @@ describe('ClinicalScenarioGenerator', () => {
     it('should throw error if objective not found', async () => {
       jest.spyOn(mockPrisma.learningObjective, 'findUnique').mockResolvedValue(null)
 
-      await expect(
-        generator.generateScenario({ objectiveId: 'nonexistent' })
-      ).rejects.toThrow('Learning objective not found: nonexistent')
+      await expect(generator.generateScenario({ objectiveId: 'nonexistent' })).rejects.toThrow(
+        'Learning objective not found: nonexistent',
+      )
     })
 
     it('should map objective complexity to difficulty when not specified', async () => {
@@ -181,7 +185,9 @@ describe('ClinicalScenarioGenerator', () => {
         complexity: 'BASIC' as ObjectiveComplexity,
       }
 
-      jest.spyOn(mockPrisma.learningObjective, 'findUnique').mockResolvedValue(basicObjective as any)
+      jest
+        .spyOn(mockPrisma.learningObjective, 'findUnique')
+        .mockResolvedValue(basicObjective as any)
       jest.spyOn(mockPrisma.clinicalScenario, 'findFirst').mockResolvedValue(null)
 
       const mockCreatedScenario = {
@@ -194,7 +200,9 @@ describe('ClinicalScenarioGenerator', () => {
         createdAt: new Date(),
       }
 
-      jest.spyOn(mockPrisma.clinicalScenario, 'create').mockResolvedValue(mockCreatedScenario as any)
+      jest
+        .spyOn(mockPrisma.clinicalScenario, 'create')
+        .mockResolvedValue(mockCreatedScenario as any)
 
       // Mock ChatMock client
       const mockChatMockResponse = {
@@ -230,11 +238,13 @@ describe('ClinicalScenarioGenerator', () => {
       jest.spyOn(mockPrisma.clinicalScenario, 'findFirst').mockResolvedValue(null)
 
       // Mock ChatMock client to throw error
-      mockChatMockClient.client.chat.completions.create.mockRejectedValue(new Error('AI service unavailable'))
+      mockChatMockClient.client.chat.completions.create.mockRejectedValue(
+        new Error('AI service unavailable'),
+      )
 
-      await expect(
-        generator.generateScenario({ objectiveId: mockObjective.id })
-      ).rejects.toThrow('AI scenario generation failed')
+      await expect(generator.generateScenario({ objectiveId: mockObjective.id })).rejects.toThrow(
+        'AI scenario generation failed',
+      )
     })
   })
 

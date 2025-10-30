@@ -9,7 +9,7 @@
  * Model targets: >75% accuracy, >70% recall (prioritize catching struggles)
  */
 
-import { FeatureVector } from './struggle-feature-extractor'
+import type { FeatureVector } from './struggle-feature-extractor'
 
 /**
  * Prediction result with probability and confidence
@@ -374,7 +374,7 @@ export class StrugglePredictionModel {
 
     // Initialize weights
     const featureNames = Object.keys(trainingData[0].features).filter((k) => k !== 'metadata')
-    let weights = Array(featureNames.length).fill(0)
+    const weights = Array(featureNames.length).fill(0)
     let bias = 0
 
     const learningRate = 0.01

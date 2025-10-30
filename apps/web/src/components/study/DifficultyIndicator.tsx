@@ -1,19 +1,14 @@
-'use client';
+'use client'
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { TrendingUp } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { TrendingUp } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 
 interface DifficultyIndicatorProps {
-  currentDifficulty: number; // 0-100 scale
-  showLabel?: boolean;
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
+  currentDifficulty: number // 0-100 scale
+  showLabel?: boolean
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
 }
 
 /**
@@ -57,34 +52,34 @@ export function DifficultyIndicator({
   className,
 }: DifficultyIndicatorProps) {
   // Clamp difficulty to 0-100 range
-  const difficulty = Math.max(0, Math.min(100, currentDifficulty));
+  const difficulty = Math.max(0, Math.min(100, currentDifficulty))
 
   // Determine difficulty category and color
   const getDifficultyCategory = () => {
-    if (difficulty <= 40) return 'Low';
-    if (difficulty <= 70) return 'Medium';
-    return 'High';
-  };
+    if (difficulty <= 40) return 'Low'
+    if (difficulty <= 70) return 'Medium'
+    return 'High'
+  }
 
   const getDifficultyColor = () => {
-    if (difficulty <= 40) return 'oklch(0.7 0.15 145)'; // Green
-    if (difficulty <= 70) return 'oklch(0.75 0.12 85)'; // Yellow
-    return 'oklch(0.65 0.20 25)'; // Red
-  };
+    if (difficulty <= 40) return 'oklch(0.7 0.15 145)' // Green
+    if (difficulty <= 70) return 'oklch(0.75 0.12 85)' // Yellow
+    return 'oklch(0.65 0.20 25)' // Red
+  }
 
   const getDifficultyDescription = () => {
-    const category = getDifficultyCategory();
+    const category = getDifficultyCategory()
     switch (category) {
       case 'Low':
-        return 'Questions at this level focus on foundational concepts and basic recall. Ideal for reviewing fundamentals or building confidence.';
+        return 'Questions at this level focus on foundational concepts and basic recall. Ideal for reviewing fundamentals or building confidence.'
       case 'Medium':
-        return 'Questions require application of knowledge and understanding of relationships between concepts. Typical exam-level difficulty.';
+        return 'Questions require application of knowledge and understanding of relationships between concepts. Typical exam-level difficulty.'
       case 'High':
-        return 'Questions involve advanced reasoning, synthesis of multiple concepts, and clinical judgment. Challenges your mastery.';
+        return 'Questions involve advanced reasoning, synthesis of multiple concepts, and clinical judgment. Challenges your mastery.'
       default:
-        return '';
+        return ''
     }
-  };
+  }
 
   // Size variants
   const sizeClasses = {
@@ -103,9 +98,9 @@ export function DifficultyIndicator({
       text: 'text-base',
       icon: 'h-5 w-5',
     },
-  };
+  }
 
-  const sizes = sizeClasses[size];
+  const sizes = sizeClasses[size]
 
   return (
     <TooltipProvider>
@@ -116,7 +111,7 @@ export function DifficultyIndicator({
               'inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200',
               'bg-white/95 backdrop-blur-xl border',
               'hover:shadow-md cursor-help',
-              className
+              className,
             )}
             style={{
               borderColor: 'oklch(0.9 0.02 240)',
@@ -207,5 +202,5 @@ export function DifficultyIndicator({
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
+  )
 }

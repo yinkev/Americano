@@ -1,26 +1,24 @@
-'use client';
+'use client'
 
-import React, { useState, useMemo } from 'react';
+import { ChevronRight, TrendingDown, TrendingUp } from 'lucide-react'
+import type React from 'react'
+import { useMemo, useState } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { ConfidenceSlider } from './ConfidenceSlider';
-import { ChevronRight, TrendingUp, TrendingDown } from 'lucide-react';
+} from '@/components/ui/dialog'
+import { ConfidenceSlider } from './ConfidenceSlider'
 
 interface PostAssessmentConfidenceDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  preAssessmentConfidence: number;
-  onConfidenceCaptured: (
-    postConfidence: number,
-    rationale?: string
-  ) => void;
-  promptDetails?: string;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  preAssessmentConfidence: number
+  onConfidenceCaptured: (postConfidence: number, rationale?: string) => void
+  promptDetails?: string
 }
 
 /**
@@ -28,23 +26,21 @@ interface PostAssessmentConfidenceDialogProps {
  * Appears AFTER student sees assessment prompt but BEFORE submitting response
  * Captures updated confidence to measure confidence shift from prompt exposure
  */
-export const PostAssessmentConfidenceDialog: React.FC<
-  PostAssessmentConfidenceDialogProps
-> = ({
+export const PostAssessmentConfidenceDialog: React.FC<PostAssessmentConfidenceDialogProps> = ({
   open,
   onOpenChange,
   preAssessmentConfidence,
   onConfidenceCaptured,
   promptDetails,
 }) => {
-  const [postConfidence, setPostConfidence] = useState(preAssessmentConfidence);
-  const [rationale, setRationale] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [postConfidence, setPostConfidence] = useState(preAssessmentConfidence)
+  const [rationale, setRationale] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Calculate confidence shift
   const confidenceShift = useMemo(() => {
-    return postConfidence - preAssessmentConfidence;
-  }, [postConfidence, preAssessmentConfidence]);
+    return postConfidence - preAssessmentConfidence
+  }, [postConfidence, preAssessmentConfidence])
 
   // Determine shift indicator
   const shiftIndicator = useMemo(() => {
@@ -53,43 +49,39 @@ export const PostAssessmentConfidenceDialog: React.FC<
         label: 'No change',
         color: 'oklch(0.6 0.05 240)',
         icon: null,
-      };
+      }
     } else if (confidenceShift > 0) {
       return {
         label: `+${confidenceShift}`,
         color: 'oklch(0.7 0.15 145)',
         icon: <TrendingUp className="h-4 w-4" />,
-      };
+      }
     } else {
       return {
         label: `${confidenceShift}`,
         color: 'oklch(0.65 0.20 25)',
         icon: <TrendingDown className="h-4 w-4" />,
-      };
+      }
     }
-  }, [confidenceShift]);
+  }, [confidenceShift])
 
   const handleContinue = async () => {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      onConfidenceCaptured(postConfidence, rationale || undefined);
+      onConfidenceCaptured(postConfidence, rationale || undefined)
       // Reset state for next use
-      setPostConfidence(preAssessmentConfidence);
-      setRationale('');
+      setPostConfidence(preAssessmentConfidence)
+      setRationale('')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="max-w-md bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]"
-      >
+      <DialogContent className="max-w-md bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
-            After Reading the Question
-          </DialogTitle>
+          <DialogTitle className="text-xl font-bold">After Reading the Question</DialogTitle>
           <DialogDescription className="text-base">
             Has seeing the question changed your confidence? Update it here.
           </DialogDescription>
@@ -105,9 +97,7 @@ export const PostAssessmentConfidenceDialog: React.FC<
               borderColor: 'oklch(0.85 0.05 250)',
             }}
           >
-            <p className="text-sm font-semibold mb-2">
-              Your initial confidence:
-            </p>
+            <p className="text-sm font-semibold mb-2">Your initial confidence:</p>
             <div className="flex items-center gap-3">
               <div
                 className="px-3 py-2 rounded font-semibold text-sm"
@@ -118,9 +108,7 @@ export const PostAssessmentConfidenceDialog: React.FC<
               >
                 {preAssessmentConfidence}/5
               </div>
-              <span className="text-sm text-muted-foreground">
-                Before reading the question
-              </span>
+              <span className="text-sm text-muted-foreground">Before reading the question</span>
             </div>
           </div>
 
@@ -143,22 +131,14 @@ export const PostAssessmentConfidenceDialog: React.FC<
               borderColor: shiftIndicator.color,
             }}
           >
-            <div
-              className="p-2 rounded"
-              style={{ background: shiftIndicator.color }}
-            >
+            <div className="p-2 rounded" style={{ background: shiftIndicator.color }}>
               {shiftIndicator.icon && (
-                <div style={{ color: 'oklch(1 0 0)' }}>
-                  {shiftIndicator.icon}
-                </div>
+                <div style={{ color: 'oklch(1 0 0)' }}>{shiftIndicator.icon}</div>
               )}
             </div>
             <div className="flex-1">
               <p className="text-sm font-semibold">Confidence Shift</p>
-              <p
-                className="text-lg font-bold"
-                style={{ color: shiftIndicator.color }}
-              >
+              <p className="text-lg font-bold" style={{ color: shiftIndicator.color }}>
                 {shiftIndicator.label}
               </p>
             </div>
@@ -194,7 +174,7 @@ export const PostAssessmentConfidenceDialog: React.FC<
         </div>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default PostAssessmentConfidenceDialog;
+export default PostAssessmentConfidenceDialog

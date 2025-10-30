@@ -11,19 +11,19 @@
  * - Privacy compliance (anonymization, deletion)
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals"
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
+import { prisma } from '@/lib/db'
 import {
-  trackSearchClick,
-  getPopularSearches,
-  getZeroResultQueries,
-  getClickThroughRateAnalytics,
-  getSearchPerformanceMetrics,
-  getSearchSuggestions,
   anonymizeOldSearchQueries,
   deleteAnonymizedSearchData,
+  getClickThroughRateAnalytics,
+  getPopularSearches,
   getSearchAnalyticsSummary,
+  getSearchPerformanceMetrics,
+  getSearchSuggestions,
+  getZeroResultQueries,
+  trackSearchClick,
 } from '../search-analytics-service'
-import { prisma } from '@/lib/db'
 
 // Mock Prisma
 jest.mock('@/lib/db', () => ({
@@ -83,7 +83,7 @@ describe('SearchAnalyticsService', () => {
           resultId: 'lecture123',
           resultType: 'lecture',
           position: 0,
-        })
+        }),
       ).resolves.not.toThrow()
     })
   })
@@ -172,7 +172,8 @@ describe('SearchAnalyticsService', () => {
 
   describe('getSearchPerformanceMetrics', () => {
     it('should calculate performance metrics', async () => {
-      jest.mocked(prisma.$queryRaw)
+      jest
+        .mocked(prisma.$queryRaw)
         .mockResolvedValueOnce([
           {
             avgResponseTime: 250.5,
@@ -230,7 +231,7 @@ describe('SearchAnalyticsService', () => {
           data: expect.objectContaining({
             isAnonymized: true,
           }),
-        })
+        }),
       )
     })
 
@@ -264,7 +265,8 @@ describe('SearchAnalyticsService', () => {
   describe('getSearchAnalyticsSummary', () => {
     it('should aggregate all analytics', async () => {
       // Mock all sub-functions
-      jest.mocked(prisma.$queryRaw)
+      jest
+        .mocked(prisma.$queryRaw)
         .mockResolvedValueOnce([]) // popular searches
         .mockResolvedValueOnce([]) // zero results
         .mockResolvedValueOnce([]) // performance metrics

@@ -59,11 +59,11 @@
  *         description: Server error
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
+import { ConflictSeverity, ConflictStatus } from '@/generated/prisma'
+import { ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { ConflictStatus, ConflictSeverity } from '@/generated/prisma'
 
 // ============================================
 // Validation Schema
@@ -75,11 +75,11 @@ const QuerySchema = z.object({
   severity: z.nativeEnum(ConflictSeverity).optional(),
   limit: z.preprocess(
     (val) => (typeof val === 'string' ? Number(val) : val),
-    z.number().int().min(1).max(100).default(20)
+    z.number().int().min(1).max(100).default(20),
   ),
   offset: z.preprocess(
     (val) => (typeof val === 'string' ? Number(val) : val),
-    z.number().int().min(0).default(0)
+    z.number().int().min(0).default(0),
   ),
 })
 
@@ -102,9 +102,9 @@ export async function GET(request: NextRequest) {
         errorResponse(
           ErrorCodes.VALIDATION_ERROR,
           'Invalid query parameters',
-          validatedParams.error.issues
+          validatedParams.error.issues,
         ),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -226,14 +226,14 @@ export async function GET(request: NextRequest) {
                 snippet: conflict.sourceAChunk.content.substring(0, 200) + '...',
               }
             : conflict.sourceAFirstAid
-            ? {
-                type: 'first_aid',
-                id: conflict.sourceAFirstAid.id,
-                title: `${conflict.sourceAFirstAid.system} - ${conflict.sourceAFirstAid.section}`,
-                edition: conflict.sourceAFirstAid.edition,
-                pageNumber: conflict.sourceAFirstAid.pageNumber,
-              }
-            : null,
+              ? {
+                  type: 'first_aid',
+                  id: conflict.sourceAFirstAid.id,
+                  title: `${conflict.sourceAFirstAid.system} - ${conflict.sourceAFirstAid.section}`,
+                  edition: conflict.sourceAFirstAid.edition,
+                  pageNumber: conflict.sourceAFirstAid.pageNumber,
+                }
+              : null,
           sourceB: conflict.sourceBChunk
             ? {
                 type: 'lecture',
@@ -244,14 +244,14 @@ export async function GET(request: NextRequest) {
                 snippet: conflict.sourceBChunk.content.substring(0, 200) + '...',
               }
             : conflict.sourceBFirstAid
-            ? {
-                type: 'first_aid',
-                id: conflict.sourceBFirstAid.id,
-                title: `${conflict.sourceBFirstAid.system} - ${conflict.sourceBFirstAid.section}`,
-                edition: conflict.sourceBFirstAid.edition,
-                pageNumber: conflict.sourceBFirstAid.pageNumber,
-              }
-            : null,
+              ? {
+                  type: 'first_aid',
+                  id: conflict.sourceBFirstAid.id,
+                  title: `${conflict.sourceBFirstAid.system} - ${conflict.sourceBFirstAid.section}`,
+                  edition: conflict.sourceBFirstAid.edition,
+                  pageNumber: conflict.sourceBFirstAid.pageNumber,
+                }
+              : null,
         })),
         total,
         pagination: {
@@ -260,14 +260,14 @@ export async function GET(request: NextRequest) {
           hasMore: offset + conflicts.length < total,
         },
         latency,
-      })
+      }),
     )
   } catch (error) {
     console.error('[GET /api/conflicts] Error:', error)
 
     return NextResponse.json(
       errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to fetch conflicts'),
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

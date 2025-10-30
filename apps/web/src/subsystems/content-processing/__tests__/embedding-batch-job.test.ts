@@ -6,10 +6,10 @@
  * Epic 3 - Story 3.1 - Task 2.2
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
-import { EmbeddingBatchJob } from '../embedding-batch-job'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { prisma } from '@/lib/db'
 import { embeddingService } from '@/lib/embedding-service'
+import { EmbeddingBatchJob } from '../embedding-batch-job'
 
 // Mock dependencies
 jest.mock('@/lib/db', () => ({
@@ -157,9 +157,7 @@ describe('EmbeddingBatchJob', () => {
         } as any)
 
       prismaMock.contentChunk.findMany
-        .mockResolvedValueOnce([
-          { id: 'chunk-1', content: 'Content 1' },
-        ] as any)
+        .mockResolvedValueOnce([{ id: 'chunk-1', content: 'Content 1' }] as any)
         .mockRejectedValueOnce(new Error('Database error'))
 
       embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
@@ -199,10 +197,7 @@ describe('EmbeddingBatchJob', () => {
       ] as any)
 
       embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
-        embeddings: [
-          new Array(1536).fill(0.1),
-          new Array(1536).fill(0.2),
-        ],
+        embeddings: [new Array(1536).fill(0.1), new Array(1536).fill(0.2)],
         errors: new Map(),
         successCount: 2,
         failureCount: 0,
@@ -342,7 +337,7 @@ describe('EmbeddingBatchJob', () => {
         Promise.resolve({
           id: params.where.id,
           title: `Lecture ${params.where.id}`,
-        } as any)
+        } as any),
       )
       prismaMock.contentChunk.findMany.mockResolvedValue([
         { id: 'chunk-1', content: 'Content' },
@@ -378,9 +373,7 @@ describe('EmbeddingBatchJob', () => {
         content: `Content ${i + 1}`,
       }))
 
-      prismaMock.contentChunk.findMany.mockResolvedValue(
-        mockChunks as any
-      )
+      prismaMock.contentChunk.findMany.mockResolvedValue(mockChunks as any)
 
       embeddingServiceMock.generateBatchEmbeddings.mockResolvedValue({
         embeddings: Array(10).fill(new Array(1536).fill(0.1)),
@@ -397,9 +390,7 @@ describe('EmbeddingBatchJob', () => {
       // Verify progress was updated during processing
       const progressUpdates = jest
         .mocked(prisma.lecture.update)
-        .mock.calls.filter(
-          (call) => call[0].data && 'embeddingProgress' in call[0].data
-        )
+        .mock.calls.filter((call) => call[0].data && 'embeddingProgress' in call[0].data)
 
       expect(progressUpdates.length).toBeGreaterThan(0)
     })

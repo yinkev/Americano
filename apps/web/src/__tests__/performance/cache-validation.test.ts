@@ -20,9 +20,9 @@
  * - Max cache size: 1000 entries
  */
 
-import { SearchCache, searchCache } from '@/lib/search-cache'
 import { performanceMonitor } from '@/lib/performance-monitor'
-import type { SearchResult, SearchFilters } from '@/lib/semantic-search-service'
+import { SearchCache, searchCache } from '@/lib/search-cache'
+import type { SearchFilters, SearchResult } from '@/lib/semantic-search-service'
 
 /**
  * Medical search query dataset for realistic testing
@@ -151,8 +151,8 @@ function generateMockResults(query: string, count: number = 10): SearchResult[] 
     type: 'chunk' as const,
     title: `Search Result ${i + 1} for "${query}"`,
     snippet: `This is a snippet for ${query}...`,
-    similarity: 0.85 - (i * 0.05),
-    relevanceScore: 0.85 - (i * 0.05),
+    similarity: 0.85 - i * 0.05,
+    relevanceScore: 0.85 - i * 0.05,
     metadata: {
       courseId: 'course-1',
       courseName: 'Medical Foundations',
@@ -168,7 +168,7 @@ function generateMockResults(query: string, count: number = 10): SearchResult[] 
 function simulateSearch(
   cache: SearchCache,
   query: string,
-  filters?: SearchFilters
+  filters?: SearchFilters,
 ): { cached: boolean; durationMs: number } {
   const startTime = Date.now()
 
@@ -199,11 +199,13 @@ function simulateSearch(
 /**
  * Generate search operation sequence based on distribution
  */
-function generateSearchSequence(operationCount: number): Array<{ query: string; filters?: SearchFilters }> {
+function generateSearchSequence(
+  operationCount: number,
+): Array<{ query: string; filters?: SearchFilters }> {
   const sequence: Array<{ query: string; filters?: SearchFilters }> = []
 
   // Calculate operation counts based on distribution
-  const popularCount = Math.floor(operationCount * 0.5)   // 50% repeated
+  const popularCount = Math.floor(operationCount * 0.5) // 50% repeated
   const variationCount = Math.floor(operationCount * 0.3) // 30% variations
   const uniqueCount = operationCount - popularCount - variationCount // 20% unique
 
@@ -301,7 +303,7 @@ describe('Cache Validation - Story 3.6 Performance Engineering', () => {
 
       // Test variations
       let hits = 0
-      variations.forEach(variation => {
+      variations.forEach((variation) => {
         const result = simulateSearch(testCache, variation)
         if (result.cached) hits++
       })
@@ -409,7 +411,7 @@ describe('Cache Validation - Story 3.6 Performance Engineering', () => {
 
       // All variations should hit due to stop word removal
       let hits = 0
-      queriesWithStopWords.slice(1).forEach(query => {
+      queriesWithStopWords.slice(1).forEach((query) => {
         const result = simulateSearch(testCache, query)
         if (result.cached) hits++
       })
@@ -561,7 +563,7 @@ describe('Cache Validation - Story 3.6 Performance Engineering', () => {
       }
 
       expect(results[0]).toBe(false) // First miss
-      expect(results.slice(1).every(r => r === true)).toBe(true) // Rest hit
+      expect(results.slice(1).every((r) => r === true)).toBe(true) // Rest hit
 
       console.log('\n=== Concurrent Requests Test ===')
       console.log(`Total Requests: 11`)
@@ -663,7 +665,9 @@ describe('Validation Report Generation', () => {
     console.log(`  Actual Hit Rate: ${(hitRate * 100).toFixed(2)}%`)
     console.log(`  Claimed Hit Rate: 58.4%`)
     console.log(`  Target Hit Rate: >40%`)
-    console.log(`  Status: ${hitRate > 0.4 ? '✓ PASS' : '✗ FAIL'} ${hitRate >= 0.584 ? '(Exceeds claim!)' : hitRate > 0.5 ? '(Close to claim)' : '(Below claim)'}`)
+    console.log(
+      `  Status: ${hitRate > 0.4 ? '✓ PASS' : '✗ FAIL'} ${hitRate >= 0.584 ? '(Exceeds claim!)' : hitRate > 0.5 ? '(Close to claim)' : '(Below claim)'}`,
+    )
     console.log('')
     console.log('CACHE BEHAVIOR VERIFICATION:')
     console.log(`  ✓ TTL (Simple): 5 minutes`)

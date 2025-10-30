@@ -7,8 +7,8 @@
  * Story 2.6: Mission Performance Analytics and Adaptation
  */
 
-import { prisma } from '@/lib/db'
 import { MissionStatus } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 // Constants for adaptation logic
 const LOW_COMPLETION_THRESHOLD = 0.7 // Below 70% = too difficult
@@ -258,7 +258,7 @@ export class MissionAdaptationEngine {
           })
           break
 
-        case 'TIME_INACCURACY':
+        case 'TIME_INACCURACY': {
           // Adjust time estimates
           const avgDiff = pattern.details.avgDifference
           if (avgDiff > 0) {
@@ -283,6 +283,7 @@ export class MissionAdaptationEngine {
             })
           }
           break
+        }
 
         case 'SKIPPED_TYPES':
           // Filter out consistently skipped objective types
@@ -363,12 +364,13 @@ export class MissionAdaptationEngine {
 
     for (const rec of highPriorityRecs) {
       switch (rec.action) {
-        case 'REDUCE_DURATION':
+        case 'REDUCE_DURATION': {
           // Reduce mission duration
           const currentDuration = user.defaultMissionMinutes
           const newDuration = Math.round(currentDuration * rec.value)
           updates.defaultMissionMinutes = Math.max(30, newDuration) // Min 30 minutes
           break
+        }
 
         case 'ADJUST_DIFFICULTY':
           // Adjust difficulty level

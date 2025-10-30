@@ -8,9 +8,9 @@
  * @see /Users/kyin/Projects/Americano/docs/design/animation-patterns-guide.md#accessibility
  */
 
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 
 /**
  * Check if user prefers reduced motion
@@ -34,34 +34,34 @@ import { useEffect, useState } from 'react';
  * ```
  */
 export function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
   useEffect(() => {
     // Check if window is available (client-side only)
     if (typeof window === 'undefined') {
-      return;
+      return
     }
 
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
 
     // Set initial value
-    setPrefersReducedMotion(mediaQuery.matches);
+    setPrefersReducedMotion(mediaQuery.matches)
 
     // Listen for changes
     const listener = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches);
-    };
+      setPrefersReducedMotion(event.matches)
+    }
 
     // Modern browsers
-    mediaQuery.addEventListener('change', listener);
+    mediaQuery.addEventListener('change', listener)
 
     // Cleanup
     return () => {
-      mediaQuery.removeEventListener('change', listener);
-    };
-  }, []);
+      mediaQuery.removeEventListener('change', listener)
+    }
+  }, [])
 
-  return prefersReducedMotion;
+  return prefersReducedMotion
 }
 
 /**
@@ -83,7 +83,7 @@ export function useReducedMotion(): boolean {
  * ```
  */
 export function useAnimationConfig() {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion()
 
   if (shouldReduceMotion) {
     return {
@@ -91,14 +91,14 @@ export function useAnimationConfig() {
       animate: false,
       exit: false,
       transition: { duration: 0 },
-    };
+    }
   }
 
   return {
     initial: 'hidden',
     animate: 'visible',
     exit: 'exit',
-  };
+  }
 }
 
 /**
@@ -122,13 +122,13 @@ export function useAnimationConfig() {
  */
 export function useConditionalAnimation<T extends Record<string, unknown>>(
   normalProps: T,
-  reducedProps: Partial<T> = {}
+  reducedProps: Partial<T> = {},
 ): T {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion()
 
   if (shouldReduceMotion) {
-    return { ...normalProps, ...reducedProps } as T;
+    return { ...normalProps, ...reducedProps } as T
   }
 
-  return normalProps;
+  return normalProps
 }

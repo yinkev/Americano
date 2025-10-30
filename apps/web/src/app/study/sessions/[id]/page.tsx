@@ -1,29 +1,36 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { format } from 'date-fns'
+import {
+  ArrowLeft,
+  BarChart3,
+  BookOpen,
+  CheckCircle2,
+  Clock,
+  Download,
+  Eye,
+  PlayCircle,
+  RotateCcw,
+  Share2,
+  Star,
+  Target,
+  TrendingUp,
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { use, useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { MissionFeedbackDialog } from '@/components/missions/feedback-dialog'
+import { AccuracyTrendsChart } from '@/components/study/charts/accuracy-trends-chart'
+import { SelfAssessmentRadarChart } from '@/components/study/charts/self-assessment-radar-chart'
+import { TimePerObjectiveChart } from '@/components/study/charts/time-per-objective-chart'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { formatDuration, formatDurationHuman } from '@/lib/format-time'
-import {
-  Clock,
-  BookOpen,
-  Target,
-  ArrowLeft,
-  TrendingUp,
-  Star,
-  CheckCircle2,
-  Share2,
-  Download,
-  PlayCircle,
-  Eye,
-} from 'lucide-react'
-import { toast } from 'sonner'
-import { format } from 'date-fns'
-import { TimePerObjectiveChart } from '@/components/study/charts/time-per-objective-chart'
-import { SelfAssessmentRadarChart } from '@/components/study/charts/self-assessment-radar-chart'
-import { AccuracyTrendsChart } from '@/components/study/charts/accuracy-trends-chart'
-import { MissionFeedbackDialog } from '@/components/missions/feedback-dialog'
 
 interface ObjectiveCompletion {
   objectiveId: string
@@ -35,15 +42,15 @@ interface ObjectiveCompletion {
 }
 
 interface CalibrationMetrics {
-  totalValidations: number;
-  avgConfidenceVsPerformanceGap: number;
+  totalValidations: number
+  avgConfidenceVsPerformanceGap: number
   categoryDistribution: {
-    overconfident: number;
-    underconfident: number;
-    calibrated: number;
-  };
-  reflectionCompletionRate: number;
-  calibrationTimeMinutes: number;
+    overconfident: number
+    underconfident: number
+    calibrated: number
+  }
+  reflectionCompletionRate: number
+  calibrationTimeMinutes: number
 }
 
 interface SessionData {
@@ -77,12 +84,12 @@ interface SessionData {
         id: string
         title: string
         course: {
-          name: string;
-        };
-      } | null;
-    };
-  }>;
-  calibrationMetrics?: CalibrationMetrics;
+          name: string
+        }
+      } | null
+    }
+  }>
+  calibrationMetrics?: CalibrationMetrics
 }
 
 export default function SessionSummaryPage({ params }: { params: Promise<{ id: string }> }) {
@@ -94,6 +101,8 @@ export default function SessionSummaryPage({ params }: { params: Promise<{ id: s
   const [isLoading, setIsLoading] = useState(true)
   const [showFeedbackDialog, setShowFeedbackDialog] = useState(false)
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false)
+  const [activeTab, setActiveTab] = useState('overview')
+  const [replaySpeed, setReplaySpeed] = useState(1)
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -169,18 +178,54 @@ export default function SessionSummaryPage({ params }: { params: Promise<{ id: s
     }
   }
 
+  // Enhanced export with detailed metrics (Wave 2)
   const handleExportSummary = () => {
     try {
       if (!session) throw new Error('No session loaded')
       const lines: string[] = []
-      // Header metadata
+
+      // Enhanced header metadata
       lines.push(`Session ID,${session.id}`)
+      lines.push(`User ID,${session.userId}`)
       lines.push(`Started At,${session.startedAt}`)
       lines.push(`Completed At,${session.completedAt}`)
       lines.push(`Duration,${formatDuration(session.durationMs || 0)}`)
+      lines.push(`Cards Reviewed,${session.reviewsCompleted}`)
+      lines.push(`New Cards,${session.newCardsStudied}`)
+
+      // Calculate card accuracy
+      const reviews = session.reviews || []
+      const ratingWeights: Record<string, number> = { EASY: 100, GOOD: 80, HARD: 60, AGAIN: 0 }
+      let totalScore = 0
+      reviews.forEach((review) => {
+        totalScore += ratingWeights[review.rating] || 0
+      })
+      const cardAccuracy = reviews.length > 0 ? Math.round(totalScore / reviews.length) : 0
+      lines.push(`Card Accuracy,${cardAccuracy}%`)
+
+      // Calibration metrics (if available)
+      if (session.calibrationMetrics) {
+        lines.push('')
+        lines.push('=== Calibration Metrics ===')
+        lines.push(`Total Validations,${session.calibrationMetrics.totalValidations}`)
+        lines.push(
+          `Avg Confidence-Performance Gap,${session.calibrationMetrics.avgConfidenceVsPerformanceGap}%`,
+        )
+        lines.push(
+          `Overconfident,${session.calibrationMetrics.categoryDistribution.overconfident}`,
+        )
+        lines.push(
+          `Underconfident,${session.calibrationMetrics.categoryDistribution.underconfident}`,
+        )
+        lines.push(`Calibrated,${session.calibrationMetrics.categoryDistribution.calibrated}`)
+        lines.push(
+          `Reflection Completion Rate,${session.calibrationMetrics.reflectionCompletionRate}%`,
+        )
+      }
+
       lines.push('')
-      // Table header
-      lines.push('Objective,Time Spent (min),Estimated (min),Self-Assessment,Confidence')
+      lines.push('=== Objectives ===')
+      lines.push('Objective,Time Spent (min),Estimated (min),Self-Assessment,Confidence,Notes')
 
       const completions = session.objectiveCompletions || []
       completions.forEach((c, index) => {
@@ -190,9 +235,9 @@ export default function SessionSummaryPage({ params }: { params: Promise<{ id: s
         const est = missionObj?.estimatedMinutes ?? 0
         const self = c.selfAssessment ?? ''
         const conf = c.confidenceRating ?? ''
-        // Escape commas by wrapping in quotes if needed
+        const notes = c.notes ? `"${c.notes.replace(/"/g, '""')}"` : ''
         const safeName = name.includes(',') ? `"${name.replace(/"/g, '""')}"` : name
-        lines.push([safeName, spent, est, self, conf].join(','))
+        lines.push([safeName, spent, est, self, conf, notes].join(','))
       })
 
       const csv = lines.join('\n')
@@ -201,10 +246,10 @@ export default function SessionSummaryPage({ params }: { params: Promise<{ id: s
       const link = document.createElement('a')
       link.href = url
       const dateStr = new Date(session.startedAt).toISOString().slice(0, 10)
-      link.download = `session-summary-${dateStr}-${session.id}.csv`
+      link.download = `session-summary-enhanced-${dateStr}-${session.id}.csv`
       link.click()
       URL.revokeObjectURL(url)
-      toast.success('Summary exported')
+      toast.success('Enhanced summary exported with detailed metrics')
     } catch (err) {
       console.error('Export summary failed:', err)
       toast.error('Failed to export summary')
@@ -836,23 +881,19 @@ View full summary: ${window.location.href}`
             </div>
             <div className="space-y-3">
               {/* Average Gap */}
-              <div
-                className="p-4 rounded-xl"
-                style={{ background: 'oklch(0.98 0.005 250)' }}
-              >
+              <div className="p-4 rounded-xl" style={{ background: 'oklch(0.98 0.005 250)' }}>
                 <p className="text-sm" style={{ color: 'oklch(0.4 0.15 250)' }}>
                   <strong>Average Confidence-Performance Gap:</strong>{' '}
                   {session.calibrationMetrics.avgConfidenceVsPerformanceGap}%
-                  {session.calibrationMetrics.avgConfidenceVsPerformanceGap <= 15 && ' - Well calibrated!'}
-                  {session.calibrationMetrics.avgConfidenceVsPerformanceGap > 15 && ' - Consider reviewing self-assessment accuracy'}
+                  {session.calibrationMetrics.avgConfidenceVsPerformanceGap <= 15 &&
+                    ' - Well calibrated!'}
+                  {session.calibrationMetrics.avgConfidenceVsPerformanceGap > 15 &&
+                    ' - Consider reviewing self-assessment accuracy'}
                 </p>
               </div>
 
               {/* Category Distribution */}
-              <div
-                className="p-4 rounded-xl"
-                style={{ background: 'oklch(0.98 0.005 250)' }}
-              >
+              <div className="p-4 rounded-xl" style={{ background: 'oklch(0.98 0.005 250)' }}>
                 <p className="text-sm font-medium mb-2" style={{ color: 'oklch(0.4 0.15 250)' }}>
                   Calibration Category Distribution:
                 </p>
@@ -894,24 +935,22 @@ View full summary: ${window.location.href}`
               </div>
 
               {/* Reflection Completion */}
-              <div
-                className="p-4 rounded-xl"
-                style={{ background: 'oklch(0.98 0.005 250)' }}
-              >
+              <div className="p-4 rounded-xl" style={{ background: 'oklch(0.98 0.005 250)' }}>
                 <p className="text-sm" style={{ color: 'oklch(0.4 0.15 250)' }}>
                   <strong>Metacognitive Reflection:</strong>{' '}
                   {session.calibrationMetrics.reflectionCompletionRate}% completion rate
-                  {session.calibrationMetrics.reflectionCompletionRate >= 80 && ' - Excellent engagement!'}
-                  {session.calibrationMetrics.reflectionCompletionRate >= 50 && session.calibrationMetrics.reflectionCompletionRate < 80 && ' - Good reflection practice'}
-                  {session.calibrationMetrics.reflectionCompletionRate < 50 && ' - Try reflecting more often to build metacognitive awareness'}
+                  {session.calibrationMetrics.reflectionCompletionRate >= 80 &&
+                    ' - Excellent engagement!'}
+                  {session.calibrationMetrics.reflectionCompletionRate >= 50 &&
+                    session.calibrationMetrics.reflectionCompletionRate < 80 &&
+                    ' - Good reflection practice'}
+                  {session.calibrationMetrics.reflectionCompletionRate < 50 &&
+                    ' - Try reflecting more often to build metacognitive awareness'}
                 </p>
               </div>
 
               {/* Total Validations */}
-              <div
-                className="p-4 rounded-xl"
-                style={{ background: 'oklch(0.98 0.005 250)' }}
-              >
+              <div className="p-4 rounded-xl" style={{ background: 'oklch(0.98 0.005 250)' }}>
                 <p className="text-sm" style={{ color: 'oklch(0.4 0.15 250)' }}>
                   <strong>Total Comprehension Validations:</strong>{' '}
                   {session.calibrationMetrics.totalValidations}

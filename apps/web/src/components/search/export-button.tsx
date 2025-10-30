@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 /**
  * ExportButton Component
@@ -12,20 +12,20 @@
  * - Metadata inclusion toggle
  */
 
-import * as React from "react"
-import { Download, FileJson, FileText, FileSpreadsheet, Loader2, AlertCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { AlertCircle, Download, FileJson, FileSpreadsheet, FileText, Loader2 } from 'lucide-react'
+import * as React from 'react'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu"
-import { useToast } from "@/hooks/use-toast"
-import { cn } from "@/lib/utils"
+} from '@/components/ui/dropdown-menu'
+import { useToast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
 
 type ExportFormat = 'json' | 'csv' | 'markdown'
 
@@ -73,9 +73,9 @@ export function ExportButton({ query, filters, disabled, className }: ExportButt
   const handleExport = async (format: ExportFormat) => {
     if (!query || query.trim().length === 0) {
       toast({
-        title: "Cannot export",
-        description: "Please enter a search query first",
-        variant: "destructive",
+        title: 'Cannot export',
+        description: 'Please enter a search query first',
+        variant: 'destructive',
       })
       return
     }
@@ -113,9 +113,9 @@ export function ExportButton({ query, filters, disabled, className }: ExportButt
             : 'a few'
 
           toast({
-            title: "Export limit reached",
+            title: 'Export limit reached',
             description: error.message || `You can export again in ${resetIn} minutes`,
-            variant: "destructive",
+            variant: 'destructive',
           })
           return
         }
@@ -132,22 +132,24 @@ export function ExportButton({ query, filters, disabled, className }: ExportButt
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = response.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] || `search-results.${format}`
+      a.download =
+        response.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] ||
+        `search-results.${format}`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
 
       toast({
-        title: "Export successful",
+        title: 'Export successful',
         description: `Exported ${exportCount || 'N/A'} results in ${processingTime || 'N/A'}. ${remainingExports !== null ? `${remainingExports} exports remaining this hour.` : ''}`,
       })
     } catch (error) {
       console.error('Export error:', error)
       toast({
-        title: "Export failed",
-        description: error instanceof Error ? error.message : "Failed to export search results",
-        variant: "destructive",
+        title: 'Export failed',
+        description: error instanceof Error ? error.message : 'Failed to export search results',
+        variant: 'destructive',
       })
     } finally {
       setIsExporting(false)
@@ -161,10 +163,7 @@ export function ExportButton({ query, filters, disabled, className }: ExportButt
           variant="outline"
           size="sm"
           disabled={disabled || isExporting || !query}
-          className={cn(
-            "rounded-lg bg-white/60 hover:bg-white/80 border-white/40",
-            className
-          )}
+          className={cn('rounded-lg bg-white/60 hover:bg-white/80 border-white/40', className)}
           aria-label="Export search results"
         >
           {isExporting ? (
@@ -181,7 +180,10 @@ export function ExportButton({ query, filters, disabled, className }: ExportButt
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-64 bg-white/95 backdrop-blur-md border-white/40">
+      <DropdownMenuContent
+        align="end"
+        className="w-64 bg-white/95 backdrop-blur-md border-white/40"
+      >
         <DropdownMenuLabel className="flex items-center gap-2">
           Export Results
           {remainingExports !== null && (
@@ -205,9 +207,7 @@ export function ExportButton({ query, filters, disabled, className }: ExportButt
               <Icon className="size-4 mr-2" aria-hidden="true" />
               <div className="flex-1">
                 <div className="font-medium">{formatLabels[format]}</div>
-                <div className="text-xs text-muted-foreground">
-                  {formatDescriptions[format]}
-                </div>
+                <div className="text-xs text-muted-foreground">{formatDescriptions[format]}</div>
               </div>
             </DropdownMenuItem>
           )
@@ -216,10 +216,7 @@ export function ExportButton({ query, filters, disabled, className }: ExportButt
         <DropdownMenuSeparator />
 
         {/* Metadata toggle */}
-        <DropdownMenuCheckboxItem
-          checked={includeMetadata}
-          onCheckedChange={setIncludeMetadata}
-        >
+        <DropdownMenuCheckboxItem checked={includeMetadata} onCheckedChange={setIncludeMetadata}>
           Include metadata
         </DropdownMenuCheckboxItem>
 

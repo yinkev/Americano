@@ -1,7 +1,7 @@
 import { ProcessingStatus } from '@/generated/prisma'
+import { contentChunker } from '@/lib/content-chunker'
 import { prisma } from '@/lib/db'
 import { embeddingService } from '@/lib/embedding-service'
-import { contentChunker } from '@/lib/content-chunker'
 
 interface OCRResponse {
   text: string
@@ -88,10 +88,7 @@ export class PDFProcessor {
 
       // Generate embeddings for all chunks
       await this.updateLectureStatus(lectureId, 'EMBEDDING')
-      const embeddingCount = await this.generateEmbeddingsForChunks(
-        lectureId,
-        chunkIds
-      )
+      const embeddingCount = await this.generateEmbeddingsForChunks(lectureId, chunkIds)
 
       // Mark as COMPLETED
       await prisma.lecture.update({
@@ -114,8 +111,7 @@ export class PDFProcessor {
         chunkCount: contentChunks.length,
       }
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error occurred'
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
 
       // Determine error status based on failure point
       const errorStatus = errorMessage.includes('embedding')
@@ -272,7 +268,7 @@ export class PDFProcessor {
    */
   private async createContentChunks(
     lectureId: string,
-    chunks: Array<{ content: string; metadata: any }>
+    chunks: Array<{ content: string; metadata: any }>,
   ): Promise<string[]> {
     const chunkIds: string[] = []
 
@@ -298,7 +294,7 @@ export class PDFProcessor {
    */
   private async generateEmbeddingsForChunks(
     lectureId: string,
-    chunkIds: string[]
+    chunkIds: string[],
   ): Promise<number> {
     let successCount = 0
     const totalChunks = chunkIds.length
@@ -328,9 +324,7 @@ export class PDFProcessor {
           successCount++
         } else {
           const errorMsg = batchResult.errors.get(j)
-          console.error(
-            `Failed to generate embedding for chunk ${chunks[j].id}: ${errorMsg}`
-          )
+          console.error(`Failed to generate embedding for chunk ${chunks[j].id}: ${errorMsg}`)
         }
       }
 
@@ -352,10 +346,7 @@ export class PDFProcessor {
    * Update chunk with generated embedding
    * Uses raw SQL to update vector column (not supported by Prisma ORM)
    */
-  private async updateChunkEmbedding(
-    chunkId: string,
-    embedding: number[]
-  ): Promise<void> {
+  private async updateChunkEmbedding(chunkId: string, embedding: number[]): Promise<void> {
     const embeddingStr = JSON.stringify(embedding)
     // Use raw SQL to update vector column
     await prisma.$executeRaw`
@@ -368,10 +359,7 @@ export class PDFProcessor {
   /**
    * Update lecture processing status
    */
-  private async updateLectureStatus(
-    lectureId: string,
-    status: ProcessingStatus
-  ): Promise<void> {
+  private async updateLectureStatus(lectureId: string, status: ProcessingStatus): Promise<void> {
     await prisma.lecture.update({
       where: { id: lectureId },
       data: {

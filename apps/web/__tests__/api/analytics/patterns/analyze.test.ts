@@ -5,16 +5,17 @@
  * Tests behavioral pattern analysis API endpoint
  */
 
-import type { PrismaClient } from '@/generated/prisma'
 import {
-  mockPatternAnalysisResult,
   mockInsufficientDataResult,
+  mockPatternAnalysisResult,
 } from '@/__tests__/fixtures/patterns'
+import type { PrismaClient } from '@/generated/prisma'
 
 // Mock dependencies - factory creates mock without hoisting issues
 jest.mock('@/lib/db', () => {
   const { mockDeep } = require('jest-mock-extended')
   return {
+    // @ts-expect-error - mockDeep is untyped at runtime
     prisma: mockDeep<PrismaClient>(),
   }
 })
@@ -25,11 +26,14 @@ jest.mock('@/subsystems/behavioral-analytics/behavioral-pattern-engine', () => (
   },
 }))
 
+import { NextRequest } from 'next/server'
+import type { DeepMockProxy } from 'jest-mock-extended'
 // Import after jest.mock to avoid module resolution issues
 import { POST } from '@/app/api/analytics/patterns/analyze/route'
-import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
 import { BehavioralPatternEngine } from '@/subsystems/behavioral-analytics/behavioral-pattern-engine'
-import { prisma as prismaMock } from '@/lib/db'
+
+const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>
 
 describe('POST /api/analytics/patterns/analyze', () => {
   const validUserId = 'test-user-id'
@@ -40,7 +44,7 @@ describe('POST /api/analytics/patterns/analyze', () => {
     behavioralAnalysisEnabled: true,
     createdAt: new Date(),
     updatedAt: new Date(),
-  }
+  } as any
 
   beforeEach(() => {
     jest.clearAllMocks()

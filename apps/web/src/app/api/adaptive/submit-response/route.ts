@@ -12,14 +12,14 @@
  * - Performance target: < 1s
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { getUserId } from '@/lib/auth'
-import { ApiError } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
-import { validateRequest, submitResponseSchema } from '@/lib/validation'
+import { type NextRequest, NextResponse } from 'next/server'
 import { AdaptiveDifficultyEngine } from '@/lib/adaptive/adaptive-engine'
 import { IrtEngine } from '@/lib/adaptive/irt-engine'
+import { ApiError } from '@/lib/api-error'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getUserId } from '@/lib/auth'
+import { prisma } from '@/lib/db'
+import { submitResponseSchema, validateRequest } from '@/lib/validation'
 
 export async function POST(request: NextRequest) {
   try {
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     const difficultyAdjustment = difficultyEngine.adjustDifficulty(
       data.currentDifficulty,
       score,
-      data.confidence
+      data.confidence,
     )
 
     // Get recent responses for IRT calculation
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
             }
           : null,
         efficiencyMetrics,
-      })
+      }),
     )
   } catch (error) {
     console.error('[API] POST /api/adaptive/submit-response error:', error)
@@ -181,9 +181,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(errorResponse(error), { status: error.statusCode })
     }
 
-    return NextResponse.json(
-      errorResponse(ApiError.internal('Failed to submit response')),
-      { status: 500 }
-    )
+    return NextResponse.json(errorResponse(ApiError.internal('Failed to submit response')), {
+      status: 500,
+    })
   }
 }

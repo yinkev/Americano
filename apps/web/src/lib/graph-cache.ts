@@ -17,7 +17,7 @@
  */
 
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 
 /**
  * Graph node structure matching API response
@@ -79,11 +79,7 @@ type GraphCacheActions = {
     offset?: number
     hasMore?: boolean
   }) => void
-  appendGraphData: (data: {
-    nodes: GraphNode[]
-    edges: GraphEdge[]
-    total: number
-  }) => void
+  appendGraphData: (data: { nodes: GraphNode[]; edges: GraphEdge[]; total: number }) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
   invalidateCache: () => void
@@ -240,8 +236,8 @@ export const useGraphCache = create<GraphCacheStore>()(
         hasMore: state.hasMore,
         performanceMetrics: state.performanceMetrics,
       }),
-    }
-  )
+    },
+  ),
 )
 
 /**

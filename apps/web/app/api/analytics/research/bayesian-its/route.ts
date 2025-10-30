@@ -12,14 +12,14 @@
  * Part of: Day 7-8 Research Analytics Implementation
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server'
 
 // Python FastAPI service URL
-const PYTHON_API_URL = process.env.PYTHON_API_URL || 'http://localhost:8000';
-const ITS_ENDPOINT = `${PYTHON_API_URL}/analytics/its/analyze`;
+const PYTHON_API_URL = process.env.PYTHON_API_URL || 'http://localhost:8000'
+const ITS_ENDPOINT = `${PYTHON_API_URL}/analytics/its/analyze`
 
 // Timeout for MCMC sampling (120 seconds)
-const REQUEST_TIMEOUT = 120000;
+const REQUEST_TIMEOUT = 120000
 
 /**
  * POST handler for Bayesian ITS analysis
@@ -42,26 +42,23 @@ const REQUEST_TIMEOUT = 120000;
 export async function POST(request: NextRequest) {
   try {
     // Parse request body
-    const body = await request.json();
+    const body = await request.json()
 
     // Validate required fields
     if (!body.user_id) {
-      return NextResponse.json(
-        { error: 'Missing required field: user_id' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required field: user_id' }, { status: 400 })
     }
 
     if (!body.intervention_date) {
       return NextResponse.json(
         { error: 'Missing required field: intervention_date' },
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
     // Create AbortController for timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT)
 
     try {
       // Proxy request to Python FastAPI service
@@ -72,12 +69,12 @@ export async function POST(request: NextRequest) {
         },
         body: JSON.stringify(body),
         signal: controller.signal,
-      });
+      })
 
-      clearTimeout(timeoutId);
+      clearTimeout(timeoutId)
 
       // Parse response
-      const data = await response.json();
+      const data = await response.json()
 
       // Handle Python FastAPI errors
       if (!response.ok) {
@@ -89,8 +86,8 @@ export async function POST(request: NextRequest) {
               error: data.detail || 'Invalid analysis parameters',
               type: 'validation_error',
             },
-            { status: 400 }
-          );
+            { status: 400 },
+          )
         } else if (response.status === 500) {
           // MCMC convergence failure or computation error
           return NextResponse.json(
@@ -98,8 +95,8 @@ export async function POST(request: NextRequest) {
               error: data.detail || 'Analysis computation failed',
               type: 'computation_error',
             },
-            { status: 500 }
-          );
+            { status: 500 },
+          )
         } else {
           // Other errors
           return NextResponse.json(
@@ -107,8 +104,8 @@ export async function POST(request: NextRequest) {
               error: data.detail || 'Unknown error',
               type: 'unknown_error',
             },
-            { status: response.status }
-          );
+            { status: response.status },
+          )
         }
       }
 
@@ -118,9 +115,9 @@ export async function POST(request: NextRequest) {
         headers: {
           'Cache-Control': 'private, max-age=3600', // Cache for 1 hour
         },
-      });
+      })
     } catch (fetchError) {
-      clearTimeout(timeoutId);
+      clearTimeout(timeoutId)
 
       // Handle timeout
       if (fetchError instanceof Error && fetchError.name === 'AbortError') {
@@ -130,8 +127,8 @@ export async function POST(request: NextRequest) {
             type: 'timeout_error',
             suggestion: 'Try reducing mcmc_samples or mcmc_chains parameters',
           },
-          { status: 504 }
-        );
+          { status: 504 },
+        )
       }
 
       // Handle network errors
@@ -142,12 +139,12 @@ export async function POST(request: NextRequest) {
             type: 'network_error',
             details: 'Ensure Python FastAPI service is running on port 8000',
           },
-          { status: 503 }
-        );
+          { status: 503 },
+        )
       }
 
       // Re-throw unexpected errors
-      throw fetchError;
+      throw fetchError
     }
   } catch (error) {
     // Handle JSON parsing errors
@@ -157,20 +154,20 @@ export async function POST(request: NextRequest) {
           error: 'Invalid JSON in request body',
           type: 'parse_error',
         },
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
     // Log unexpected errors
-    console.error('Bayesian ITS API Error:', error);
+    console.error('Bayesian ITS API Error:', error)
 
     return NextResponse.json(
       {
         error: 'Internal server error',
         type: 'server_error',
       },
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }
 
@@ -188,6 +185,6 @@ export async function OPTIONS(request: NextRequest) {
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Max-Age': '86400', // 24 hours
       },
-    }
-  );
+    },
+  )
 }

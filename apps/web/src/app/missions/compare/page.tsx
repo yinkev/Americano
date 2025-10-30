@@ -1,23 +1,23 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { format, parseISO, differenceInMinutes } from 'date-fns'
+import { differenceInMinutes, format, parseISO } from 'date-fns'
 import {
   ArrowLeft,
-  TrendingUp,
-  TrendingDown,
-  Minus,
   CheckCircle2,
-  XCircle,
   Clock,
-  Target,
+  Minus,
   Star,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  XCircle,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
 
 interface MissionObjective {
   objectiveId: string

@@ -10,7 +10,7 @@
  * - Mock factories for external services
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 
 /**
  * Transient error types
@@ -51,7 +51,7 @@ export class TransientErrorSimulator {
 
   constructor(
     private errorType: TransientErrorType,
-    failForNAttempts: number = 1
+    failForNAttempts: number = 1,
   ) {
     this.failureCount = failForNAttempts
   }
@@ -74,27 +74,31 @@ export class TransientErrorSimulator {
    */
   private createError(): Error {
     switch (this.errorType) {
-      case TransientErrorType.RATE_LIMIT:
+      case TransientErrorType.RATE_LIMIT: {
         const rateLimitError = new Error('Rate limit exceeded')
         ;(rateLimitError as any).status = 429
         ;(rateLimitError as any).retryAfter = 60
         return rateLimitError
+      }
 
-      case TransientErrorType.TIMEOUT:
+      case TransientErrorType.TIMEOUT: {
         const timeoutError = new Error('Request timeout')
         ;(timeoutError as any).code = 'ECONNABORTED'
         ;(timeoutError as any).timeout = 5000
         return timeoutError
+      }
 
-      case TransientErrorType.CONNECTION_ERROR:
+      case TransientErrorType.CONNECTION_ERROR: {
         const connError = new Error('Connection refused')
         ;(connError as any).code = 'ECONNREFUSED'
         return connError
+      }
 
-      case TransientErrorType.SERVICE_UNAVAILABLE:
+      case TransientErrorType.SERVICE_UNAVAILABLE: {
         const unavailableError = new Error('Service temporarily unavailable')
         ;(unavailableError as any).status = 503
         return unavailableError
+      }
 
       case TransientErrorType.TEMPORARY_FAILURE:
         return new Error('Temporary failure, please retry')
@@ -137,31 +141,36 @@ export class PermanentErrorSimulator {
    */
   private createError(): Error {
     switch (this.errorType) {
-      case PermanentErrorType.INVALID_INPUT:
+      case PermanentErrorType.INVALID_INPUT: {
         const invalidError = new Error('Invalid input provided')
         ;(invalidError as any).status = 400
         ;(invalidError as any).code = 'INVALID_INPUT'
         return invalidError
+      }
 
-      case PermanentErrorType.AUTHENTICATION_ERROR:
+      case PermanentErrorType.AUTHENTICATION_ERROR: {
         const authError = new Error('Authentication failed')
         ;(authError as any).status = 401
         return authError
+      }
 
-      case PermanentErrorType.FORBIDDEN:
+      case PermanentErrorType.FORBIDDEN: {
         const forbiddenError = new Error('Access forbidden')
         ;(forbiddenError as any).status = 403
         return forbiddenError
+      }
 
-      case PermanentErrorType.NOT_FOUND:
+      case PermanentErrorType.NOT_FOUND: {
         const notFoundError = new Error('Resource not found')
         ;(notFoundError as any).status = 404
         return notFoundError
+      }
 
-      case PermanentErrorType.INVALID_JSON:
+      case PermanentErrorType.INVALID_JSON: {
         const jsonError = new Error('Invalid JSON: Unexpected token')
         ;(jsonError as any).code = 'INVALID_JSON'
         return jsonError
+      }
 
       default:
         return new Error('Unknown permanent error')
@@ -198,14 +207,11 @@ export class BatchFailureSimulator {
   /**
    * Execute operation on batch item
    */
-  async executeItem<T>(
-    itemIndex: number,
-    fn: (index: number) => Promise<T>
-  ): Promise<T> {
+  async executeItem<T>(itemIndex: number, fn: (index: number) => Promise<T>): Promise<T> {
     const attempts = (this.itemAttemptCounts.get(itemIndex) || 0) + 1
     this.itemAttemptCounts.set(itemIndex, attempts)
 
-    const config = this.failureConfigs.find(c => c.index === itemIndex)
+    const config = this.failureConfigs.find((c) => c.index === itemIndex)
 
     if (config && attempts <= 2) {
       // Fail for first 2 attempts
@@ -232,13 +238,13 @@ export class BatchFailureSimulator {
 
   private createError(errorType: TransientErrorType | PermanentErrorType): Error {
     if (Object.values(TransientErrorType).includes(errorType as TransientErrorType)) {
-      return new TransientErrorSimulator(errorType as TransientErrorType).execute(
-        () => Promise.reject(new Error())
-      ).catch(e => e)
+      return new TransientErrorSimulator(errorType as TransientErrorType)
+        .execute(() => Promise.reject(new Error()))
+        .catch((e) => e)
     } else {
-      return new PermanentErrorSimulator(errorType as PermanentErrorType).execute(
-        () => Promise.reject(new Error())
-      ).catch(e => e)
+      return new PermanentErrorSimulator(errorType as PermanentErrorType)
+        .execute(() => Promise.reject(new Error()))
+        .catch((e) => e)
     }
   }
 }
@@ -260,14 +266,14 @@ export class ExponentialBackoffCalculator {
     private initialDelayMs: number = 100,
     private multiplier: number = 2,
     private maxDelayMs: number = 30000,
-    private jitterFactor: number = 0.1
+    private jitterFactor: number = 0.1,
   ) {}
 
   /**
    * Calculate backoff delay for nth retry
    */
   calculate(retryAttempt: number): number {
-    const exponentialDelay = this.initialDelayMs * Math.pow(this.multiplier, retryAttempt)
+    const exponentialDelay = this.initialDelayMs * this.multiplier ** retryAttempt
     const cappedDelay = Math.min(exponentialDelay, this.maxDelayMs)
     const jitter = this.calculateJitter(cappedDelay)
     return cappedDelay + jitter
@@ -285,7 +291,7 @@ export class ExponentialBackoffCalculator {
    * Calculate backoff WITHOUT jitter for deterministic testing
    */
   calculateDeterministic(retryAttempt: number): number {
-    const exponentialDelay = this.initialDelayMs * Math.pow(this.multiplier, retryAttempt)
+    const exponentialDelay = this.initialDelayMs * this.multiplier ** retryAttempt
     return Math.min(exponentialDelay, this.maxDelayMs)
   }
 
@@ -327,7 +333,7 @@ export class CircuitBreakerStateTracker {
 
   constructor(
     private failureThreshold: number = 5,
-    private resetTimeoutMs: number = 60000
+    private resetTimeoutMs: number = 60000,
   ) {}
 
   /**
@@ -462,7 +468,7 @@ export class RetryAttemptTracker {
     status: 'success' | 'failure',
     error?: Error,
     delayBeforeAttemptMs: number = 0,
-    executionTimeMs: number = 0
+    executionTimeMs: number = 0,
   ): void {
     this.attempts.push({
       id,
@@ -486,8 +492,8 @@ export class RetryAttemptTracker {
    */
   getStats() {
     const totalAttempts = this.attempts.length
-    const successCount = this.attempts.filter(a => a.status === 'success').length
-    const failureCount = this.attempts.filter(a => a.status === 'failure').length
+    const successCount = this.attempts.filter((a) => a.status === 'success').length
+    const failureCount = this.attempts.filter((a) => a.status === 'failure').length
     const totalDelayMs = this.attempts.reduce((sum, a) => sum + a.delayBeforeAttemptMs, 0)
     const totalExecutionTimeMs = this.attempts.reduce((sum, a) => sum + a.executionTimeMs, 0)
 
@@ -505,14 +511,14 @@ export class RetryAttemptTracker {
    * Get attempts that succeeded
    */
   getSuccessfulAttempts(): RetryAttemptRecord[] {
-    return this.attempts.filter(a => a.status === 'success')
+    return this.attempts.filter((a) => a.status === 'success')
   }
 
   /**
    * Get attempts that failed
    */
   getFailedAttempts(): RetryAttemptRecord[] {
-    return this.attempts.filter(a => a.status === 'failure')
+    return this.attempts.filter((a) => a.status === 'failure')
   }
 
   /**
@@ -530,10 +536,7 @@ export const retryAssertions = {
   /**
    * Assert that a function was retried the expected number of times
    */
-  assertRetryCount(
-    mockFunction: jest.MockedFunction<any>,
-    expectedRetries: number
-  ): void {
+  assertRetryCount(mockFunction: jest.MockedFunction<any>, expectedRetries: number): void {
     const totalCalls = mockFunction.mock.calls.length
     const expectedCalls = expectedRetries + 1 // original attempt + retries
     expect(totalCalls).toBe(expectedCalls)
@@ -554,10 +557,7 @@ export const retryAssertions = {
   /**
    * Assert that error was categorized correctly (retriable vs permanent)
    */
-  assertErrorCategory(
-    error: Error,
-    expectedRetriable: boolean
-  ): void {
+  assertErrorCategory(error: Error, expectedRetriable: boolean): void {
     const status = (error as any).status
     const isRetriable = status && [408, 429, 500, 502, 503, 504].includes(status)
     expect(isRetriable).toBe(expectedRetriable)
@@ -566,20 +566,14 @@ export const retryAssertions = {
   /**
    * Assert that circuit breaker triggered correctly
    */
-  assertCircuitBreakerTriggered(
-    tracker: CircuitBreakerStateTracker,
-    shouldBeOpen: boolean
-  ): void {
+  assertCircuitBreakerTriggered(tracker: CircuitBreakerStateTracker, shouldBeOpen: boolean): void {
     expect(tracker.isOpen()).toBe(shouldBeOpen)
   },
 
   /**
    * Assert that all retries were exhausted
    */
-  assertRetriesExhausted(
-    tracker: RetryAttemptTracker,
-    maxRetries: number
-  ): void {
+  assertRetriesExhausted(tracker: RetryAttemptTracker, maxRetries: number): void {
     const stats = tracker.getStats()
     expect(stats.totalAttempts).toBe(maxRetries + 1) // original + retries
     expect(stats.successCount).toBe(0)
@@ -596,7 +590,9 @@ export const mockFactories = {
    */
   createMockGeminiClient: jest.fn(() => ({
     generateEmbedding: jest.fn(async (text: string) => ({
-      embedding: Array(1536).fill(0).map(() => Math.random()),
+      embedding: Array(1536)
+        .fill(0)
+        .map(() => Math.random()),
       error: undefined,
     })),
   })),

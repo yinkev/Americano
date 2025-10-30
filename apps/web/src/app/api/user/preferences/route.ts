@@ -7,28 +7,28 @@
  * Story 4.4 Task 9: Peer Calibration Comparison - Privacy Opt-in
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
+import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { prisma } from '@/lib/db'
 
 const preferencesSchema = z.object({
   userId: z.string().optional(),
   sharePeerCalibrationData: z.boolean().optional(),
   // Future preferences can be added here
-});
+})
 
 export async function PATCH(request: NextRequest) {
   try {
-    const body = await request.json();
-    const params = preferencesSchema.parse(body);
+    const body = await request.json()
+    const params = preferencesSchema.parse(body)
 
     // Default to hardcoded kevy@americano.dev for MVP
-    const userId = params.userId || 'kevy@americano.dev';
+    const userId = params.userId || 'kevy@americano.dev'
 
     // Check if user exists
     const user = await prisma.user.findUnique({
       where: { id: userId },
-    });
+    })
 
     if (!user) {
       return NextResponse.json(
@@ -37,14 +37,14 @@ export async function PATCH(request: NextRequest) {
           error: 'USER_NOT_FOUND',
           message: 'User not found',
         },
-        { status: 404 }
-      );
+        { status: 404 },
+      )
     }
 
     // Build update data (only include fields that were provided)
-    const updateData: { sharePeerCalibrationData?: boolean } = {};
+    const updateData: { sharePeerCalibrationData?: boolean } = {}
     if (params.sharePeerCalibrationData !== undefined) {
-      updateData.sharePeerCalibrationData = params.sharePeerCalibrationData;
+      updateData.sharePeerCalibrationData = params.sharePeerCalibrationData
     }
 
     // Update user preferences
@@ -56,7 +56,7 @@ export async function PATCH(request: NextRequest) {
         sharePeerCalibrationData: true,
         // Include other preference fields as they're added
       },
-    });
+    })
 
     return NextResponse.json(
       {
@@ -68,14 +68,14 @@ export async function PATCH(request: NextRequest) {
           message: updateData.sharePeerCalibrationData
             ? 'You are now sharing anonymized calibration data with peers'
             : updateData.sharePeerCalibrationData === false
-            ? 'You have opted out of peer calibration data sharing'
-            : 'Preferences updated successfully',
+              ? 'You have opted out of peer calibration data sharing'
+              : 'Preferences updated successfully',
         },
       },
-      { status: 200 }
-    );
+      { status: 200 },
+    )
   } catch (error) {
-    console.error('[API] User preferences update error:', error);
+    console.error('[API] User preferences update error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -85,8 +85,8 @@ export async function PATCH(request: NextRequest) {
           message: 'Invalid preferences data',
           details: error.errors,
         },
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
     return NextResponse.json(
@@ -95,15 +95,15 @@ export async function PATCH(request: NextRequest) {
         error: 'PREFERENCES_UPDATE_FAILED',
         message: 'Failed to update user preferences',
       },
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const userId = searchParams.get('userId') || 'kevy@americano.dev';
+    const searchParams = request.nextUrl.searchParams
+    const userId = searchParams.get('userId') || 'kevy@americano.dev'
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
         id: true,
         sharePeerCalibrationData: true,
       },
-    });
+    })
 
     if (!user) {
       return NextResponse.json(
@@ -120,8 +120,8 @@ export async function GET(request: NextRequest) {
           error: 'USER_NOT_FOUND',
           message: 'User not found',
         },
-        { status: 404 }
-      );
+        { status: 404 },
+      )
     }
 
     return NextResponse.json(
@@ -133,10 +133,10 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      { status: 200 }
-    );
+      { status: 200 },
+    )
   } catch (error) {
-    console.error('[API] Get user preferences error:', error);
+    console.error('[API] Get user preferences error:', error)
 
     return NextResponse.json(
       {
@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
         error: 'PREFERENCES_FETCH_FAILED',
         message: 'Failed to fetch user preferences',
       },
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

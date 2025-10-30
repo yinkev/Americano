@@ -15,8 +15,8 @@
 
 'use client'
 
-import { useEffect, useState, useRef, useCallback } from 'react'
-import { Search, Clock, BookOpen, Brain, FileText, Target } from 'lucide-react'
+import { BookOpen, Brain, Clock, FileText, Search, Target } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 /**
  * Suggestion type from API
@@ -173,47 +173,49 @@ export function SearchAutocomplete({
   /**
    * Handle suggestion selection
    */
-  const handleSelect = useCallback((suggestion: Suggestion) => {
-    onSelect(suggestion.text)
-    setIsOpen(false)
-    setSelectedIndex(-1)
-  }, [onSelect])
+  const handleSelect = useCallback(
+    (suggestion: Suggestion) => {
+      onSelect(suggestion.text)
+      setIsOpen(false)
+      setSelectedIndex(-1)
+    },
+    [onSelect],
+  )
 
   /**
    * Handle keyboard navigation
    */
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (!isOpen || suggestions.length === 0) return
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!isOpen || suggestions.length === 0) return
 
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault()
-        setSelectedIndex(prev =>
-          prev < suggestions.length - 1 ? prev + 1 : 0
-        )
-        break
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault()
+          setSelectedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : 0))
+          break
 
-      case 'ArrowUp':
-        event.preventDefault()
-        setSelectedIndex(prev =>
-          prev > 0 ? prev - 1 : suggestions.length - 1
-        )
-        break
+        case 'ArrowUp':
+          event.preventDefault()
+          setSelectedIndex((prev) => (prev > 0 ? prev - 1 : suggestions.length - 1))
+          break
 
-      case 'Enter':
-        event.preventDefault()
-        if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
-          handleSelect(suggestions[selectedIndex])
-        }
-        break
+        case 'Enter':
+          event.preventDefault()
+          if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
+            handleSelect(suggestions[selectedIndex])
+          }
+          break
 
-      case 'Escape':
-        event.preventDefault()
-        setIsOpen(false)
-        setSelectedIndex(-1)
-        break
-    }
-  }, [isOpen, suggestions, selectedIndex, handleSelect])
+        case 'Escape':
+          event.preventDefault()
+          setIsOpen(false)
+          setSelectedIndex(-1)
+          break
+      }
+    },
+    [isOpen, suggestions, selectedIndex, handleSelect],
+  )
 
   /**
    * Attach keyboard event listener
@@ -254,9 +256,7 @@ export function SearchAutocomplete({
     >
       {/* Loading indicator */}
       {loading && (
-        <div className="px-4 py-2 text-sm text-oklch-gray-500">
-          Loading suggestions...
-        </div>
+        <div className="px-4 py-2 text-sm text-oklch-gray-500">Loading suggestions...</div>
       )}
 
       {/* Suggestions list */}
@@ -266,18 +266,14 @@ export function SearchAutocomplete({
             <li
               key={`${suggestion.type}-${suggestion.text}`}
               className={`cursor-pointer px-4 py-2.5 transition-colors ${
-                index === selectedIndex
-                  ? 'bg-oklch-blue-100'
-                  : 'hover:bg-oklch-gray-50'
+                index === selectedIndex ? 'bg-oklch-blue-100' : 'hover:bg-oklch-gray-50'
               }`}
               onClick={() => handleSelect(suggestion)}
               onMouseEnter={() => setSelectedIndex(index)}
             >
               <div className="flex items-center gap-3">
                 {/* Icon */}
-                <div className="flex-shrink-0">
-                  {getSuggestionIcon(suggestion.type)}
-                </div>
+                <div className="flex-shrink-0">{getSuggestionIcon(suggestion.type)}</div>
 
                 {/* Text content */}
                 <div className="flex-1 min-w-0">
@@ -302,9 +298,7 @@ export function SearchAutocomplete({
 
                 {/* Frequency indicator for popular searches */}
                 {suggestion.metadata?.frequency && suggestion.metadata.frequency > 10 && (
-                  <div className="flex-shrink-0 text-xs text-oklch-gray-400">
-                    Popular
-                  </div>
+                  <div className="flex-shrink-0 text-xs text-oklch-gray-400">Popular</div>
                 )}
               </div>
             </li>
@@ -315,12 +309,10 @@ export function SearchAutocomplete({
       {/* Footer hint */}
       <div className="border-t border-oklch-gray-200 px-4 py-2 text-xs text-oklch-gray-500">
         <kbd className="px-1.5 py-0.5 rounded bg-oklch-gray-100 font-mono">↑</kbd>
-        <kbd className="ml-1 px-1.5 py-0.5 rounded bg-oklch-gray-100 font-mono">↓</kbd>
-        {' '}to navigate,
-        <kbd className="ml-1 px-1.5 py-0.5 rounded bg-oklch-gray-100 font-mono">Enter</kbd>
-        {' '}to select,
-        <kbd className="ml-1 px-1.5 py-0.5 rounded bg-oklch-gray-100 font-mono">Esc</kbd>
-        {' '}to close
+        <kbd className="ml-1 px-1.5 py-0.5 rounded bg-oklch-gray-100 font-mono">↓</kbd> to navigate,
+        <kbd className="ml-1 px-1.5 py-0.5 rounded bg-oklch-gray-100 font-mono">Enter</kbd> to
+        select,
+        <kbd className="ml-1 px-1.5 py-0.5 rounded bg-oklch-gray-100 font-mono">Esc</kbd> to close
       </div>
     </div>
   )

@@ -9,12 +9,12 @@
  * Uses k6-style load testing patterns with Jest for TypeScript compatibility
  */
 
+import { PrismaClient } from '@/generated/prisma'
+import { BurnoutPreventionEngine } from '@/subsystems/behavioral-analytics/burnout-prevention-engine'
 import {
   CognitiveLoadMonitor,
-  SessionBehavioralData,
+  type SessionBehavioralData,
 } from '@/subsystems/behavioral-analytics/cognitive-load-monitor'
-import { BurnoutPreventionEngine } from '@/subsystems/behavioral-analytics/burnout-prevention-engine'
-import { PrismaClient } from '@/generated/prisma'
 
 // Test configuration
 const PERFORMANCE_THRESHOLDS = {

@@ -1,7 +1,7 @@
 'use client'
 
-import React from 'react'
 import { MessageCircle } from 'lucide-react'
+import React from 'react'
 import { Button } from '@/components/ui/button'
 
 export function AIChatFAB() {

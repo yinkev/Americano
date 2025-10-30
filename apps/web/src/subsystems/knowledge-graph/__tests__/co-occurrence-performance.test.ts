@@ -16,7 +16,7 @@
  * - Edge cases (empty, single concept, no co-occurrences)
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import type { Concept } from '@/types/prisma-extensions'
 import type { DetectedRelationship } from '../graph-builder'
 
@@ -49,7 +49,7 @@ import { prisma } from '@/lib/db'
 async function simulateDetectCoOccurrence(
   concepts: Concept[],
   coOccurrenceThreshold: number = 3,
-  mockCountFn: (name1: string, name2: string) => Promise<number>
+  mockCountFn: (name1: string, name2: string) => Promise<number>,
 ): Promise<DetectedRelationship[]> {
   const relationships: DetectedRelationship[] = []
 
@@ -93,7 +93,7 @@ function generateMockConcepts(count: number): Concept[] {
       name: `Concept ${i}`,
       description: `Description for concept ${i}`,
       category: categories[i % categories.length],
-      embedding: Array(1536).fill(0.1 + (i * 0.0001)),
+      embedding: Array(1536).fill(0.1 + i * 0.0001),
       createdAt: new Date(),
       updatedAt: new Date(),
     })
@@ -108,7 +108,7 @@ function generateMockConcepts(count: number): Concept[] {
  * @returns Function that returns co-occurrence count for a pair
  */
 function createCoOccurrenceMap(
-  conceptPairs: Array<[number, number, number]> // [idx1, idx2, count]
+  conceptPairs: Array<[number, number, number]>, // [idx1, idx2, count]
 ) {
   const map = new Map<string, number>()
 
@@ -322,7 +322,7 @@ describe('Co-Occurrence Detection Performance Tests', () => {
       const pair12Exists = relationshipPairs.some(
         (pair: string[]) =>
           (pair[0] === 'concept-1' && pair[1] === 'concept-2') ||
-          (pair[0] === 'concept-2' && pair[1] === 'concept-1')
+          (pair[0] === 'concept-2' && pair[1] === 'concept-1'),
       )
       expect(pair12Exists).toBe(false)
     })
@@ -434,8 +434,7 @@ describe('Co-Occurrence Detection Performance Tests', () => {
 
         const pair = coOccurrencePairs.find(
           ([a, b]) =>
-            (a === concept1Idx && b === concept2Idx) ||
-            (a === concept2Idx && b === concept1Idx)
+            (a === concept1Idx && b === concept2Idx) || (a === concept2Idx && b === concept1Idx),
         )
 
         expect(pair?.[2]).toBeGreaterThanOrEqual(threshold)

@@ -9,9 +9,13 @@
  * - Complexity-to-difficulty mapping
  */
 
-import { AdaptiveDifficultyEngine, DifficultyAdjustment, QuestionCriteria } from '@/lib/adaptive-difficulty-engine'
-import { prisma } from '@/lib/db'
 import { ObjectiveComplexity } from '@prisma/client'
+import {
+  AdaptiveDifficultyEngine,
+  DifficultyAdjustment,
+  type QuestionCriteria,
+} from '@/lib/adaptive-difficulty-engine'
+import { prisma } from '@/lib/db'
 
 jest.mock('@/lib/db')
 
@@ -37,7 +41,7 @@ describe('AdaptiveDifficultyEngine', () => {
           where: expect.objectContaining({
             userId,
           }),
-        })
+        }),
       )
     })
 
@@ -221,7 +225,7 @@ describe('AdaptiveDifficultyEngine', () => {
               notIn: ['q1', 'q2'],
             }),
           }),
-        })
+        }),
       )
     })
 
@@ -242,7 +246,7 @@ describe('AdaptiveDifficultyEngine', () => {
       expect(prisma.validationPrompt.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           orderBy: expect.arrayContaining([{ timesUsed: 'asc' }]),
-        })
+        }),
       )
     })
 
@@ -266,7 +270,7 @@ describe('AdaptiveDifficultyEngine', () => {
               }),
             ]),
           }),
-        })
+        }),
       )
     })
 
@@ -311,7 +315,7 @@ describe('AdaptiveDifficultyEngine', () => {
 
     it('should return null when fewer than 20 responses', async () => {
       const mockResponses = Array.from({ length: 10 }, (_, i) => ({
-        score: 0.5 + (i * 0.1),
+        score: 0.5 + i * 0.1,
         userId: `user${i}`,
       }))
 
@@ -325,17 +329,17 @@ describe('AdaptiveDifficultyEngine', () => {
     it('should calculate discrimination index from 20+ responses', async () => {
       const mockResponses = [
         ...Array.from({ length: 20 }, (_, i) => ({
-          score: 0.9 - (i * 0.05), // Top performers: 0.9-0.05 = 0.85
+          score: 0.9 - i * 0.05, // Top performers: 0.9-0.05 = 0.85
           userId: `top-user${i}`,
         })),
         ...Array.from({ length: 20 }, (_, i) => ({
-          score: 0.3 - (i * 0.01), // Bottom performers: 0.3-0.2 = 0.1
+          score: 0.3 - i * 0.01, // Bottom performers: 0.3-0.2 = 0.1
           userId: `bottom-user${i}`,
         })),
       ]
 
       ;(prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
-        mockResponses.sort((a, b) => b.score - a.score)
+        mockResponses.sort((a, b) => b.score - a.score),
       )
 
       const discrimination = await engine.calculateDiscrimination(promptId)
@@ -349,8 +353,7 @@ describe('AdaptiveDifficultyEngine', () => {
       const mockResponses = Array.from({ length: 100 }, (_, i) => ({
         score: i / 100, // 0.0 to 0.99
         userId: `user${i}`,
-      }))
-        .reverse() // Sort descending
+      })).reverse() // Sort descending
 
       ;(prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(mockResponses)
 
@@ -368,10 +371,9 @@ describe('AdaptiveDifficultyEngine', () => {
     it('should return false for questions with sufficient discrimination (>= 0.2)', async () => {
       ;(prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
         Array.from({ length: 20 }, (_, i) => ({
-          score: 0.8 - (i * 0.02),
+          score: 0.8 - i * 0.02,
           userId: `user${i}`,
-        }))
-          .sort((a, b) => b.score - a.score)
+        })).sort((a, b) => b.score - a.score),
       )
 
       const shouldRemove = await engine.shouldRemoveQuestion(promptId)
@@ -384,7 +386,7 @@ describe('AdaptiveDifficultyEngine', () => {
         Array.from({ length: 20 }, () => ({
           score: 0.5, // All same score
           userId: `user${Math.random()}`,
-        }))
+        })),
       )
 
       const shouldRemove = await engine.shouldRemoveQuestion(promptId)
@@ -395,9 +397,9 @@ describe('AdaptiveDifficultyEngine', () => {
     it('should return false when insufficient data', async () => {
       ;(prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
         Array.from({ length: 10 }, (_, i) => ({
-          score: 0.5 + (i * 0.02),
+          score: 0.5 + i * 0.02,
           userId: `user${i}`,
-        }))
+        })),
       )
 
       const shouldRemove = await engine.shouldRemoveQuestion(promptId)

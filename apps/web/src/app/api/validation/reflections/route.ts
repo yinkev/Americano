@@ -1,16 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { getUserId } from '@/lib/auth';
-import { calculateMetacognitiveEngagementScore } from '@/lib/reflection-config';
+import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getUserId } from '@/lib/auth'
+import { prisma } from '@/lib/db'
+import { calculateMetacognitiveEngagementScore } from '@/lib/reflection-config'
 
 // Zod validation schema for query parameters
 const getReflectionsSchema = z.object({
   period: z.enum(['7d', '30d', '90d', 'all']).optional().default('30d'),
   objectiveId: z.string().cuid().optional(),
-  limit: z.string().transform(Number).pipe(z.number().int().min(1).max(100)).optional().default('50'),
-});
+  limit: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().int().min(1).max(100))
+    .optional()
+    .default('50'),
+})
 
 /**
  * GET /api/validation/reflections
@@ -37,29 +42,29 @@ const getReflectionsSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     // Parse and validate query parameters
-    const searchParams = request.nextUrl.searchParams;
+    const searchParams = request.nextUrl.searchParams
     const queryParams = {
       period: searchParams.get('period') || '30d',
       objectiveId: searchParams.get('objectiveId') || undefined,
       limit: searchParams.get('limit') || '50',
-    };
+    }
 
-    const validatedParams = getReflectionsSchema.parse(queryParams);
-    const { period, objectiveId, limit } = validatedParams;
+    const validatedParams = getReflectionsSchema.parse(queryParams)
+    const { period, objectiveId, limit } = validatedParams
 
     // Get user ID
-    const userId = await getUserId();
+    const userId = await getUserId()
 
     // Calculate date filter
-    let dateFilter: Date | undefined;
+    let dateFilter: Date | undefined
     if (period !== 'all') {
       const daysAgo = {
         '7d': 7,
         '30d': 30,
         '90d': 90,
-      }[period];
-      dateFilter = new Date();
-      dateFilter.setDate(dateFilter.getDate() - daysAgo);
+      }[period]
+      dateFilter = new Date()
+      dateFilter.setDate(dateFilter.getDate() - daysAgo)
     }
 
     // Build where clause
@@ -70,13 +75,13 @@ export async function GET(request: NextRequest) {
           gte: dateFilter,
         },
       }),
-    };
+    }
 
     // Add objective filter if provided
     if (objectiveId) {
       whereClause.prompt = {
         objectiveId,
-      };
+      }
     }
 
     // Fetch all validation responses for the period (for metrics calculation)
@@ -86,7 +91,7 @@ export async function GET(request: NextRequest) {
         id: true,
         reflectionNotes: true,
       },
-    });
+    })
 
     // Fetch validation responses with reflection notes
     const responsesWithReflections = await prisma.validationResponse.findMany({
@@ -112,28 +117,26 @@ export async function GET(request: NextRequest) {
         respondedAt: 'desc',
       },
       take: limit,
-    });
+    })
 
     // Calculate engagement metrics
-    const totalPrompts = allResponses.length;
-    const completedReflections = allResponses.filter((r) => r.reflectionNotes !== null).length;
-    const completionRate = totalPrompts > 0 ? (completedReflections / totalPrompts) * 100 : 0;
+    const totalPrompts = allResponses.length
+    const completedReflections = allResponses.filter((r) => r.reflectionNotes !== null).length
+    const completionRate = totalPrompts > 0 ? (completedReflections / totalPrompts) * 100 : 0
 
     // Calculate average response length (only for non-null reflections)
     const avgResponseLength =
       completedReflections > 0
-        ? responsesWithReflections.reduce(
-            (sum, r) => sum + (r.reflectionNotes?.length || 0),
-            0
-          ) / completedReflections
-        : 0;
+        ? responsesWithReflections.reduce((sum, r) => sum + (r.reflectionNotes?.length || 0), 0) /
+          completedReflections
+        : 0
 
     // Calculate metacognitive engagement score
     const engagementScore = calculateMetacognitiveEngagementScore(
       completedReflections,
       totalPrompts,
-      avgResponseLength
-    );
+      avgResponseLength,
+    )
 
     // Format reflections for response
     const reflections = responsesWithReflections.map((response) => ({
@@ -143,7 +146,7 @@ export async function GET(request: NextRequest) {
       conceptName: response.prompt.conceptName,
       score: response.score * 100, // Convert 0-1 to 0-100
       respondedAt: response.respondedAt,
-    }));
+    }))
 
     return NextResponse.json(
       successResponse({
@@ -153,23 +156,23 @@ export async function GET(request: NextRequest) {
         avgResponseLength: Math.round(avgResponseLength),
         totalPrompts,
         completedReflections,
-      })
-    );
+      }),
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', 'Invalid query parameters', error.issues),
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    console.error('Error fetching reflections:', error);
+    console.error('Error fetching reflections:', error)
     return NextResponse.json(
       errorResponse(
         'INTERNAL_ERROR',
-        error instanceof Error ? error.message : 'Failed to fetch reflections'
+        error instanceof Error ? error.message : 'Failed to fetch reflections',
       ),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

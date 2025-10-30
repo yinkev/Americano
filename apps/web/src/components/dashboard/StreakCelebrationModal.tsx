@@ -1,10 +1,10 @@
 'use client'
 
+import { Flame, Star, Trophy, X } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import React, { useEffect } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { X, Flame, Trophy, Star } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { DumplingMascot } from './DumplingMascot'
 
 interface StreakCelebrationModalProps {
@@ -147,14 +147,10 @@ export function StreakCelebrationModal({
               >
                 <div className="flex items-center justify-center gap-2">
                   <Flame className="h-8 w-8 text-orange-500" />
-                  <span className="text-5xl font-bold gradient-text">
-                    {streakDays}
-                  </span>
+                  <span className="text-5xl font-bold gradient-text">{streakDays}</span>
                   <Flame className="h-8 w-8 text-orange-500" />
                 </div>
-                <p className="text-lg text-muted-foreground">
-                  Day Streak {streakInfo.emoji}
-                </p>
+                <p className="text-lg text-muted-foreground">Day Streak {streakInfo.emoji}</p>
               </motion.div>
 
               {/* Message */}
@@ -179,9 +175,7 @@ export function StreakCelebrationModal({
               >
                 <div className="text-center">
                   <Trophy className="h-6 w-6 mx-auto mb-1 text-yellow-500" />
-                  <p className="text-2xl font-bold">
-                    {Math.floor(streakDays / 7)}
-                  </p>
+                  <p className="text-2xl font-bold">{Math.floor(streakDays / 7)}</p>
                   <p className="text-xs text-muted-foreground">Weeks</p>
                 </div>
                 <div className="text-center">
@@ -191,9 +185,7 @@ export function StreakCelebrationModal({
                 </div>
                 <div className="text-center">
                   <Flame className="h-6 w-6 mx-auto mb-1 text-orange-500" />
-                  <p className="text-2xl font-bold">
-                    {streakDays >= 7 ? 'Top 10%' : 'Top 30%'}
-                  </p>
+                  <p className="text-2xl font-bold">{streakDays >= 7 ? 'Top 10%' : 'Top 30%'}</p>
                   <p className="text-xs text-muted-foreground">Ranking</p>
                 </div>
               </motion.div>
@@ -204,11 +196,7 @@ export function StreakCelebrationModal({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <Button
-                  onClick={onClose}
-                  className="w-full"
-                  size="lg"
-                >
+                <Button onClick={onClose} className="w-full" size="lg">
                   Continue Learning
                 </Button>
               </motion.div>

@@ -37,7 +37,7 @@ export class AdaptiveDifficultyEngine {
    */
   async calculateInitialDifficulty(
     userId: string,
-    objectiveId: string
+    objectiveId: string,
   ): Promise<InitialDifficultyResult> {
     // Query last 10 validation responses for this user and objective
     const recentResponses = await prisma.validationResponse.findMany({
@@ -72,7 +72,7 @@ export class AdaptiveDifficultyEngine {
     let weightTotal = 0
 
     recentResponses.forEach((response, index) => {
-      const weight = Math.pow(0.9, index) // Exponential decay: 1.0, 0.9, 0.81...
+      const weight = 0.9 ** index // Exponential decay: 1.0, 0.9, 0.81...
       const normalizedScore = response.score * 100 // Convert 0-1 to 0-100
       weightedSum += normalizedScore * weight
       weightTotal += weight
@@ -95,7 +95,9 @@ export class AdaptiveDifficultyEngine {
 
     let calibrationAdjustment = 0
     if (calibrationMetrics.length > 0) {
-      const avgCorrelation = calibrationMetrics.reduce((sum, m) => sum + m.correlationCoeff, 0) / calibrationMetrics.length
+      const avgCorrelation =
+        calibrationMetrics.reduce((sum, m) => sum + m.correlationCoeff, 0) /
+        calibrationMetrics.length
 
       // Well-calibrated users (correlation > 0.7) get +5 difficulty
       // Poorly-calibrated users (correlation < 0.3) get -5 difficulty
@@ -131,7 +133,7 @@ export class AdaptiveDifficultyEngine {
     currentDifficulty: number,
     score: number, // 0-100 scale
     confidenceLevel?: number, // 1-5 scale
-    sessionAdjustmentCount?: number
+    sessionAdjustmentCount?: number,
   ): DifficultyAdjustment {
     // Enforce max 3 adjustments per session
     if (sessionAdjustmentCount !== undefined && sessionAdjustmentCount >= 3) {

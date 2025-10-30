@@ -3,7 +3,7 @@
  * Story 5.3 Task 5
  */
 
-import { describe, it, expect, beforeEach } from '@jest/globals'
+import { beforeEach, describe, expect, it } from '@jest/globals'
 import { StudyIntensityModulator } from '@/subsystems/behavioral-analytics/study-intensity-modulator'
 
 // Mock fetch for Story 5.4 API integration

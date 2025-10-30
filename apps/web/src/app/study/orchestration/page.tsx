@@ -1,17 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Brain, Calendar, Clock, History, Play, Settings, TrendingUp } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { Play, Settings, Calendar, Clock, Brain } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { CalendarStatusWidget } from '@/components/orchestration/CalendarStatusWidget'
+import { CognitiveLoadIndicator } from '@/components/orchestration/CognitiveLoadIndicator'
 import { OptimalTimeSlotsPanel } from '@/components/orchestration/OptimalTimeSlotsPanel'
 import { SessionPlanPreview } from '@/components/orchestration/SessionPlanPreview'
-import { CognitiveLoadIndicator } from '@/components/orchestration/CognitiveLoadIndicator'
-import { CalendarStatusWidget } from '@/components/orchestration/CalendarStatusWidget'
 import { SessionPlanCustomizeDialog } from '@/components/orchestration/session-plan-customize-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useStudySession } from '@/hooks/use-study-session'
 import { useUserStore } from '@/store/use-user-store'
-import { toast } from 'sonner'
 
 interface TimeSlot {
   startTime: string
@@ -57,11 +59,37 @@ interface SessionPlan {
 export default function OrchestrationPage() {
   const router = useRouter()
   const { userEmail } = useUserStore()
+
+  // Wave 2: Study session hook for state management
+  const studySession = useStudySession()
+
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null)
   const [sessionPlan, setSessionPlan] = useState<SessionPlan | null>(null)
   const [loadingPlan, setLoadingPlan] = useState(false)
   const [showCustomizeDialog, setShowCustomizeDialog] = useState(false)
   const [calendarConnected, setCalendarConnected] = useState(false)
+  const [sessionHistory, setSessionHistory] = useState<any[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
+
+  // Fetch recent session history on mount
+  useEffect(() => {
+    async function fetchSessionHistory() {
+      setLoadingHistory(true)
+      try {
+        const res = await fetch(`/api/learning/sessions?limit=5&userId=${userEmail}`)
+        if (!res.ok) throw new Error('Failed to fetch session history')
+
+        const data = await res.json()
+        setSessionHistory(data.data?.sessions || [])
+      } catch (err) {
+        console.error('Failed to fetch session history:', err)
+      } finally {
+        setLoadingHistory(false)
+      }
+    }
+
+    fetchSessionHistory()
+  }, [userEmail])
 
   // Fetch session plan when time slot is selected
   useEffect(() => {
@@ -232,10 +260,70 @@ export default function OrchestrationPage() {
             <CognitiveLoadIndicator userId={userEmail} />
 
             {/* Calendar Integration Status */}
-            <CalendarStatusWidget
-              userId={userEmail}
-              onStatusChange={handleCalendarStatusChange}
-            />
+            <CalendarStatusWidget userId={userEmail} onStatusChange={handleCalendarStatusChange} />
+
+            {/* Session History - Wave 2 Feature */}
+            <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <History className="size-5 text-[oklch(0.7_0.15_230)]" />
+                  Recent Sessions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {loadingHistory ? (
+                  <div className="space-y-3">
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                  </div>
+                ) : sessionHistory.length > 0 ? (
+                  <div className="space-y-3">
+                    {sessionHistory.map((session) => (
+                      <button
+                        key={session.id}
+                        onClick={() => router.push(`/study/sessions/${session.id}`)}
+                        className="w-full text-left p-3 rounded-lg hover:bg-[oklch(0.7_0.15_230)]/5 transition-colors"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <Clock className="size-3 text-[oklch(0.556_0_0)]" />
+                              <p className="text-xs text-[oklch(0.556_0_0)]">
+                                {new Date(session.startedAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <div className="mt-1 flex items-center gap-2">
+                              <TrendingUp className="size-3 text-[oklch(0.7_0.15_230)]" />
+                              <p className="text-sm font-medium text-[oklch(0.145_0_0)]">
+                                {Math.floor((session.durationMs || 0) / 60000)}m session
+                              </p>
+                            </div>
+                          </div>
+                          <div className="ml-2">
+                            <div className="text-xs font-semibold text-[oklch(0.7_0.15_145)]">
+                              {session.reviewsCompleted || 0} cards
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => router.push('/sessions')}
+                    >
+                      View All Sessions
+                    </Button>
+                  </div>
+                ) : (
+                  <p className="text-sm text-[oklch(0.556_0_0)] text-center py-4">
+                    No recent sessions
+                  </p>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Quick Settings */}
             <Card className="rounded-2xl bg-white/80 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)]">

@@ -5,7 +5,7 @@
  * Story 5.4 Task 6.7
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { PrismaClient } from '@/generated/prisma'
 import { difficultyAdapter } from '@/subsystems/behavioral-analytics/difficulty-adapter'

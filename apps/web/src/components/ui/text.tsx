@@ -1,5 +1,5 @@
-import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
+import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 /**
@@ -47,7 +47,7 @@ const Text = React.forwardRef<HTMLElement, TextProps>(
       ref,
       ...props,
     })
-  }
+  },
 )
 
 Text.displayName = 'Text'

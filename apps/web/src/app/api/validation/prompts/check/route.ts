@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { type NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/db'
 
 /**
  * GET /api/validation/prompts/check
@@ -15,20 +15,17 @@ import { prisma } from '@/lib/db';
  */
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const objectiveId = searchParams.get('objectiveId');
-    const userId = searchParams.get('userId') || 'kevy@americano.dev'; // Hardcoded for MVP
+    const searchParams = request.nextUrl.searchParams
+    const objectiveId = searchParams.get('objectiveId')
+    const userId = searchParams.get('userId') || 'kevy@americano.dev' // Hardcoded for MVP
 
     if (!objectiveId) {
-      return NextResponse.json(
-        { error: 'objectiveId is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'objectiveId is required' }, { status: 400 })
     }
 
     // Check for recent validation responses (last 7 days)
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
     const recentResponse = await prisma.validationResponse.findFirst({
       where: {
@@ -49,10 +46,10 @@ export async function GET(request: NextRequest) {
         score: true,
         skipped: true,
       },
-    });
+    })
 
     // If recent response exists, validation is not needed
-    const needsValidation = !recentResponse;
+    const needsValidation = !recentResponse
 
     return NextResponse.json({
       data: {
@@ -65,12 +62,9 @@ export async function GET(request: NextRequest) {
             }
           : null,
       },
-    });
+    })
   } catch (error) {
-    console.error('Error checking validation status:', error);
-    return NextResponse.json(
-      { error: 'Failed to check validation status' },
-      { status: 500 }
-    );
+    console.error('Error checking validation status:', error)
+    return NextResponse.json({ error: 'Failed to check validation status' }, { status: 500 })
   }
 }

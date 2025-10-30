@@ -6,12 +6,12 @@
  * Story 5.6: Behavioral Insights Dashboard - Task 6
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
+import { CACHE_TTL, withCache } from '@/lib/cache'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
 import { RecommendationsEngine } from '@/subsystems/behavioral-analytics/recommendations-engine'
-import { withCache, CACHE_TTL } from '@/lib/cache'
 
 // Zod validation schema for query parameters
 const RecommendationsQuerySchema = z.object({

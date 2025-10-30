@@ -10,8 +10,8 @@
  * 5. Connection pool utilization <80%
  */
 
-import { getRedisStats, isRedisHealthy } from '@/lib/redis'
 import { apiCache } from '@/lib/cache'
+import { getRedisStats, isRedisHealthy } from '@/lib/redis'
 
 describe('Wave 2 Performance Optimization', () => {
   describe('Redis Integration', () => {

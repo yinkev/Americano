@@ -1,9 +1,9 @@
 'use client'
 
+import { TrendingUp } from 'lucide-react'
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { TrendingUp } from 'lucide-react'
 
 interface ProgressChartProps {
   examReadiness: number // 0-1 scale
@@ -72,9 +72,7 @@ export function ProgressChart({ examReadiness }: ProgressChartProps) {
               <span className="text-3xl font-bold" style={{ color: readiness.color }}>
                 {percentage}%
               </span>
-              <span className="text-xs text-muted-foreground mt-1">
-                Ready
-              </span>
+              <span className="text-xs text-muted-foreground mt-1">Ready</span>
             </div>
           </div>
 
@@ -85,7 +83,7 @@ export function ProgressChart({ examReadiness }: ProgressChartProps) {
             <p className="text-sm text-muted-foreground mt-1">
               {percentage >= 75
                 ? "You're on track for a great score!"
-                : "Keep studying to improve your readiness"}
+                : 'Keep studying to improve your readiness'}
             </p>
           </div>
         </div>

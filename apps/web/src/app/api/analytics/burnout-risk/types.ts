@@ -24,11 +24,11 @@ export type SignalSeverity = 'LOW' | 'MEDIUM' | 'HIGH'
  * Warning signal types
  */
 export type WarningSignalType =
-  | 'CHRONIC_OVERLOAD'      // Sustained high cognitive load
-  | 'PERFORMANCE_DROP'       // Significant performance decline
-  | 'ENGAGEMENT_LOSS'        // Skipped missions, incomplete sessions
-  | 'IRREGULAR_PATTERN'      // Missed study sessions
-  | 'NO_RECOVERY'            // Absence of low-intensity days
+  | 'CHRONIC_OVERLOAD' // Sustained high cognitive load
+  | 'PERFORMANCE_DROP' // Significant performance decline
+  | 'ENGAGEMENT_LOSS' // Skipped missions, incomplete sessions
+  | 'IRREGULAR_PATTERN' // Missed study sessions
+  | 'NO_RECOVERY' // Absence of low-intensity days
 
 /**
  * Contributing factor to burnout risk

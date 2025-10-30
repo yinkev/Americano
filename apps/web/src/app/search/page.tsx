@@ -1,15 +1,15 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { SidebarInset } from "@/components/ui/sidebar"
-import { SearchBar } from "@/components/search/search-bar"
-import { SearchFilters } from "@/components/search/search-filters"
-import { SearchResults } from "@/components/search/search-results"
-import { SearchError } from "@/components/search/search-error"
-import { useSearch } from "@/hooks/use-search"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import { useRouter, useSearchParams } from 'next/navigation'
+import * as React from 'react'
+import { SearchBar } from '@/components/search/search-bar'
+import { SearchError } from '@/components/search/search-error'
+import { SearchFilters } from '@/components/search/search-filters'
+import { SearchResults } from '@/components/search/search-results'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { SidebarInset } from '@/components/ui/sidebar'
+import { useSearch } from '@/hooks/use-search'
 
 /**
  * Search page with full semantic search functionality
@@ -18,10 +18,12 @@ import { Separator } from "@/components/ui/separator"
 export default function SearchPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const initialQuery = searchParams.get("q") || ""
+  const initialQuery = searchParams.get('q') || ''
 
   const [currentPage, setCurrentPage] = React.useState(1)
-  const [courses, setCourses] = React.useState<Array<{ id: string; name: string; code?: string }>>([])
+  const [courses, setCourses] = React.useState<Array<{ id: string; name: string; code?: string }>>(
+    [],
+  )
 
   const {
     query,
@@ -51,7 +53,7 @@ export default function SearchPage() {
   React.useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch("/api/courses")
+        const response = await fetch('/api/courses')
         if (response.ok) {
           const data = await response.json()
           if (data.success) {
@@ -59,7 +61,7 @@ export default function SearchPage() {
           }
         }
       } catch (error) {
-        console.error("Failed to fetch courses:", error)
+        console.error('Failed to fetch courses:', error)
       }
     }
 
@@ -75,10 +77,7 @@ export default function SearchPage() {
 
   // Calculate pagination
   const totalPages = Math.ceil(results.length / 20)
-  const paginatedResults = results.slice(
-    (currentPage - 1) * 20,
-    currentPage * 20
-  )
+  const paginatedResults = results.slice((currentPage - 1) * 20, currentPage * 20)
 
   // Reset page when results change
   React.useEffect(() => {
@@ -90,9 +89,7 @@ export default function SearchPage() {
       <div className="flex flex-1 flex-col gap-6 p-6 md:p-8">
         {/* Header */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-heading font-bold tracking-tight">
-            Semantic Search
-          </h1>
+          <h1 className="text-3xl font-heading font-bold tracking-tight">Semantic Search</h1>
           <p className="text-muted-foreground">
             Find lectures, learning objectives, flashcards, and concepts using natural language
           </p>
@@ -111,20 +108,14 @@ export default function SearchPage() {
         </div>
 
         {/* Error Display */}
-        {error && (
-          <SearchError error={error} onRetry={executeSearch} />
-        )}
+        {error && <SearchError error={error} onRetry={executeSearch} />}
 
         {/* Main Content */}
         <div className="flex flex-col lg:flex-row gap-6 flex-1">
           {/* Filters Sidebar */}
           <aside className="w-full lg:w-72 shrink-0">
             <div className="sticky top-6 space-y-6">
-              <SearchFilters
-                courses={courses}
-                filters={filters}
-                onChange={setFilters}
-              />
+              <SearchFilters courses={courses} filters={filters} onChange={setFilters} />
 
               {/* Search Tips */}
               {query.length === 0 && (
@@ -188,7 +179,7 @@ export default function SearchPage() {
                 {!isLoading && results.length > 0 && (
                   <div className="mb-4">
                     <h2 className="text-lg font-semibold text-foreground">
-                      {totalResults} {totalResults === 1 ? "result" : "results"} found
+                      {totalResults} {totalResults === 1 ? 'result' : 'results'} found
                       {query && ` for "${query}"`}
                     </h2>
                     <Separator className="mt-2 bg-white/40" />

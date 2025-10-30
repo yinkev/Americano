@@ -8,20 +8,20 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
-import { CognitiveLoadMeter } from '@/components/analytics/cognitive-load-meter'
-import {
-  StressPatternsTimeline,
-  CognitiveLoadDataPoint,
-} from '@/components/analytics/stress-patterns-timeline'
-import {
-  BurnoutRiskPanel,
-  BurnoutRiskLevel,
-  BurnoutContributingFactor,
-} from '@/components/analytics/burnout-risk-panel'
-import { StressProfileCard, StressTrigger } from '@/components/analytics/stress-profile-card'
-import { InterventionRecommendationPanel } from '@/components/analytics/intervention-recommendation-panel'
 import { AlertCircle } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import {
+  type BurnoutContributingFactor,
+  type BurnoutRiskLevel,
+  BurnoutRiskPanel,
+} from '@/components/analytics/burnout-risk-panel'
+import { CognitiveLoadMeter } from '@/components/analytics/cognitive-load-meter'
+import { InterventionRecommendationPanel } from '@/components/analytics/intervention-recommendation-panel'
+import {
+  type CognitiveLoadDataPoint,
+  StressPatternsTimeline,
+} from '@/components/analytics/stress-patterns-timeline'
+import { StressProfileCard, type StressTrigger } from '@/components/analytics/stress-profile-card'
 
 interface CognitiveHealthData {
   currentLoad: {
@@ -115,9 +115,9 @@ export function CognitiveHealthDashboard() {
           contributingFactors: burnoutData.data?.contributingFactors || [],
           recommendations: burnoutData.data?.recommendations || [],
           lastAssessmentDate: burnoutData.data?.assessmentDate || new Date().toISOString(),
-          daysSinceLastRest: burnoutData.data?.contributingFactors?.find(
-            (f: any) => f.factor === 'Recovery Deficit',
-          )?.metadata?.daysSinceRest || 0,
+          daysSinceLastRest:
+            burnoutData.data?.contributingFactors?.find((f: any) => f.factor === 'Recovery Deficit')
+              ?.metadata?.daysSinceRest || 0,
           recoveryProgress: burnoutData.data?.metadata?.recoveryProgress,
         },
         stressProfile: stressProfileData
@@ -174,7 +174,9 @@ export function CognitiveHealthDashboard() {
         <div className="flex items-start gap-4 text-center justify-center">
           <AlertCircle className="size-6 text-destructive shrink-0 mt-1" />
           <div>
-            <h3 className="text-[16px] font-semibold text-foreground mb-2">Unable to Load Dashboard</h3>
+            <h3 className="text-[16px] font-semibold text-foreground mb-2">
+              Unable to Load Dashboard
+            </h3>
             <p className="text-[13px] text-muted-foreground mb-4">
               {error || 'An unexpected error occurred while loading your cognitive health data.'}
             </p>

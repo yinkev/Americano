@@ -6,7 +6,7 @@
  * Returns list of user's saved searches
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
 /**
@@ -28,13 +28,13 @@ export async function GET(request: NextRequest) {
             viewed: false,
           },
           orderBy: { createdAt: 'desc' },
-          take: 5,  // Latest 5 unviewed alerts
+          take: 5, // Latest 5 unviewed alerts
         },
       },
     })
 
     // Count unread alerts per search
-    const searchesWithAlertCounts = savedSearches.map(search => ({
+    const searchesWithAlertCounts = savedSearches.map((search) => ({
       id: search.id,
       name: search.name,
       query: search.query,
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
         error: 'Failed to fetch saved searches',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

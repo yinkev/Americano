@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { getUserId } from '@/lib/auth';
+import { type NextRequest, NextResponse } from 'next/server'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getUserId } from '@/lib/auth'
+import { prisma } from '@/lib/db'
 
 /**
  * GET /api/validation/metrics/:objectiveId
@@ -19,23 +19,23 @@ import { getUserId } from '@/lib/auth';
  */
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ objectiveId: string }> }
+  context: { params: Promise<{ objectiveId: string }> },
 ) {
   try {
     // Await params per Next.js 15 async params pattern
-    const { objectiveId } = await context.params;
+    const { objectiveId } = await context.params
 
     // Get user ID (hardcoded for MVP per CLAUDE.md)
-    const userId = await getUserId();
+    const userId = await getUserId()
 
     // Parse query parameters
-    const searchParams = request.nextUrl.searchParams;
-    const days = parseInt(searchParams.get('days') || '30', 10);
+    const searchParams = request.nextUrl.searchParams
+    const days = parseInt(searchParams.get('days') || '30', 10)
 
     // Calculate date range
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-    startDate.setHours(0, 0, 0, 0);
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - days)
+    startDate.setHours(0, 0, 0, 0)
 
     // Fetch comprehension metrics for objective
     const metrics = await prisma.comprehensionMetric.findMany({
@@ -49,7 +49,7 @@ export async function GET(
       orderBy: {
         date: 'asc',
       },
-    });
+    })
 
     if (metrics.length === 0) {
       return NextResponse.json(
@@ -58,31 +58,29 @@ export async function GET(
           trend: 'STABLE',
           avgScore: 0,
           totalAttempts: 0,
-        })
-      );
+        }),
+      )
     }
 
     // Calculate overall trend
     // Compare first half average to second half average
-    const midpoint = Math.floor(metrics.length / 2);
+    const midpoint = Math.floor(metrics.length / 2)
     const firstHalfAvg =
-      metrics.slice(0, midpoint).reduce((sum, m) => sum + m.avgScore, 0) /
-      Math.max(midpoint, 1);
+      metrics.slice(0, midpoint).reduce((sum, m) => sum + m.avgScore, 0) / Math.max(midpoint, 1)
     const secondHalfAvg =
       metrics.slice(midpoint).reduce((sum, m) => sum + m.avgScore, 0) /
-      Math.max(metrics.length - midpoint, 1);
+      Math.max(metrics.length - midpoint, 1)
 
-    let trend: 'IMPROVING' | 'STABLE' | 'WORSENING' = 'STABLE';
-    const trendDiff = secondHalfAvg - firstHalfAvg;
-    if (trendDiff > 0.1) trend = 'IMPROVING';
-    else if (trendDiff < -0.1) trend = 'WORSENING';
+    let trend: 'IMPROVING' | 'STABLE' | 'WORSENING' = 'STABLE'
+    const trendDiff = secondHalfAvg - firstHalfAvg
+    if (trendDiff > 0.1) trend = 'IMPROVING'
+    else if (trendDiff < -0.1) trend = 'WORSENING'
 
     // Calculate overall average score (convert from 0-1 to 0-100)
-    const avgScore =
-      (metrics.reduce((sum, m) => sum + m.avgScore, 0) / metrics.length) * 100;
+    const avgScore = (metrics.reduce((sum, m) => sum + m.avgScore, 0) / metrics.length) * 100
 
     // Total attempts across all days
-    const totalAttempts = metrics.reduce((sum, m) => sum + m.sampleSize, 0);
+    const totalAttempts = metrics.reduce((sum, m) => sum + m.sampleSize, 0)
 
     // Transform metrics for response (convert scores to 0-100 scale)
     const transformedMetrics = metrics.map((m) => ({
@@ -92,7 +90,7 @@ export async function GET(
       avgScore: m.avgScore * 100, // Convert to 0-100 scale
       sampleSize: m.sampleSize,
       trend: (m.trend || 'STABLE') as 'IMPROVING' | 'STABLE' | 'WORSENING',
-    }));
+    }))
 
     return NextResponse.json(
       successResponse({
@@ -100,16 +98,16 @@ export async function GET(
         trend,
         avgScore,
         totalAttempts,
-      })
-    );
+      }),
+    )
   } catch (error) {
-    console.error('Error fetching comprehension metrics:', error);
+    console.error('Error fetching comprehension metrics:', error)
     return NextResponse.json(
       errorResponse(
         'INTERNAL_ERROR',
-        error instanceof Error ? error.message : 'Failed to fetch metrics'
+        error instanceof Error ? error.message : 'Failed to fetch metrics',
       ),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

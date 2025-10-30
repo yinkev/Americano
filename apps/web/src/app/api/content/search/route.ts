@@ -1,7 +1,7 @@
 // /api/content/search route
 // GET: Search lectures by title, course name, and tags using PostgreSQL full-text search
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest) {

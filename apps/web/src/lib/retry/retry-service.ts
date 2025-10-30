@@ -241,7 +241,9 @@ export class RetryService {
 
         // Don't retry permanent errors
         if (category === ErrorCategory.PERMANENT) {
-          console.error(`[RetryService] Permanent error detected, aborting retries for ${operationName}`)
+          console.error(
+            `[RetryService] Permanent error detected, aborting retries for ${operationName}`,
+          )
           this.recordFailure(operationName, config)
           return {
             error: new PermanentError(lastError.message, lastError),
@@ -344,7 +346,7 @@ export class RetryService {
    */
   private calculateDelay(attempt: number, config: Required<RetryPolicy>, error: Error): number {
     // Check if error includes Retry-After header value
-    let baseDelay = config.initialDelayMs * Math.pow(config.backoffMultiplier, attempt - 1)
+    let baseDelay = config.initialDelayMs * config.backoffMultiplier ** (attempt - 1)
 
     // Check for Retry-After in error (if it's a RetriableError)
     if (error instanceof RetriableError && error.retryAfter) {
@@ -409,7 +411,9 @@ export class RetryService {
     const circuit = this.circuitBreakers.get(operationName)
 
     if (circuit?.state === CircuitState.HALF_OPEN) {
-      console.log(`[RetryService] Circuit breaker for ${operationName} closing after successful request`)
+      console.log(
+        `[RetryService] Circuit breaker for ${operationName} closing after successful request`,
+      )
       this.circuitBreakers.set(operationName, {
         state: CircuitState.CLOSED,
         failureCount: 0,

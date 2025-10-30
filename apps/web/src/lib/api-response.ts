@@ -142,7 +142,11 @@ export function withErrorHandler<T extends (...args: any[]) => Promise<Response>
       // Handle Zod validation errors
       if (error?.name === 'ZodError' || error?.issues) {
         return Response.json(
-          errorResponse(ErrorCodes.VALIDATION_ERROR, 'Validation failed', error.issues || error.errors),
+          errorResponse(
+            ErrorCodes.VALIDATION_ERROR,
+            'Validation failed',
+            error.issues || error.errors,
+          ),
           { status: 400 },
         )
       }
@@ -155,17 +159,17 @@ export function withErrorHandler<T extends (...args: any[]) => Promise<Response>
       // Handle Prisma errors
       if (error?.code && typeof error.code === 'string' && error.code.startsWith('P')) {
         return Response.json(
-          errorResponse(ErrorCodes.DATABASE_ERROR, `Database error: ${error.message || 'Unknown database error'}`),
+          errorResponse(
+            ErrorCodes.DATABASE_ERROR,
+            `Database error: ${error.message || 'Unknown database error'}`,
+          ),
           { status: 500 },
         )
       }
 
       // Default to 500 for unexpected errors with more detail
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
-      return Response.json(
-        errorResponse(ErrorCodes.INTERNAL_ERROR, errorMessage),
-        { status: 500 },
-      )
+      return Response.json(errorResponse(ErrorCodes.INTERNAL_ERROR, errorMessage), { status: 500 })
     }
   }) as T
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 export function WelcomeTour() {
   const [showTour, setShowTour] = useState(false)

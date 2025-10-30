@@ -8,10 +8,10 @@
  * Creates or updates a saved search with optional alert configuration
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { AlertFrequency } from '@/generated/prisma'
+import type { AlertFrequency } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 /**
  * Request body validation schema
@@ -19,15 +19,19 @@ import { AlertFrequency } from '@/generated/prisma'
 const SaveSearchSchema = z.object({
   name: z.string().min(1).max(200),
   query: z.string().min(1).max(500),
-  filters: z.object({
-    courseIds: z.array(z.string()).optional(),
-    dateRange: z.object({
-      start: z.string(),
-      end: z.string(),
-    }).optional(),
-    contentTypes: z.array(z.string()).optional(),
-    minSimilarity: z.number().min(0).max(1).optional(),
-  }).optional(),
+  filters: z
+    .object({
+      courseIds: z.array(z.string()).optional(),
+      dateRange: z
+        .object({
+          start: z.string(),
+          end: z.string(),
+        })
+        .optional(),
+      contentTypes: z.array(z.string()).optional(),
+      minSimilarity: z.number().min(0).max(1).optional(),
+    })
+    .optional(),
   alertEnabled: z.boolean().default(false),
   alertFrequency: z.enum(['IMMEDIATE', 'DAILY', 'WEEKLY']).default('IMMEDIATE'),
 })
@@ -50,7 +54,7 @@ export async function POST(request: NextRequest) {
           error: 'Invalid request body',
           details: validation.error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -85,7 +89,7 @@ export async function POST(request: NextRequest) {
           createdAt: savedSearch.createdAt,
         },
       },
-      { status: 201 }
+      { status: 201 },
     )
   } catch (error) {
     console.error('Save search API error:', error)
@@ -96,7 +100,7 @@ export async function POST(request: NextRequest) {
         error: 'Failed to save search',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

@@ -14,10 +14,10 @@
 
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
-import { Search, X, Loader2 } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import { Loader2, Search, X } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 export interface ConceptSearchResult {
   id: string
@@ -71,9 +71,10 @@ export default function GraphSearch({
         // Simple fuzzy matching on concept names
         const searchLower = searchQuery.toLowerCase()
         const matchedConcepts = data.data.nodes
-          .filter((node: any) =>
-            node.name.toLowerCase().includes(searchLower) ||
-            (node.description && node.description.toLowerCase().includes(searchLower))
+          .filter(
+            (node: any) =>
+              node.name.toLowerCase().includes(searchLower) ||
+              (node.description && node.description.toLowerCase().includes(searchLower)),
           )
           .slice(0, 10)
           .map((node: any) => ({
@@ -92,7 +93,7 @@ export default function GraphSearch({
         setIsSearching(false)
       }
     },
-    [onSearchResults, onClearSearch]
+    [onSearchResults, onClearSearch],
   )
 
   /**
@@ -112,7 +113,7 @@ export default function GraphSearch({
         performSearch(value)
       }, 300)
     },
-    [performSearch]
+    [performSearch],
   )
 
   /**
@@ -148,10 +149,7 @@ export default function GraphSearch({
         }}
       >
         {/* Search icon */}
-        <Search
-          className="w-4 h-4 flex-shrink-0"
-          style={{ color: 'oklch(0.5 0.05 240)' }}
-        />
+        <Search className="w-4 h-4 flex-shrink-0" style={{ color: 'oklch(0.5 0.05 240)' }} />
 
         {/* Search input */}
         <Input
@@ -181,10 +179,7 @@ export default function GraphSearch({
             onClick={handleClear}
             className="h-8 w-8 p-0 flex-shrink-0"
           >
-            <X
-              className="w-4 h-4"
-              style={{ color: 'oklch(0.5 0.05 240)' }}
-            />
+            <X className="w-4 h-4" style={{ color: 'oklch(0.5 0.05 240)' }} />
           </Button>
         )}
       </div>

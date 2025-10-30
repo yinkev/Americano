@@ -6,7 +6,7 @@
  * Shows immediately upon navigation while page data loads
  */
 
-import { Brain, TrendingUp, Activity } from 'lucide-react'
+import { Activity, Brain, TrendingUp } from 'lucide-react'
 
 export default function Loading() {
   return (

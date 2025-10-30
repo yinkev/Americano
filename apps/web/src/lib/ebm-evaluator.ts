@@ -17,7 +17,7 @@
  * - Medical specialty-aware credibility adjustments
  */
 
-import { PrismaClient, Source, SourceType, Conflict } from '@/generated/prisma'
+import { Conflict, PrismaClient, type Source, type SourceType } from '@/generated/prisma'
 
 /**
  * Evidence-Based Medicine hierarchy levels
@@ -33,7 +33,7 @@ export enum EvidenceLevel {
   /** Level IV: Case series, case reports */
   LEVEL_IV = 'LEVEL_IV',
   /** Level V: Expert opinion, editorials */
-  LEVEL_V = 'LEVEL_V'
+  LEVEL_V = 'LEVEL_V',
 }
 
 /**
@@ -47,7 +47,7 @@ export enum RecommendationGrade {
   /** Grade C: Level IV evidence or inconsistent level II-III */
   GRADE_C = 'GRADE_C',
   /** Grade D: Level V evidence or expert opinion */
-  GRADE_D = 'GRADE_D'
+  GRADE_D = 'GRADE_D',
 }
 
 /**
@@ -115,12 +115,12 @@ interface CredibilityCriteria {
  * Task 2.1: Source authority ranking system
  */
 const DEFAULT_CREDIBILITY_SCORES: Record<SourceType, number> = {
-  FIRST_AID: 95,      // Gold standard for board exam prep
-  GUIDELINE: 95,      // Official clinical guidelines
-  JOURNAL: 90,        // Peer-reviewed journals
-  TEXTBOOK: 85,       // Medical textbooks
-  LECTURE: 75,        // Medical school lectures (variable quality)
-  USER_NOTES: 50      // User-generated content
+  FIRST_AID: 95, // Gold standard for board exam prep
+  GUIDELINE: 95, // Official clinical guidelines
+  JOURNAL: 90, // Peer-reviewed journals
+  TEXTBOOK: 85, // Medical textbooks
+  LECTURE: 75, // Medical school lectures (variable quality)
+  USER_NOTES: 50, // User-generated content
 }
 
 /**
@@ -128,12 +128,12 @@ const DEFAULT_CREDIBILITY_SCORES: Record<SourceType, number> = {
  * Task 2.2: EBM hierarchy implementation
  */
 const SOURCE_TYPE_TO_EVIDENCE_LEVEL: Record<SourceType, EvidenceLevel> = {
-  GUIDELINE: EvidenceLevel.LEVEL_I,     // Based on systematic reviews
-  JOURNAL: EvidenceLevel.LEVEL_II,      // Typically RCTs or cohort studies
-  FIRST_AID: EvidenceLevel.LEVEL_II,    // Curated evidence-based content
-  TEXTBOOK: EvidenceLevel.LEVEL_III,    // Compiled knowledge
-  LECTURE: EvidenceLevel.LEVEL_IV,      // Educational synthesis
-  USER_NOTES: EvidenceLevel.LEVEL_V     // Personal opinion
+  GUIDELINE: EvidenceLevel.LEVEL_I, // Based on systematic reviews
+  JOURNAL: EvidenceLevel.LEVEL_II, // Typically RCTs or cohort studies
+  FIRST_AID: EvidenceLevel.LEVEL_II, // Curated evidence-based content
+  TEXTBOOK: EvidenceLevel.LEVEL_III, // Compiled knowledge
+  LECTURE: EvidenceLevel.LEVEL_IV, // Educational synthesis
+  USER_NOTES: EvidenceLevel.LEVEL_V, // Personal opinion
 }
 
 /**
@@ -192,7 +192,10 @@ export class EBMEvaluator {
     const peerReviewBonus = this.calculatePeerReviewBonus(source)
 
     // Final score (capped at 100)
-    const finalScore = Math.min(100, baseScore + recencyBonus + specialtyRelevance + peerReviewBonus)
+    const finalScore = Math.min(
+      100,
+      baseScore + recencyBonus + specialtyRelevance + peerReviewBonus,
+    )
 
     // Determine recommendation grade
     const recommendationGrade = this.determineRecommendationGrade(evidenceLevel, finalScore)
@@ -203,7 +206,7 @@ export class EBMEvaluator {
       evidenceLevel,
       recencyBonus,
       specialtyRelevance,
-      peerReviewBonus
+      peerReviewBonus,
     })
 
     // Confidence based on available metadata
@@ -214,7 +217,7 @@ export class EBMEvaluator {
       evidenceLevel,
       recommendationGrade,
       rationale,
-      confidence
+      confidence,
     }
   }
 
@@ -231,27 +234,24 @@ export class EBMEvaluator {
    * @param userId - Optional user ID for preference integration
    * @returns Evidence comparison with recommendation
    */
-  async compareEvidence(
-    conflictId: string,
-    userId?: string
-  ): Promise<EBMComparison> {
+  async compareEvidence(conflictId: string, userId?: string): Promise<EBMComparison> {
     // Fetch conflict with sources
     const conflict = await this.prisma.conflict.findUnique({
       where: { id: conflictId },
       include: {
         sourceAChunk: {
           include: {
-            lecture: true
-          }
+            lecture: true,
+          },
         },
         sourceBChunk: {
           include: {
-            lecture: true
-          }
+            lecture: true,
+          },
         },
         sourceAFirstAid: true,
-        sourceBFirstAid: true
-      }
+        sourceBFirstAid: true,
+      },
     })
 
     if (!conflict) {
@@ -267,16 +267,22 @@ export class EBMEvaluator {
       id: conflict.sourceAChunkId || conflict.sourceAFirstAidId || '',
       type: sourceAType as SourceType,
       credibilityScore: DEFAULT_CREDIBILITY_SCORES[sourceAType as SourceType],
-      lastUpdated: conflict.sourceAChunk?.lecture.uploadedAt || conflict.sourceAFirstAid?.createdAt || new Date(),
-      metadata: {}
+      lastUpdated:
+        conflict.sourceAChunk?.lecture.uploadedAt ||
+        conflict.sourceAFirstAid?.createdAt ||
+        new Date(),
+      metadata: {},
     }
 
     const sourceB: Partial<Source> = {
       id: conflict.sourceBChunkId || conflict.sourceBFirstAidId || '',
       type: sourceBType as SourceType,
       credibilityScore: DEFAULT_CREDIBILITY_SCORES[sourceBType as SourceType],
-      lastUpdated: conflict.sourceBChunk?.lecture.uploadedAt || conflict.sourceBFirstAid?.createdAt || new Date(),
-      metadata: {}
+      lastUpdated:
+        conflict.sourceBChunk?.lecture.uploadedAt ||
+        conflict.sourceBFirstAid?.createdAt ||
+        new Date(),
+      metadata: {},
     }
 
     // Evaluate both sources
@@ -288,7 +294,7 @@ export class EBMEvaluator {
     const preferenceAdjustment = this.applyUserPreferences(
       sourceA.id!,
       sourceB.id!,
-      userPreferences
+      userPreferences,
     )
 
     // Calculate adjusted scores
@@ -308,11 +314,11 @@ export class EBMEvaluator {
     const scoreDifference = Math.abs(adjustedScoreA - adjustedScoreB)
     const evidenceLevelDiff = Math.abs(
       this.evidenceLevelToNumber(ratingA.evidenceLevel) -
-      this.evidenceLevelToNumber(ratingB.evidenceLevel)
+        this.evidenceLevelToNumber(ratingB.evidenceLevel),
     )
 
     // High confidence if significant difference in both score and evidence level
-    const confidence = Math.min(1.0, (scoreDifference / 100) + (evidenceLevelDiff / 5))
+    const confidence = Math.min(1.0, scoreDifference / 100 + evidenceLevelDiff / 5)
 
     // Determine if manual review needed
     const requiresManualReview = scoreDifference < 10 || confidence < 0.5
@@ -322,7 +328,7 @@ export class EBMEvaluator {
       preferSourceA ? sourceAType : sourceBType,
       preferSourceA ? ratingA : ratingB,
       scoreDifference,
-      preferenceAdjustment
+      preferenceAdjustment,
     )
 
     return {
@@ -333,14 +339,14 @@ export class EBMEvaluator {
       evidenceLevelDifference: {
         preferred: preferred.evidenceLevel,
         alternative: alternative.evidenceLevel,
-        significant: evidenceLevelDiff >= 2
+        significant: evidenceLevelDiff >= 2,
       },
       credibilityDifference: {
         preferred: preferSourceA ? adjustedScoreA : adjustedScoreB,
         alternative: preferSourceA ? adjustedScoreB : adjustedScoreA,
-        percentDifference: (scoreDifference / Math.max(adjustedScoreA, adjustedScoreB)) * 100
+        percentDifference: (scoreDifference / Math.max(adjustedScoreA, adjustedScoreB)) * 100,
       },
-      requiresManualReview
+      requiresManualReview,
     }
   }
 
@@ -384,11 +390,11 @@ export class EBMEvaluator {
     const now = new Date()
     const ageYears = (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24 * 365)
 
-    if (ageYears < 1) return 10      // <1 year old
-    if (ageYears < 2) return 7       // 1-2 years
-    if (ageYears < 5) return 4       // 2-5 years
-    if (ageYears < 10) return 2      // 5-10 years
-    return 0                          // >10 years
+    if (ageYears < 1) return 10 // <1 year old
+    if (ageYears < 2) return 7 // 1-2 years
+    if (ageYears < 5) return 4 // 2-5 years
+    if (ageYears < 10) return 2 // 5-10 years
+    return 0 // >10 years
   }
 
   /**
@@ -430,7 +436,7 @@ export class EBMEvaluator {
    */
   private determineRecommendationGrade(
     evidenceLevel: EvidenceLevel,
-    score: number
+    score: number,
   ): RecommendationGrade {
     if (evidenceLevel === EvidenceLevel.LEVEL_I && score >= 90) {
       return RecommendationGrade.GRADE_A
@@ -496,7 +502,7 @@ export class EBMEvaluator {
       [EvidenceLevel.LEVEL_II]: 4,
       [EvidenceLevel.LEVEL_III]: 3,
       [EvidenceLevel.LEVEL_IV]: 2,
-      [EvidenceLevel.LEVEL_V]: 1
+      [EvidenceLevel.LEVEL_V]: 1,
     }
     return mapping[level]
   }
@@ -507,7 +513,7 @@ export class EBMEvaluator {
   private async getUserSourcePreferences(userId: string) {
     return await this.prisma.userSourcePreference.findMany({
       where: { userId },
-      include: { source: true }
+      include: { source: true },
     })
   }
 
@@ -517,7 +523,7 @@ export class EBMEvaluator {
   private applyUserPreferences(
     sourceAId: string,
     sourceBId: string,
-    preferences: any[] | null
+    preferences: any[] | null,
   ): { sourceA: number; sourceB: number } {
     if (!preferences || preferences.length === 0) {
       return { sourceA: 0, sourceB: 0 }
@@ -546,7 +552,7 @@ export class EBMEvaluator {
       HIGH: 10,
       MEDIUM: 0,
       LOW: -10,
-      BLOCKED: -100 // Effectively eliminates this source
+      BLOCKED: -100, // Effectively eliminates this source
     }
     return mapping[trustLevel] || 0
   }
@@ -558,12 +564,14 @@ export class EBMEvaluator {
     preferredType: string,
     rating: CredibilityRating,
     scoreDifference: number,
-    preferences: { sourceA: number; sourceB: number }
+    preferences: { sourceA: number; sourceB: number },
   ): string {
     const parts: string[] = []
 
     // Primary reason
-    parts.push(`Prefer ${preferredType} source (credibility score: ${rating.score}/100, ${rating.evidenceLevel})`)
+    parts.push(
+      `Prefer ${preferredType} source (credibility score: ${rating.score}/100, ${rating.evidenceLevel})`,
+    )
 
     // Evidence level
     parts.push(`Evidence grade: ${rating.recommendationGrade}`)

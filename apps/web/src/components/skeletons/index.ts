@@ -8,6 +8,6 @@
 
 export { AnalyticsCardSkeleton } from './analytics-card-skeleton'
 export { ChartSkeleton } from './chart-skeleton'
-export { TableSkeleton } from './table-skeleton'
 export { HeatmapSkeleton } from './heatmap-skeleton'
+export { TableSkeleton } from './table-skeleton'
 export { TimelineSkeleton } from './timeline-skeleton'

@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
 import { Command } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 
 export function CommandPalette() {
   const [isOpen, setIsOpen] = useState(false)

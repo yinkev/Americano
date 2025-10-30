@@ -9,22 +9,22 @@
 
 'use client'
 
-import { useState } from 'react'
 import {
-  ChevronDown,
-  ChevronUp,
-  TrendingUp,
-  Target,
-  Lightbulb,
+  AlertCircle,
   Award,
   Calendar,
-  Clock,
   CheckCircle,
-  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Lightbulb,
+  Target,
+  TrendingUp,
 } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 
 /**

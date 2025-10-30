@@ -1,10 +1,10 @@
 // GET /api/personalization/config
 // Returns active PersonalizationConfig for user
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse } from '@/lib/api-response'
+import type { NextRequest } from 'next/server'
 import { ApiError, withErrorHandler } from '@/lib/api-error'
+import { successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
 interface PersonalizationConfigData {
   missionPersonalization: {

@@ -1,9 +1,9 @@
 // /api/ai/generate-tags
 // POST: Generate topic tags for a lecture using GPT-5
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import type { NextRequest } from 'next/server'
 import { ChatMockClient } from '@/lib/ai/chatmock-client'
+import { prisma } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
   try {

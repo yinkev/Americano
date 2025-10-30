@@ -15,40 +15,40 @@
  * AC#6: Calibration Trends Dashboard
  */
 
-import { render, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, waitFor } from '@testing-library/react'
+import '@testing-library/jest-dom'
 
 /**
  * Mock calibration dashboard page
  */
 interface CalibrationPoint {
-  confidence: number;
-  score: number;
-  conceptName: string;
-  date: string;
-  isOverconfident: boolean;
-  isUnderconfident: boolean;
+  confidence: number
+  score: number
+  conceptName: string
+  date: string
+  isOverconfident: boolean
+  isUnderconfident: boolean
 }
 
 interface CalibrationMetrics {
-  meanAbsoluteError: number;
-  correlationCoefficient: number;
-  overconfidentCount: number;
-  underconfidentCount: number;
-  calibratedCount: number;
-  trend: 'IMPROVING' | 'STABLE' | 'WORSENING';
+  meanAbsoluteError: number
+  correlationCoefficient: number
+  overconfidentCount: number
+  underconfidentCount: number
+  calibratedCount: number
+  trend: 'IMPROVING' | 'STABLE' | 'WORSENING'
 }
 
 interface CalibrationExample {
-  conceptName: string;
-  confidence: string;
-  score: number;
-  type: 'OVERCONFIDENT' | 'UNDERCONFIDENT';
+  conceptName: string
+  confidence: string
+  score: number
+  type: 'OVERCONFIDENT' | 'UNDERCONFIDENT'
 }
 
 interface TrendPoint {
-  date: string;
-  calibrationAccuracy: number;
+  date: string
+  calibrationAccuracy: number
 }
 
 // Mock component for testing
@@ -59,21 +59,21 @@ const MockCalibrationDashboard = ({
   examples,
   isLoading = false,
 }: {
-  calibrationData: CalibrationPoint[];
-  metrics: CalibrationMetrics | null;
-  trendData: TrendPoint[];
-  examples: CalibrationExample[];
-  isLoading?: boolean;
+  calibrationData: CalibrationPoint[]
+  metrics: CalibrationMetrics | null
+  trendData: TrendPoint[]
+  examples: CalibrationExample[]
+  isLoading?: boolean
 }) => {
   if (isLoading) {
     return (
       <div>
         <div className="animate-spin">Loading</div>
       </div>
-    );
+    )
   }
 
-  const normalizeConfidence = (confidence: number) => (confidence - 1) * 25;
+  const normalizeConfidence = (confidence: number) => (confidence - 1) * 25
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -115,8 +115,8 @@ const MockCalibrationDashboard = ({
                 point.isOverconfident
                   ? 'overconfident'
                   : point.isUnderconfident
-                  ? 'underconfident'
-                  : 'calibrated'
+                    ? 'underconfident'
+                    : 'calibrated'
               }
             >
               {point.conceptName}
@@ -165,9 +165,7 @@ const MockCalibrationDashboard = ({
         <div data-testid="examples-container">
           {examples.map((example, idx) => (
             <div key={idx} data-testid={`example-${idx}`} data-type={example.type}>
-              <h4>
-                {example.type === 'OVERCONFIDENT' ? 'Overconfidence' : 'Underconfidence'}
-              </h4>
+              <h4>{example.type === 'OVERCONFIDENT' ? 'Overconfidence' : 'Underconfidence'}</h4>
               <p>
                 {example.conceptName}: {example.confidence} confidence, {example.score}% score
               </p>
@@ -176,8 +174,8 @@ const MockCalibrationDashboard = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 describe('CalibrationDashboard', () => {
   const mockCalibrationData: CalibrationPoint[] = [
@@ -205,7 +203,7 @@ describe('CalibrationDashboard', () => {
       isOverconfident: false,
       isUnderconfident: true,
     },
-  ];
+  ]
 
   const mockMetrics: CalibrationMetrics = {
     meanAbsoluteError: 20.5,
@@ -214,14 +212,14 @@ describe('CalibrationDashboard', () => {
     underconfidentCount: 1,
     calibratedCount: 1,
     trend: 'IMPROVING',
-  };
+  }
 
   const mockTrendData: TrendPoint[] = [
     { date: '2025-10-10', calibrationAccuracy: 65 },
     { date: '2025-10-12', calibrationAccuracy: 68 },
     { date: '2025-10-14', calibrationAccuracy: 72 },
     { date: '2025-10-16', calibrationAccuracy: 75 },
-  ];
+  ]
 
   const mockExamples: CalibrationExample[] = [
     {
@@ -236,7 +234,7 @@ describe('CalibrationDashboard', () => {
       score: 85,
       type: 'UNDERCONFIDENT',
     },
-  ];
+  ]
 
   describe('Component Rendering', () => {
     it('should render loading state', () => {
@@ -247,11 +245,11 @@ describe('CalibrationDashboard', () => {
           trendData={[]}
           examples={[]}
           isLoading={true}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByText('Loading')).toBeInTheDocument();
-    });
+      expect(screen.getByText('Loading')).toBeInTheDocument()
+    })
 
     it('should render dashboard with all sections', () => {
       render(
@@ -260,15 +258,15 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByText('Confidence Calibration')).toBeInTheDocument();
-      expect(screen.getByTestId('scatter-plot')).toBeInTheDocument();
-      expect(screen.getByTestId('trend-chart')).toBeInTheDocument();
-      expect(screen.getByTestId('examples-container')).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText('Confidence Calibration')).toBeInTheDocument()
+      expect(screen.getByTestId('scatter-plot')).toBeInTheDocument()
+      expect(screen.getByTestId('trend-chart')).toBeInTheDocument()
+      expect(screen.getByTestId('examples-container')).toBeInTheDocument()
+    })
+  })
 
   describe('AC#4: Calibration Feedback Display', () => {
     it('should display Mean Absolute Error metric', () => {
@@ -278,12 +276,12 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('mae-card')).toBeInTheDocument();
-      expect(screen.getByTestId('mae-value')).toHaveTextContent('20.5%');
-    });
+      expect(screen.getByTestId('mae-card')).toBeInTheDocument()
+      expect(screen.getByTestId('mae-value')).toHaveTextContent('20.5%')
+    })
 
     it('should display correlation coefficient', () => {
       render(
@@ -292,12 +290,12 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('correlation-card')).toBeInTheDocument();
-      expect(screen.getByTestId('correlation-value')).toHaveTextContent('0.82');
-    });
+      expect(screen.getByTestId('correlation-card')).toBeInTheDocument()
+      expect(screen.getByTestId('correlation-value')).toHaveTextContent('0.82')
+    })
 
     it('should display trend indicator', () => {
       render(
@@ -306,12 +304,12 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('trend-card')).toBeInTheDocument();
-      expect(screen.getByTestId('trend-value')).toHaveTextContent('IMPROVING');
-    });
+      expect(screen.getByTestId('trend-card')).toBeInTheDocument()
+      expect(screen.getByTestId('trend-value')).toHaveTextContent('IMPROVING')
+    })
 
     it('should display count of well-calibrated attempts', () => {
       render(
@@ -320,12 +318,12 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('calibrated-count')).toHaveTextContent('1 well-calibrated');
-    });
-  });
+      expect(screen.getByTestId('calibrated-count')).toHaveTextContent('1 well-calibrated')
+    })
+  })
 
   describe('AC#6: Calibration Trends Dashboard', () => {
     it('should render scatter plot with calibration data', () => {
@@ -335,12 +333,12 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      const scatterPoints = screen.getAllByTestId(/scatter-point-/);
-      expect(scatterPoints).toHaveLength(3);
-    });
+      const scatterPoints = screen.getAllByTestId(/scatter-point-/)
+      expect(scatterPoints).toHaveLength(3)
+    })
 
     it('should display perfect calibration line (y=x diagonal)', () => {
       render(
@@ -349,13 +347,13 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      const calibrationLine = screen.getByTestId('calibration-line');
-      expect(calibrationLine).toBeInTheDocument();
-      expect(calibrationLine).toHaveTextContent('Perfect Calibration (y=x)');
-    });
+      const calibrationLine = screen.getByTestId('calibration-line')
+      expect(calibrationLine).toBeInTheDocument()
+      expect(calibrationLine).toHaveTextContent('Perfect Calibration (y=x)')
+    })
 
     it('should highlight overconfidence zone', () => {
       render(
@@ -364,11 +362,11 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('overconfidence-zone')).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('overconfidence-zone')).toBeInTheDocument()
+    })
 
     it('should highlight underconfidence zone', () => {
       render(
@@ -377,11 +375,11 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('underconfidence-zone')).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('underconfidence-zone')).toBeInTheDocument()
+    })
 
     it('should color-code scatter points', () => {
       render(
@@ -390,18 +388,18 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      const overconfidentPoint = screen.getByTestId('scatter-point-0');
-      expect(overconfidentPoint).toHaveClass('overconfident');
+      const overconfidentPoint = screen.getByTestId('scatter-point-0')
+      expect(overconfidentPoint).toHaveClass('overconfident')
 
-      const calibratedPoint = screen.getByTestId('scatter-point-1');
-      expect(calibratedPoint).toHaveClass('calibrated');
+      const calibratedPoint = screen.getByTestId('scatter-point-1')
+      expect(calibratedPoint).toHaveClass('calibrated')
 
-      const underconfidentPoint = screen.getByTestId('scatter-point-2');
-      expect(underconfidentPoint).toHaveClass('underconfident');
-    });
+      const underconfidentPoint = screen.getByTestId('scatter-point-2')
+      expect(underconfidentPoint).toHaveClass('underconfident')
+    })
 
     it('should display legend with all categories', () => {
       render(
@@ -410,13 +408,13 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('legend-overconfident')).toBeInTheDocument();
-      expect(screen.getByTestId('legend-calibrated')).toBeInTheDocument();
-      expect(screen.getByTestId('legend-underconfident')).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('legend-overconfident')).toBeInTheDocument()
+      expect(screen.getByTestId('legend-calibrated')).toBeInTheDocument()
+      expect(screen.getByTestId('legend-underconfident')).toBeInTheDocument()
+    })
 
     it('should render line chart for trend data', () => {
       render(
@@ -425,14 +423,14 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      const trendPoints = screen.getAllByTestId(/trend-point-/);
-      expect(trendPoints).toHaveLength(4);
-      expect(trendPoints[0]).toHaveAttribute('data-accuracy', '65');
-      expect(trendPoints[3]).toHaveAttribute('data-accuracy', '75');
-    });
+      const trendPoints = screen.getAllByTestId(/trend-point-/)
+      expect(trendPoints).toHaveLength(4)
+      expect(trendPoints[0]).toHaveAttribute('data-accuracy', '65')
+      expect(trendPoints[3]).toHaveAttribute('data-accuracy', '75')
+    })
 
     it('should display correlation coefficient with interpretation', () => {
       render(
@@ -441,12 +439,12 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('correlation-value')).toHaveTextContent('0.82');
+      expect(screen.getByTestId('correlation-value')).toHaveTextContent('0.82')
       // Value of 0.82 is > 0.7, so should be "Strong"
-    });
+    })
 
     it('should identify consistently overconfident topics', () => {
       render(
@@ -480,16 +478,16 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      const scatterPoints = screen.getAllByTestId(/scatter-point-/);
+      const scatterPoints = screen.getAllByTestId(/scatter-point-/)
       const cardiologyPoints = scatterPoints.filter((el) =>
-        el.getAttribute('data-concept')?.includes('Cardiology')
-      );
-      expect(cardiologyPoints.length).toBe(3);
-      expect(cardiologyPoints.every((el) => el.classList.contains('overconfident'))).toBe(true);
-    });
+        el.getAttribute('data-concept')?.includes('Cardiology'),
+      )
+      expect(cardiologyPoints.length).toBe(3)
+      expect(cardiologyPoints.every((el) => el.classList.contains('overconfident'))).toBe(true)
+    })
 
     it('should identify consistently underconfident topics', () => {
       render(
@@ -523,17 +521,17 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      const scatterPoints = screen.getAllByTestId(/scatter-point-/);
+      const scatterPoints = screen.getAllByTestId(/scatter-point-/)
       const pharmPoints = scatterPoints.filter((el) =>
-        el.getAttribute('data-concept')?.includes('Pharmacology')
-      );
-      expect(pharmPoints.length).toBe(3);
-      expect(pharmPoints.every((el) => el.classList.contains('underconfident'))).toBe(true);
-    });
-  });
+        el.getAttribute('data-concept')?.includes('Pharmacology'),
+      )
+      expect(pharmPoints.length).toBe(3)
+      expect(pharmPoints.every((el) => el.classList.contains('underconfident'))).toBe(true)
+    })
+  })
 
   describe('Data Display and Formatting', () => {
     it('should display overconfident examples', () => {
@@ -543,14 +541,14 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      const overconfidentExample = screen.getByTestId('example-0');
-      expect(overconfidentExample).toHaveAttribute('data-type', 'OVERCONFIDENT');
-      expect(overconfidentExample).toHaveTextContent('Overconfidence');
-      expect(overconfidentExample).toHaveTextContent('Cardiology');
-    });
+      const overconfidentExample = screen.getByTestId('example-0')
+      expect(overconfidentExample).toHaveAttribute('data-type', 'OVERCONFIDENT')
+      expect(overconfidentExample).toHaveTextContent('Overconfidence')
+      expect(overconfidentExample).toHaveTextContent('Cardiology')
+    })
 
     it('should display underconfident examples', () => {
       render(
@@ -559,14 +557,14 @@ describe('CalibrationDashboard', () => {
           metrics={mockMetrics}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      const underconfidentExample = screen.getByTestId('example-1');
-      expect(underconfidentExample).toHaveAttribute('data-type', 'UNDERCONFIDENT');
-      expect(underconfidentExample).toHaveTextContent('Underconfidence');
-      expect(underconfidentExample).toHaveTextContent('Pharmacology');
-    });
+      const underconfidentExample = screen.getByTestId('example-1')
+      expect(underconfidentExample).toHaveAttribute('data-type', 'UNDERCONFIDENT')
+      expect(underconfidentExample).toHaveTextContent('Underconfidence')
+      expect(underconfidentExample).toHaveTextContent('Pharmacology')
+    })
 
     it('should display correlation coefficient with 2 decimals', () => {
       render(
@@ -575,11 +573,11 @@ describe('CalibrationDashboard', () => {
           metrics={{ ...mockMetrics, correlationCoefficient: 0.8234 }}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('correlation-value')).toHaveTextContent('0.82');
-    });
+      expect(screen.getByTestId('correlation-value')).toHaveTextContent('0.82')
+    })
 
     it('should display MAE with 1 decimal place', () => {
       render(
@@ -588,12 +586,12 @@ describe('CalibrationDashboard', () => {
           metrics={{ ...mockMetrics, meanAbsoluteError: 20.456 }}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('mae-value')).toHaveTextContent('20.5%');
-    });
-  });
+      expect(screen.getByTestId('mae-value')).toHaveTextContent('20.5%')
+    })
+  })
 
   describe('Trend Interpretation', () => {
     it('should display IMPROVING trend', () => {
@@ -603,11 +601,11 @@ describe('CalibrationDashboard', () => {
           metrics={{ ...mockMetrics, trend: 'IMPROVING' }}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('trend-value')).toHaveTextContent('IMPROVING');
-    });
+      expect(screen.getByTestId('trend-value')).toHaveTextContent('IMPROVING')
+    })
 
     it('should display STABLE trend', () => {
       render(
@@ -616,11 +614,11 @@ describe('CalibrationDashboard', () => {
           metrics={{ ...mockMetrics, trend: 'STABLE' }}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('trend-value')).toHaveTextContent('STABLE');
-    });
+      expect(screen.getByTestId('trend-value')).toHaveTextContent('STABLE')
+    })
 
     it('should display WORSENING trend', () => {
       render(
@@ -629,10 +627,10 @@ describe('CalibrationDashboard', () => {
           metrics={{ ...mockMetrics, trend: 'WORSENING' }}
           trendData={mockTrendData}
           examples={mockExamples}
-        />
-      );
+        />,
+      )
 
-      expect(screen.getByTestId('trend-value')).toHaveTextContent('WORSENING');
-    });
-  });
-});
+      expect(screen.getByTestId('trend-value')).toHaveTextContent('WORSENING')
+    })
+  })
+})

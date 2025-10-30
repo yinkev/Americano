@@ -11,16 +11,19 @@ import type { PrismaClient } from '@/generated/prisma'
 jest.mock('@/lib/db', () => {
   const { mockDeep } = require('jest-mock-extended')
   return {
+    // @ts-expect-error - mockDeep is untyped at runtime
     prisma: mockDeep<PrismaClient>(),
   }
 })
 
+import { NextRequest } from 'next/server'
+import type { DeepMockProxy } from 'jest-mock-extended'
 // Import after jest.mock to avoid module resolution issues
 import { GET, PATCH } from '@/app/api/personalization/preferences/route'
-import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
 
 // Get the mocked prisma instance
-const { prisma: prismaMock } = require('@/lib/db')
+const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>
 
 const mockUser = {
   id: 'test-user-id',

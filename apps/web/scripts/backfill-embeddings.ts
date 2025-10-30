@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+
 /**
  * Backfill Embeddings Script
  *
@@ -18,9 +19,9 @@
  * Epic 3 - Story 3.1 - Task 2.3
  */
 
-import { EmbeddingBatchJob } from '../src/subsystems/content-processing/embedding-batch-job'
-import { prisma } from '../src/lib/db'
 import { Prisma } from '../src/generated/prisma'
+import { prisma } from '../src/lib/db'
+import { EmbeddingBatchJob } from '../src/subsystems/content-processing/embedding-batch-job'
 
 /**
  * CLI options
@@ -116,9 +117,7 @@ Examples:
 /**
  * Get statistics about missing embeddings
  */
-async function getStatistics(
-  lectureId?: string
-): Promise<{
+async function getStatistics(lectureId?: string): Promise<{
   totalLectures: number
   totalChunks: number
   lectureDetails: Array<{
@@ -220,13 +219,9 @@ async function main(): Promise<void> {
   if (stats.lectureDetails.length > 0) {
     console.log('Lecture breakdown:')
     stats.lectureDetails.forEach((lecture, index) => {
-      console.log(
-        `  ${index + 1}. ${lecture.title} (${lecture.chunksWithoutEmbeddings} chunks)`
-      )
+      console.log(`  ${index + 1}. ${lecture.title} (${lecture.chunksWithoutEmbeddings} chunks)`)
       if (index >= 9 && stats.lectureDetails.length > 10) {
-        console.log(
-          `  ... and ${stats.lectureDetails.length - 10} more lectures`
-        )
+        console.log(`  ... and ${stats.lectureDetails.length - 10} more lectures`)
         return
       }
     })
@@ -234,9 +229,7 @@ async function main(): Promise<void> {
   }
 
   // Estimate time
-  const estimatedMinutes = Math.ceil(
-    stats.totalChunks / options.rateLimit
-  )
+  const estimatedMinutes = Math.ceil(stats.totalChunks / options.rateLimit)
   console.log(`Estimated time: ~${estimatedMinutes} minutes`)
   console.log()
 
@@ -284,7 +277,7 @@ async function main(): Promise<void> {
   console.log(`Embeddings generated: ${result.embeddingsGenerated}`)
   console.log(`Total time: ${formatDuration(result.totalTimeMs)}`)
   console.log(
-    `Average: ${(result.totalTimeMs / result.lecturesProcessed / 1000).toFixed(1)}s per lecture`
+    `Average: ${(result.totalTimeMs / result.lecturesProcessed / 1000).toFixed(1)}s per lecture`,
   )
   console.log()
 
@@ -307,7 +300,7 @@ async function main(): Promise<void> {
       .slice(0, 10)
       .forEach((r) => {
         console.log(
-          `   ${r.title}: ${r.embeddingsGenerated} embeddings (${(r.processingTimeMs / 1000).toFixed(1)}s)`
+          `   ${r.title}: ${r.embeddingsGenerated} embeddings (${(r.processingTimeMs / 1000).toFixed(1)}s)`,
         )
       })
 

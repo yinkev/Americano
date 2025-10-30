@@ -14,14 +14,14 @@
 
 'use client'
 
+import { AnimatePresence, motion } from 'framer-motion'
+import { AlertCircle, Brain, Coffee, Minus, TrendingDown, TrendingUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Brain, TrendingUp, TrendingDown, Minus, AlertCircle, Coffee } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { typography, colors, transitions, borderRadius } from '@/lib/design-tokens'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { buttonVariants, numberCounterVariants } from '@/lib/animation-variants'
+import { borderRadius, colors, transitions, typography } from '@/lib/design-tokens'
 
 interface CognitiveLoadIndicatorProps {
   sessionId: string

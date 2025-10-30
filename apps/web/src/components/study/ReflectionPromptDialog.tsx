@@ -1,29 +1,26 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
+import { Brain, Send, SkipForward } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Brain, SkipForward, Send } from 'lucide-react';
-import {
-  getRandomReflectionQuestion,
-  type ReflectionQuestion,
-} from '@/lib/reflection-config';
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { getRandomReflectionQuestion, type ReflectionQuestion } from '@/lib/reflection-config'
 
 interface ReflectionPromptDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (reflectionNotes: string) => void;
-  onSkip: () => void;
-  recentQuestionIds?: string[]; // To avoid repeating recent questions
-  completedThisWeek?: number; // For progress display
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSubmit: (reflectionNotes: string) => void
+  onSkip: () => void
+  recentQuestionIds?: string[] // To avoid repeating recent questions
+  completedThisWeek?: number // For progress display
 }
 
 /**
@@ -51,41 +48,41 @@ export function ReflectionPromptDialog({
   recentQuestionIds = [],
   completedThisWeek = 0,
 }: ReflectionPromptDialogProps) {
-  const [reflectionNotes, setReflectionNotes] = useState('');
-  const [currentQuestion, setCurrentQuestion] = useState<ReflectionQuestion | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [reflectionNotes, setReflectionNotes] = useState('')
+  const [currentQuestion, setCurrentQuestion] = useState<ReflectionQuestion | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Select a random question when dialog opens
   useEffect(() => {
     if (open && !currentQuestion) {
-      const question = getRandomReflectionQuestion(recentQuestionIds);
-      setCurrentQuestion(question);
+      const question = getRandomReflectionQuestion(recentQuestionIds)
+      setCurrentQuestion(question)
     }
-  }, [open, currentQuestion, recentQuestionIds]);
+  }, [open, currentQuestion, recentQuestionIds])
 
   // Reset state when dialog closes
   useEffect(() => {
     if (!open) {
       setTimeout(() => {
-        setReflectionNotes('');
-        setCurrentQuestion(null);
-        setIsSubmitting(false);
-      }, 300); // Wait for dialog close animation
+        setReflectionNotes('')
+        setCurrentQuestion(null)
+        setIsSubmitting(false)
+      }, 300) // Wait for dialog close animation
     }
-  }, [open]);
+  }, [open])
 
   const handleSubmit = () => {
-    setIsSubmitting(true);
-    onSubmit(reflectionNotes.trim());
-    onOpenChange(false);
-  };
+    setIsSubmitting(true)
+    onSubmit(reflectionNotes.trim())
+    onOpenChange(false)
+  }
 
   const handleSkip = () => {
-    onSkip();
-    onOpenChange(false);
-  };
+    onSkip()
+    onOpenChange(false)
+  }
 
-  if (!currentQuestion) return null;
+  if (!currentQuestion) return null
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -98,15 +95,10 @@ export function ReflectionPromptDialog({
                 backgroundColor: 'oklch(0.95 0.05 230)',
               }}
             >
-              <Brain
-                className="h-6 w-6"
-                style={{ color: 'oklch(0.6 0.18 230)' }}
-              />
+              <Brain className="h-6 w-6" style={{ color: 'oklch(0.6 0.18 230)' }} />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-dm-sans">
-                Reflect on Your Learning
-              </DialogTitle>
+              <DialogTitle className="text-2xl font-dm-sans">Reflect on Your Learning</DialogTitle>
               <DialogDescription className="text-base">
                 Take a moment to think about your understanding
               </DialogDescription>
@@ -125,7 +117,8 @@ export function ReflectionPromptDialog({
               }}
             >
               <span className="text-sm font-medium" style={{ color: 'oklch(0.35 0.16 145)' }}>
-                {completedThisWeek} reflection{completedThisWeek !== 1 ? 's' : ''} completed this week
+                {completedThisWeek} reflection{completedThisWeek !== 1 ? 's' : ''} completed this
+                week
               </span>
               <span className="text-xs text-muted-foreground">Keep it up!</span>
             </div>
@@ -141,10 +134,7 @@ export function ReflectionPromptDialog({
               }}
             >
               <div className="flex items-start gap-3">
-                <span
-                  className="text-4xl font-serif"
-                  style={{ color: 'oklch(0.6 0.18 230)' }}
-                >
+                <span className="text-4xl font-serif" style={{ color: 'oklch(0.6 0.18 230)' }}>
                   "
                 </span>
                 <div className="flex-1 pt-2">
@@ -227,12 +217,12 @@ export function ReflectionPromptDialog({
             <p className="font-medium mb-1">💡 Why reflect?</p>
             <p className="text-xs leading-relaxed">
               Metacognitive reflection helps you understand <em>how</em> you learn, not just{' '}
-              <em>what</em> you learn. This self-awareness improves long-term retention and
-              clinical decision-making.
+              <em>what</em> you learn. This self-awareness improves long-term retention and clinical
+              decision-making.
             </p>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

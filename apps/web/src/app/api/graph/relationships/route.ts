@@ -5,9 +5,9 @@
  * Story 3.2 Task 5.1
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { withErrorHandler } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
+import { errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 
 async function handler(request: NextRequest) {
@@ -22,10 +22,9 @@ async function handler(request: NextRequest) {
     ])
 
     if (!fromConcept || !toConcept) {
-      return Response.json(
-        errorResponse('NOT_FOUND', 'One or both concepts not found'),
-        { status: 404 }
-      )
+      return Response.json(errorResponse('NOT_FOUND', 'One or both concepts not found'), {
+        status: 404,
+      })
     }
 
     // Create user-defined relationship
@@ -44,10 +43,9 @@ async function handler(request: NextRequest) {
     return Response.json(successResponse({ relationship: rel }))
   } catch (error) {
     console.error('Failed to create relationship:', error)
-    return Response.json(
-      errorResponse('CREATE_FAILED', 'Failed to create relationship'),
-      { status: 500 }
-    )
+    return Response.json(errorResponse('CREATE_FAILED', 'Failed to create relationship'), {
+      status: 500,
+    })
   }
 }
 

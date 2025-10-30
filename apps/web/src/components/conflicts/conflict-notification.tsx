@@ -1,11 +1,11 @@
 'use client'
 
+import { AlertTriangle, Eye, X } from 'lucide-react'
 import * as React from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ConflictSeverity, ConflictType, Conflict } from '@/types/conflicts'
-import { AlertTriangle, Eye, X } from 'lucide-react'
+import { type Conflict, ConflictSeverity, ConflictType } from '@/types/conflicts'
 
 interface ConflictToastProps {
   conflict: Conflict
@@ -16,11 +16,14 @@ interface ConflictToastProps {
 /**
  * Severity color mapping for toast notifications
  */
-const SEVERITY_COLORS: Record<ConflictSeverity, {
-  bg: string
-  border: string
-  text: string
-}> = {
+const SEVERITY_COLORS: Record<
+  ConflictSeverity,
+  {
+    bg: string
+    border: string
+    text: string
+  }
+> = {
   [ConflictSeverity.LOW]: {
     bg: 'oklch(0.98 0.05 95)',
     border: 'oklch(0.75 0.15 95)',
@@ -53,7 +56,7 @@ const SEVERITY_COLORS: Record<ConflictSeverity, {
 export function showConflictToast(
   conflict: Conflict,
   onView?: (conflictId: string) => void,
-  onDismiss?: (conflictId: string) => void
+  onDismiss?: (conflictId: string) => void,
 ) {
   const colors = SEVERITY_COLORS[conflict.severity]
   const isCritical = conflict.severity === ConflictSeverity.CRITICAL
@@ -100,9 +103,7 @@ export function showConflictToast(
                 <p className="font-semibold text-sm" style={{ color: colors.text }}>
                   Conflict Detected
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  {conflict.conceptName}
-                </p>
+                <p className="text-xs text-muted-foreground">{conflict.conceptName}</p>
               </div>
               <button
                 onClick={() => {
@@ -167,7 +168,7 @@ export function showConflictToast(
       duration: isCritical ? 10000 : 6000, // Critical conflicts stay longer
       onDismiss: () => onDismiss?.(conflict.id),
       onAutoClose: () => onDismiss?.(conflict.id),
-    }
+    },
   )
 }
 
@@ -175,19 +176,20 @@ export function showConflictToast(
  * Batch conflict notification
  * Shows a summary when multiple conflicts are detected
  */
-export function showBatchConflictToast(
-  conflicts: Conflict[],
-  onViewAll?: () => void
-) {
-  const criticalCount = conflicts.filter(c => c.severity === ConflictSeverity.CRITICAL).length
-  const highCount = conflicts.filter(c => c.severity === ConflictSeverity.HIGH).length
-  const mediumCount = conflicts.filter(c => c.severity === ConflictSeverity.MEDIUM).length
-  const lowCount = conflicts.filter(c => c.severity === ConflictSeverity.LOW).length
+export function showBatchConflictToast(conflicts: Conflict[], onViewAll?: () => void) {
+  const criticalCount = conflicts.filter((c) => c.severity === ConflictSeverity.CRITICAL).length
+  const highCount = conflicts.filter((c) => c.severity === ConflictSeverity.HIGH).length
+  const mediumCount = conflicts.filter((c) => c.severity === ConflictSeverity.MEDIUM).length
+  const lowCount = conflicts.filter((c) => c.severity === ConflictSeverity.LOW).length
 
-  const primaryColor = criticalCount > 0 ? SEVERITY_COLORS[ConflictSeverity.CRITICAL] :
-                      highCount > 0 ? SEVERITY_COLORS[ConflictSeverity.HIGH] :
-                      mediumCount > 0 ? SEVERITY_COLORS[ConflictSeverity.MEDIUM] :
-                      SEVERITY_COLORS[ConflictSeverity.LOW]
+  const primaryColor =
+    criticalCount > 0
+      ? SEVERITY_COLORS[ConflictSeverity.CRITICAL]
+      : highCount > 0
+        ? SEVERITY_COLORS[ConflictSeverity.HIGH]
+        : mediumCount > 0
+          ? SEVERITY_COLORS[ConflictSeverity.MEDIUM]
+          : SEVERITY_COLORS[ConflictSeverity.LOW]
 
   toast.custom(
     (t) => (
@@ -308,7 +310,7 @@ export function showBatchConflictToast(
     ),
     {
       duration: 8000,
-    }
+    },
   )
 }
 
@@ -326,13 +328,9 @@ export function useConflictNotifications() {
     if (queue.length > 0) {
       const [current, ...rest] = queue
 
-      showConflictToast(
-        current,
-        viewConflictHandler,
-        () => {
-          setQueue(rest)
-        }
-      )
+      showConflictToast(current, viewConflictHandler, () => {
+        setQueue(rest)
+      })
     }
   }, [queue, viewConflictHandler])
 
@@ -348,15 +346,12 @@ export function useConflictNotifications() {
         showBatchConflictToast(conflicts, onViewAll)
       }
     },
-    [viewConflictHandler]
+    [viewConflictHandler],
   )
 
-  const setViewHandler = React.useCallback(
-    (handler: (conflictId: string) => void) => {
-      setViewConflictHandler(() => handler)
-    },
-    []
-  )
+  const setViewHandler = React.useCallback((handler: (conflictId: string) => void) => {
+    setViewConflictHandler(() => handler)
+  }, [])
 
   return {
     showConflict,
@@ -394,9 +389,7 @@ export function ConflictNotificationBadge({
       aria-label={`${count} unread conflicts`}
       type="button"
     >
-      <span className="text-xs font-bold leading-none">
-        {count > 99 ? '99+' : count}
-      </span>
+      <span className="text-xs font-bold leading-none">{count > 99 ? '99+' : count}</span>
       {count > 0 && (
         <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75" />

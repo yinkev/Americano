@@ -76,7 +76,7 @@ export class IrtEngine {
       const { firstDerivative, secondDerivative } = this.logLikelihoodDerivatives(
         theta,
         betaLogit,
-        responses
+        responses,
       )
 
       // Check second derivative for numerical stability
@@ -143,7 +143,7 @@ export class IrtEngine {
   private logLikelihoodDerivatives(
     theta: number,
     betaLogit: number[],
-    responses: ResponseData[]
+    responses: ResponseData[],
   ): { firstDerivative: number; secondDerivative: number } {
     let firstDerivative = 0
     let secondDerivative = 0

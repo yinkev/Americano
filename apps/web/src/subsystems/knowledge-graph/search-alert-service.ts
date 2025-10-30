@@ -8,9 +8,9 @@
  * @module SearchAlertService
  */
 
+import type { AlertFrequency } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
 import { semanticSearchService } from '@/lib/semantic-search-service'
-import { AlertFrequency } from '@/generated/prisma'
 
 /**
  * Check all active saved searches for new content
@@ -93,7 +93,7 @@ export async function checkSavedSearchAlerts(): Promise<number> {
  */
 function shouldCheckAlert(lastRun: Date | null, frequency: AlertFrequency): boolean {
   if (!lastRun) {
-    return true  // Never run before
+    return true // Never run before
   }
 
   const now = new Date()

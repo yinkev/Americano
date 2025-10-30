@@ -5,8 +5,8 @@
  * Tests recommendation generation and filtering
  */
 
-import { GET } from '@/app/api/analytics/behavioral-insights/recommendations/route'
 import { NextRequest } from 'next/server'
+import { GET } from '@/app/api/analytics/behavioral-insights/recommendations/route'
 
 // Mock dependencies
 const mockRecommendationsEngine = {

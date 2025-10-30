@@ -1,8 +1,8 @@
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@/lib/db'
-import { successResponse, errorResponse } from '@/lib/api-response'
 import { withErrorHandler } from '@/lib/api-error'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
 // Validation schema
 const completeObjectiveSchema = z.object({

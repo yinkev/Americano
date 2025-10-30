@@ -8,35 +8,35 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
 import {
-  Clock,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Coffee,
-  Brain,
-  Target,
   AlertTriangle,
-  Lightbulb,
+  BarChart3,
+  Brain,
   ChevronRight,
+  Clock,
+  Coffee,
+  Lightbulb,
+  Minus,
   Pause,
   Play,
-  BarChart3,
+  Target,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { cn } from '@/lib/utils'
 import {
-  realtimeOrchestrationService,
-  type RealtimeOrchestrationPlan,
-  type PerformanceMetrics,
   type BreakRecommendation,
   type ContentAdaptation,
+  type PerformanceMetrics,
+  type RealtimeOrchestrationPlan,
+  realtimeOrchestrationService,
   type SessionRecommendation,
 } from '@/services/realtime-orchestration'
-import { cn } from '@/lib/utils'
 
 interface RealtimeOrchestrationPanelProps {
   sessionId: string

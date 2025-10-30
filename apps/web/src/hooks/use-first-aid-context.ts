@@ -18,7 +18,7 @@
 
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 /**
  * First Aid concept reference with contextual metadata
@@ -116,7 +116,7 @@ interface CacheEntry {
  */
 export function useFirstAidContext(
   guidelineId: string,
-  options: UseFirstAidContextOptions = {}
+  options: UseFirstAidContextOptions = {},
 ): UseFirstAidContextResult {
   const {
     enabled = true,
@@ -146,7 +146,7 @@ export function useFirstAidContext(
     (entry: CacheEntry): boolean => {
       return Date.now() - entry.timestamp < cacheTTL
     },
-    [cacheTTL]
+    [cacheTTL],
   )
 
   /**
@@ -160,7 +160,7 @@ export function useFirstAidContext(
       }
       return null
     },
-    [isCacheValid]
+    [isCacheValid],
   )
 
   /**
@@ -197,7 +197,7 @@ export function useFirstAidContext(
       try {
         const response = await fetch(
           `/api/first-aid/references?guidelineId=${encodeURIComponent(guidelineId)}&section=${encodeURIComponent(sectionId)}`,
-          { signal }
+          { signal },
         )
 
         if (!response.ok) {
@@ -220,7 +220,7 @@ export function useFirstAidContext(
         throw err instanceof Error ? err : new Error('Unknown error')
       }
     },
-    [guidelineId, getFromCache, storeInCache]
+    [guidelineId, getFromCache, storeInCache],
   )
 
   /**
@@ -237,7 +237,7 @@ export function useFirstAidContext(
         console.warn(`[FirstAidContext] Prefetch failed for ${sectionId}:`, err)
       }
     },
-    [enabled, fetchReferencesForSection]
+    [enabled, fetchReferencesForSection],
   )
 
   /**
@@ -262,7 +262,7 @@ export function useFirstAidContext(
     try {
       const refs = await fetchReferencesForSection(
         currentSection,
-        abortControllerRef.current.signal
+        abortControllerRef.current.signal,
       )
       setReferences(refs)
 
@@ -312,7 +312,10 @@ export function useFirstAidContext(
           const viewportHeight = window.innerHeight
 
           // Calculate visibility percentage
-          const visibleTop = Math.max(0, Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0))
+          const visibleTop = Math.max(
+            0,
+            Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0),
+          )
           const totalHeight = rect.height
           const visibility = totalHeight > 0 ? visibleTop / totalHeight : 0
 
@@ -356,7 +359,7 @@ export function useFirstAidContext(
         root: null,
         rootMargin: `${prefetchThreshold}px 0px ${prefetchThreshold}px 0px`,
         threshold: [0, 0.25, 0.5, 0.75, 1.0],
-      }
+      },
     )
 
     // Observe all sections with data-section-id attribute

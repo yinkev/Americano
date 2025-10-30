@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse } from '@/lib/api-response';
+import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
 // Zod validation schema for request body
 const GenerateRequestSchema = z.object({
   objectiveId: z.string().cuid(),
   difficulty: z.enum(['BASIC', 'INTERMEDIATE', 'ADVANCED']).optional(),
-});
+})
 
 /**
  * POST /api/validation/scenarios/generate
@@ -30,11 +30,11 @@ const GenerateRequestSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
 
     // Validate request body
-    const validatedData = GenerateRequestSchema.parse(body);
-    const { objectiveId, difficulty } = validatedData;
+    const validatedData = GenerateRequestSchema.parse(body)
+    const { objectiveId, difficulty } = validatedData
 
     // Fetch objective from database with board exam tags
     const objective = await prisma.learningObjective.findUnique({
@@ -45,17 +45,17 @@ export async function POST(request: NextRequest) {
         complexity: true,
         boardExamTags: true,
       },
-    });
+    })
 
     if (!objective) {
       return NextResponse.json(
         errorResponse('OBJECTIVE_NOT_FOUND', 'Learning objective not found'),
-        { status: 404 }
-      );
+        { status: 404 },
+      )
     }
 
     // Check for cached scenario (generated within last 30 days for same objective)
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     const cachedScenario = await prisma.clinicalScenario.findFirst({
       where: {
         objectiveId,
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       orderBy: {
         createdAt: 'desc',
       },
-    });
+    })
 
     if (cachedScenario) {
       // Return cached scenario
@@ -74,12 +74,12 @@ export async function POST(request: NextRequest) {
         successResponse({
           scenario: cachedScenario,
           cached: true,
-        })
-      );
+        }),
+      )
     }
 
     // Call Python FastAPI service to generate new scenario
-    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8001';
+    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8001'
 
     const pythonResponse = await fetch(`${pythonServiceUrl}/validation/scenarios/generate`, {
       method: 'POST',
@@ -92,21 +92,18 @@ export async function POST(request: NextRequest) {
         difficulty: difficulty || objective.complexity,
         board_exam_tags: objective.boardExamTags,
       }),
-    });
+    })
 
     if (!pythonResponse.ok) {
-      const errorText = await pythonResponse.text();
-      console.error('Python service error:', errorText);
+      const errorText = await pythonResponse.text()
+      console.error('Python service error:', errorText)
       return NextResponse.json(
-        errorResponse(
-          'PYTHON_SERVICE_ERROR',
-          'Failed to generate scenario from Python service'
-        ),
-        { status: 500 }
-      );
+        errorResponse('PYTHON_SERVICE_ERROR', 'Failed to generate scenario from Python service'),
+        { status: 500 },
+      )
     }
 
-    const pythonData = await pythonResponse.json();
+    const pythonData = await pythonResponse.json()
 
     // Save generated scenario to database
     const savedScenario = await prisma.clinicalScenario.create({
@@ -115,31 +112,33 @@ export async function POST(request: NextRequest) {
         scenarioType: pythonData.scenario_type,
         difficulty: pythonData.difficulty,
         caseText: pythonData.case_text,
-        boardExamTopic: pythonData.board_exam_topic || (objective.boardExamTags.length > 0 ? objective.boardExamTags[0] : null),
+        boardExamTopic:
+          pythonData.board_exam_topic ||
+          (objective.boardExamTags.length > 0 ? objective.boardExamTags[0] : null),
       },
-    });
+    })
 
     return NextResponse.json(
       successResponse({
         scenario: savedScenario,
         cached: false,
-      })
-    );
+      }),
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', 'Invalid request data', error.issues),
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    console.error('[/api/validation/scenarios/generate] Error:', error);
+    console.error('[/api/validation/scenarios/generate] Error:', error)
     return NextResponse.json(
       errorResponse(
         'INTERNAL_ERROR',
-        error instanceof Error ? error.message : 'Failed to generate scenario'
+        error instanceof Error ? error.message : 'Failed to generate scenario',
       ),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

@@ -1,15 +1,15 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import Image, { ImageProps } from "next/image"
-import { cn } from "@/lib/utils"
+import Image, { type ImageProps } from 'next/image'
+import * as React from 'react'
+import { cn } from '@/lib/utils'
 
-interface OptimizedImageProps extends Omit<ImageProps, "src"> {
+interface OptimizedImageProps extends Omit<ImageProps, 'src'> {
   src: string
   alt: string
   className?: string
   priority?: boolean
-  loading?: "lazy" | "eager"
+  loading?: 'lazy' | 'eager'
   quality?: number
   blur?: boolean
 }
@@ -29,7 +29,7 @@ export function OptimizedImage({
   alt,
   className,
   priority = false,
-  loading = "lazy",
+  loading = 'lazy',
   quality = 75,
   blur = true,
   ...props
@@ -37,7 +37,7 @@ export function OptimizedImage({
   const [isLoading, setIsLoading] = React.useState(true)
 
   return (
-    <div className={cn("relative overflow-hidden", className)}>
+    <div className={cn('relative overflow-hidden', className)}>
       <Image
         src={src}
         alt={alt}
@@ -45,16 +45,16 @@ export function OptimizedImage({
         priority={priority}
         loading={priority ? undefined : loading}
         quality={quality}
-        placeholder={blur ? "blur" : "empty"}
+        placeholder={blur ? 'blur' : 'empty'}
         blurDataURL={
           blur
-            ? "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAB//2Q=="
+            ? 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAB//2Q=='
             : undefined
         }
         onLoad={() => setIsLoading(false)}
         className={cn(
-          "duration-700 ease-in-out",
-          isLoading ? "scale-110 blur-sm" : "scale-100 blur-0"
+          'duration-700 ease-in-out',
+          isLoading ? 'scale-110 blur-sm' : 'scale-100 blur-0',
         )}
       />
     </div>
@@ -84,7 +84,7 @@ export function LazyImage({
           observer.disconnect()
         }
       },
-      { threshold }
+      { threshold },
     )
 
     observer.observe(imgRef.current)

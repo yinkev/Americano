@@ -57,7 +57,7 @@ export class FirstAidUpdateNotifier {
   async notifyUser(
     userId: string,
     versionResult: VersionComparisonResult,
-    method: NotificationMethod = 'IN_APP'
+    method: NotificationMethod = 'IN_APP',
   ): Promise<NotificationResult> {
     console.log(`📧 Sending update notification to user ${userId}`)
 
@@ -107,7 +107,7 @@ export class FirstAidUpdateNotifier {
    */
   async notifyMultipleUsers(
     updates: Map<string, VersionComparisonResult>,
-    method: NotificationMethod = 'IN_APP'
+    method: NotificationMethod = 'IN_APP',
   ): Promise<NotificationResult[]> {
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`)
     console.log(`📧 Sending notifications to ${updates.size} users`)
@@ -123,8 +123,8 @@ export class FirstAidUpdateNotifier {
       }
     }
 
-    const successCount = results.filter(r => r.success).length
-    const failCount = results.filter(r => !r.success).length
+    const successCount = results.filter((r) => r.success).length
+    const failCount = results.filter((r) => !r.success).length
 
     console.log(`\n✓ Notifications sent: ${successCount} success, ${failCount} failed`)
 
@@ -208,7 +208,7 @@ export class FirstAidUpdateNotifier {
     userId: string,
     message: string,
     success: boolean,
-    error?: string
+    error?: string,
   ): Promise<void> {
     await this.prisma.behavioralEvent.create({
       data: {
@@ -243,7 +243,7 @@ export class FirstAidUpdateNotifier {
 
     // Filter for notification events
     return events
-      .filter(e => {
+      .filter((e) => {
         const data = e.eventData as { type?: string }
         return (
           data.type === 'FIRST_AID_UPDATE_NOTIFICATION' ||

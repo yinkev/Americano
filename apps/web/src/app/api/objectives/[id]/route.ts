@@ -1,7 +1,7 @@
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
 
 // Zod validation schema for update request
 const UpdateObjectiveSchema = z.object({

@@ -16,20 +16,21 @@
  * - BREAK_SCHEDULE_ADJUST
  */
 
-import { PrismaClient, Prisma } from '@/generated/prisma'
 import {
   InterventionRecommendation,
   InterventionType,
-  StrugglePrediction,
+  type Prisma,
+  PrismaClient,
+  type StrugglePrediction,
 } from '@/generated/prisma'
+import { getMissionObjectives } from '@/types/mission-helpers'
 import type {
+  ContentPreferences,
   FeatureVector,
   LearningStyleProfile,
-  ContentPreferences,
-  PreferredStudyTime,
   MissionObjective,
+  PreferredStudyTime,
 } from '@/types/prisma-json'
-import { getMissionObjectives } from '@/types/mission-helpers'
 
 const prisma = new PrismaClient()
 
@@ -110,7 +111,7 @@ export class InterventionEngine {
 
     // 2. Difficulty Progression (if complexity mismatch)
     if ((features.complexityMismatch ?? 0) > 0.6) {
-      const contentComplexity = (features.complexityMismatch ?? 0)
+      const contentComplexity = features.complexityMismatch ?? 0
       interventions.push({
         type: InterventionType.DIFFICULTY_PROGRESSION,
         description: 'Start with foundational content before tackling advanced concepts',
@@ -179,7 +180,7 @@ export class InterventionEngine {
 
     // 5. Spaced Repetition Boost (if historical struggles)
     const historicalPerformance = features.historicalPerformance ?? 0
-    if ((1 - historicalPerformance) > 0.6) {
+    if (1 - historicalPerformance > 0.6) {
       interventions.push({
         type: InterventionType.SPACED_REPETITION_BOOST,
         description: 'Increase review frequency for this topic area',
@@ -390,7 +391,7 @@ export class InterventionEngine {
     const objectives = getMissionObjectives(mission)
 
     switch (intervention.interventionType) {
-      case InterventionType.PREREQUISITE_REVIEW:
+      case InterventionType.PREREQUISITE_REVIEW: {
         // Insert prerequisite objectives before main objective
         const prerequisites = await prisma.objectivePrerequisite.findMany({
           where: { objectiveId: objectiveId || '' },
@@ -415,17 +416,21 @@ export class InterventionEngine {
 
         appliedActions.push(`Inserted ${prerequisites.length} prerequisite reviews`)
         break
+      }
 
-      case InterventionType.DIFFICULTY_PROGRESSION:
+      case InterventionType.DIFFICULTY_PROGRESSION: {
         // Adjust objective complexity in mission
         const objIndex = objectives.findIndex((o) => o.id === objectiveId)
 
         if (objIndex >= 0) {
-          objectives[objIndex].estimatedMinutes = Math.round(objectives[objIndex].estimatedMinutes * 1.25) // Add 25% more time
+          objectives[objIndex].estimatedMinutes = Math.round(
+            objectives[objIndex].estimatedMinutes * 1.25,
+          ) // Add 25% more time
         }
 
         appliedActions.push('Enabled difficulty progression mode')
         break
+      }
 
       case InterventionType.COGNITIVE_LOAD_REDUCE:
         // Reduce mission duration by 50%
@@ -438,12 +443,13 @@ export class InterventionEngine {
         appliedActions.push('Reduced mission workload by 50%')
         break
 
-      case InterventionType.SPACED_REPETITION_BOOST:
+      case InterventionType.SPACED_REPETITION_BOOST: {
         // Mark objective for increased review frequency (handled by FSRS separately)
         const objIdx = objectives.findIndex((o) => o.id === objectiveId)
 
         appliedActions.push('Enabled spaced repetition boost')
         break
+      }
 
       case InterventionType.BREAK_SCHEDULE_ADJUST:
         // Add break reminders to mission - handled separately

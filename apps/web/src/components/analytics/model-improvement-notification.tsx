@@ -9,8 +9,8 @@
 
 'use client'
 
+import { CheckCircle2, Sparkles, TrendingUp } from 'lucide-react'
 import { useEffect, useRef } from 'react'
-import { TrendingUp, CheckCircle2, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface ModelImprovement {

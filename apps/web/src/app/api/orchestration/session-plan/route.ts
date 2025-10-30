@@ -6,12 +6,12 @@
  * Integrates all 4 subsystems for comprehensive planning
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { SessionDurationOptimizer } from '@/subsystems/behavioral-analytics/session-duration-optimizer'
-import { ContentSequencer } from '@/subsystems/behavioral-analytics/content-sequencer'
-import { StudyIntensityModulator } from '@/subsystems/behavioral-analytics/study-intensity-modulator'
-import { prisma } from '@/lib/db'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { prisma } from '@/lib/db'
+import { ContentSequencer } from '@/subsystems/behavioral-analytics/content-sequencer'
+import { SessionDurationOptimizer } from '@/subsystems/behavioral-analytics/session-duration-optimizer'
+import { StudyIntensityModulator } from '@/subsystems/behavioral-analytics/study-intensity-modulator'
 
 const SessionPlanSchema = z.object({
   userId: z.string().min(1),
@@ -41,11 +41,12 @@ export async function POST(request: NextRequest) {
 
     // Determine mission complexity (heuristic based on objectives)
     const objectivesArray = Array.isArray(mission.objectives) ? mission.objectives : []
-    const missionComplexity = objectivesArray.length > 3
-      ? ('ADVANCED' as const)
-      : objectivesArray.length > 1
-        ? ('INTERMEDIATE' as const)
-        : ('BASIC' as const)
+    const missionComplexity =
+      objectivesArray.length > 3
+        ? ('ADVANCED' as const)
+        : objectivesArray.length > 1
+          ? ('INTERMEDIATE' as const)
+          : ('BASIC' as const)
 
     // Get duration recommendation
     const startDateTime = new Date(startTime)

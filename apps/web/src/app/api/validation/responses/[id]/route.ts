@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { getUserId } from '@/lib/auth';
+import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getUserId } from '@/lib/auth'
+import { prisma } from '@/lib/db'
 
 // Zod validation schema for PATCH request body
 const updateResponseSchema = z.object({
   reflectionNotes: z.string().optional(),
-});
+})
 
 /**
  * PATCH /api/validation/responses/[id]
@@ -24,39 +24,36 @@ const updateResponseSchema = z.object({
  * @see Story 4.4 Task 10.5 (Reflection Integration)
  * @see Story 4.4 AC#5 (Metacognitive Reflection Prompts)
  */
-export async function PATCH(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await context.params;
-    const body = await request.json();
+    const { id } = await context.params
+    const body = await request.json()
 
     // Validate request body
-    const validatedData = updateResponseSchema.parse(body);
-    const { reflectionNotes } = validatedData;
+    const validatedData = updateResponseSchema.parse(body)
+    const { reflectionNotes } = validatedData
 
     // Get user ID (hardcoded for MVP per CLAUDE.md)
-    const userId = await getUserId();
+    const userId = await getUserId()
 
     // Fetch existing ValidationResponse
     const existingResponse = await prisma.validationResponse.findUnique({
       where: { id },
-    });
+    })
 
     if (!existingResponse) {
       return NextResponse.json(
         errorResponse('RESPONSE_NOT_FOUND', 'Validation response not found'),
-        { status: 404 }
-      );
+        { status: 404 },
+      )
     }
 
     // Verify ownership
     if (existingResponse.userId !== userId) {
       return NextResponse.json(
         errorResponse('UNAUTHORIZED', 'You do not have permission to update this response'),
-        { status: 403 }
-      );
+        { status: 403 },
+      )
     }
 
     // Update ValidationResponse with reflection notes
@@ -65,7 +62,7 @@ export async function PATCH(
       data: {
         reflectionNotes: reflectionNotes || null,
       },
-    });
+    })
 
     // Return updated response
     return NextResponse.json(
@@ -73,23 +70,23 @@ export async function PATCH(
         responseId: updatedResponse.id,
         reflectionNotes: updatedResponse.reflectionNotes,
         updatedAt: updatedResponse.updatedAt,
-      })
-    );
+      }),
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', 'Invalid request data', error.issues),
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    console.error('Error updating validation response:', error);
+    console.error('Error updating validation response:', error)
     return NextResponse.json(
       errorResponse(
         'INTERNAL_ERROR',
-        error instanceof Error ? error.message : 'Failed to update validation response'
+        error instanceof Error ? error.message : 'Failed to update validation response',
       ),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

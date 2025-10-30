@@ -1,17 +1,17 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { BookOpen, AlertCircle } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { cn } from "@/lib/utils"
+import { AlertCircle, BookOpen } from 'lucide-react'
+import * as React from 'react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { cn } from '@/lib/utils'
 import {
   FirstAidReferenceCard,
-  FirstAidReferenceCardSkeleton,
   type FirstAidReferenceCardProps,
-} from "./reference-card"
+  FirstAidReferenceCardSkeleton,
+} from './reference-card'
 
 export interface FirstAidReference {
   guidelineId: string
@@ -27,7 +27,7 @@ export interface FirstAidReference {
 
 export interface CrossReferencePanelProps {
   conceptId: string
-  position?: "sidebar" | "inline"
+  position?: 'sidebar' | 'inline'
   references?: FirstAidReference[]
   isLoading?: boolean
   error?: string | null
@@ -70,24 +70,24 @@ export interface CrossReferencePanelProps {
  */
 export function FirstAidCrossReferencePanel({
   conceptId,
-  position = "sidebar",
+  position = 'sidebar',
   references = [],
   isLoading = false,
   error = null,
   onReferenceClick,
   className,
-  maxHeight = "calc(100vh - 200px)",
+  maxHeight = 'calc(100vh - 200px)',
 }: CrossReferencePanelProps) {
-  const isSidebar = position === "sidebar"
+  const isSidebar = position === 'sidebar'
 
   // Loading State
   if (isLoading) {
     return (
       <Card
         className={cn(
-          "border-white/40 bg-white/80 backdrop-blur-md",
-          isSidebar ? "w-full sticky top-4" : "w-full",
-          className
+          'border-white/40 bg-white/80 backdrop-blur-md',
+          isSidebar ? 'w-full sticky top-4' : 'w-full',
+          className,
         )}
         role="region"
         aria-label="First Aid references loading"
@@ -101,7 +101,7 @@ export function FirstAidCrossReferencePanel({
         <CardContent>
           <ScrollArea
             className="w-full pr-4"
-            style={{ maxHeight: isSidebar ? maxHeight : "600px" }}
+            style={{ maxHeight: isSidebar ? maxHeight : '600px' }}
           >
             <div className="space-y-3">
               <FirstAidReferenceCardSkeleton />
@@ -119,9 +119,9 @@ export function FirstAidCrossReferencePanel({
     return (
       <Card
         className={cn(
-          "border-white/40 bg-white/80 backdrop-blur-md",
-          isSidebar ? "w-full sticky top-4" : "w-full",
-          className
+          'border-white/40 bg-white/80 backdrop-blur-md',
+          isSidebar ? 'w-full sticky top-4' : 'w-full',
+          className,
         )}
         role="region"
         aria-label="First Aid references error"
@@ -135,9 +135,7 @@ export function FirstAidCrossReferencePanel({
         <CardContent>
           <Alert variant="destructive" className="bg-red-50/80">
             <AlertCircle className="size-4" />
-            <AlertDescription className="text-sm">
-              {error}
-            </AlertDescription>
+            <AlertDescription className="text-sm">{error}</AlertDescription>
           </Alert>
         </CardContent>
       </Card>
@@ -149,9 +147,9 @@ export function FirstAidCrossReferencePanel({
     return (
       <Card
         className={cn(
-          "border-white/40 bg-white/80 backdrop-blur-md",
-          isSidebar ? "w-full sticky top-4" : "w-full",
-          className
+          'border-white/40 bg-white/80 backdrop-blur-md',
+          isSidebar ? 'w-full sticky top-4' : 'w-full',
+          className,
         )}
         role="region"
         aria-label="First Aid references empty"
@@ -164,13 +162,8 @@ export function FirstAidCrossReferencePanel({
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-            <BookOpen
-              className="size-12 text-muted-foreground/40 mb-3"
-              aria-hidden="true"
-            />
-            <p className="text-sm font-medium text-foreground mb-1">
-              No references found
-            </p>
+            <BookOpen className="size-12 text-muted-foreground/40 mb-3" aria-hidden="true" />
+            <p className="text-sm font-medium text-foreground mb-1">No references found</p>
             <p className="text-xs text-muted-foreground max-w-[280px]">
               There are no First Aid references mapped to this concept yet.
             </p>
@@ -184,9 +177,9 @@ export function FirstAidCrossReferencePanel({
   return (
     <Card
       className={cn(
-        "border-white/40 bg-white/80 backdrop-blur-md",
-        isSidebar ? "w-full sticky top-4" : "w-full",
-        className
+        'border-white/40 bg-white/80 backdrop-blur-md',
+        isSidebar ? 'w-full sticky top-4' : 'w-full',
+        className,
       )}
       role="region"
       aria-label={`First Aid references for concept ${conceptId}`}
@@ -201,7 +194,7 @@ export function FirstAidCrossReferencePanel({
             variant="secondary"
             className="text-xs"
             aria-label={`${references.length} ${
-              references.length === 1 ? "reference" : "references"
+              references.length === 1 ? 'reference' : 'references'
             } found`}
           >
             {references.length}
@@ -210,18 +203,13 @@ export function FirstAidCrossReferencePanel({
         {/* High-yield count */}
         {references.some((ref) => ref.isHighYield) && (
           <p className="text-xs text-muted-foreground mt-2">
-            {references.filter((ref) => ref.isHighYield).length} high-yield{" "}
-            {references.filter((ref) => ref.isHighYield).length === 1
-              ? "topic"
-              : "topics"}
+            {references.filter((ref) => ref.isHighYield).length} high-yield{' '}
+            {references.filter((ref) => ref.isHighYield).length === 1 ? 'topic' : 'topics'}
           </p>
         )}
       </CardHeader>
       <CardContent>
-        <ScrollArea
-          className="w-full pr-4"
-          style={{ maxHeight: isSidebar ? maxHeight : "600px" }}
-        >
+        <ScrollArea className="w-full pr-4" style={{ maxHeight: isSidebar ? maxHeight : '600px' }}>
           <div className="space-y-3">
             {references.map((reference) => (
               <FirstAidReferenceCard
@@ -258,10 +246,10 @@ export function FirstAidCrossReferencePanelCompact({
   isLoading = false,
   onReferenceClick,
   className,
-}: Omit<CrossReferencePanelProps, "position" | "maxHeight">) {
+}: Omit<CrossReferencePanelProps, 'position' | 'maxHeight'>) {
   if (isLoading) {
     return (
-      <div className={cn("space-y-2", className)}>
+      <div className={cn('space-y-2', className)}>
         <div className="h-4 w-32 bg-muted/60 rounded animate-pulse" />
         <div className="h-20 w-full bg-muted/40 rounded animate-pulse" />
       </div>
@@ -273,7 +261,7 @@ export function FirstAidCrossReferencePanelCompact({
   }
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn('space-y-2', className)}>
       <div className="flex items-center gap-2">
         <BookOpen className="size-4 text-primary" aria-hidden="true" />
         <p className="text-sm font-medium">First Aid ({references.length})</p>
@@ -284,15 +272,13 @@ export function FirstAidCrossReferencePanelCompact({
             key={reference.guidelineId}
             onClick={() => onReferenceClick?.(reference.guidelineId)}
             className={cn(
-              "w-full text-left p-3 rounded-lg border transition-all",
-              "bg-white/80 border-white/40 hover:bg-white/95 hover:shadow-sm"
+              'w-full text-left p-3 rounded-lg border transition-all',
+              'bg-white/80 border-white/40 hover:bg-white/95 hover:shadow-sm',
             )}
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium line-clamp-1">
-                  {reference.title}
-                </p>
+                <p className="text-sm font-medium line-clamp-1">{reference.title}</p>
                 {reference.pageNumber && (
                   <p className="text-xs text-muted-foreground mt-0.5">
                     Page {reference.pageNumber}
@@ -302,7 +288,7 @@ export function FirstAidCrossReferencePanelCompact({
               {reference.isHighYield && (
                 <BookOpen
                   className="size-3 shrink-0"
-                  style={{ color: "oklch(0.7 0.2 60)" }}
+                  style={{ color: 'oklch(0.7 0.2 60)' }}
                   fill="oklch(0.7 0.2 60)"
                   aria-label="High-yield"
                 />

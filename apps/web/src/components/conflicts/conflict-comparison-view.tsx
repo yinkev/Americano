@@ -1,12 +1,12 @@
 'use client'
 
-import * as React from 'react'
+import { Award, BookOpen, Calendar, ExternalLink } from 'lucide-react'
+import type * as React from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
-import { ConflictContent, Source, EBMLevel, ConflictType } from '@/types/conflicts'
-import { BookOpen, Award, Calendar, ExternalLink } from 'lucide-react'
+import { type ConflictContent, type ConflictType, EBMLevel, type Source } from '@/types/conflicts'
 
 interface ConflictComparisonViewProps {
   /**
@@ -164,7 +164,10 @@ function SourceMetadata({ source }: { source: Source }) {
  * ContentPanel Component
  * Displays content with highlighted segments
  */
-function ContentPanel({ content, isHigherCredibility }: {
+function ContentPanel({
+  content,
+  isHigherCredibility,
+}: {
   content: ConflictContent
   isHigherCredibility?: boolean
 }) {
@@ -185,11 +188,7 @@ function ContentPanel({ content, isHigherCredibility }: {
     sortedSegments.forEach((segment, index) => {
       // Add text before highlight
       if (segment.start > lastIndex) {
-        parts.push(
-          <span key={`text-${index}`}>
-            {text.substring(lastIndex, segment.start)}
-          </span>
-        )
+        parts.push(<span key={`text-${index}`}>{text.substring(lastIndex, segment.start)}</span>)
       }
 
       // Add highlighted segment
@@ -203,7 +202,7 @@ function ContentPanel({ content, isHigherCredibility }: {
           }}
         >
           {segment.text}
-        </mark>
+        </mark>,
       )
 
       lastIndex = segment.end
@@ -211,9 +210,7 @@ function ContentPanel({ content, isHigherCredibility }: {
 
     // Add remaining text
     if (lastIndex < text.length) {
-      parts.push(
-        <span key="text-end">{text.substring(lastIndex)}</span>
-      )
+      parts.push(<span key="text-end">{text.substring(lastIndex)}</span>)
     }
 
     return <p className="text-sm leading-relaxed">{parts}</p>
@@ -223,7 +220,7 @@ function ContentPanel({ content, isHigherCredibility }: {
     <div
       className={cn(
         'relative rounded-lg border p-4',
-        isHigherCredibility && 'ring-2 ring-primary/20'
+        isHigherCredibility && 'ring-2 ring-primary/20',
       )}
     >
       {isHigherCredibility && (
@@ -241,11 +238,7 @@ function ContentPanel({ content, isHigherCredibility }: {
 
       {renderHighlightedText()}
 
-      {pageNumber && (
-        <p className="mt-2 text-xs text-muted-foreground">
-          Page {pageNumber}
-        </p>
-      )}
+      {pageNumber && <p className="mt-2 text-xs text-muted-foreground">Page {pageNumber}</p>}
     </div>
   )
 }
@@ -299,9 +292,7 @@ export function ConflictComparisonView({
           <Separator orientation="vertical" className="h-4" />
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-muted-foreground">Similarity:</span>
-            <span className="text-xs font-semibold">
-              {(similarityScore * 100).toFixed(1)}%
-            </span>
+            <span className="text-xs font-semibold">{(similarityScore * 100).toFixed(1)}%</span>
           </div>
           <Separator orientation="vertical" className="h-4" />
           <div className="flex items-center gap-2">

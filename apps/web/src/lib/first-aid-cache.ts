@@ -204,18 +204,12 @@ export class FirstAidCache {
       ttl?: number
       edition?: string
       isStableGuideline?: boolean
-    } = {}
+    } = {},
   ): void {
-    const {
-      ttl = FirstAidCache.TTL_CONFIG.CONCEPT,
-      edition,
-      isStableGuideline = false,
-    } = options
+    const { ttl = FirstAidCache.TTL_CONFIG.CONCEPT, edition, isStableGuideline = false } = options
 
     // Use extended TTL for stable guidelines
-    const effectiveTTL = isStableGuideline
-      ? FirstAidCache.TTL_CONFIG.STABLE_GUIDELINE
-      : ttl
+    const effectiveTTL = isStableGuideline ? FirstAidCache.TTL_CONFIG.STABLE_GUIDELINE : ttl
 
     const entry: CachedReference = {
       references,
@@ -337,13 +331,14 @@ export class FirstAidCache {
         }
         break
 
-      case 'scroll':
+      case 'scroll': {
         if (!guidelineId) throw new Error('guidelineId required for scroll cache key')
         if (position === undefined) throw new Error('position required for scroll cache key')
         // Round position to nearest 100px for better cache hit rate
         const roundedPosition = Math.floor(position / 100) * 100
         key = `scroll:${guidelineId}:${roundedPosition}`
         break
+      }
 
       case 'section':
         if (!guidelineId) throw new Error('guidelineId required for section cache key')
@@ -615,14 +610,10 @@ export function isStableGuideline(lastEditedAt: Date): boolean {
 export async function prefetchAdjacentPositions(
   guidelineId: string,
   currentPosition: number,
-  fetchFn: (position: number) => Promise<ConceptReference[]>
+  fetchFn: (position: number) => Promise<ConceptReference[]>,
 ): Promise<void> {
   // Prefetch next 3 positions (300px ahead)
-  const positions = [
-    currentPosition + 100,
-    currentPosition + 200,
-    currentPosition + 300,
-  ]
+  const positions = [currentPosition + 100, currentPosition + 200, currentPosition + 300]
 
   for (const position of positions) {
     const key = firstAidCache.generateKey({

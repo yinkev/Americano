@@ -1,36 +1,36 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { format } from 'date-fns';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { format } from 'date-fns'
+import { Brain, Calendar, Filter, MessageSquare, TrendingUp } from 'lucide-react'
+import { useState } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Brain, Calendar, TrendingUp, MessageSquare, Filter } from 'lucide-react';
-import { getEngagementLevel } from '@/lib/reflection-config';
+} from '@/components/ui/select'
+import { getEngagementLevel } from '@/lib/reflection-config'
 
 interface ReflectionEntry {
-  id: string;
-  responseId: string;
-  reflectionNotes: string;
-  conceptName: string;
-  score: number;
-  respondedAt: Date;
+  id: string
+  responseId: string
+  reflectionNotes: string
+  conceptName: string
+  score: number
+  respondedAt: Date
 }
 
 interface ReflectionHistoryViewProps {
-  reflections: ReflectionEntry[];
-  engagementScore?: number;
-  completionRate?: number; // 0-100
-  avgResponseLength?: number;
-  isLoading?: boolean;
+  reflections: ReflectionEntry[]
+  engagementScore?: number
+  completionRate?: number // 0-100
+  avgResponseLength?: number
+  isLoading?: boolean
 }
 
 /**
@@ -55,35 +55,35 @@ export function ReflectionHistoryView({
   avgResponseLength = 0,
   isLoading = false,
 }: ReflectionHistoryViewProps) {
-  const [filterPeriod, setFilterPeriod] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [filterPeriod, setFilterPeriod] = useState<'7d' | '30d' | '90d' | 'all'>('30d')
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
-  const engagement = getEngagementLevel(engagementScore);
+  const engagement = getEngagementLevel(engagementScore)
 
   const toggleExpanded = (id: string) => {
     setExpandedIds((prev) => {
-      const next = new Set(prev);
+      const next = new Set(prev)
       if (next.has(id)) {
-        next.delete(id);
+        next.delete(id)
       } else {
-        next.add(id);
+        next.add(id)
       }
-      return next;
-    });
-  };
+      return next
+    })
+  }
 
   // Filter reflections by period
   const filteredReflections = reflections.filter((reflection) => {
-    if (filterPeriod === 'all') return true;
+    if (filterPeriod === 'all') return true
     const daysAgo = {
       '7d': 7,
       '30d': 30,
       '90d': 90,
-    }[filterPeriod];
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - daysAgo);
-    return new Date(reflection.respondedAt) >= cutoffDate;
-  });
+    }[filterPeriod]
+    const cutoffDate = new Date()
+    cutoffDate.setDate(cutoffDate.getDate() - daysAgo)
+    return new Date(reflection.respondedAt) >= cutoffDate
+  })
 
   if (isLoading) {
     return (
@@ -93,7 +93,7 @@ export function ReflectionHistoryView({
           <p className="text-sm text-muted-foreground">Loading reflections...</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -178,17 +178,11 @@ export function ReflectionHistoryView({
                 backgroundColor: 'oklch(0.7 0.15 145 / 0.2)',
               }}
             >
-              <TrendingUp
-                className="h-5 w-5"
-                style={{ color: 'oklch(0.7 0.15 145)' }}
-              />
+              <TrendingUp className="h-5 w-5" style={{ color: 'oklch(0.7 0.15 145)' }} />
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Completion Rate</p>
-              <p
-                className="text-2xl font-bold"
-                style={{ color: 'oklch(0.7 0.15 145)' }}
-              >
+              <p className="text-2xl font-bold" style={{ color: 'oklch(0.7 0.15 145)' }}>
                 {Math.round(completionRate)}%
               </p>
             </div>
@@ -214,17 +208,11 @@ export function ReflectionHistoryView({
                 backgroundColor: 'oklch(0.65 0.18 60 / 0.2)',
               }}
             >
-              <MessageSquare
-                className="h-5 w-5"
-                style={{ color: 'oklch(0.65 0.18 60)' }}
-              />
+              <MessageSquare className="h-5 w-5" style={{ color: 'oklch(0.65 0.18 60)' }} />
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Avg Response</p>
-              <p
-                className="text-2xl font-bold"
-                style={{ color: 'oklch(0.65 0.18 60)' }}
-              >
+              <p className="text-2xl font-bold" style={{ color: 'oklch(0.65 0.18 60)' }}>
                 {Math.round(avgResponseLength)}
               </p>
             </div>
@@ -245,9 +233,7 @@ export function ReflectionHistoryView({
         {filteredReflections.length === 0 ? (
           <div className="text-center py-12">
             <Brain className="h-16 w-16 mx-auto text-muted-foreground opacity-50 mb-4" />
-            <p className="text-base font-medium text-muted-foreground">
-              No reflections yet
-            </p>
+            <p className="text-base font-medium text-muted-foreground">No reflections yet</p>
             <p className="text-sm text-muted-foreground mt-2">
               Complete assessments and take time to reflect on your learning
             </p>
@@ -256,11 +242,11 @@ export function ReflectionHistoryView({
           <ScrollArea className="h-[500px] pr-4">
             <div className="space-y-4">
               {filteredReflections.map((reflection) => {
-                const isExpanded = expandedIds.has(reflection.id);
+                const isExpanded = expandedIds.has(reflection.id)
                 const truncatedText =
                   reflection.reflectionNotes.length > 150
                     ? reflection.reflectionNotes.substring(0, 150) + '...'
-                    : reflection.reflectionNotes;
+                    : reflection.reflectionNotes
 
                 return (
                   <div
@@ -304,7 +290,10 @@ export function ReflectionHistoryView({
                     </div>
 
                     {/* Reflection Text */}
-                    <div className="pl-4 border-l-2" style={{ borderColor: 'oklch(0.85 0.08 230)' }}>
+                    <div
+                      className="pl-4 border-l-2"
+                      style={{ borderColor: 'oklch(0.85 0.08 230)' }}
+                    >
                       <p className="text-sm leading-relaxed text-foreground">
                         {isExpanded ? reflection.reflectionNotes : truncatedText}
                       </p>
@@ -321,12 +310,12 @@ export function ReflectionHistoryView({
                       )}
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           </ScrollArea>
         )}
       </Card>
     </div>
-  );
+  )
 }

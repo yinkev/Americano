@@ -1,7 +1,8 @@
 /* API client (timeouts/abort, request id). Safe to merge. */
 import { ApiError, toApiError } from './errors'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api'
+// Prefer NEXT_PUBLIC_API_BASE_URL; fall back to legacy NEXT_PUBLIC_API_URL; default to '/api'
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || '/api'
 
 export type JsonValue = unknown
 export type Query = Record<string, string | number | boolean | null | undefined>
@@ -14,7 +15,9 @@ function randomId(bytes = 8) {
     crypto.getRandomValues(arr)
     return Array.from(arr, (b) => b.toString(16).padStart(2, '0')).join('')
   }
-  return Math.random().toString(16).slice(2, 2 + bytes * 2)
+  return Math.random()
+    .toString(16)
+    .slice(2, 2 + bytes * 2)
 }
 
 function buildQuery(query?: Query): string {
@@ -31,7 +34,13 @@ function buildQuery(query?: Query): string {
 export async function request<T = JsonValue>(
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   path: string,
-  opts: { query?: Query; body?: unknown; init?: RequestInit; timeoutMs?: number; requestId?: string } = {},
+  opts: {
+    query?: Query
+    body?: unknown
+    init?: RequestInit
+    timeoutMs?: number
+    requestId?: string
+  } = {},
 ): Promise<T> {
   const { query, body, init } = opts
   const url = `${API_BASE}${path.startsWith('/') ? path : `/${path}`}${buildQuery(query)}`
@@ -71,11 +80,16 @@ export async function request<T = JsonValue>(
 }
 
 export const api = {
-  get: <T = JsonValue>(path: string, query?: Query, init?: RequestInit) => request<T>('GET', path, { query, init }),
-  post: <T = JsonValue>(path: string, body?: unknown, init?: RequestInit) => request<T>('POST', path, { body, init }),
-  put: <T = JsonValue>(path: string, body?: unknown, init?: RequestInit) => request<T>('PUT', path, { body, init }),
-  patch: <T = JsonValue>(path: string, body?: unknown, init?: RequestInit) => request<T>('PATCH', path, { body, init }),
-  delete: <T = JsonValue>(path: string, query?: Query, init?: RequestInit) => request<T>('DELETE', path, { query, init }),
+  get: <T = JsonValue>(path: string, query?: Query, init?: RequestInit) =>
+    request<T>('GET', path, { query, init }),
+  post: <T = JsonValue>(path: string, body?: unknown, init?: RequestInit) =>
+    request<T>('POST', path, { body, init }),
+  put: <T = JsonValue>(path: string, body?: unknown, init?: RequestInit) =>
+    request<T>('PUT', path, { body, init }),
+  patch: <T = JsonValue>(path: string, body?: unknown, init?: RequestInit) =>
+    request<T>('PATCH', path, { body, init }),
+  delete: <T = JsonValue>(path: string, query?: Query, init?: RequestInit) =>
+    request<T>('DELETE', path, { query, init }),
 }
 
 export const apiBase = API_BASE

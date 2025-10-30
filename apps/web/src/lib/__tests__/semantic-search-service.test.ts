@@ -12,14 +12,14 @@
  * - Error handling
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals"
-import {
-  SemanticSearchService,
-  SearchParams,
-  SearchResult,
-  ChunkSearchResult,
-} from '../semantic-search-service'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { embeddingService } from '../embedding-service'
+import {
+  ChunkSearchResult,
+  type SearchParams,
+  type SearchResult,
+  SemanticSearchService,
+} from '../semantic-search-service'
 
 // Mock dependencies
 jest.mock('../embedding-service', () => ({
@@ -39,7 +39,9 @@ describe('SemanticSearchService', () => {
   const embeddingServiceMock = jest.mocked(embeddingService)
 
   // Mock embedding vector (1536 dimensions)
-  const mockQueryEmbedding = Array(1536).fill(0).map((_, i) => Math.random())
+  const mockQueryEmbedding = Array(1536)
+    .fill(0)
+    .map((_, i) => Math.random())
 
   // Mock search results
   const mockChunkResults = [
@@ -57,7 +59,8 @@ describe('SemanticSearchService', () => {
     },
     {
       id: 'chunk-2',
-      content: 'Cardiac muscle tissue has unique properties including automaticity and conductivity.',
+      content:
+        'Cardiac muscle tissue has unique properties including automaticity and conductivity.',
       chunkIndex: 1,
       pageNumber: 6,
       lectureId: 'lecture-1',
@@ -119,9 +122,7 @@ describe('SemanticSearchService', () => {
       expect(response.results[0].similarity).toBeLessThanOrEqual(1.0)
 
       // Verify results are sorted by similarity (highest first)
-      expect(response.results[0].similarity).toBeGreaterThanOrEqual(
-        response.results[1].similarity
-      )
+      expect(response.results[0].similarity).toBeGreaterThanOrEqual(response.results[1].similarity)
     })
 
     it('should filter results below minimum similarity threshold', async () => {
@@ -138,7 +139,7 @@ describe('SemanticSearchService', () => {
       const response = await searchService.search(params)
 
       // Only high similarity results should be returned
-      response.results.forEach(result => {
+      response.results.forEach((result) => {
         expect(result.similarity).toBeGreaterThanOrEqual(0.8)
       })
     })
@@ -201,7 +202,7 @@ describe('SemanticSearchService', () => {
       expect(response.metadata.hybridSearchUsed).toBe(true)
 
       // Verify results have relevance scores (composite of vector + keyword)
-      response.results.forEach(result => {
+      response.results.forEach((result) => {
         expect(result.relevanceScore).toBeDefined()
         expect(result.relevanceScore).toBeGreaterThanOrEqual(0)
         expect(result.relevanceScore).toBeLessThanOrEqual(1)
@@ -236,7 +237,7 @@ describe('SemanticSearchService', () => {
         vectorResults,
         keywordMatches,
         0.7, // vector weight
-        0.3  // keyword weight
+        0.3, // keyword weight
       )
 
       // Expected: 0.7 * 0.9 + 0.3 * 0.8 = 0.63 + 0.24 = 0.87
@@ -267,12 +268,7 @@ describe('SemanticSearchService', () => {
         },
       ]
 
-      const combined = (service as any).combineScores(
-        vectorResults,
-        keywordMatches,
-        0.7,
-        0.3
-      )
+      const combined = (service as any).combineScores(vectorResults, keywordMatches, 0.7, 0.3)
 
       // result-1 should have relevance from vector only
       expect(combined[0].relevanceScore).toBeCloseTo(0.35, 2) // 0.7 * 0.5
@@ -281,11 +277,13 @@ describe('SemanticSearchService', () => {
 
   describe('Pagination and Filtering', () => {
     it('should paginate results correctly', async () => {
-      const manyResults = Array(50).fill(null).map((_, i) => ({
-        ...mockChunkResults[0],
-        id: `chunk-${i}`,
-        distance: 0.1 + (i * 0.01),
-      }))
+      const manyResults = Array(50)
+        .fill(null)
+        .map((_, i) => ({
+          ...mockChunkResults[0],
+          id: `chunk-${i}`,
+          distance: 0.1 + i * 0.01,
+        }))
 
       mockSql.mockResolvedValue(manyResults)
 
@@ -318,9 +316,7 @@ describe('SemanticSearchService', () => {
         limit: 15, // Invalid - must be 10, 25, or 50
       }
 
-      await expect(searchService.search(params)).rejects.toThrow(
-        'Limit must be 10, 25, or 50'
-      )
+      await expect(searchService.search(params)).rejects.toThrow('Limit must be 10, 25, or 50')
     })
 
     it('should filter by course IDs', async () => {
@@ -339,7 +335,7 @@ describe('SemanticSearchService', () => {
       expect(response.metadata.filtersApplied).toContain('courses: 1')
 
       // All results should be from course-1
-      response.results.forEach(result => {
+      response.results.forEach((result) => {
         expect(result.metadata.courseId).toBe('course-1')
       })
     })
@@ -375,7 +371,7 @@ describe('SemanticSearchService', () => {
       const response = await searchService.search(params)
 
       // All results should be chunks
-      response.results.forEach(result => {
+      response.results.forEach((result) => {
         expect(result.type).toBe('chunk')
       })
     })
@@ -385,7 +381,8 @@ describe('SemanticSearchService', () => {
     it('should generate snippet with highlighted terms', () => {
       const service = new SemanticSearchService()
 
-      const content = 'The cardiac conduction system controls the heart rate and rhythm through electrical signals.'
+      const content =
+        'The cardiac conduction system controls the heart rate and rhythm through electrical signals.'
       const query = 'heart rate electrical'
 
       const snippet = (service as any).generateSnippet(content, query, 200)
@@ -408,7 +405,8 @@ describe('SemanticSearchService', () => {
     it('should extract snippet around matching term', () => {
       const service = new SemanticSearchService()
 
-      const content = 'This is some leading text. The heart is a muscular organ. This is trailing text that goes on.'
+      const content =
+        'This is some leading text. The heart is a muscular organ. This is trailing text that goes on.'
       const query = 'heart'
 
       const snippet = (service as any).generateSnippet(content, query, 50)
@@ -480,7 +478,7 @@ describe('SemanticSearchService', () => {
       }
 
       await expect(searchService.search(params)).rejects.toThrow(
-        'Failed to generate query embedding'
+        'Failed to generate query embedding',
       )
     })
 
@@ -489,7 +487,7 @@ describe('SemanticSearchService', () => {
       delete process.env.DATABASE_URL
 
       expect(() => new SemanticSearchService()).toThrow(
-        'DATABASE_URL environment variable is required'
+        'DATABASE_URL environment variable is required',
       )
 
       process.env.DATABASE_URL = originalEnv
@@ -502,9 +500,7 @@ describe('SemanticSearchService', () => {
         query: 'test query',
       }
 
-      await expect(searchService.search(params)).rejects.toThrow(
-        'Database connection failed'
-      )
+      await expect(searchService.search(params)).rejects.toThrow('Database connection failed')
     })
   })
 
@@ -558,9 +554,9 @@ describe('SemanticSearchService', () => {
   describe('Result Ranking', () => {
     it('should rank results by relevance score', async () => {
       const unsortedResults = [
-        { ...mockChunkResults[0], distance: 0.5 },  // Lower similarity
-        { ...mockChunkResults[1], distance: 0.1 },  // Higher similarity
-        { ...mockChunkResults[2], distance: 0.3 },  // Medium similarity
+        { ...mockChunkResults[0], distance: 0.5 }, // Lower similarity
+        { ...mockChunkResults[1], distance: 0.1 }, // Higher similarity
+        { ...mockChunkResults[2], distance: 0.3 }, // Medium similarity
       ]
 
       mockSql.mockResolvedValue(unsortedResults)
@@ -571,12 +567,8 @@ describe('SemanticSearchService', () => {
       })
 
       // Results should be sorted by similarity (descending)
-      expect(response.results[0].similarity).toBeGreaterThanOrEqual(
-        response.results[1].similarity
-      )
-      expect(response.results[1].similarity).toBeGreaterThanOrEqual(
-        response.results[2].similarity
-      )
+      expect(response.results[0].similarity).toBeGreaterThanOrEqual(response.results[1].similarity)
+      expect(response.results[1].similarity).toBeGreaterThanOrEqual(response.results[2].similarity)
     })
   })
 })

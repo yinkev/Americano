@@ -1,19 +1,16 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { FileText, ChevronLeft, ChevronRight, Network, List } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { SearchResultItem } from "./search-result-item"
-import type { SearchResult } from "./search-result-item"
-import dynamic from "next/dynamic"
+import { ChevronLeft, ChevronRight, FileText, List, Network } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import * as React from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+import type { SearchResult } from './search-result-item'
+import { SearchResultItem } from './search-result-item'
 
 // Dynamic import for SearchGraphView to avoid SSR issues
-const SearchGraphView = dynamic(
-  () => import("./search-graph-view"),
-  { ssr: false }
-)
+const SearchGraphView = dynamic(() => import('./search-graph-view'), { ssr: false })
 
 export type { SearchResult }
 
@@ -51,7 +48,12 @@ export function SearchResults({
   const [viewMode, setViewMode] = React.useState<ViewMode>('list')
   if (isLoading) {
     return (
-      <div className={cn("space-y-4", className)} role="status" aria-live="polite" aria-label="Loading search results">
+      <div
+        className={cn('space-y-4', className)}
+        role="status"
+        aria-live="polite"
+        aria-label="Loading search results"
+      >
         {[...Array(3)].map((_, i) => (
           <Card key={i} className="border-white/40 bg-white/80 backdrop-blur-md animate-pulse">
             <div className="p-6 space-y-4">
@@ -78,10 +80,7 @@ export function SearchResults({
   if (results.length === 0) {
     return (
       <Card
-        className={cn(
-          "border-white/40 bg-white/80 backdrop-blur-md text-center py-12",
-          className
-        )}
+        className={cn('border-white/40 bg-white/80 backdrop-blur-md text-center py-12', className)}
         role="status"
         aria-live="polite"
       >
@@ -90,7 +89,10 @@ export function SearchResults({
           <p className="text-lg font-semibold text-foreground mb-2">No results found</p>
           <p className="text-sm text-muted-foreground">
             {searchQuery ? (
-              <>No results found for &quot;{searchQuery}&quot;. Try adjusting your search query or filters.</>
+              <>
+                No results found for &quot;{searchQuery}&quot;. Try adjusting your search query or
+                filters.
+              </>
             ) : (
               <>Try adjusting your search query or filters</>
             )}
@@ -101,11 +103,12 @@ export function SearchResults({
   }
 
   return (
-    <div className={cn("space-y-4", className)} role="region" aria-label="Search results">
+    <div className={cn('space-y-4', className)} role="region" aria-label="Search results">
       {/* Results Count and View Toggle */}
       <div className="flex items-center justify-between px-1">
         <p className="text-sm text-muted-foreground" role="status" aria-live="polite">
-          Showing {((currentPage - 1) * RESULTS_PER_PAGE) + 1} - {Math.min(currentPage * RESULTS_PER_PAGE, results.length)} of {results.length} results
+          Showing {(currentPage - 1) * RESULTS_PER_PAGE + 1} -{' '}
+          {Math.min(currentPage * RESULTS_PER_PAGE, results.length)} of {results.length} results
         </p>
 
         {/* View Mode Toggle */}
@@ -138,11 +141,7 @@ export function SearchResults({
         <div className="space-y-3" role="list">
           {results.map((result) => (
             <div key={result.id} role="listitem">
-              <SearchResultItem
-                result={result}
-                searchQuery={searchQuery}
-                onClick={onResultClick}
-              />
+              <SearchResultItem result={result} searchQuery={searchQuery} onClick={onResultClick} />
             </div>
           ))}
         </div>
@@ -150,12 +149,16 @@ export function SearchResults({
         <div className="h-[600px] rounded-xl border border-white/40 overflow-hidden">
           <SearchGraphView
             results={results}
-            onNodeClick={onResultClick ? (nodeId: string) => {
-              const result = results.find(r => r.id === nodeId)
-              if (result) {
-                onResultClick(result)
-              }
-            } : undefined}
+            onNodeClick={
+              onResultClick
+                ? (nodeId: string) => {
+                    const result = results.find((r) => r.id === nodeId)
+                    if (result) {
+                      onResultClick(result)
+                    }
+                  }
+                : undefined
+            }
             onExpandSearch={onExpandSearch}
           />
         </div>
@@ -192,23 +195,27 @@ export function SearchResults({
                 return (
                   <Button
                     key={page}
-                    variant={page === currentPage ? "default" : "outline"}
+                    variant={page === currentPage ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => onPageChange?.(page)}
-                    aria-current={page === currentPage ? "page" : undefined}
-                    aria-label={`${page === currentPage ? "Current page, " : ""}Page ${page}`}
+                    aria-current={page === currentPage ? 'page' : undefined}
+                    aria-label={`${page === currentPage ? 'Current page, ' : ''}Page ${page}`}
                     className={cn(
-                      "min-w-9 rounded-lg",
+                      'min-w-9 rounded-lg',
                       page === currentPage
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-white/60 hover:bg-white/80 border-white/40"
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-white/60 hover:bg-white/80 border-white/40',
                     )}
                   >
                     {page}
                   </Button>
                 )
               } else if (page === currentPage - 2 || page === currentPage + 2) {
-                return <span key={page} className="text-muted-foreground" aria-hidden="true">...</span>
+                return (
+                  <span key={page} className="text-muted-foreground" aria-hidden="true">
+                    ...
+                  </span>
+                )
               }
               return null
             })}

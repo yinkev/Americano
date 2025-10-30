@@ -22,4 +22,3 @@ export function createKey<Parts extends readonly (string | number | boolean | nu
 ) {
   return parts.map((p) => (p == null ? 'null' : String(p))) as readonly string[]
 }
-

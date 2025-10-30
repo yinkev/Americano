@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSessionStore } from '@/store/use-session-store'
 import { formatDuration } from '@/lib/format-time'
+import { useSessionStore } from '@/store/use-session-store'
 
 interface SessionTimerProps {
   className?: string

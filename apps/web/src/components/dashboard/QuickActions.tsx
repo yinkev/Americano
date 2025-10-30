@@ -1,8 +1,8 @@
 'use client'
 
+import { BarChart3, BookOpen, Search, Upload } from 'lucide-react'
 import React from 'react'
 import { Card } from '@/components/ui/card'
-import { Upload, Search, BookOpen, BarChart3 } from 'lucide-react'
 
 const actions = [
   {

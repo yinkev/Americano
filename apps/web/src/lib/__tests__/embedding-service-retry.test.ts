@@ -12,18 +12,18 @@
  * - Batch embedding retry resilience
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
-import { EmbeddingService, type EmbeddingResult } from '../embedding-service'
-import { GeminiClient } from '../ai/gemini-client'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import {
-  TransientErrorSimulator,
-  PermanentErrorSimulator,
   ExponentialBackoffCalculator,
-  RetryAttemptTracker,
-  TransientErrorType,
+  PermanentErrorSimulator,
   PermanentErrorType,
+  RetryAttemptTracker,
   retryAssertions,
+  TransientErrorSimulator,
+  TransientErrorType,
 } from '../../__tests__/test-utils/retry-test-helpers'
+import type { GeminiClient } from '../ai/gemini-client'
+import { type EmbeddingResult, EmbeddingService } from '../embedding-service'
 
 jest.mock('../ai/gemini-client')
 
@@ -37,7 +37,9 @@ describe('EmbeddingService - Retry Logic', () => {
     jest.clearAllMocks()
     jest.useFakeTimers()
 
-    const mockEmbedding = Array(1536).fill(0).map(() => Math.random())
+    const mockEmbedding = Array(1536)
+      .fill(0)
+      .map(() => Math.random())
     generateEmbeddingMock = jest.fn(async (text: string) => ({
       embedding: mockEmbedding,
       error: undefined,
@@ -67,17 +69,21 @@ describe('EmbeddingService - Retry Logic', () => {
       const mockEmbedding = Array(1536).fill(0)
 
       generateEmbeddingMock
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Rate limit exceeded')
-          ;(error as any).status = 429
-          ;(error as any).code = 'RATE_LIMIT_EXCEEDED'
-          return error
-        })())
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Rate limit exceeded')
-          ;(error as any).status = 429
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Rate limit exceeded')
+            ;(error as any).status = 429
+            ;(error as any).code = 'RATE_LIMIT_EXCEEDED'
+            return error
+          })(),
+        )
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Rate limit exceeded')
+            ;(error as any).status = 429
+            return error
+          })(),
+        )
         .mockResolvedValueOnce({
           embedding: mockEmbedding,
           error: undefined,
@@ -93,12 +99,14 @@ describe('EmbeddingService - Retry Logic', () => {
     it('should include retry-after delay in rate limit handling', async () => {
       const retryAfter = 60
 
-      generateEmbeddingMock.mockRejectedValue((() => {
-        const error = new Error('Rate limit exceeded')
-        ;(error as any).status = 429
-        ;(error as any).retryAfter = retryAfter
-        return error
-      })())
+      generateEmbeddingMock.mockRejectedValue(
+        (() => {
+          const error = new Error('Rate limit exceeded')
+          ;(error as any).status = 429
+          ;(error as any).retryAfter = retryAfter
+          return error
+        })(),
+      )
 
       // Verify error includes retry timing information
       try {
@@ -113,12 +121,14 @@ describe('EmbeddingService - Retry Logic', () => {
       const mockEmbedding = Array(1536).fill(0)
 
       generateEmbeddingMock
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Approaching rate limit')
-          ;(error as any).status = 429
-          ;(error as any).remaining = 5
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Approaching rate limit')
+            ;(error as any).status = 429
+            ;(error as any).remaining = 5
+            return error
+          })(),
+        )
         .mockResolvedValueOnce({
           embedding: mockEmbedding,
           error: undefined,
@@ -137,12 +147,14 @@ describe('EmbeddingService - Retry Logic', () => {
       const mockEmbedding = Array(1536).fill(0)
 
       generateEmbeddingMock
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Request timeout')
-          ;(error as any).code = 'ECONNABORTED'
-          ;(error as any).timeout = 5000
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Request timeout')
+            ;(error as any).code = 'ECONNABORTED'
+            ;(error as any).timeout = 5000
+            return error
+          })(),
+        )
         .mockResolvedValueOnce({
           embedding: mockEmbedding,
           error: undefined,
@@ -157,11 +169,13 @@ describe('EmbeddingService - Retry Logic', () => {
     })
 
     it('should handle connection timeout with retry', async () => {
-      generateEmbeddingMock.mockRejectedValue((() => {
-        const error = new Error('Connection timeout')
-        ;(error as any).code = 'ETIMEDOUT'
-        return error
-      })())
+      generateEmbeddingMock.mockRejectedValue(
+        (() => {
+          const error = new Error('Connection timeout')
+          ;(error as any).code = 'ETIMEDOUT'
+          return error
+        })(),
+      )
 
       try {
         await service.generateEmbedding('test')
@@ -171,11 +185,13 @@ describe('EmbeddingService - Retry Logic', () => {
     })
 
     it('should not retry on non-timeout connection errors', async () => {
-      generateEmbeddingMock.mockRejectedValue((() => {
-        const error = new Error('Connection refused')
-        ;(error as any).code = 'ECONNREFUSED'
-        return error
-      })())
+      generateEmbeddingMock.mockRejectedValue(
+        (() => {
+          const error = new Error('Connection refused')
+          ;(error as any).code = 'ECONNREFUSED'
+          return error
+        })(),
+      )
 
       try {
         await service.generateEmbedding('test')
@@ -237,14 +253,18 @@ describe('EmbeddingService - Retry Logic', () => {
 
   describe('Success After N Retries', () => {
     it('should succeed after 1 retry', async () => {
-      const mockEmbedding = Array(1536).fill(0).map(() => Math.random())
+      const mockEmbedding = Array(1536)
+        .fill(0)
+        .map(() => Math.random())
 
       generateEmbeddingMock
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Rate limit')
-          ;(error as any).status = 429
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Rate limit')
+            ;(error as any).status = 429
+            return error
+          })(),
+        )
         .mockResolvedValueOnce({
           embedding: mockEmbedding,
           error: undefined,
@@ -260,19 +280,25 @@ describe('EmbeddingService - Retry Logic', () => {
     })
 
     it('should succeed after 2 retries', async () => {
-      const mockEmbedding = Array(1536).fill(0).map(() => Math.random())
+      const mockEmbedding = Array(1536)
+        .fill(0)
+        .map(() => Math.random())
 
       generateEmbeddingMock
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Timeout')
-          ;(error as any).code = 'ECONNABORTED'
-          return error
-        })())
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Timeout')
-          ;(error as any).code = 'ECONNABORTED'
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Timeout')
+            ;(error as any).code = 'ECONNABORTED'
+            return error
+          })(),
+        )
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Timeout')
+            ;(error as any).code = 'ECONNABORTED'
+            return error
+          })(),
+        )
         .mockResolvedValueOnce({
           embedding: mockEmbedding,
           error: undefined,
@@ -291,11 +317,13 @@ describe('EmbeddingService - Retry Logic', () => {
       const mockEmbedding = Array(1536).fill(0)
 
       generateEmbeddingMock
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Service unavailable')
-          ;(error as any).status = 503
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Service unavailable')
+            ;(error as any).status = 503
+            return error
+          })(),
+        )
         .mockResolvedValueOnce({
           embedding: mockEmbedding,
           error: undefined,
@@ -312,11 +340,13 @@ describe('EmbeddingService - Retry Logic', () => {
 
   describe('All Retries Exhausted', () => {
     it('should fail after all retries exhausted', async () => {
-      generateEmbeddingMock.mockRejectedValue((() => {
-        const error = new Error('Rate limit')
-        ;(error as any).status = 429
-        return error
-      })())
+      generateEmbeddingMock.mockRejectedValue(
+        (() => {
+          const error = new Error('Rate limit')
+          ;(error as any).status = 429
+          return error
+        })(),
+      )
 
       try {
         await service.generateEmbedding('test')
@@ -329,12 +359,14 @@ describe('EmbeddingService - Retry Logic', () => {
     })
 
     it('should include retry attempt count in error context', async () => {
-      generateEmbeddingMock.mockRejectedValue((() => {
-        const error = new Error('Persistent timeout')
-        ;(error as any).code = 'ECONNABORTED'
-        ;(error as any).attempts = 4
-        return error
-      })())
+      generateEmbeddingMock.mockRejectedValue(
+        (() => {
+          const error = new Error('Persistent timeout')
+          ;(error as any).code = 'ECONNABORTED'
+          ;(error as any).attempts = 4
+          return error
+        })(),
+      )
 
       try {
         await service.generateEmbedding('test')
@@ -347,11 +379,13 @@ describe('EmbeddingService - Retry Logic', () => {
     it('should not leak resources after retry exhaustion', async () => {
       const initialMemory = (global as any).gc?.() || {}
 
-      generateEmbeddingMock.mockRejectedValue((() => {
-        const error = new Error('Service error')
-        ;(error as any).status = 503
-        return error
-      })())
+      generateEmbeddingMock.mockRejectedValue(
+        (() => {
+          const error = new Error('Service error')
+          ;(error as any).status = 503
+          return error
+        })(),
+      )
 
       try {
         await service.generateEmbedding('test')
@@ -381,11 +415,13 @@ describe('EmbeddingService - Retry Logic', () => {
           error: undefined,
         })
         // Second item: first attempt fails
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Rate limit')
-          ;(error as any).status = 429
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Rate limit')
+            ;(error as any).status = 429
+            return error
+          })(),
+        )
         // Second item: retry succeeds
         .mockResolvedValueOnce({
           embedding: mockEmbedding,
@@ -480,7 +516,9 @@ describe('EmbeddingService - Retry Logic', () => {
 
       await service.generateEmbedding('text2')
       const statusAfter2 = service.getRateLimitStatus()
-      expect(statusAfter2.requestsInLastMinute).toBeGreaterThanOrEqual(statusAfter1.requestsInLastMinute)
+      expect(statusAfter2.requestsInLastMinute).toBeGreaterThanOrEqual(
+        statusAfter1.requestsInLastMinute,
+      )
     })
 
     it('should not double-count retries in rate limit', async () => {
@@ -587,11 +625,13 @@ describe('EmbeddingService - Retry Logic', () => {
       const mockEmbedding = Array(1536).fill(0)
 
       generateEmbeddingMock
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Rate limit')
-          ;(error as any).status = 429
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Rate limit')
+            ;(error as any).status = 429
+            return error
+          })(),
+        )
         .mockResolvedValueOnce({
           embedding: mockEmbedding,
           error: undefined,

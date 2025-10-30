@@ -11,23 +11,23 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { format } from 'date-fns'
+import { Minus, TrendingDown, TrendingUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import {
-  LineChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
 } from 'recharts'
-import { format } from 'date-fns'
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { typography, colors } from '@/lib/design-tokens'
-import { chartTheme, chartColors } from '@/lib/chart-theme'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { chartColors, chartTheme } from '@/lib/chart-theme'
+import { colors, typography } from '@/lib/design-tokens'
 
 interface AccuracyData {
   week: string
@@ -212,7 +212,10 @@ export function PredictionAccuracyChart() {
                 style: { fontSize: 11, fill: chartColors.text },
               }}
             />
-            <Tooltip {...chartTheme.tooltip} formatter={(value: number) => `${value.toFixed(1)}%`} />
+            <Tooltip
+              {...chartTheme.tooltip}
+              formatter={(value: number) => `${value.toFixed(1)}%`}
+            />
             <Legend {...chartTheme.legend} />
 
             {/* Precision Line */}

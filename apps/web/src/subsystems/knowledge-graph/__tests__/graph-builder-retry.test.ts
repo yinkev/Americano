@@ -11,16 +11,16 @@
  * - Retry logging and diagnostics
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import {
-  TransientErrorSimulator,
-  PermanentErrorSimulator,
   BatchFailureSimulator,
-  RetryAttemptTracker,
-  TransientErrorType,
-  PermanentErrorType,
-  retryAssertions,
   CircuitBreakerStateTracker,
+  PermanentErrorSimulator,
+  PermanentErrorType,
+  RetryAttemptTracker,
+  retryAssertions,
+  TransientErrorSimulator,
+  TransientErrorType,
 } from '../../../__tests__/test-utils/retry-test-helpers'
 
 /**
@@ -54,10 +54,7 @@ class MockGraphBuilder {
 
   constructor(config: { maxRetries?: number; circuitBreakerThreshold?: number } = {}) {
     this.maxRetries = config.maxRetries ?? 3
-    this.circuitBreaker = new CircuitBreakerStateTracker(
-      config.circuitBreakerThreshold ?? 5,
-      60000
-    )
+    this.circuitBreaker = new CircuitBreakerStateTracker(config.circuitBreakerThreshold ?? 5, 60000)
     this.chatMockClient = {
       client: {
         chat: {
@@ -97,7 +94,7 @@ class MockGraphBuilder {
         const executionTime = Date.now() - startTime
 
         // Parse response
-        let content = response.choices[0]?.message?.content
+        const content = response.choices[0]?.message?.content
         if (!content) {
           throw new Error('No response from ChatMock')
         }
@@ -123,26 +120,14 @@ class MockGraphBuilder {
         const isRetriable = this.isRetriableError(err)
 
         if (!isRetriable || attempt === this.maxRetries) {
-          this.retryTracker.recordAttempt(
-            `chunk-${chunk.id}`,
-            'failure',
-            err,
-            0,
-            0
-          )
+          this.retryTracker.recordAttempt(`chunk-${chunk.id}`, 'failure', err, 0, 0)
           this.circuitBreaker.recordFailure()
           throw error
         }
 
         const delayMs = this.calculateBackoff(attempt)
 
-        this.retryTracker.recordAttempt(
-          `chunk-${chunk.id}`,
-          'failure',
-          err,
-          delayMs,
-          0
-        )
+        this.retryTracker.recordAttempt(`chunk-${chunk.id}`, 'failure', err, delayMs, 0)
 
         // Wait for backoff
         await this.delay(delayMs)
@@ -215,7 +200,7 @@ class MockGraphBuilder {
     const multiplier = 2
     const maxDelay = 30000
 
-    const delay = Math.min(baseDelay * Math.pow(multiplier, attempt), maxDelay)
+    const delay = Math.min(baseDelay * multiplier ** attempt, maxDelay)
     const jitter = Math.random() * delay * 0.1
 
     return delay + jitter
@@ -225,7 +210,7 @@ class MockGraphBuilder {
    * Delay helper
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
   /**
@@ -280,11 +265,13 @@ describe('KnowledgeGraphBuilder - Retry Logic', () => {
       const mockClient = builder.getMockClient()
 
       mockClient.client.chat.completions.create
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Rate limit exceeded')
-          ;(error as any).status = 429
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Rate limit exceeded')
+            ;(error as any).status = 429
+            return error
+          })(),
+        )
         .mockResolvedValueOnce({
           choices: [
             {
@@ -320,17 +307,19 @@ describe('KnowledgeGraphBuilder - Retry Logic', () => {
       const mockClient = builder.getMockClient()
       const retryAfter = 30
 
-      mockClient.client.chat.completions.create.mockRejectedValue((() => {
-        const error = new Error('Rate limit')
-        ;(error as any).status = 429
-        ;(error as any).headers = { 'retry-after': retryAfter }
-        return error
-      })())
+      mockClient.client.chat.completions.create.mockRejectedValue(
+        (() => {
+          const error = new Error('Rate limit')
+          ;(error as any).status = 429
+          ;(error as any).headers = { 'retry-after': retryAfter }
+          return error
+        })(),
+      )
 
       const chunk = { id: 'chunk-1', content: 'Test content' }
 
       // Start async operation
-      const extractPromise = builder.extractConceptsFromChunk(chunk).catch(error => error)
+      const extractPromise = builder.extractConceptsFromChunk(chunk).catch((error) => error)
 
       // Advance timers for all retry attempts (will exhaust retries)
       // Max retries = 3, delays: ~100ms, ~200ms, ~400ms = ~700ms total max
@@ -434,11 +423,13 @@ describe('KnowledgeGraphBuilder - Retry Logic', () => {
       const mockClient = builder.getMockClient()
 
       mockClient.client.chat.completions.create
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Service unavailable')
-          ;(error as any).status = 503
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Service unavailable')
+            ;(error as any).status = 503
+            return error
+          })(),
+        )
         .mockResolvedValueOnce({
           choices: [
             {
@@ -474,16 +465,20 @@ describe('KnowledgeGraphBuilder - Retry Logic', () => {
       const mockClient = builder.getMockClient()
 
       mockClient.client.chat.completions.create
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Timeout')
-          ;(error as any).code = 'ECONNABORTED'
-          return error
-        })())
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Timeout')
-          ;(error as any).code = 'ECONNABORTED'
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Timeout')
+            ;(error as any).code = 'ECONNABORTED'
+            return error
+          })(),
+        )
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Timeout')
+            ;(error as any).code = 'ECONNABORTED'
+            return error
+          })(),
+        )
         .mockResolvedValueOnce({
           choices: [
             {
@@ -545,11 +540,13 @@ describe('KnowledgeGraphBuilder - Retry Logic', () => {
           ],
         })
         // Chunk 2 - first attempt fails
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Rate limit')
-          ;(error as any).status = 429
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Rate limit')
+            ;(error as any).status = 429
+            return error
+          })(),
+        )
         // Chunk 3 - success first time
         .mockResolvedValueOnce({
           choices: [
@@ -675,11 +672,13 @@ describe('KnowledgeGraphBuilder - Retry Logic', () => {
     it('should reject requests when circuit is open', async () => {
       const mockClient = builder.getMockClient()
 
-      mockClient.client.chat.completions.create.mockRejectedValue((() => {
-        const error = new Error('Service error')
-        ;(error as any).status = 503
-        return error
-      })())
+      mockClient.client.chat.completions.create.mockRejectedValue(
+        (() => {
+          const error = new Error('Service error')
+          ;(error as any).status = 503
+          return error
+        })(),
+      )
 
       const chunk = { id: 'chunk-1', content: 'Test' }
 
@@ -689,7 +688,7 @@ describe('KnowledgeGraphBuilder - Retry Logic', () => {
       // Trigger failures to open the circuit breaker (threshold is 5)
       for (let i = 0; i < 5; i++) {
         // Start async operation
-        const extractPromise = builder.extractConceptsFromChunk(chunk).catch(error => error)
+        const extractPromise = builder.extractConceptsFromChunk(chunk).catch((error) => error)
 
         // Advance timers for each retry attempt (3 retries max = ~700ms total)
         await jest.advanceTimersByTimeAsync(800)
@@ -712,7 +711,7 @@ describe('KnowledgeGraphBuilder - Retry Logic', () => {
       expect(circuitBreaker.isOpen()).toBe(true)
 
       // Wait for timeout
-      await new Promise(resolve => setTimeout(resolve, 150))
+      await new Promise((resolve) => setTimeout(resolve, 150))
 
       expect(circuitBreaker.canAttemptReset()).toBe(true)
 
@@ -731,11 +730,13 @@ describe('KnowledgeGraphBuilder - Retry Logic', () => {
       const mockClient = builder.getMockClient()
 
       mockClient.client.chat.completions.create
-        .mockRejectedValueOnce((() => {
-          const error = new Error('Rate limit')
-          ;(error as any).status = 429
-          return error
-        })())
+        .mockRejectedValueOnce(
+          (() => {
+            const error = new Error('Rate limit')
+            ;(error as any).status = 429
+            return error
+          })(),
+        )
         .mockResolvedValueOnce({
           choices: [
             {
@@ -848,16 +849,18 @@ describe('KnowledgeGraphBuilder - Retry Logic', () => {
     it('should exhaust retries and report failure', async () => {
       const mockClient = builder.getMockClient()
 
-      mockClient.client.chat.completions.create.mockRejectedValue((() => {
-        const error = new Error('Persistent failure')
-        ;(error as any).status = 500
-        return error
-      })())
+      mockClient.client.chat.completions.create.mockRejectedValue(
+        (() => {
+          const error = new Error('Persistent failure')
+          ;(error as any).status = 500
+          return error
+        })(),
+      )
 
       const chunk = { id: 'chunk-1', content: 'Test' }
 
       // Start async operation and catch the error
-      const extractPromise = builder.extractConceptsFromChunk(chunk).catch(error => error)
+      const extractPromise = builder.extractConceptsFromChunk(chunk).catch((error) => error)
 
       // Advance timers for all retry attempts
       // Max retries = 3, delays: ~100ms, ~200ms, ~400ms = ~700ms total max

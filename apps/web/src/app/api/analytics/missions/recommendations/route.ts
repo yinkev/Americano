@@ -7,9 +7,9 @@
  * Story 2.6: Mission Performance Analytics and Adaptation - Task 10.4
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
 import { MissionAnalyticsEngine } from '@/lib/mission-analytics-engine'
 
 /**

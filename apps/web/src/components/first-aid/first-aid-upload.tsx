@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { Upload, X, FileText, Loader2, AlertCircle, CheckCircle2, BookOpen } from 'lucide-react'
+import { AlertCircle, BookOpen, CheckCircle2, FileText, Loader2, Upload, X } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { toast } from 'sonner'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -14,8 +16,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
 interface FirstAidUploadProps {
@@ -128,7 +128,8 @@ export function FirstAidUpload({ open, onOpenChange, onUploadComplete }: FirstAi
             <DialogTitle>Upload First Aid for USMLE Step 1</DialogTitle>
           </div>
           <DialogDescription className="pt-2">
-            Upload your personal copy of First Aid to enable cross-referencing with your lecture content.
+            Upload your personal copy of First Aid to enable cross-referencing with your lecture
+            content.
           </DialogDescription>
         </DialogHeader>
 
@@ -142,7 +143,8 @@ export function FirstAidUpload({ open, onOpenChange, onUploadComplete }: FirstAi
                 First Aid for the USMLE Step 1 is copyrighted material by McGraw Hill Education.
               </p>
               <p className="font-medium">
-                By uploading, you confirm that you legally own this book and will use it for personal study only.
+                By uploading, you confirm that you legally own this book and will use it for
+                personal study only.
               </p>
               <p>
                 This content will not be shared, redistributed, or used for commercial purposes.
@@ -174,7 +176,7 @@ export function FirstAidUpload({ open, onOpenChange, onUploadComplete }: FirstAi
             <div
               className={cn(
                 'flex items-center gap-3 p-3 rounded-lg border transition-colors',
-                'bg-white/60 backdrop-blur-sm border-border/60'
+                'bg-white/60 backdrop-blur-sm border-border/60',
               )}
             >
               <FileText className="size-8 text-primary flex-shrink-0" />
@@ -222,7 +224,8 @@ export function FirstAidUpload({ open, onOpenChange, onUploadComplete }: FirstAi
               <CheckCircle2 className="h-4 w-4" style={{ color: 'oklch(0.6 0.15 150)' }} />
               <AlertTitle className="text-green-900">Upload Successful</AlertTitle>
               <AlertDescription className="text-green-800 text-xs">
-                Your First Aid book has been uploaded successfully. Processing will begin shortly, and references will appear in your lectures once complete.
+                Your First Aid book has been uploaded successfully. Processing will begin shortly,
+                and references will appear in your lectures once complete.
               </AlertDescription>
             </Alert>
           )}
@@ -232,9 +235,7 @@ export function FirstAidUpload({ open, onOpenChange, onUploadComplete }: FirstAi
             <Alert className="border-red-200 bg-red-50/80 backdrop-blur-sm">
               <AlertCircle className="h-4 w-4" style={{ color: 'oklch(0.6 0.2 20)' }} />
               <AlertTitle className="text-red-900">Upload Failed</AlertTitle>
-              <AlertDescription className="text-red-800 text-xs">
-                {errorMessage}
-              </AlertDescription>
+              <AlertDescription className="text-red-800 text-xs">{errorMessage}</AlertDescription>
             </Alert>
           )}
         </div>
@@ -249,21 +250,13 @@ export function FirstAidUpload({ open, onOpenChange, onUploadComplete }: FirstAi
             {uploadState === 'success' ? 'Close' : 'Cancel'}
           </Button>
           {uploadState === 'idle' && (
-            <Button
-              type="button"
-              onClick={handleUpload}
-              disabled={!selectedFile}
-            >
+            <Button type="button" onClick={handleUpload} disabled={!selectedFile}>
               <Upload className="size-4 mr-2" />
               Upload
             </Button>
           )}
           {uploadState === 'error' && (
-            <Button
-              type="button"
-              onClick={handleUpload}
-              disabled={!selectedFile}
-            >
+            <Button type="button" onClick={handleUpload} disabled={!selectedFile}>
               <Upload className="size-4 mr-2" />
               Retry Upload
             </Button>

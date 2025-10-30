@@ -20,8 +20,8 @@
  * Performance: <500ms response time with 14-day data analysis
  */
 
-import { NextRequest } from 'next/server'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
+import type { NextRequest } from 'next/server'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
 import { burnoutPreventionEngine } from '@/subsystems/behavioral-analytics/burnout-prevention-engine'
 
 /**
@@ -70,12 +70,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   // Validation: userId is required
   if (!userId) {
-    return Response.json(
-      errorResponse('MISSING_PARAMETER', 'userId is required'),
-      {
-        status: 400,
-      },
-    )
+    return Response.json(errorResponse('MISSING_PARAMETER', 'userId is required'), {
+      status: 400,
+    })
   }
 
   try {
@@ -86,7 +83,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     const executionTime = endTime - startTime
 
     // Log performance metrics
-    console.log(`Burnout risk assessment completed in ${executionTime.toFixed(2)}ms for user ${userId}`)
+    console.log(
+      `Burnout risk assessment completed in ${executionTime.toFixed(2)}ms for user ${userId}`,
+    )
 
     // Warn if exceeds performance target
     if (executionTime > 500) {
@@ -107,11 +106,11 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
           analysisWindow: '14 days',
           algorithm: 'MBI-based 6-factor weighted model',
           weights: {
-            studyIntensity: 0.20,
+            studyIntensity: 0.2,
             performanceDecline: 0.25,
             chronicCognitiveLoad: 0.25,
             scheduleIrregularity: 0.15,
-            engagementDecay: 0.10,
+            engagementDecay: 0.1,
             recoveryDeficit: 0.05,
           },
           executionTimeMs: Math.round(executionTime),
@@ -138,11 +137,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
     // Generic error response
     return Response.json(
-      errorResponse(
-        'ASSESSMENT_FAILED',
-        'Failed to assess burnout risk. Please try again later.',
-        { details: error.message },
-      ),
+      errorResponse('ASSESSMENT_FAILED', 'Failed to assess burnout risk. Please try again later.', {
+        details: error.message,
+      }),
       { status: 500 },
     )
   }

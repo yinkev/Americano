@@ -14,8 +14,8 @@
  * @module SearchSuggestionEngine
  */
 
+import type { SuggestionType } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
-import { SuggestionType } from '@/generated/prisma'
 
 /**
  * Suggestion response interface
@@ -28,7 +28,7 @@ export interface Suggestion {
     category?: string
     frequency?: number
   }
-  score: number  // Relevance score 0.0-1.0
+  score: number // Relevance score 0.0-1.0
 }
 
 /**
@@ -50,7 +50,7 @@ export interface Suggestion {
 export async function getSuggestions(
   partial: string,
   limit: number = 10,
-  userId?: string
+  userId?: string,
 ): Promise<Suggestion[]> {
   if (!partial || partial.length < 2) {
     // Return recent searches for empty query
@@ -72,10 +72,7 @@ export async function getSuggestions(
           mode: 'insensitive',
         },
       },
-      orderBy: [
-        { frequency: 'desc' },
-        { lastUsed: 'desc' },
-      ],
+      orderBy: [{ frequency: 'desc' }, { lastUsed: 'desc' }],
       take: limit * 2, // Get more for filtering/ranking
     })
 
@@ -128,10 +125,7 @@ export async function getSuggestions(
  * - Recency: Recent usage boosts score
  * - Match quality: Exact prefix match scores higher
  */
-function calculateSuggestionScore(
-  suggestion: any,
-  query: string
-): number {
+function calculateSuggestionScore(suggestion: any, query: string): number {
   let score = 0.0
 
   // Type priority
@@ -149,16 +143,17 @@ function calculateSuggestionScore(
   score += frequencyScore * 0.3
 
   // Recency factor (boost if used in last 7 days)
-  const daysSinceLastUse = (Date.now() - new Date(suggestion.lastUsed).getTime()) / (1000 * 60 * 60 * 24)
-  const recencyScore = Math.max(0, 1.0 - (daysSinceLastUse / 30))
+  const daysSinceLastUse =
+    (Date.now() - new Date(suggestion.lastUsed).getTime()) / (1000 * 60 * 60 * 24)
+  const recencyScore = Math.max(0, 1.0 - daysSinceLastUse / 30)
   score += recencyScore * 0.2
 
   // Match quality (exact prefix match scores higher)
   const term = suggestion.term.toLowerCase()
   if (term === query) {
-    score += 0.1  // Exact match
+    score += 0.1 // Exact match
   } else if (term.startsWith(query)) {
-    score += 0.05  // Prefix match
+    score += 0.05 // Prefix match
   }
 
   return Math.min(score, 1.0)
@@ -167,29 +162,26 @@ function calculateSuggestionScore(
 /**
  * Get recent searches when no query provided
  */
-async function getRecentSearches(
-  userId: string,
-  limit: number
-): Promise<Suggestion[]> {
+async function getRecentSearches(userId: string, limit: number): Promise<Suggestion[]> {
   try {
     const recentSearches = await prisma.searchQuery.findMany({
       where: {
         userId,
         isAnonymized: false,
-        resultCount: { gt: 0 },  // Only searches that returned results
+        resultCount: { gt: 0 }, // Only searches that returned results
       },
       orderBy: { timestamp: 'desc' },
       take: limit,
       distinct: ['query'],
     })
 
-    return recentSearches.map(search => ({
+    return recentSearches.map((search) => ({
       text: search.query,
       type: 'PREVIOUS_SEARCH' as SuggestionType,
       metadata: {
         source: 'recent_history',
       },
-      score: 1.0,  // Recent searches get high scores
+      score: 1.0, // Recent searches get high scores
     }))
   } catch (error) {
     console.error('Failed to get recent searches:', error)
@@ -203,7 +195,7 @@ async function getRecentSearches(
 async function getUserSearchSuggestions(
   userId: string,
   query: string,
-  limit: number
+  limit: number,
 ): Promise<Suggestion[]> {
   try {
     const searches = await prisma.searchQuery.findMany({
@@ -221,7 +213,7 @@ async function getUserSearchSuggestions(
       distinct: ['query'],
     })
 
-    return searches.map(search => ({
+    return searches.map((search) => ({
       text: search.query,
       type: 'PREVIOUS_SEARCH' as SuggestionType,
       metadata: {
@@ -238,10 +230,7 @@ async function getUserSearchSuggestions(
 /**
  * Get suggestions from lecture titles
  */
-async function getContentTitleSuggestions(
-  query: string,
-  limit: number
-): Promise<Suggestion[]> {
+async function getContentTitleSuggestions(query: string, limit: number): Promise<Suggestion[]> {
   try {
     const lectures = await prisma.lecture.findMany({
       where: {
@@ -262,7 +251,7 @@ async function getContentTitleSuggestions(
       take: limit,
     })
 
-    return lectures.map(lecture => ({
+    return lectures.map((lecture) => ({
       text: lecture.title,
       type: 'CONTENT_TITLE' as SuggestionType,
       metadata: {
@@ -280,10 +269,7 @@ async function getContentTitleSuggestions(
 /**
  * Get suggestions from knowledge graph concepts
  */
-async function getConceptSuggestions(
-  query: string,
-  limit: number
-): Promise<Suggestion[]> {
+async function getConceptSuggestions(query: string, limit: number): Promise<Suggestion[]> {
   try {
     const concepts = await prisma.concept.findMany({
       where: {
@@ -299,7 +285,7 @@ async function getConceptSuggestions(
       take: limit,
     })
 
-    return concepts.map(concept => ({
+    return concepts.map((concept) => ({
       text: concept.name,
       type: 'CONCEPT' as SuggestionType,
       metadata: {
@@ -341,13 +327,13 @@ function deduplicateSuggestions(suggestions: Suggestion[]): Suggestion[] {
 export async function updateSearchSuggestion(
   term: string,
   type: SuggestionType,
-  metadata?: Record<string, any>
+  metadata?: Record<string, any>,
 ): Promise<void> {
   try {
     const normalizedTerm = term.trim()
 
     if (normalizedTerm.length < 2) {
-      return  // Don't track very short terms
+      return // Don't track very short terms
     }
 
     // TODO: SearchSuggestion model removed in Epic 4 - needs schema migration
@@ -376,8 +362,10 @@ export async function updateSearchSuggestion(
  *
  * Task 2.1: Pre-populate medical terms for autocomplete
  */
-export async function seedMedicalTerms(terms: Array<{ term: string; category?: string }>): Promise<number> {
-  let seeded = 0
+export async function seedMedicalTerms(
+  terms: Array<{ term: string; category?: string }>,
+): Promise<number> {
+  const seeded = 0
 
   try {
     // TODO: SearchSuggestion model removed in Epic 4 - needs schema migration
@@ -411,7 +399,7 @@ export async function seedMedicalTerms(terms: Array<{ term: string; category?: s
  */
 export async function cleanupOldSuggestions(
   daysOld: number = 90,
-  minFrequency: number = 2
+  minFrequency: number = 2,
 ): Promise<number> {
   try {
     // TODO: SearchSuggestion model removed in Epic 4 - needs schema migration

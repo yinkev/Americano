@@ -17,5 +17,6 @@ export default function SearchAnalyticsPage() {
 
 export const metadata = {
   title: 'Search Analytics | Americano',
-  description: 'Comprehensive search analytics including popular searches, CTR metrics, and performance data',
+  description:
+    'Comprehensive search analytics including popular searches, CTR metrics, and performance data',
 }

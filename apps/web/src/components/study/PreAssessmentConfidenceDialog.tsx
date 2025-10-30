@@ -1,21 +1,22 @@
-'use client';
+'use client'
 
-import React, { useState } from 'react';
+import { ChevronRight } from 'lucide-react'
+import type React from 'react'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { ConfidenceSlider } from './ConfidenceSlider';
-import { ChevronRight } from 'lucide-react';
+} from '@/components/ui/dialog'
+import { ConfidenceSlider } from './ConfidenceSlider'
 
 interface PreAssessmentConfidenceDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onConfidenceCaptured: (confidence: number, rationale?: string) => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onConfidenceCaptured: (confidence: number, rationale?: string) => void
 }
 
 /**
@@ -23,37 +24,35 @@ interface PreAssessmentConfidenceDialogProps {
  * Appears BEFORE student sees assessment prompt details
  * Captures initial confidence to measure learning from prompt exposure
  */
-export const PreAssessmentConfidenceDialog: React.FC<
-  PreAssessmentConfidenceDialogProps
-> = ({ open, onOpenChange, onConfidenceCaptured }) => {
-  const [confidence, setConfidence] = useState(3);
-  const [rationale, setRationale] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export const PreAssessmentConfidenceDialog: React.FC<PreAssessmentConfidenceDialogProps> = ({
+  open,
+  onOpenChange,
+  onConfidenceCaptured,
+}) => {
+  const [confidence, setConfidence] = useState(3)
+  const [rationale, setRationale] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleNext = async () => {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      onConfidenceCaptured(confidence, rationale || undefined);
+      onConfidenceCaptured(confidence, rationale || undefined)
       // Reset state for next use
-      setConfidence(3);
-      setRationale('');
+      setConfidence(3)
+      setRationale('')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="max-w-md bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]"
-      >
+      <DialogContent className="max-w-md bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
-            Before We Begin
-          </DialogTitle>
+          <DialogTitle className="text-xl font-bold">Before We Begin</DialogTitle>
           <DialogDescription className="text-base">
-            Help us understand your confidence before seeing the question.
-            This helps track your learning and metacognitive awareness.
+            Help us understand your confidence before seeing the question. This helps track your
+            learning and metacognitive awareness.
           </DialogDescription>
         </DialogHeader>
 
@@ -80,9 +79,8 @@ export const PreAssessmentConfidenceDialog: React.FC<
           >
             <p className="font-semibold mb-1">Why this matters:</p>
             <p>
-              Your initial confidence helps us identify patterns - like when
-              you overestimate or underestimate your knowledge. This awareness
-              is crucial for better studying!
+              Your initial confidence helps us identify patterns - like when you overestimate or
+              underestimate your knowledge. This awareness is crucial for better studying!
             </p>
           </div>
 
@@ -102,7 +100,7 @@ export const PreAssessmentConfidenceDialog: React.FC<
         </div>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default PreAssessmentConfidenceDialog;
+export default PreAssessmentConfidenceDialog

@@ -17,7 +17,14 @@
  * - Medical context awareness for dosage, contraindications, mechanisms
  */
 
-import { PrismaClient, ConflictType, ConflictSeverity, ConflictStatus, ContentChunk, Concept } from '@/generated/prisma'
+import {
+  type Concept,
+  type ConflictSeverity,
+  ConflictStatus,
+  type ConflictType,
+  type ContentChunk,
+  PrismaClient,
+} from '@/generated/prisma'
 import { ChatMockClient } from '@/lib/ai/chatmock-client'
 import { GeminiClient } from '@/lib/ai/gemini-client'
 import { semanticSearchService } from '@/lib/semantic-search-service'
@@ -27,7 +34,12 @@ import { semanticSearchService } from '@/lib/semantic-search-service'
  */
 export interface ContradictionPattern {
   /** Pattern type */
-  type: 'NEGATION' | 'OPPOSING_TERMS' | 'NUMERICAL_CONFLICT' | 'DOSAGE_CONFLICT' | 'TEMPORAL_CONFLICT'
+  type:
+    | 'NEGATION'
+    | 'OPPOSING_TERMS'
+    | 'NUMERICAL_CONFLICT'
+    | 'DOSAGE_CONFLICT'
+    | 'TEMPORAL_CONFLICT'
   /** Pattern description */
   description: string
   /** Confidence score (0.0-1.0) */
@@ -142,45 +154,66 @@ export class ConflictDetector {
    */
   private medicalTerms: Map<string, MedicalTermVariant> = new Map([
     // Cardiac terminology
-    ['myocardial infarction', {
-      term: 'myocardial infarction',
-      variants: ['MI', 'heart attack', 'myocardial infarct', 'coronary occlusion'],
-      type: 'SYNONYM'
-    }],
-    ['heart failure', {
-      term: 'heart failure',
-      variants: ['HF', 'CHF', 'congestive heart failure', 'cardiac failure'],
-      type: 'SYNONYM'
-    }],
-    ['atrial fibrillation', {
-      term: 'atrial fibrillation',
-      variants: ['AFib', 'AF', 'atrial fib'],
-      type: 'ABBREVIATION'
-    }],
+    [
+      'myocardial infarction',
+      {
+        term: 'myocardial infarction',
+        variants: ['MI', 'heart attack', 'myocardial infarct', 'coronary occlusion'],
+        type: 'SYNONYM',
+      },
+    ],
+    [
+      'heart failure',
+      {
+        term: 'heart failure',
+        variants: ['HF', 'CHF', 'congestive heart failure', 'cardiac failure'],
+        type: 'SYNONYM',
+      },
+    ],
+    [
+      'atrial fibrillation',
+      {
+        term: 'atrial fibrillation',
+        variants: ['AFib', 'AF', 'atrial fib'],
+        type: 'ABBREVIATION',
+      },
+    ],
 
     // Dosage-related
-    ['aspirin', {
-      term: 'aspirin',
-      variants: ['ASA', 'acetylsalicylic acid'],
-      type: 'SYNONYM'
-    }],
+    [
+      'aspirin',
+      {
+        term: 'aspirin',
+        variants: ['ASA', 'acetylsalicylic acid'],
+        type: 'SYNONYM',
+      },
+    ],
 
     // Common medical abbreviations
-    ['blood pressure', {
-      term: 'blood pressure',
-      variants: ['BP'],
-      type: 'ABBREVIATION'
-    }],
-    ['diabetes mellitus', {
-      term: 'diabetes mellitus',
-      variants: ['DM', 'diabetes'],
-      type: 'ABBREVIATION'
-    }],
-    ['chronic kidney disease', {
-      term: 'chronic kidney disease',
-      variants: ['CKD'],
-      type: 'ABBREVIATION'
-    }],
+    [
+      'blood pressure',
+      {
+        term: 'blood pressure',
+        variants: ['BP'],
+        type: 'ABBREVIATION',
+      },
+    ],
+    [
+      'diabetes mellitus',
+      {
+        term: 'diabetes mellitus',
+        variants: ['DM', 'diabetes'],
+        type: 'ABBREVIATION',
+      },
+    ],
+    [
+      'chronic kidney disease',
+      {
+        term: 'chronic kidney disease',
+        variants: ['CKD'],
+        type: 'ABBREVIATION',
+      },
+    ],
   ])
 
   /**
@@ -201,7 +234,7 @@ export class ConflictDetector {
       'cannot',
       'contraindicated',
       'prohibited',
-      'avoid'
+      'avoid',
     ],
     opposition: [
       'however',
@@ -215,17 +248,9 @@ export class ConflictDetector {
       'unlike',
       'contrary to',
       'opposite',
-      'different from'
+      'different from',
     ],
-    uncertainty: [
-      'may',
-      'might',
-      'possibly',
-      'rarely',
-      'sometimes',
-      'occasionally',
-      'uncommonly'
-    ],
+    uncertainty: ['may', 'might', 'possibly', 'rarely', 'sometimes', 'occasionally', 'uncommonly'],
     certainty: [
       'always',
       'must',
@@ -235,8 +260,8 @@ export class ConflictDetector {
       'typically',
       'usually',
       'frequently',
-      'invariably'
-    ]
+      'invariably',
+    ],
   }
 
   constructor() {
@@ -266,7 +291,7 @@ export class ConflictDetector {
   async detectConflicts(
     sourceA: ChunkWithEmbedding,
     sourceB: ChunkWithEmbedding,
-    useAIAnalysis: boolean = true
+    useAIAnalysis: boolean = true,
   ): Promise<DetectedConflict | null> {
     // Step 1: Calculate semantic similarity
     const similarity = await this.calculateSimilarity(sourceA, sourceB)
@@ -289,7 +314,7 @@ export class ConflictDetector {
     }
 
     // Step 4: Calculate initial confidence based on pattern strength
-    const patternConfidence = Math.max(...patterns.map(p => p.confidence))
+    const patternConfidence = Math.max(...patterns.map((p) => p.confidence))
 
     // Step 5: Use GPT-5 for detailed analysis if enabled
     let analysis: ConflictAnalysis | null = null
@@ -317,7 +342,7 @@ export class ConflictDetector {
       severity,
       description,
       similarity,
-      confidence: analysis?.confidence || patternConfidence
+      confidence: analysis?.confidence || patternConfidence,
     }
   }
 
@@ -336,7 +361,7 @@ export class ConflictDetector {
       sourceIds,
       minSimilarity = 0.85,
       maxConflicts = 100,
-      skipAIAnalysis = false
+      skipAIAnalysis = false,
     } = params
 
     const conflicts: DetectedConflict[] = []
@@ -350,14 +375,14 @@ export class ConflictDetector {
       chunks = await this.getChunksForConcept(conceptId)
     } else if (sourceIds && sourceIds.length > 0) {
       // Get chunks from specific sources
-      chunks = await this.prisma.contentChunk.findMany({
+      chunks = (await this.prisma.contentChunk.findMany({
         where: {
           lecture: {
-            courseId: { in: sourceIds }
-          }
+            courseId: { in: sourceIds },
+          },
         },
-        take: 1000 // Limit for performance
-      }) as unknown as ChunkWithEmbedding[]
+        take: 1000, // Limit for performance
+      })) as unknown as ChunkWithEmbedding[]
     } else {
       throw new Error('Either conceptId or sourceIds must be provided')
     }
@@ -381,7 +406,7 @@ export class ConflictDetector {
           if (conflict) {
             conflicts.push({
               ...conflict,
-              conceptId: conceptId
+              conceptId: conceptId,
             })
           }
         } catch (error) {
@@ -410,8 +435,8 @@ export class ConflictDetector {
         sourceAChunk: true,
         sourceBChunk: true,
         sourceAFirstAid: true,
-        sourceBFirstAid: true
-      }
+        sourceBFirstAid: true,
+      },
     })
 
     if (!conflict) {
@@ -448,10 +473,7 @@ export class ConflictDetector {
    * @param textB - Normalized text from source B
    * @returns Array of detected contradiction patterns
    */
-  private detectContradictionPatterns(
-    textA: string,
-    textB: string
-  ): ContradictionPattern[] {
+  private detectContradictionPatterns(textA: string, textB: string): ContradictionPattern[] {
     const patterns: ContradictionPattern[] = []
 
     // Pattern 1: Negation detection
@@ -484,11 +506,11 @@ export class ConflictDetector {
     const aLower = textA.toLowerCase()
     const bLower = textB.toLowerCase()
 
-    const aHasNegation = this.contradictionMarkers.negation.some(marker =>
-      aLower.includes(marker)
+    const aHasNegation = this.contradictionMarkers.negation.some((marker) =>
+      aLower.includes(marker),
     )
-    const bHasNegation = this.contradictionMarkers.negation.some(marker =>
-      bLower.includes(marker)
+    const bHasNegation = this.contradictionMarkers.negation.some((marker) =>
+      bLower.includes(marker),
     )
 
     // If one has negation and the other doesn't, potential conflict
@@ -499,8 +521,8 @@ export class ConflictDetector {
         confidence: 0.7,
         evidence: {
           sourceA: this.extractSentence(textA, this.contradictionMarkers.negation),
-          sourceB: this.extractSentence(textB, this.contradictionMarkers.negation)
-        }
+          sourceB: this.extractSentence(textB, this.contradictionMarkers.negation),
+        },
       }
     }
 
@@ -519,7 +541,7 @@ export class ConflictDetector {
       ['beneficial', 'harmful'],
       ['elevated', 'reduced'],
       ['high', 'low'],
-      ['positive', 'negative']
+      ['positive', 'negative'],
     ]
 
     for (const [term1, term2] of opposingPairs) {
@@ -536,8 +558,8 @@ export class ConflictDetector {
           confidence: 0.8,
           evidence: {
             sourceA: this.extractSentence(textA, [term1, term2]),
-            sourceB: this.extractSentence(textB, [term1, term2])
-          }
+            sourceB: this.extractSentence(textB, [term1, term2]),
+          },
         }
       }
     }
@@ -573,8 +595,8 @@ export class ConflictDetector {
               confidence: Math.min(0.9, 0.5 + percentDiff),
               evidence: {
                 sourceA: this.extractSentence(textA, [valueA]),
-                sourceB: this.extractSentence(textB, [valueB])
-              }
+                sourceB: this.extractSentence(textB, [valueB]),
+              },
             })
           }
         }
@@ -607,8 +629,8 @@ export class ConflictDetector {
             confidence: 0.9,
             evidence: {
               sourceA: this.extractSentence(textA, [drugA]),
-              sourceB: this.extractSentence(textB, [drugB])
-            }
+              sourceB: this.extractSentence(textB, [drugB]),
+            },
           }
         }
       }
@@ -624,10 +646,10 @@ export class ConflictDetector {
     const aLower = textA.toLowerCase()
     const bLower = textB.toLowerCase()
 
-    const aHasCertainty = this.contradictionMarkers.certainty.some(m => aLower.includes(m))
-    const aHasUncertainty = this.contradictionMarkers.uncertainty.some(m => aLower.includes(m))
-    const bHasCertainty = this.contradictionMarkers.certainty.some(m => bLower.includes(m))
-    const bHasUncertainty = this.contradictionMarkers.uncertainty.some(m => bLower.includes(m))
+    const aHasCertainty = this.contradictionMarkers.certainty.some((m) => aLower.includes(m))
+    const aHasUncertainty = this.contradictionMarkers.uncertainty.some((m) => aLower.includes(m))
+    const bHasCertainty = this.contradictionMarkers.certainty.some((m) => bLower.includes(m))
+    const bHasUncertainty = this.contradictionMarkers.uncertainty.some((m) => bLower.includes(m))
 
     // If one expresses certainty and the other uncertainty, conflict
     if ((aHasCertainty && bHasUncertainty) || (aHasUncertainty && bHasCertainty)) {
@@ -636,9 +658,15 @@ export class ConflictDetector {
         description: 'Sources disagree on certainty/frequency of occurrence',
         confidence: 0.6,
         evidence: {
-          sourceA: this.extractSentence(textA, [...this.contradictionMarkers.certainty, ...this.contradictionMarkers.uncertainty]),
-          sourceB: this.extractSentence(textB, [...this.contradictionMarkers.certainty, ...this.contradictionMarkers.uncertainty])
-        }
+          sourceA: this.extractSentence(textA, [
+            ...this.contradictionMarkers.certainty,
+            ...this.contradictionMarkers.uncertainty,
+          ]),
+          sourceB: this.extractSentence(textB, [
+            ...this.contradictionMarkers.certainty,
+            ...this.contradictionMarkers.uncertainty,
+          ]),
+        },
       }
     }
 
@@ -668,13 +696,13 @@ export class ConflictDetector {
    */
   private async calculateSimilarity(
     chunkA: ChunkWithEmbedding,
-    chunkB: ChunkWithEmbedding
+    chunkB: ChunkWithEmbedding,
   ): Promise<number> {
     // If both have embeddings, use cosine similarity
     if (chunkA.embedding && chunkB.embedding) {
       return this.cosineSimilarity(
         chunkA.embedding as unknown as number[],
-        chunkB.embedding as unknown as number[]
+        chunkB.embedding as unknown as number[],
       )
     }
 
@@ -685,7 +713,7 @@ export class ConflictDetector {
         : this.gemini.generateEmbedding(chunkA.content),
       chunkB.embedding
         ? Promise.resolve({ embedding: chunkB.embedding as unknown as number[], error: undefined })
-        : this.gemini.generateEmbedding(chunkB.content)
+        : this.gemini.generateEmbedding(chunkB.content),
     ])
 
     if (embeddingA.error || embeddingB.error) {
@@ -729,7 +757,7 @@ export class ConflictDetector {
   private async analyzeWithGPT5(
     contentA: string,
     contentB: string,
-    patterns: ContradictionPattern[]
+    patterns: ContradictionPattern[],
   ): Promise<ConflictAnalysis> {
     const systemPrompt = `You are a medical education expert analyzing potential conflicts between medical educational sources.
 
@@ -774,17 +802,17 @@ Content B:
 ${contentB}
 
 Detected patterns:
-${patterns.map(p => `- ${p.type}: ${p.description} (confidence: ${p.confidence})`).join('\n')}`
+${patterns.map((p) => `- ${p.type}: ${p.description} (confidence: ${p.confidence})`).join('\n')}`
 
     try {
       const response = await this.chatmock.createChatCompletion({
         model: 'gpt-5',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userContent }
+          { role: 'user', content: userContent },
         ],
         temperature: 0.3, // Low for consistency
-        max_tokens: 16000
+        max_tokens: 16000,
       })
 
       const content = response.choices[0]?.message?.content
@@ -812,7 +840,7 @@ ${patterns.map(p => `- ${p.type}: ${p.description} (confidence: ${p.confidence})
         explanation: parsed.explanation,
         recommendation: parsed.recommendation,
         confidence: parsed.confidence,
-        keyDifferences: parsed.keyDifferences || []
+        keyDifferences: parsed.keyDifferences || [],
       }
     } catch (error) {
       console.error('GPT-5 analysis error:', error)
@@ -822,10 +850,10 @@ ${patterns.map(p => `- ${p.type}: ${p.description} (confidence: ${p.confidence})
         isConflict: patterns.length > 0,
         conflictType: this.inferConflictType(patterns),
         severity: this.calculateSeverity(patterns, 0.5),
-        explanation: `Pattern-based detection (GPT-5 unavailable): ${patterns.map(p => p.description).join('; ')}`,
+        explanation: `Pattern-based detection (GPT-5 unavailable): ${patterns.map((p) => p.description).join('; ')}`,
         recommendation: 'Requires manual review - AI analysis failed',
         confidence: 0.5,
-        keyDifferences: patterns.map(p => p.description)
+        keyDifferences: patterns.map((p) => p.description),
       }
     }
   }
@@ -848,11 +876,11 @@ ${patterns.map(p => `- ${p.type}: ${p.description} (confidence: ${p.confidence})
    */
   private calculateSeverity(
     patterns: ContradictionPattern[],
-    confidence: number
+    confidence: number,
   ): ConflictSeverity {
     // Dosage conflicts are always at least MEDIUM severity
-    const hasDosageConflict = patterns.some(p =>
-      p.type === 'DOSAGE_CONFLICT' || p.type === 'NUMERICAL_CONFLICT'
+    const hasDosageConflict = patterns.some(
+      (p) => p.type === 'DOSAGE_CONFLICT' || p.type === 'NUMERICAL_CONFLICT',
     )
 
     if (hasDosageConflict && confidence > 0.8) {
@@ -869,11 +897,8 @@ ${patterns.map(p => `- ${p.type}: ${p.description} (confidence: ${p.confidence})
   /**
    * Generate human-readable description of conflict
    */
-  private generateDescription(
-    patterns: ContradictionPattern[],
-    similarity: number
-  ): string {
-    const descriptions = patterns.map(p => p.description)
+  private generateDescription(patterns: ContradictionPattern[], similarity: number): string {
+    const descriptions = patterns.map((p) => p.description)
 
     return `Conflict detected (${(similarity * 100).toFixed(1)}% similarity): ${descriptions.join('; ')}`
   }
@@ -886,7 +911,7 @@ ${patterns.map(p => `- ${p.type}: ${p.description} (confidence: ${p.confidence})
 
     for (const sentence of sentences) {
       const lowerSentence = sentence.toLowerCase()
-      if (keywords.some(kw => lowerSentence.includes(kw.toLowerCase()))) {
+      if (keywords.some((kw) => lowerSentence.includes(kw.toLowerCase()))) {
         return sentence.trim()
       }
     }
@@ -911,9 +936,9 @@ ${patterns.map(p => `- ${p.type}: ${p.description} (confidence: ${p.confidence})
    */
   private async getChunksForConcept(conceptId: string): Promise<ChunkWithEmbedding[]> {
     // Fetch concept with its embedding
-    const concept = await this.prisma.concept.findUnique({
-      where: { id: conceptId }
-    }) as ConceptWithEmbedding | null
+    const concept = (await this.prisma.concept.findUnique({
+      where: { id: conceptId },
+    })) as ConceptWithEmbedding | null
 
     if (!concept || !concept.embedding) {
       console.warn(`Concept ${conceptId} not found or has no embedding`)
@@ -945,7 +970,7 @@ ${patterns.map(p => `- ${p.type}: ${p.description} (confidence: ${p.confidence})
       if (chunk.embedding) {
         const similarity = this.cosineSimilarity(
           concept.embedding as unknown as number[],
-          chunk.embedding as unknown as number[]
+          chunk.embedding as unknown as number[],
         )
 
         // Only include chunks with strong semantic relationship
@@ -977,7 +1002,7 @@ ${patterns.map(p => `- ${p.type}: ${p.description} (confidence: ${p.confidence})
       sourceBId?: string
       conceptId?: string
       useAI?: boolean
-    }
+    },
   ): Promise<{
     isConflict: boolean
     severity: ConflictSeverity | null
@@ -1005,7 +1030,7 @@ ${patterns.map(p => `- ${p.type}: ${p.description} (confidence: ${p.confidence})
         embedding: null,
         createdAt: new Date(),
       } as ChunkWithEmbedding,
-      options?.useAI ?? true
+      options?.useAI ?? true,
     )
 
     // If no conflict detected, return null values

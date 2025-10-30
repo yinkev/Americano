@@ -6,9 +6,9 @@
  * Target: 60%+ coverage
  */
 
-import { StudyTimeAnalyzer } from '../study-time-analyzer'
 import { prisma } from '@/lib/db'
 import { PerformanceCalculator } from '@/lib/performance-calculator'
+import { StudyTimeAnalyzer } from '../study-time-analyzer'
 
 jest.mock('@/lib/db')
 jest.mock('@/lib/performance-calculator')
@@ -62,9 +62,7 @@ describe('StudyTimeAnalyzer', () => {
           completedAt: new Date(`2025-01-${i + 1}T22:00:00Z`),
           durationMs: 3600000,
           reviewsCompleted: 15,
-          objectiveCompletions: [
-            { objectiveId: 'obj4', selfAssessment: 2 },
-          ],
+          objectiveCompletions: [{ objectiveId: 'obj4', selfAssessment: 2 }],
           reviews: [{ id: `r${i}`, rating: 'AGAIN' }],
         })),
       ]
@@ -183,7 +181,9 @@ describe('StudyTimeAnalyzer', () => {
           id: `h${hour}-s${i}`,
           userId,
           startedAt: new Date(`2025-01-${i + 1}T${hour.toString().padStart(2, '0')}:00:00Z`),
-          completedAt: new Date(`2025-01-${i + 1}T${(hour + 1).toString().padStart(2, '0')}:00:00Z`),
+          completedAt: new Date(
+            `2025-01-${i + 1}T${(hour + 1).toString().padStart(2, '0')}:00:00Z`,
+          ),
           durationMs: 3600000,
           reviewsCompleted: 30,
           objectiveCompletions: [
@@ -455,7 +455,9 @@ describe('StudyTimeAnalyzer', () => {
           completedAt: new Date(`2025-01-${i + 1}T10:00:00Z`),
           durationMs: 3600000,
           reviewsCompleted: 30,
-          objectiveCompletions: [{ objectiveId: 'obj', completedAt: new Date().toISOString(), selfAssessment: 4 }],
+          objectiveCompletions: [
+            { objectiveId: 'obj', completedAt: new Date().toISOString(), selfAssessment: 4 },
+          ],
           reviews: [{ id: 'r', rating: 'GOOD' }],
         })),
         ...Array.from({ length: 6 }, (_, i) => ({
@@ -465,7 +467,9 @@ describe('StudyTimeAnalyzer', () => {
           completedAt: new Date(`2025-01-${i + 1}T15:00:00Z`),
           durationMs: 3600000,
           reviewsCompleted: 25,
-          objectiveCompletions: [{ objectiveId: 'obj', completedAt: new Date().toISOString(), selfAssessment: 3 }],
+          objectiveCompletions: [
+            { objectiveId: 'obj', completedAt: new Date().toISOString(), selfAssessment: 3 },
+          ],
           reviews: [{ id: 'r', rating: 'HARD' }],
         })),
       ]

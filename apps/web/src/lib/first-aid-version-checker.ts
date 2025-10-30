@@ -90,7 +90,7 @@ export class FirstAidVersionChecker {
     console.log(`✓ Current edition: ${currentEdition ? `${currentEdition.year}` : 'None'}`)
     console.log(`✓ Latest edition: ${latestVersion.year}`)
     console.log(
-      `✓ Update available: ${updateAvailable ? `Yes (${versionDifference} versions behind)` : 'No'}`
+      `✓ Update available: ${updateAvailable ? `Yes (${versionDifference} versions behind)` : 'No'}`,
     )
 
     return {
@@ -213,7 +213,7 @@ export class FirstAidVersionChecker {
       results.set(edition.userId, result)
     }
 
-    const usersWithUpdates = Array.from(results.values()).filter(r => r.updateAvailable).length
+    const usersWithUpdates = Array.from(results.values()).filter((r) => r.updateAvailable).length
 
     console.log(`\n✓ Checked ${results.size} users`)
     console.log(`✓ Updates available for ${usersWithUpdates} users`)

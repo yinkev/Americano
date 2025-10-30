@@ -12,9 +12,9 @@
  * - Flag poor questions (D < 0.2)
  */
 
-import { QuestionBankManager } from '@/lib/question-bank-manager'
-import type { QuestionBankQuestion } from '@/lib/question-bank-manager'
 import { prisma } from '@/lib/db'
+import type { QuestionBankQuestion } from '@/lib/question-bank-manager'
+import { QuestionBankManager } from '@/lib/question-bank-manager'
 
 // Prisma is already mocked in jest.setup.ts
 // We just need to cast it for TypeScript
@@ -380,7 +380,7 @@ describe('QuestionBankManager', () => {
             timesUsed: { increment: 1 },
             lastUsedAt: expect.any(Date),
           }),
-        })
+        }),
       )
     })
 
@@ -438,7 +438,7 @@ describe('QuestionBankManager', () => {
   describe('calculateDiscriminationIndex', () => {
     it('should return 0.0 if fewer than 20 responses', async () => {
       ;(mockPrisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
-        Array(15).fill({ score: 0.9 }) as any
+        Array(15).fill({ score: 0.9 }) as any,
       )
 
       const index = await manager.calculateDiscriminationIndex('prompt1')
@@ -625,7 +625,7 @@ describe('QuestionBankManager', () => {
           where: expect.objectContaining({
             objectiveId: undefined,
           }),
-        })
+        }),
       )
     })
   })

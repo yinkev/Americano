@@ -4,14 +4,14 @@
  * Story 2.4: Daily Mission Generation and Display (Task 3.2)
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import type { Prisma } from '@/generated/prisma'
+import { withErrorHandler } from '@/lib/api-error'
+import { errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 import { MissionGenerator } from '@/lib/mission-generator'
-import { successResponse, errorResponse } from '@/lib/api-response'
-import { withErrorHandler } from '@/lib/api-error'
 import type { MissionProgress } from '@/types/mission'
 import { getMissionObjectives } from '@/types/mission-helpers'
-import { Prisma } from '@/generated/prisma'
 
 async function handler(request: NextRequest) {
   // Get user from header (MVP: hardcoded to kevy@americano.dev)

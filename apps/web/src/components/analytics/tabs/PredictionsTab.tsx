@@ -15,18 +15,18 @@
 
 'use client'
 
-import { usePredictions } from '@/hooks/use-understanding-analytics'
-import { Calendar, TrendingUp, AlertTriangle, Target, Info } from 'lucide-react'
+import { AlertTriangle, Calendar, Info, Target, TrendingUp } from 'lucide-react'
 import {
-  ResponsiveContainer,
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Cell,
 } from 'recharts'
+import { usePredictions } from '@/hooks/use-understanding-analytics'
 
 /**
  * Main Predictions Tab Component
@@ -180,7 +180,10 @@ function ForgettingRisksList({ risks }: { risks: any[] }) {
   // Sort by risk level (high -> medium -> low)
   const sortedRisks = [...risks].sort((a, b) => {
     const riskOrder = { high: 0, medium: 1, low: 2 }
-    return riskOrder[a.riskLevel as keyof typeof riskOrder] - riskOrder[b.riskLevel as keyof typeof riskOrder]
+    return (
+      riskOrder[a.riskLevel as keyof typeof riskOrder] -
+      riskOrder[b.riskLevel as keyof typeof riskOrder]
+    )
   })
 
   const getRiskColor = (level: string) => {
@@ -244,12 +247,18 @@ function ForgettingRisksList({ risks }: { risks: any[] }) {
                     >
                       {risk.riskLevel} risk
                     </span>
-                    <span className="text-sm font-medium truncate" style={{ color: 'oklch(0.3 0.02 240)' }}>
+                    <span
+                      className="text-sm font-medium truncate"
+                      style={{ color: 'oklch(0.3 0.02 240)' }}
+                    >
                       {risk.objectiveName}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs" style={{ color: 'oklch(0.5 0.02 240)' }}>
+                  <div
+                    className="flex items-center gap-4 text-xs"
+                    style={{ color: 'oklch(0.5 0.02 240)' }}
+                  >
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       <span>Last studied: {formatDate(risk.lastStudied)}</span>
@@ -324,10 +333,16 @@ function MasteryDatesList({ predictions }: { predictions: any[] }) {
             >
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-sm mb-1 truncate" style={{ color: 'oklch(0.3 0.02 240)' }}>
+                  <h4
+                    className="font-medium text-sm mb-1 truncate"
+                    style={{ color: 'oklch(0.3 0.02 240)' }}
+                  >
                     {pred.objectiveName}
                   </h4>
-                  <div className="flex items-center gap-3 text-xs" style={{ color: 'oklch(0.5 0.02 240)' }}>
+                  <div
+                    className="flex items-center gap-3 text-xs"
+                    style={{ color: 'oklch(0.5 0.02 240)' }}
+                  >
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       <span>Est: {formatDate(pred.estimatedDate)}</span>
@@ -499,8 +514,14 @@ function PredictionsTabSkeleton() {
         style={{ minHeight: '300px' }}
       >
         <div className="h-6 w-48 rounded" style={{ backgroundColor: 'oklch(0.9 0.02 240)' }} />
-        <div className="mt-4 h-16 w-32 rounded" style={{ backgroundColor: 'oklch(0.9 0.02 240)' }} />
-        <div className="mt-4 h-3 w-full rounded" style={{ backgroundColor: 'oklch(0.9 0.02 240)' }} />
+        <div
+          className="mt-4 h-16 w-32 rounded"
+          style={{ backgroundColor: 'oklch(0.9 0.02 240)' }}
+        />
+        <div
+          className="mt-4 h-3 w-full rounded"
+          style={{ backgroundColor: 'oklch(0.9 0.02 240)' }}
+        />
       </div>
 
       {/* Grid Skeleton */}
@@ -511,7 +532,10 @@ function PredictionsTabSkeleton() {
             className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-[0_8px_32px_rgba(31,38,135,0.1)] border border-white/50"
             style={{ minHeight: '400px' }}
           >
-            <div className="h-6 w-48 rounded mb-4" style={{ backgroundColor: 'oklch(0.9 0.02 240)' }} />
+            <div
+              className="h-6 w-48 rounded mb-4"
+              style={{ backgroundColor: 'oklch(0.9 0.02 240)' }}
+            />
             <div className="space-y-3">
               {[1, 2, 3].map((j) => (
                 <div
@@ -533,7 +557,11 @@ function PredictionsTabSkeleton() {
         <div className="h-6 w-48 rounded" style={{ backgroundColor: 'oklch(0.9 0.02 240)' }} />
         <div className="mt-4 grid grid-cols-2 gap-6">
           {[1, 2].map((i) => (
-            <div key={i} className="h-24 rounded" style={{ backgroundColor: 'oklch(0.95 0.02 240)' }} />
+            <div
+              key={i}
+              className="h-24 rounded"
+              style={{ backgroundColor: 'oklch(0.95 0.02 240)' }}
+            />
           ))}
         </div>
       </div>

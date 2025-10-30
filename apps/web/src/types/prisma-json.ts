@@ -12,34 +12,34 @@
 // ============================================
 
 export interface MissionObjective {
-  id: string;
+  id: string
   objective: {
-    id: string;
-    objective: string;
-    complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
-    isHighYield: boolean;
-    masteryLevel?: 'NOT_STARTED' | 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'MASTERED';
-    lectureId?: string;
-  };
-  cardCount: number;
-  estimatedMinutes: number;
-  completed?: boolean;
-  completedAt?: string;
-  confidence?: number;
-  timeSpentMs?: number;
+    id: string
+    objective: string
+    complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
+    isHighYield: boolean
+    masteryLevel?: 'NOT_STARTED' | 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'MASTERED'
+    lectureId?: string
+  }
+  cardCount: number
+  estimatedMinutes: number
+  completed?: boolean
+  completedAt?: string
+  confidence?: number
+  timeSpentMs?: number
 }
 
 export interface ObjectiveCompletion {
-  objectiveId: string;
-  completed?: boolean; // Optional for when pushed to array during completion
-  completedAt?: string;
-  confidence?: number;
-  confidenceRating?: number; // Session-level confidence rating (1-5)
-  selfAssessment?: number; // Session-level self-assessment (1-5)
-  timeSpentMs?: number;
-  cardsReviewed?: number;
-  averageRating?: number;
-  notes?: string; // Optional notes from session completion
+  objectiveId: string
+  completed?: boolean // Optional for when pushed to array during completion
+  completedAt?: string
+  confidence?: number
+  confidenceRating?: number // Session-level confidence rating (1-5)
+  selfAssessment?: number // Session-level self-assessment (1-5)
+  timeSpentMs?: number
+  cardsReviewed?: number
+  averageRating?: number
+  notes?: string // Optional notes from session completion
 }
 
 // ============================================
@@ -47,37 +47,37 @@ export interface ObjectiveCompletion {
 // ============================================
 
 export interface PreferredStudyTime {
-  dayOfWeek: number; // 0-6 (Sunday=0)
-  startHour: number; // 0-23
-  endHour: number; // 0-23
-  effectiveness: number; // 0.0-1.0
+  dayOfWeek: number // 0-6 (Sunday=0)
+  startHour: number // 0-23
+  endHour: number // 0-23
+  effectiveness: number // 0.0-1.0
 }
 
 export interface LearningStyleProfile {
   // VARK learning style scores
-  visual: number; // 0.0-1.0
-  auditory: number; // 0.0-1.0
-  reading: number; // 0.0-1.0
-  kinesthetic: number; // 0.0-1.0
+  visual: number // 0.0-1.0
+  auditory: number // 0.0-1.0
+  reading: number // 0.0-1.0
+  kinesthetic: number // 0.0-1.0
 
   // Additional cognitive preferences
-  loadTolerance?: number; // 0-100
-  preferredSessionLength?: number; // minutes
-  optimalDifficulty?: number; // 0.0-1.0
+  loadTolerance?: number // 0-100
+  preferredSessionLength?: number // minutes
+  optimalDifficulty?: number // 0.0-1.0
 }
 
 export interface ContentPreferences {
-  preferredTypes?: string[];
-  avoidedTypes?: string[];
-  difficultyPreference?: 'easier' | 'balanced' | 'challenging';
-  interactivityLevel?: 'low' | 'medium' | 'high';
+  preferredTypes?: string[]
+  avoidedTypes?: string[]
+  difficultyPreference?: 'easier' | 'balanced' | 'challenging'
+  interactivityLevel?: 'low' | 'medium' | 'high'
 }
 
 export interface PersonalizedForgettingCurve {
-  initialRetention: number; // 0.0-1.0
-  decayRate: number; // 0.0-1.0
-  stabilityFactor: number; // 0.0-1.0
-  optimalSpacing?: number[]; // days between reviews
+  initialRetention: number // 0.0-1.0
+  decayRate: number // 0.0-1.0
+  stabilityFactor: number // 0.0-1.0
+  optimalSpacing?: number[] // days between reviews
 }
 
 // ============================================
@@ -85,34 +85,39 @@ export interface PersonalizedForgettingCurve {
 // ============================================
 
 export interface BehavioralPatternData {
-  patternName?: string;
-  description?: string;
-  strength?: number;
-  frequency?: number;
-  lastOccurrence?: string;
-  metadata?: Record<string, unknown>;
+  patternName?: string
+  description?: string
+  strength?: number
+  frequency?: number
+  lastOccurrence?: string
+  metadata?: Record<string, unknown>
 }
 
 export interface StressIndicator {
-  type: 'PERFORMANCE_DECLINE' | 'SESSION_SKIPPING' | 'REDUCED_ENGAGEMENT' | 'DIFFICULTY_AVOIDANCE' | 'IRREGULAR_SCHEDULE';
-  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-  description: string;
-  value?: number;
-  trend?: 'INCREASING' | 'STABLE' | 'DECREASING';
+  type:
+    | 'PERFORMANCE_DECLINE'
+    | 'SESSION_SKIPPING'
+    | 'REDUCED_ENGAGEMENT'
+    | 'DIFFICULTY_AVOIDANCE'
+    | 'IRREGULAR_SCHEDULE'
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  description: string
+  value?: number
+  trend?: 'INCREASING' | 'STABLE' | 'DECREASING'
 }
 
 export interface ContributingFactor {
-  factor: string;
-  weight: number; // 0.0-1.0
-  description: string;
-  recommendation?: string;
+  factor: string
+  weight: number // 0.0-1.0
+  description: string
+  recommendation?: string
 }
 
 export interface WarningSignal {
-  signal: string;
-  detected: boolean;
-  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-  since?: string; // ISO date
+  signal: string
+  detected: boolean
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  since?: string // ISO date
 }
 
 // ============================================
@@ -121,95 +126,99 @@ export interface WarningSignal {
 
 export interface MissionPersonalization {
   timing?: {
-    preferredStartTime?: number; // Hour of day
-    flexibility?: number; // 0.0-1.0
-  };
+    preferredStartTime?: number // Hour of day
+    flexibility?: number // 0.0-1.0
+  }
   duration?: {
-    targetMinutes?: number;
-    minMinutes?: number;
-    maxMinutes?: number;
-  };
+    targetMinutes?: number
+    minMinutes?: number
+    maxMinutes?: number
+  }
   objectives?: {
-    prioritizationStrategy?: 'DEADLINE' | 'DIFFICULTY' | 'MASTERY' | 'BALANCED';
-    maxObjectives?: number;
-  };
+    prioritizationStrategy?: 'DEADLINE' | 'DIFFICULTY' | 'MASTERY' | 'BALANCED'
+    maxObjectives?: number
+  }
   difficulty?: {
-    targetDifficulty?: number; // 0.0-1.0
-    adaptationRate?: number; // 0.0-1.0
-  };
+    targetDifficulty?: number // 0.0-1.0
+    adaptationRate?: number // 0.0-1.0
+  }
 }
 
 export interface ContentPersonalization {
-  contentTypes?: string[];
-  learningStyle?: Partial<LearningStyleProfile>;
+  contentTypes?: string[]
+  learningStyle?: Partial<LearningStyleProfile>
   topicSelection?: {
-    diversityLevel?: number; // 0.0-1.0
-    repeatFrequency?: number; // days
-  };
+    diversityLevel?: number // 0.0-1.0
+    repeatFrequency?: number // days
+  }
 }
 
 export interface AssessmentPersonalization {
   frequency?: {
-    validationsPerSession?: number;
-    selfAssessmentInterval?: number; // minutes
-  };
+    validationsPerSession?: number
+    selfAssessmentInterval?: number // minutes
+  }
   difficulty?: {
-    targetDifficulty?: number; // 0.0-1.0
-    adaptOnPerformance?: boolean;
-  };
-  questionTypes?: string[];
+    targetDifficulty?: number // 0.0-1.0
+    adaptOnPerformance?: boolean
+  }
+  questionTypes?: string[]
 }
 
 export interface SessionPersonalization {
   breakTiming?: {
-    breakFrequency?: number; // minutes
-    breakDuration?: number; // minutes
-    adaptToLoad?: boolean;
-  };
+    breakFrequency?: number // minutes
+    breakDuration?: number // minutes
+    adaptToLoad?: boolean
+  }
   contentSequence?: {
-    easingStrategy?: 'GRADUAL' | 'MIXED' | 'DIVE_DEEP';
-    interleaving?: boolean;
-  };
+    easingStrategy?: 'GRADUAL' | 'MIXED' | 'DIVE_DEEP'
+    interleaving?: boolean
+  }
   intensityModulation?: {
-    peakIntensityDuration?: number; // minutes
-    recoveryDuration?: number; // minutes
-  };
+    peakIntensityDuration?: number // minutes
+    recoveryDuration?: number // minutes
+  }
 }
 
 export interface ExperimentVariant {
-  variantId: string;
-  name: string;
-  config: MissionPersonalization | ContentPersonalization | AssessmentPersonalization | SessionPersonalization;
-  weight: number; // 0.0-1.0
+  variantId: string
+  name: string
+  config:
+    | MissionPersonalization
+    | ContentPersonalization
+    | AssessmentPersonalization
+    | SessionPersonalization
+  weight: number // 0.0-1.0
 }
 
 export interface ExperimentVariants {
-  variants: ExperimentVariant[];
+  variants: ExperimentVariant[]
 }
 
 export interface ExperimentMetrics {
   [variantId: string]: {
-    sampleSize: number;
-    retentionRate: number;
-    performanceScore: number;
-    completionRate: number;
-    engagementScore: number;
-  };
+    sampleSize: number
+    retentionRate: number
+    performanceScore: number
+    completionRate: number
+    engagementScore: number
+  }
 }
 
 export interface ExperimentAssignmentMetrics {
-  retentionScore?: number;
-  performanceScore?: number;
-  completionRate?: number;
-  engagementScore?: number;
-  sessionCount?: number;
-  timestamp?: string;
+  retentionScore?: number
+  performanceScore?: number
+  completionRate?: number
+  engagementScore?: number
+  sessionCount?: number
+  timestamp?: string
 }
 
 export interface ConfidenceInterval {
-  lower: number;
-  upper: number;
-  confidenceLevel: number; // e.g., 0.95 for 95% CI
+  lower: number
+  upper: number
+  confidenceLevel: number // e.g., 0.95 for 95% CI
 }
 
 // ============================================
@@ -218,33 +227,38 @@ export interface ConfidenceInterval {
 
 export interface FeatureVector {
   // Performance features
-  retentionScore?: number;
-  avgReviewTime?: number;
-  lapseRate?: number;
+  retentionScore?: number
+  avgReviewTime?: number
+  lapseRate?: number
 
   // Behavioral features
-  studyConsistency?: number;
-  sessionGapDays?: number;
-  engagementLevel?: number;
+  studyConsistency?: number
+  sessionGapDays?: number
+  engagementLevel?: number
 
   // Cognitive features
-  cognitiveLoad?: number;
-  prerequisiteGap?: number;
-  complexityMismatch?: number;
+  cognitiveLoad?: number
+  prerequisiteGap?: number
+  complexityMismatch?: number
 
   // Historical features
-  historicalPerformance?: number;
-  similarTopicPerformance?: number;
+  historicalPerformance?: number
+  similarTopicPerformance?: number
 
   // Additional dynamic features
-  [key: string]: number | undefined;
+  [key: string]: number | undefined
 }
 
 export interface StrugglingFactor {
-  factor: 'LOW_RETENTION' | 'PREREQUISITE_GAP' | 'COMPLEXITY_MISMATCH' | 'COGNITIVE_OVERLOAD' | 'HISTORICAL_STRUGGLE_PATTERN';
-  weight: number; // 0.0-1.0
-  description: string;
-  recommendation?: string;
+  factor:
+    | 'LOW_RETENTION'
+    | 'PREREQUISITE_GAP'
+    | 'COMPLEXITY_MISMATCH'
+    | 'COGNITIVE_OVERLOAD'
+    | 'HISTORICAL_STRUGGLE_PATTERN'
+  weight: number // 0.0-1.0
+  description: string
+  recommendation?: string
 }
 
 // ============================================
@@ -252,25 +266,25 @@ export interface StrugglingFactor {
 // ============================================
 
 export interface RecommendationBaselineMetrics {
-  avgConfidence?: number;
-  behavioralScore?: number;
-  sessionCount?: number;
-  retentionRate?: number;
-  completionRate?: number;
-  engagementLevel?: number;
-  timestamp: string;
+  avgConfidence?: number
+  behavioralScore?: number
+  sessionCount?: number
+  retentionRate?: number
+  completionRate?: number
+  engagementLevel?: number
+  timestamp: string
 }
 
 export interface RecommendationCurrentMetrics extends RecommendationBaselineMetrics {
-  improvement?: number; // 0.0-1.0
-  evaluatedAt: string;
+  improvement?: number // 0.0-1.0
+  evaluatedAt: string
 }
 
 export interface GoalProgressEntry {
-  date: string; // ISO date
-  value: number;
-  note?: string;
-  trend?: 'UP' | 'DOWN' | 'STABLE';
+  date: string // ISO date
+  value: number
+  note?: string
+  trend?: 'UP' | 'DOWN' | 'STABLE'
 }
 
 // ============================================
@@ -278,32 +292,32 @@ export interface GoalProgressEntry {
 // ============================================
 
 export interface MissionReviewSummary {
-  totalMissions: number;
-  completedMissions: number;
-  completionRate: number;
-  avgDuration: number;
-  avgSuccessScore: number;
+  totalMissions: number
+  completedMissions: number
+  completionRate: number
+  avgDuration: number
+  avgSuccessScore: number
 }
 
 export interface MissionReviewHighlight {
-  type: 'ACHIEVEMENT' | 'IMPROVEMENT' | 'STREAK' | 'MILESTONE';
-  title: string;
-  description: string;
-  date?: string;
+  type: 'ACHIEVEMENT' | 'IMPROVEMENT' | 'STREAK' | 'MILESTONE'
+  title: string
+  description: string
+  date?: string
 }
 
 export interface MissionReviewInsight {
-  category: 'PATTERN' | 'CHALLENGE' | 'OPPORTUNITY';
-  title: string;
-  description: string;
-  confidence: number;
+  category: 'PATTERN' | 'CHALLENGE' | 'OPPORTUNITY'
+  title: string
+  description: string
+  confidence: number
 }
 
 export interface MissionReviewRecommendation {
-  priority: 'HIGH' | 'MEDIUM' | 'LOW';
-  title: string;
-  description: string;
-  actionable: string;
+  priority: 'HIGH' | 'MEDIUM' | 'LOW'
+  title: string
+  description: string
+  actionable: string
 }
 
 // ============================================
@@ -311,47 +325,47 @@ export interface MissionReviewRecommendation {
 // ============================================
 
 export interface ScheduleRecommendation {
-  scheduledTime: string; // ISO datetime
-  duration: number; // minutes
-  objectives: string[];
-  reasoning: string;
-  conflictFree: boolean;
-  optimalityScore: number; // 0.0-1.0
+  scheduledTime: string // ISO datetime
+  duration: number // minutes
+  objectives: string[]
+  reasoning: string
+  conflictFree: boolean
+  optimalityScore: number // 0.0-1.0
 }
 
 export interface AdaptationDetails {
   from: {
-    time?: string;
-    duration?: number;
-    difficulty?: number;
-  };
+    time?: string
+    duration?: number
+    difficulty?: number
+  }
   to: {
-    time?: string;
-    duration?: number;
-    difficulty?: number;
-  };
-  reason: string;
-  expectedImpact?: number; // 0.0-1.0
+    time?: string
+    duration?: number
+    difficulty?: number
+  }
+  reason: string
+  expectedImpact?: number // 0.0-1.0
 }
 
 export interface SessionOrchestrationPlan {
-  plannedObjectives: string[];
-  estimatedDuration: number; // minutes
+  plannedObjectives: string[]
+  estimatedDuration: number // minutes
   breakSchedule: Array<{
-    afterMinutes: number;
-    duration: number;
-    type: 'SHORT' | 'MEDIUM' | 'LONG';
-  }>;
-  cognitiveLoadTarget: number; // 0-100
-  adaptations?: AdaptationDetails[];
+    afterMinutes: number
+    duration: number
+    type: 'SHORT' | 'MEDIUM' | 'LONG'
+  }>
+  cognitiveLoadTarget: number // 0-100
+  adaptations?: AdaptationDetails[]
 }
 
 export interface StressPattern {
-  triggers: string[];
-  symptoms: string[];
-  coping: string[];
-  effectiveness: number; // 0.0-1.0
-  lastObserved: string; // ISO date
+  triggers: string[]
+  symptoms: string[]
+  coping: string[]
+  effectiveness: number // 0.0-1.0
+  lastObserved: string // ISO date
 }
 
 // ============================================
@@ -359,16 +373,16 @@ export interface StressPattern {
 // ============================================
 
 export interface PersonalizedSection {
-  type: 'FORGETTING_CURVE' | 'LEARNING_STYLE' | 'STUDY_PATTERNS' | 'PERFORMANCE_TRENDS';
-  position: number; // Section position in article
-  dataSource?: string; // Which data to personalize with
+  type: 'FORGETTING_CURVE' | 'LEARNING_STYLE' | 'STUDY_PATTERNS' | 'PERFORMANCE_TRENDS'
+  position: number // Section position in article
+  dataSource?: string // Which data to personalize with
 }
 
 export interface ExternalLink {
-  title: string;
-  url: string;
-  description?: string;
-  credibilityScore?: number;
+  title: string
+  url: string
+  description?: string
+  credibilityScore?: number
 }
 
 // ============================================
@@ -377,25 +391,25 @@ export interface ExternalLink {
 
 export interface EventData {
   // Common fields
-  timestamp?: string;
-  source?: string;
+  timestamp?: string
+  source?: string
 
   // Mission events
-  missionId?: string;
-  objectivesCompleted?: number;
-  duration?: number;
+  missionId?: string
+  objectivesCompleted?: number
+  duration?: number
 
   // Card review events
-  cardId?: string;
-  rating?: string;
-  timeSpent?: number;
+  cardId?: string
+  rating?: string
+  timeSpent?: number
 
   // Session events
-  sessionId?: string;
-  cardsReviewed?: number;
+  sessionId?: string
+  cardsReviewed?: number
 
   // Additional dynamic fields
-  [key: string]: unknown;
+  [key: string]: unknown
 }
 
 // ============================================
@@ -410,15 +424,15 @@ export function isMissionObjective(obj: unknown): obj is MissionObjective {
     'objective' in obj &&
     'cardCount' in obj &&
     'estimatedMinutes' in obj
-  );
+  )
 }
 
 export function isFeatureVector(obj: unknown): obj is FeatureVector {
-  if (typeof obj !== 'object' || obj === null) return false;
+  if (typeof obj !== 'object' || obj === null) return false
 
   // At least some numeric features should exist
-  const values = Object.values(obj);
-  return values.some(v => typeof v === 'number');
+  const values = Object.values(obj)
+  return values.some((v) => typeof v === 'number')
 }
 
 export function isLearningStyleProfile(obj: unknown): obj is LearningStyleProfile {
@@ -429,7 +443,7 @@ export function isLearningStyleProfile(obj: unknown): obj is LearningStyleProfil
     'auditory' in obj &&
     'reading' in obj &&
     'kinesthetic' in obj
-  );
+  )
 }
 
 // ============================================
@@ -441,24 +455,24 @@ export function isLearningStyleProfile(obj: unknown): obj is LearningStyleProfil
  */
 export function parseJsonField<T>(json: unknown, defaultValue: T): T {
   if (json === null || json === undefined) {
-    return defaultValue;
+    return defaultValue
   }
 
   // Prisma returns JSON fields as objects, not strings
   if (typeof json === 'object') {
-    return json as T;
+    return json as T
   }
 
   // Fallback for string JSON (shouldn't happen with Prisma)
   if (typeof json === 'string') {
     try {
-      return JSON.parse(json) as T;
+      return JSON.parse(json) as T
     } catch {
-      return defaultValue;
+      return defaultValue
     }
   }
 
-  return defaultValue;
+  return defaultValue
 }
 
 /**
@@ -466,5 +480,5 @@ export function parseJsonField<T>(json: unknown, defaultValue: T): T {
  */
 export function stringifyJsonField<T>(value: T): T {
   // Prisma accepts objects directly for JSON fields
-  return value;
+  return value
 }

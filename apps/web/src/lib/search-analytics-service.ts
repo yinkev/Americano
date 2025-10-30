@@ -12,8 +12,8 @@
  * @module SearchAnalyticsService
  */
 
-import { prisma } from '@/lib/db'
 import { Prisma } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 /**
  * Log a search query for analytics
@@ -91,7 +91,7 @@ export async function trackSearchClick(params: {
 export async function getPopularSearches(
   userId?: string,
   limit: number = 10,
-  timeWindowDays: number = 30
+  timeWindowDays: number = 30,
 ): Promise<Array<{ query: string; count: number; avgResults: number }>> {
   try {
     const since = new Date()
@@ -138,7 +138,7 @@ export async function getPopularSearches(
 export async function getZeroResultQueries(
   userId?: string,
   limit: number = 10,
-  timeWindowDays: number = 30
+  timeWindowDays: number = 30,
 ): Promise<Array<{ query: string; count: number; lastSearched: Date }>> {
   try {
     const since = new Date()
@@ -182,7 +182,7 @@ export async function getZeroResultQueries(
  */
 export async function getClickThroughRateAnalytics(
   userId?: string,
-  timeWindowDays: number = 30
+  timeWindowDays: number = 30,
 ): Promise<{
   overallCTR: number
   byPosition: Array<{ position: number; ctr: number; clicks: number }>
@@ -260,7 +260,7 @@ export async function getClickThroughRateAnalytics(
  */
 export async function getSearchPerformanceMetrics(
   userId?: string,
-  timeWindowDays: number = 30
+  timeWindowDays: number = 30,
 ): Promise<{
   avgResponseTimeMs: number
   avgResultsPerQuery: number
@@ -335,7 +335,7 @@ export async function getSearchPerformanceMetrics(
  */
 export async function getSearchSuggestions(
   userId: string,
-  limit: number = 5
+  limit: number = 5,
 ): Promise<Array<{ query: string; frequency: number; lastSearched: Date }>> {
   try {
     // Get most frequently searched queries by this user
@@ -374,9 +374,7 @@ export async function getSearchSuggestions(
  * @param daysOld - Queries older than this will be anonymized (default: 90)
  * @returns Number of queries anonymized
  */
-export async function anonymizeOldSearchQueries(
-  daysOld: number = 90
-): Promise<number> {
+export async function anonymizeOldSearchQueries(daysOld: number = 90): Promise<number> {
   try {
     const cutoffDate = new Date()
     cutoffDate.setDate(cutoffDate.getDate() - daysOld)
@@ -410,7 +408,7 @@ export async function anonymizeOldSearchQueries(
  * @returns Object with counts of deleted queries and clicks
  */
 export async function deleteAnonymizedSearchData(
-  daysAfterAnonymization: number = 90
+  daysAfterAnonymization: number = 90,
 ): Promise<{ queriesDeleted: number; clicksDeleted: number }> {
   try {
     const cutoffDate = new Date()
@@ -435,7 +433,7 @@ export async function deleteAnonymizedSearchData(
     })
 
     console.log(
-      `Deleted ${queriesDeleted.count} anonymized queries and ${clicksDeleted.count} clicks`
+      `Deleted ${queriesDeleted.count} anonymized queries and ${clicksDeleted.count} clicks`,
     )
 
     return {
@@ -458,7 +456,7 @@ export async function deleteAnonymizedSearchData(
  */
 export async function getSearchAnalyticsSummary(
   userId?: string,
-  timeWindowDays: number = 30
+  timeWindowDays: number = 30,
 ): Promise<{
   popularSearches: Array<{ query: string; count: number; avgResults: number }>
   zeroResultQueries: Array<{ query: string; count: number; lastSearched: Date }>
@@ -475,13 +473,12 @@ export async function getSearchAnalyticsSummary(
     p95ResponseTimeMs: number | null
   }
 }> {
-  const [popularSearches, zeroResultQueries, ctrAnalytics, performanceMetrics] =
-    await Promise.all([
-      getPopularSearches(userId, 10, timeWindowDays),
-      getZeroResultQueries(userId, 10, timeWindowDays),
-      getClickThroughRateAnalytics(userId, timeWindowDays),
-      getSearchPerformanceMetrics(userId, timeWindowDays),
-    ])
+  const [popularSearches, zeroResultQueries, ctrAnalytics, performanceMetrics] = await Promise.all([
+    getPopularSearches(userId, 10, timeWindowDays),
+    getZeroResultQueries(userId, 10, timeWindowDays),
+    getClickThroughRateAnalytics(userId, timeWindowDays),
+    getSearchPerformanceMetrics(userId, timeWindowDays),
+  ])
 
   return {
     popularSearches,
@@ -501,7 +498,7 @@ export async function getSearchAnalyticsSummary(
  */
 export async function getSearchVolumeOverTime(
   userId?: string,
-  period: '7d' | '30d' | '90d' = '30d'
+  period: '7d' | '30d' | '90d' = '30d',
 ): Promise<Array<{ date: string; count: number; avgResponseTimeMs: number }>> {
   try {
     const days = parseInt(period) // 7, 30, or 90
@@ -545,7 +542,7 @@ export async function getSearchVolumeOverTime(
  */
 export async function getSearchesByContentType(
   userId?: string,
-  timeWindowDays: number = 30
+  timeWindowDays: number = 30,
 ): Promise<Array<{ contentType: string; count: number; percentage: number }>> {
   try {
     const since = new Date()
@@ -565,9 +562,7 @@ export async function getSearchesByContentType(
     }
 
     // Get searches by content type from SearchClick data
-    const results = await prisma.$queryRaw<
-      Array<{ resultType: string; count: bigint }>
-    >`
+    const results = await prisma.$queryRaw<Array<{ resultType: string; count: bigint }>>`
       SELECT
         sc."resultType" as "resultType",
         COUNT(*) as count
@@ -606,7 +601,7 @@ export async function getSearchesByContentType(
 export async function getContentGaps(
   userId?: string,
   timeWindowDays: number = 30,
-  limit: number = 20
+  limit: number = 20,
 ): Promise<
   Array<{
     query: string
@@ -678,7 +673,7 @@ export async function getContentGaps(
 export async function getTopQueriesByCTR(
   userId?: string,
   timeWindowDays: number = 30,
-  limit: number = 20
+  limit: number = 20,
 ): Promise<
   Array<{
     query: string
@@ -746,7 +741,7 @@ export async function getTopQueriesByCTR(
  */
 export async function getDashboardAnalytics(
   userId?: string,
-  period: '7d' | '30d' | '90d' = '30d'
+  period: '7d' | '30d' | '90d' = '30d',
 ): Promise<{
   summary: {
     totalSearches: number

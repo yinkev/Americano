@@ -1,8 +1,8 @@
 'use client'
 
-import React from 'react'
-import { motion } from 'motion/react'
 import { Check, Target } from 'lucide-react'
+import { motion } from 'motion/react'
+import React from 'react'
 
 /**
  * Goal Progress Component with Milestone Markers
@@ -48,14 +48,15 @@ export function GoalProgress({
   const percentage = Math.min((current / goal) * 100, 100)
 
   // Auto-generate milestones if not provided
-  const defaultMilestones: Milestone[] = milestones.length > 0
-    ? milestones
-    : [
-        { percentage: 25, label: '25%', reached: percentage >= 25 },
-        { percentage: 50, label: '50%', reached: percentage >= 50 },
-        { percentage: 75, label: '75%', reached: percentage >= 75 },
-        { percentage: 100, label: 'Goal!', reached: percentage >= 100 },
-      ]
+  const defaultMilestones: Milestone[] =
+    milestones.length > 0
+      ? milestones
+      : [
+          { percentage: 25, label: '25%', reached: percentage >= 25 },
+          { percentage: 50, label: '50%', reached: percentage >= 50 },
+          { percentage: 75, label: '75%', reached: percentage >= 75 },
+          { percentage: 100, label: 'Goal!', reached: percentage >= 100 },
+        ]
 
   // Determine progress bar color based on proximity to goal
   const getProgressColor = () => {
@@ -103,9 +104,7 @@ export function GoalProgress({
               {/* Marker dot */}
               <motion.div
                 className={`w-2 h-2 rounded-full border-2 ${
-                  milestone.reached
-                    ? 'bg-white shadow-md'
-                    : 'bg-muted'
+                  milestone.reached ? 'bg-white shadow-md' : 'bg-muted'
                 }`}
                 style={{
                   borderColor: milestone.reached ? getProgressColor() : 'var(--muted)',

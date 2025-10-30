@@ -7,11 +7,11 @@
  * Interactive list of prioritized learning objectives
  */
 
+import { BookOpen, Clock, Info, TrendingUp } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { Clock, BookOpen, TrendingUp, Info } from 'lucide-react'
 
 interface PriorityObjective {
   id: string

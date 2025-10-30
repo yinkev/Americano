@@ -3,25 +3,25 @@
  * Individual recommendation card with view/dismiss/rate actions
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
 
 export interface RecommendationCardProps {
-  id: string;
+  id: string
   content: {
-    title: string;
-    type: string;
-    pageNumber?: number;
-    lectureTitle?: string;
-    preview: string;
-  };
-  score: number;
-  reasoning: string;
-  source: string;
-  onView: (id: string) => void;
-  onDismiss: (id: string) => void;
-  onRate: (id: string, rating: number) => void;
+    title: string
+    type: string
+    pageNumber?: number
+    lectureTitle?: string
+    preview: string
+  }
+  score: number
+  reasoning: string
+  source: string
+  onView: (id: string) => void
+  onDismiss: (id: string) => void
+  onRate: (id: string, rating: number) => void
 }
 
 export function RecommendationCard({
@@ -34,28 +34,28 @@ export function RecommendationCard({
   onDismiss,
   onRate,
 }: RecommendationCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(false);
-  const [userRating, setUserRating] = useState<number | null>(null);
+  const [isHovered, setIsHovered] = useState(false)
+  const [isDismissed, setIsDismissed] = useState(false)
+  const [userRating, setUserRating] = useState<number | null>(null)
 
   const handleView = () => {
-    onView(id);
-  };
+    onView(id)
+  }
 
   const handleDismiss = () => {
-    setIsDismissed(true);
+    setIsDismissed(true)
     setTimeout(() => {
-      onDismiss(id);
-    }, 300);
-  };
+      onDismiss(id)
+    }, 300)
+  }
 
   const handleRate = (rating: number) => {
-    setUserRating(rating);
-    onRate(id, rating);
-  };
+    setUserRating(rating)
+    onRate(id, rating)
+  }
 
   if (isDismissed) {
-    return null;
+    return null
   }
 
   const sourceColorMap: Record<string, string> = {
@@ -64,9 +64,9 @@ export function RecommendationCard({
     CONCEPT_NOTE: 'oklch(0.7 0.15 50)',
     EXTERNAL_ARTICLE: 'oklch(0.7 0.15 300)',
     USER_NOTE: 'oklch(0.7 0.15 180)',
-  };
+  }
 
-  const sourceColor = sourceColorMap[source] || 'oklch(0.7 0.15 200)';
+  const sourceColor = sourceColorMap[source] || 'oklch(0.7 0.15 200)'
 
   return (
     <div
@@ -113,15 +113,18 @@ export function RecommendationCard({
           aria-label="Dismiss recommendation"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
 
       {/* Reasoning */}
-      <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-3">
-        {reasoning}
-      </p>
+      <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-3">{reasoning}</p>
 
       {/* Actions */}
       <div className="flex items-center justify-between">
@@ -138,9 +141,7 @@ export function RecommendationCard({
 
         {/* Rating buttons */}
         <div className="flex items-center gap-1">
-          <span className="text-xs text-neutral-500 dark:text-neutral-400 mr-1">
-            Helpful?
-          </span>
+          <span className="text-xs text-neutral-500 dark:text-neutral-400 mr-1">Helpful?</span>
           <button
             onClick={() => handleRate(5)}
             className={`p-1 rounded transition-colors ${
@@ -170,5 +171,5 @@ export function RecommendationCard({
         </div>
       </div>
     </div>
-  );
+  )
 }

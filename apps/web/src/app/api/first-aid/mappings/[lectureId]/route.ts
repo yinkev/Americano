@@ -5,15 +5,15 @@
  * AC#3: Caching layer to avoid re-fetching First Aid references on scroll
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
-import { firstAidCache, type ConceptReference } from '@/lib/first-aid-cache'
+import { type ConceptReference, firstAidCache } from '@/lib/first-aid-cache'
 
 const prisma = new PrismaClient()
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ lectureId: string }> }
+  { params }: { params: Promise<{ lectureId: string }> },
 ) {
   try {
     const { lectureId } = await params
@@ -55,7 +55,7 @@ export async function GET(
 
       // Transform cached references back to API response format
       return NextResponse.json({
-        mappings: cachedReferences.map(ref => ({
+        mappings: cachedReferences.map((ref) => ({
           id: ref.id,
           confidence: ref.confidence,
           priority: ref.priority,
@@ -75,13 +75,15 @@ export async function GET(
           userFeedback: null,
         })),
         confidence: calculateConfidenceLevel(cachedReferences),
-        priority: cachedReferences.some(r => r.priority === 'HIGH_YIELD') ? 'high_yield' : 'standard',
+        priority: cachedReferences.some((r) => r.priority === 'HIGH_YIELD')
+          ? 'high_yield'
+          : 'standard',
         summary: {
           totalMappings: cachedReferences.length,
           avgConfidence: (
             cachedReferences.reduce((sum, r) => sum + r.confidence, 0) / cachedReferences.length
           ).toFixed(3),
-          highYieldCount: cachedReferences.filter(r => r.priority === 'HIGH_YIELD').length,
+          highYieldCount: cachedReferences.filter((r) => r.priority === 'HIGH_YIELD').length,
         },
         cached: true,
         cacheHitTime: cacheHitTime.toFixed(2),
@@ -116,9 +118,7 @@ export async function GET(
 
     // Calculate overall confidence level
     const avgConfidence =
-      mappings.length > 0
-        ? mappings.reduce((sum, m) => sum + m.confidence, 0) / mappings.length
-        : 0
+      mappings.length > 0 ? mappings.reduce((sum, m) => sum + m.confidence, 0) / mappings.length : 0
 
     const confidenceLevel: 'high' | 'medium' | 'low' =
       avgConfidence >= 0.75 ? 'high' : avgConfidence >= 0.65 ? 'medium' : 'low'
@@ -126,7 +126,7 @@ export async function GET(
     const dbFetchTime = performance.now() - dbStartTime
 
     // Transform to ConceptReference format for caching
-    const conceptReferences: ConceptReference[] = mappings.map(m => ({
+    const conceptReferences: ConceptReference[] = mappings.map((m) => ({
       id: m.id,
       firstAidSectionId: m.firstAidSection.id,
       edition: m.firstAidSection.edition,
@@ -152,13 +152,15 @@ export async function GET(
       edition: conceptReferences[0]?.edition,
     })
 
-    console.log(`✓ Cached ${conceptReferences.length} references for ${cacheKey} (DB: ${dbFetchTime.toFixed(2)}ms)`)
+    console.log(
+      `✓ Cached ${conceptReferences.length} references for ${cacheKey} (DB: ${dbFetchTime.toFixed(2)}ms)`,
+    )
 
     // Determine if this lecture has high-yield content
-    const hasHighYield = mappings.some(m => m.priority === 'HIGH_YIELD')
+    const hasHighYield = mappings.some((m) => m.priority === 'HIGH_YIELD')
 
     return NextResponse.json({
-      mappings: mappings.map(m => ({
+      mappings: mappings.map((m) => ({
         id: m.id,
         confidence: m.confidence,
         priority: m.priority,
@@ -171,7 +173,7 @@ export async function GET(
       summary: {
         totalMappings: mappings.length,
         avgConfidence: avgConfidence.toFixed(3),
-        highYieldCount: mappings.filter(m => m.priority === 'HIGH_YIELD').length,
+        highYieldCount: mappings.filter((m) => m.priority === 'HIGH_YIELD').length,
       },
       cached: false,
       dbFetchTime: dbFetchTime.toFixed(2),
@@ -183,7 +185,7 @@ export async function GET(
         error: 'Failed to fetch mappings',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -194,8 +196,7 @@ export async function GET(
 function calculateConfidenceLevel(references: ConceptReference[]): 'high' | 'medium' | 'low' {
   if (references.length === 0) return 'low'
 
-  const avgConfidence =
-    references.reduce((sum, r) => sum + r.confidence, 0) / references.length
+  const avgConfidence = references.reduce((sum, r) => sum + r.confidence, 0) / references.length
 
   return avgConfidence >= 0.75 ? 'high' : avgConfidence >= 0.65 ? 'medium' : 'low'
 }

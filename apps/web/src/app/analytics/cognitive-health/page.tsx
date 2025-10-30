@@ -11,11 +11,11 @@
  * Real-time updates: Load meter refreshes every 5 minutes during active session
  */
 
+import { Activity, Brain, TrendingUp } from 'lucide-react'
 import { Suspense } from 'react'
-import { Brain, TrendingUp, Activity } from 'lucide-react'
-import { CognitiveHealthDashboard } from './cognitive-health-dashboard'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import { CognitiveHealthDashboard } from './cognitive-health-dashboard'
 
 // Loading skeleton components - Epic 5 design with glassmorphism
 function LoadMeterSkeleton() {
@@ -127,7 +127,9 @@ export default function CognitiveHealthPage() {
             <div className="flex items-center gap-3 p-4 rounded-xl bg-white/80 backdrop-blur-md shadow-sm border border-white/30">
               <Brain className="size-5 shrink-0" style={{ color: 'oklch(0.65 0.18 350)' }} />
               <div className="flex-1 min-w-0">
-                <div className="text-[11px] text-muted-foreground font-medium">Real-time Updates</div>
+                <div className="text-[11px] text-muted-foreground font-medium">
+                  Real-time Updates
+                </div>
                 <div className="text-[13px] font-semibold text-foreground truncate">
                   Refreshes every 30 seconds
                 </div>
@@ -168,10 +170,7 @@ export default function CognitiveHealthPage() {
             borderColor: 'oklch(0.65 0.18 240 / 0.2)',
           }}
         >
-          <h3
-            className="text-[13px] font-semibold mb-2"
-            style={{ color: 'oklch(0.65 0.18 240)' }}
-          >
+          <h3 className="text-[13px] font-semibold mb-2" style={{ color: 'oklch(0.65 0.18 240)' }}>
             About Cognitive Load Monitoring
           </h3>
           <p className="text-[13px] text-muted-foreground leading-relaxed">

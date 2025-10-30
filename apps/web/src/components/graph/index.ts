@@ -6,11 +6,9 @@
  * Centralized exports for all graph visualization components
  */
 
-export { default as KnowledgeGraph } from './knowledge-graph'
-export type { GraphNode, GraphEdge, KnowledgeGraphProps } from './knowledge-graph'
-
-export { default as ConceptNode } from './concept-node'
 export type { ConceptNodeData, ConceptNodeType } from './concept-node'
-
-export { default as RelationshipEdge, prerequisiteMarker } from './relationship-edge'
+export { default as ConceptNode } from './concept-node'
+export type { GraphEdge, GraphNode, KnowledgeGraphProps } from './knowledge-graph'
+export { default as KnowledgeGraph } from './knowledge-graph'
 export type { RelationshipEdgeData, RelationshipEdgeType } from './relationship-edge'
+export { default as RelationshipEdge, prerequisiteMarker } from './relationship-edge'

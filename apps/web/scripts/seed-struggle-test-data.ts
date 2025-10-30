@@ -11,20 +11,20 @@
  * - Expected prediction: HIGH struggle probability (>0.7) due to prerequisite gap
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { addDays, addHours, startOfDay, subDays } from 'date-fns'
 import {
-  ProcessingStatus,
-  ObjectiveComplexity,
-  MasteryLevel,
-  ReviewRating,
-  MissionStatus,
-  EventType,
-  EngagementLevel,
-  CompletionQuality,
   BehavioralPatternType,
+  CompletionQuality,
+  EngagementLevel,
+  EventType,
   InsightType,
+  MasteryLevel,
+  MissionStatus,
+  ObjectiveComplexity,
+  PrismaClient,
+  ProcessingStatus,
+  ReviewRating,
 } from '@/generated/prisma'
-import { subDays, addDays, addHours, startOfDay } from 'date-fns'
 
 const prisma = new PrismaClient()
 

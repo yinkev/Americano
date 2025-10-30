@@ -1,107 +1,107 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { Card } from '@/components/ui/card';
 import {
-  LineChart,
-  Line,
-  ScatterChart,
-  Scatter,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  ReferenceLine,
-  Cell,
-  Label,
-} from 'recharts';
-import {
+  Award,
+  CheckCircle2,
+  CircleDot,
+  Clock,
+  Filter,
+  Lightbulb,
   Target,
   TrendingUp,
-  Zap,
-  Award,
-  Clock,
-  CheckCircle2,
   XCircle,
-  CircleDot,
-  Lightbulb,
-  Filter,
-} from 'lucide-react';
+  Zap,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Label,
+  Legend,
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
+import { Card } from '@/components/ui/card'
 
 /**
  * Difficulty trajectory point for line chart
  */
 interface DifficultyPoint {
-  questionNumber: number;
-  difficulty: number;
-  score: number;
+  questionNumber: number
+  difficulty: number
+  score: number
 }
 
 /**
  * Score vs Difficulty point for scatter plot
  */
 interface PerformancePoint {
-  difficulty: number;
-  score: number;
-  conceptName: string;
-  date: string;
+  difficulty: number
+  score: number
+  conceptName: string
+  date: string
 }
 
 /**
  * IRT estimate data
  */
 interface IrtEstimate {
-  theta: number; // Knowledge estimate (-3 to +3 scale, converted to 0-100 for display)
-  confidenceInterval: number; // ±X points at 95% confidence
-  iterations: number;
+  theta: number // Knowledge estimate (-3 to +3 scale, converted to 0-100 for display)
+  confidenceInterval: number // ±X points at 95% confidence
+  iterations: number
 }
 
 /**
  * Mastery progress criteria
  */
 interface MasteryCriteria {
-  id: string;
-  label: string;
-  description: string;
-  completed: boolean;
+  id: string
+  label: string
+  description: string
+  completed: boolean
 }
 
 /**
  * Session history entry
  */
 interface SessionHistoryEntry {
-  id: string;
-  questionNumber: number;
-  conceptName: string;
-  difficulty: number;
-  score: number;
-  timeSpent: number; // seconds
-  date: string;
+  id: string
+  questionNumber: number
+  conceptName: string
+  difficulty: number
+  score: number
+  timeSpent: number // seconds
+  date: string
 }
 
 /**
  * Efficiency metrics
  */
 interface EfficiencyMetrics {
-  questionsAsked: number;
-  baselineQuestions: number;
-  questionsSaved: number;
-  efficiencyPercentage: number;
-  timeSavedMinutes: number;
+  questionsAsked: number
+  baselineQuestions: number
+  questionsSaved: number
+  efficiencyPercentage: number
+  timeSavedMinutes: number
 }
 
 /**
  * Skill tree level
  */
 interface SkillLevel {
-  level: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
-  progress: number; // 0-100
-  mastered: boolean;
-  unlocked: boolean;
+  level: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
+  progress: number // 0-100
+  mastered: boolean
+  unlocked: boolean
 }
 
 /**
@@ -122,66 +122,66 @@ interface SkillLevel {
  * @see Story 4.5 AC#7 (Assessment Efficiency Optimization)
  */
 export default function AdaptiveQuestioningDashboardPage() {
-  const [difficultyTrajectory, setDifficultyTrajectory] = useState<DifficultyPoint[]>([]);
-  const [performanceData, setPerformanceData] = useState<PerformancePoint[]>([]);
-  const [irtEstimate, setIrtEstimate] = useState<IrtEstimate | null>(null);
-  const [masteryCriteria, setMasteryCriteria] = useState<MasteryCriteria[]>([]);
-  const [sessionHistory, setSessionHistory] = useState<SessionHistoryEntry[]>([]);
-  const [efficiencyMetrics, setEfficiencyMetrics] = useState<EfficiencyMetrics | null>(null);
-  const [skillTree, setSkillTree] = useState<SkillLevel[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [dateRange, setDateRange] = useState<'7days' | '30days' | '90days'>('30days');
-  const [showFilters, setShowFilters] = useState(false);
+  const [difficultyTrajectory, setDifficultyTrajectory] = useState<DifficultyPoint[]>([])
+  const [performanceData, setPerformanceData] = useState<PerformancePoint[]>([])
+  const [irtEstimate, setIrtEstimate] = useState<IrtEstimate | null>(null)
+  const [masteryCriteria, setMasteryCriteria] = useState<MasteryCriteria[]>([])
+  const [sessionHistory, setSessionHistory] = useState<SessionHistoryEntry[]>([])
+  const [efficiencyMetrics, setEfficiencyMetrics] = useState<EfficiencyMetrics | null>(null)
+  const [skillTree, setSkillTree] = useState<SkillLevel[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [dateRange, setDateRange] = useState<'7days' | '30days' | '90days'>('30days')
+  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
-    fetchAnalyticsData();
-  }, [dateRange]);
+    fetchAnalyticsData()
+  }, [dateRange])
 
   const fetchAnalyticsData = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
-      const response = await fetch(`/api/adaptive/analytics?dateRange=${dateRange}`);
+      const response = await fetch(`/api/adaptive/analytics?dateRange=${dateRange}`)
       if (!response.ok) {
-        throw new Error('Failed to fetch analytics data');
+        throw new Error('Failed to fetch analytics data')
       }
-      const result = await response.json();
-      const data = result.data;
+      const result = await response.json()
+      const data = result.data
 
-      setDifficultyTrajectory(data.difficultyTrajectory || []);
-      setPerformanceData(data.performanceData || []);
-      setIrtEstimate(data.irtEstimate || null);
-      setMasteryCriteria(data.masteryCriteria || []);
-      setSessionHistory(data.sessionHistory || []);
-      setEfficiencyMetrics(data.efficiencyMetrics || null);
-      setSkillTree(data.skillTree || []);
+      setDifficultyTrajectory(data.difficultyTrajectory || [])
+      setPerformanceData(data.performanceData || [])
+      setIrtEstimate(data.irtEstimate || null)
+      setMasteryCriteria(data.masteryCriteria || [])
+      setSessionHistory(data.sessionHistory || [])
+      setEfficiencyMetrics(data.efficiencyMetrics || null)
+      setSkillTree(data.skillTree || [])
     } catch (error) {
-      console.error('Error fetching analytics data:', error);
+      console.error('Error fetching analytics data:', error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Convert IRT theta (-3 to +3) to 0-100 scale for display
   const thetaToDisplay = (theta: number) => {
-    return Math.round(((theta + 3) / 6) * 100);
-  };
+    return Math.round(((theta + 3) / 6) * 100)
+  }
 
   // Format time in seconds to MM:SS
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
 
   // Determine difficulty color
   const getDifficultyColor = (difficulty: number) => {
-    if (difficulty < 40) return 'oklch(0.7 0.15 145)'; // Green (Low)
-    if (difficulty < 70) return 'oklch(0.75 0.12 85)'; // Yellow (Medium)
-    return 'oklch(0.65 0.20 25)'; // Red (High)
-  };
+    if (difficulty < 40) return 'oklch(0.7 0.15 145)' // Green (Low)
+    if (difficulty < 70) return 'oklch(0.75 0.12 85)' // Yellow (Medium)
+    return 'oklch(0.65 0.20 25)' // Red (High)
+  }
 
   // Completed criteria count
-  const completedCount = masteryCriteria.filter((c) => c.completed).length;
+  const completedCount = masteryCriteria.filter((c) => c.completed).length
 
   if (isLoading) {
     return (
@@ -193,7 +193,7 @@ export default function AdaptiveQuestioningDashboardPage() {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -327,13 +327,12 @@ export default function AdaptiveQuestioningDashboardPage() {
             Difficulty Progression Over Questions
           </h2>
           <ResponsiveContainer width="100%" height={350}>
-            <LineChart data={difficultyTrajectory} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+            <LineChart
+              data={difficultyTrajectory}
+              margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+            >
               <CartesianGrid stroke="oklch(0.9 0.02 240)" strokeDasharray="5 5" />
-              <XAxis
-                dataKey="questionNumber"
-                stroke="#666"
-                tick={{ fill: '#666', fontSize: 12 }}
-              >
+              <XAxis dataKey="questionNumber" stroke="#666" tick={{ fill: '#666', fontSize: 12 }}>
                 <Label
                   value="Question Number"
                   position="insideBottom"
@@ -341,11 +340,7 @@ export default function AdaptiveQuestioningDashboardPage() {
                   style={{ fill: '#666', fontSize: 14 }}
                 />
               </XAxis>
-              <YAxis
-                domain={[0, 100]}
-                stroke="#666"
-                tick={{ fill: '#666', fontSize: 12 }}
-              >
+              <YAxis domain={[0, 100]} stroke="#666" tick={{ fill: '#666', fontSize: 12 }}>
                 <Label
                   value="Difficulty Level"
                   angle={-90}
@@ -429,7 +424,7 @@ export default function AdaptiveQuestioningDashboardPage() {
                 cursor={{ strokeDasharray: '3 3' }}
                 content={({ active, payload }) => {
                   if (active && payload && payload.length > 0) {
-                    const data = payload[0].payload as PerformancePoint;
+                    const data = payload[0].payload as PerformancePoint
                     return (
                       <div className="bg-white/95 backdrop-blur-xl border border-white/30 shadow-lg p-3 rounded-lg">
                         <p className="font-semibold text-sm mb-1">{data.conceptName}</p>
@@ -438,9 +433,9 @@ export default function AdaptiveQuestioningDashboardPage() {
                         </p>
                         <p className="text-xs text-muted-foreground">{data.date}</p>
                       </div>
-                    );
+                    )
                   }
-                  return null;
+                  return null
                 }}
               />
               {/* Target zone highlighting (60-80% score) */}
@@ -449,7 +444,12 @@ export default function AdaptiveQuestioningDashboardPage() {
                 stroke="oklch(0.7 0.15 145)"
                 strokeDasharray="3 3"
                 strokeWidth={2}
-                label={{ value: 'Target Zone (60-80%)', position: 'insideTopRight', fill: 'oklch(0.7 0.15 145)', fontSize: 11 }}
+                label={{
+                  value: 'Target Zone (60-80%)',
+                  position: 'insideTopRight',
+                  fill: 'oklch(0.7 0.15 145)',
+                  fontSize: 11,
+                }}
               />
               <ReferenceLine
                 y={80}
@@ -457,11 +457,7 @@ export default function AdaptiveQuestioningDashboardPage() {
                 strokeDasharray="3 3"
                 strokeWidth={2}
               />
-              <Scatter
-                name="Assessments"
-                data={performanceData}
-                fill="oklch(0.55 0.22 264)"
-              />
+              <Scatter name="Assessments" data={performanceData} fill="oklch(0.55 0.22 264)" />
             </ScatterChart>
           </ResponsiveContainer>
           <p className="text-sm text-muted-foreground mt-4 text-center">
@@ -510,9 +506,7 @@ export default function AdaptiveQuestioningDashboardPage() {
                   )}
                   <div className="flex-1">
                     <p className="font-medium text-sm text-gray-900">{criterion.label}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {criterion.description}
-                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">{criterion.description}</p>
                   </div>
                 </div>
               ))
@@ -571,13 +565,13 @@ export default function AdaptiveQuestioningDashboardPage() {
                         backgroundColor: level.mastered
                           ? 'oklch(0.8 0.15 60)'
                           : level.unlocked
-                          ? 'oklch(0.95 0.05 264)'
-                          : 'oklch(0.95 0.02 240)',
+                            ? 'oklch(0.95 0.05 264)'
+                            : 'oklch(0.95 0.02 240)',
                         borderColor: level.mastered
                           ? 'oklch(0.8 0.15 60)'
                           : level.unlocked
-                          ? 'oklch(0.55 0.22 264)'
-                          : 'oklch(0.85 0.05 240)',
+                            ? 'oklch(0.55 0.22 264)'
+                            : 'oklch(0.85 0.05 240)',
                       }}
                     >
                       {level.mastered ? (
@@ -625,7 +619,9 @@ export default function AdaptiveQuestioningDashboardPage() {
                               }}
                             />
                           </div>
-                          <p className="text-xs text-muted-foreground">{level.progress}% complete</p>
+                          <p className="text-xs text-muted-foreground">
+                            {level.progress}% complete
+                          </p>
                         </div>
                       )}
 
@@ -652,10 +648,18 @@ export default function AdaptiveQuestioningDashboardPage() {
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">Q#</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">Concept</th>
-                  <th className="text-center py-3 px-4 font-semibold text-sm text-gray-700">Difficulty</th>
-                  <th className="text-center py-3 px-4 font-semibold text-sm text-gray-700">Score</th>
-                  <th className="text-center py-3 px-4 font-semibold text-sm text-gray-700">Time</th>
+                  <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">
+                    Concept
+                  </th>
+                  <th className="text-center py-3 px-4 font-semibold text-sm text-gray-700">
+                    Difficulty
+                  </th>
+                  <th className="text-center py-3 px-4 font-semibold text-sm text-gray-700">
+                    Score
+                  </th>
+                  <th className="text-center py-3 px-4 font-semibold text-sm text-gray-700">
+                    Time
+                  </th>
                   <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">Date</th>
                 </tr>
               </thead>
@@ -738,7 +742,10 @@ export default function AdaptiveQuestioningDashboardPage() {
                   }}
                 >
                   <p className="text-sm text-muted-foreground mb-1">Questions Saved</p>
-                  <p className="text-3xl font-heading font-bold" style={{ color: 'oklch(0.7 0.15 145)' }}>
+                  <p
+                    className="text-3xl font-heading font-bold"
+                    style={{ color: 'oklch(0.7 0.15 145)' }}
+                  >
                     {efficiencyMetrics.questionsSaved}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -753,11 +760,15 @@ export default function AdaptiveQuestioningDashboardPage() {
                   }}
                 >
                   <p className="text-sm text-muted-foreground mb-1">Time Saved</p>
-                  <p className="text-3xl font-heading font-bold" style={{ color: 'oklch(0.55 0.22 264)' }}>
+                  <p
+                    className="text-3xl font-heading font-bold"
+                    style={{ color: 'oklch(0.55 0.22 264)' }}
+                  >
                     {efficiencyMetrics.timeSavedMinutes}m
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Assessed in {efficiencyMetrics.questionsAsked} questions vs {efficiencyMetrics.baselineQuestions}
+                    Assessed in {efficiencyMetrics.questionsAsked} questions vs{' '}
+                    {efficiencyMetrics.baselineQuestions}
                   </p>
                 </div>
               </div>
@@ -787,25 +798,29 @@ export default function AdaptiveQuestioningDashboardPage() {
               <li className="flex items-start gap-2">
                 <span style={{ color: 'oklch(0.68 0.16 280)' }}>•</span>
                 <span>
-                  <strong>Target zone (60-80%):</strong> Questions should challenge you without being overwhelming. This is your optimal learning zone.
+                  <strong>Target zone (60-80%):</strong> Questions should challenge you without
+                  being overwhelming. This is your optimal learning zone.
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <span style={{ color: 'oklch(0.68 0.16 280)' }}>•</span>
                 <span>
-                  <strong>Efficiency matters:</strong> The system adapts to assess your knowledge faster. Trust the process and embrace early stopping when confidence is high.
+                  <strong>Efficiency matters:</strong> The system adapts to assess your knowledge
+                  faster. Trust the process and embrace early stopping when confidence is high.
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <span style={{ color: 'oklch(0.68 0.16 280)' }}>•</span>
                 <span>
-                  <strong>Progress through complexity:</strong> Master BASIC concepts before INTERMEDIATE and ADVANCED unlock. Build a strong foundation.
+                  <strong>Progress through complexity:</strong> Master BASIC concepts before
+                  INTERMEDIATE and ADVANCED unlock. Build a strong foundation.
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <span style={{ color: 'oklch(0.68 0.16 280)' }}>•</span>
                 <span>
-                  <strong>Mastery requires consistency:</strong> All 5 criteria must be met, including time-spacing. This ensures durable learning, not cramming.
+                  <strong>Mastery requires consistency:</strong> All 5 criteria must be met,
+                  including time-spacing. This ensures durable learning, not cramming.
                 </span>
               </li>
             </ul>
@@ -813,5 +828,5 @@ export default function AdaptiveQuestioningDashboardPage() {
         </div>
       </Card>
     </div>
-  );
+  )
 }

@@ -11,22 +11,22 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Calendar, CheckCircle2, Target, TrendingDown } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import {
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
 } from 'recharts'
-import { TrendingDown, CheckCircle2, Target, Calendar } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { typography, colors } from '@/lib/design-tokens'
-import { chartTheme, chartColors } from '@/lib/chart-theme'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { chartColors, chartTheme } from '@/lib/chart-theme'
+import { colors, typography } from '@/lib/design-tokens'
 
 interface ReductionData {
   baselineRate: number
@@ -205,8 +205,16 @@ export function StruggleReductionMetrics() {
                 {...chartTheme.axis}
                 tick={{ fill: chartColors.text, fontSize: 13, fontWeight: 600 }}
               />
-              <Tooltip {...chartTheme.tooltip} formatter={(value: number) => `${value.toFixed(1)}%`} />
-              <Bar dataKey="rate" radius={[0, 8, 8, 0]} animationDuration={800} animationEasing="ease-out">
+              <Tooltip
+                {...chartTheme.tooltip}
+                formatter={(value: number) => `${value.toFixed(1)}%`}
+              />
+              <Bar
+                dataKey="rate"
+                radius={[0, 8, 8, 0]}
+                animationDuration={800}
+                animationEasing="ease-out"
+              >
                 {comparisonData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -281,7 +289,9 @@ export function StruggleReductionMetrics() {
           <div className="flex items-start gap-3 transition-all duration-200 hover:scale-[1.02]">
             <div
               className="p-2 rounded-lg"
-              style={{ backgroundColor: `color-mix(in oklch, ${colors.clinical}, transparent 90%)` }}
+              style={{
+                backgroundColor: `color-mix(in oklch, ${colors.clinical}, transparent 90%)`,
+              }}
             >
               <Target className="size-5" style={{ color: colors.clinical }} />
             </div>

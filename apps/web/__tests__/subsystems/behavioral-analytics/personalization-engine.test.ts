@@ -9,11 +9,11 @@
  * - Integration with Stories 5.1-5.4
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import type { PrismaClient } from '@/generated/prisma'
 import {
-  PersonalizationEngine,
   type AggregatedInsights,
   type PersonalizationConfig,
+  PersonalizationEngine,
 } from '@/subsystems/behavioral-analytics/personalization-engine'
 
 // Mock Prisma Client

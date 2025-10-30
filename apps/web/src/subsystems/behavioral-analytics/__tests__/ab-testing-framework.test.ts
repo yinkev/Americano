@@ -13,8 +13,8 @@
  * - Requirement enforcement (20 users/variant, 2 weeks)
  */
 
-import { ABTestingFramework } from '../ab-testing-framework'
 import type { ExperimentConfig, ExperimentMetrics } from '../ab-testing-framework'
+import { ABTestingFramework } from '../ab-testing-framework'
 
 // Mock Prisma
 jest.mock('@/lib/db', () => ({

@@ -13,9 +13,9 @@
  * Returns concepts and their relationships with optional filtering and pagination.
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { withErrorHandler } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
+import { errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 
 async function handler(request: NextRequest) {
@@ -55,8 +55,8 @@ async function handler(request: NextRequest) {
     })
 
     // Extract edges (relationships)
-    const edges = concepts.flatMap(concept => [
-      ...concept.relatedFrom.map(rel => ({
+    const edges = concepts.flatMap((concept) => [
+      ...concept.relatedFrom.map((rel) => ({
         id: rel.id,
         fromConceptId: rel.fromConceptId,
         toConceptId: rel.toConceptId,
@@ -67,7 +67,7 @@ async function handler(request: NextRequest) {
     ])
 
     // Format nodes
-    const nodes = concepts.map(c => ({
+    const nodes = concepts.map((c) => ({
       id: c.id,
       name: c.name,
       description: c.description,
@@ -86,14 +86,11 @@ async function handler(request: NextRequest) {
         offset,
         limit,
         hasMore,
-      })
+      }),
     )
   } catch (error) {
     console.error('Failed to fetch concepts:', error)
-    return Response.json(
-      errorResponse('FETCH_FAILED', 'Failed to fetch concepts'),
-      { status: 500 }
-    )
+    return Response.json(errorResponse('FETCH_FAILED', 'Failed to fetch concepts'), { status: 500 })
   }
 }
 

@@ -15,12 +15,12 @@
 
 'use client'
 
+import { Award, Link as LinkIcon, Network, TrendingUp } from 'lucide-react'
 import { useMemo } from 'react'
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
-import { Card } from '@/components/ui/card'
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { Badge } from '@/components/ui/badge'
-import { TrendingUp, Network, Link as LinkIcon, Award } from 'lucide-react'
-import type { GraphNode, GraphEdge } from './knowledge-graph'
+import { Card } from '@/components/ui/card'
+import type { GraphEdge, GraphNode } from './knowledge-graph'
 
 export interface GraphStatsProps {
   nodes: GraphNode[]
@@ -52,13 +52,12 @@ export default function GraphStats({ nodes, edges, className = '' }: GraphStatsP
   const stats = useMemo(() => {
     const totalConcepts = nodes.length
     const totalRelationships = edges.length
-    const avgRelationships =
-      totalConcepts > 0 ? (totalRelationships * 2) / totalConcepts : 0
+    const avgRelationships = totalConcepts > 0 ? (totalRelationships * 2) / totalConcepts : 0
 
     // Find most connected concept (hub node)
     const hubNode = nodes.reduce(
       (max, node) => (node.relationshipCount > (max?.relationshipCount ?? 0) ? node : max),
-      null as GraphNode | null
+      null as GraphNode | null,
     )
 
     // Calculate category distribution
@@ -152,12 +151,18 @@ export default function GraphStats({ nodes, edges, className = '' }: GraphStatsP
             }}
           >
             <div className="flex items-start gap-2">
-              <Award className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'oklch(0.6 0.15 50)' }} />
+              <Award
+                className="w-4 h-4 flex-shrink-0 mt-0.5"
+                style={{ color: 'oklch(0.6 0.15 50)' }}
+              />
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-medium mb-1" style={{ color: 'oklch(0.4 0.05 240)' }}>
                   Most Connected Concept
                 </div>
-                <div className="text-sm font-semibold truncate" style={{ color: 'oklch(0.2 0.05 240)' }}>
+                <div
+                  className="text-sm font-semibold truncate"
+                  style={{ color: 'oklch(0.2 0.05 240)' }}
+                >
                   {stats.hubNode.name}
                 </div>
                 <Badge

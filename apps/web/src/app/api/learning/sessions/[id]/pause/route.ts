@@ -1,7 +1,7 @@
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import type { NextRequest } from 'next/server'
+import { ApiError, withErrorHandler } from '@/lib/api-error'
 import { successResponse } from '@/lib/api-response'
-import { withErrorHandler, ApiError } from '@/lib/api-error'
+import { prisma } from '@/lib/db'
 
 // PATCH /api/learning/sessions/:id/pause - Pause a study session
 export const PATCH = withErrorHandler(

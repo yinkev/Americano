@@ -5,10 +5,10 @@
  * Tests real-time cognitive load monitoring endpoint
  */
 
-import { GET } from '@/app/api/analytics/cognitive-load/current/route'
 import { NextRequest } from 'next/server'
-import { PrismaClient } from '@/generated/prisma'
 import { mockCognitiveLoadMetric } from '@/__tests__/fixtures/cognitive-health'
+import { GET } from '@/app/api/analytics/cognitive-load/current/route'
+import { PrismaClient } from '@/generated/prisma'
 
 // Mock Prisma
 const mockPrisma = {

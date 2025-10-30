@@ -13,15 +13,15 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { format } from 'date-fns'
+import { Clock, RotateCcw, Settings, Sparkles, TrendingUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
-import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
-import { format } from 'date-fns'
-import { Settings, RotateCcw, Clock, Sparkles, TrendingUp } from 'lucide-react'
 
 interface UserProfile {
   id: string
@@ -186,7 +186,9 @@ export function MissionAdaptation() {
     return (
       <Card className="bg-white border shadow-sm rounded-lg">
         <CardHeader className="p-4">
-          <CardTitle className="text-[20px] font-heading font-semibold tracking-tight">Mission Adaptation</CardTitle>
+          <CardTitle className="text-[20px] font-heading font-semibold tracking-tight">
+            Mission Adaptation
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-4">
           <div className="animate-pulse space-y-4">
@@ -206,7 +208,10 @@ export function MissionAdaptation() {
     <Card className="bg-white border shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg">
       <CardHeader className="p-4">
         <div className="flex items-center gap-3">
-          <div className="rounded-full p-2" style={{ backgroundColor: 'oklch(0.7 0.15 280 / 0.1)' }}>
+          <div
+            className="rounded-full p-2"
+            style={{ backgroundColor: 'oklch(0.7 0.15 280 / 0.1)' }}
+          >
             <Settings className="size-5" style={{ color: 'oklch(0.7 0.15 280)' }} />
           </div>
           <div>
@@ -230,11 +235,7 @@ export function MissionAdaptation() {
               Automatically adjust based on completion patterns
             </p>
           </div>
-          <Switch
-            id="auto-adapt"
-            checked={autoAdapt}
-            onCheckedChange={setAutoAdapt}
-          />
+          <Switch id="auto-adapt" checked={autoAdapt} onCheckedChange={setAutoAdapt} />
         </div>
 
         {/* Manual Duration Override */}
@@ -245,7 +246,10 @@ export function MissionAdaptation() {
               Mission Duration
             </Label>
             {!autoAdapt && (
-              <span className="text-[11px] text-muted-foreground px-2 py-0.5 rounded-full" style={{ backgroundColor: 'oklch(0.97 0 0)' }}>
+              <span
+                className="text-[11px] text-muted-foreground px-2 py-0.5 rounded-full"
+                style={{ backgroundColor: 'oklch(0.97 0 0)' }}
+              >
                 Manual Override
               </span>
             )}
@@ -261,9 +265,7 @@ export function MissionAdaptation() {
               disabled={autoAdapt}
               className="flex-1"
             />
-            <span className="text-[13px] font-semibold w-20 text-right">
-              {manualDuration} min
-            </span>
+            <span className="text-[13px] font-semibold w-20 text-right">{manualDuration} min</span>
           </div>
           <p className="text-[11px] text-muted-foreground">
             {autoAdapt
@@ -280,7 +282,10 @@ export function MissionAdaptation() {
               Mission Difficulty
             </Label>
             {!autoAdapt && (
-              <span className="text-[11px] text-muted-foreground px-2 py-0.5 rounded-full" style={{ backgroundColor: 'oklch(0.97 0 0)' }}>
+              <span
+                className="text-[11px] text-muted-foreground px-2 py-0.5 rounded-full"
+                style={{ backgroundColor: 'oklch(0.97 0 0)' }}
+              >
                 Manual Override
               </span>
             )}
@@ -321,15 +326,19 @@ export function MissionAdaptation() {
               <Sparkles className="size-4 text-muted-foreground" />
               <Label className="text-[13px] font-medium">Recent Adaptation</Label>
             </div>
-            <div className="p-4 rounded-lg border" style={{ backgroundColor: 'oklch(0.97 0 0)', borderColor: 'oklch(0.9 0 0)' }}>
+            <div
+              className="p-4 rounded-lg border"
+              style={{ backgroundColor: 'oklch(0.97 0 0)', borderColor: 'oklch(0.9 0 0)' }}
+            >
               <div className="flex items-start gap-3">
-                <div className="rounded-full p-2 flex-shrink-0" style={{ backgroundColor: 'oklch(0.7 0.15 230 / 0.1)' }}>
+                <div
+                  className="rounded-full p-2 flex-shrink-0"
+                  style={{ backgroundColor: 'oklch(0.7 0.15 230 / 0.1)' }}
+                >
                   <RotateCcw className="size-4" style={{ color: 'oklch(0.7 0.15 230)' }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium mb-1">
-                    Settings adjusted automatically
-                  </p>
+                  <p className="text-[13px] font-medium mb-1">Settings adjusted automatically</p>
                   <p className="text-[11px] text-muted-foreground mb-2">
                     Based on your recent completion patterns
                   </p>

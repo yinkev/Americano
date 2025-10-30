@@ -8,7 +8,7 @@
  *   pnpm tsx scripts/test-first-aid-updater.ts --status
  */
 
-import { runFirstAidUpdateCheck, getFirstAidUpdater } from '../src/jobs/first-aid-updater'
+import { getFirstAidUpdater, runFirstAidUpdateCheck } from '../src/jobs/first-aid-updater'
 
 async function main() {
   const args = process.argv.slice(2)
@@ -42,7 +42,7 @@ async function main() {
 
       if (lastExecution.errors.length > 0) {
         console.log(`\n❌ Errors:`)
-        lastExecution.errors.forEach(error => console.log(`   - ${error}`))
+        lastExecution.errors.forEach((error) => console.log(`   - ${error}`))
       }
     } else {
       console.log(`\n⚠️  No execution history available`)
@@ -90,7 +90,7 @@ async function main() {
   process.exit(result.success ? 0 : 1)
 }
 
-main().catch(error => {
+main().catch((error) => {
   console.error(`\n❌ Fatal error:`, error)
   process.exit(1)
 })

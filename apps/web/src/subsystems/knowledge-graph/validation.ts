@@ -20,16 +20,11 @@ export const searchFiltersSchema = z
         start: z.coerce.date(),
         end: z.coerce.date(),
       })
-      .refine(
-        data => data.start <= data.end,
-        {
-          message: 'Start date must be before or equal to end date',
-        }
-      )
+      .refine((data) => data.start <= data.end, {
+        message: 'Start date must be before or equal to end date',
+      })
       .optional(),
-    contentTypes: z
-      .array(z.enum(['lecture', 'chunk', 'objective', 'concept']))
-      .optional(),
+    contentTypes: z.array(z.enum(['lecture', 'chunk', 'objective', 'concept'])).optional(),
     categories: z.array(z.string()).optional(),
     highYieldOnly: z.boolean().optional(),
     minSimilarity: z.number().min(0).max(1).optional(),
@@ -53,12 +48,7 @@ export const searchRequestSchema = z.object({
     .max(100, 'Limit must not exceed 100')
     .optional()
     .default(20),
-  offset: z
-    .number()
-    .int()
-    .min(0, 'Offset must be non-negative')
-    .optional()
-    .default(0),
+  offset: z.number().int().min(0, 'Offset must be non-negative').optional().default(0),
   filters: searchFiltersSchema.optional(),
 })
 
@@ -105,7 +95,7 @@ export type SuggestionsRequestValidated = z.infer<typeof suggestionsRequestSchem
  */
 export function parseQueryParams<T extends z.ZodTypeAny>(
   url: string,
-  schema: T
+  schema: T,
 ): { success: true; data: z.infer<T> } | { success: false; error: string; details: any } {
   try {
     const { searchParams } = new URL(url)
@@ -127,7 +117,9 @@ export function parseQueryParams<T extends z.ZodTypeAny>(
     const result = schema.safeParse(params)
 
     if (!result.success) {
-      const errorMessage = result.error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+      const errorMessage = result.error.issues
+        .map((err) => `${err.path.join('.')}: ${err.message}`)
+        .join(', ')
       return {
         success: false,
         error: errorMessage,
@@ -160,14 +152,16 @@ export function parseQueryParams<T extends z.ZodTypeAny>(
  */
 export async function parseRequestBody<T extends z.ZodTypeAny>(
   request: Request,
-  schema: T
+  schema: T,
 ): Promise<{ success: true; data: z.infer<T> } | { success: false; error: string; details: any }> {
   try {
     const body = await request.json()
     const result = schema.safeParse(body)
 
     if (!result.success) {
-      const errorMessage = result.error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+      const errorMessage = result.error.issues
+        .map((err) => `${err.path.join('.')}: ${err.message}`)
+        .join(', ')
       return {
         success: false,
         error: errorMessage,

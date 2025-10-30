@@ -1,6 +1,6 @@
 'use client'
 
-import { Star, BookOpen, ExternalLink, ChevronRight } from 'lucide-react'
+import { BookOpen, ChevronRight, ExternalLink, Star } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -49,15 +49,12 @@ export function FirstAidSearchResults({
       <>
         {parts.map((part, index) =>
           regex.test(part) ? (
-            <mark
-              key={index}
-              className="bg-primary/20 text-foreground font-medium px-0.5 rounded"
-            >
+            <mark key={index} className="bg-primary/20 text-foreground font-medium px-0.5 rounded">
               {part}
             </mark>
           ) : (
             <span key={index}>{part}</span>
-          )
+          ),
         )}
       </>
     )
@@ -99,7 +96,7 @@ export function FirstAidSearchResults({
             className={cn(
               'transition-all duration-200 cursor-pointer',
               'bg-white/80 backdrop-blur-md border-border/50',
-              'hover:bg-white hover:border-border hover:shadow-md'
+              'hover:bg-white hover:border-border hover:shadow-md',
             )}
             onClick={() => onResultClick?.(result)}
           >
@@ -115,9 +112,7 @@ export function FirstAidSearchResults({
                         fill="oklch(0.7 0.2 60)"
                       />
                     )}
-                    <h4 className="text-base font-semibold truncate">
-                      {result.section}
-                    </h4>
+                    <h4 className="text-base font-semibold truncate">{result.section}</h4>
                   </div>
 
                   {/* Subsection */}
@@ -237,9 +232,7 @@ export function FirstAidSearchResults({
         <div className="text-xs text-muted-foreground text-center pt-2">
           Showing {results.length} First Aid {results.length === 1 ? 'reference' : 'references'}
           {results.filter((r) => r.isHighYield).length > 0 && (
-            <span className="ml-1">
-              • {results.filter((r) => r.isHighYield).length} high-yield
-            </span>
+            <span className="ml-1">• {results.filter((r) => r.isHighYield).length} high-yield</span>
           )}
         </div>
       )}

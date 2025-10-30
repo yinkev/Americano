@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { validateQuery, analyticsQuerySchema, peerBenchmarkResponseSchema } from '@/lib/validation'
+import { type NextRequest, NextResponse } from 'next/server'
 import { ApiError } from '@/lib/api-error'
+import { analyticsQuerySchema, peerBenchmarkResponseSchema, validateQuery } from '@/lib/validation'
 
 /**
  * GET /api/analytics/understanding/peer-benchmark
@@ -39,7 +39,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(validatedData, { status: 200 })
   } catch (error) {
     if (error instanceof ApiError) {
-      return NextResponse.json({ error: error.message, details: error.details }, { status: error.statusCode })
+      return NextResponse.json(
+        { error: error.message, details: error.details },
+        { status: error.statusCode },
+      )
     }
 
     console.error('Peer benchmark API error:', error)

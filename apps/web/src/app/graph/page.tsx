@@ -14,8 +14,8 @@
  * Route: /graph
  */
 
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
-import { Metadata } from 'next'
 import GraphPageClient from './graph-client'
 
 export const metadata: Metadata = {
@@ -54,17 +54,11 @@ export default async function GraphPage() {
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div
-              className="w-3 h-0.5 rounded"
-              style={{ backgroundColor: 'oklch(0.65 0.18 40)' }}
-            />
+            <div className="w-3 h-0.5 rounded" style={{ backgroundColor: 'oklch(0.65 0.18 40)' }} />
             <span style={{ color: 'oklch(0.4 0.05 240)' }}>Prerequisite</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div
-              className="w-3 h-0.5 rounded"
-              style={{ backgroundColor: 'oklch(0.5 0.05 240)' }}
-            />
+            <div className="w-3 h-0.5 rounded" style={{ backgroundColor: 'oklch(0.5 0.05 240)' }} />
             <span style={{ color: 'oklch(0.4 0.05 240)' }}>Related</span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -114,10 +108,7 @@ function GraphLoadingState() {
 
         {/* Loading text */}
         <div>
-          <div
-            className="text-lg font-semibold mb-1"
-            style={{ color: 'oklch(0.3 0.05 240)' }}
-          >
+          <div className="text-lg font-semibold mb-1" style={{ color: 'oklch(0.3 0.05 240)' }}>
             Building Knowledge Graph...
           </div>
           <div className="text-sm" style={{ color: 'oklch(0.5 0.05 240)' }}>

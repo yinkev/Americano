@@ -72,7 +72,7 @@ export class RateLimiter {
     }
 
     // Remove requests outside the current window (sliding window)
-    entry.requests = entry.requests.filter(timestamp => timestamp > windowStart)
+    entry.requests = entry.requests.filter((timestamp) => timestamp > windowStart)
     entry.lastAccess = now
 
     // Check if limit exceeded
@@ -86,9 +86,10 @@ export class RateLimiter {
 
     // Calculate metadata
     const remaining = Math.max(0, this.config.maxRequests - currentCount - (allowed ? 1 : 0))
-    const resetTime = entry.requests.length > 0
-      ? entry.requests[0] + this.config.windowMs
-      : now + this.config.windowMs
+    const resetTime =
+      entry.requests.length > 0
+        ? entry.requests[0] + this.config.windowMs
+        : now + this.config.windowMs
 
     return {
       allowed,
@@ -135,21 +136,20 @@ export class RateLimiter {
     }
 
     // Filter requests in current window
-    const validRequests = entry.requests.filter(timestamp => timestamp > windowStart)
+    const validRequests = entry.requests.filter((timestamp) => timestamp > windowStart)
     const currentCount = validRequests.length
     const remaining = Math.max(0, this.config.maxRequests - currentCount)
-    const resetTime = validRequests.length > 0
-      ? validRequests[0] + this.config.windowMs
-      : now + this.config.windowMs
+    const resetTime =
+      validRequests.length > 0
+        ? validRequests[0] + this.config.windowMs
+        : now + this.config.windowMs
 
     return {
       allowed: currentCount < this.config.maxRequests,
       limit: this.config.maxRequests,
       remaining,
       resetAt: new Date(resetTime),
-      retryAfter: currentCount >= this.config.maxRequests
-        ? Math.ceil((resetTime - now) / 1000)
-        : 0,
+      retryAfter: currentCount >= this.config.maxRequests ? Math.ceil((resetTime - now) / 1000) : 0,
     }
   }
 
@@ -239,7 +239,7 @@ export function withRateLimit<T extends (request: Request, ...args: any[]) => Pr
   options?: {
     /** Custom function to extract identifier from request */
     getIdentifier?: (request: Request) => string | Promise<string>
-  }
+  },
 ): T {
   return (async (request: Request, ...args: any[]) => {
     // Extract identifier (default to X-User-Email header or 'anonymous')
@@ -273,7 +273,7 @@ export function withRateLimit<T extends (request: Request, ...args: any[]) => Pr
             'X-RateLimit-Reset': result.resetAt.toISOString(),
             'Retry-After': result.retryAfter.toString(),
           },
-        }
+        },
       )
     }
 

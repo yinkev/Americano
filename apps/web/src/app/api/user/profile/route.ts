@@ -2,11 +2,11 @@
 // GET: Fetch user profile
 // PATCH: Update user profile
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse, errorResponse } from '@/lib/api-response'
+import type { NextRequest } from 'next/server'
 import { ApiError, withErrorHandler } from '@/lib/api-error'
-import { validateRequest, updateUserProfileSchema } from '@/lib/validation'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
+import { updateUserProfileSchema, validateRequest } from '@/lib/validation'
 
 /**
  * GET /api/user/profile

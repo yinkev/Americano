@@ -9,7 +9,7 @@
 // Import Node.js Web API globals into jsdom environment
 // Node.js 18+ provides these as globals
 try {
-  // @ts-ignore - Node.js globals
+  // @ts-expect-error - Node.js globals
   const { fetch, Request, Response, Headers, FormData, Blob, File } = globalThis
 
   // Ensure these are available to test code
@@ -43,7 +43,10 @@ if (typeof (global as any).crypto === 'undefined') {
 }
 
 // Ensure TextEncoder/TextDecoder are available
-if (typeof (global as any).TextEncoder === 'undefined' || typeof (global as any).TextDecoder === 'undefined') {
+if (
+  typeof (global as any).TextEncoder === 'undefined' ||
+  typeof (global as any).TextDecoder === 'undefined'
+) {
   try {
     const { TextEncoder, TextDecoder } = require('util')
     ;(global as any).TextEncoder = TextEncoder

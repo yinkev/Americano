@@ -1,7 +1,7 @@
 'use client'
 
-import * as React from 'react'
 import { AlertTriangle } from 'lucide-react'
+import * as React from 'react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { ConflictSeverity } from '@/types/conflicts'
@@ -37,12 +37,15 @@ interface ConflictIndicatorProps {
  * Severity color mapping using OKLCH color space
  * LOW: yellow, MEDIUM: orange, HIGH: red, CRITICAL: dark red
  */
-const SEVERITY_COLORS: Record<ConflictSeverity, {
-  bg: string
-  border: string
-  text: string
-  glow?: string
-}> = {
+const SEVERITY_COLORS: Record<
+  ConflictSeverity,
+  {
+    bg: string
+    border: string
+    text: string
+    glow?: string
+  }
+> = {
   [ConflictSeverity.LOW]: {
     bg: 'oklch(0.95 0.12 95)', // Light yellow background
     border: 'oklch(0.75 0.15 95)', // Yellow border
@@ -108,7 +111,7 @@ export function ConflictIndicator({
         'hover:scale-105 active:scale-95',
         // Focus ring color based on severity
         'focus:ring-ring',
-        className
+        className,
       )}
       style={{
         backgroundColor: colors.bg,
@@ -123,10 +126,7 @@ export function ConflictIndicator({
     >
       <div className="relative">
         <AlertTriangle
-          className={cn(
-            'h-4 w-4',
-            isCritical && 'animate-pulse'
-          )}
+          className={cn('h-4 w-4', isCritical && 'animate-pulse')}
           aria-hidden="true"
         />
         {isCritical && (
@@ -143,9 +143,7 @@ export function ConflictIndicator({
 
       {!compact && (
         <>
-          <span className="text-xs font-semibold leading-none">
-            {severity}
-          </span>
+          <span className="text-xs font-semibold leading-none">{severity}</span>
           {count > 1 && (
             <Badge
               variant="outline"
@@ -197,13 +195,16 @@ export function ConflictIndicatorList({
   className,
 }: ConflictIndicatorListProps) {
   // Group conflicts by severity
-  const groupedConflicts = conflicts.reduce((acc, conflict) => {
-    if (!acc[conflict.severity]) {
-      acc[conflict.severity] = []
-    }
-    acc[conflict.severity].push(conflict)
-    return acc
-  }, {} as Record<ConflictSeverity, typeof conflicts>)
+  const groupedConflicts = conflicts.reduce(
+    (acc, conflict) => {
+      if (!acc[conflict.severity]) {
+        acc[conflict.severity] = []
+      }
+      acc[conflict.severity].push(conflict)
+      return acc
+    },
+    {} as Record<ConflictSeverity, typeof conflicts>,
+  )
 
   // Sort severities: CRITICAL -> HIGH -> MEDIUM -> LOW
   const severityOrder: ConflictSeverity[] = [
@@ -214,7 +215,7 @@ export function ConflictIndicatorList({
   ]
 
   const sortedSeverities = severityOrder.filter(
-    (severity) => groupedConflicts[severity]?.length > 0
+    (severity) => groupedConflicts[severity]?.length > 0,
   )
 
   if (sortedSeverities.length === 0) {

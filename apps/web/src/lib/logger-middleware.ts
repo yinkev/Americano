@@ -23,10 +23,10 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { Logger, logger as defaultLogger } from './logger'
-import { sanitizeURL } from './logger-pii-redaction'
+import { type NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
+import { logger as defaultLogger, type Logger } from './logger'
+import { sanitizeURL } from './logger-pii-redaction'
 
 /**
  * Correlation ID header name
@@ -52,8 +52,7 @@ export function getCorrelationId(request: NextRequest | Request): string {
   const headers = request.headers
 
   // Try to get existing correlation ID from headers
-  const correlationId =
-    headers.get(CORRELATION_ID_HEADER) || headers.get(REQUEST_ID_HEADER)
+  const correlationId = headers.get(CORRELATION_ID_HEADER) || headers.get(REQUEST_ID_HEADER)
 
   // Return existing or generate new
   return correlationId || generateCorrelationId()
@@ -65,7 +64,7 @@ export function getCorrelationId(request: NextRequest | Request): string {
 export function addCorrelationHeaders(
   response: NextResponse,
   correlationId: string,
-  requestId?: string
+  requestId?: string,
 ): NextResponse {
   response.headers.set(CORRELATION_ID_HEADER, correlationId)
   if (requestId) {
@@ -122,7 +121,7 @@ export function createRequestContext(request: NextRequest | Request): RequestCon
 export type LoggingHandler<T = unknown> = (
   request: NextRequest | Request,
   logger: Logger,
-  context: RequestContext
+  context: RequestContext,
 ) => Promise<NextResponse<T>>
 
 /**
@@ -152,7 +151,7 @@ export type LoggingHandler<T = unknown> = (
  */
 export async function withLogging<T = unknown>(
   request: NextRequest | Request,
-  handler: LoggingHandler<T>
+  handler: LoggingHandler<T>,
 ): Promise<NextResponse<T>> {
   const context = createRequestContext(request)
 
@@ -200,7 +199,7 @@ export async function withLogging<T = unknown>(
         correlationId: context.correlationId,
         requestId: context.requestId,
       } as T,
-      { status: 500 }
+      { status: 500 },
     )
 
     // Add correlation headers
@@ -262,7 +261,7 @@ export function correlationMiddleware(request: NextRequest): NextResponse {
 export async function withTiming<T>(
   operation: string,
   fn: () => Promise<T>,
-  logger: Logger = defaultLogger
+  logger: Logger = defaultLogger,
 ): Promise<T> {
   const startTime = Date.now()
 
@@ -331,7 +330,7 @@ export class BatchLogger {
     private operation: string,
     private totalItems: number,
     private logger: Logger = defaultLogger,
-    logInterval = 10000 // Log every 10 seconds
+    logInterval = 10000, // Log every 10 seconds
   ) {
     this.startTime = 0
     this.lastLogTime = 0
@@ -362,9 +361,7 @@ export class BatchLogger {
       const elapsed = now - this.startTime
       const percentComplete = (currentItem / this.totalItems) * 100
       const itemsPerSecond = currentItem / (elapsed / 1000)
-      const estimatedRemaining = Math.round(
-        (this.totalItems - currentItem) / itemsPerSecond
-      )
+      const estimatedRemaining = Math.round((this.totalItems - currentItem) / itemsPerSecond)
 
       this.logger.info(`Batch progress: ${this.operation}`, {
         operation: this.operation,
@@ -417,7 +414,7 @@ export class BatchLogger {
 export function createBatchLogger(
   operation: string,
   totalItems: number,
-  logger: Logger = defaultLogger
+  logger: Logger = defaultLogger,
 ): BatchLogger {
   return new BatchLogger(operation, totalItems, logger)
 }

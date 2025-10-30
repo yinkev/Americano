@@ -1,11 +1,11 @@
 // PATCH /api/personalization/preferences
 // Update user personalization preferences with feature-level toggles
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse } from '@/lib/api-response'
-import { ApiError, withErrorHandler } from '@/lib/api-error'
+import type { NextRequest } from 'next/server'
 import { PersonalizationLevel } from '@/generated/prisma'
+import { ApiError, withErrorHandler } from '@/lib/api-error'
+import { successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
 /**
  * GET /api/personalization/preferences

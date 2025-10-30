@@ -13,7 +13,7 @@
  * 5. Return patterns for UI display
  */
 
-import { z } from 'zod';
+import { z } from 'zod'
 
 // ============================================================================
 // Zod Schemas (Type-safe validation)
@@ -37,9 +37,9 @@ export const ControlledFailureRecordSchema = z.object({
   course_name: z.string().nullable(),
   topic_tags: z.array(z.string()),
   board_exam_tags: z.array(z.string()),
-});
+})
 
-export type ControlledFailureRecord = z.infer<typeof ControlledFailureRecordSchema>;
+export type ControlledFailureRecord = z.infer<typeof ControlledFailureRecordSchema>
 
 /**
  * Schema for detected failure pattern.
@@ -53,9 +53,9 @@ export const FailurePatternSchema = z.object({
   frequency: z.number().int().min(1),
   remediation: z.string(),
   detected_at: z.string().datetime(),
-});
+})
 
-export type FailurePattern = z.infer<typeof FailurePatternSchema>;
+export type FailurePattern = z.infer<typeof FailurePatternSchema>
 
 /**
  * Schema for pattern detection request.
@@ -63,9 +63,9 @@ export type FailurePattern = z.infer<typeof FailurePatternSchema>;
 export const PatternDetectionRequestSchema = z.object({
   user_id: z.string(),
   min_frequency: z.number().int().min(1).default(3),
-});
+})
 
-export type PatternDetectionRequest = z.infer<typeof PatternDetectionRequestSchema>;
+export type PatternDetectionRequest = z.infer<typeof PatternDetectionRequestSchema>
 
 /**
  * Schema for pattern detection response.
@@ -74,24 +74,24 @@ export const PatternDetectionResponseSchema = z.object({
   patterns: z.array(FailurePatternSchema),
   total_patterns: z.number().int().min(0),
   detection_timestamp: z.string().datetime(),
-});
+})
 
-export type PatternDetectionResponse = z.infer<typeof PatternDetectionResponseSchema>;
+export type PatternDetectionResponse = z.infer<typeof PatternDetectionResponseSchema>
 
 // ============================================================================
 // Python Service Client
 // ============================================================================
 
-const PYTHON_API_URL = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
+const PYTHON_API_URL = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000'
 
 /**
  * Client for interacting with Python FailurePatternDetector service.
  */
 export class FailurePatternDetectorClient {
-  private baseUrl: string;
+  private baseUrl: string
 
   constructor(baseUrl: string = PYTHON_API_URL) {
-    this.baseUrl = baseUrl;
+    this.baseUrl = baseUrl
   }
 
   /**
@@ -110,14 +110,11 @@ export class FailurePatternDetectorClient {
    * @returns Detected patterns
    * @throws Error if API call fails
    */
-  async detectPatterns(
-    userId: string,
-    minFrequency: number = 3
-  ): Promise<FailurePattern[]> {
+  async detectPatterns(userId: string, minFrequency: number = 3): Promise<FailurePattern[]> {
     try {
       // In production, fetch failures from Prisma here
       // For now, this demonstrates the integration pattern
-      const failures = await this.fetchFailuresFromDatabase(userId);
+      const failures = await this.fetchFailuresFromDatabase(userId)
 
       // Call Python service
       const response = await fetch(`${this.baseUrl}/challenge/detect-patterns-with-data`, {
@@ -131,25 +128,25 @@ export class FailurePatternDetectorClient {
           min_frequency: minFrequency,
           lookback_days: 30,
         }),
-      });
+      })
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(`Pattern detection failed: ${error.detail || response.statusText}`);
+        const error = await response.json()
+        throw new Error(`Pattern detection failed: ${error.detail || response.statusText}`)
       }
 
-      const data = await response.json();
+      const data = await response.json()
 
       // Validate response
-      const validated = PatternDetectionResponseSchema.parse(data);
+      const validated = PatternDetectionResponseSchema.parse(data)
 
       // In production, store patterns in database here
       // await this.storePatternsInDatabase(validated.patterns);
 
-      return validated.patterns;
+      return validated.patterns
     } catch (error) {
-      console.error('Failed to detect patterns:', error);
-      throw error;
+      console.error('Failed to detect patterns:', error)
+      throw error
     }
   }
 
@@ -184,13 +181,11 @@ export class FailurePatternDetectorClient {
    * @param userId - User ID
    * @returns Array of failure records
    */
-  private async fetchFailuresFromDatabase(
-    userId: string
-  ): Promise<ControlledFailureRecord[]> {
+  private async fetchFailuresFromDatabase(userId: string): Promise<ControlledFailureRecord[]> {
     // TODO: Implement Prisma query
     // For now, return empty array (testing with Python service directly)
-    console.warn('fetchFailuresFromDatabase not yet implemented - requires Prisma integration');
-    return [];
+    console.warn('fetchFailuresFromDatabase not yet implemented - requires Prisma integration')
+    return []
   }
 
   /**
@@ -217,7 +212,7 @@ export class FailurePatternDetectorClient {
    */
   private async storePatternsInDatabase(patterns: FailurePattern[]): Promise<void> {
     // TODO: Implement Prisma mutation
-    console.warn('storePatternsInDatabase not yet implemented - requires Prisma schema extension');
+    console.warn('storePatternsInDatabase not yet implemented - requires Prisma schema extension')
   }
 }
 
@@ -234,10 +229,10 @@ export class FailurePatternDetectorClient {
  */
 export async function detectFailurePatterns(
   userId: string,
-  minFrequency: number = 3
+  minFrequency: number = 3,
 ): Promise<FailurePattern[]> {
-  const client = new FailurePatternDetectorClient();
-  return client.detectPatterns(userId, minFrequency);
+  const client = new FailurePatternDetectorClient()
+  return client.detectPatterns(userId, minFrequency)
 }
 
 /**
@@ -249,8 +244,8 @@ export async function detectFailurePatterns(
  */
 export async function getTopFailurePatterns(
   userId: string,
-  limit: number = 5
+  limit: number = 5,
 ): Promise<FailurePattern[]> {
-  const patterns = await detectFailurePatterns(userId);
-  return patterns.slice(0, limit);
+  const patterns = await detectFailurePatterns(userId)
+  return patterns.slice(0, limit)
 }

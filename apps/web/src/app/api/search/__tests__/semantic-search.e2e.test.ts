@@ -22,7 +22,7 @@
  * - Analytics persistence
  */
 
-import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals'
+import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals'
 import { PrismaClient } from '@prisma/client'
 
 /**
@@ -788,7 +788,7 @@ describe('Semantic Search API E2E Integration Tests', () => {
       expect(response.status).toBe(200)
 
       // Give database time to persist
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
 
       // Verify query was logged
       const searchQuery = await prisma.searchQuery.findFirst({

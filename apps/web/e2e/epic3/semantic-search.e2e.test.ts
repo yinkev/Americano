@@ -21,7 +21,7 @@
  * - Analytics tracking: Non-blocking, <100ms
  */
 
-import { test, expect, Page, APIRequestContext } from '@playwright/test'
+import { type APIRequestContext, expect, type Page, test } from '@playwright/test'
 
 /**
  * Test Data and Fixtures
@@ -235,7 +235,9 @@ describe('Semantic Search E2E Tests', () => {
     await page.goto(`${baseURL}/search`)
 
     // Perform search
-    const searchInput = page.locator('input[placeholder*="search" i], input[aria-label*="search" i]')
+    const searchInput = page.locator(
+      'input[placeholder*="search" i], input[aria-label*="search" i]',
+    )
     if (await searchInput.isVisible()) {
       await searchInput.fill(MOCK_QUERIES.simple)
       await searchInput.press('Enter')
@@ -534,7 +536,7 @@ describe('Semantic Search E2E Tests', () => {
         apiContext.post(`${apiURL}/search`, {
           data: { query: MOCK_QUERIES.simple, limit: 20, offset: 0 },
           headers: { 'X-User-Email': TEST_USER.email },
-        })
+        }),
       )
 
     const responses = await Promise.all(requests)
@@ -724,7 +726,9 @@ describe('Semantic Search E2E Tests', () => {
 
     // Verify page doesn't crash and results appear
     const resultsContainer = searchPage.locator('[role="region"]')
-    await expect(resultsContainer).toBeVisible({ timeout: 5000 }).catch(() => {})
+    await expect(resultsContainer)
+      .toBeVisible({ timeout: 5000 })
+      .catch(() => {})
 
     await context.close()
   })
@@ -754,7 +758,7 @@ describe('Semantic Search Performance Tests', () => {
           headers: {
             'X-User-Email': 'test@americano.dev',
           },
-        })
+        }),
       )
 
     const results = await Promise.all(promises)

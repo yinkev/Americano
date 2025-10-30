@@ -31,18 +31,18 @@
  * - Set Mission.intensityLevel from StudyIntensityModulator
  */
 
+import { addDays } from 'date-fns'
 import type { LearningObjective, UserLearningProfile } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
+import { ContentSequencer } from '@/subsystems/behavioral-analytics/content-sequencer'
+import { SessionDurationOptimizer } from '@/subsystems/behavioral-analytics/session-duration-optimizer'
+import { StudyIntensityModulator } from '@/subsystems/behavioral-analytics/study-intensity-modulator'
+import { StudyTimeRecommender } from '@/subsystems/behavioral-analytics/study-time-recommender'
 import type {
   MissionGenerationConstraints,
   MissionObjective,
   PrioritizedObjective,
 } from '@/types/mission'
-import { addDays } from 'date-fns'
-import { StudyTimeRecommender } from '@/subsystems/behavioral-analytics/study-time-recommender'
-import { SessionDurationOptimizer } from '@/subsystems/behavioral-analytics/session-duration-optimizer'
-import { ContentSequencer } from '@/subsystems/behavioral-analytics/content-sequencer'
-import { StudyIntensityModulator } from '@/subsystems/behavioral-analytics/study-intensity-modulator'
 
 // Time estimation constants (minutes)
 const COMPLEXITY_TIME_MAP = {

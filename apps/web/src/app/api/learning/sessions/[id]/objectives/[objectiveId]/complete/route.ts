@@ -1,10 +1,14 @@
-import { NextRequest } from 'next/server'
-import { Prisma } from '@/generated/prisma'
-import { prisma } from '@/lib/db'
-import { successResponse, errorResponse } from '@/lib/api-response'
-import { withErrorHandler } from '@/lib/api-error'
-import { getSessionMissionObjectives, getObjectiveCompletions, getMissionObjectives } from '@/types/mission-helpers'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
+import type { Prisma } from '@/generated/prisma'
+import { withErrorHandler } from '@/lib/api-error'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
+import {
+  getMissionObjectives,
+  getObjectiveCompletions,
+  getSessionMissionObjectives,
+} from '@/types/mission-helpers'
 
 const completeObjectiveSchema = z.object({
   selfAssessment: z.number().min(1).max(5),
@@ -14,7 +18,7 @@ const completeObjectiveSchema = z.object({
   comprehensionScore: z.number().min(0).max(100).optional(), // Story 4.1 Task 6.7
   clinicalScenarioScore: z.number().min(0).max(100).optional(), // Story 4.2 Task 7.7
   clinicalScenarioTime: z.number().min(0).optional(), // Story 4.2 Task 7.6 (seconds)
-});
+})
 
 // POST /api/learning/sessions/:id/objectives/:objectiveId/complete (Story 2.5 Task 6.2)
 export async function POST(
@@ -67,7 +71,7 @@ export async function POST(
       comprehensionScore: validatedData.comprehensionScore, // Story 4.1 Task 6.7
       clinicalScenarioScore: validatedData.clinicalScenarioScore, // Story 4.2 Task 7.7
       clinicalScenarioTime: validatedData.clinicalScenarioTime, // Story 4.2 Task 7.6
-    });
+    })
 
     // Increment objective index
     const newIndex = session.currentObjectiveIndex + 1

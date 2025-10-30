@@ -1,7 +1,7 @@
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
+import type { NextRequest } from 'next/server'
+import { ApiError, withErrorHandler } from '@/lib/api-error'
 import { successResponse } from '@/lib/api-response'
-import { withErrorHandler, ApiError } from '@/lib/api-error'
+import { prisma } from '@/lib/db'
 
 // GET /api/missions/reflection-check - Check if user should see reflection prompt
 async function handleGET(request: NextRequest) {

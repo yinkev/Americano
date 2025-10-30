@@ -94,7 +94,7 @@ export class FirstAidMapper {
         AND embedding IS NOT NULL
       ORDER BY "chunkIndex"
     `,
-      lectureId
+      lectureId,
     )
 
     if (chunks.length === 0) {
@@ -110,7 +110,7 @@ export class FirstAidMapper {
     for (const chunk of chunks) {
       const chunkMappings = await this.findRelevantFirstAidSectionsForEmbedding(
         chunk.embedding,
-        5 // Top 5 per chunk
+        5, // Top 5 per chunk
       )
       allMappings.push(...chunkMappings)
     }
@@ -143,7 +143,10 @@ export class FirstAidMapper {
    * Find relevant First Aid sections for a concept name
    * Task 2.1: Concept-based section discovery
    */
-  async findRelevantFirstAidSections(conceptName: string, limit: number = 5): Promise<FirstAidMapping[]> {
+  async findRelevantFirstAidSections(
+    conceptName: string,
+    limit: number = 5,
+  ): Promise<FirstAidMapping[]> {
     // Generate embedding for concept
     const embeddingResult = await embeddingService.generateEmbedding(conceptName)
 
@@ -161,7 +164,7 @@ export class FirstAidMapper {
    */
   private async findRelevantFirstAidSectionsForEmbedding(
     queryEmbedding: number[],
-    limit: number = 5
+    limit: number = 5,
   ): Promise<FirstAidMapping[]> {
     const embeddingStr = `[${queryEmbedding.join(',')}]`
 
@@ -183,7 +186,7 @@ export class FirstAidMapper {
       LIMIT $2
     `,
       embeddingStr,
-      limit * 2 // Get 2x for high-yield boosting
+      limit * 2, // Get 2x for high-yield boosting
     )
 
     // Convert distance to similarity and apply high-yield boost
@@ -228,7 +231,7 @@ export class FirstAidMapper {
    */
   async calculateMappingConfidence(
     lectureChunk: { content: string; embedding: number[] },
-    firstAidChunk: { content: string; embedding: number[] }
+    firstAidChunk: { content: string; embedding: number[] },
   ): Promise<number> {
     // Calculate cosine similarity
     const similarity = this.cosineSimilarity(lectureChunk.embedding, firstAidChunk.embedding)
@@ -362,7 +365,7 @@ export class FirstAidMapper {
    */
   private determinePriority(
     similarity: number,
-    isHighYield: boolean
+    isHighYield: boolean,
   ): 'HIGH_YIELD' | 'STANDARD' | 'SUGGESTED' {
     if (similarity >= this.HIGH_CONFIDENCE_THRESHOLD) {
       return isHighYield ? 'HIGH_YIELD' : 'STANDARD'
@@ -445,7 +448,7 @@ export class FirstAidMapper {
   async mapSectionToFirstAid(
     contentText: string,
     sectionId?: string,
-    limit: number = 5
+    limit: number = 5,
   ): Promise<FirstAidMapping[]> {
     console.log(`📍 Mapping section ${sectionId || 'unknown'} to First Aid...`)
 
@@ -460,7 +463,7 @@ export class FirstAidMapper {
     // Find relevant First Aid sections using the embedding
     const mappings = await this.findRelevantFirstAidSectionsForEmbedding(
       embeddingResult.embedding,
-      limit
+      limit,
     )
 
     console.log(`✓ Found ${mappings.length} First Aid references for section`)
@@ -534,7 +537,7 @@ export class FirstAidMapper {
    */
   async batchMapSectionsToFirstAid(
     sections: Array<{ text: string; id: string }>,
-    limit: number = 5
+    limit: number = 5,
   ): Promise<Map<string, FirstAidMapping[]>> {
     console.log(`📦 Batch mapping ${sections.length} sections to First Aid...`)
 

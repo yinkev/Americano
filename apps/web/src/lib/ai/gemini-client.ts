@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import { retryService, DEFAULT_POLICIES, PermanentError } from '../retry/retry-service'
+import { DEFAULT_POLICIES, PermanentError, retryService } from '../retry/retry-service'
 
 interface EmbeddingResult {
   embedding: number[]

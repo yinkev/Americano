@@ -8,11 +8,11 @@
  * @route GET /api/personalization/history
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@/lib/db'
-import { successResponse } from '@/lib/api-response'
 import { ApiError, withErrorHandler } from '@/lib/api-error'
+import { successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
 /**
  * Query parameter validation schema
@@ -222,7 +222,11 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     }
 
     // Generate REMOVED event if deactivated in range
-    if (config.deactivatedAt && config.deactivatedAt >= startDateTime && config.deactivatedAt <= endDateTime) {
+    if (
+      config.deactivatedAt &&
+      config.deactivatedAt >= startDateTime &&
+      config.deactivatedAt <= endDateTime
+    ) {
       events.push({
         id: `${config.id}-removed`,
         timestamp: config.deactivatedAt.toISOString(),

@@ -15,8 +15,8 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Bell, BellOff, Play, Edit2, Trash2, Download, Plus } from 'lucide-react'
+import { Bell, BellOff, Download, Edit2, Play, Plus, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 /**
  * Saved search interface
@@ -130,7 +130,7 @@ export function SavedSearches({ onRunSearch, className = '' }: SavedSearchesProp
       }
 
       // Remove from local state
-      setSearches(prev => prev.filter(s => s.id !== searchId))
+      setSearches((prev) => prev.filter((s) => s.id !== searchId))
     } catch (err) {
       console.error('Failed to delete search:', err)
       alert('Failed to delete search. Please try again.')
@@ -176,11 +176,13 @@ export function SavedSearches({ onRunSearch, className = '' }: SavedSearchesProp
 
   if (loading) {
     return (
-      <div className={`rounded-lg border border-oklch-gray-200 bg-white/80 backdrop-blur-md p-6 ${className}`}>
+      <div
+        className={`rounded-lg border border-oklch-gray-200 bg-white/80 backdrop-blur-md p-6 ${className}`}
+      >
         <div className="animate-pulse">
           <div className="h-6 bg-oklch-gray-200 rounded w-1/3 mb-4"></div>
           <div className="space-y-3">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="h-20 bg-oklch-gray-100 rounded"></div>
             ))}
           </div>
@@ -204,12 +206,12 @@ export function SavedSearches({ onRunSearch, className = '' }: SavedSearchesProp
   }
 
   return (
-    <div className={`rounded-lg border border-oklch-gray-200 bg-white/80 backdrop-blur-md ${className}`}>
+    <div
+      className={`rounded-lg border border-oklch-gray-200 bg-white/80 backdrop-blur-md ${className}`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-oklch-gray-200">
-        <h3 className="text-lg font-semibold text-oklch-gray-900">
-          Saved Searches
-        </h3>
+        <h3 className="text-lg font-semibold text-oklch-gray-900">Saved Searches</h3>
         <div className="flex items-center gap-2">
           {searches.length > 0 && (
             <button
@@ -233,18 +235,13 @@ export function SavedSearches({ onRunSearch, className = '' }: SavedSearchesProp
         </div>
       ) : (
         <div className="divide-y divide-oklch-gray-100">
-          {searches.map(search => (
-            <div
-              key={search.id}
-              className="p-4 hover:bg-oklch-gray-50 transition-colors"
-            >
+          {searches.map((search) => (
+            <div key={search.id} className="p-4 hover:bg-oklch-gray-50 transition-colors">
               <div className="flex items-start justify-between gap-4">
                 {/* Search info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-oklch-gray-900 truncate">
-                      {search.name}
-                    </h4>
+                    <h4 className="font-medium text-oklch-gray-900 truncate">{search.name}</h4>
 
                     {/* Alert badge */}
                     {search.unreadAlertCount && search.unreadAlertCount > 0 && (
@@ -254,21 +251,11 @@ export function SavedSearches({ onRunSearch, className = '' }: SavedSearchesProp
                     )}
                   </div>
 
-                  <p className="text-sm text-oklch-gray-600 truncate mb-2">
-                    {search.query}
-                  </p>
+                  <p className="text-sm text-oklch-gray-600 truncate mb-2">{search.query}</p>
 
                   <div className="flex items-center gap-4 text-xs text-oklch-gray-500">
-                    {search.lastRun && (
-                      <span>
-                        Last run: {formatDate(search.lastRun)}
-                      </span>
-                    )}
-                    {search.resultCount !== undefined && (
-                      <span>
-                        {search.resultCount} results
-                      </span>
-                    )}
+                    {search.lastRun && <span>Last run: {formatDate(search.lastRun)}</span>}
+                    {search.resultCount !== undefined && <span>{search.resultCount} results</span>}
                   </div>
                 </div>
 

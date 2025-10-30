@@ -10,10 +10,10 @@
  * - Database errors
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals"
-import { POST } from '../route'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { prisma } from '@/lib/db'
 import { searchAnalyticsService } from '@/lib/search-analytics-service'
+import { POST } from '../route'
 
 // Mock dependencies
 jest.mock('@/lib/db', () => ({

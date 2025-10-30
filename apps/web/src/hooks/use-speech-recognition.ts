@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 interface UseSpeechRecognitionOptions {
   onTranscriptChange?: (transcript: string) => void
@@ -36,26 +36,25 @@ interface UseSpeechRecognitionReturn {
 export function useSpeechRecognition({
   onTranscriptChange,
   onEnd,
-  language = "en-US",
+  language = 'en-US',
   continuous = false,
   interimResults = true,
 }: UseSpeechRecognitionOptions = {}): UseSpeechRecognitionReturn {
   const [isListening, setIsListening] = useState(false)
-  const [transcript, setTranscript] = useState("")
+  const [transcript, setTranscript] = useState('')
   const [error, setError] = useState<string | null>(null)
   const recognitionRef = useRef<SpeechRecognition | null>(null)
 
   // Check browser support
   const isSupported =
-    typeof window !== "undefined" &&
-    ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
+    typeof window !== 'undefined' &&
+    ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)
 
   // Initialize Speech Recognition
   useEffect(() => {
     if (!isSupported) return
 
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
 
     const recognition = new SpeechRecognition()
     recognition.lang = language
@@ -65,8 +64,8 @@ export function useSpeechRecognition({
 
     // Handle results
     recognition.onresult = (event) => {
-      let interimTranscript = ""
-      let finalTranscript = ""
+      let interimTranscript = ''
+      let finalTranscript = ''
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i]
@@ -92,19 +91,19 @@ export function useSpeechRecognition({
 
     // Handle errors
     recognition.onerror = (event) => {
-      console.error("Speech recognition error:", event.error)
+      console.error('Speech recognition error:', event.error)
       setIsListening(false)
 
       const errorMessages: Record<string, string> = {
-        "no-speech": "No speech detected. Please try again.",
-        "audio-capture": "Microphone access denied or unavailable.",
-        "not-allowed": "Microphone permission denied.",
-        "network": "Network error. Please check your connection.",
-        "aborted": "Speech recognition aborted.",
-        "language-not-supported": "Language not supported.",
+        'no-speech': 'No speech detected. Please try again.',
+        'audio-capture': 'Microphone access denied or unavailable.',
+        'not-allowed': 'Microphone permission denied.',
+        network: 'Network error. Please check your connection.',
+        aborted: 'Speech recognition aborted.',
+        'language-not-supported': 'Language not supported.',
       }
 
-      setError(errorMessages[event.error] || "Speech recognition failed. Please try again.")
+      setError(errorMessages[event.error] || 'Speech recognition failed. Please try again.')
 
       // Clear error after 5 seconds
       setTimeout(() => setError(null), 5000)
@@ -126,19 +125,19 @@ export function useSpeechRecognition({
 
   const startListening = useCallback(() => {
     if (!isSupported) {
-      setError("Speech recognition is not supported in this browser.")
+      setError('Speech recognition is not supported in this browser.')
       return
     }
 
     if (recognitionRef.current && !isListening) {
       try {
-        setTranscript("")
+        setTranscript('')
         setError(null)
         recognitionRef.current.start()
         setIsListening(true)
       } catch (err) {
-        console.error("Error starting speech recognition:", err)
-        setError("Failed to start speech recognition. Please try again.")
+        console.error('Error starting speech recognition:', err)
+        setError('Failed to start speech recognition. Please try again.')
       }
     }
   }, [isSupported, isListening])

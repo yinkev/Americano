@@ -6,9 +6,9 @@
  * DELEGATED TO DATA-SCIENTIST: Validate Pearson correlation, p-value, and confidence interval calculations
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { AcademicPerformanceIntegration } from '../academic-performance-integration'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '@/lib/db'
+import { AcademicPerformanceIntegration } from '../academic-performance-integration'
 
 // Mock Prisma
 vi.mock('@/lib/db', () => ({

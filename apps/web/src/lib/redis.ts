@@ -98,7 +98,7 @@ export async function initializeRedis(): Promise<boolean> {
 
     // Test connection with timeout
     const pingTimeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Redis ping timeout after 5s')), 5000)
+      setTimeout(() => reject(new Error('Redis ping timeout after 5s')), 5000),
     )
     await Promise.race([redisClient.ping(), pingTimeout])
 

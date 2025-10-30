@@ -12,9 +12,9 @@
  * - Relationship strength scores
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { withErrorHandler } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
+import { errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 
 interface PrerequisiteNode {
@@ -35,7 +35,7 @@ async function buildPrerequisitePath(
   visited: Set<string> = new Set(),
   depth: number = 0,
   path: string[] = [],
-  maxDepth: number = 5
+  maxDepth: number = 5,
 ): Promise<PrerequisiteNode[]> {
   // Prevent infinite loops from circular dependencies
   if (visited.has(objectiveId) || depth > maxDepth) {
@@ -91,7 +91,7 @@ async function buildPrerequisitePath(
       visited,
       depth + 1,
       currentPath,
-      maxDepth
+      maxDepth,
     )
 
     // Update strength for the direct prerequisite
@@ -107,7 +107,7 @@ async function buildPrerequisitePath(
 
 async function handler(
   request: NextRequest,
-  { params }: { params: Promise<{ objectiveId: string }> }
+  { params }: { params: Promise<{ objectiveId: string }> },
 ) {
   const { objectiveId } = await params
   const searchParams = request.nextUrl.searchParams
@@ -129,20 +129,13 @@ async function handler(
     })
 
     if (!objective) {
-      return Response.json(
-        errorResponse('NOT_FOUND', 'Learning objective not found'),
-        { status: 404 }
-      )
+      return Response.json(errorResponse('NOT_FOUND', 'Learning objective not found'), {
+        status: 404,
+      })
     }
 
     // Build prerequisite pathway
-    const prerequisitePath = await buildPrerequisitePath(
-      objectiveId,
-      new Set(),
-      0,
-      [],
-      maxDepth
-    )
+    const prerequisitePath = await buildPrerequisitePath(objectiveId, new Set(), 0, [], maxDepth)
 
     // Remove the root node (the objective itself) from prerequisites
     const prerequisites = prerequisitePath.slice(1)
@@ -181,18 +174,16 @@ async function handler(
           maxDepth: Math.max(...prerequisites.map((n) => n.depth), 0),
           avgStrength:
             prerequisites.length > 0
-              ? prerequisites.reduce((sum, n) => sum + n.strength, 0) /
-                prerequisites.length
+              ? prerequisites.reduce((sum, n) => sum + n.strength, 0) / prerequisites.length
               : 0,
         },
-      })
+      }),
     )
   } catch (error) {
     console.error('Failed to fetch prerequisite pathway:', error)
-    return Response.json(
-      errorResponse('FETCH_FAILED', 'Failed to fetch prerequisite pathway'),
-      { status: 500 }
-    )
+    return Response.json(errorResponse('FETCH_FAILED', 'Failed to fetch prerequisite pathway'), {
+      status: 500,
+    })
   }
 }
 

@@ -7,8 +7,8 @@
  * Vertical timeline with alternating sides
  */
 
-import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils'
 
 interface TimelineSkeletonProps {
   className?: string
@@ -30,9 +30,7 @@ export function TimelineSkeleton({
       {[...Array(items)].map((_, index) => (
         <div key={index} className="relative flex items-start gap-4">
           {/* Timeline Connector Line */}
-          {index < items - 1 && (
-            <div className="absolute left-4 top-10 bottom-0 w-0.5 bg-border" />
-          )}
+          {index < items - 1 && <div className="absolute left-4 top-10 bottom-0 w-0.5 bg-border" />}
 
           {/* Timeline Dot */}
           <div className="relative z-10 flex-shrink-0">

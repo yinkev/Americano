@@ -1,10 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { ArrowUpDown, Filter, Search } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
-import { Search, Filter, ArrowUpDown } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { BulkActionToolbar } from '@/components/library/bulk-action-toolbar'
+import { CourseDialog } from '@/components/library/course-dialog'
+import { LectureFilters } from '@/components/library/lecture-filters'
+import { LectureList } from '@/components/library/lecture-list'
+import { UploadDialog } from '@/components/library/upload-dialog'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -12,15 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { toast } from 'sonner'
-import { LectureList } from '@/components/library/lecture-list'
-import { LectureFilters } from '@/components/library/lecture-filters'
-import { BulkActionToolbar } from '@/components/library/bulk-action-toolbar'
-import { UploadDialog } from '@/components/library/upload-dialog'
-import { CourseDialog } from '@/components/library/course-dialog'
 
 interface Course {
   id: string

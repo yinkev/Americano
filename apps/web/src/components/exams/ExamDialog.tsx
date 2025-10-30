@@ -7,13 +7,13 @@
 
 'use client'
 
-import React from 'react'
-import dynamic from 'next/dynamic'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon, Loader2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import dynamic from 'next/dynamic'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -32,6 +32,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -39,11 +41,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { TagInput } from '@/components/ui/tag-input'
-import { createExamSchema, type CreateExamInput } from '@/lib/validation/exam'
+import { cn } from '@/lib/utils'
+import { type CreateExamInput, createExamSchema } from '@/lib/validation/exam'
 
 // Dynamically import Calendar to avoid SSR issues with DOMMatrix
 const Calendar = dynamic(() => import('@/components/ui/calendar').then((mod) => mod.Calendar), {
@@ -147,9 +147,7 @@ export function ExamDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
 
-      <DialogContent
-        className="sm:max-w-[525px]"
-      >
+      <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle className="text-[20px] font-heading font-semibold">
             {exam ? 'Edit Exam' : 'Add New Exam'}
@@ -169,7 +167,9 @@ export function ExamDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[11px] font-medium uppercase tracking-wide">Exam Name</FormLabel>
+                  <FormLabel className="text-[11px] font-medium uppercase tracking-wide">
+                    Exam Name
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -191,7 +191,9 @@ export function ExamDialog({
               name="courseId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[11px] font-medium uppercase tracking-wide">Course</FormLabel>
+                  <FormLabel className="text-[11px] font-medium uppercase tracking-wide">
+                    Course
+                  </FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -204,11 +206,7 @@ export function ExamDialog({
                     </FormControl>
                     <SelectContent>
                       {courses.map((course) => (
-                        <SelectItem
-                          key={course.id}
-                          value={course.id}
-                          className="cursor-pointer"
-                        >
+                        <SelectItem key={course.id} value={course.id} className="cursor-pointer">
                           {course.code} - {course.name}
                         </SelectItem>
                       ))}
@@ -228,7 +226,9 @@ export function ExamDialog({
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="text-[11px] font-medium uppercase tracking-wide">Exam Date</FormLabel>
+                  <FormLabel className="text-[11px] font-medium uppercase tracking-wide">
+                    Exam Date
+                  </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -244,10 +244,7 @@ export function ExamDialog({
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                    >
+                    <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         selected={field.value}

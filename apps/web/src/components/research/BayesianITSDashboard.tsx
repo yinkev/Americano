@@ -11,89 +11,87 @@
  * Part of: Day 7-8 Research Analytics Implementation
  */
 
-'use client';
+'use client'
 
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import CounterfactualChart from './CounterfactualChart';
-import MCMCDiagnosticsPanel from './MCMCDiagnosticsPanel';
+import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import CounterfactualChart from './CounterfactualChart'
+import MCMCDiagnosticsPanel from './MCMCDiagnosticsPanel'
 
 // ==================== TYPE DEFINITIONS ====================
 
 interface CausalEffect {
-  point_estimate: number;
-  ci_lower: number;
-  ci_upper: number;
-  probability_positive: number;
-  probability_negative: number;
+  point_estimate: number
+  ci_lower: number
+  ci_upper: number
+  probability_positive: number
+  probability_negative: number
 }
 
 interface MCMCDiagnostics {
-  r_hat: Record<string, number>;
-  effective_sample_size: Record<string, number>;
-  divergent_transitions: number;
-  max_tree_depth: number;
-  converged: boolean;
+  r_hat: Record<string, number>
+  effective_sample_size: Record<string, number>
+  divergent_transitions: number
+  max_tree_depth: number
+  converged: boolean
 }
 
 interface ITSAnalysisResponse {
-  immediate_effect: CausalEffect;
-  sustained_effect: CausalEffect;
-  counterfactual_effect: CausalEffect;
-  probability_of_benefit: number;
-  mcmc_diagnostics: MCMCDiagnostics;
+  immediate_effect: CausalEffect
+  sustained_effect: CausalEffect
+  counterfactual_effect: CausalEffect
+  probability_of_benefit: number
+  mcmc_diagnostics: MCMCDiagnostics
   plots: {
-    observed_vs_counterfactual: string; // base64
-    posterior_predictive_check: string;
-    effect_distribution: string;
-    mcmc_diagnostics: string;
-  };
-  mlflow_run_id: string;
-  computation_time_seconds: number;
-  n_observations_pre: number;
-  n_observations_post: number;
+    observed_vs_counterfactual: string // base64
+    posterior_predictive_check: string
+    effect_distribution: string
+    mcmc_diagnostics: string
+  }
+  mlflow_run_id: string
+  computation_time_seconds: number
+  n_observations_pre: number
+  n_observations_post: number
 }
 
 interface ITSAnalysisRequest {
-  user_id: string;
-  intervention_date: string;
-  outcome_metric?: string;
-  include_day_of_week?: boolean;
-  include_time_of_day?: boolean;
-  mcmc_samples?: number;
-  mcmc_chains?: number;
-  start_date?: string;
-  end_date?: string;
+  user_id: string
+  intervention_date: string
+  outcome_metric?: string
+  include_day_of_week?: boolean
+  include_time_of_day?: boolean
+  mcmc_samples?: number
+  mcmc_chains?: number
+  start_date?: string
+  end_date?: string
 }
 
 // ==================== API FUNCTIONS ====================
 
-async function fetchITSAnalysis(
-  request: ITSAnalysisRequest
-): Promise<ITSAnalysisResponse> {
+async function fetchITSAnalysis(request: ITSAnalysisRequest): Promise<ITSAnalysisResponse> {
   const response = await fetch('/api/analytics/research/bayesian-its', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(request),
-  });
+  })
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'ITS analysis failed');
+    const error = await response.json()
+    throw new Error(error.error || 'ITS analysis failed')
   }
 
-  return response.json();
+  return response.json()
 }
 
 // ==================== COMPONENT ====================
 
 interface BayesianITSDashboardProps {
-  userId: string;
-  interventionDate: string;
-  outcomeMetric?: string;
-  autoRun?: boolean;
+  userId: string
+  interventionDate: string
+  outcomeMetric?: string
+  autoRun?: boolean
 }
 
 export default function BayesianITSDashboard({
@@ -102,7 +100,7 @@ export default function BayesianITSDashboard({
   outcomeMetric = 'sessionPerformanceScore',
   autoRun = false,
 }: BayesianITSDashboardProps) {
-  const [isAnalysisTriggered, setIsAnalysisTriggered] = useState(autoRun);
+  const [isAnalysisTriggered, setIsAnalysisTriggered] = useState(autoRun)
 
   // React Query with 120s timeout for MCMC sampling
   const {
@@ -124,11 +122,11 @@ export default function BayesianITSDashboard({
     staleTime: 1000 * 60 * 60, // 1 hour
     gcTime: 1000 * 60 * 60 * 24, // 24 hours
     retry: false, // Don't retry on failure (expensive MCMC)
-  });
+  })
 
   const handleRunAnalysis = () => {
-    setIsAnalysisTriggered(true);
-  };
+    setIsAnalysisTriggered(true)
+  }
 
   // ==================== RENDER STATES ====================
 
@@ -137,13 +135,13 @@ export default function BayesianITSDashboard({
       <div className="rounded-lg border border-white/20 bg-white/80 backdrop-blur-md p-8 text-center shadow-lg">
         <h2 className="mb-4 text-2xl font-bold">Bayesian ITS Analysis</h2>
         <p className="mb-6 text-gray-600">
-          Run Bayesian Interrupted Time Series analysis to estimate causal
-          effects of your intervention.
+          Run Bayesian Interrupted Time Series analysis to estimate causal effects of your
+          intervention.
         </p>
         <div className="mb-6 rounded-md bg-blue-50 p-4">
           <p className="text-sm text-blue-700">
-            <strong>Note:</strong> Analysis takes 60-120 seconds due to MCMC
-            sampling. Please be patient.
+            <strong>Note:</strong> Analysis takes 60-120 seconds due to MCMC sampling. Please be
+            patient.
           </p>
         </div>
         <button
@@ -153,7 +151,7 @@ export default function BayesianITSDashboard({
           Run Analysis
         </button>
       </div>
-    );
+    )
   }
 
   if (isLoading) {
@@ -163,9 +161,7 @@ export default function BayesianITSDashboard({
           <h2 className="text-2xl font-bold">Bayesian ITS Analysis</h2>
           <div className="flex items-center gap-2">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-            <span className="text-sm text-gray-600">
-              Running MCMC sampling...
-            </span>
+            <span className="text-sm text-gray-600">Running MCMC sampling...</span>
           </div>
         </div>
 
@@ -176,7 +172,7 @@ export default function BayesianITSDashboard({
           <div className="h-48 animate-pulse rounded-md bg-gray-100" />
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -193,11 +189,11 @@ export default function BayesianITSDashboard({
           Retry Analysis
         </button>
       </div>
-    );
+    )
   }
 
   if (!results) {
-    return null;
+    return null
   }
 
   // ==================== RESULTS VIEW ====================
@@ -210,8 +206,8 @@ export default function BayesianITSDashboard({
           <div>
             <h2 className="text-2xl font-bold">Bayesian ITS Results</h2>
             <p className="text-sm text-gray-600">
-              Intervention: {new Date(interventionDate).toLocaleDateString()} •
-              Computed in {results.computation_time_seconds.toFixed(1)}s
+              Intervention: {new Date(interventionDate).toLocaleDateString()} • Computed in{' '}
+              {results.computation_time_seconds.toFixed(1)}s
             </p>
           </div>
           <button
@@ -280,44 +276,33 @@ export default function BayesianITSDashboard({
       <div className="rounded-lg border border-white/20 bg-white/60 backdrop-blur-sm p-4 shadow">
         <p className="text-sm text-gray-600">
           <strong>MLflow Run ID:</strong>{' '}
-          <code className="rounded bg-gray-200 px-2 py-1 text-xs">
-            {results.mlflow_run_id}
-          </code>
+          <code className="rounded bg-gray-200 px-2 py-1 text-xs">{results.mlflow_run_id}</code>
         </p>
       </div>
     </div>
-  );
+  )
 }
 
 // ==================== SUB-COMPONENTS ====================
 
 interface EffectCardProps {
-  title: string;
-  effect: CausalEffect;
-  description: string;
-  highlight?: boolean;
+  title: string
+  effect: CausalEffect
+  description: string
+  highlight?: boolean
 }
 
-function EffectCard({
-  title,
-  effect,
-  description,
-  highlight = false,
-}: EffectCardProps) {
-  const isPositive = effect.point_estimate > 0;
-  const bgColor = highlight ? 'bg-blue-50' : 'bg-white';
-  const borderColor = highlight ? 'border-blue-200' : 'border-gray-200';
+function EffectCard({ title, effect, description, highlight = false }: EffectCardProps) {
+  const isPositive = effect.point_estimate > 0
+  const bgColor = highlight ? 'bg-blue-50' : 'bg-white'
+  const borderColor = highlight ? 'border-blue-200' : 'border-gray-200'
 
   return (
     <div className={`rounded-lg border ${borderColor} ${bgColor} backdrop-blur-md p-6 shadow-lg`}>
       <h3 className="mb-2 text-sm font-medium text-gray-600">{title}</h3>
       <div className="mb-2 flex items-baseline gap-2">
-        <span className="text-3xl font-bold">
-          {effect.point_estimate.toFixed(2)}
-        </span>
-        <span
-          className={`text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}
-        >
+        <span className="text-3xl font-bold">{effect.point_estimate.toFixed(2)}</span>
+        <span className={`text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
           {isPositive ? '↑' : '↓'}
         </span>
       </div>
@@ -337,5 +322,5 @@ function EffectCard({
         </span>
       </div>
     </div>
-  );
+  )
 }

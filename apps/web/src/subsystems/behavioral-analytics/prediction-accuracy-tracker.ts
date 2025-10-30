@@ -20,15 +20,15 @@
  *   - Manual correction allowed (user can override)
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import { differenceInDays, subDays, subMonths, subWeeks } from 'date-fns'
 import {
-  StrugglePrediction,
-  PredictionStatus,
   FeedbackType,
+  PredictionStatus,
+  PrismaClient,
   ReviewRating,
+  type StrugglePrediction,
   StudySession,
 } from '@/generated/prisma'
-import { subDays, subWeeks, subMonths, differenceInDays } from 'date-fns'
 import type { FeatureVector } from '@/types/prisma-json'
 
 const prisma = new PrismaClient()
@@ -580,7 +580,7 @@ export class PredictionAccuracyTracker {
       predictions.reduce((sum, p) => {
         const actual = p.actualOutcome ? 1 : 0
         const predicted = p.predictedStruggleProbability
-        return sum + Math.pow(predicted - actual, 2)
+        return sum + (predicted - actual) ** 2
       }, 0) / predictions.length
 
     // Calibration score: 1 - normalized calibration error

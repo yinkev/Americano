@@ -22,11 +22,11 @@
  * - Validation of allowed transitions
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
+import { ChangeType, ConflictStatus } from '@/generated/prisma'
+import { ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { ConflictStatus, ChangeType } from '@/generated/prisma'
 import { ebmEvaluator } from '@/lib/ebm-evaluator'
 
 // ============================================
@@ -42,10 +42,7 @@ const PatchBodySchema = z.object({
 // GET Handler
 // ============================================
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const startTime = Date.now()
     const { id } = await params
@@ -161,10 +158,9 @@ export async function GET(
     })
 
     if (!conflict) {
-      return NextResponse.json(
-        errorResponse(ErrorCodes.NOT_FOUND, 'Conflict not found'),
-        { status: 404 }
-      )
+      return NextResponse.json(errorResponse(ErrorCodes.NOT_FOUND, 'Conflict not found'), {
+        status: 404,
+      })
     }
 
     // Get EBM evaluation for this conflict
@@ -205,19 +201,19 @@ export async function GET(
                 },
               }
             : conflict.sourceAFirstAid
-            ? {
-                type: 'first_aid',
-                id: conflict.sourceAFirstAid.id,
-                content: conflict.sourceAFirstAid.content,
-                edition: conflict.sourceAFirstAid.edition,
-                year: conflict.sourceAFirstAid.year,
-                system: conflict.sourceAFirstAid.system,
-                section: conflict.sourceAFirstAid.section,
-                subsection: conflict.sourceAFirstAid.subsection,
-                pageNumber: conflict.sourceAFirstAid.pageNumber,
-                isHighYield: conflict.sourceAFirstAid.isHighYield,
-              }
-            : null,
+              ? {
+                  type: 'first_aid',
+                  id: conflict.sourceAFirstAid.id,
+                  content: conflict.sourceAFirstAid.content,
+                  edition: conflict.sourceAFirstAid.edition,
+                  year: conflict.sourceAFirstAid.year,
+                  system: conflict.sourceAFirstAid.system,
+                  section: conflict.sourceAFirstAid.section,
+                  subsection: conflict.sourceAFirstAid.subsection,
+                  pageNumber: conflict.sourceAFirstAid.pageNumber,
+                  isHighYield: conflict.sourceAFirstAid.isHighYield,
+                }
+              : null,
           sourceB: conflict.sourceBChunk
             ? {
                 type: 'lecture',
@@ -233,33 +229,33 @@ export async function GET(
                 },
               }
             : conflict.sourceBFirstAid
-            ? {
-                type: 'first_aid',
-                id: conflict.sourceBFirstAid.id,
-                content: conflict.sourceBFirstAid.content,
-                edition: conflict.sourceBFirstAid.edition,
-                year: conflict.sourceBFirstAid.year,
-                system: conflict.sourceBFirstAid.system,
-                section: conflict.sourceBFirstAid.section,
-                subsection: conflict.sourceBFirstAid.subsection,
-                pageNumber: conflict.sourceBFirstAid.pageNumber,
-                isHighYield: conflict.sourceBFirstAid.isHighYield,
-              }
-            : null,
+              ? {
+                  type: 'first_aid',
+                  id: conflict.sourceBFirstAid.id,
+                  content: conflict.sourceBFirstAid.content,
+                  edition: conflict.sourceBFirstAid.edition,
+                  year: conflict.sourceBFirstAid.year,
+                  system: conflict.sourceBFirstAid.system,
+                  section: conflict.sourceBFirstAid.section,
+                  subsection: conflict.sourceBFirstAid.subsection,
+                  pageNumber: conflict.sourceBFirstAid.pageNumber,
+                  isHighYield: conflict.sourceBFirstAid.isHighYield,
+                }
+              : null,
           resolutions: conflict.resolutions,
           history: conflict.history,
           flags: conflict.flags,
         },
         ebmComparison,
         latency,
-      })
+      }),
     )
   } catch (error) {
     console.error('[GET /api/conflicts/:id] Error:', error)
 
     return NextResponse.json(
       errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to fetch conflict details'),
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -268,10 +264,7 @@ export async function GET(
 // PATCH Handler
 // ============================================
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
 
@@ -287,9 +280,9 @@ export async function PATCH(
         errorResponse(
           ErrorCodes.VALIDATION_ERROR,
           'Invalid request body',
-          validatedBody.error.issues
+          validatedBody.error.issues,
         ),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -302,10 +295,9 @@ export async function PATCH(
     })
 
     if (!currentConflict) {
-      return NextResponse.json(
-        errorResponse(ErrorCodes.NOT_FOUND, 'Conflict not found'),
-        { status: 404 }
-      )
+      return NextResponse.json(errorResponse(ErrorCodes.NOT_FOUND, 'Conflict not found'), {
+        status: 404,
+      })
     }
 
     // Validate status transition
@@ -326,9 +318,9 @@ export async function PATCH(
             currentStatus: currentConflict.status,
             requestedStatus: status,
             allowedTransitions: allowed,
-          }
+          },
         ),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -338,7 +330,10 @@ export async function PATCH(
       changeType = ChangeType.RESOLVED
     } else if (status === ConflictStatus.DISMISSED) {
       changeType = ChangeType.DISMISSED
-    } else if (currentConflict.status === ConflictStatus.RESOLVED || currentConflict.status === ConflictStatus.DISMISSED) {
+    } else if (
+      currentConflict.status === ConflictStatus.RESOLVED ||
+      currentConflict.status === ConflictStatus.DISMISSED
+    ) {
       changeType = ChangeType.REOPENED
     } else {
       changeType = ChangeType.DETECTED // Default
@@ -377,14 +372,14 @@ export async function PATCH(
       successResponse({
         conflict: updatedConflict,
         message: `Conflict status updated to ${status}`,
-      })
+      }),
     )
   } catch (error) {
     console.error('[PATCH /api/conflicts/:id] Error:', error)
 
     return NextResponse.json(
       errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to update conflict status'),
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

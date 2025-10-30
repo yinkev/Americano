@@ -13,8 +13,8 @@
  * Status: VERIFIED, IN_PROGRESS, NOT_STARTED
  */
 
-import { prisma } from '@/lib/db'
 import { differenceInDays } from 'date-fns'
+import { prisma } from '@/lib/db'
 
 export enum MasteryStatus {
   VERIFIED = 'VERIFIED',
@@ -109,7 +109,12 @@ export class MasteryVerificationEngine {
         score: r.score,
         date: r.respondedAt,
         calibrationDelta: 0, // Scenarios don't have calibration yet
-        difficulty: r.scenario.difficulty === 'ADVANCED' ? 80 : r.scenario.difficulty === 'INTERMEDIATE' ? 50 : 20,
+        difficulty:
+          r.scenario.difficulty === 'ADVANCED'
+            ? 80
+            : r.scenario.difficulty === 'INTERMEDIATE'
+              ? 50
+              : 20,
       })),
     ].sort((a, b) => b.date.getTime() - a.date.getTime())
 
@@ -148,7 +153,7 @@ export class MasteryVerificationEngine {
       calibrationDelta: number
       difficulty: number
     }>,
-    objectiveComplexity: string
+    objectiveComplexity: string,
   ): MasteryCriteria {
     // Criterion 1: 3 consecutive assessments > 80%
     const consecutiveHighScores = this.checkConsecutiveHighScores(responses)
@@ -201,7 +206,7 @@ export class MasteryVerificationEngine {
    */
   private checkAppropriateDifficulty(
     responses: Array<{ difficulty: number }>,
-    objectiveComplexity: string
+    objectiveComplexity: string,
   ): boolean {
     if (responses.length === 0) return false
 
@@ -261,13 +266,13 @@ export class MasteryVerificationEngine {
       steps.push(
         responsesCount === 0
           ? 'Complete your first assessment to start mastery verification'
-          : 'Achieve 3 consecutive assessments scoring above 80%'
+          : 'Achieve 3 consecutive assessments scoring above 80%',
       )
     }
 
     if (!criteria.multipleAssessmentTypes) {
       steps.push(
-        'Complete both Comprehension and Clinical Reasoning assessments to demonstrate breadth'
+        'Complete both Comprehension and Clinical Reasoning assessments to demonstrate breadth',
       )
     }
 
@@ -277,7 +282,7 @@ export class MasteryVerificationEngine {
 
     if (!criteria.accurateCalibration) {
       steps.push(
-        'Improve confidence calibration - aim for confidence within ±15 points of actual score'
+        'Improve confidence calibration - aim for confidence within ±15 points of actual score',
       )
     }
 

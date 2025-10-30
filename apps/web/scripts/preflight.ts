@@ -28,7 +28,7 @@ async function main() {
   checks.push({
     name: 'Env:GEMINI_API_KEY',
     ok: Boolean(geminiKey && geminiKey.length > 0),
-    details: geminiKey ? 'present' : 'missing'
+    details: geminiKey ? 'present' : 'missing',
   })
 
   // 2) Env: GEMINI_EMBEDDING_MODEL (optional, will default), GEMINI_EMBEDDING_DIM (recommended)
@@ -48,12 +48,16 @@ async function main() {
   checks.push({
     name: 'Env:GEMINI_EMBEDDING_MODEL',
     ok: true,
-    details: model
+    details: model,
   })
   checks.push({
     name: 'Env:GEMINI_EMBEDDING_DIM',
     ok: dimOk,
-    details: dimStr ? (dimOk ? dimStr : 'invalid number') : 'not set (will skip strict DB dim match)'
+    details: dimStr
+      ? dimOk
+        ? dimStr
+        : 'invalid number'
+      : 'not set (will skip strict DB dim match)',
   })
 
   // 3) DB vector dims check (content_chunks)
@@ -67,31 +71,31 @@ async function main() {
         WHERE embedding IS NOT NULL
         GROUP BY 1
         ORDER BY 1
-      `
+      `,
     )
 
     if (!rows || rows.length === 0) {
       checks.push({
         name: 'DB:vector_dims(content_chunks)',
         ok: true,
-        details: 'no embeddings found (OK for fresh DB)'
+        details: 'no embeddings found (OK for fresh DB)',
       })
     } else {
       // If env dim set, require exact match; else just report found dims
       if (dimStr) {
-        const uniqueDims = new Set(rows.map(r => r.dims))
+        const uniqueDims = new Set(rows.map((r) => r.dims))
         const onlyOne = uniqueDims.size === 1
         const matches = onlyOne && [...uniqueDims][0] === dim
         checks.push({
           name: 'DB:vector_dims(content_chunks) == GEMINI_EMBEDDING_DIM',
           ok: matches,
-          details: rows.map(r => `dims=${r.dims} count=${r.count}`).join(', ')
+          details: rows.map((r) => `dims=${r.dims} count=${r.count}`).join(', '),
         })
       } else {
         checks.push({
           name: 'DB:vector_dims(content_chunks)',
           ok: true,
-          details: rows.map(r => `dims=${r.dims} count=${r.count}`).join(', ')
+          details: rows.map((r) => `dims=${r.dims} count=${r.count}`).join(', '),
         })
       }
     }
@@ -100,7 +104,7 @@ async function main() {
     checks.push({
       name: 'DB:vector_dims(content_chunks)',
       ok: false,
-      details: `query failed (${err?.message || 'unknown error'})`
+      details: `query failed (${err?.message || 'unknown error'})`,
     })
   } finally {
     await prisma.$disconnect()
@@ -110,19 +114,19 @@ async function main() {
   const fs = await import('node:fs')
   const filesToCheck = [
     'apps/web/src/lib/rate-limiter.ts',
-    'apps/web/src/lib/logger-pii-redaction.ts'
+    'apps/web/src/lib/logger-pii-redaction.ts',
   ]
   for (const f of filesToCheck) {
     const exists = fs.existsSync(f)
     checks.push({
       name: `FS:${f}`,
       ok: exists,
-      details: exists ? 'present' : 'missing'
+      details: exists ? 'present' : 'missing',
     })
   }
 
   // Summary
-  const failures = checks.filter(c => !c.ok)
+  const failures = checks.filter((c) => !c.ok)
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   console.log('Preflight Summary')
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')

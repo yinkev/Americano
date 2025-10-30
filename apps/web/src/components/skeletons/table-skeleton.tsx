@@ -7,8 +7,8 @@
  * Prevents layout shift by matching real table dimensions
  */
 
-import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils'
 
 interface TableSkeletonProps {
   className?: string
@@ -57,10 +57,7 @@ export function TableSkeleton({
             {[...Array(rows)].map((_, rowIndex) => (
               <tr
                 key={rowIndex}
-                className={cn(
-                  'border-b border-muted',
-                  rowIndex % 2 === 0 && 'bg-muted/30',
-                )}
+                className={cn('border-b border-muted', rowIndex % 2 === 0 && 'bg-muted/30')}
               >
                 {[...Array(columns)].map((_, colIndex) => (
                   <td key={colIndex} className="px-6 py-4">

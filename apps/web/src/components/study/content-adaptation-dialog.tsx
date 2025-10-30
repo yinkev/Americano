@@ -9,21 +9,26 @@
 
 'use client'
 
-import { useState } from 'react'
 import {
-  Brain,
-  TrendingUp,
-  TrendingDown,
-  BookOpen,
-  Target,
-  Zap,
-  Clock,
-  BarChart3,
   ArrowRight,
+  BarChart3,
+  BookOpen,
+  Brain,
   CheckCircle,
-  XCircle,
+  Clock,
   Lightbulb,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  XCircle,
+  Zap,
 } from 'lucide-react'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -32,19 +37,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
+import { cn } from '@/lib/utils'
 import {
   type ContentAdaptation,
   realtimeOrchestrationService,
 } from '@/services/realtime-orchestration'
-import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
 
 interface ContentAdaptationDialogProps {
   open: boolean

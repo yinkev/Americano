@@ -12,15 +12,15 @@
  * - Circuit breaker for database failures
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import {
-  TransientErrorSimulator,
-  PermanentErrorSimulator,
   CircuitBreakerStateTracker,
-  RetryAttemptTracker,
-  TransientErrorType,
+  PermanentErrorSimulator,
   PermanentErrorType,
+  RetryAttemptTracker,
   retryAssertions,
+  TransientErrorSimulator,
+  TransientErrorType,
 } from '../../__tests__/test-utils/retry-test-helpers'
 
 /**
@@ -34,10 +34,7 @@ class MockSemanticSearchService {
 
   constructor(config: { maxRetries?: number; circuitBreakerThreshold?: number } = {}) {
     this.maxRetries = config.maxRetries ?? 3
-    this.circuitBreaker = new CircuitBreakerStateTracker(
-      config.circuitBreakerThreshold ?? 5,
-      60000
-    )
+    this.circuitBreaker = new CircuitBreakerStateTracker(config.circuitBreakerThreshold ?? 5, 60000)
   }
 
   /**
@@ -45,7 +42,7 @@ class MockSemanticSearchService {
    */
   async search(
     query: string,
-    mockPrismaQuery?: (attempt: number) => Promise<any[]>
+    mockPrismaQuery?: (attempt: number) => Promise<any[]>,
   ): Promise<{ results: any[]; fallbackUsed: boolean; embeddingFailed: boolean }> {
     if (this.circuitBreaker.isOpen()) {
       return {
@@ -66,7 +63,7 @@ class MockSemanticSearchService {
         const results = await this.executeVectorSearchWithRetry(
           queryEmbedding,
           mockPrismaQuery,
-          attempt
+          attempt,
         )
 
         const executionTime = Date.now() - startTime
@@ -111,7 +108,9 @@ class MockSemanticSearchService {
    */
   private async generateQueryEmbedding(query: string): Promise<number[]> {
     // Simulate embedding generation that might fail with rate limit
-    return Array(1536).fill(0).map(() => Math.random())
+    return Array(1536)
+      .fill(0)
+      .map(() => Math.random())
   }
 
   /**
@@ -120,7 +119,7 @@ class MockSemanticSearchService {
   private async executeVectorSearchWithRetry(
     queryEmbedding: number[],
     mockPrismaQuery?: (attempt: number) => Promise<any[]>,
-    attempt: number = 0
+    attempt: number = 0,
   ): Promise<any[]> {
     if (mockPrismaQuery) {
       return mockPrismaQuery(attempt)
@@ -166,7 +165,7 @@ class MockSemanticSearchService {
     const multiplier = 2
     const maxDelay = 2000
 
-    const delay = Math.min(baseDelay * Math.pow(multiplier, attempt), maxDelay)
+    const delay = Math.min(baseDelay * multiplier ** attempt, maxDelay)
     const jitter = Math.random() * delay * 0.1
 
     return delay + jitter
@@ -191,7 +190,7 @@ class MockSemanticSearchService {
    * Delay helper
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
   /**
@@ -629,7 +628,7 @@ describe('SemanticSearchService - Retry Logic', () => {
       circuitBreaker.recordFailure()
       expect(circuitBreaker.isOpen()).toBe(true)
 
-      await new Promise(resolve => setTimeout(resolve, 150))
+      await new Promise((resolve) => setTimeout(resolve, 150))
 
       expect(circuitBreaker.canAttemptReset()).toBe(true)
 

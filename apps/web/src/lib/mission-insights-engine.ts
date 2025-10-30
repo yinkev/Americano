@@ -7,9 +7,9 @@
  * Story 2.6: Mission Performance Analytics and Adaptation
  */
 
-import { prisma } from '@/lib/db'
+import { endOfWeek, startOfWeek, subWeeks } from 'date-fns'
 import { MissionStatus } from '@/generated/prisma'
-import { startOfWeek, endOfWeek, subWeeks } from 'date-fns'
+import { prisma } from '@/lib/db'
 
 // Constants for insight generation
 const MIN_MISSIONS_FOR_INSIGHTS = 7
@@ -186,7 +186,7 @@ export class MissionInsightsEngine {
 
     const stdDev = Math.sqrt(
       completionRates
-        .map((rate) => Math.pow(rate - avgCompletionRate, 2))
+        .map((rate) => (rate - avgCompletionRate) ** 2)
         .reduce((sum, val) => sum + val, 0) / completionRates.length,
     )
 

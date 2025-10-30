@@ -3,28 +3,27 @@
  * POST /api/recommendations/[id]/dismiss - Dismiss a recommendation
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse, ApiError, ErrorCodes } from '@/lib/api-response';
+import { type NextRequest, NextResponse } from 'next/server'
+import { ApiError, ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Hard-coded user for MVP
-    const userId = 'kevy@americano.dev';
+    const userId = 'kevy@americano.dev'
 
     // Get recommendation ID from params
-    const { id: recommendationId } = await params;
+    const { id: recommendationId } = await params
 
     // Check if recommendation exists
     const recommendation = await prisma.contentRecommendation.findUnique({
       where: { id: recommendationId },
-    });
+    })
 
     if (!recommendation) {
-      return NextResponse.json(errorResponse(ErrorCodes.NOT_FOUND, 'Recommendation not found'), { status: 404 });
+      return NextResponse.json(errorResponse(ErrorCodes.NOT_FOUND, 'Recommendation not found'), {
+        status: 404,
+      })
     }
 
     // Update recommendation status to DISMISSED
@@ -34,7 +33,7 @@ export async function POST(
         status: 'DISMISSED',
         dismissedAt: new Date(),
       },
-    });
+    })
 
     // Track behavioral event
     await prisma.behavioralEvent.create({
@@ -46,16 +45,21 @@ export async function POST(
           contentId: recommendation.recommendedContentId,
         },
       },
-    });
+    })
 
-    return NextResponse.json(successResponse({ success: true }));
+    return NextResponse.json(successResponse({ success: true }))
   } catch (error) {
-    console.error('[POST /api/recommendations/[id]/dismiss] Error:', error);
+    console.error('[POST /api/recommendations/[id]/dismiss] Error:', error)
 
     if (error instanceof ApiError) {
-      return NextResponse.json(errorResponse(error.code, error.message), { status: error.statusCode });
+      return NextResponse.json(errorResponse(error.code, error.message), {
+        status: error.statusCode,
+      })
     }
 
-    return NextResponse.json(errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to dismiss recommendation'), { status: 500 });
+    return NextResponse.json(
+      errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to dismiss recommendation'),
+      { status: 500 },
+    )
   }
 }

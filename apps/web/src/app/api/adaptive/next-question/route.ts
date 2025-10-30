@@ -12,15 +12,15 @@
  * - Performance target: < 1s per question
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { getUserId } from '@/lib/auth'
-import { ApiError } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
-import { validateRequest, nextQuestionSchema } from '@/lib/validation'
+import { subDays } from 'date-fns'
+import { type NextRequest, NextResponse } from 'next/server'
 import { AdaptiveDifficultyEngine } from '@/lib/adaptive/adaptive-engine'
 import { IrtEngine } from '@/lib/adaptive/irt-engine'
-import { subDays } from 'date-fns'
+import { ApiError } from '@/lib/api-error'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getUserId } from '@/lib/auth'
+import { prisma } from '@/lib/db'
+import { nextQuestionSchema, validateRequest } from '@/lib/validation'
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       // First question - calculate initial difficulty
       const initialDifficulty = await difficultyEngine.calculateInitialDifficulty(
         userId,
-        data.objectiveId
+        data.objectiveId,
       )
 
       currentDifficulty = initialDifficulty.difficulty
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
           adaptiveSession.currentDifficulty,
           data.lastScore,
           data.lastConfidence,
-          adaptiveSession.questionCount
+          adaptiveSession.questionCount,
         )
 
         currentDifficulty = difficultyAdjustment.newDifficulty
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
 
     if (!prompt) {
       throw ApiError.notFound(
-        'No unused questions available at target difficulty. Please try a different objective or wait for cooldown period.'
+        'No unused questions available at target difficulty. Please try a different objective or wait for cooldown period.',
       )
     }
 
@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
               iterations: irtEstimate.iterations,
             }
           : null,
-      })
+      }),
     )
   } catch (error) {
     console.error('[API] POST /api/adaptive/next-question error:', error)
@@ -238,9 +238,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(errorResponse(error), { status: error.statusCode })
     }
 
-    return NextResponse.json(
-      errorResponse(ApiError.internal('Failed to get next question')),
-      { status: 500 }
-    )
+    return NextResponse.json(errorResponse(ApiError.internal('Failed to get next question')), {
+      status: 500,
+    })
   }
 }

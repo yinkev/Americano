@@ -11,17 +11,17 @@
  * (e.g., 40% baseline → 30% current = 25% reduction)
  */
 
-import { prisma } from '@/lib/db'
-import { subDays, subWeeks, differenceInDays } from 'date-fns'
+import { differenceInDays, subDays, subWeeks } from 'date-fns'
 import type {
-  StrugglePrediction,
+  BehavioralEvent,
   InterventionRecommendation,
   Review,
+  StrugglePrediction,
   StudySession,
-  BehavioralEvent,
   ValidationResponse,
 } from '@/generated/prisma'
-import { ReviewRating, InterventionType } from '@/generated/prisma'
+import { type InterventionType, ReviewRating } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import type { EventData } from '@/types/prisma-json'
 
 /**
@@ -138,7 +138,7 @@ export class StruggleReductionAnalyzer {
     })
 
     if (baselineSessions.length === 0) {
-      return this.getEmptyStruggleRate(baselineStartDate, baselineEndDate)
+      return StruggleReductionAnalyzer.getEmptyStruggleRate(baselineStartDate, baselineEndDate)
     }
 
     // Also query behavioral events for session performance scores
@@ -290,7 +290,7 @@ export class StruggleReductionAnalyzer {
     })
 
     if (currentSessions.length === 0) {
-      return this.getEmptyStruggleRate(currentStartDate, currentEndDate)
+      return StruggleReductionAnalyzer.getEmptyStruggleRate(currentStartDate, currentEndDate)
     }
 
     // Query behavioral events for session performance scores
@@ -424,10 +424,16 @@ export class StruggleReductionAnalyzer {
     const activationDate = predictionActivationDate || subWeeks(new Date(), 6)
 
     // Calculate baseline (before activation)
-    const baselineRate = await this.calculateBaselineStruggleRate(userId, activationDate)
+    const baselineRate = await StruggleReductionAnalyzer.calculateBaselineStruggleRate(
+      userId,
+      activationDate,
+    )
 
     // Calculate current (after activation)
-    const currentRate = await this.calculateCurrentStruggleRate(userId, activationDate)
+    const currentRate = await StruggleReductionAnalyzer.calculateCurrentStruggleRate(
+      userId,
+      activationDate,
+    )
 
     // Calculate reduction percentage
     const reductionPercentage =
@@ -437,22 +443,34 @@ export class StruggleReductionAnalyzer {
     const meetsTarget = reductionPercentage >= 25
 
     // Generate timeline (weekly aggregation)
-    const timeline = await this.generateTimeline(userId, baselineRate.period.startDate, new Date())
+    const timeline = await StruggleReductionAnalyzer.generateTimeline(
+      userId,
+      baselineRate.period.startDate,
+      new Date(),
+    )
 
     // Analyze intervention effectiveness
-    const interventionEffectiveness = await this.identifySuccessfulInterventions(userId)
+    const interventionEffectiveness =
+      await StruggleReductionAnalyzer.identifySuccessfulInterventions(userId)
 
     // Calculate average performance improvement
-    const performanceImprovement = await this.calculatePerformanceImprovement(
+    const performanceImprovement = await StruggleReductionAnalyzer.calculatePerformanceImprovement(
       userId,
       activationDate,
     )
 
     // Estimate time saved
-    const timeSavedMinutes = await this.estimateTimeSaved(userId, baselineRate, currentRate)
+    const timeSavedMinutes = await StruggleReductionAnalyzer.estimateTimeSaved(
+      userId,
+      baselineRate,
+      currentRate,
+    )
 
     // Calculate confidence increase
-    const confidenceIncrease = await this.calculateConfidenceIncrease(userId, activationDate)
+    const confidenceIncrease = await StruggleReductionAnalyzer.calculateConfidenceIncrease(
+      userId,
+      activationDate,
+    )
 
     // Data quality metrics
     const baselineSessions = await prisma.studySession.count({

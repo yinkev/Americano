@@ -15,13 +15,13 @@
  * - Async state management with React Query
  */
 
-import React from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { HttpResponse, http } from 'msw'
+import type React from 'react'
 import { UnderstandingDashboard } from '@/components/analytics/UnderstandingDashboard'
-import { server, setupMSW, createErrorHandler, create503Handler } from '../../setup'
-import { http, HttpResponse } from 'msw'
+import { create503Handler, createErrorHandler, server, setupMSW } from '../../setup'
 
 // Initialize MSW server
 setupMSW()
@@ -328,10 +328,7 @@ describe('UnderstandingDashboard Component - Integration Tests', () => {
       // Mock API error
       server.use(
         http.get(`${API_BASE_URL}/api/analytics/predictions`, () => {
-          return HttpResponse.json(
-            { error: 'Failed to fetch predictions' },
-            { status: 500 },
-          )
+          return HttpResponse.json({ error: 'Failed to fetch predictions' }, { status: 500 })
         }),
       )
 
@@ -339,9 +336,7 @@ describe('UnderstandingDashboard Component - Integration Tests', () => {
 
       // Wait for error state
       await waitFor(() => {
-        expect(
-          screen.getByText(/error|failed|something went wrong/i),
-        ).toBeInTheDocument()
+        expect(screen.getByText(/error|failed|something went wrong/i)).toBeInTheDocument()
       })
 
       // Verify error message mentions predictions
@@ -449,9 +444,7 @@ describe('UnderstandingDashboard Component - Integration Tests', () => {
 
       // Wait for empty state
       await waitFor(() => {
-        expect(
-          screen.getByText(/no predictions|empty|no data/i),
-        ).toBeInTheDocument()
+        expect(screen.getByText(/no predictions|empty|no data/i)).toBeInTheDocument()
       })
     })
 
@@ -479,9 +472,7 @@ describe('UnderstandingDashboard Component - Integration Tests', () => {
 
       // Wait for insufficient data message
       await waitFor(() => {
-        expect(
-          screen.getByText(/insufficient|not enough|more data needed/i),
-        ).toBeInTheDocument()
+        expect(screen.getByText(/insufficient|not enough|more data needed/i)).toBeInTheDocument()
       })
     })
   })

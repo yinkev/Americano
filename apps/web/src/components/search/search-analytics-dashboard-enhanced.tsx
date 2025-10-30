@@ -14,10 +14,27 @@
 
 'use client'
 
+import { AlertCircle, BarChart3, Clock, Download, Search, TrendingUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import type { PieLabelRenderProps } from 'recharts'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -26,30 +43,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts'
-import type { PieLabelRenderProps } from 'recharts'
-import { AlertCircle, Search, TrendingUp, Clock, BarChart3, Download } from 'lucide-react'
 
 // OKLCH colors for charts (no gradients per design system)
 const CHART_COLORS = [
   'oklch(0.65 0.15 250)', // Blue
   'oklch(0.60 0.15 150)', // Green
-  'oklch(0.70 0.15 50)',  // Yellow
-  'oklch(0.65 0.15 0)',   // Red
+  'oklch(0.70 0.15 50)', // Yellow
+  'oklch(0.65 0.15 0)', // Red
   'oklch(0.60 0.15 290)', // Purple
   'oklch(0.65 0.15 180)', // Cyan
 ]
@@ -192,12 +192,8 @@ export function SearchAnalyticsDashboardEnhanced({
       <Card className={className}>
         <CardContent className="flex flex-col items-center justify-center py-12">
           <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-          <p className="text-lg font-medium text-gray-900">
-            Failed to load analytics
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            {error || 'An unknown error occurred'}
-          </p>
+          <p className="text-lg font-medium text-gray-900">Failed to load analytics</p>
+          <p className="text-sm text-gray-500 mt-2">{error || 'An unknown error occurred'}</p>
           <Button onClick={fetchAnalytics} className="mt-4">
             Retry
           </Button>
@@ -209,7 +205,7 @@ export function SearchAnalyticsDashboardEnhanced({
   const { summary, volumeOverTime, topQueries, contentTypeDistribution, contentGaps } = analytics
 
   // Prepare data for charts
-  const topQueriesData = topQueries.slice(0, 20).map(q => ({
+  const topQueriesData = topQueries.slice(0, 20).map((q) => ({
     name: q.query.length > 30 ? q.query.substring(0, 30) + '...' : q.query,
     fullName: q.query,
     count: q.count,
@@ -258,12 +254,7 @@ export function SearchAnalyticsDashboardEnhanced({
             <Download className="h-4 w-4" />
             JSON
           </Button>
-          <Button
-            onClick={() => handleExport('csv')}
-            variant="outline"
-            size="sm"
-            className="gap-2"
-          >
+          <Button onClick={() => handleExport('csv')} variant="outline" size="sm" className="gap-2">
             <Download className="h-4 w-4" />
             CSV
           </Button>
@@ -274,9 +265,7 @@ export function SearchAnalyticsDashboardEnhanced({
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">
-              Total Searches
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500">Total Searches</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-gray-900">
@@ -323,9 +312,7 @@ export function SearchAnalyticsDashboardEnhanced({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-gray-900">
-              {summary.contentGapsCount}
-            </div>
+            <div className="text-3xl font-bold text-gray-900">{summary.contentGapsCount}</div>
           </CardContent>
         </Card>
       </div>
@@ -334,9 +321,7 @@ export function SearchAnalyticsDashboardEnhanced({
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Search Volume Over Time</CardTitle>
-          <CardDescription>
-            Daily search activity for the last {period}
-          </CardDescription>
+          <CardDescription>Daily search activity for the last {period}</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -347,10 +332,7 @@ export function SearchAnalyticsDashboardEnhanced({
                 stroke="oklch(0.5 0.05 250)"
                 tick={{ fill: 'oklch(0.5 0.05 250)' }}
               />
-              <YAxis
-                stroke="oklch(0.5 0.05 250)"
-                tick={{ fill: 'oklch(0.5 0.05 250)' }}
-              />
+              <YAxis stroke="oklch(0.5 0.05 250)" tick={{ fill: 'oklch(0.5 0.05 250)' }} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: 'oklch(1 0 0)',
@@ -381,9 +363,7 @@ export function SearchAnalyticsDashboardEnhanced({
               <BarChart3 className="h-5 w-5" />
               Top 20 Search Queries
             </CardTitle>
-            <CardDescription>
-              Most frequently searched queries
-            </CardDescription>
+            <CardDescription>Most frequently searched queries</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={400}>
@@ -417,7 +397,8 @@ export function SearchAnalyticsDashboardEnhanced({
                             Count: <span className="font-semibold">{data.count}</span>
                           </p>
                           <p className="text-sm text-gray-600">
-                            Avg Results: <span className="font-semibold">{data.avgResults.toFixed(1)}</span>
+                            Avg Results:{' '}
+                            <span className="font-semibold">{data.avgResults.toFixed(1)}</span>
                           </p>
                         </div>
                       )
@@ -435,9 +416,7 @@ export function SearchAnalyticsDashboardEnhanced({
         <Card>
           <CardHeader>
             <CardTitle>Search by Content Type</CardTitle>
-            <CardDescription>
-              Distribution of clicked content types
-            </CardDescription>
+            <CardDescription>Distribution of clicked content types</CardDescription>
           </CardHeader>
           <CardContent>
             {pieChartData.length === 0 ? (
@@ -505,9 +484,7 @@ export function SearchAnalyticsDashboardEnhanced({
               <TableBody>
                 {contentGaps.map((gap, index) => (
                   <TableRow key={index}>
-                    <TableCell className="font-medium max-w-[300px]">
-                      {gap.query}
-                    </TableCell>
+                    <TableCell className="font-medium max-w-[300px]">{gap.query}</TableCell>
                     <TableCell className="text-right">
                       <Badge variant="secondary">{gap.searchFrequency}</Badge>
                     </TableCell>
@@ -515,9 +492,7 @@ export function SearchAnalyticsDashboardEnhanced({
                       {gap.avgResultCount.toFixed(1)}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Badge
-                        variant={gap.priorityScore >= 2 ? 'destructive' : 'default'}
-                      >
+                      <Badge variant={gap.priorityScore >= 2 ? 'destructive' : 'default'}>
                         {gap.priorityScore.toFixed(2)}
                       </Badge>
                     </TableCell>

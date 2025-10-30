@@ -1,5 +1,5 @@
 /* Minimal example hooks using TanStack Query (safe scaffold) */
-import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import { type UseQueryOptions, useQuery } from '@tanstack/react-query'
 import { api } from './client'
 import { endpoints } from './endpoints'
 import { queryKeys } from './queryKeys'

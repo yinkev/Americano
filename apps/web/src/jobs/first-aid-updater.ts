@@ -21,9 +21,9 @@
  */
 
 import cron from 'node-cron'
-import { firstAidVersionChecker } from '@/lib/first-aid-version-checker'
-import { firstAidUpdateNotifier } from '@/lib/first-aid-update-notifier'
 import type { NotificationMethod } from '@/lib/first-aid-update-notifier'
+import { firstAidUpdateNotifier } from '@/lib/first-aid-update-notifier'
+import { firstAidVersionChecker } from '@/lib/first-aid-version-checker'
 
 /**
  * Job execution result
@@ -111,7 +111,7 @@ export class FirstAidUpdater {
       },
       {
         timezone: 'America/New_York', // Adjust to your timezone
-      }
+      },
     )
 
     console.log(`✓ First Aid updater started successfully`)
@@ -159,7 +159,7 @@ export class FirstAidUpdater {
 
       // Step 2: Filter users with available updates
       const usersWithUpdates = new Map(
-        Array.from(updateResults.entries()).filter(([, result]) => result.updateAvailable)
+        Array.from(updateResults.entries()).filter(([, result]) => result.updateAvailable),
       )
 
       if (this.config.logResults) {
@@ -177,13 +177,13 @@ export class FirstAidUpdater {
           console.log(`   Users with updates:`)
           for (const [userId, result] of usersWithUpdates) {
             console.log(
-              `   - ${userId}: ${result.currentVersion} → ${result.latestVersion} (${result.versionDifference} version${result.versionDifference > 1 ? 's' : ''} behind)`
+              `   - ${userId}: ${result.currentVersion} → ${result.latestVersion} (${result.versionDifference} version${result.versionDifference > 1 ? 's' : ''} behind)`,
             )
           }
         } else {
           notificationResults = await firstAidUpdateNotifier.notifyMultipleUsers(
             usersWithUpdates,
-            this.config.notificationMethod
+            this.config.notificationMethod,
           )
         }
       }
@@ -194,8 +194,8 @@ export class FirstAidUpdater {
         executedAt: new Date(),
         usersChecked: updateResults.size,
         updatesFound: usersWithUpdates.size,
-        notificationsSent: notificationResults.filter(r => r.success).length,
-        notificationsFailed: notificationResults.filter(r => !r.success).length,
+        notificationsSent: notificationResults.filter((r) => r.success).length,
+        notificationsFailed: notificationResults.filter((r) => !r.success).length,
         errors,
         duration,
         success: true,

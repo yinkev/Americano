@@ -1,7 +1,7 @@
 // /api/content/lectures/bulk route
 // POST: Perform bulk operations on multiple lectures (move, tag, delete)
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getStorageProvider } from '@/lib/storage'
 
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     let result
 
     switch (action) {
-      case 'move':
+      case 'move': {
         if (!data?.courseId) {
           return Response.json(
             {
@@ -134,6 +134,7 @@ export async function POST(request: NextRequest) {
           affectedCount: result.count,
           message: `${result.count} lecture(s) moved to course: ${course.name}`,
         })
+      }
 
       case 'tag':
         if (!data?.tags || !Array.isArray(data.tags) || data.tags.length === 0) {
@@ -208,7 +209,7 @@ export async function POST(request: NextRequest) {
           })
         }
 
-      case 'delete':
+      case 'delete': {
         // Fetch all lectures to get file URLs before deletion
         const lecturesToDelete = await prisma.lecture.findMany({
           where: { id: { in: lectureIds } },
@@ -242,6 +243,7 @@ export async function POST(request: NextRequest) {
             failed: failedDeletions,
           },
         })
+      }
 
       default:
         return Response.json(

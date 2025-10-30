@@ -15,11 +15,7 @@
  */
 
 import { GeminiClient } from './ai/gemini-client'
-import {
-  retryService,
-  DEFAULT_POLICIES,
-  type RetryAttempt,
-} from './retry/retry-service'
+import { DEFAULT_POLICIES, type RetryAttempt, retryService } from './retry/retry-service'
 
 /**
  * Configuration for the embedding service
@@ -109,9 +105,7 @@ export interface RateLimitUsage {
  */
 export class EmbeddingService {
   private geminiClient: GeminiClient
-  private config: Required<
-    Omit<EmbeddingServiceConfig, 'onRateLimitWarning' | 'onRetry'>
-  >
+  private config: Required<Omit<EmbeddingServiceConfig, 'onRateLimitWarning' | 'onRetry'>>
   private onRateLimitWarning?: (usage: RateLimitUsage) => void
   private onRetry?: (attempts: RetryAttempt[]) => void
   private requestTimestamps: number[] = []
@@ -189,7 +183,7 @@ export class EmbeddingService {
         maxAttempts: this.config.maxRetries,
         ...DEFAULT_POLICIES.GEMINI_API,
       },
-      'embedding-service'
+      'embedding-service',
     )
 
     // Notify retry callback if provided
@@ -247,7 +241,7 @@ export class EmbeddingService {
 
     if (this.config.enableRetryLogging) {
       console.log(
-        `[EmbeddingService] Starting batch processing: ${totalTexts} texts in batches of ${this.config.batchSize}`
+        `[EmbeddingService] Starting batch processing: ${totalTexts} texts in batches of ${this.config.batchSize}`,
       )
     }
 
@@ -260,7 +254,7 @@ export class EmbeddingService {
 
       if (this.config.enableRetryLogging) {
         console.log(
-          `[EmbeddingService] Processing batch ${batchNumber}/${totalBatches} (${batch.length} texts)`
+          `[EmbeddingService] Processing batch ${batchNumber}/${totalBatches} (${batch.length} texts)`,
         )
       }
 
@@ -272,9 +266,7 @@ export class EmbeddingService {
 
           if (result.error) {
             // Store detailed error information
-            const errorMessage = result.permanent
-              ? `[PERMANENT] ${result.error}`
-              : result.error
+            const errorMessage = result.permanent ? `[PERMANENT] ${result.error}` : result.error
             errors.set(originalIndex, errorMessage)
             failureCount++
 
@@ -282,7 +274,7 @@ export class EmbeddingService {
             if (result.permanent && this.config.enableRetryLogging) {
               console.error(
                 `[EmbeddingService] Permanent error for text ${originalIndex}: ${result.error}`,
-                result.errorDetails?.type
+                result.errorDetails?.type,
               )
             }
 
@@ -291,7 +283,7 @@ export class EmbeddingService {
             successCount++
             return result.embedding
           }
-        })
+        }),
       )
 
       embeddings.push(...batchResults)
@@ -307,12 +299,10 @@ export class EmbeddingService {
     // Log batch summary
     if (this.config.enableRetryLogging) {
       console.log(
-        `[EmbeddingService] Batch complete: ${successCount} success, ${failureCount} failed in ${(batchElapsedTime / 1000).toFixed(1)}s`
+        `[EmbeddingService] Batch complete: ${successCount} success, ${failureCount} failed in ${(batchElapsedTime / 1000).toFixed(1)}s`,
       )
       if (failureCount > 0) {
-        console.warn(
-          `[EmbeddingService] Failed texts: ${Array.from(errors.keys()).join(', ')}`
-        )
+        console.warn(`[EmbeddingService] Failed texts: ${Array.from(errors.keys()).join(', ')}`)
       }
     }
 
@@ -334,7 +324,7 @@ export class EmbeddingService {
 
     // Remove timestamps older than 24 hours
     this.dailyRequestTimestamps = this.dailyRequestTimestamps.filter(
-      (timestamp) => timestamp > oneDayAgo
+      (timestamp) => timestamp > oneDayAgo,
     )
 
     // If at daily limit, wait until oldest request expires
@@ -345,7 +335,7 @@ export class EmbeddingService {
       if (waitTime > 0) {
         const hoursToWait = Math.ceil(waitTime / 3600000)
         console.error(
-          `⚠️ GEMINI API DAILY QUOTA REACHED (${this.config.maxRequestsPerDay} RPD)! Waiting ${hoursToWait}h...`
+          `⚠️ GEMINI API DAILY QUOTA REACHED (${this.config.maxRequestsPerDay} RPD)! Waiting ${hoursToWait}h...`,
         )
         // Notify user via callback
         if (this.onRateLimitWarning) {
@@ -370,9 +360,7 @@ export class EmbeddingService {
     const oneMinuteAgo = now - 60000
 
     // Remove timestamps older than 1 minute
-    this.requestTimestamps = this.requestTimestamps.filter(
-      (timestamp) => timestamp > oneMinuteAgo
-    )
+    this.requestTimestamps = this.requestTimestamps.filter((timestamp) => timestamp > oneMinuteAgo)
 
     // If at limit, wait until oldest request expires
     if (this.requestTimestamps.length >= this.config.maxRequestsPerMinute) {
@@ -381,7 +369,7 @@ export class EmbeddingService {
 
       if (waitTime > 0) {
         console.warn(
-          `⚠️ Rate limit reached (${this.config.maxRequestsPerMinute} RPM). Waiting ${Math.ceil(waitTime / 1000)}s...`
+          `⚠️ Rate limit reached (${this.config.maxRequestsPerMinute} RPM). Waiting ${Math.ceil(waitTime / 1000)}s...`,
         )
         await this.delay(waitTime)
       }
@@ -436,15 +424,18 @@ export class EmbeddingService {
     const oneDayAgo = now - 86400000
 
     const recentMinuteRequests = this.requestTimestamps.filter(
-      (timestamp) => timestamp > oneMinuteAgo
+      (timestamp) => timestamp > oneMinuteAgo,
     )
     const recentDayRequests = this.dailyRequestTimestamps.filter(
-      (timestamp) => timestamp > oneDayAgo
+      (timestamp) => timestamp > oneDayAgo,
     )
 
     const minutePercent = (recentMinuteRequests.length / this.config.maxRequestsPerMinute) * 100
     const dayPercent = (recentDayRequests.length / this.config.maxRequestsPerDay) * 100
-    const availableRequests = Math.max(0, this.config.maxRequestsPerMinute - recentMinuteRequests.length)
+    const availableRequests = Math.max(
+      0,
+      this.config.maxRequestsPerMinute - recentMinuteRequests.length,
+    )
 
     return {
       requestsInLastMinute: recentMinuteRequests.length,
@@ -477,7 +468,9 @@ export function consoleRateLimitNotification(usage: RateLimitUsage): void {
     console.warn('🚨 GEMINI API RATE LIMIT WARNING')
     console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
     console.warn(usage.warning)
-    console.warn(`Daily: ${usage.requestsInLastDay}/${usage.maxRequestsPerDay} (${usage.dailyQuotaUsedPercent.toFixed(1)}%)`)
+    console.warn(
+      `Daily: ${usage.requestsInLastDay}/${usage.maxRequestsPerDay} (${usage.dailyQuotaUsedPercent.toFixed(1)}%)`,
+    )
     console.warn(`Per-Minute: ${usage.requestsInLastMinute}/${usage.maxRequestsPerMinute}`)
     console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   }

@@ -3,7 +3,7 @@
 // PATCH: Update lecture metadata (title, courseId, weekNumber, topicTags)
 // DELETE: Delete lecture with cascades (chunks, objectives, PDF file)
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getStorageProvider } from '@/lib/storage'
 

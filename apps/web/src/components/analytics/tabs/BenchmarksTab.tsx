@@ -16,41 +16,41 @@
  * Performance: React Query for data fetching with stale-while-revalidate
  */
 
-'use client';
+'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useQuery } from '@tanstack/react-query';
-import { useUnderstandingAnalyticsStore } from '@/store/understanding-analytics-store';
+import { useQuery } from '@tanstack/react-query'
 import {
-  ResponsiveContainer,
-  ComposedChart,
+  AlertCircle,
+  AlertTriangle,
+  Award,
+  Info,
+  Shield,
+  TrendingDown,
+  TrendingUp,
+  Users,
+} from 'lucide-react'
+import {
   Bar,
+  CartesianGrid,
+  Cell,
+  ComposedChart,
+  Legend,
   Line,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ReferenceLine,
-  Cell,
-} from 'recharts';
-import {
-  AlertTriangle,
-  TrendingUp,
-  TrendingDown,
-  Users,
-  Shield,
-  Info,
-  Award,
-  AlertCircle,
-} from 'lucide-react';
-import type { PeerBenchmarkResponse } from '@/lib/validation';
+} from 'recharts'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { PeerBenchmarkResponse } from '@/lib/validation'
+import { useUnderstandingAnalyticsStore } from '@/store/understanding-analytics-store'
 
 export default function BenchmarksTab() {
-  const { dateRange, courseId, topic } = useUnderstandingAnalyticsStore();
+  const { dateRange, courseId, topic } = useUnderstandingAnalyticsStore()
 
   const { data, isLoading, error } = useQuery<PeerBenchmarkResponse>({
     queryKey: ['peer-benchmark', dateRange, courseId, topic],
@@ -59,38 +59,36 @@ export default function BenchmarksTab() {
         dateRange,
         ...(courseId && { courseId }),
         ...(topic && { topic }),
-      });
-      const response = await fetch(`/api/analytics/understanding/peer-benchmark?${params}`);
+      })
+      const response = await fetch(`/api/analytics/understanding/peer-benchmark?${params}`)
       if (!response.ok) {
-        throw new Error('Failed to fetch peer benchmark data');
+        throw new Error('Failed to fetch peer benchmark data')
       }
-      return response.json();
+      return response.json()
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     retry: 1,
-  });
+  })
 
   if (isLoading) {
-    return <BenchmarksSkeleton />;
+    return <BenchmarksSkeleton />
   }
 
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-12 space-y-4">
         <AlertCircle className="w-16 h-16 text-[oklch(0.65_0.20_25)]" />
-        <p className="text-[oklch(0.65_0.20_25)] font-medium">
-          Failed to load peer benchmark data
-        </p>
+        <p className="text-[oklch(0.65_0.20_25)] font-medium">Failed to load peer benchmark data</p>
         <p className="text-sm text-[oklch(0.6_0.05_240)]">
           Please ensure you have opted into peer comparison analytics.
         </p>
       </div>
-    );
+    )
   }
 
-  if (!data) return null;
+  if (!data) return null
 
-  const isStatisticallyValid = data.sampleSize >= 50;
+  const isStatisticallyValid = data.sampleSize >= 50
 
   return (
     <div className="space-y-6">
@@ -139,9 +137,7 @@ export default function BenchmarksTab() {
               <Award className="w-5 h-5 text-[oklch(0.7_0.15_145)]" />
               Relative Strengths
             </CardTitle>
-            <p className="text-sm text-[oklch(0.6_0.05_240)]">
-              Top 25% vs. peers
-            </p>
+            <p className="text-sm text-[oklch(0.6_0.05_240)]">Top 25% vs. peers</p>
           </CardHeader>
           <CardContent>
             {data.relativeStrengths.length === 0 ? (
@@ -183,9 +179,7 @@ export default function BenchmarksTab() {
               <AlertTriangle className="w-5 h-5 text-[oklch(0.65_0.20_25)]" />
               Relative Weaknesses
             </CardTitle>
-            <p className="text-sm text-[oklch(0.6_0.05_240)]">
-              Bottom 25% vs. peers
-            </p>
+            <p className="text-sm text-[oklch(0.6_0.05_240)]">Bottom 25% vs. peers</p>
           </CardHeader>
           <CardContent>
             {data.relativeWeaknesses.length === 0 ? (
@@ -224,7 +218,7 @@ export default function BenchmarksTab() {
       {/* Growth Rate Comparison */}
       <GrowthRateComparison sampleSize={data.sampleSize} />
     </div>
-  );
+  )
 }
 
 /**
@@ -232,7 +226,7 @@ export default function BenchmarksTab() {
  * Displays opt-in consent, sample size, cohort definition, and opt-out button
  */
 interface PrivacyNoticeCardProps {
-  sampleSize: number;
+  sampleSize: number
 }
 
 function PrivacyNoticeCard({ sampleSize }: PrivacyNoticeCardProps) {
@@ -242,19 +236,19 @@ function PrivacyNoticeCard({ sampleSize }: PrivacyNoticeCardProps) {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sharePeerCalibrationData: false }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to update preferences');
+        throw new Error('Failed to update preferences')
       }
 
       // Refresh the page to reflect changes
-      window.location.reload();
+      window.location.reload()
     } catch (error) {
-      console.error('Failed to opt out:', error);
-      alert('Failed to update privacy settings. Please try again.');
+      console.error('Failed to opt out:', error)
+      alert('Failed to update privacy settings. Please try again.')
     }
-  };
+  }
 
   return (
     <Card className="bg-[oklch(0.95_0.18_230)]/50 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-[oklch(0.8_0.18_230)]">
@@ -267,8 +261,8 @@ function PrivacyNoticeCard({ sampleSize }: PrivacyNoticeCardProps) {
                 Privacy-First Peer Comparison
               </h3>
               <p className="text-sm text-[oklch(0.5_0.18_230)] mt-1">
-                You have <strong>opted into</strong> anonymous peer comparison analytics.
-                Your data helps {sampleSize - 1} other students while remaining unidentifiable.
+                You have <strong>opted into</strong> anonymous peer comparison analytics. Your data
+                helps {sampleSize - 1} other students while remaining unidentifiable.
               </p>
             </div>
 
@@ -276,13 +270,15 @@ function PrivacyNoticeCard({ sampleSize }: PrivacyNoticeCardProps) {
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 <span>
-                  <strong>Cohort:</strong> {sampleSize} medical students with similar course progress
+                  <strong>Cohort:</strong> {sampleSize} medical students with similar course
+                  progress
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Info className="w-4 h-4" />
                 <span>
-                  <strong>Data Shared:</strong> Only aggregated performance statistics (no names, emails, or demographics)
+                  <strong>Data Shared:</strong> Only aggregated performance statistics (no names,
+                  emails, or demographics)
                 </span>
               </div>
             </div>
@@ -299,7 +295,7 @@ function PrivacyNoticeCard({ sampleSize }: PrivacyNoticeCardProps) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 /**
@@ -308,18 +304,18 @@ function PrivacyNoticeCard({ sampleSize }: PrivacyNoticeCardProps) {
  */
 interface PeerDistributionBoxPlotProps {
   metricData: {
-    metric: string;
-    percentile25: number;
-    percentile50: number;
-    percentile75: number;
-    mean: number;
-    userValue: number;
-  };
-  userPercentile: number;
+    metric: string
+    percentile25: number
+    percentile50: number
+    percentile75: number
+    mean: number
+    userValue: number
+  }
+  userPercentile: number
 }
 
 function PeerDistributionBoxPlot({ metricData, userPercentile }: PeerDistributionBoxPlotProps) {
-  const { metric, percentile25, percentile50, percentile75, mean, userValue } = metricData;
+  const { metric, percentile25, percentile50, percentile75, mean, userValue } = metricData
 
   // Prepare data for Recharts ComposedChart (box plot approximation)
   // We'll use Bar chart with error bars to simulate box plot
@@ -334,17 +330,17 @@ function PeerDistributionBoxPlot({ metricData, userPercentile }: PeerDistributio
       mean,
       userValue,
     },
-  ];
+  ]
 
   // Determine user's performance color
   const getUserColor = () => {
-    if (userPercentile >= 75) return 'oklch(0.7 0.15 145)'; // Green (top 25%)
-    if (userPercentile >= 50) return 'oklch(0.6 0.18 230)'; // Blue (above median)
-    if (userPercentile >= 25) return 'oklch(0.75 0.12 85)'; // Yellow (below median)
-    return 'oklch(0.65 0.20 25)'; // Red (bottom 25%)
-  };
+    if (userPercentile >= 75) return 'oklch(0.7 0.15 145)' // Green (top 25%)
+    if (userPercentile >= 50) return 'oklch(0.6 0.18 230)' // Blue (above median)
+    if (userPercentile >= 25) return 'oklch(0.75 0.12 85)' // Yellow (below median)
+    return 'oklch(0.65 0.20 25)' // Red (bottom 25%)
+  }
 
-  const userColor = getUserColor();
+  const userColor = getUserColor()
 
   return (
     <div className="space-y-4">
@@ -381,10 +377,7 @@ function PeerDistributionBoxPlot({ metricData, userPercentile }: PeerDistributio
             <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0.05 240)" />
             <XAxis type="number" domain={[0, 100]} stroke="oklch(0.6 0.05 240)" />
             <YAxis type="category" dataKey="name" stroke="oklch(0.6 0.05 240)" width={150} />
-            <Tooltip
-              content={<CustomTooltip />}
-              cursor={{ fill: 'oklch(0.95 0.05 240)' }}
-            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'oklch(0.95 0.05 240)' }} />
 
             {/* Box plot elements */}
             {/* IQR (Interquartile Range) - 25th to 75th percentile */}
@@ -447,22 +440,20 @@ function PeerDistributionBoxPlot({ metricData, userPercentile }: PeerDistributio
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * Custom Tooltip for Box Plot
  */
 function CustomTooltip({ active, payload }: any) {
-  if (!active || !payload || !payload.length) return null;
+  if (!active || !payload || !payload.length) return null
 
-  const data = payload[0].payload;
+  const data = payload[0].payload
 
   return (
     <div className="bg-white/95 backdrop-blur-xl shadow-xl rounded-xl p-4 border border-[oklch(0.9_0.05_240)]">
-      <p className="font-semibold text-[oklch(0.3_0.05_240)] mb-2">
-        {data.name}
-      </p>
+      <p className="font-semibold text-[oklch(0.3_0.05_240)] mb-2">{data.name}</p>
       <div className="space-y-1 text-sm text-[oklch(0.6_0.05_240)]">
         <div>25th Percentile: {data.q1.toFixed(1)}</div>
         <div>Median (50th): {data.median.toFixed(1)}</div>
@@ -475,7 +466,7 @@ function CustomTooltip({ active, payload }: any) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -483,16 +474,16 @@ function CustomTooltip({ active, payload }: any) {
  * Shows user's growth rate vs. peer average growth rate
  */
 interface GrowthRateComparisonProps {
-  sampleSize: number;
+  sampleSize: number
 }
 
 function GrowthRateComparison({ sampleSize }: GrowthRateComparisonProps) {
   // Mock data - would fetch from API in production
-  const userGrowthRate = 12.3; // % improvement per month
-  const peerAverageGrowthRate = 8.5; // % improvement per month
+  const userGrowthRate = 12.3 // % improvement per month
+  const peerAverageGrowthRate = 8.5 // % improvement per month
 
-  const isAboveAverage = userGrowthRate > peerAverageGrowthRate;
-  const difference = Math.abs(userGrowthRate - peerAverageGrowthRate);
+  const isAboveAverage = userGrowthRate > peerAverageGrowthRate
+  const difference = Math.abs(userGrowthRate - peerAverageGrowthRate)
 
   const chartData = [
     {
@@ -505,7 +496,7 @@ function GrowthRateComparison({ sampleSize }: GrowthRateComparisonProps) {
       value: peerAverageGrowthRate,
       fill: 'oklch(0.6 0.18 230)',
     },
-  ];
+  ]
 
   return (
     <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
@@ -527,17 +518,13 @@ function GrowthRateComparison({ sampleSize }: GrowthRateComparisonProps) {
           {/* Comparison Summary */}
           <div
             className={`p-4 rounded-xl ${
-              isAboveAverage
-                ? 'bg-[oklch(0.95_0.15_145)]/50'
-                : 'bg-[oklch(0.98_0.20_25)]/50'
+              isAboveAverage ? 'bg-[oklch(0.95_0.15_145)]/50' : 'bg-[oklch(0.98_0.20_25)]/50'
             }`}
           >
             <p className="text-center">
               <span
                 className={`text-2xl font-bold ${
-                  isAboveAverage
-                    ? 'text-[oklch(0.7_0.15_145)]'
-                    : 'text-[oklch(0.65_0.20_25)]'
+                  isAboveAverage ? 'text-[oklch(0.7_0.15_145)]' : 'text-[oklch(0.65_0.20_25)]'
                 }`}
               >
                 {isAboveAverage ? '+' : ''}
@@ -554,11 +541,7 @@ function GrowthRateComparison({ sampleSize }: GrowthRateComparisonProps) {
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0.05 240)" />
-                <XAxis
-                  dataKey="category"
-                  stroke="oklch(0.6 0.05 240)"
-                  tick={{ fontSize: 12 }}
-                />
+                <XAxis dataKey="category" stroke="oklch(0.6 0.05 240)" tick={{ fontSize: 12 }} />
                 <YAxis
                   stroke="oklch(0.6 0.05 240)"
                   label={{
@@ -570,8 +553,8 @@ function GrowthRateComparison({ sampleSize }: GrowthRateComparisonProps) {
                 />
                 <Tooltip
                   content={({ active, payload }) => {
-                    if (!active || !payload || !payload.length) return null;
-                    const data = payload[0];
+                    if (!active || !payload || !payload.length) return null
+                    const data = payload[0]
                     return (
                       <div className="bg-white/95 backdrop-blur-xl shadow-xl rounded-xl p-3 border border-[oklch(0.9_0.05_240)]">
                         <p className="font-semibold text-[oklch(0.3_0.05_240)]">
@@ -581,7 +564,7 @@ function GrowthRateComparison({ sampleSize }: GrowthRateComparisonProps) {
                           {data.value}% per month
                         </p>
                       </div>
-                    );
+                    )
                   }}
                 />
                 <Bar dataKey="value" barSize={80}>
@@ -602,7 +585,7 @@ function GrowthRateComparison({ sampleSize }: GrowthRateComparisonProps) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 /**
@@ -616,9 +599,9 @@ function formatMetricName(metric: string): string {
     calibration: 'Confidence Calibration',
     adaptive: 'Adaptive Efficiency',
     mastery: 'Mastery Status',
-  };
+  }
 
-  return nameMap[metric.toLowerCase()] || metric;
+  return nameMap[metric.toLowerCase()] || metric
 }
 
 /**
@@ -673,5 +656,5 @@ function BenchmarksSkeleton() {
         ))}
       </div>
     </div>
-  );
+  )
 }

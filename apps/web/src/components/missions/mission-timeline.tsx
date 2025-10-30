@@ -1,24 +1,24 @@
 'use client'
 
-import { useState, useMemo } from 'react'
 import {
-  format,
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  isSameDay,
-  startOfWeek,
-  endOfWeek,
   addMonths,
-  subMonths,
-  isToday,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
   isFuture,
+  isSameDay,
+  isToday,
   parseISO,
+  startOfMonth,
+  startOfWeek,
+  subMonths,
 } from 'date-fns'
-import { ChevronLeft, ChevronRight, Calendar, CheckCircle2, XCircle, Clock } from 'lucide-react'
+import { Calendar, CheckCircle2, ChevronLeft, ChevronRight, Clock, XCircle } from 'lucide-react'
+import Link from 'next/link'
+import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import Link from 'next/link'
 
 interface MissionTimelineProps {
   missions: Array<{
@@ -224,14 +224,9 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
             </button>
           </TooltipTrigger>
           {dayStatus.missions.length > 0 && (
-            <TooltipContent
-              side="top"
-              className="max-w-xs"
-            >
+            <TooltipContent side="top" className="max-w-xs">
               <div className="space-y-2">
-                <p className="font-semibold text-[13px]">
-                  {format(day, 'EEEE, MMMM d')}
-                </p>
+                <p className="font-semibold text-[13px]">{format(day, 'EEEE, MMMM d')}</p>
                 {dayStatus.missions.map((mission, idx) => {
                   const completionRate =
                     mission.objectives.length > 0
@@ -326,11 +321,7 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
 
         {/* Month Navigation */}
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={previousMonth}
-          >
+          <Button variant="outline" size="sm" onClick={previousMonth}>
             <ChevronLeft className="size-4" />
           </Button>
           <Button
@@ -341,11 +332,7 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
           >
             Today
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={nextMonth}
-          >
+          <Button variant="outline" size="sm" onClick={nextMonth}>
             <ChevronRight className="size-4" />
           </Button>
         </div>
@@ -356,7 +343,10 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
         {/* Day Headers */}
         <div className="grid grid-cols-7 gap-2 mb-2">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-            <div key={day} className="text-center text-[11px] font-medium text-muted-foreground py-2">
+            <div
+              key={day}
+              className="text-center text-[11px] font-medium text-muted-foreground py-2"
+            >
               {day}
             </div>
           ))}
@@ -368,7 +358,9 @@ export function MissionTimeline({ missions, onDateClick }: MissionTimelineProps)
 
       {/* Legend */}
       <div className="mt-6 pt-4 border-t border-border">
-        <p className="text-[11px] font-medium text-muted-foreground mb-3 uppercase tracking-wide">Legend:</p>
+        <p className="text-[11px] font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+          Legend:
+        </p>
         <div className="flex flex-wrap items-center gap-4 text-[11px]">
           <div className="flex items-center gap-2">
             <div className="size-4 rounded bg-[oklch(0.75_0.15_160)]" />

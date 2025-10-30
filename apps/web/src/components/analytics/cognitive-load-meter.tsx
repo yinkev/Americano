@@ -14,18 +14,18 @@
 
 'use client'
 
-import { useMemo } from 'react'
-import {
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  CheckCircle,
-  AlertTriangle,
-  Zap,
-  AlertCircle,
-} from 'lucide-react'
 import { format } from 'date-fns'
-import { Card, CardHeader, CardContent } from '@/components/ui/card'
+import {
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle,
+  Minus,
+  TrendingDown,
+  TrendingUp,
+  Zap,
+} from 'lucide-react'
+import { useMemo } from 'react'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 interface CognitiveLoadMeterProps {
   currentLoad: number // 0-100 scale
@@ -98,7 +98,9 @@ export function CognitiveLoadMeter({
   const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus
 
   return (
-    <Card className={`bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all ${className}`}>
+    <Card
+      className={`bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all ${className}`}
+    >
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
           <h3 className="font-heading font-semibold text-foreground text-[16px]">Cognitive Load</h3>
@@ -112,125 +114,121 @@ export function CognitiveLoadMeter({
       <CardContent className="p-4 pt-4">
         {/* Circular Gauge */}
         <div className="relative w-full aspect-square max-w-[320px] mx-auto mb-4">
-        <svg
-          viewBox="0 0 200 200"
-          className="w-full h-full transform -rotate-90"
-          aria-hidden="true"
-        >
-          {/* Background circle (gray track) */}
-          <circle
-            cx={centerX}
-            cy={centerY}
-            r={gaugeRadius}
-            fill="none"
-            stroke="oklch(0.85 0 0)" // Light gray
-            strokeWidth={strokeWidth}
-            opacity={0.2}
-          />
-
-          {/* Load arc with solid color zones (NO gradients) */}
-          {Object.entries(LOAD_ZONES).map(([zoneName, zoneData]) => {
-            const [zoneMin, zoneMax] = zoneData.range
-
-            // Only render if current load extends into this zone
-            if (loadPercentage <= zoneMin) return null
-
-            const zoneStart = zoneMin
-            const zoneEnd = Math.min(loadPercentage, zoneMax)
-            const zoneLength = ((zoneEnd - zoneStart) / 100) * circumference
-            const zoneOffset = ((100 - zoneStart) / 100) * circumference
-
-            return (
-              <circle
-                key={zoneName}
-                cx={centerX}
-                cy={centerY}
-                r={gaugeRadius}
-                fill="none"
-                stroke={zoneData.color}
-                strokeWidth={strokeWidth}
-                strokeLinecap="round"
-                strokeDasharray={`${zoneLength} ${circumference}`}
-                strokeDashoffset={zoneOffset}
-                style={{
-                  transition: 'stroke-dasharray 0.5s ease, stroke-dashoffset 0.5s ease',
-                }}
-              />
-            )
-          })}
-        </svg>
-
-        {/* Center content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div
-            className="p-3 rounded-full mb-2"
-            style={{ backgroundColor: `color-mix(in oklch, ${zone.color}, transparent 85%)` }}
+          <svg
+            viewBox="0 0 200 200"
+            className="w-full h-full transform -rotate-90"
+            aria-hidden="true"
           >
-            <ZoneIcon className="size-8" style={{ color: zone.color }} />
-          </div>
-          <div className="text-[32px] font-bold font-heading" style={{ color: zone.color }}>
-            {Math.round(loadPercentage)}
-          </div>
-          <div className="text-[13px] text-muted-foreground font-medium">/ 100</div>
-        </div>
-      </div>
+            {/* Background circle (gray track) */}
+            <circle
+              cx={centerX}
+              cy={centerY}
+              r={gaugeRadius}
+              fill="none"
+              stroke="oklch(0.85 0 0)" // Light gray
+              strokeWidth={strokeWidth}
+              opacity={0.2}
+            />
 
-      {/* Animated linear progress bar with OKLCH gradient (zone-based colors, no CSS gradients) */}
-      <div className="mb-4">
-        <div className="w-full h-3 bg-muted/30 rounded-full overflow-hidden relative">
-          {/* Multi-segment progress bar using solid OKLCH colors */}
-          <div className="absolute inset-0 flex">
+            {/* Load arc with solid color zones (NO gradients) */}
             {Object.entries(LOAD_ZONES).map(([zoneName, zoneData]) => {
               const [zoneMin, zoneMax] = zoneData.range
-              const zoneWidth = ((zoneMax - zoneMin) / 100) * 100
 
-              // Only fill up to current load percentage
-              const isActive = loadPercentage > zoneMin
-              const fillWidth = isActive
-                ? Math.min(loadPercentage - zoneMin, zoneMax - zoneMin)
-                : 0
-              const fillPercentage = (fillWidth / (zoneMax - zoneMin)) * 100
+              // Only render if current load extends into this zone
+              if (loadPercentage <= zoneMin) return null
+
+              const zoneStart = zoneMin
+              const zoneEnd = Math.min(loadPercentage, zoneMax)
+              const zoneLength = ((zoneEnd - zoneStart) / 100) * circumference
+              const zoneOffset = ((100 - zoneStart) / 100) * circumference
 
               return (
-                <div
+                <circle
                   key={zoneName}
-                  className="relative"
-                  style={{ width: `${zoneWidth}%` }}
-                >
-                  <div
-                    className="h-3 transition-all duration-500 ease-out"
-                    style={{
-                      width: `${fillPercentage}%`,
-                      backgroundColor: zoneData.color,
-                    }}
-                  />
-                </div>
+                  cx={centerX}
+                  cy={centerY}
+                  r={gaugeRadius}
+                  fill="none"
+                  stroke={zoneData.color}
+                  strokeWidth={strokeWidth}
+                  strokeLinecap="round"
+                  strokeDasharray={`${zoneLength} ${circumference}`}
+                  strokeDashoffset={zoneOffset}
+                  style={{
+                    transition: 'stroke-dasharray 0.5s ease, stroke-dashoffset 0.5s ease',
+                  }}
+                />
               )
             })}
+          </svg>
+
+          {/* Center content */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div
+              className="p-3 rounded-full mb-2"
+              style={{ backgroundColor: `color-mix(in oklch, ${zone.color}, transparent 85%)` }}
+            >
+              <ZoneIcon className="size-8" style={{ color: zone.color }} />
+            </div>
+            <div className="text-[32px] font-bold font-heading" style={{ color: zone.color }}>
+              {Math.round(loadPercentage)}
+            </div>
+            <div className="text-[13px] text-muted-foreground font-medium">/ 100</div>
           </div>
         </div>
-        {/* Zone labels below progress bar */}
-        <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground font-medium">
-          <span>0</span>
-          <span>40</span>
-          <span>60</span>
-          <span>80</span>
-          <span>100</span>
-        </div>
-      </div>
 
-      {/* Zone indicator badge */}
-      <div
-        className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg mb-4"
-        style={{
-          backgroundColor: `color-mix(in oklch, ${zone.color}, transparent 90%)`,
-          borderLeft: `4px solid ${zone.color}`,
-        }}
-      >
-        <span className="text-sm font-semibold" style={{ color: zone.color }}>
-          {zone.label}
-        </span>
-      </div>
+        {/* Animated linear progress bar with OKLCH gradient (zone-based colors, no CSS gradients) */}
+        <div className="mb-4">
+          <div className="w-full h-3 bg-muted/30 rounded-full overflow-hidden relative">
+            {/* Multi-segment progress bar using solid OKLCH colors */}
+            <div className="absolute inset-0 flex">
+              {Object.entries(LOAD_ZONES).map(([zoneName, zoneData]) => {
+                const [zoneMin, zoneMax] = zoneData.range
+                const zoneWidth = ((zoneMax - zoneMin) / 100) * 100
+
+                // Only fill up to current load percentage
+                const isActive = loadPercentage > zoneMin
+                const fillWidth = isActive
+                  ? Math.min(loadPercentage - zoneMin, zoneMax - zoneMin)
+                  : 0
+                const fillPercentage = (fillWidth / (zoneMax - zoneMin)) * 100
+
+                return (
+                  <div key={zoneName} className="relative" style={{ width: `${zoneWidth}%` }}>
+                    <div
+                      className="h-3 transition-all duration-500 ease-out"
+                      style={{
+                        width: `${fillPercentage}%`,
+                        backgroundColor: zoneData.color,
+                      }}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+          {/* Zone labels below progress bar */}
+          <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground font-medium">
+            <span>0</span>
+            <span>40</span>
+            <span>60</span>
+            <span>80</span>
+            <span>100</span>
+          </div>
+        </div>
+
+        {/* Zone indicator badge */}
+        <div
+          className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg mb-4"
+          style={{
+            backgroundColor: `color-mix(in oklch, ${zone.color}, transparent 90%)`,
+            borderLeft: `4px solid ${zone.color}`,
+          }}
+        >
+          <span className="text-sm font-semibold" style={{ color: zone.color }}>
+            {zone.label}
+          </span>
+        </div>
 
         {/* Supportive message */}
         <p className="text-[13px] text-center text-muted-foreground mb-4">{zone.message}</p>

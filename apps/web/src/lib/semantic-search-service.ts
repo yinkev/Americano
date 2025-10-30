@@ -20,9 +20,16 @@
  * - Circuit breaker pattern for failing services
  */
 
-import { PrismaClient, Prisma } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
 import { embeddingService } from './embedding-service'
-import { retryService, DEFAULT_POLICIES, type RetryResult, ErrorCategory, RetriableError, PermanentError } from './retry/retry-service'
+import {
+  DEFAULT_POLICIES,
+  ErrorCategory,
+  PermanentError,
+  RetriableError,
+  type RetryResult,
+  retryService,
+} from './retry/retry-service'
 
 /**
  * Search result types
@@ -235,7 +242,7 @@ export class SemanticSearchService {
    */
   private async executeWithRetry<T>(
     operation: () => Promise<T>,
-    operationName: string
+    operationName: string,
   ): Promise<RetryResult<T>> {
     // Wrap the operation to classify Prisma errors
     const wrappedOperation = async (): Promise<T> => {
@@ -247,11 +254,7 @@ export class SemanticSearchService {
       }
     }
 
-    return retryService.execute(
-      wrappedOperation,
-      DEFAULT_POLICIES.DATABASE,
-      operationName
-    )
+    return retryService.execute(wrappedOperation, DEFAULT_POLICIES.DATABASE, operationName)
   }
 
   /**
@@ -274,7 +277,7 @@ export class SemanticSearchService {
           ErrorCategory.TRANSIENT,
           error,
           undefined,
-          0.5 // 500ms suggested delay
+          0.5, // 500ms suggested delay
         )
       }
 
@@ -285,7 +288,7 @@ export class SemanticSearchService {
           ErrorCategory.TRANSIENT,
           error,
           undefined,
-          1 // 1000ms suggested delay
+          1, // 1000ms suggested delay
         )
       }
 
@@ -296,7 +299,7 @@ export class SemanticSearchService {
           ErrorCategory.TRANSIENT,
           error,
           undefined,
-          0.5 // 500ms suggested delay
+          0.5, // 500ms suggested delay
         )
       }
 
@@ -307,7 +310,7 @@ export class SemanticSearchService {
           ErrorCategory.TRANSIENT,
           error,
           undefined,
-          0.2 // 200ms suggested delay
+          0.2, // 200ms suggested delay
         )
       }
 
@@ -350,7 +353,7 @@ export class SemanticSearchService {
         ErrorCategory.TRANSIENT,
         error instanceof Error ? error : new Error(errorMessage),
         undefined,
-        0.5 // 500ms suggested delay
+        0.5, // 500ms suggested delay
       )
     }
 
@@ -358,7 +361,7 @@ export class SemanticSearchService {
     return new RetriableError(
       errorMessage || 'Unknown database error',
       ErrorCategory.TRANSIENT,
-      error instanceof Error ? error : new Error(errorMessage)
+      error instanceof Error ? error : new Error(errorMessage),
     )
   }
 
@@ -424,7 +427,7 @@ export class SemanticSearchService {
       if (embeddingResult.error) {
         console.warn(
           `[SemanticSearchService] Embedding generation failed: ${embeddingResult.error}`,
-          embeddingResult.permanent ? '(PERMANENT)' : '(TRANSIENT)'
+          embeddingResult.permanent ? '(PERMANENT)' : '(TRANSIENT)',
         )
         embeddingFailed = true
 
@@ -449,16 +452,16 @@ export class SemanticSearchService {
             queryEmbedding,
             params.filters,
             minSimilarity,
-            limit * 2 // Get 2x results for hybrid re-ranking
+            limit * 2, // Get 2x results for hybrid re-ranking
           )
         },
         (error) => this.classifyPrismaError(error),
         (metadata) => {
           this.retryAttempts = metadata.attempt
           console.warn(
-            `[SemanticSearchService] Vector search retry ${metadata.attempt}/${metadata.maxAttempts} after ${metadata.delayMs}ms delay`
+            `[SemanticSearchService] Vector search retry ${metadata.attempt}/${metadata.maxAttempts} after ${metadata.delayMs}ms delay`,
           )
-        }
+        },
       )
 
       if (vectorSearchResult.success) {
@@ -467,7 +470,7 @@ export class SemanticSearchService {
         console.error(
           '[SemanticSearchService] Vector search failed after retries:',
           vectorSearchResult.error.message,
-          vectorSearchResult.permanent ? '(PERMANENT)' : '(TRANSIENT)'
+          vectorSearchResult.permanent ? '(PERMANENT)' : '(TRANSIENT)',
         )
 
         // Gracefully fallback to keyword search
@@ -495,9 +498,9 @@ export class SemanticSearchService {
         (error) => this.classifyPrismaError(error),
         (metadata) => {
           console.warn(
-            `[SemanticSearchService] Keyword search retry ${metadata.attempt}/${metadata.maxAttempts}`
+            `[SemanticSearchService] Keyword search retry ${metadata.attempt}/${metadata.maxAttempts}`,
           )
-        }
+        },
       )
 
       if (keywordSearchResult.success) {
@@ -507,7 +510,7 @@ export class SemanticSearchService {
           // Convert keyword matches to search results (keyword-only mode)
           finalResults = await this.keywordMatchesToSearchResults(keywordMatches, params.query)
           console.warn(
-            `[SemanticSearchService] Operating in keyword-only mode (${finalResults.length} results)`
+            `[SemanticSearchService] Operating in keyword-only mode (${finalResults.length} results)`,
           )
         } else {
           // Combine vector and keyword scores (hybrid mode)
@@ -515,14 +518,14 @@ export class SemanticSearchService {
             vectorResults,
             keywordMatches,
             vectorWeight,
-            keywordWeight
+            keywordWeight,
           )
           hybridSearchUsed = true
         }
       } else {
         console.error(
           '[SemanticSearchService] Keyword search failed after retries:',
-          keywordSearchResult.error.message
+          keywordSearchResult.error.message,
         )
 
         // Both vector and keyword search failed
@@ -563,10 +566,7 @@ export class SemanticSearchService {
     const total = finalResults.length
 
     // Generate snippets with highlighting
-    const enrichedResults = await this.enrichWithSnippets(
-      paginatedResults,
-      params.query
-    )
+    const enrichedResults = await this.enrichWithSnippets(paginatedResults, params.query)
 
     const queryTime = Date.now() - startTime
 
@@ -596,10 +596,7 @@ export class SemanticSearchService {
    * Search lectures by semantic similarity
    * Subtask 3.1: Vector similarity search
    */
-  async searchLectures(
-    query: string,
-    limit: number = 10
-  ): Promise<LectureSearchResult[]> {
+  async searchLectures(query: string, limit: number = 10): Promise<LectureSearchResult[]> {
     const response = await this.search({
       query,
       limit,
@@ -615,10 +612,7 @@ export class SemanticSearchService {
    * Search content chunks by semantic similarity
    * Subtask 3.1: Vector similarity search
    */
-  async searchChunks(
-    query: string,
-    limit: number = 10
-  ): Promise<ChunkSearchResult[]> {
+  async searchChunks(query: string, limit: number = 10): Promise<ChunkSearchResult[]> {
     const response = await this.search({
       query,
       limit,
@@ -641,7 +635,7 @@ export class SemanticSearchService {
     queryEmbedding: number[],
     filters?: SearchFilters,
     minSimilarity: number = 0.7,
-    limit: number = 20
+    limit: number = 20,
   ): Promise<SearchResult[]> {
     const results: SearchResult[] = []
 
@@ -651,7 +645,7 @@ export class SemanticSearchService {
         queryEmbedding,
         filters,
         minSimilarity,
-        limit
+        limit,
       )
       results.push(...chunkResults)
     }
@@ -662,7 +656,7 @@ export class SemanticSearchService {
         queryEmbedding,
         filters,
         minSimilarity,
-        limit
+        limit,
       )
       results.push(...lectureResults)
     }
@@ -673,7 +667,7 @@ export class SemanticSearchService {
         queryEmbedding,
         filters,
         minSimilarity,
-        limit
+        limit,
       )
       results.push(...conceptResults)
     }
@@ -688,7 +682,7 @@ export class SemanticSearchService {
     queryEmbedding: number[],
     filters?: SearchFilters,
     minSimilarity: number = 0.7,
-    limit: number = 20
+    limit: number = 20,
   ): Promise<ChunkSearchResult[]> {
     // Build WHERE clause for filters
     const whereClauses: string[] = []
@@ -743,7 +737,7 @@ export class SemanticSearchService {
       ORDER BY distance
       LIMIT $${params.length}
     `,
-      ...params
+      ...params,
     )
 
     return rows.map((row: any) => ({
@@ -773,7 +767,7 @@ export class SemanticSearchService {
     queryEmbedding: number[],
     filters?: SearchFilters,
     minSimilarity: number = 0.7,
-    limit: number = 20
+    limit: number = 20,
   ): Promise<LectureSearchResult[]> {
     // Note: Lectures table has embedding field but may be NULL
     // This searches lectures that have embeddings
@@ -822,7 +816,7 @@ export class SemanticSearchService {
       ORDER BY distance
       LIMIT $${params.length}
     `,
-      ...params
+      ...params,
     )
 
     return rows.map((row: any) => ({
@@ -849,7 +843,7 @@ export class SemanticSearchService {
     queryEmbedding: number[],
     filters?: SearchFilters,
     minSimilarity: number = 0.7,
-    limit: number = 20
+    limit: number = 20,
   ): Promise<ConceptSearchResult[]> {
     const whereClauses: string[] = []
     const params: any[] = []
@@ -883,7 +877,7 @@ export class SemanticSearchService {
       ORDER BY distance
       LIMIT $${params.length}
     `,
-      ...params
+      ...params,
     )
 
     return rows.map((row: any) => ({
@@ -906,7 +900,7 @@ export class SemanticSearchService {
    */
   private async executeKeywordSearch(
     query: string,
-    filters?: SearchFilters
+    filters?: SearchFilters,
   ): Promise<KeywordMatch[]> {
     // Extract search terms (remove common stop words)
     const terms = this.extractSearchTerms(query)
@@ -937,7 +931,7 @@ export class SemanticSearchService {
    */
   private async keywordSearchChunks(
     terms: string[],
-    filters?: SearchFilters
+    filters?: SearchFilters,
   ): Promise<KeywordMatch[]> {
     const whereClauses: string[] = []
     const params: any[] = []
@@ -965,7 +959,7 @@ export class SemanticSearchService {
       ORDER BY rank DESC
       LIMIT 100
     `,
-      ...params
+      ...params,
     )
 
     return rows.map((row: any) => ({
@@ -981,7 +975,7 @@ export class SemanticSearchService {
    */
   private async keywordSearchLectures(
     terms: string[],
-    filters?: SearchFilters
+    filters?: SearchFilters,
   ): Promise<KeywordMatch[]> {
     const whereClauses: string[] = []
     const params: any[] = []
@@ -1007,7 +1001,7 @@ export class SemanticSearchService {
       ORDER BY rank DESC
       LIMIT 100
     `,
-      ...params
+      ...params,
     )
 
     return rows.map((row: any) => ({
@@ -1026,7 +1020,7 @@ export class SemanticSearchService {
     vectorResults: SearchResult[],
     keywordMatches: KeywordMatch[],
     vectorWeight: number = 0.7,
-    keywordWeight: number = 0.3
+    keywordWeight: number = 0.3,
   ): SearchResult[] {
     // Create lookup map for keyword scores
     const keywordScoreMap = new Map<string, number>()
@@ -1036,17 +1030,16 @@ export class SemanticSearchService {
     }
 
     // Normalize keyword scores to 0-1 range
-    const maxKeywordScore = Math.max(...keywordMatches.map(m => m.matchScore), 1)
+    const maxKeywordScore = Math.max(...keywordMatches.map((m) => m.matchScore), 1)
 
     // Combine scores
-    return vectorResults.map(result => {
+    return vectorResults.map((result) => {
       const keywordScore = keywordScoreMap.get(result.id) || 0
       const normalizedKeywordScore = keywordScore / maxKeywordScore
 
       // Composite relevance score
       const relevanceScore =
-        vectorWeight * result.similarity +
-        keywordWeight * normalizedKeywordScore
+        vectorWeight * result.similarity + keywordWeight * normalizedKeywordScore
 
       return {
         ...result,
@@ -1062,12 +1055,12 @@ export class SemanticSearchService {
    */
   private async keywordMatchesToSearchResults(
     keywordMatches: KeywordMatch[],
-    query: string
+    query: string,
   ): Promise<SearchResult[]> {
     const results: SearchResult[] = []
 
     // Normalize scores
-    const maxScore = Math.max(...keywordMatches.map(m => m.matchScore), 1)
+    const maxScore = Math.max(...keywordMatches.map((m) => m.matchScore), 1)
 
     for (const match of keywordMatches) {
       const normalizedScore = match.matchScore / maxScore
@@ -1153,10 +1146,10 @@ export class SemanticSearchService {
    */
   private async enrichWithSnippets(
     results: SearchResult[],
-    query: string
+    query: string,
   ): Promise<SearchResult[]> {
     return Promise.all(
-      results.map(async result => {
+      results.map(async (result) => {
         if (result.type === 'chunk') {
           const chunkResult = result as ChunkSearchResult
           const snippet = this.generateSnippet(chunkResult.content, query)
@@ -1175,7 +1168,7 @@ export class SemanticSearchService {
           const conceptResult = result as ConceptSearchResult
           const snippet = this.generateSnippet(
             conceptResult.description || conceptResult.title,
-            query
+            query,
           )
           return {
             ...result,
@@ -1184,7 +1177,7 @@ export class SemanticSearchService {
         }
 
         return result
-      })
+      }),
     )
   }
 
@@ -1201,7 +1194,7 @@ export class SemanticSearchService {
         ORDER BY "chunkIndex"
         LIMIT 1
       `,
-        lectureId
+        lectureId,
       )
 
       if (rows.length > 0) {
@@ -1268,15 +1261,41 @@ export class SemanticSearchService {
    */
   private extractSearchTerms(query: string): string[] {
     const stopWords = new Set([
-      'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from',
-      'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the',
-      'to', 'was', 'will', 'with', 'what', 'when', 'where', 'who', 'how'
+      'a',
+      'an',
+      'and',
+      'are',
+      'as',
+      'at',
+      'be',
+      'by',
+      'for',
+      'from',
+      'has',
+      'he',
+      'in',
+      'is',
+      'it',
+      'its',
+      'of',
+      'on',
+      'that',
+      'the',
+      'to',
+      'was',
+      'will',
+      'with',
+      'what',
+      'when',
+      'where',
+      'who',
+      'how',
     ])
 
     return query
       .toLowerCase()
       .split(/\s+/)
-      .filter(term => term.length > 2 && !stopWords.has(term))
+      .filter((term) => term.length > 2 && !stopWords.has(term))
   }
 
   /**

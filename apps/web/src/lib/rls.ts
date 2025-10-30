@@ -27,10 +27,7 @@ import { prisma } from './db'
  */
 export async function setRLSContext(userId: string): Promise<void> {
   // Call PostgreSQL function to set session variable
-  await prisma.$executeRawUnsafe(
-    `SELECT set_current_user_id($1)`,
-    userId
-  )
+  await prisma.$executeRawUnsafe(`SELECT set_current_user_id($1)`, userId)
 }
 
 /**
@@ -40,9 +37,7 @@ export async function setRLSContext(userId: string): Promise<void> {
  * especially in long-running connections or connection pools.
  */
 export async function clearRLSContext(): Promise<void> {
-  await prisma.$executeRawUnsafe(
-    `SELECT set_config('app.current_user_id', '', FALSE)`
-  )
+  await prisma.$executeRawUnsafe(`SELECT set_config('app.current_user_id', '', FALSE)`)
 }
 
 /**
@@ -67,10 +62,7 @@ export async function clearRLSContext(): Promise<void> {
  * });
  * ```
  */
-export async function withRLSContext<T>(
-  userId: string,
-  queryFn: () => Promise<T>
-): Promise<T> {
+export async function withRLSContext<T>(userId: string, queryFn: () => Promise<T>): Promise<T> {
   try {
     await setRLSContext(userId)
     return await queryFn()
@@ -97,7 +89,7 @@ export async function withRLSContext<T>(
  */
 export async function withRLS<T>(
   request: Request,
-  handler: (userId: string) => Promise<T>
+  handler: (userId: string) => Promise<T>,
 ): Promise<T> {
   // TODO: Extract userId from session/JWT
   // This is a placeholder - implement actual auth logic
@@ -121,7 +113,7 @@ export async function isRLSEnabled(tableName: string): Promise<boolean> {
     `SELECT relrowsecurity AS rowsecurity
      FROM pg_class
      WHERE relname = $1`,
-    tableName
+    tableName,
   )
 
   return result.length > 0 && result[0].rowsecurity
@@ -135,14 +127,16 @@ export async function isRLSEnabled(tableName: string): Promise<boolean> {
  * @param tableName - Name of the table to check
  * @returns Array of policy names and definitions
  */
-export async function listRLSPolicies(tableName: string): Promise<Array<{
-  policyName: string
-  permissive: string
-  roles: string[]
-  cmd: string
-  qual: string | null
-  withCheck: string | null
-}>> {
+export async function listRLSPolicies(tableName: string): Promise<
+  Array<{
+    policyName: string
+    permissive: string
+    roles: string[]
+    cmd: string
+    qual: string | null
+    withCheck: string | null
+  }>
+> {
   const result = await prisma.$queryRawUnsafe<Array<any>>(
     `SELECT
        polname AS "policyName",
@@ -154,7 +148,7 @@ export async function listRLSPolicies(tableName: string): Promise<Array<{
      FROM pg_policy
      JOIN pg_class ON pg_policy.polrelid = pg_class.oid
      WHERE pg_class.relname = $1`,
-    tableName
+    tableName,
   )
 
   return result

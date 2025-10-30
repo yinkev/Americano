@@ -11,10 +11,10 @@
 
 'use client'
 
+import { AlertTriangle, Brain, Info, Minus, TrendingDown, TrendingUp } from 'lucide-react'
 import { useMemo } from 'react'
-import { Brain, TrendingUp, TrendingDown, Minus, AlertTriangle, Info } from 'lucide-react'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 
 interface CognitiveLoadData {
@@ -58,7 +58,7 @@ export function CognitiveLoadIndicator({ userId, className = '' }: Props) {
       recommendation:
         'Your cognitive load is moderate. Standard intensity recommended for optimal learning.',
     }),
-    []
+    [],
   )
 
   // Determine current zone
@@ -80,7 +80,8 @@ export function CognitiveLoadIndicator({ userId, className = '' }: Props) {
     return diff > 0 ? 'up' : 'down'
   }, [data.trend])
 
-  const TrendIcon = trendDirection === 'up' ? TrendingUp : trendDirection === 'down' ? TrendingDown : Minus
+  const TrendIcon =
+    trendDirection === 'up' ? TrendingUp : trendDirection === 'down' ? TrendingDown : Minus
 
   // SVG arc calculation for semi-circle gauge
   const getProgressArc = (load: number): string => {
@@ -99,9 +100,14 @@ export function CognitiveLoadIndicator({ userId, className = '' }: Props) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Brain className="size-5" style={{ color: zone.color }} />
-            <h3 className="font-heading font-semibold text-foreground text-[16px]">Cognitive Load</h3>
+            <h3 className="font-heading font-semibold text-foreground text-[16px]">
+              Cognitive Load
+            </h3>
           </div>
-          <button className="p-1 hover:bg-muted rounded-md transition-colors" aria-label="Cognitive load information">
+          <button
+            className="p-1 hover:bg-muted rounded-md transition-colors"
+            aria-label="Cognitive load information"
+          >
             <Info className="size-4 text-info" />
           </button>
         </div>
@@ -110,7 +116,12 @@ export function CognitiveLoadIndicator({ userId, className = '' }: Props) {
       <CardContent className="p-4 pt-4 space-y-6">
         {/* Semi-Circle Gauge Visualization */}
         <div className="relative flex flex-col items-center">
-          <svg viewBox="0 0 200 120" className="w-full max-w-sm" style={{ maxHeight: '160px' }} aria-hidden="true">
+          <svg
+            viewBox="0 0 200 120"
+            className="w-full max-w-sm"
+            style={{ maxHeight: '160px' }}
+            aria-hidden="true"
+          >
             {/* Background Arc */}
             <path
               d="M 20 100 A 80 80 0 0 1 180 100"
@@ -212,7 +223,17 @@ export function CognitiveLoadIndicator({ userId, className = '' }: Props) {
               7-Day Trend
             </span>
             <div className="flex items-center gap-1">
-              <TrendIcon className="size-4" style={{ color: trendDirection === 'up' ? 'oklch(0.6 0.20 30)' : trendDirection === 'down' ? 'oklch(0.7 0.15 145)' : 'oklch(0.5 0 0)' }} />
+              <TrendIcon
+                className="size-4"
+                style={{
+                  color:
+                    trendDirection === 'up'
+                      ? 'oklch(0.6 0.20 30)'
+                      : trendDirection === 'down'
+                        ? 'oklch(0.7 0.15 145)'
+                        : 'oklch(0.5 0 0)',
+                }}
+              />
               <span className="text-[11px] font-medium text-muted-foreground">
                 {trendDirection === 'up' && 'Increasing'}
                 {trendDirection === 'down' && 'Decreasing'}
@@ -224,7 +245,12 @@ export function CognitiveLoadIndicator({ userId, className = '' }: Props) {
           <div className="h-16 flex items-end gap-1">
             {data.trend.map((value, idx) => {
               const height = (value / 100) * 100
-              const zoneColor = value < 30 ? LOAD_ZONES.low.color : value < 70 ? LOAD_ZONES.moderate.color : LOAD_ZONES.high.color
+              const zoneColor =
+                value < 30
+                  ? LOAD_ZONES.low.color
+                  : value < 70
+                    ? LOAD_ZONES.moderate.color
+                    : LOAD_ZONES.high.color
               return (
                 <div
                   key={idx}
@@ -292,8 +318,8 @@ export function CognitiveLoadIndicator({ userId, className = '' }: Props) {
 
         {/* ARIA live region for screen readers */}
         <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
-          Cognitive load is {zone.label} at {Math.round(data.load)} percent. Load is trending {trendDirection}.{' '}
-          {data.recommendation}
+          Cognitive load is {zone.label} at {Math.round(data.load)} percent. Load is trending{' '}
+          {trendDirection}. {data.recommendation}
         </div>
       </CardContent>
     </Card>

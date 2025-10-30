@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 
 export function LearningPatternsEmpty() {
   return (
@@ -26,14 +26,7 @@ export function LearningPatternsEmpty() {
             stroke="oklch(0.6 0.15 230)"
             strokeWidth="2"
           />
-          <line
-            x1="80"
-            y1="50"
-            x2="80"
-            y2="110"
-            stroke="oklch(0.6 0.15 230)"
-            strokeWidth="2"
-          />
+          <line x1="80" y1="50" x2="80" y2="110" stroke="oklch(0.6 0.15 230)" strokeWidth="2" />
           <path
             d="M50 65 L70 65 M50 75 L70 75 M50 85 L70 85"
             stroke="oklch(0.6 0.15 230)"
@@ -66,18 +59,16 @@ export function LearningPatternsEmpty() {
         </svg>
       </div>
 
-      <h3 className="text-xl font-semibold mb-2">
-        No Study Sessions Yet
-      </h3>
+      <h3 className="text-xl font-semibold mb-2">No Study Sessions Yet</h3>
 
       <p className="text-muted-foreground mb-6 max-w-md">
-        Start your first study session to unlock personalized learning patterns
-        and insights. We'll analyze your study habits to help you learn more effectively.
+        Start your first study session to unlock personalized learning patterns and insights. We'll
+        analyze your study habits to help you learn more effectively.
       </p>
 
       <Button asChild size="lg">
         <Link href="/study">Start Studying</Link>
       </Button>
     </Card>
-  );
+  )
 }

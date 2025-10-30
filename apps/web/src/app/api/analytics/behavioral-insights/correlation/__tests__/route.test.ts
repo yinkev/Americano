@@ -5,9 +5,9 @@
  * Tests statistical accuracy and API contract validation for the correlation endpoint
  */
 
-import { GET } from '../route'
 import { NextRequest } from 'next/server'
 import type { CorrelationResult } from '@/subsystems/behavioral-analytics/academic-performance-integration'
+import { GET } from '../route'
 
 // Mock the AcademicPerformanceIntegration subsystem
 jest.mock('@/subsystems/behavioral-analytics/academic-performance-integration', () => {

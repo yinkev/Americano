@@ -10,7 +10,7 @@
  * - Async non-blocking behavior
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { PrismaClient } from '@/generated/prisma'
 import { logSearchQuery } from '@/lib/search-analytics-service'
 
@@ -47,7 +47,6 @@ describe('Search Analytics Logging', () => {
   })
 
   describe('logSearchQuery', () => {
-
     it('should log search query with all required fields', async () => {
       mockPrisma.searchQuery.create.mockResolvedValue({
         id: 'query-001',
@@ -148,9 +147,7 @@ describe('Search Analytics Logging', () => {
     })
 
     it('should handle database errors gracefully', async () => {
-      mockPrisma.searchQuery.create.mockRejectedValue(
-        new Error('Database connection failed')
-      )
+      mockPrisma.searchQuery.create.mockRejectedValue(new Error('Database connection failed'))
 
       // Should not throw - logging errors should be silent
       await expect(
@@ -161,17 +158,14 @@ describe('Search Analytics Logging', () => {
           resultCount: 0,
           responseTimeMs: 100,
           timestamp: new Date(),
-        })
+        }),
       ).resolves.not.toThrow()
     })
 
     it('should be non-blocking and async', async () => {
       // Simulate slow database operation
       mockPrisma.searchQuery.create.mockImplementation(
-        () =>
-          new Promise(resolve =>
-            setTimeout(() => resolve({} as any), 100)
-          )
+        () => new Promise((resolve) => setTimeout(() => resolve({} as any), 100)),
       )
 
       const startTime = Date.now()
@@ -382,7 +376,7 @@ describe('Search Analytics Logging', () => {
 
       // Verify performance is improving
       expect(mockTimeSeries[0].avgResponseTime).toBeGreaterThan(
-        mockTimeSeries[mockTimeSeries.length - 1].avgResponseTime
+        mockTimeSeries[mockTimeSeries.length - 1].avgResponseTime,
       )
     })
   })

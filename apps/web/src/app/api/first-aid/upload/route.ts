@@ -6,11 +6,11 @@
  * Handles First Aid PDF upload, processing, and copyright validation
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { firstAidProcessor } from '@/subsystems/content-processing/first-aid-processor'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
 import { existsSync } from 'fs'
+import { mkdir, writeFile } from 'fs/promises'
+import { type NextRequest, NextResponse } from 'next/server'
+import { join } from 'path'
+import { firstAidProcessor } from '@/subsystems/content-processing/first-aid-processor'
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,10 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!edition || !yearStr) {
-      return NextResponse.json(
-        { error: 'Edition and year are required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Edition and year are required' }, { status: 400 })
     }
 
     const year = parseInt(yearStr, 10)
@@ -79,7 +76,7 @@ export async function POST(request: NextRequest) {
           error: 'Processing failed',
           details: result.errors,
         },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -97,7 +94,7 @@ export async function POST(request: NextRequest) {
         error: 'Upload failed',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

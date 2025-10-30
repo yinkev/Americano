@@ -2,11 +2,11 @@
 // GET: Retrieve all behavioral patterns for the user
 // DELETE: Delete all behavioral data for the user (Story 5.1 Task 11)
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@/lib/db'
-import { successResponse } from '@/lib/api-response'
 import { ApiError, withErrorHandler } from '@/lib/api-error'
+import { successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
 /**
  * GET /api/analytics/patterns/all

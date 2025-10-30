@@ -17,7 +17,7 @@ interface DumplingMascotProps {
 export function DumplingMascot({
   size = 48,
   variant = 'happy',
-  className = ''
+  className = '',
 }: DumplingMascotProps) {
   const getExpressionPath = () => {
     switch (variant) {
@@ -123,47 +123,17 @@ export function DumplingMascot({
       {/* Blush */}
       {(variant === 'happy' || variant === 'excited') && (
         <>
-          <circle
-            cx="20"
-            cy="42"
-            r="4"
-            fill="oklch(0.80 0.15 20)"
-            opacity="0.4"
-          />
-          <circle
-            cx="56"
-            cy="42"
-            r="4"
-            fill="oklch(0.80 0.15 20)"
-            opacity="0.4"
-          />
+          <circle cx="20" cy="42" r="4" fill="oklch(0.80 0.15 20)" opacity="0.4" />
+          <circle cx="56" cy="42" r="4" fill="oklch(0.80 0.15 20)" opacity="0.4" />
         </>
       )}
 
       {/* Thinking bubble */}
       {variant === 'thinking' && (
         <>
-          <circle
-            cx="58"
-            cy="20"
-            r="2"
-            fill="oklch(0.85 0.02 220)"
-            opacity="0.6"
-          />
-          <circle
-            cx="62"
-            cy="16"
-            r="3"
-            fill="oklch(0.85 0.02 220)"
-            opacity="0.6"
-          />
-          <circle
-            cx="67"
-            cy="13"
-            r="5"
-            fill="oklch(0.85 0.02 220)"
-            opacity="0.6"
-          />
+          <circle cx="58" cy="20" r="2" fill="oklch(0.85 0.02 220)" opacity="0.6" />
+          <circle cx="62" cy="16" r="3" fill="oklch(0.85 0.02 220)" opacity="0.6" />
+          <circle cx="67" cy="13" r="5" fill="oklch(0.85 0.02 220)" opacity="0.6" />
         </>
       )}
 
@@ -174,10 +144,7 @@ export function DumplingMascot({
             d="M12 20 L13 22 L15 23 L13 24 L12 26 L11 24 L9 23 L11 22 Z"
             fill="oklch(0.75 0.20 60)"
           />
-          <path
-            d="M62 24 L63 25 L64 24 L63 23 Z"
-            fill="oklch(0.75 0.20 60)"
-          />
+          <path d="M62 24 L63 25 L64 24 L63 23 Z" fill="oklch(0.75 0.20 60)" />
         </>
       )}
 

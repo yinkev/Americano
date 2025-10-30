@@ -13,17 +13,17 @@
 'use client'
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useUnderstandingAnalyticsStore } from '@/store/understanding-analytics-store'
 import type {
-  DashboardResponse,
   ComparisonData,
-  PatternsResponse,
-  LongitudinalResponse,
-  PredictionsResponse,
   CorrelationsResponse,
+  DashboardResponse,
+  LongitudinalResponse,
+  PatternsResponse,
   PeerBenchmarkResponse,
+  PredictionsResponse,
   RecommendationsResponse,
 } from '@/lib/validation'
+import { useUnderstandingAnalyticsStore } from '@/store/understanding-analytics-store'
 
 /**
  * MVP Authentication Header
@@ -352,7 +352,7 @@ export function useInvalidateMetric(
     | 'predictions'
     | 'correlations'
     | 'peer-benchmark'
-    | 'recommendations'
+    | 'recommendations',
 ) {
   const queryClient = useQueryClient()
 

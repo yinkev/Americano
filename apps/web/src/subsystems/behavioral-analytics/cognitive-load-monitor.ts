@@ -9,7 +9,7 @@
  *           + (performanceDecline * 0.15) + (durationStress * 0.10)
  */
 
-import { PrismaClient, Prisma } from '@/generated/prisma'
+import { type Prisma, PrismaClient } from '@/generated/prisma'
 import type { StressIndicator as StressIndicatorType } from '@/types/prisma-json'
 
 const prisma = new PrismaClient()

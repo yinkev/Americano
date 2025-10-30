@@ -7,8 +7,8 @@
  * Uses shadcn/ui Skeleton component with OKLCH colors
  */
 
-import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils'
 
 interface ChartSkeletonProps {
   className?: string
@@ -100,7 +100,12 @@ function LineChartSkeleton({ showAxes }: { showAxes: boolean }) {
 
       {/* Line Path */}
       <div className="w-full h-full opacity-50">
-        <Skeleton className="w-full h-full" style={{ clipPath: 'polygon(0% 80%, 15% 20%, 30% 40%, 60% 30%, 100% 60%, 100% 100%, 0% 100%)' }} />
+        <Skeleton
+          className="w-full h-full"
+          style={{
+            clipPath: 'polygon(0% 80%, 15% 20%, 30% 40%, 60% 30%, 100% 60%, 100% 100%, 0% 100%)',
+          }}
+        />
       </div>
 
       {/* X-Axis Labels */}
@@ -119,7 +124,12 @@ function AreaChartSkeleton({ showAxes }: { showAxes: boolean }) {
   return (
     <div className="h-full relative px-8 pb-8">
       <div className="w-full h-full opacity-40">
-        <Skeleton className="w-full h-full" style={{ clipPath: 'polygon(0% 80%, 15% 30%, 30% 50%, 60% 40%, 100% 70%, 100% 100%, 0% 100%)' }} />
+        <Skeleton
+          className="w-full h-full"
+          style={{
+            clipPath: 'polygon(0% 80%, 15% 30%, 30% 50%, 60% 40%, 100% 70%, 100% 100%, 0% 100%)',
+          }}
+        />
       </div>
     </div>
   )
@@ -137,7 +147,10 @@ function RadarChartSkeleton() {
   return (
     <div className="h-full flex items-center justify-center">
       <div className="w-[240px] h-[240px] flex items-center justify-center">
-        <Skeleton className="w-[180px] h-[180px]" style={{ clipPath: 'polygon(50% 10%, 90% 30%, 90% 70%, 50% 90%, 10% 70%, 10% 30%)' }} />
+        <Skeleton
+          className="w-[180px] h-[180px]"
+          style={{ clipPath: 'polygon(50% 10%, 90% 30%, 90% 70%, 50% 90%, 10% 70%, 10% 30%)' }}
+        />
       </div>
     </div>
   )

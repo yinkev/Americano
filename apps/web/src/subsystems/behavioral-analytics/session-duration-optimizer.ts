@@ -7,7 +7,7 @@
  */
 
 import { prisma } from '@/lib/db'
-import { StudyTimeAnalyzer, type AttentionCyclePattern } from './study-time-analyzer'
+import { type AttentionCyclePattern, StudyTimeAnalyzer } from './study-time-analyzer'
 
 /**
  * Duration recommendation with min/max bounds
@@ -89,7 +89,7 @@ export class SessionDurationOptimizer {
 
     // 3. Check if start time is a peak performance hour
     const hour = startTime.getHours()
-    const peakHours = await this.getPeakPerformanceHours(userId)
+    const peakHours = await SessionDurationOptimizer.getPeakPerformanceHours(userId)
     const isPeakHour = peakHours.includes(hour)
 
     if (isPeakHour) {
@@ -101,7 +101,7 @@ export class SessionDurationOptimizer {
     }
 
     // 4. Adjust for recent study load
-    const recentLoad = await this.getRecentStudyLoad(userId, 7)
+    const recentLoad = await SessionDurationOptimizer.getRecentStudyLoad(userId, 7)
 
     if (recentLoad > 20) {
       baseDuration = Math.round(baseDuration * 0.85)
@@ -116,7 +116,10 @@ export class SessionDurationOptimizer {
     }
 
     // 5. Calculate break schedule
-    const breakSchedule = await this.calculateBreakSchedule(userId, baseDuration)
+    const breakSchedule = await SessionDurationOptimizer.calculateBreakSchedule(
+      userId,
+      baseDuration,
+    )
 
     // 6. Calculate confidence based on data quality
     const confidence = userProfile?.dataQualityScore || 0.5
@@ -290,7 +293,11 @@ export class SessionDurationOptimizer {
     originalDuration: number,
     elapsedMinutes: number,
   ): Promise<{ newDuration: number; reason: string }> {
-    const fatigueCheck = await this.detectFatigueAndAdjust(userId, currentSessionId, elapsedMinutes)
+    const fatigueCheck = await SessionDurationOptimizer.detectFatigueAndAdjust(
+      userId,
+      currentSessionId,
+      elapsedMinutes,
+    )
 
     if (fatigueCheck.adjustment < 0) {
       return {

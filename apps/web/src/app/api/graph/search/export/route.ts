@@ -12,7 +12,7 @@
  * @route POST /api/graph/search/export
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { semanticSearchService } from '@/lib/semantic-search-service'
 
@@ -20,16 +20,20 @@ import { semanticSearchService } from '@/lib/semantic-search-service'
 const ExportRequestSchema = z.object({
   searchId: z.string().optional(),
   query: z.string().optional(),
-  filters: z.object({
-    courseIds: z.array(z.string()).optional(),
-    category: z.string().optional(),
-    dateRange: z.object({
-      start: z.coerce.date(),
-      end: z.coerce.date(),
-    }).optional(),
-    contentTypes: z.array(z.enum(['lecture', 'chunk', 'concept'])).optional(),
-    minSimilarity: z.number().min(0).max(1).optional(),
-  }).optional(),
+  filters: z
+    .object({
+      courseIds: z.array(z.string()).optional(),
+      category: z.string().optional(),
+      dateRange: z
+        .object({
+          start: z.coerce.date(),
+          end: z.coerce.date(),
+        })
+        .optional(),
+      contentTypes: z.array(z.enum(['lecture', 'chunk', 'concept'])).optional(),
+      minSimilarity: z.number().min(0).max(1).optional(),
+    })
+    .optional(),
   format: z.enum(['json', 'csv', 'markdown']),
   includeMetadata: z.boolean().default(true),
 })
@@ -121,14 +125,16 @@ function exportToCSV(results: any[], includeMetadata: boolean): string {
       `"${result.snippet.replace(/"/g, '""')}"`,
       result.metadata?.lectureTitle || result.metadata?.courseName || '',
       result.relevanceScore.toFixed(3),
-      result.metadata?.uploadDate ? new Date(result.metadata.uploadDate).toISOString().split('T')[0] : '',
+      result.metadata?.uploadDate
+        ? new Date(result.metadata.uploadDate).toISOString().split('T')[0]
+        : '',
     ]
 
     if (includeMetadata) {
       row.push(
         result.metadata?.courseName || '',
         result.metadata?.lectureTitle || '',
-        result.metadata?.pageNumber?.toString() || ''
+        result.metadata?.pageNumber?.toString() || '',
       )
     }
 
@@ -214,7 +220,7 @@ export async function POST(req: NextRequest) {
           message: `You have reached the export limit of ${RATE_LIMIT} exports per hour. Try again in ${resetIn} minutes.`,
           resetAt: rateLimit.resetAt.toISOString(),
         },
-        { status: 429 }
+        { status: 429 },
       )
     }
 
@@ -239,12 +245,12 @@ export async function POST(req: NextRequest) {
       // For now, return error
       return NextResponse.json(
         { error: 'Search by searchId not yet implemented. Please provide a query.' },
-        { status: 400 }
+        { status: 400 },
       )
     } else {
       return NextResponse.json(
         { error: 'Either query or searchId must be provided' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -252,10 +258,7 @@ export async function POST(req: NextRequest) {
     const exportResults = results.slice(0, MAX_EXPORT_RESULTS)
 
     if (exportResults.length === 0) {
-      return NextResponse.json(
-        { error: 'No results to export' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'No results to export' }, { status: 400 })
     }
 
     // Generate export based on format
@@ -309,7 +312,7 @@ export async function POST(req: NextRequest) {
           error: 'Validation error',
           details: error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -318,7 +321,7 @@ export async function POST(req: NextRequest) {
         error: 'Export failed',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

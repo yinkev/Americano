@@ -17,10 +17,10 @@
  * - Stores in FirstAidSection model with embeddings
  */
 
-import { PrismaClient } from '@/generated/prisma'
-import { embeddingService } from '@/lib/embedding-service'
 import * as fs from 'fs/promises'
 import * as path from 'path'
+import { PrismaClient } from '@/generated/prisma'
+import { embeddingService } from '@/lib/embedding-service'
 
 /**
  * First Aid section structure after parsing
@@ -133,14 +133,14 @@ export class FirstAidProcessor {
       const sections = await this.parseFirstAidStructure(extractedText)
       console.log(`✓ Parsed ${sections.length} sections`)
 
-      const highYieldCount = sections.filter(s => s.isHighYield).length
+      const highYieldCount = sections.filter((s) => s.isHighYield).length
       console.log(`✓ Identified ${highYieldCount} high-yield sections`)
 
       // Generate embeddings for all sections (Task 1.3)
       if (generateEmbeddings) {
         console.log(`\n🧠 Generating embeddings for ${sections.length} sections...`)
         const embeddingResults = await embeddingService.generateBatchEmbeddings(
-          sections.map(s => s.content)
+          sections.map((s) => s.content),
         )
 
         console.log(`✓ Generated ${embeddingResults.successCount} embeddings`)
@@ -206,7 +206,7 @@ export class FirstAidProcessor {
           data: {
             sectionCount: storedCount,
             highYieldCount,
-            totalPages: Math.max(...sections.map(s => s.pageNumber), 0),
+            totalPages: Math.max(...sections.map((s) => s.pageNumber), 0),
             processingProgress: 100,
             mappingStatus: 'COMPLETED',
           },
@@ -261,7 +261,9 @@ export class FirstAidProcessor {
       // Production: Use PaddleOCR or pdf-parse library
       return this.generateMockFirstAidContent()
     } catch (error) {
-      throw new Error(`Failed to read PDF: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      throw new Error(
+        `Failed to read PDF: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
     }
   }
 

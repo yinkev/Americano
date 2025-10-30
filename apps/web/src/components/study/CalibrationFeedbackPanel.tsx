@@ -1,13 +1,13 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import type { CalibrationFeedbackData } from '@/types/validation';
+import { ArrowDown, ArrowUp, Minus, TrendingDown, TrendingUp } from 'lucide-react'
+import React from 'react'
+import { Button } from '@/components/ui/button'
+import type { CalibrationFeedbackData } from '@/types/validation'
 
 interface CalibrationFeedbackPanelProps {
-  calibrationData: CalibrationFeedbackData;
-  onContinue: () => void;
+  calibrationData: CalibrationFeedbackData
+  onContinue: () => void
 }
 
 /**
@@ -43,80 +43,80 @@ export function CalibrationFeedbackPanel({
     feedbackMessage,
     trend,
     trendMessage,
-  } = calibrationData;
+  } = calibrationData
 
   // Get color based on calibration category (EXACT OKLCH colors from spec)
   const getCategoryColor = () => {
     switch (category) {
       case 'OVERCONFIDENT':
-        return 'oklch(0.65 0.20 25)'; // Red - EXACT spec
+        return 'oklch(0.65 0.20 25)' // Red - EXACT spec
       case 'UNDERCONFIDENT':
-        return 'oklch(0.60 0.18 230)'; // Blue - EXACT spec
+        return 'oklch(0.60 0.18 230)' // Blue - EXACT spec
       case 'CALIBRATED':
-        return 'oklch(0.7 0.15 145)'; // Green - EXACT spec
+        return 'oklch(0.7 0.15 145)' // Green - EXACT spec
       default:
-        return 'oklch(0.6 0.05 240)'; // Neutral gray
+        return 'oklch(0.6 0.05 240)' // Neutral gray
     }
-  };
+  }
 
   // Get background color for category badge
   const getCategoryBgColor = () => {
     switch (category) {
       case 'OVERCONFIDENT':
-        return 'oklch(0.95 0.05 25)';
+        return 'oklch(0.95 0.05 25)'
       case 'UNDERCONFIDENT':
-        return 'oklch(0.95 0.05 230)';
+        return 'oklch(0.95 0.05 230)'
       case 'CALIBRATED':
-        return 'oklch(0.95 0.05 145)';
+        return 'oklch(0.95 0.05 145)'
       default:
-        return 'oklch(0.95 0.02 240)';
+        return 'oklch(0.95 0.02 240)'
     }
-  };
+  }
 
   // Get category label
   const getCategoryLabel = () => {
     switch (category) {
       case 'OVERCONFIDENT':
-        return 'Overconfident';
+        return 'Overconfident'
       case 'UNDERCONFIDENT':
-        return 'Underconfident';
+        return 'Underconfident'
       case 'CALIBRATED':
-        return 'Well Calibrated';
+        return 'Well Calibrated'
       default:
-        return 'Calibrated';
+        return 'Calibrated'
     }
-  };
+  }
 
   // Calculate absolute delta percentage for gauge (cap at 50 for visualization)
-  const absDeltaPercentage = Math.min(Math.abs(delta), 50);
-  const gaugePercentage = (absDeltaPercentage / 50) * 100;
+  const absDeltaPercentage = Math.min(Math.abs(delta), 50)
+  const gaugePercentage = (absDeltaPercentage / 50) * 100
 
   // Calculate confidence shift if post-confidence exists
-  const confidenceShift = postConfidence !== undefined ? postConfidence - preConfidence : 0;
+  const confidenceShift = postConfidence !== undefined ? postConfidence - preConfidence : 0
 
   // Get trend icon
   const TrendIcon = () => {
-    if (!trend || trend === 'stable') return <Minus className="h-4 w-4" />;
+    if (!trend || trend === 'stable') return <Minus className="h-4 w-4" />
     return trend === 'improving' ? (
       <TrendingUp className="h-4 w-4" />
     ) : (
       <TrendingDown className="h-4 w-4" />
-    );
-  };
+    )
+  }
 
   // Get trend color
   const getTrendColor = () => {
-    if (!trend) return 'oklch(0.6 0.05 240)';
+    if (!trend) return 'oklch(0.6 0.05 240)'
     switch (trend) {
       case 'improving':
-        return 'oklch(0.7 0.15 145)'; // Green
+        return 'oklch(0.7 0.15 145)' // Green
       case 'declining':
-        return 'oklch(0.65 0.20 25)'; // Red
+        return 'oklch(0.65 0.20 25)' // Red
       case 'stable':
       default:
-        return 'oklch(0.6 0.05 240)'; // Gray
+        return 'oklch(0.6 0.05 240)' // Gray
     }
-  };
+  }
 
   return (
     <div
@@ -129,9 +129,7 @@ export function CalibrationFeedbackPanel({
     >
       {/* Header */}
       <div className="text-center">
-        <h3 className="text-xl font-dm-sans font-semibold mb-2">
-          Confidence Calibration
-        </h3>
+        <h3 className="text-xl font-dm-sans font-semibold mb-2">Confidence Calibration</h3>
         <p className="text-sm text-muted-foreground">
           How well did your confidence match your performance?
         </p>
@@ -204,13 +202,9 @@ export function CalibrationFeedbackPanel({
             borderColor: 'oklch(0.9 0.02 240)',
           }}
         >
-          <div className="text-xs text-muted-foreground mb-1">
-            Pre-Assessment
-          </div>
+          <div className="text-xs text-muted-foreground mb-1">Pre-Assessment</div>
           <div className="text-2xl font-bold">{confidenceNormalized}%</div>
-          <div className="text-xs text-muted-foreground mt-1">
-            Confidence
-          </div>
+          <div className="text-xs text-muted-foreground mt-1">Confidence</div>
         </div>
 
         {/* Actual Score */}
@@ -221,13 +215,9 @@ export function CalibrationFeedbackPanel({
             borderColor: 'oklch(0.9 0.02 240)',
           }}
         >
-          <div className="text-xs text-muted-foreground mb-1">
-            Actual
-          </div>
+          <div className="text-xs text-muted-foreground mb-1">Actual</div>
           <div className="text-2xl font-bold">{Math.round(score)}%</div>
-          <div className="text-xs text-muted-foreground mt-1">
-            Score
-          </div>
+          <div className="text-xs text-muted-foreground mt-1">Score</div>
         </div>
 
         {/* Post-Confidence (if exists) or Confidence Level */}
@@ -240,27 +230,15 @@ export function CalibrationFeedbackPanel({
         >
           {postConfidence !== undefined ? (
             <>
-              <div className="text-xs text-muted-foreground mb-1">
-                Post-Assessment
-              </div>
-              <div className="text-2xl font-bold">
-                {(postConfidence - 1) * 25}%
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Confidence
-              </div>
+              <div className="text-xs text-muted-foreground mb-1">Post-Assessment</div>
+              <div className="text-2xl font-bold">{(postConfidence - 1) * 25}%</div>
+              <div className="text-xs text-muted-foreground mt-1">Confidence</div>
             </>
           ) : (
             <>
-              <div className="text-xs text-muted-foreground mb-1">
-                Confidence
-              </div>
-              <div className="text-2xl font-bold">
-                {preConfidence}/5
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Level
-              </div>
+              <div className="text-xs text-muted-foreground mb-1">Confidence</div>
+              <div className="text-2xl font-bold">{preConfidence}/5</div>
+              <div className="text-xs text-muted-foreground mt-1">Level</div>
             </>
           )}
         </div>
@@ -271,18 +249,9 @@ export function CalibrationFeedbackPanel({
         <div
           className="flex items-center justify-center gap-2 p-3 rounded-lg border"
           style={{
-            backgroundColor:
-              confidenceShift > 0
-                ? 'oklch(0.95 0.05 145)'
-                : 'oklch(0.95 0.05 25)',
-            borderColor:
-              confidenceShift > 0
-                ? 'oklch(0.85 0.08 145)'
-                : 'oklch(0.85 0.08 25)',
-            color:
-              confidenceShift > 0
-                ? 'oklch(0.35 0.16 145)'
-                : 'oklch(0.35 0.16 25)',
+            backgroundColor: confidenceShift > 0 ? 'oklch(0.95 0.05 145)' : 'oklch(0.95 0.05 25)',
+            borderColor: confidenceShift > 0 ? 'oklch(0.85 0.08 145)' : 'oklch(0.85 0.08 25)',
+            color: confidenceShift > 0 ? 'oklch(0.35 0.16 145)' : 'oklch(0.35 0.16 25)',
           }}
         >
           {confidenceShift > 0 ? (
@@ -291,8 +260,8 @@ export function CalibrationFeedbackPanel({
             <ArrowDown className="h-5 w-5" />
           )}
           <span className="text-sm font-medium">
-            Confidence shifted {confidenceShift > 0 ? 'up' : 'down'} by{' '}
-            {Math.abs(confidenceShift)} point{Math.abs(confidenceShift) !== 1 ? 's' : ''}
+            Confidence shifted {confidenceShift > 0 ? 'up' : 'down'} by {Math.abs(confidenceShift)}{' '}
+            point{Math.abs(confidenceShift) !== 1 ? 's' : ''}
           </span>
         </div>
       )}
@@ -318,17 +287,11 @@ export function CalibrationFeedbackPanel({
             borderColor: 'oklch(0.9 0.02 240)',
           }}
         >
-          <div
-            className="flex-shrink-0"
-            style={{ color: getTrendColor() }}
-            aria-hidden="true"
-          >
+          <div className="flex-shrink-0" style={{ color: getTrendColor() }} aria-hidden="true">
             <TrendIcon />
           </div>
           <div className="flex-1">
-            <div className="text-xs text-muted-foreground mb-1">
-              7-Day Trend
-            </div>
+            <div className="text-xs text-muted-foreground mb-1">7-Day Trend</div>
             <p className="text-sm" style={{ color: getTrendColor() }}>
               {trendMessage}
             </p>
@@ -349,5 +312,5 @@ export function CalibrationFeedbackPanel({
         Continue
       </Button>
     </div>
-  );
+  )
 }

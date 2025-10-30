@@ -1,9 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Switch } from '@/components/ui/switch'
-import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,7 +12,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Switch } from '@/components/ui/switch'
 
 export function BehavioralPrivacySettings() {
   const [behavioralAnalysisEnabled, setBehavioralAnalysisEnabled] = React.useState(true)
@@ -162,7 +162,10 @@ export function BehavioralPrivacySettings() {
           {/* Toggle 1: Enable behavioral pattern analysis */}
           <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
             <div className="flex-1 space-y-1">
-              <label htmlFor="behavioral-analysis" className="text-[13px] font-medium cursor-pointer">
+              <label
+                htmlFor="behavioral-analysis"
+                className="text-[13px] font-medium cursor-pointer"
+              >
                 Enable behavioral pattern analysis
               </label>
               <p className="text-[11px] text-muted-foreground">

@@ -8,7 +8,7 @@
  * Database model `calendarIntegration` not yet created
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 const DisconnectSchema = z.object({

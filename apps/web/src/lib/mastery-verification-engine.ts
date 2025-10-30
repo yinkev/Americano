@@ -11,9 +11,9 @@
  * @module mastery-verification-engine
  */
 
-import { prisma } from '@/lib/db'
 import { differenceInDays, subDays } from 'date-fns'
 import type { MasteryStatus } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 // ============================================
 // Type Definitions
@@ -92,7 +92,7 @@ const MIN_ASSESSMENT_TYPES = 2 // Minimum different assessment types required
  */
 export async function checkMasteryStatus(
   userId: string,
-  objectiveId: string
+  objectiveId: string,
 ): Promise<MasteryVerificationResult> {
   // Fetch recent assessments for this objective (last 30 days, up to 50 assessments)
   const recentAssessments = await fetchRecentAssessments(userId, objectiveId, 30, 50)
@@ -155,7 +155,7 @@ export async function checkMasteryStatus(
 export async function updateMasteryStatus(
   userId: string,
   objectiveId: string,
-  result: MasteryVerificationResult
+  result: MasteryVerificationResult,
 ): Promise<void> {
   // Serialize criteria to JSON for database storage
   const criteriaJson = {
@@ -259,7 +259,7 @@ function checkMultipleAssessmentTypes(assessments: RecentAssessment[]): Criterio
  */
 function checkDifficultyMatch(
   assessments: RecentAssessment[],
-  complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
+  complexity: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED',
 ): CriterionCheck {
   if (assessments.length === 0) {
     return {
@@ -281,9 +281,7 @@ function checkDifficultyMatch(
   // Check high-scoring assessments that match difficulty
   const matchingAssessments = assessments.filter(
     (a) =>
-      a.score >= MASTERY_SCORE_THRESHOLD &&
-      a.difficulty >= range.min &&
-      a.difficulty <= range.max
+      a.score >= MASTERY_SCORE_THRESHOLD && a.difficulty >= range.min && a.difficulty <= range.max,
   )
 
   const progress = Math.min(matchingAssessments.length / CONSECUTIVE_REQUIRED, 1.0)
@@ -304,7 +302,7 @@ function checkDifficultyMatch(
  */
 function checkCalibrationAccuracy(assessments: RecentAssessment[]): CriterionCheck {
   const assessmentsWithCalibration = assessments.filter(
-    (a) => a.calibrationDelta !== undefined && a.calibrationDelta !== null
+    (a) => a.calibrationDelta !== undefined && a.calibrationDelta !== null,
   )
 
   if (assessmentsWithCalibration.length === 0) {
@@ -317,7 +315,7 @@ function checkCalibrationAccuracy(assessments: RecentAssessment[]): CriterionChe
 
   // Count assessments with accurate calibration
   const wellCalibratedCount = assessmentsWithCalibration.filter(
-    (a) => Math.abs(a.calibrationDelta!) <= CALIBRATION_TOLERANCE
+    (a) => Math.abs(a.calibrationDelta!) <= CALIBRATION_TOLERANCE,
   ).length
 
   const progress = wellCalibratedCount / assessmentsWithCalibration.length
@@ -374,7 +372,7 @@ async function fetchRecentAssessments(
   userId: string,
   objectiveId: string,
   daysBack: number,
-  limit: number
+  limit: number,
 ): Promise<RecentAssessment[]> {
   const cutoffDate = subDays(new Date(), daysBack)
 

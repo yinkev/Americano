@@ -13,26 +13,35 @@
  * Charts: Recharts for heatmap, D3.js for network graph
  */
 
-'use client';
+'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useCorrelations } from '@/hooks/use-understanding-analytics';
-import { useState, useEffect, useRef } from 'react';
-import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import * as d3 from 'd3';
-import { AlertCircle, TrendingUp, Link2, ArrowRight } from 'lucide-react';
+import * as d3 from 'd3'
+import { AlertCircle, ArrowRight, Link2, TrendingUp } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import {
+  Cell,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+  ZAxis,
+} from 'recharts'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useCorrelations } from '@/hooks/use-understanding-analytics'
 
 export default function RelationshipsTab() {
-  const { data, isLoading, error } = useCorrelations();
+  const { data, isLoading, error } = useCorrelations()
   const [selectedCell, setSelectedCell] = useState<{
-    x: number;
-    y: number;
-    correlation: number;
-  } | null>(null);
+    x: number
+    y: number
+    correlation: number
+  } | null>(null)
 
   if (isLoading) {
-    return <RelationshipsSkeleton />;
+    return <RelationshipsSkeleton />
   }
 
   if (error) {
@@ -43,10 +52,10 @@ export default function RelationshipsTab() {
           <p>Failed to load relationship data. Please try again.</p>
         </div>
       </div>
-    );
+    )
   }
 
-  if (!data) return null;
+  if (!data) return null
 
   return (
     <div className="space-y-6">
@@ -189,7 +198,8 @@ export default function RelationshipsTab() {
             <CardTitle className="text-lg font-semibold">Understanding Network</CardTitle>
           </div>
           <p className="text-sm text-[oklch(0.6_0.05_240)] mt-1">
-            Interactive visualization of objective dependencies (node size = importance, edge thickness = correlation)
+            Interactive visualization of objective dependencies (node size = importance, edge
+            thickness = correlation)
           </p>
         </CardHeader>
         <CardContent>
@@ -232,9 +242,7 @@ export default function RelationshipsTab() {
                     <p className="font-medium text-sm text-[oklch(0.4_0.05_240)]">
                       {step.objectiveName}
                     </p>
-                    <p className="text-xs text-[oklch(0.5_0.05_240)] mt-1">
-                      {step.reasoning}
-                    </p>
+                    <p className="text-xs text-[oklch(0.5_0.05_240)] mt-1">{step.reasoning}</p>
                   </div>
                   {idx < data.sequence.length - 1 && (
                     <ArrowRight className="w-4 h-4 text-[oklch(0.7_0.05_240)] flex-shrink-0 mt-1" />
@@ -246,7 +254,7 @@ export default function RelationshipsTab() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 /**
@@ -256,9 +264,9 @@ export default function RelationshipsTab() {
  * Color intensity represents correlation strength (red = strong, yellow = weak, blue = negative).
  */
 interface CorrelationHeatmapProps {
-  matrix: number[][];
-  labels: string[];
-  onCellClick: (cell: { x: number; y: number; correlation: number }) => void;
+  matrix: number[][]
+  labels: string[]
+  onCellClick: (cell: { x: number; y: number; correlation: number }) => void
 }
 
 function CorrelationHeatmap({ matrix, labels, onCellClick }: CorrelationHeatmapProps) {
@@ -269,17 +277,17 @@ function CorrelationHeatmap({ matrix, labels, onCellClick }: CorrelationHeatmapP
       y,
       correlation,
       z: Math.abs(correlation) * 100, // Size based on magnitude
-    }))
-  );
+    })),
+  )
 
   // Color scale: blue (negative) -> yellow (weak) -> red (strong positive)
   const getColor = (correlation: number) => {
-    if (correlation < 0) return 'oklch(0.6 0.18 230)'; // Blue
-    if (correlation < 0.3) return 'oklch(0.85 0.05 240)'; // Light gray
-    if (correlation < 0.5) return 'oklch(0.75 0.12 85)'; // Yellow
-    if (correlation < 0.7) return 'oklch(0.7 0.15 50)'; // Orange
-    return 'oklch(0.65 0.20 25)'; // Red
-  };
+    if (correlation < 0) return 'oklch(0.6 0.18 230)' // Blue
+    if (correlation < 0.3) return 'oklch(0.85 0.05 240)' // Light gray
+    if (correlation < 0.5) return 'oklch(0.75 0.12 85)' // Yellow
+    if (correlation < 0.7) return 'oklch(0.7 0.15 50)' // Orange
+    return 'oklch(0.65 0.20 25)' // Red
+  }
 
   return (
     <div className="w-full" style={{ height: Math.max(400, labels.length * 30) }}>
@@ -288,12 +296,12 @@ function CorrelationHeatmap({ matrix, labels, onCellClick }: CorrelationHeatmapP
           margin={{ top: 20, right: 100, bottom: 100, left: 100 }}
           onClick={(e: any) => {
             if (e && e.activePayload && e.activePayload[0]) {
-              const payload = e.activePayload[0].payload;
+              const payload = e.activePayload[0].payload
               onCellClick({
                 x: payload.x,
                 y: payload.y,
                 correlation: payload.correlation,
-              });
+              })
             }
           }}
         >
@@ -326,7 +334,7 @@ function CorrelationHeatmap({ matrix, labels, onCellClick }: CorrelationHeatmapP
             cursor={{ strokeDasharray: '3 3' }}
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
-                const data = payload[0].payload;
+                const data = payload[0].payload
                 return (
                   <div className="bg-white/95 backdrop-blur-xl px-3 py-2 rounded-lg shadow-lg border border-[oklch(0.85_0.05_240)]">
                     <p className="text-xs font-medium text-[oklch(0.4_0.05_240)]">
@@ -336,9 +344,9 @@ function CorrelationHeatmap({ matrix, labels, onCellClick }: CorrelationHeatmapP
                       Correlation: {data.correlation.toFixed(3)}
                     </p>
                   </div>
-                );
+                )
               }
-              return null;
+              return null
             }}
           />
           <Scatter data={data} shape="square">
@@ -385,7 +393,7 @@ function CorrelationHeatmap({ matrix, labels, onCellClick }: CorrelationHeatmapP
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -397,20 +405,20 @@ function CorrelationHeatmap({ matrix, labels, onCellClick }: CorrelationHeatmapP
  * - Colors: Green (foundational), Red (bottleneck), Gray (neutral)
  */
 interface NetworkGraphProps {
-  matrix: number[][];
-  labels: string[];
-  foundational: string[];
-  bottlenecks: string[];
+  matrix: number[][]
+  labels: string[]
+  foundational: string[]
+  bottlenecks: string[]
 }
 
 function NetworkGraph({ matrix, labels, foundational, bottlenecks }: NetworkGraphProps) {
-  const svgRef = useRef<SVGSVGElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null)
 
   useEffect(() => {
-    if (!svgRef.current || matrix.length === 0) return;
+    if (!svgRef.current || matrix.length === 0) return
 
     // Clear previous graph
-    d3.select(svgRef.current).selectAll('*').remove();
+    d3.select(svgRef.current).selectAll('*').remove()
 
     // Prepare data
     const nodes = labels.map((name, i) => ({
@@ -418,32 +426,32 @@ function NetworkGraph({ matrix, labels, foundational, bottlenecks }: NetworkGrap
       name,
       isFoundational: foundational.includes(i.toString()),
       isBottleneck: bottlenecks.includes(i.toString()),
-    }));
+    }))
 
-    const links = [];
+    const links = []
     for (let i = 0; i < matrix.length; i++) {
       for (let j = i + 1; j < matrix[i].length; j++) {
-        const correlation = matrix[i][j];
+        const correlation = matrix[i][j]
         if (correlation > 0.3) {
           // Only show meaningful correlations
           links.push({
             source: i.toString(),
             target: j.toString(),
             value: correlation,
-          });
+          })
         }
       }
     }
 
     // Set up SVG dimensions
-    const width = svgRef.current.clientWidth;
-    const height = 500;
+    const width = svgRef.current.clientWidth
+    const height = 500
 
     const svg = d3
       .select(svgRef.current)
       .attr('width', width)
       .attr('height', height)
-      .attr('viewBox', [0, 0, width, height]);
+      .attr('viewBox', [0, 0, width, height])
 
     // Create force simulation
     const simulation = d3
@@ -453,11 +461,11 @@ function NetworkGraph({ matrix, labels, foundational, bottlenecks }: NetworkGrap
         d3
           .forceLink(links)
           .id((d: any) => d.id)
-          .distance(100)
+          .distance(100),
       )
       .force('charge', d3.forceManyBody().strength(-300))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collide', d3.forceCollide().radius(30));
+      .force('collide', d3.forceCollide().radius(30))
 
     // Draw links (edges)
     const link = svg
@@ -467,7 +475,7 @@ function NetworkGraph({ matrix, labels, foundational, bottlenecks }: NetworkGrap
       .selectAll('line')
       .data(links)
       .join('line')
-      .attr('stroke-width', (d: any) => d.value * 3); // Thickness based on correlation
+      .attr('stroke-width', (d: any) => d.value * 3) // Thickness based on correlation
 
     // Draw nodes
     const node = svg
@@ -476,12 +484,14 @@ function NetworkGraph({ matrix, labels, foundational, bottlenecks }: NetworkGrap
       .data(nodes)
       .join('circle')
       .attr('r', 12)
-      .attr('fill', (d: any) =>
-        d.isFoundational
-          ? 'oklch(0.7 0.15 145)' // Green for foundational
-          : d.isBottleneck
-            ? 'oklch(0.65 0.20 25)' // Red for bottleneck
-            : 'oklch(0.6 0.18 230)' // Blue for neutral
+      .attr(
+        'fill',
+        (d: any) =>
+          d.isFoundational
+            ? 'oklch(0.7 0.15 145)' // Green for foundational
+            : d.isBottleneck
+              ? 'oklch(0.65 0.20 25)' // Red for bottleneck
+              : 'oklch(0.6 0.18 230)', // Blue for neutral
       )
       .attr('stroke', 'white')
       .attr('stroke-width', 2)
@@ -490,20 +500,20 @@ function NetworkGraph({ matrix, labels, foundational, bottlenecks }: NetworkGrap
         d3
           .drag<SVGCircleElement, any>()
           .on('start', (event: any, d: any) => {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
+            if (!event.active) simulation.alphaTarget(0.3).restart()
+            d.fx = d.x
+            d.fy = d.y
           })
           .on('drag', (event: any, d: any) => {
-            d.fx = event.x;
-            d.fy = event.y;
+            d.fx = event.x
+            d.fy = event.y
           })
           .on('end', (event: any, d: any) => {
-            if (!event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-          }) as any
-      );
+            if (!event.active) simulation.alphaTarget(0)
+            d.fx = null
+            d.fy = null
+          }) as any,
+      )
 
     // Add labels
     const label = svg
@@ -515,10 +525,10 @@ function NetworkGraph({ matrix, labels, foundational, bottlenecks }: NetworkGrap
       .attr('font-size', 10)
       .attr('dx', 15)
       .attr('dy', 4)
-      .attr('fill', 'oklch(0.4 0.05 240)');
+      .attr('fill', 'oklch(0.4 0.05 240)')
 
     // Add tooltips
-    node.append('title').text((d: any) => d.name);
+    node.append('title').text((d: any) => d.name)
 
     // Update positions on tick
     simulation.on('tick', () => {
@@ -526,22 +536,27 @@ function NetworkGraph({ matrix, labels, foundational, bottlenecks }: NetworkGrap
         .attr('x1', (d: any) => d.source.x)
         .attr('y1', (d: any) => d.source.y)
         .attr('x2', (d: any) => d.target.x)
-        .attr('y2', (d: any) => d.target.y);
+        .attr('y2', (d: any) => d.target.y)
 
-      node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
+      node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y)
 
-      label.attr('x', (d: any) => d.x).attr('y', (d: any) => d.y);
-    });
+      label.attr('x', (d: any) => d.x).attr('y', (d: any) => d.y)
+    })
 
     // Cleanup on unmount
     return () => {
-      simulation.stop();
-    };
-  }, [matrix, labels, foundational, bottlenecks]);
+      simulation.stop()
+    }
+  }, [matrix, labels, foundational, bottlenecks])
 
   return (
     <div className="relative">
-      <svg ref={svgRef} className="w-full" style={{ minHeight: 500 }} aria-label="Network graph of objective relationships" />
+      <svg
+        ref={svgRef}
+        className="w-full"
+        style={{ minHeight: 500 }}
+        aria-label="Network graph of objective relationships"
+      />
       <div className="flex items-center justify-center gap-6 mt-4 text-xs">
         <div className="flex items-center gap-2">
           <div
@@ -569,7 +584,7 @@ function NetworkGraph({ matrix, labels, foundational, bottlenecks }: NetworkGrap
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -616,5 +631,5 @@ function RelationshipsSkeleton() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

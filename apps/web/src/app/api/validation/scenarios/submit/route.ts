@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { Prisma } from '@/generated/prisma';
-import { prisma } from '@/lib/db';
-import { getUserId } from '@/lib/auth';
-import { successResponse, errorResponse } from '@/lib/api-response';
+import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import type { Prisma } from '@/generated/prisma'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getUserId } from '@/lib/auth'
+import { prisma } from '@/lib/db'
 
 // Zod validation schema for request body
 const SubmitRequestSchema = z.object({
@@ -12,7 +12,7 @@ const SubmitRequestSchema = z.object({
   userChoices: z.record(z.string(), z.any()),
   userReasoning: z.string().min(10),
   timeSpent: z.number().int().positive(),
-});
+})
 
 /**
  * POST /api/validation/scenarios/submit
@@ -35,27 +35,26 @@ const SubmitRequestSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   try {
-    const userId = await getUserId();
-    const body = await request.json();
+    const userId = await getUserId()
+    const body = await request.json()
 
     // Validate request body
-    const validatedData = SubmitRequestSchema.parse(body);
-    const { scenarioId, sessionId, userChoices, userReasoning, timeSpent } = validatedData;
+    const validatedData = SubmitRequestSchema.parse(body)
+    const { scenarioId, sessionId, userChoices, userReasoning, timeSpent } = validatedData
 
     // Fetch scenario from database
     const scenario = await prisma.clinicalScenario.findUnique({
       where: { id: scenarioId },
-    });
+    })
 
     if (!scenario) {
-      return NextResponse.json(
-        errorResponse('SCENARIO_NOT_FOUND', 'Clinical scenario not found'),
-        { status: 404 }
-      );
+      return NextResponse.json(errorResponse('SCENARIO_NOT_FOUND', 'Clinical scenario not found'), {
+        status: 404,
+      })
     }
 
     // Call Python FastAPI service for evaluation
-    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8001';
+    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8001'
 
     const pythonResponse = await fetch(`${pythonServiceUrl}/validation/scenarios/evaluate`, {
       method: 'POST',
@@ -70,21 +69,18 @@ export async function POST(request: NextRequest) {
         user_reasoning: userReasoning,
         time_spent: timeSpent,
       }),
-    });
+    })
 
     if (!pythonResponse.ok) {
-      const errorText = await pythonResponse.text();
-      console.error('Python service error:', errorText);
+      const errorText = await pythonResponse.text()
+      console.error('Python service error:', errorText)
       return NextResponse.json(
-        errorResponse(
-          'PYTHON_SERVICE_ERROR',
-          'Failed to evaluate scenario from Python service'
-        ),
-        { status: 500 }
-      );
+        errorResponse('PYTHON_SERVICE_ERROR', 'Failed to evaluate scenario from Python service'),
+        { status: 500 },
+      )
     }
 
-    const evaluation = await pythonResponse.json();
+    const evaluation = await pythonResponse.json()
 
     // Save response to database
     const response = await prisma.scenarioResponse.create({
@@ -98,7 +94,7 @@ export async function POST(request: NextRequest) {
         competencyScores: evaluation.competency_scores as Prisma.InputJsonValue,
         timeSpent,
       },
-    });
+    })
 
     // Update ClinicalReasoningMetric (daily rollup)
     await prisma.clinicalReasoningMetric.create({
@@ -108,7 +104,7 @@ export async function POST(request: NextRequest) {
         competencyScores: evaluation.competency_scores as Prisma.InputJsonValue,
         boardExamTopic: scenario.boardExamTopic,
       },
-    });
+    })
 
     return NextResponse.json(
       successResponse({
@@ -123,23 +119,23 @@ export async function POST(request: NextRequest) {
           teachingPoints: evaluation.teaching_points,
         },
         responseId: response.id,
-      })
-    );
+      }),
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', 'Invalid request data', error.issues),
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    console.error('[/api/validation/scenarios/submit] Error:', error);
+    console.error('[/api/validation/scenarios/submit] Error:', error)
     return NextResponse.json(
       errorResponse(
         'INTERNAL_ERROR',
-        error instanceof Error ? error.message : 'Failed to submit scenario'
+        error instanceof Error ? error.message : 'Failed to submit scenario',
       ),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

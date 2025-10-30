@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse } from '@/lib/api-response';
+import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
 // Zod validation schema for request body
 const generatePromptSchema = z.object({
   objectiveId: z.string().cuid(),
   sessionId: z.string().cuid().optional(),
-});
+})
 
 /**
  * POST /api/validation/prompts/generate
@@ -30,11 +30,11 @@ const generatePromptSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
 
     // Validate request body
-    const validatedData = generatePromptSchema.parse(body);
-    const { objectiveId, sessionId } = validatedData;
+    const validatedData = generatePromptSchema.parse(body)
+    const { objectiveId, sessionId } = validatedData
 
     // Fetch objective from database with lecture context
     const objective = await prisma.learningObjective.findUnique({
@@ -46,17 +46,16 @@ export async function POST(request: NextRequest) {
           },
         },
       },
-    });
+    })
 
     if (!objective) {
-      return NextResponse.json(
-        errorResponse('OBJECTIVE_NOT_FOUND', 'Objective not found'),
-        { status: 404 }
-      );
+      return NextResponse.json(errorResponse('OBJECTIVE_NOT_FOUND', 'Objective not found'), {
+        status: 404,
+      })
     }
 
     // Check for cached prompt (generated within last 7 days for same objective)
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     const cachedPrompt = await prisma.validationPrompt.findFirst({
       where: {
         objectiveId,
@@ -68,7 +67,7 @@ export async function POST(request: NextRequest) {
       orderBy: {
         createdAt: 'desc',
       },
-    });
+    })
 
     if (cachedPrompt) {
       // Return cached prompt
@@ -84,12 +83,12 @@ export async function POST(request: NextRequest) {
             createdAt: cachedPrompt.createdAt,
           },
           cached: true,
-        })
-      );
+        }),
+      )
     }
 
     // Call Python FastAPI service to generate new prompt
-    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000';
+    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000'
 
     const pythonResponse = await fetch(`${pythonServiceUrl}/validation/generate-prompt`, {
       method: 'POST',
@@ -102,21 +101,18 @@ export async function POST(request: NextRequest) {
         lecture_title: objective.lecture.title,
         course_name: objective.lecture.course.name,
       }),
-    });
+    })
 
     if (!pythonResponse.ok) {
-      const errorText = await pythonResponse.text();
-      console.error('Python service error:', errorText);
+      const errorText = await pythonResponse.text()
+      console.error('Python service error:', errorText)
       return NextResponse.json(
-        errorResponse(
-          'PYTHON_SERVICE_ERROR',
-          'Failed to generate prompt from Python service'
-        ),
-        { status: 500 }
-      );
+        errorResponse('PYTHON_SERVICE_ERROR', 'Failed to generate prompt from Python service'),
+        { status: 500 },
+      )
     }
 
-    const pythonData = await pythonResponse.json();
+    const pythonData = await pythonResponse.json()
 
     // Save generated prompt to database
     const savedPrompt = await prisma.validationPrompt.create({
@@ -132,7 +128,7 @@ export async function POST(request: NextRequest) {
           seed: Math.random(),
         },
       },
-    });
+    })
 
     return NextResponse.json(
       successResponse({
@@ -146,23 +142,23 @@ export async function POST(request: NextRequest) {
           createdAt: savedPrompt.createdAt,
         },
         cached: false,
-      })
-    );
+      }),
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', 'Invalid request data', error.issues),
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    console.error('Error generating prompt:', error);
+    console.error('Error generating prompt:', error)
     return NextResponse.json(
       errorResponse(
         'INTERNAL_ERROR',
-        error instanceof Error ? error.message : 'Failed to generate prompt'
+        error instanceof Error ? error.message : 'Failed to generate prompt',
       ),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

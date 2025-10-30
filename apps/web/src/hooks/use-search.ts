@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import { useState, useCallback, useEffect } from "react"
-import { useDebounce } from "./use-debounce"
-import type { SearchFilters } from "@/components/search/search-filters"
-import type { SearchResult } from "@/components/search/search-results"
+import { useCallback, useEffect, useState } from 'react'
+import type { SearchFilters } from '@/components/search/search-filters'
+import type { SearchResult } from '@/components/search/search-results'
+import { useDebounce } from './use-debounce'
 
 interface UseSearchOptions {
   /**
@@ -62,7 +62,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
   } = options
 
   // State management
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = useState('')
   const [filters, setFilters] = useState<SearchFilters>(initialFilters)
   const [results, setResults] = useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -88,10 +88,10 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
     setError(null)
 
     try {
-      const response = await fetch("/api/graph/search", {
-        method: "POST",
+      const response = await fetch('/api/graph/search', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           query: debouncedQuery,
@@ -110,15 +110,14 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
         setResults(data.data.results || [])
         setTotalResults(data.data.total || 0)
       } else {
-        throw new Error(data.error || "Search failed")
+        throw new Error(data.error || 'Search failed')
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "An unexpected error occurred"
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
       setError(errorMessage)
       setResults([])
       setTotalResults(0)
-      console.error("Search error:", err)
+      console.error('Search error:', err)
     } finally {
       setIsLoading(false)
     }
@@ -128,7 +127,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
    * Clear search results and reset state
    */
   const clearSearch = useCallback(() => {
-    setQuery("")
+    setQuery('')
     setResults([])
     setError(null)
     setTotalResults(0)

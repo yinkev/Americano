@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { getUserId } from '@/lib/auth';
-import { calculateCalibration, normalizeConfidence } from '@/lib/confidence-calibrator';
-import { CalibrationCategory } from '@prisma/client';
+import { CalibrationCategory } from '@prisma/client'
+import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getUserId } from '@/lib/auth'
+import { calculateCalibration, normalizeConfidence } from '@/lib/confidence-calibrator'
+import { prisma } from '@/lib/db'
 
 // Zod validation schema for request body
 const evaluateResponseSchema = z.object({
@@ -18,7 +18,7 @@ const evaluateResponseSchema = z.object({
   postAssessmentConfidence: z.number().int().min(1).max(5).optional(),
   confidenceRationale: z.string().optional(),
   reflectionNotes: z.string().optional(),
-});
+})
 
 /**
  * POST /api/validation/responses
@@ -42,10 +42,10 @@ const evaluateResponseSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
 
     // Validate request body
-    const validatedData = evaluateResponseSchema.parse(body);
+    const validatedData = evaluateResponseSchema.parse(body)
     const {
       promptId,
       sessionId,
@@ -56,25 +56,24 @@ export async function POST(request: NextRequest) {
       postAssessmentConfidence,
       confidenceRationale,
       reflectionNotes,
-    } = validatedData;
+    } = validatedData
 
     // Get user ID (hardcoded for MVP per CLAUDE.md)
-    const userId = await getUserId();
+    const userId = await getUserId()
 
     // Fetch prompt from database
     const prompt = await prisma.validationPrompt.findUnique({
       where: { id: promptId },
-    });
+    })
 
     if (!prompt) {
-      return NextResponse.json(
-        errorResponse('PROMPT_NOT_FOUND', 'Prompt not found'),
-        { status: 404 }
-      );
+      return NextResponse.json(errorResponse('PROMPT_NOT_FOUND', 'Prompt not found'), {
+        status: 404,
+      })
     }
 
     // Call Python FastAPI service for AI evaluation
-    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000';
+    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000'
 
     const pythonResponse = await fetch(`${pythonServiceUrl}/validation/evaluate`, {
       method: 'POST',
@@ -88,29 +87,26 @@ export async function POST(request: NextRequest) {
         user_answer: userAnswer,
         confidence_level: confidenceLevel,
       }),
-    });
+    })
 
     if (!pythonResponse.ok) {
-      const errorText = await pythonResponse.text();
-      console.error('Python service error:', errorText);
+      const errorText = await pythonResponse.text()
+      console.error('Python service error:', errorText)
       return NextResponse.json(
-        errorResponse(
-          'PYTHON_SERVICE_ERROR',
-          'Failed to evaluate response from Python service'
-        ),
-        { status: 500 }
-      );
+        errorResponse('PYTHON_SERVICE_ERROR', 'Failed to evaluate response from Python service'),
+        { status: 500 },
+      )
     }
 
-    const evaluation = await pythonResponse.json();
+    const evaluation = await pythonResponse.json()
 
     // Story 4.4: Calculate calibration using ConfidenceCalibrator
-    const calibration = calculateCalibration(preAssessmentConfidence, evaluation.overall_score);
+    const calibration = calculateCalibration(preAssessmentConfidence, evaluation.overall_score)
 
     // Calculate confidence shift if post-assessment confidence provided
     const confidenceShift = postAssessmentConfidence
       ? postAssessmentConfidence - preAssessmentConfidence
-      : null;
+      : null
 
     // Save ValidationResponse to database with Story 4.4 calibration fields
     const savedResponse = await prisma.validationResponse.create({
@@ -143,11 +139,11 @@ export async function POST(request: NextRequest) {
           calibrationNote: calibration.feedbackMessage,
         },
       },
-    });
+    })
 
     // Update ComprehensionMetric (daily rollup)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Start of day
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // Start of day
 
     // Fetch all responses for this objective today
     const todayResponses = await prisma.validationResponse.findMany({
@@ -159,15 +155,14 @@ export async function POST(request: NextRequest) {
           gte: today,
         },
       },
-    });
+    })
 
     // Calculate average score for today
-    const avgScore =
-      todayResponses.reduce((sum, r) => sum + r.score, 0) / todayResponses.length;
+    const avgScore = todayResponses.reduce((sum, r) => sum + r.score, 0) / todayResponses.length
 
     // Determine trend (compare to yesterday's average)
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
 
     const yesterdayMetric = await prisma.comprehensionMetric.findFirst({
       where: {
@@ -175,13 +170,13 @@ export async function POST(request: NextRequest) {
         userId,
         date: yesterday,
       },
-    });
+    })
 
-    let trend: string = 'STABLE';
+    let trend: string = 'STABLE'
     if (yesterdayMetric) {
-      const scoreDiff = avgScore - yesterdayMetric.avgScore;
-      if (scoreDiff > 0.1) trend = 'IMPROVING';
-      else if (scoreDiff < -0.1) trend = 'WORSENING';
+      const scoreDiff = avgScore - yesterdayMetric.avgScore
+      if (scoreDiff > 0.1) trend = 'IMPROVING'
+      else if (scoreDiff < -0.1) trend = 'WORSENING'
     }
 
     // Upsert ComprehensionMetric for today
@@ -207,7 +202,7 @@ export async function POST(request: NextRequest) {
         sampleSize: todayResponses.length,
         trend,
       },
-    });
+    })
 
     // Return evaluation results with Story 4.4 calibration data
     return NextResponse.json(
@@ -232,23 +227,23 @@ export async function POST(request: NextRequest) {
         },
         score: evaluation.overall_score,
         responseId: savedResponse.id,
-      })
-    );
+      }),
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', 'Invalid request data', error.issues),
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    console.error('Error evaluating response:', error);
+    console.error('Error evaluating response:', error)
     return NextResponse.json(
       errorResponse(
         'INTERNAL_ERROR',
-        error instanceof Error ? error.message : 'Failed to evaluate response'
+        error instanceof Error ? error.message : 'Failed to evaluate response',
       ),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

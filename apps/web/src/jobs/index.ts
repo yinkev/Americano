@@ -21,8 +21,8 @@
  * ```
  */
 
-import { getFirstAidUpdater, type FirstAidUpdaterConfig } from './first-aid-updater'
 import type { JobExecutionResult } from './first-aid-updater'
+import { type FirstAidUpdaterConfig, getFirstAidUpdater } from './first-aid-updater'
 
 /**
  * Job manager for all scheduled jobs
@@ -116,7 +116,9 @@ export function getJobManager(): JobManager {
 /**
  * Initialize all scheduled jobs (convenience function)
  */
-export function initializeJobs(config?: { firstAidUpdater?: Partial<FirstAidUpdaterConfig> }): void {
+export function initializeJobs(config?: {
+  firstAidUpdater?: Partial<FirstAidUpdaterConfig>
+}): void {
   const manager = getJobManager()
   manager.initialize(config)
 }
@@ -129,8 +131,13 @@ export function shutdownJobs(): void {
   manager.shutdown()
 }
 
+export type { FirstAidUpdaterConfig, JobExecutionResult } from './first-aid-updater'
 /**
  * Re-export job modules for direct access
  */
-export { getFirstAidUpdater, startFirstAidUpdater, stopFirstAidUpdater, runFirstAidUpdateCheck } from './first-aid-updater'
-export type { FirstAidUpdaterConfig, JobExecutionResult } from './first-aid-updater'
+export {
+  getFirstAidUpdater,
+  runFirstAidUpdateCheck,
+  startFirstAidUpdater,
+  stopFirstAidUpdater,
+} from './first-aid-updater'

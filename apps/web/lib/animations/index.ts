@@ -7,7 +7,7 @@
  * @see /Users/kyin/Projects/Americano/docs/design/animation-patterns-guide.md
  */
 
-import { Variants, Transition } from 'framer-motion';
+import type { Transition, Variants } from 'framer-motion'
 
 /**
  * Standard timing durations in seconds
@@ -34,7 +34,7 @@ export const duration = {
 
   /** 1200ms - Chart reveals, data visualizations */
   reveal: 1.2,
-} as const;
+} as const
 
 /**
  * Material Design 3 easing curves
@@ -52,7 +52,7 @@ export const easing = {
 
   /** Temporary exits that may return */
   sharp: [0.4, 0.0, 0.6, 1] as const,
-} as const;
+} as const
 
 /**
  * Spring physics presets for natural motion
@@ -97,7 +97,7 @@ export const spring = {
     duration: 0.3,
     bounce: 0.25,
   },
-} as const;
+} as const
 
 /**
  * Common animation variants for consistent motion
@@ -171,14 +171,14 @@ export const variants = {
       opacity: 1,
       transition: {
         staggerChildren: 0.05, // 50ms between children
-        delayChildren: 0.1,    // Wait 100ms before starting
+        delayChildren: 0.1, // Wait 100ms before starting
       },
     },
     exit: {
       opacity: 0,
       transition: {
         staggerChildren: 0.03,
-        staggerDirection: -1,  // Reverse order
+        staggerDirection: -1, // Reverse order
       },
     },
   } satisfies Variants,
@@ -195,7 +195,7 @@ export const variants = {
       scale: 0.99,
     },
   } satisfies Variants,
-} as const;
+} as const
 
 /**
  * Common transition configurations
@@ -236,7 +236,7 @@ export const transitions = {
     duration: duration.reveal,
     ease: easing.decelerate,
   } satisfies Transition,
-} as const;
+} as const
 
 /**
  * Stagger timing configurations
@@ -253,7 +253,7 @@ export const stagger = {
 
   /** Exit stagger (faster than entrance) */
   exit: 0.03,
-} as const;
+} as const
 
 /**
  * Export all animation utilities
@@ -265,13 +265,13 @@ export const animations = {
   variants,
   transitions,
   stagger,
-} as const;
+} as const
 
 /**
  * Type exports for TypeScript support
  */
-export type AnimationDuration = keyof typeof duration;
-export type AnimationEasing = keyof typeof easing;
-export type AnimationSpring = keyof typeof spring;
-export type AnimationVariant = keyof typeof variants;
-export type AnimationTransition = keyof typeof transitions;
+export type AnimationDuration = keyof typeof duration
+export type AnimationEasing = keyof typeof easing
+export type AnimationSpring = keyof typeof spring
+export type AnimationVariant = keyof typeof variants
+export type AnimationTransition = keyof typeof transitions

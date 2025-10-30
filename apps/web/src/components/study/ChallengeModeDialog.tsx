@@ -1,79 +1,79 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
+import {
+  AlertCircle,
+  AlertTriangle,
+  Calendar,
+  CheckCircle2,
+  Lightbulb,
+  RefreshCw,
+  Sparkles,
+  Target,
+  XCircle,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
-import {
-  AlertTriangle,
-  AlertCircle,
-  Lightbulb,
-  Target,
-  Calendar,
-  RefreshCw,
-  Sparkles,
-  CheckCircle2,
-  XCircle
-} from 'lucide-react';
-import type { ValidationPromptData } from '@/types/validation';
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Slider } from '@/components/ui/slider'
+import { Textarea } from '@/components/ui/textarea'
+import type { ValidationPromptData } from '@/types/validation'
 
 /**
  * Emotion tags for memory anchoring (Story 4.3 AC#4)
  */
-type EmotionTag = 'SURPRISE' | 'CONFUSION' | 'FRUSTRATION' | 'AHA_MOMENT';
+type EmotionTag = 'SURPRISE' | 'CONFUSION' | 'FRUSTRATION' | 'AHA_MOMENT'
 
 /**
  * Challenge metadata including vulnerability type
  */
 interface ChallengeMetadata {
-  vulnerabilityType: 'OVERCONFIDENCE' | 'MISCONCEPTION' | 'RECENT_MISTAKES';
-  attemptNumber?: number; // For retry tracking
-  previousScore?: number; // For retry context
+  vulnerabilityType: 'OVERCONFIDENCE' | 'MISCONCEPTION' | 'RECENT_MISTAKES'
+  attemptNumber?: number // For retry tracking
+  previousScore?: number // For retry context
 }
 
 /**
  * Corrective feedback structure (Story 4.3 AC#3)
  */
 interface CorrectiveFeedback {
-  misconceptionExplained: string;
-  correctConcept: string;
-  clinicalContext: string;
-  memoryAnchor: string; // Mnemonic, analogy, or clinical pearl
+  misconceptionExplained: string
+  correctConcept: string
+  clinicalContext: string
+  memoryAnchor: string // Mnemonic, analogy, or clinical pearl
 }
 
 /**
  * Challenge response data
  */
 interface ChallengeResponse {
-  isCorrect: boolean;
-  feedback?: CorrectiveFeedback;
-  retrySchedule?: string[]; // ISO date strings
-  celebration?: string; // Success message on retry mastery
+  isCorrect: boolean
+  feedback?: CorrectiveFeedback
+  retrySchedule?: string[] // ISO date strings
+  celebration?: string // Success message on retry mastery
 }
 
 interface ChallengeModeDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  challenge: ValidationPromptData;
-  metadata: ChallengeMetadata;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  challenge: ValidationPromptData
+  metadata: ChallengeMetadata
   onComplete: (response: {
-    userAnswer: string;
-    confidenceLevel: number;
-    emotionTag?: EmotionTag;
-    personalNotes?: string;
-    isCorrect: boolean;
-  }) => void;
-  onSkip: () => void;
+    userAnswer: string
+    confidenceLevel: number
+    emotionTag?: EmotionTag
+    personalNotes?: string
+    isCorrect: boolean
+  }) => void
+  onSkip: () => void
 }
 
 const CONFIDENCE_LABELS = [
@@ -82,30 +82,30 @@ const CONFIDENCE_LABELS = [
   'Neutral',
   'Somewhat Confident',
   'Very Confident',
-];
+]
 
 const EMOTION_OPTIONS: { value: EmotionTag; label: string; description: string }[] = [
   {
     value: 'SURPRISE',
     label: 'Surprise 😮',
-    description: 'This challenged my assumptions'
+    description: 'This challenged my assumptions',
   },
   {
     value: 'CONFUSION',
     label: 'Confusion 🤔',
-    description: 'I need to think more about this'
+    description: 'I need to think more about this',
   },
   {
     value: 'FRUSTRATION',
     label: 'Frustration 😤',
-    description: 'This was really difficult'
+    description: 'This was really difficult',
   },
   {
     value: 'AHA_MOMENT',
     label: 'Aha! 💡',
-    description: 'Now I understand!'
+    description: 'Now I understand!',
   },
-];
+]
 
 /**
  * ChallengeModeDialog
@@ -135,34 +135,34 @@ export function ChallengeModeDialog({
   onComplete,
   onSkip,
 }: ChallengeModeDialogProps) {
-  const [userAnswer, setUserAnswer] = useState('');
-  const [confidenceLevel, setConfidenceLevel] = useState(3); // Default to "Neutral"
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [response, setResponse] = useState<ChallengeResponse | null>(null);
-  const [emotionTag, setEmotionTag] = useState<EmotionTag | undefined>(undefined);
-  const [personalNotes, setPersonalNotes] = useState('');
-  const [showFeedback, setShowFeedback] = useState(false);
+  const [userAnswer, setUserAnswer] = useState('')
+  const [confidenceLevel, setConfidenceLevel] = useState(3) // Default to "Neutral"
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [response, setResponse] = useState<ChallengeResponse | null>(null)
+  const [emotionTag, setEmotionTag] = useState<EmotionTag | undefined>(undefined)
+  const [personalNotes, setPersonalNotes] = useState('')
+  const [showFeedback, setShowFeedback] = useState(false)
 
   // Reset state when dialog opens/closes
   useEffect(() => {
     if (!open) {
       setTimeout(() => {
-        setUserAnswer('');
-        setConfidenceLevel(3);
-        setResponse(null);
-        setEmotionTag(undefined);
-        setPersonalNotes('');
-        setShowFeedback(false);
-      }, 300); // Wait for dialog close animation
+        setUserAnswer('')
+        setConfidenceLevel(3)
+        setResponse(null)
+        setEmotionTag(undefined)
+        setPersonalNotes('')
+        setShowFeedback(false)
+      }, 300) // Wait for dialog close animation
     }
-  }, [open]);
+  }, [open])
 
   const handleSubmit = async () => {
     if (userAnswer.trim().length < 10) {
-      return;
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
       // Call challenge submission API
@@ -178,21 +178,21 @@ export function ChallengeModeDialog({
           emotionTag,
           personalNotes,
         }),
-      });
+      })
 
       if (!apiResponse.ok) {
-        throw new Error('Failed to submit challenge response');
+        throw new Error('Failed to submit challenge response')
       }
 
-      const data = await apiResponse.json();
-      setResponse(data);
-      setShowFeedback(!data.isCorrect); // Show feedback panel if incorrect
+      const data = await apiResponse.json()
+      setResponse(data)
+      setShowFeedback(!data.isCorrect) // Show feedback panel if incorrect
     } catch (err) {
-      console.error('Challenge submission error:', err);
+      console.error('Challenge submission error:', err)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleComplete = () => {
     onComplete({
@@ -201,36 +201,36 @@ export function ChallengeModeDialog({
       emotionTag,
       personalNotes,
       isCorrect: response?.isCorrect ?? false,
-    });
-    onOpenChange(false);
-  };
+    })
+    onOpenChange(false)
+  }
 
   const handleRetryNow = () => {
     // Reset for immediate retry
-    setUserAnswer('');
-    setConfidenceLevel(3);
-    setResponse(null);
-    setEmotionTag(undefined);
-    setPersonalNotes('');
-    setShowFeedback(false);
-  };
+    setUserAnswer('')
+    setConfidenceLevel(3)
+    setResponse(null)
+    setEmotionTag(undefined)
+    setPersonalNotes('')
+    setShowFeedback(false)
+  }
 
   const handleSkip = () => {
-    onSkip();
-    onOpenChange(false);
-  };
+    onSkip()
+    onOpenChange(false)
+  }
 
   // Format retry dates for display
   const formatRetrySchedule = (schedule: string[]) => {
     return schedule.map((dateStr) => {
-      const date = new Date(dateStr);
+      const date = new Date(dateStr)
       return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
-        year: 'numeric'
-      });
-    });
-  };
+        year: 'numeric',
+      })
+    })
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -241,10 +241,7 @@ export function ChallengeModeDialog({
               className="flex items-center justify-center w-12 h-12 rounded-full"
               style={{ backgroundColor: 'oklch(0.95 0.08 45)' }}
             >
-              <Target
-                className="w-6 h-6"
-                style={{ color: 'oklch(0.72 0.16 45)' }}
-              />
+              <Target className="w-6 h-6" style={{ color: 'oklch(0.72 0.16 45)' }} />
             </div>
             <div>
               <DialogTitle className="text-2xl font-heading flex items-center gap-2">
@@ -253,14 +250,15 @@ export function ChallengeModeDialog({
                   className="text-sm font-normal px-3 py-1 rounded-full"
                   style={{
                     backgroundColor: 'oklch(0.95 0.08 45)',
-                    color: 'oklch(0.5 0.16 45)'
+                    color: 'oklch(0.5 0.16 45)',
                   }}
                 >
                   {metadata.attemptNumber ? `Retry #${metadata.attemptNumber}` : 'New Challenge'}
                 </span>
               </DialogTitle>
               <DialogDescription className="text-base mt-1">
-                Embrace the challenge! This is designed to be difficult — that's where learning happens.
+                Embrace the challenge! This is designed to be difficult — that's where learning
+                happens.
               </DialogDescription>
             </div>
           </div>
@@ -281,15 +279,10 @@ export function ChallengeModeDialog({
                 style={{ color: 'oklch(0.72 0.16 45)' }}
               />
               <div className="flex-1 space-y-2">
-                <h3
-                  className="font-semibold text-sm"
-                  style={{ color: 'oklch(0.5 0.16 45)' }}
-                >
+                <h3 className="font-semibold text-sm" style={{ color: 'oklch(0.5 0.16 45)' }}>
                   Concept Being Challenged
                 </h3>
-                <p className="text-base text-foreground">
-                  {challenge.conceptName}
-                </p>
+                <p className="text-base text-foreground">{challenge.conceptName}</p>
                 {metadata.previousScore !== undefined && (
                   <p className="text-sm text-muted-foreground">
                     Previous attempt: {metadata.previousScore}% — You've got this!
@@ -300,10 +293,13 @@ export function ChallengeModeDialog({
           </Card>
 
           {/* Challenge Question */}
-          <div className="p-5 rounded-lg border" style={{
-            backgroundColor: 'oklch(1 0 0)',
-            borderColor: 'oklch(0.92 0 0)',
-          }}>
+          <div
+            className="p-5 rounded-lg border"
+            style={{
+              backgroundColor: 'oklch(1 0 0)',
+              borderColor: 'oklch(0.92 0 0)',
+            }}
+          >
             <p className="text-base leading-relaxed">{challenge.promptText}</p>
           </div>
 
@@ -315,10 +311,7 @@ export function ChallengeModeDialog({
                   <Label htmlFor="confidence" className="text-base font-medium">
                     How confident are you in your answer?
                   </Label>
-                  <span
-                    className="text-sm font-medium"
-                    style={{ color: 'oklch(0.72 0.16 45)' }}
-                  >
+                  <span className="text-sm font-medium" style={{ color: 'oklch(0.72 0.16 45)' }}>
                     {CONFIDENCE_LABELS[confidenceLevel - 1]}
                   </span>
                 </div>
@@ -439,7 +432,10 @@ export function ChallengeModeDialog({
                       />
                       <div className="flex-1">
                         <h4 className="font-semibold mb-2">The Correct Concept</h4>
-                        <p className="text-sm leading-relaxed" style={{ color: 'oklch(0.35 0.16 145)' }}>
+                        <p
+                          className="text-sm leading-relaxed"
+                          style={{ color: 'oklch(0.35 0.16 145)' }}
+                        >
                           {response.feedback.correctConcept}
                         </p>
                       </div>
@@ -461,7 +457,10 @@ export function ChallengeModeDialog({
                       />
                       <div className="flex-1">
                         <h4 className="font-semibold mb-2">Clinical Context</h4>
-                        <p className="text-sm leading-relaxed" style={{ color: 'oklch(0.35 0.16 230)' }}>
+                        <p
+                          className="text-sm leading-relaxed"
+                          style={{ color: 'oklch(0.35 0.16 230)' }}
+                        >
                           {response.feedback.clinicalContext}
                         </p>
                       </div>
@@ -483,7 +482,10 @@ export function ChallengeModeDialog({
                       />
                       <div className="flex-1">
                         <h4 className="font-semibold mb-2">Memory Trick</h4>
-                        <p className="text-sm leading-relaxed font-medium" style={{ color: 'oklch(0.35 0.16 280)' }}>
+                        <p
+                          className="text-sm leading-relaxed font-medium"
+                          style={{ color: 'oklch(0.35 0.16 280)' }}
+                        >
                           {response.feedback.memoryAnchor}
                         </p>
                       </div>
@@ -505,12 +507,12 @@ export function ChallengeModeDialog({
                           key={option.value}
                           className="flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors hover:bg-accent"
                           style={{
-                            borderColor: emotionTag === option.value
-                              ? 'oklch(0.72 0.16 45)'
-                              : 'oklch(0.92 0 0)',
-                            backgroundColor: emotionTag === option.value
-                              ? 'oklch(0.98 0.03 45)'
-                              : 'transparent',
+                            borderColor:
+                              emotionTag === option.value
+                                ? 'oklch(0.72 0.16 45)'
+                                : 'oklch(0.92 0 0)',
+                            backgroundColor:
+                              emotionTag === option.value ? 'oklch(0.98 0.03 45)' : 'transparent',
                           }}
                         >
                           <RadioGroupItem
@@ -520,7 +522,9 @@ export function ChallengeModeDialog({
                           />
                           <div className="flex-1 min-h-[44px] flex flex-col justify-center">
                             <div className="font-medium text-sm">{option.label}</div>
-                            <div className="text-xs text-muted-foreground">{option.description}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {option.description}
+                            </div>
                           </div>
                         </label>
                       ))}
@@ -655,5 +659,5 @@ export function ChallengeModeDialog({
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

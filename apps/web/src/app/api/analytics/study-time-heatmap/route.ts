@@ -6,10 +6,10 @@
  * Story 5.1: Learning Pattern Recognition and Analysis - Task 8.6
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
 import { getObjectiveCompletions } from '@/types/mission-helpers'
 
 // Zod validation schema for query parameters

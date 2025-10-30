@@ -11,66 +11,66 @@
  * Part of: Day 7-8 Research Analytics Implementation
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
 
 // ==================== TYPE DEFINITIONS ====================
 
 interface MCMCDiagnosticsProps {
   diagnostics: {
-    r_hat: Record<string, number>;
-    effective_sample_size: Record<string, number>;
-    divergent_transitions: number;
-    max_tree_depth: number;
-    converged: boolean;
-  };
+    r_hat: Record<string, number>
+    effective_sample_size: Record<string, number>
+    divergent_transitions: number
+    max_tree_depth: number
+    converged: boolean
+  }
 }
 
 // ==================== HELPER FUNCTIONS ====================
 
 function getRhatColor(rhat: number): string {
-  if (rhat < 1.01) return 'bg-green-100 text-green-800 border-green-200';
-  if (rhat < 1.05) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-  return 'bg-red-100 text-red-800 border-red-200';
+  if (rhat < 1.01) return 'bg-green-100 text-green-800 border-green-200'
+  if (rhat < 1.05) return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+  return 'bg-red-100 text-red-800 border-red-200'
 }
 
 function getRhatStatus(rhat: number): string {
-  if (rhat < 1.01) return 'Excellent';
-  if (rhat < 1.05) return 'Acceptable';
-  return 'Poor';
+  if (rhat < 1.01) return 'Excellent'
+  if (rhat < 1.05) return 'Acceptable'
+  return 'Poor'
 }
 
 function getESSStatus(ess: number, totalSamples: number = 8000): string {
-  const ratio = ess / totalSamples;
-  if (ratio > 0.5) return 'Good';
-  if (ratio > 0.1) return 'Acceptable';
-  return 'Low';
+  const ratio = ess / totalSamples
+  if (ratio > 0.5) return 'Good'
+  if (ratio > 0.1) return 'Acceptable'
+  return 'Low'
 }
 
 function getESSColor(ess: number, totalSamples: number = 8000): string {
-  const ratio = ess / totalSamples;
-  if (ratio > 0.5) return 'text-green-600';
-  if (ratio > 0.1) return 'text-yellow-600';
-  return 'text-red-600';
+  const ratio = ess / totalSamples
+  if (ratio > 0.5) return 'text-green-600'
+  if (ratio > 0.1) return 'text-yellow-600'
+  return 'text-red-600'
 }
 
 // ==================== COMPONENT ====================
 
-export default function MCMCDiagnosticsPanel({
-  diagnostics,
-}: MCMCDiagnosticsProps) {
-  const [showDetails, setShowDetails] = useState(false);
+export default function MCMCDiagnosticsPanel({ diagnostics }: MCMCDiagnosticsProps) {
+  const [showDetails, setShowDetails] = useState(false)
 
   // Extract parameter names and sort by R-hat (worst first)
-  const parameterMetrics = Object.keys(diagnostics.r_hat).map((param) => ({
-    name: param,
-    rhat: diagnostics.r_hat[param],
-    ess: diagnostics.effective_sample_size[param],
-  })).sort((a, b) => b.rhat - a.rhat);
+  const parameterMetrics = Object.keys(diagnostics.r_hat)
+    .map((param) => ({
+      name: param,
+      rhat: diagnostics.r_hat[param],
+      ess: diagnostics.effective_sample_size[param],
+    }))
+    .sort((a, b) => b.rhat - a.rhat)
 
   // Get worst R-hat for summary
-  const worstRhat = parameterMetrics[0]?.rhat || 1.0;
+  const worstRhat = parameterMetrics[0]?.rhat || 1.0
 
   return (
     <div className="space-y-4">
@@ -96,16 +96,19 @@ export default function MCMCDiagnosticsPanel({
           {/* Worst R-hat */}
           <div className="rounded-md border border-gray-200 bg-gray-50 p-4">
             <div className="mb-1 flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-600">
-                Worst R̂
-              </span>
+              <span className="text-sm font-medium text-gray-600">Worst R̂</span>
               <InfoTooltip content="R̂ (R-hat) measures chain convergence. Values < 1.01 indicate excellent convergence. This shows the worst parameter." />
             </div>
             <div className="text-2xl font-bold">{worstRhat.toFixed(4)}</div>
-            <div className={`text-xs ${
-              worstRhat < 1.01 ? 'text-green-600' :
-              worstRhat < 1.05 ? 'text-yellow-600' : 'text-red-600'
-            }`}>
+            <div
+              className={`text-xs ${
+                worstRhat < 1.01
+                  ? 'text-green-600'
+                  : worstRhat < 1.05
+                    ? 'text-yellow-600'
+                    : 'text-red-600'
+              }`}
+            >
               {getRhatStatus(worstRhat)}
             </div>
           </div>
@@ -113,17 +116,15 @@ export default function MCMCDiagnosticsPanel({
           {/* Divergent Transitions */}
           <div className="rounded-md border border-gray-200 bg-gray-50 p-4">
             <div className="mb-1 flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-600">
-                Divergences
-              </span>
+              <span className="text-sm font-medium text-gray-600">Divergences</span>
               <InfoTooltip content="Number of divergent transitions. Should be 0 for reliable results. Divergences indicate sampling problems." />
             </div>
-            <div className="text-2xl font-bold">
-              {diagnostics.divergent_transitions}
-            </div>
-            <div className={`text-xs ${
-              diagnostics.divergent_transitions === 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
+            <div className="text-2xl font-bold">{diagnostics.divergent_transitions}</div>
+            <div
+              className={`text-xs ${
+                diagnostics.divergent_transitions === 0 ? 'text-green-600' : 'text-red-600'
+              }`}
+            >
               {diagnostics.divergent_transitions === 0 ? 'None' : 'Warning'}
             </div>
           </div>
@@ -131,28 +132,20 @@ export default function MCMCDiagnosticsPanel({
           {/* Max Tree Depth */}
           <div className="rounded-md border border-gray-200 bg-gray-50 p-4">
             <div className="mb-1 flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-600">
-                Max Tree Depth
-              </span>
+              <span className="text-sm font-medium text-gray-600">Max Tree Depth</span>
               <InfoTooltip content="Maximum NUTS tree depth reached. High values may indicate sampling inefficiency." />
             </div>
-            <div className="text-2xl font-bold">
-              {diagnostics.max_tree_depth}
-            </div>
+            <div className="text-2xl font-bold">{diagnostics.max_tree_depth}</div>
             <div className="text-xs text-gray-600">NUTS depth</div>
           </div>
 
           {/* Parameters Tracked */}
           <div className="rounded-md border border-gray-200 bg-gray-50 p-4">
             <div className="mb-1 flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-600">
-                Parameters
-              </span>
+              <span className="text-sm font-medium text-gray-600">Parameters</span>
               <InfoTooltip content="Number of model parameters monitored for convergence." />
             </div>
-            <div className="text-2xl font-bold">
-              {parameterMetrics.length}
-            </div>
+            <div className="text-2xl font-bold">{parameterMetrics.length}</div>
             <div className="text-xs text-gray-600">Tracked</div>
           </div>
         </div>
@@ -198,7 +191,9 @@ export default function MCMCDiagnosticsPanel({
                         {param.rhat.toFixed(4)}
                       </span>
                     </td>
-                    <td className={`whitespace-nowrap px-4 py-3 text-sm font-medium ${getESSColor(param.ess)}`}>
+                    <td
+                      className={`whitespace-nowrap px-4 py-3 text-sm font-medium ${getESSColor(param.ess)}`}
+                    >
                       {Math.round(param.ess)}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
@@ -214,43 +209,41 @@ export default function MCMCDiagnosticsPanel({
 
       {/* Interpretation Guide */}
       <div className="rounded-lg border border-blue-100 bg-blue-50 p-4">
-        <h4 className="mb-2 text-sm font-semibold text-blue-900">
-          Understanding MCMC Diagnostics
-        </h4>
+        <h4 className="mb-2 text-sm font-semibold text-blue-900">Understanding MCMC Diagnostics</h4>
         <dl className="space-y-2 text-sm text-blue-800">
           <div>
             <dt className="font-semibold">R̂ (R-hat):</dt>
             <dd>
-              Measures chain convergence. Values close to 1.0 indicate chains
-              have converged. <strong>&lt; 1.01 is excellent</strong>, &lt; 1.05
-              is acceptable, ≥ 1.05 suggests lack of convergence.
+              Measures chain convergence. Values close to 1.0 indicate chains have converged.{' '}
+              <strong>&lt; 1.01 is excellent</strong>, &lt; 1.05 is acceptable, ≥ 1.05 suggests lack
+              of convergence.
             </dd>
           </div>
           <div>
             <dt className="font-semibold">ESS (Effective Sample Size):</dt>
             <dd>
-              Number of independent samples. Higher is better. Should be at least
-              10% of total samples (800+ for 8,000 samples).
+              Number of independent samples. Higher is better. Should be at least 10% of total
+              samples (800+ for 8,000 samples).
             </dd>
           </div>
           <div>
             <dt className="font-semibold">Divergent Transitions:</dt>
             <dd>
-              Indicates sampling problems in high-curvature regions.{' '}
-              <strong>Should be 0</strong>. If &gt; 0, results may be unreliable.
+              Indicates sampling problems in high-curvature regions. <strong>Should be 0</strong>.
+              If &gt; 0, results may be unreliable.
             </dd>
           </div>
           <div>
             <dt className="font-semibold">Max Tree Depth:</dt>
             <dd>
-              NUTS algorithm tree depth. Values hitting the limit (usually 10)
-              may indicate inefficient sampling.
+              NUTS algorithm tree depth. Values hitting the limit (usually 10) may indicate
+              inefficient sampling.
             </dd>
           </div>
         </dl>
       </div>
     </div>
-  );
+  )
 }
 
 // ==================== SUB-COMPONENTS ====================
@@ -264,5 +257,5 @@ function InfoTooltip({ content }: { content: string }) {
         <div className="absolute left-1/2 top-full h-2 w-2 -translate-x-1/2 rotate-45 bg-gray-900" />
       </div>
     </div>
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 
 export function BehavioralInsightsEmpty() {
   return (
@@ -30,14 +30,7 @@ export function BehavioralInsightsEmpty() {
             strokeWidth="2.5"
             fill="none"
           />
-          <rect
-            x="75"
-            y="95"
-            width="10"
-            height="8"
-            rx="1"
-            fill="oklch(0.65 0.25 60)"
-          />
+          <rect x="75" y="95" width="10" height="8" rx="1" fill="oklch(0.65 0.25 60)" />
           <line
             x1="80"
             y1="35"
@@ -69,18 +62,16 @@ export function BehavioralInsightsEmpty() {
         </svg>
       </div>
 
-      <h3 className="text-xl font-semibold mb-2">
-        Collecting Insights...
-      </h3>
+      <h3 className="text-xl font-semibold mb-2">Collecting Insights...</h3>
 
       <p className="text-muted-foreground mb-6 max-w-md">
-        We're gathering data about your learning patterns to provide personalized
-        behavioral insights. Complete a few more study sessions to see your first recommendations.
+        We're gathering data about your learning patterns to provide personalized behavioral
+        insights. Complete a few more study sessions to see your first recommendations.
       </p>
 
       <Button asChild size="lg">
         <Link href="/study">Build Your Profile</Link>
       </Button>
     </Card>
-  );
+  )
 }

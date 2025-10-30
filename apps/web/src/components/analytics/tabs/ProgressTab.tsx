@@ -16,34 +16,34 @@
  * Data Source: /api/analytics/understanding/longitudinal (Python FastAPI service)
  */
 
-'use client';
+'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useLongitudinalProgress } from '@/hooks/use-understanding-analytics';
+import { format, parseISO } from 'date-fns'
 import {
-  LineChart,
+  AlertTriangle,
+  Award,
+  Calendar,
+  FileDown,
+  Sparkles,
+  Target,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react'
+import { useState } from 'react'
+import {
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ReferenceDot,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ReferenceDot,
-} from 'recharts';
-import {
-  TrendingUp,
-  TrendingDown,
-  Award,
-  Sparkles,
-  AlertTriangle,
-  FileDown,
-  Calendar,
-  Target,
-} from 'lucide-react';
-import { format, parseISO } from 'date-fns';
-import { useState } from 'react';
+} from 'recharts'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useLongitudinalProgress } from '@/hooks/use-understanding-analytics'
 
 // Color constants following design system (OKLCH)
 const COLORS = {
@@ -58,7 +58,7 @@ const COLORS = {
   positive: 'oklch(0.7 0.15 145)', // Green
   negative: 'oklch(0.65 0.20 25)', // Red
   neutral: 'oklch(0.6 0.05 240)', // Gray
-};
+}
 
 // Map dimension names to colors
 const DIMENSION_COLORS: Record<string, string> = {
@@ -68,14 +68,14 @@ const DIMENSION_COLORS: Record<string, string> = {
   adaptive: COLORS.adaptive,
   failure: COLORS.failure,
   mastery: COLORS.mastery,
-};
+}
 
 export default function ProgressTab() {
-  const { data, isLoading, error } = useLongitudinalProgress();
-  const [isExporting, setIsExporting] = useState(false);
+  const { data, isLoading, error } = useLongitudinalProgress()
+  const [isExporting, setIsExporting] = useState(false)
 
   if (isLoading) {
-    return <ProgressSkeleton />;
+    return <ProgressSkeleton />
   }
 
   if (error) {
@@ -86,10 +86,10 @@ export default function ProgressTab() {
           Failed to load progress data. Please try again.
         </p>
       </div>
-    );
+    )
   }
 
-  if (!data) return null;
+  if (!data) return null
 
   // Transform metrics data for Recharts (pivot from long to wide format)
   const chartData = data.metrics.map((metric) => ({
@@ -99,15 +99,15 @@ export default function ProgressTab() {
     reasoning: metric.reasoning,
     calibration: metric.calibration,
     // Add more dimensions from backend if available
-  }));
+  }))
 
   // Calculate improvement rates
-  const weekOverWeekRate = calculateWeekOverWeekRate(data.metrics);
-  const monthOverMonthRate = calculateMonthOverMonthRate(data.metrics);
+  const weekOverWeekRate = calculateWeekOverWeekRate(data.metrics)
+  const monthOverMonthRate = calculateMonthOverMonthRate(data.metrics)
 
   // Handle PDF export
   const handleExport = async () => {
-    setIsExporting(true);
+    setIsExporting(true)
     try {
       const response = await fetch('/api/analytics/understanding/export-report', {
         method: 'POST',
@@ -119,38 +119,36 @@ export default function ProgressTab() {
           dateRange: '90d', // Use current filter from store
           includeCharts: true,
         }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Export failed');
+        throw new Error('Export failed')
       }
 
       // Download PDF
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `progress-report-${format(new Date(), 'yyyy-MM-dd')}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `progress-report-${format(new Date(), 'yyyy-MM-dd')}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
     } catch (err) {
-      console.error('Export error:', err);
-      alert('Failed to export report. Please try again.');
+      console.error('Export error:', err)
+      alert('Failed to export report. Please try again.')
     } finally {
-      setIsExporting(false);
+      setIsExporting(false)
     }
-  };
+  }
 
   return (
     <div className="space-y-6">
       {/* Header with Export Button */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-[oklch(0.3_0.05_240)]">
-            Longitudinal Progress
-          </h2>
+          <h2 className="text-2xl font-bold text-[oklch(0.3_0.05_240)]">Longitudinal Progress</h2>
           <p className="text-sm text-[oklch(0.6_0.05_240)] mt-1">
             Track your understanding development over time
           </p>
@@ -177,18 +175,19 @@ export default function ProgressTab() {
           <CardContent>
             <div className="space-y-3">
               {data.regressions.map((regression, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-start gap-3 p-4 bg-white/50 rounded-xl"
-                >
-                  <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: COLORS.negative }} />
+                <div key={idx} className="flex items-start gap-3 p-4 bg-white/50 rounded-xl">
+                  <AlertTriangle
+                    className="w-5 h-5 mt-0.5 flex-shrink-0"
+                    style={{ color: COLORS.negative }}
+                  />
                   <div>
                     <p className="font-semibold text-[oklch(0.3_0.05_240)]">
-                      {regression.metric.charAt(0).toUpperCase() + regression.metric.slice(1)} declined by{' '}
-                      {regression.dropPercentage.toFixed(1)}%
+                      {regression.metric.charAt(0).toUpperCase() + regression.metric.slice(1)}{' '}
+                      declined by {regression.dropPercentage.toFixed(1)}%
                     </p>
                     <p className="text-sm text-[oklch(0.6_0.05_240)] mt-1">
-                      {format(parseISO(regression.date), 'MMMM d, yyyy')} - Previously mastered topic showing decline
+                      {format(parseISO(regression.date), 'MMMM d, yyyy')} - Previously mastered
+                      topic showing decline
                     </p>
                   </div>
                 </div>
@@ -208,10 +207,7 @@ export default function ProgressTab() {
         <CardContent>
           <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={chartData}
-                margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
-              >
+              <LineChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
                 <CartesianGrid stroke="oklch(0.9 0.02 240)" strokeDasharray="3 3" />
                 <XAxis
                   dataKey="formattedDate"
@@ -276,8 +272,8 @@ export default function ProgressTab() {
 
                 {/* Milestone markers */}
                 {data.milestones.map((milestone) => {
-                  const dataPoint = chartData.find((d) => d.date === milestone.date);
-                  if (!dataPoint) return null;
+                  const dataPoint = chartData.find((d) => d.date === milestone.date)
+                  if (!dataPoint) return null
 
                   return (
                     <ReferenceDot
@@ -289,24 +285,17 @@ export default function ProgressTab() {
                           : dataPoint.comprehension || 50
                       }
                       r={8}
-                      fill={
-                        milestone.type === 'mastery'
-                          ? COLORS.positive
-                          : COLORS.improvement
-                      }
+                      fill={milestone.type === 'mastery' ? COLORS.positive : COLORS.improvement}
                       stroke="white"
                       strokeWidth={2}
                       label={{
                         value: milestone.type === 'mastery' ? '★' : '↑',
                         position: 'top',
-                        fill:
-                          milestone.type === 'mastery'
-                            ? COLORS.positive
-                            : COLORS.improvement,
+                        fill: milestone.type === 'mastery' ? COLORS.positive : COLORS.improvement,
                         fontSize: 16,
                       }}
                     />
-                  );
+                  )
                 })}
               </LineChart>
             </ResponsiveContainer>
@@ -316,15 +305,11 @@ export default function ProgressTab() {
           <div className="flex flex-wrap gap-4 mt-6 justify-center">
             <div className="flex items-center gap-2">
               <Award className="w-5 h-5" style={{ color: COLORS.positive }} />
-              <span className="text-sm text-[oklch(0.6_0.05_240)]">
-                Mastery Achievement
-              </span>
+              <span className="text-sm text-[oklch(0.6_0.05_240)]">Mastery Achievement</span>
             </div>
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5" style={{ color: COLORS.improvement }} />
-              <span className="text-sm text-[oklch(0.6_0.05_240)]">
-                Major Improvement (+20%)
-              </span>
+              <span className="text-sm text-[oklch(0.6_0.05_240)]">Major Improvement (+20%)</span>
             </div>
           </div>
         </CardContent>
@@ -382,9 +367,7 @@ export default function ProgressTab() {
                 <TrendingDown className="w-6 h-6" style={{ color: COLORS.negative }} />
               )}
             </div>
-            <p className="text-xs text-[oklch(0.6_0.05_240)] mt-2">
-              Long-term growth trajectory
-            </p>
+            <p className="text-xs text-[oklch(0.6_0.05_240)] mt-2">Long-term growth trajectory</p>
           </CardContent>
         </Card>
 
@@ -406,9 +389,7 @@ export default function ProgressTab() {
               </p>
               <Calendar className="w-6 h-6" style={{ color: COLORS.comprehension }} />
             </div>
-            <p className="text-xs text-[oklch(0.6_0.05_240)] mt-2">
-              Per month (from API)
-            </p>
+            <p className="text-xs text-[oklch(0.6_0.05_240)] mt-2">Per month (from API)</p>
           </CardContent>
         </Card>
       </div>
@@ -417,9 +398,7 @@ export default function ProgressTab() {
       {data.milestones.length > 0 && (
         <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0">
           <CardHeader>
-            <CardTitle className="text-[oklch(0.3_0.05_240)]">
-              Achievement Milestones
-            </CardTitle>
+            <CardTitle className="text-[oklch(0.3_0.05_240)]">Achievement Milestones</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -429,14 +408,14 @@ export default function ProgressTab() {
                     ? Award
                     : milestone.type === 'breakthrough'
                       ? Sparkles
-                      : Target;
+                      : Target
 
                 const iconColor =
                   milestone.type === 'mastery'
                     ? COLORS.positive
                     : milestone.type === 'breakthrough'
                       ? COLORS.improvement
-                      : COLORS.comprehension;
+                      : COLORS.comprehension
 
                 return (
                   <div
@@ -462,65 +441,71 @@ export default function ProgressTab() {
                       {milestone.type.toUpperCase()}
                     </span>
                   </div>
-                );
+                )
               })}
             </div>
           </CardContent>
         </Card>
       )}
     </div>
-  );
+  )
 }
 
 /**
  * Calculate week-over-week improvement rate
  * Compares last week's average to previous week's average
  */
-function calculateWeekOverWeekRate(metrics: Array<{ date: string; comprehension: number; reasoning: number; calibration: number }>): number {
-  if (metrics.length < 14) return 0; // Need at least 2 weeks of data
+function calculateWeekOverWeekRate(
+  metrics: Array<{ date: string; comprehension: number; reasoning: number; calibration: number }>,
+): number {
+  if (metrics.length < 14) return 0 // Need at least 2 weeks of data
 
   // Get last 7 days
-  const lastWeek = metrics.slice(-7);
-  const previousWeek = metrics.slice(-14, -7);
+  const lastWeek = metrics.slice(-7)
+  const previousWeek = metrics.slice(-14, -7)
 
-  const lastWeekAvg = calculateAverage(lastWeek);
-  const previousWeekAvg = calculateAverage(previousWeek);
+  const lastWeekAvg = calculateAverage(lastWeek)
+  const previousWeekAvg = calculateAverage(previousWeek)
 
-  if (previousWeekAvg === 0) return 0;
+  if (previousWeekAvg === 0) return 0
 
-  return ((lastWeekAvg - previousWeekAvg) / previousWeekAvg) * 100;
+  return ((lastWeekAvg - previousWeekAvg) / previousWeekAvg) * 100
 }
 
 /**
  * Calculate month-over-month improvement rate
  * Compares last 30 days to previous 30 days
  */
-function calculateMonthOverMonthRate(metrics: Array<{ date: string; comprehension: number; reasoning: number; calibration: number }>): number {
-  if (metrics.length < 60) return 0; // Need at least 2 months of data
+function calculateMonthOverMonthRate(
+  metrics: Array<{ date: string; comprehension: number; reasoning: number; calibration: number }>,
+): number {
+  if (metrics.length < 60) return 0 // Need at least 2 months of data
 
   // Get last 30 days
-  const lastMonth = metrics.slice(-30);
-  const previousMonth = metrics.slice(-60, -30);
+  const lastMonth = metrics.slice(-30)
+  const previousMonth = metrics.slice(-60, -30)
 
-  const lastMonthAvg = calculateAverage(lastMonth);
-  const previousMonthAvg = calculateAverage(previousMonth);
+  const lastMonthAvg = calculateAverage(lastMonth)
+  const previousMonthAvg = calculateAverage(previousMonth)
 
-  if (previousMonthAvg === 0) return 0;
+  if (previousMonthAvg === 0) return 0
 
-  return ((lastMonthAvg - previousMonthAvg) / previousMonthAvg) * 100;
+  return ((lastMonthAvg - previousMonthAvg) / previousMonthAvg) * 100
 }
 
 /**
  * Calculate average score across all dimensions
  */
-function calculateAverage(metrics: Array<{ comprehension: number; reasoning: number; calibration: number }>): number {
-  if (metrics.length === 0) return 0;
+function calculateAverage(
+  metrics: Array<{ comprehension: number; reasoning: number; calibration: number }>,
+): number {
+  if (metrics.length === 0) return 0
 
   const sum = metrics.reduce((acc, m) => {
-    return acc + m.comprehension + m.reasoning + m.calibration;
-  }, 0);
+    return acc + m.comprehension + m.reasoning + m.calibration
+  }, 0)
 
-  return sum / (metrics.length * 3); // 3 dimensions
+  return sum / (metrics.length * 3) // 3 dimensions
 }
 
 /**
@@ -565,5 +550,5 @@ function ProgressSkeleton() {
         ))}
       </div>
     </div>
-  );
+  )
 }

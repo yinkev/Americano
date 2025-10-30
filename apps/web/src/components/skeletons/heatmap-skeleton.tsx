@@ -7,8 +7,8 @@
  * Matches StudyTimeHeatmap component dimensions exactly
  */
 
-import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils'
 
 interface HeatmapSkeletonProps {
   className?: string

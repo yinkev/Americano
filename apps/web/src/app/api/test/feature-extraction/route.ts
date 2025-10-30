@@ -10,9 +10,9 @@
  * - Data quality score reflects completeness
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { StruggleFeatureExtractor } from '@/subsystems/behavioral-analytics/struggle-feature-extractor'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { StruggleFeatureExtractor } from '@/subsystems/behavioral-analytics/struggle-feature-extractor'
 
 const requestSchema = z.object({
   userId: z.string(),

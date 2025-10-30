@@ -5,7 +5,7 @@
  * All confetti uses OKLCH color space for consistent, accessible colors
  */
 
-import confetti from "canvas-confetti";
+import confetti from 'canvas-confetti'
 
 /**
  * OKLCH color palette for confetti
@@ -13,25 +13,25 @@ import confetti from "canvas-confetti";
  */
 const CONFETTI_COLORS = {
   // Primary blues
-  blue1: "#5B8DEF", // oklch(0.6 0.15 230)
-  blue2: "#7BA5F5", // oklch(0.65 0.18 230)
+  blue1: '#5B8DEF', // oklch(0.6 0.15 230)
+  blue2: '#7BA5F5', // oklch(0.65 0.18 230)
 
   // Success greens
-  green1: "#52C98A", // oklch(0.6 0.20 140)
-  green2: "#6BD49E", // oklch(0.65 0.22 140)
+  green1: '#52C98A', // oklch(0.6 0.20 140)
+  green2: '#6BD49E', // oklch(0.65 0.22 140)
 
   // Accent purples
-  purple1: "#9370DB", // oklch(0.60 0.18 280)
-  purple2: "#A989E3", // oklch(0.65 0.20 280)
+  purple1: '#9370DB', // oklch(0.60 0.18 280)
+  purple2: '#A989E3', // oklch(0.65 0.20 280)
 
   // Warm accents
-  orange1: "#F0A868", // oklch(0.70 0.20 60)
-  orange2: "#F4BC85", // oklch(0.75 0.18 60)
+  orange1: '#F0A868', // oklch(0.70 0.20 60)
+  orange2: '#F4BC85', // oklch(0.75 0.18 60)
 
   // Pink highlights
-  pink1: "#E679A6", // oklch(0.65 0.20 340)
-  pink2: "#EE95B9", // oklch(0.70 0.18 340)
-};
+  pink1: '#E679A6', // oklch(0.65 0.20 340)
+  pink2: '#EE95B9', // oklch(0.70 0.18 340)
+}
 
 const DEFAULT_COLORS = [
   CONFETTI_COLORS.blue1,
@@ -39,14 +39,14 @@ const DEFAULT_COLORS = [
   CONFETTI_COLORS.green1,
   CONFETTI_COLORS.green2,
   CONFETTI_COLORS.purple1,
-];
+]
 
 /**
  * Check if user prefers reduced motion
  */
 function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 /**
@@ -54,14 +54,14 @@ function prefersReducedMotion(): boolean {
  * Use for: Completing objectives, small wins
  */
 export function celebrateBasic() {
-  if (prefersReducedMotion()) return;
+  if (prefersReducedMotion()) return
 
   confetti({
     particleCount: 50,
     spread: 60,
     origin: { y: 0.6 },
     colors: DEFAULT_COLORS,
-  });
+  })
 }
 
 /**
@@ -69,10 +69,10 @@ export function celebrateBasic() {
  * Special celebration with gentle, welcoming effect
  */
 export function celebrateFirstSession() {
-  if (prefersReducedMotion()) return;
+  if (prefersReducedMotion()) return
 
-  const duration = 2000;
-  const end = Date.now() + duration;
+  const duration = 2000
+  const end = Date.now() + duration
 
   const frame = () => {
     confetti({
@@ -81,7 +81,7 @@ export function celebrateFirstSession() {
       spread: 55,
       origin: { x: 0, y: 0.6 },
       colors: [CONFETTI_COLORS.blue1, CONFETTI_COLORS.green1],
-    });
+    })
 
     confetti({
       particleCount: 3,
@@ -89,14 +89,14 @@ export function celebrateFirstSession() {
       spread: 55,
       origin: { x: 1, y: 0.6 },
       colors: [CONFETTI_COLORS.purple1, CONFETTI_COLORS.pink1],
-    });
+    })
 
     if (Date.now() < end) {
-      requestAnimationFrame(frame);
+      requestAnimationFrame(frame)
     }
-  };
+  }
 
-  frame();
+  frame()
 }
 
 /**
@@ -104,10 +104,10 @@ export function celebrateFirstSession() {
  * More dramatic celebration
  */
 export function celebrateWeekStreak() {
-  if (prefersReducedMotion()) return;
+  if (prefersReducedMotion()) return
 
-  const duration = 3000;
-  const end = Date.now() + duration;
+  const duration = 3000
+  const end = Date.now() + duration
 
   const frame = () => {
     confetti({
@@ -116,7 +116,7 @@ export function celebrateWeekStreak() {
       spread: 70,
       origin: { x: 0, y: 0.5 },
       colors: DEFAULT_COLORS,
-    });
+    })
 
     confetti({
       particleCount: 7,
@@ -124,14 +124,14 @@ export function celebrateWeekStreak() {
       spread: 70,
       origin: { x: 1, y: 0.5 },
       colors: DEFAULT_COLORS,
-    });
+    })
 
     if (Date.now() < end) {
-      requestAnimationFrame(frame);
+      requestAnimationFrame(frame)
     }
-  };
+  }
 
-  frame();
+  frame()
 }
 
 /**
@@ -139,18 +139,14 @@ export function celebrateWeekStreak() {
  * Focused burst from center
  */
 export function celebrateGoalReached() {
-  if (prefersReducedMotion()) return;
+  if (prefersReducedMotion()) return
 
   confetti({
     particleCount: 100,
     spread: 70,
     origin: { y: 0.6 },
-    colors: [
-      CONFETTI_COLORS.green1,
-      CONFETTI_COLORS.green2,
-      CONFETTI_COLORS.blue1,
-    ],
-  });
+    colors: [CONFETTI_COLORS.green1, CONFETTI_COLORS.green2, CONFETTI_COLORS.blue1],
+  })
 }
 
 /**
@@ -158,10 +154,10 @@ export function celebrateGoalReached() {
  * Spectacular celebration
  */
 export function celebratePerfectScore() {
-  if (prefersReducedMotion()) return;
+  if (prefersReducedMotion()) return
 
-  const duration = 2500;
-  const end = Date.now() + duration;
+  const duration = 2500
+  const end = Date.now() + duration
 
   const frame = () => {
     // Random confetti from random positions
@@ -179,14 +175,14 @@ export function celebratePerfectScore() {
         CONFETTI_COLORS.orange1,
         CONFETTI_COLORS.orange2,
       ],
-    });
+    })
 
     if (Date.now() < end) {
-      requestAnimationFrame(frame);
+      requestAnimationFrame(frame)
     }
-  };
+  }
 
-  frame();
+  frame()
 }
 
 /**
@@ -194,18 +190,14 @@ export function celebratePerfectScore() {
  * Professional, measured celebration
  */
 export function celebrateMissionComplete() {
-  if (prefersReducedMotion()) return;
+  if (prefersReducedMotion()) return
 
   confetti({
     particleCount: 75,
     spread: 60,
     origin: { y: 0.6 },
-    colors: [
-      CONFETTI_COLORS.blue1,
-      CONFETTI_COLORS.green1,
-      CONFETTI_COLORS.purple1,
-    ],
-  });
+    colors: [CONFETTI_COLORS.blue1, CONFETTI_COLORS.green1, CONFETTI_COLORS.purple1],
+  })
 }
 
 /**
@@ -213,10 +205,10 @@ export function celebrateMissionComplete() {
  * Grand celebration
  */
 export function celebrateCourseMastery() {
-  if (prefersReducedMotion()) return;
+  if (prefersReducedMotion()) return
 
-  const duration = 4000;
-  const end = Date.now() + duration;
+  const duration = 4000
+  const end = Date.now() + duration
 
   const frame = () => {
     confetti({
@@ -225,7 +217,7 @@ export function celebrateCourseMastery() {
       spread: 80,
       origin: { x: 0, y: 0.4 },
       colors: DEFAULT_COLORS,
-    });
+    })
 
     confetti({
       particleCount: 10,
@@ -233,28 +225,28 @@ export function celebrateCourseMastery() {
       spread: 80,
       origin: { x: 1, y: 0.4 },
       colors: DEFAULT_COLORS,
-    });
+    })
 
     if (Date.now() < end) {
-      requestAnimationFrame(frame);
+      requestAnimationFrame(frame)
     }
-  };
+  }
 
-  frame();
+  frame()
 }
 
 /**
  * Generic celebration (fallback)
  */
 export function celebrate() {
-  celebrateBasic();
+  celebrateBasic()
 }
 
 /**
  * Reset all confetti (stop animations)
  */
 export function resetConfetti() {
-  confetti.reset();
+  confetti.reset()
 }
 
 /**
@@ -262,36 +254,36 @@ export function resetConfetti() {
  */
 export function celebrateAchievement(
   achievement:
-    | "first_session"
-    | "week_streak"
-    | "goal_reached"
-    | "perfect_score"
-    | "mission_complete"
-    | "course_mastery"
-    | "basic"
+    | 'first_session'
+    | 'week_streak'
+    | 'goal_reached'
+    | 'perfect_score'
+    | 'mission_complete'
+    | 'course_mastery'
+    | 'basic',
 ) {
   switch (achievement) {
-    case "first_session":
-      celebrateFirstSession();
-      break;
-    case "week_streak":
-      celebrateWeekStreak();
-      break;
-    case "goal_reached":
-      celebrateGoalReached();
-      break;
-    case "perfect_score":
-      celebratePerfectScore();
-      break;
-    case "mission_complete":
-      celebrateMissionComplete();
-      break;
-    case "course_mastery":
-      celebrateCourseMastery();
-      break;
-    case "basic":
+    case 'first_session':
+      celebrateFirstSession()
+      break
+    case 'week_streak':
+      celebrateWeekStreak()
+      break
+    case 'goal_reached':
+      celebrateGoalReached()
+      break
+    case 'perfect_score':
+      celebratePerfectScore()
+      break
+    case 'mission_complete':
+      celebrateMissionComplete()
+      break
+    case 'course_mastery':
+      celebrateCourseMastery()
+      break
+    case 'basic':
     default:
-      celebrateBasic();
-      break;
+      celebrateBasic()
+      break
   }
 }

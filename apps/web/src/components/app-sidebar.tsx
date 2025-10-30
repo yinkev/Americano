@@ -11,21 +11,21 @@
  */
 
 import {
+  BarChart2,
+  BookOpen,
+  Brain,
+  Calendar,
+  Flame,
+  FlaskConical,
   Home,
   Library,
-  BookOpen,
-  BarChart2,
   Settings,
-  Calendar,
-  Brain,
-  FlaskConical,
-  Flame,
   Target,
 } from 'lucide-react'
+import { motion } from 'motion/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { motion } from 'motion/react'
-
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   Sidebar,
   SidebarContent,
@@ -37,7 +37,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { GoalProgress } from './dashboard/GoalProgress'
 
 const navItems = [
@@ -126,7 +125,9 @@ export function AppSidebar() {
                       `}
                     >
                       <Link href={item.url}>
-                        <item.icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <item.icon
+                          className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`}
+                        />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>

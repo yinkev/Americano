@@ -50,7 +50,7 @@ export class FollowUpQuestionGenerator {
   async generateFollowUp(
     parentPromptId: string,
     score: number, // 0-100 scale
-    userId: string
+    userId: string,
   ): Promise<FollowUpQuestionResult> {
     // Check if follow-up limit reached
     const limitCheck = await this.limitFollowUps(userId, parentPromptId)
@@ -311,7 +311,7 @@ export class FollowUpQuestionGenerator {
    */
   calculateFollowUpDifficulty(
     currentDifficulty: number,
-    followUpType: 'prerequisite' | 'advanced'
+    followUpType: 'prerequisite' | 'advanced',
   ): number {
     const adjustment = followUpType === 'prerequisite' ? -20 : 20
     return Math.max(0, Math.min(100, currentDifficulty + adjustment))
@@ -322,7 +322,10 @@ export class FollowUpQuestionGenerator {
    *
    * Provides user-friendly explanation of why follow-up is being generated
    */
-  getFollowUpContext(followUpType: 'prerequisite' | 'advanced', score: number): {
+  getFollowUpContext(
+    followUpType: 'prerequisite' | 'advanced',
+    score: number,
+  ): {
     title: string
     description: string
     icon: string

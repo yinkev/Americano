@@ -7,12 +7,12 @@
 
 'use client'
 
+import { differenceInDays, format, formatDistanceToNow } from 'date-fns'
+import { BookOpen, Calendar, Clock, Edit, Plus, Trash2 } from 'lucide-react'
 import React from 'react'
-import { format, formatDistanceToNow, differenceInDays } from 'date-fns'
-import { Calendar, Clock, BookOpen, Edit, Trash2, Plus } from 'lucide-react'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { ExamDialog } from './ExamDialog'
 
@@ -131,10 +131,7 @@ export function UpcomingExamsPanel({
           <Calendar className="w-6 h-6 text-clinical" />
           <h2 className="text-[20px] font-heading font-semibold">Upcoming Exams</h2>
           {exams.length > 0 && (
-            <Badge
-              variant="secondary"
-              className="rounded-full"
-            >
+            <Badge variant="secondary" className="rounded-full">
               {exams.length}
             </Badge>
           )}
@@ -215,9 +212,7 @@ export function UpcomingExamsPanel({
                     <div className="flex items-center gap-4 text-[13px]">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-muted-foreground" />
-                        <span className="font-medium">
-                          {format(new Date(exam.date), 'PPP')}
-                        </span>
+                        <span className="font-medium">{format(new Date(exam.date), 'PPP')}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-muted-foreground" />
@@ -328,7 +323,9 @@ export function UpcomingExamsCompact({ exams, className }: { exams: Exam[]; clas
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-[13px] truncate">{exam.name}</p>
-                <p className="text-[11px] text-muted-foreground truncate mt-0.5">{exam.course.code}</p>
+                <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                  {exam.course.code}
+                </p>
               </div>
               <div className="text-right flex-shrink-0">
                 <p className={cn('text-[11px] font-medium', urgency.color)}>

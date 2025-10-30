@@ -11,13 +11,12 @@
 
 'use client'
 
-import { useState } from 'react'
-import { AlertTriangle, ChevronDown, ChevronUp, Info } from 'lucide-react'
 import { format } from 'date-fns'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { AlertTriangle, ChevronDown, ChevronUp, Info } from 'lucide-react'
+import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -26,7 +25,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { typography, colors } from '@/lib/design-tokens'
+import { Progress } from '@/components/ui/progress'
+import { colors, typography } from '@/lib/design-tokens'
 
 interface PredictionFeatures {
   prerequisiteGap?: number
@@ -90,7 +90,9 @@ export function StrugglePredictionCard({ prediction }: Props) {
             {probability > 70 && (
               <div
                 className="p-2 rounded-lg shrink-0 mt-0.5 transition-all duration-300 hover:scale-110"
-                style={{ backgroundColor: `color-mix(in oklch, ${probabilityColor}, transparent 90%)` }}
+                style={{
+                  backgroundColor: `color-mix(in oklch, ${probabilityColor}, transparent 90%)`,
+                }}
               >
                 <AlertTriangle className="size-5" style={{ color: probabilityColor }} />
               </div>
@@ -127,7 +129,10 @@ export function StrugglePredictionCard({ prediction }: Props) {
             <span className={`${typography.body.small} font-medium text-foreground`}>
               Struggle Probability
             </span>
-            <span className={`${typography.body.small} font-semibold`} style={{ color: probabilityColor }}>
+            <span
+              className={`${typography.body.small} font-semibold`}
+              style={{ color: probabilityColor }}
+            >
               {probability.toFixed(0)}%
             </span>
           </div>

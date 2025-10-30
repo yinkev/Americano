@@ -1,11 +1,9 @@
 'use client'
 
-import * as React from 'react'
 import { motion } from 'motion/react'
-
-import { cn } from '@/lib/utils'
+import * as React from 'react'
 import { cardVariants as animationVariants, getAnimationConfig } from '@/lib/animation-variants'
-
+import { cn } from '@/lib/utils'
 
 export interface CardProps
   extends Omit<
@@ -40,13 +38,14 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     const isInteractive = interactive !== false || !!onClick
 
     // Select animation variant
-    const variant = interactive === 'glow'
-      ? animationVariants.glow
-      : interactive === 'static'
-        ? animationVariants.static
-        : interactive === 'interactive' || isInteractive
-          ? animationVariants.interactive
-          : null
+    const variant =
+      interactive === 'glow'
+        ? animationVariants.glow
+        : interactive === 'static'
+          ? animationVariants.static
+          : interactive === 'interactive' || isInteractive
+            ? animationVariants.interactive
+            : null
 
     if (!variant) {
       // No animation - static card
@@ -66,7 +65,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         className={cn(
           'rounded-lg border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md',
           isInteractive && 'cursor-pointer',
-          className
+          className,
         )}
         onClick={onClick}
         initial="rest"

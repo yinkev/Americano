@@ -13,9 +13,9 @@
 
 'use client'
 
-import { memo } from 'react'
-import { Handle, Position, type NodeProps } from '@xyflow/react'
 import type { Node } from '@xyflow/react'
+import { Handle, type NodeProps, Position } from '@xyflow/react'
+import { memo } from 'react'
 
 /**
  * Custom node data type for medical concepts
@@ -32,15 +32,15 @@ export type ConceptNodeData = {
  * Following design system guidelines: no gradients, glassmorphism
  */
 const CATEGORY_COLORS: Record<string, string> = {
-  anatomy: 'oklch(0.6 0.15 240)',         // Blue
-  physiology: 'oklch(0.6 0.15 140)',      // Green
-  pathology: 'oklch(0.6 0.15 20)',        // Red
-  pharmacology: 'oklch(0.6 0.15 290)',    // Purple
-  biochemistry: 'oklch(0.6 0.15 80)',     // Yellow
-  microbiology: 'oklch(0.6 0.15 200)',    // Cyan
-  immunology: 'oklch(0.6 0.15 330)',      // Magenta
-  clinical: 'oklch(0.6 0.15 50)',         // Orange
-  default: 'oklch(0.6 0.1 220)',          // Default blue-gray
+  anatomy: 'oklch(0.6 0.15 240)', // Blue
+  physiology: 'oklch(0.6 0.15 140)', // Green
+  pathology: 'oklch(0.6 0.15 20)', // Red
+  pharmacology: 'oklch(0.6 0.15 290)', // Purple
+  biochemistry: 'oklch(0.6 0.15 80)', // Yellow
+  microbiology: 'oklch(0.6 0.15 200)', // Cyan
+  immunology: 'oklch(0.6 0.15 330)', // Magenta
+  clinical: 'oklch(0.6 0.15 50)', // Orange
+  default: 'oklch(0.6 0.1 220)', // Default blue-gray
 }
 
 /**
@@ -128,11 +128,7 @@ function ConceptNode({ data, selected }: NodeProps<Node<ConceptNodeData>>) {
           >
             <div className="font-semibold mb-1">{name}</div>
             <div className="text-xs opacity-90">{description}</div>
-            {category && (
-              <div className="text-xs opacity-70 mt-1 capitalize">
-                {category}
-              </div>
-            )}
+            {category && <div className="text-xs opacity-70 mt-1 capitalize">{category}</div>}
           </div>
         </div>
       )}

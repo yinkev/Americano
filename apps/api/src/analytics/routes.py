@@ -1025,7 +1025,7 @@ async def get_dashboard_summary(
 # ============================================================================
 
 @router.get(
-    "/analytics/understanding/comparison",
+    "/understanding/comparison",
     response_model=ComparisonResult,
     status_code=status.HTTP_200_OK,
     summary="Compare user performance with peers",

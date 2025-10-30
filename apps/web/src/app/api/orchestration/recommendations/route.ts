@@ -6,10 +6,10 @@
  * Integrates StudyTimeRecommender subsystem
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { StudyTimeRecommender } from '@/subsystems/behavioral-analytics/study-time-recommender'
-import { StudyIntensityModulator } from '@/subsystems/behavioral-analytics/study-intensity-modulator'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { StudyIntensityModulator } from '@/subsystems/behavioral-analytics/study-intensity-modulator'
+import { StudyTimeRecommender } from '@/subsystems/behavioral-analytics/study-time-recommender'
 
 const RecommendationsSchema = z.object({
   userId: z.string().min(1),

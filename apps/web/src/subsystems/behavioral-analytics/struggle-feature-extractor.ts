@@ -12,21 +12,26 @@
  * All features normalized to 0-1 scale with missing value handling.
  */
 
-import { prisma } from '@/lib/db'
+import { differenceInDays, subDays } from 'date-fns'
 import type {
+  BehavioralPattern,
   LearningObjective,
   PerformanceMetric,
-  BehavioralPattern,
   UserLearningProfile,
 } from '@/generated/prisma'
 import {
-  ObjectiveComplexity,
-  MasteryLevel,
   BehavioralPatternType,
+  MasteryLevel,
+  ObjectiveComplexity,
   ReviewRating,
 } from '@/generated/prisma'
-import { subDays, differenceInDays } from 'date-fns'
-import type { LearningStyleProfile, ContentPreferences, BehavioralPatternData, EventData } from '@/types/prisma-json'
+import { prisma } from '@/lib/db'
+import type {
+  BehavioralPatternData,
+  ContentPreferences,
+  EventData,
+  LearningStyleProfile,
+} from '@/types/prisma-json'
 
 /**
  * Feature vector with 15+ normalized features (0-1 scale)
@@ -166,7 +171,7 @@ export class StruggleFeatureExtractor {
     const topicArea = objective.lecture.course.name
 
     // 1. Performance-based features
-    const performanceFeatures = await this.extractPerformanceFeatures(
+    const performanceFeatures = await StruggleFeatureExtractor.extractPerformanceFeatures(
       userId,
       objectiveId,
       topicArea,
@@ -175,19 +180,27 @@ export class StruggleFeatureExtractor {
     )
 
     // 2. Prerequisite features
-    const prerequisiteFeatures = await this.extractPrerequisiteFeatures(
+    const prerequisiteFeatures = await StruggleFeatureExtractor.extractPrerequisiteFeatures(
       userId,
       objective.prerequisites.map((p) => p.prerequisite),
     )
 
     // 3. Complexity features
-    const complexityFeatures = await this.extractComplexityFeatures(userId, objective, topicArea)
+    const complexityFeatures = await StruggleFeatureExtractor.extractComplexityFeatures(
+      userId,
+      objective,
+      topicArea,
+    )
 
     // 4. Behavioral features
-    const behavioralFeatures = await this.extractBehavioralFeatures(userId, topicArea, objective)
+    const behavioralFeatures = await StruggleFeatureExtractor.extractBehavioralFeatures(
+      userId,
+      topicArea,
+      objective,
+    )
 
     // 5. Contextual features
-    const contextualFeatures = await this.extractContextualFeatures(
+    const contextualFeatures = await StruggleFeatureExtractor.extractContextualFeatures(
       userId,
       topicArea,
       objective.lecture.course.id,
@@ -267,10 +280,10 @@ export class StruggleFeatureExtractor {
 
     if (objectives.length === 0) {
       // No objectives in this topic, return default features
-      return this.getDefaultFeatures()
+      return StruggleFeatureExtractor.getDefaultFeatures()
     }
 
-    return this.extractFeaturesForObjective(userId, objectives[0].id)
+    return StruggleFeatureExtractor.extractFeaturesForObjective(userId, objectives[0].id)
   }
 
   /**
@@ -419,7 +432,8 @@ export class StruggleFeatureExtractor {
       }
     })
 
-    const avgMastery = masteryScores.reduce((sum: number, s: number) => sum + s, 0) / masteryScores.length
+    const avgMastery =
+      masteryScores.reduce((sum: number, s: number) => sum + s, 0) / masteryScores.length
     const prerequisiteMasteryGap = 1 - avgMastery // Higher gap = worse
 
     return {
@@ -484,7 +498,8 @@ export class StruggleFeatureExtractor {
         }
       })
 
-      userAbilityLevel = masteryScores.reduce((sum: number, s: number) => sum + s, 0) / masteryScores.length
+      userAbilityLevel =
+        masteryScores.reduce((sum: number, s: number) => sum + s, 0) / masteryScores.length
     }
 
     // Complexity mismatch: Content difficulty exceeds user ability
@@ -522,7 +537,10 @@ export class StruggleFeatureExtractor {
       // Check if evidence includes this topic area
       const relevantPatterns = strugglePatterns.filter((p) => {
         const evidence = p.evidence as unknown as BehavioralPatternData & Record<string, unknown>
-        return (evidence.topicArea as string) === topicArea || (evidence.courseId as string) === objective.lecture.courseId
+        return (
+          (evidence.topicArea as string) === topicArea ||
+          (evidence.courseId as string) === objective.lecture.courseId
+        )
       })
 
       if (relevantPatterns.length > 0) {
@@ -538,12 +556,14 @@ export class StruggleFeatureExtractor {
 
     let contentTypeMismatch = 0 // Default (no mismatch)
     if (learningProfile) {
-      const styleProfile = learningProfile.learningStyleProfile as unknown as LearningStyleProfile | null
-      const contentPrefs = learningProfile.contentPreferences as unknown as ContentPreferences | null
+      const styleProfile =
+        learningProfile.learningStyleProfile as unknown as LearningStyleProfile | null
+      const contentPrefs =
+        learningProfile.contentPreferences as unknown as ContentPreferences | null
 
       // For MVP, assume lecture-based objectives match "reading" style
       // Visual learners may struggle with text-heavy content
-      const lecturePreference = (contentPrefs?.preferredTypes?.includes('lectures')) ? 0.8 : 0.2
+      const lecturePreference = contentPrefs?.preferredTypes?.includes('lectures') ? 0.8 : 0.2
       if ((styleProfile?.visual || 0) > 0.5 && lecturePreference > 0.4) {
         contentTypeMismatch = 0.6 // Moderate mismatch
       }
@@ -723,7 +743,7 @@ export class StruggleFeatureExtractor {
     userId: string,
   ): Promise<UserLearningProfile | null> {
     const cacheKey = `profile:${userId}`
-    const cached = this.cache.get(cacheKey)
+    const cached = StruggleFeatureExtractor.cache.get(cacheKey)
 
     if (cached && Date.now() - cached.timestamp.getTime() < CACHE_TTL.USER_LEARNING_PROFILE) {
       return cached.data
@@ -733,7 +753,7 @@ export class StruggleFeatureExtractor {
       where: { userId },
     })
 
-    this.cache.set(cacheKey, { data: profile, timestamp: new Date() })
+    StruggleFeatureExtractor.cache.set(cacheKey, { data: profile, timestamp: new Date() })
     return profile
   }
 
@@ -742,7 +762,7 @@ export class StruggleFeatureExtractor {
    */
   private static async getCachedBehavioralPatterns(userId: string): Promise<BehavioralPattern[]> {
     const cacheKey = `patterns:${userId}`
-    const cached = this.cache.get(cacheKey)
+    const cached = StruggleFeatureExtractor.cache.get(cacheKey)
 
     if (cached && Date.now() - cached.timestamp.getTime() < CACHE_TTL.BEHAVIORAL_PATTERNS) {
       return cached.data
@@ -752,7 +772,7 @@ export class StruggleFeatureExtractor {
       where: { userId },
     })
 
-    this.cache.set(cacheKey, { data: patterns, timestamp: new Date() })
+    StruggleFeatureExtractor.cache.set(cacheKey, { data: patterns, timestamp: new Date() })
     return patterns
   }
 
@@ -764,7 +784,7 @@ export class StruggleFeatureExtractor {
     objectiveId: string,
   ): Promise<PerformanceMetric[]> {
     const cacheKey = `metrics:${userId}:${objectiveId}`
-    const cached = this.cache.get(cacheKey)
+    const cached = StruggleFeatureExtractor.cache.get(cacheKey)
 
     if (cached && Date.now() - cached.timestamp.getTime() < CACHE_TTL.PERFORMANCE_METRICS) {
       return cached.data
@@ -781,7 +801,7 @@ export class StruggleFeatureExtractor {
       orderBy: { date: 'desc' },
     })
 
-    this.cache.set(cacheKey, { data: metrics, timestamp: new Date() })
+    StruggleFeatureExtractor.cache.set(cacheKey, { data: metrics, timestamp: new Date() })
     return metrics
   }
 
@@ -789,6 +809,6 @@ export class StruggleFeatureExtractor {
    * Clear cache (useful for testing or manual invalidation)
    */
   static clearCache(): void {
-    this.cache.clear()
+    StruggleFeatureExtractor.cache.clear()
   }
 }

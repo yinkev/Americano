@@ -1,29 +1,27 @@
 'use client'
 
-import React, { useState } from 'react'
 import { motion } from 'motion/react'
+import React, { useState } from 'react'
 import { useDashboard } from '@/hooks/use-dashboard'
+import { CourseMastery } from './CourseMastery'
+import { DashboardFooter } from './DashboardFooter'
 import { DashboardSkeleton } from './DashboardSkeleton'
+import { DumplingMascot } from './DumplingMascot'
+import { ExamCountdown } from './ExamCountdown'
 import { Icons } from './icons'
-import { playSoundEffect } from './SoundToggle'
-
+import { KeyboardShortcuts } from './KeyboardShortcuts'
 // Import all sub-components
 import { MissionCard } from './MissionCard'
-import { StatsCard } from './StatsCard'
 import { ProgressChart } from './ProgressChart'
-import { UpcomingReviews } from './UpcomingReviews'
-import { CourseMastery } from './CourseMastery'
 import { QuickActions } from './QuickActions'
-import { ExamCountdown } from './ExamCountdown'
-import { SoundToggle } from './SoundToggle'
-import { WeeklyChallengeCard } from './WeeklyChallengeCard'
+import { playSoundEffect, SoundToggle } from './SoundToggle'
+import { StatsCard } from './StatsCard'
 import { StreakCelebrationModal } from './StreakCelebrationModal'
 import { StreakMilestones } from './StreakMilestones'
-import { VariableRewards, useVariableReward } from './VariableRewards'
-import { DumplingMascot } from './DumplingMascot'
-import { DashboardFooter } from './DashboardFooter'
+import { UpcomingReviews } from './UpcomingReviews'
+import { useVariableReward, VariableRewards } from './VariableRewards'
+import { WeeklyChallengeCard } from './WeeklyChallengeCard'
 import { WelcomeTour } from './WelcomeTour'
-import { KeyboardShortcuts } from './KeyboardShortcuts'
 
 interface DashboardProps {
   userId?: string
@@ -118,8 +116,12 @@ export function Dashboard({ userId = 'kevy@americano.dev' }: DashboardProps) {
               <Icons.flame className="h-5 w-5 text-[var(--streak-foreground)] drop-shadow" />
             </motion.div>
             <div>
-              <div className="text-lg font-bold text-[var(--streak-foreground)] drop-shadow leading-none whitespace-nowrap">{streakDays}</div>
-              <div className="text-sm text-[var(--streak-foreground)]/90 leading-none whitespace-nowrap">day streak</div>
+              <div className="text-lg font-bold text-[var(--streak-foreground)] drop-shadow leading-none whitespace-nowrap">
+                {streakDays}
+              </div>
+              <div className="text-sm text-[var(--streak-foreground)]/90 leading-none whitespace-nowrap">
+                day streak
+              </div>
             </div>
           </motion.button>
         </motion.div>
@@ -229,9 +231,12 @@ export function Dashboard({ userId = 'kevy@americano.dev' }: DashboardProps) {
             <div className="flex items-center gap-3">
               <div className="text-2xl">🏆</div>
               <div>
-                <h3 className="text-sm font-semibold leading-tight mb-1">You're making great progress this week!</h3>
+                <h3 className="text-sm font-semibold leading-tight mb-1">
+                  You're making great progress this week!
+                </h3>
                 <p className="text-xs text-muted-foreground leading-tight">
-                  {(examReadiness * 100).toFixed(0)}% ready for your exam. Keep building that mastery! 💪
+                  {(examReadiness * 100).toFixed(0)}% ready for your exam. Keep building that
+                  mastery! 💪
                 </p>
               </div>
             </div>

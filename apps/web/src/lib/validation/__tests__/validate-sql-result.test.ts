@@ -6,15 +6,15 @@
 
 import { describe, expect, it } from '@jest/globals'
 import { z } from 'zod'
+import { DatabaseValidationError } from '@/lib/errors'
 import { isErr, isOk } from '@/lib/result'
 import {
-  validateSqlResult,
-  validateSingleSqlResult,
-  validateOptionalSqlResult,
   type InferSchemaType,
   type ValidatedQueryResult,
+  validateOptionalSqlResult,
+  validateSingleSqlResult,
+  validateSqlResult,
 } from '../validate-sql-result'
-import { DatabaseValidationError } from '@/lib/errors'
 
 /* ============================================================================
  * TEST SCHEMAS
@@ -180,9 +180,7 @@ describe('validateSqlResult', () => {
     expect(isErr(result)).toBe(true)
     if (isErr(result)) {
       // Should have validation errors for row 1
-      expect(result.error.validationErrors.some((err) => err.includes('Row 1'))).toBe(
-        true
-      )
+      expect(result.error.validationErrors.some((err) => err.includes('Row 1'))).toBe(true)
       // Metadata should show both total and validated rows
       expect(result.error.metadata.totalRows).toBe(2)
       expect(result.error.metadata.validatedRows).toBe(1)
@@ -248,9 +246,7 @@ describe('validateSingleSqlResult', () => {
 
     expect(isErr(result)).toBe(true)
     if (isErr(result)) {
-      expect(result.error.validationErrors).toContain(
-        'Expected exactly 1 row, received 0 rows'
-      )
+      expect(result.error.validationErrors).toContain('Expected exactly 1 row, received 0 rows')
       expect(result.error.metadata.rowCount).toBe(0)
     }
   })
@@ -277,9 +273,7 @@ describe('validateSingleSqlResult', () => {
 
     expect(isErr(result)).toBe(true)
     if (isErr(result)) {
-      expect(result.error.validationErrors[0]).toContain(
-        'Expected exactly 1 row, received 2 rows'
-      )
+      expect(result.error.validationErrors[0]).toContain('Expected exactly 1 row, received 2 rows')
       expect(result.error.metadata.rowCount).toBe(2)
     }
   })
@@ -368,9 +362,7 @@ describe('validateOptionalSqlResult', () => {
 
     expect(isErr(result)).toBe(true)
     if (isErr(result)) {
-      expect(result.error.validationErrors[0]).toContain(
-        'Expected at most 1 row, received 2 rows'
-      )
+      expect(result.error.validationErrors[0]).toContain('Expected at most 1 row, received 2 rows')
     }
   })
 

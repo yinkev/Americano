@@ -16,7 +16,7 @@
  */
 
 import { createHash } from 'crypto'
-import type { SearchResult, SearchFilters } from '@/lib/semantic-search-service'
+import type { SearchFilters, SearchResult } from '@/lib/semantic-search-service'
 
 /**
  * Cache entry with metadata
@@ -94,10 +94,7 @@ export class SearchCache {
    * @param filters - Optional search filters
    * @returns Cached results or null if not found/expired
    */
-  get(
-    query: string,
-    filters?: SearchFilters
-  ): { results: SearchResult[]; total: number } | null {
+  get(query: string, filters?: SearchFilters): { results: SearchResult[]; total: number } | null {
     const key = this.generateCacheKey(query, filters)
     const entry = this.cache.get(key)
 
@@ -142,14 +139,12 @@ export class SearchCache {
     filters: SearchFilters | undefined,
     results: SearchResult[],
     total: number,
-    isComplexQuery: boolean = false
+    isComplexQuery: boolean = false,
   ): void {
     const key = this.generateCacheKey(query, filters)
 
     // Determine TTL based on query complexity
-    const ttl = isComplexQuery
-      ? SearchCache.DEFAULT_COMPLEX_TTL
-      : SearchCache.DEFAULT_SIMPLE_TTL
+    const ttl = isComplexQuery ? SearchCache.DEFAULT_COMPLEX_TTL : SearchCache.DEFAULT_SIMPLE_TTL
 
     const entry: CacheEntry = {
       results,
@@ -239,10 +234,7 @@ export class SearchCache {
    * @param filters - Optional search filters
    * @returns Normalized query object
    */
-  private normalizeQuery(
-    query: string,
-    filters?: SearchFilters
-  ): NormalizedQuery {
+  private normalizeQuery(query: string, filters?: SearchFilters): NormalizedQuery {
     // Normalize query string
     let normalizedQuery = query
       .toLowerCase() // Convert to lowercase
@@ -353,9 +345,9 @@ export class SearchCache {
 
     // Check for multiple filters
     const hasMultipleFilters =
-      ((filters?.courseIds?.length ?? 0) > 1) ||
+      (filters?.courseIds?.length ?? 0) > 1 ||
       Boolean(filters?.dateRange) ||
-      ((filters?.contentTypes?.length ?? 0) > 1)
+      (filters?.contentTypes?.length ?? 0) > 1
 
     return hasBooleanOperators || hasFieldSyntax || hasMultipleFilters
   }
@@ -373,12 +365,12 @@ export const searchCache = new SearchCache()
 if (typeof setInterval !== 'undefined') {
   setInterval(() => {
     const now = Date.now()
-    // @ts-ignore - Access private cache property for cleanup
+    // @ts-expect-error - Access private cache property for cleanup
     for (const [key, entry] of searchCache.cache.entries()) {
       if (now - entry.cachedAt > entry.ttl) {
-        // @ts-ignore
+        // @ts-expect-error
         searchCache.cache.delete(key)
-        // @ts-ignore
+        // @ts-expect-error
         searchCache.removeFromAccessOrder(key)
       }
     }

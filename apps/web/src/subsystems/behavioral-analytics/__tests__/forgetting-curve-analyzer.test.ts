@@ -6,9 +6,9 @@
  * Target: 60%+ coverage
  */
 
-import { ForgettingCurveAnalyzer } from '../forgetting-curve-analyzer'
 import { prisma } from '@/lib/db'
 import { PerformanceCalculator } from '@/lib/performance-calculator'
+import { ForgettingCurveAnalyzer } from '../forgetting-curve-analyzer'
 
 // Mock dependencies
 jest.mock('@/lib/db')
@@ -39,9 +39,21 @@ describe('ForgettingCurveAnalyzer', () => {
           card: {
             reviews: [
               { id: 'r1', reviewedAt: new Date(baseDate.getTime()), rating: 'GOOD' as const },
-              { id: 'r2', reviewedAt: new Date(baseDate.getTime() + 1 * 24 * 60 * 60 * 1000), rating: 'GOOD' as const },
-              { id: 'r3', reviewedAt: new Date(baseDate.getTime() + 3 * 24 * 60 * 60 * 1000), rating: 'HARD' as const },
-              { id: 'r4', reviewedAt: new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000), rating: 'GOOD' as const },
+              {
+                id: 'r2',
+                reviewedAt: new Date(baseDate.getTime() + 1 * 24 * 60 * 60 * 1000),
+                rating: 'GOOD' as const,
+              },
+              {
+                id: 'r3',
+                reviewedAt: new Date(baseDate.getTime() + 3 * 24 * 60 * 60 * 1000),
+                rating: 'HARD' as const,
+              },
+              {
+                id: 'r4',
+                reviewedAt: new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000),
+                rating: 'GOOD' as const,
+              },
             ],
           },
         },
@@ -395,8 +407,7 @@ describe('ForgettingCurveAnalyzer', () => {
       const result = await ForgettingCurveAnalyzer.predictRetentionDecay(userId, objectiveId)
 
       // Assert - review should be recommended before forgetting threshold
-      const daysDiff =
-        (result.recommendedReviewDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      const daysDiff = (result.recommendedReviewDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
       expect(daysDiff).toBeGreaterThanOrEqual(0)
     })
   })

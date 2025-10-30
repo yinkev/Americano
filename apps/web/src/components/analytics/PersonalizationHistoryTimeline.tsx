@@ -7,10 +7,21 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Activity,
+  BookOpen,
+  Clock,
+  Filter,
+  History,
+  Minus,
+  Target,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -18,17 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Clock,
-  Activity,
-  BookOpen,
-  Target,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  History,
-  Filter,
-} from 'lucide-react'
 
 interface PersonalizationEvent {
   id: string
@@ -125,7 +125,8 @@ export function PersonalizationHistoryTimeline() {
           eventType: eventTypeMap[event.eventType] || 'config_updated',
           context: contextMap[event.context] || 'general',
           title: event.reason || 'Personalization Event',
-          description: event.reason || `${event.strategyVariant} strategy ${event.eventType.toLowerCase()}`,
+          description:
+            event.reason || `${event.strategyVariant} strategy ${event.eventType.toLowerCase()}`,
           outcome,
           metadata: {
             configId: event.configId,
@@ -232,12 +233,8 @@ export function PersonalizationHistoryTimeline() {
               {filteredEvents.map((event, index) => {
                 const ContextIcon = CONTEXT_ICONS[event.context]
                 const contextColor = CONTEXT_COLORS[event.context]
-                const OutcomeIcon = event.outcome
-                  ? OUTCOME_ICONS[event.outcome]
-                  : null
-                const outcomeColor = event.outcome
-                  ? OUTCOME_COLORS[event.outcome]
-                  : undefined
+                const OutcomeIcon = event.outcome ? OUTCOME_ICONS[event.outcome] : null
+                const outcomeColor = event.outcome ? OUTCOME_COLORS[event.outcome] : undefined
 
                 const isLast = index === filteredEvents.length - 1
 
@@ -268,16 +265,11 @@ export function PersonalizationHistoryTimeline() {
                           >
                             <ContextIcon className="size-4" style={{ color: contextColor }} />
                           </div>
-                          <h4 className="text-sm font-semibold text-foreground">
-                            {event.title}
-                          </h4>
+                          <h4 className="text-sm font-semibold text-foreground">{event.title}</h4>
                         </div>
                         {event.outcome && OutcomeIcon && (
                           <div className="flex items-center gap-1 shrink-0">
-                            <OutcomeIcon
-                              className="size-4"
-                              style={{ color: outcomeColor }}
-                            />
+                            <OutcomeIcon className="size-4" style={{ color: outcomeColor }} />
                             <Badge
                               variant="outline"
                               className="px-2 py-0 text-xs capitalize"
@@ -300,11 +292,7 @@ export function PersonalizationHistoryTimeline() {
                       {event.metadata && Object.keys(event.metadata).length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-3">
                           {Object.entries(event.metadata).map(([key, value]) => (
-                            <Badge
-                              key={key}
-                              variant="secondary"
-                              className="text-xs px-2 py-0.5"
-                            >
+                            <Badge key={key} variant="secondary" className="text-xs px-2 py-0.5">
                               {key}: {value}
                             </Badge>
                           ))}
@@ -324,9 +312,7 @@ export function PersonalizationHistoryTimeline() {
                           })}
                         </span>
                         <span className="text-muted-foreground/50">•</span>
-                        <span className="capitalize">
-                          {event.eventType.replace('_', ' ')}
-                        </span>
+                        <span className="capitalize">{event.eventType.replace('_', ' ')}</span>
                       </div>
                     </div>
                   </div>

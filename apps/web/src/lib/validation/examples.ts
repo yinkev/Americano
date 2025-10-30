@@ -7,22 +7,17 @@
  * @module ValidationExamples
  */
 
-import { z } from 'zod'
 import { PrismaClient } from '@prisma/client'
-import {
-  validateSqlResult,
-  validateSingleSqlResult,
-  validateOptionalSqlResult,
-  type InferSchemaType,
-  type ValidatedQueryResult,
-} from './validate-sql-result'
+import { z } from 'zod'
+import { ExtractionError, ExtractionErrorCode, SearchError, SearchErrorCode } from '@/lib/errors'
 import { err, isErr, isOk, ok, type Result } from '@/lib/result'
 import {
-  SearchError,
-  SearchErrorCode,
-  ExtractionError,
-  ExtractionErrorCode,
-} from '@/lib/errors'
+  type InferSchemaType,
+  type ValidatedQueryResult,
+  validateOptionalSqlResult,
+  validateSingleSqlResult,
+  validateSqlResult,
+} from './validate-sql-result'
 
 const prisma = new PrismaClient()
 
@@ -51,7 +46,7 @@ type SearchResult = InferSchemaType<typeof searchResultSchema>
  */
 export async function semanticSearch(
   query: string,
-  limit = 20
+  limit = 20,
 ): Promise<Result<SearchResult[], SearchError>> {
   try {
     // Execute vector similarity search
@@ -93,23 +88,19 @@ export async function semanticSearch(
             retriable: false,
             cause: validationResult.error,
             query: query.substring(0, 100),
-          }
-        )
+          },
+        ),
       )
     }
 
     return ok(validationResult.value)
   } catch (error) {
     return err(
-      new SearchError(
-        'Semantic search query failed',
-        SearchErrorCode.VECTOR_SEARCH_FAILED,
-        {
-          retriable: true,
-          cause: error,
-          query: query.substring(0, 100),
-        }
-      )
+      new SearchError('Semantic search query failed', SearchErrorCode.VECTOR_SEARCH_FAILED, {
+        retriable: true,
+        cause: error,
+        query: query.substring(0, 100),
+      }),
     )
   }
 }
@@ -138,7 +129,7 @@ type Concept = InferSchemaType<typeof conceptSchema>
  * Example: Get concepts by type with validation
  */
 export async function getConceptsByType(
-  type: 'DISEASE' | 'SYMPTOM' | 'TREATMENT' | 'ANATOMY'
+  type: 'DISEASE' | 'SYMPTOM' | 'TREATMENT' | 'ANATOMY',
 ): Promise<Result<Concept[], ExtractionError>> {
   try {
     const rawResults = await prisma.$queryRaw<unknown>`
@@ -162,22 +153,18 @@ export async function getConceptsByType(
           {
             retriable: false,
             cause: validationResult.error,
-          }
-        )
+          },
+        ),
       )
     }
 
     return ok(validationResult.value)
   } catch (error) {
     return err(
-      new ExtractionError(
-        'Database query failed',
-        ExtractionErrorCode.DATABASE_ERROR,
-        {
-          retriable: true,
-          cause: error,
-        }
-      )
+      new ExtractionError('Database query failed', ExtractionErrorCode.DATABASE_ERROR, {
+        retriable: true,
+        cause: error,
+      }),
     )
   }
 }
@@ -185,9 +172,7 @@ export async function getConceptsByType(
 /**
  * Example: Get single concept by ID with validation
  */
-export async function getConceptById(
-  id: string
-): Promise<Result<Concept, ExtractionError>> {
+export async function getConceptById(id: string): Promise<Result<Concept, ExtractionError>> {
   try {
     const rawResult = await prisma.$queryRaw<unknown>`
       SELECT *
@@ -209,22 +194,18 @@ export async function getConceptById(
           {
             retriable: false,
             cause: validationResult.error,
-          }
-        )
+          },
+        ),
       )
     }
 
     return ok(validationResult.value)
   } catch (error) {
     return err(
-      new ExtractionError(
-        'Database query failed',
-        ExtractionErrorCode.DATABASE_ERROR,
-        {
-          retriable: true,
-          cause: error,
-        }
-      )
+      new ExtractionError('Database query failed', ExtractionErrorCode.DATABASE_ERROR, {
+        retriable: true,
+        cause: error,
+      }),
     )
   }
 }
@@ -233,7 +214,7 @@ export async function getConceptById(
  * Example: Find concept by name (optional result)
  */
 export async function findConceptByName(
-  name: string
+  name: string,
 ): Promise<Result<Concept | undefined, ExtractionError>> {
   try {
     const rawResult = await prisma.$queryRaw<unknown>`
@@ -243,15 +224,11 @@ export async function findConceptByName(
       LIMIT 1
     `
 
-    const validationResult = validateOptionalSqlResult(
-      rawResult,
-      conceptSchema,
-      {
-        query: 'SELECT * FROM ConceptNode WHERE LOWER(name) = LOWER(?)',
-        operation: 'findConceptByName',
-        metadata: { name },
-      }
-    )
+    const validationResult = validateOptionalSqlResult(rawResult, conceptSchema, {
+      query: 'SELECT * FROM ConceptNode WHERE LOWER(name) = LOWER(?)',
+      operation: 'findConceptByName',
+      metadata: { name },
+    })
 
     if (isErr(validationResult)) {
       return err(
@@ -261,22 +238,18 @@ export async function findConceptByName(
           {
             retriable: false,
             cause: validationResult.error,
-          }
-        )
+          },
+        ),
       )
     }
 
     return ok(validationResult.value)
   } catch (error) {
     return err(
-      new ExtractionError(
-        'Database query failed',
-        ExtractionErrorCode.DATABASE_ERROR,
-        {
-          retriable: true,
-          cause: error,
-        }
-      )
+      new ExtractionError('Database query failed', ExtractionErrorCode.DATABASE_ERROR, {
+        retriable: true,
+        cause: error,
+      }),
     )
   }
 }
@@ -311,7 +284,7 @@ type Relationship = InferSchemaType<typeof relationshipSchema>
  * Example: Get relationships for a concept
  */
 export async function getConceptRelationships(
-  conceptId: string
+  conceptId: string,
 ): Promise<Result<Relationship[], ExtractionError>> {
   try {
     const rawResults = await prisma.$queryRaw<unknown>`
@@ -322,16 +295,12 @@ export async function getConceptRelationships(
       ORDER BY strength DESC
     `
 
-    const validationResult = validateSqlResult(
-      rawResults,
-      relationshipSchema,
-      {
-        query:
-          'SELECT * FROM ConceptRelationship WHERE sourceId = ? OR (bidirectional = true AND targetId = ?)',
-        operation: 'getConceptRelationships',
-        metadata: { conceptId },
-      }
-    )
+    const validationResult = validateSqlResult(rawResults, relationshipSchema, {
+      query:
+        'SELECT * FROM ConceptRelationship WHERE sourceId = ? OR (bidirectional = true AND targetId = ?)',
+      operation: 'getConceptRelationships',
+      metadata: { conceptId },
+    })
 
     if (isErr(validationResult)) {
       return err(
@@ -341,22 +310,18 @@ export async function getConceptRelationships(
           {
             retriable: false,
             cause: validationResult.error,
-          }
-        )
+          },
+        ),
       )
     }
 
     return ok(validationResult.value)
   } catch (error) {
     return err(
-      new ExtractionError(
-        'Database query failed',
-        ExtractionErrorCode.DATABASE_ERROR,
-        {
-          retriable: true,
-          cause: error,
-        }
-      )
+      new ExtractionError('Database query failed', ExtractionErrorCode.DATABASE_ERROR, {
+        retriable: true,
+        cause: error,
+      }),
     )
   }
 }
@@ -380,9 +345,7 @@ type ConceptStats = InferSchemaType<typeof conceptStatsSchema>
 /**
  * Example: Get concept statistics with validation
  */
-export async function getConceptStatistics(): Promise<
-  Result<ConceptStats[], ExtractionError>
-> {
+export async function getConceptStatistics(): Promise<Result<ConceptStats[], ExtractionError>> {
   try {
     const rawResults = await prisma.$queryRaw<unknown>`
       SELECT
@@ -405,15 +368,11 @@ export async function getConceptStatistics(): Promise<
       GROUP BY c.type
     `
 
-    const validationResult = validateSqlResult(
-      rawResults,
-      conceptStatsSchema,
-      {
-        query: 'SELECT aggregated statistics from ConceptNode',
-        operation: 'getConceptStatistics',
-        metadata: { timestamp: new Date().toISOString() },
-      }
-    )
+    const validationResult = validateSqlResult(rawResults, conceptStatsSchema, {
+      query: 'SELECT aggregated statistics from ConceptNode',
+      operation: 'getConceptStatistics',
+      metadata: { timestamp: new Date().toISOString() },
+    })
 
     if (isErr(validationResult)) {
       return err(
@@ -423,22 +382,18 @@ export async function getConceptStatistics(): Promise<
           {
             retriable: false,
             cause: validationResult.error,
-          }
-        )
+          },
+        ),
       )
     }
 
     return ok(validationResult.value)
   } catch (error) {
     return err(
-      new ExtractionError(
-        'Statistics query failed',
-        ExtractionErrorCode.DATABASE_ERROR,
-        {
-          retriable: true,
-          cause: error,
-        }
-      )
+      new ExtractionError('Statistics query failed', ExtractionErrorCode.DATABASE_ERROR, {
+        retriable: true,
+        cause: error,
+      }),
     )
   }
 }
@@ -456,10 +411,7 @@ export async function GET(request: Request) {
   const limit = Number(searchParams.get('limit') || '20')
 
   if (!query) {
-    return Response.json(
-      { success: false, error: 'Query parameter required' },
-      { status: 400 }
-    )
+    return Response.json({ success: false, error: 'Query parameter required' }, { status: 400 })
   }
 
   // Execute search with validation
@@ -476,7 +428,7 @@ export async function GET(request: Request) {
           retriable: result.error.retriable,
         },
       },
-      { status: result.error.httpStatus }
+      { status: result.error.httpStatus },
     )
   }
 
@@ -504,7 +456,7 @@ export class KnowledgeGraphService {
    * Get all concepts of a specific type
    */
   async getConceptsByType(
-    type: 'DISEASE' | 'SYMPTOM' | 'TREATMENT' | 'ANATOMY'
+    type: 'DISEASE' | 'SYMPTOM' | 'TREATMENT' | 'ANATOMY',
   ): Promise<Result<Concept[], ExtractionError>> {
     return getConceptsByType(type)
   }
@@ -519,18 +471,14 @@ export class KnowledgeGraphService {
   /**
    * Search for concepts by name
    */
-  async searchConceptsByName(
-    name: string
-  ): Promise<Result<Concept | undefined, ExtractionError>> {
+  async searchConceptsByName(name: string): Promise<Result<Concept | undefined, ExtractionError>> {
     return findConceptByName(name)
   }
 
   /**
    * Get relationships for a concept
    */
-  async getRelationships(
-    conceptId: string
-  ): Promise<Result<Relationship[], ExtractionError>> {
+  async getRelationships(conceptId: string): Promise<Result<Relationship[], ExtractionError>> {
     return getConceptRelationships(conceptId)
   }
 
@@ -561,17 +509,15 @@ export class KnowledgeGraphService {
 
     // Get related concepts
     const relatedIds = relationshipsResult.value.map((r) =>
-      r.sourceId === conceptId ? r.targetId : r.sourceId
+      r.sourceId === conceptId ? r.targetId : r.sourceId,
     )
 
     const relatedConceptsResults = await Promise.all(
-      relatedIds.map((id) => this.getConceptById(id))
+      relatedIds.map((id) => this.getConceptById(id)),
     )
 
     // Filter out errors
-    const relatedConcepts = relatedConceptsResults
-      .filter(isOk)
-      .map((r) => r.value)
+    const relatedConcepts = relatedConceptsResults.filter(isOk).map((r) => r.value)
 
     return ok({
       concept: conceptResult.value,
@@ -589,7 +535,7 @@ export class KnowledgeGraphService {
  * Example: Retry with fallback on validation failure
  */
 export async function searchWithFallback(
-  query: string
+  query: string,
 ): Promise<Result<SearchResult[], SearchError>> {
   // Try semantic search first
   const semanticResult = await semanticSearch(query)
@@ -601,7 +547,7 @@ export async function searchWithFallback(
   // Log validation error
   console.error(
     'Semantic search validation failed, falling back to keyword search',
-    semanticResult.error.toJSON()
+    semanticResult.error.toJSON(),
   )
 
   // Fallback to keyword search (simpler validation)
@@ -630,9 +576,7 @@ export async function searchWithFallback(
 /**
  * Example: Partial failure handling
  */
-export async function getBatchConcepts(
-  ids: string[]
-): Promise<{
+export async function getBatchConcepts(ids: string[]): Promise<{
   concepts: Concept[]
   errors: ExtractionError[]
 }> {

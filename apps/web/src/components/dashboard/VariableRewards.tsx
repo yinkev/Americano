@@ -1,8 +1,8 @@
 'use client'
 
+import { Gift, Sparkles, Star, Zap } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import React, { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { Sparkles, Gift, Star, Zap } from 'lucide-react'
 import { playSoundEffect } from './SoundToggle'
 
 /**
@@ -64,7 +64,9 @@ interface VariableRewardsProps {
 export function VariableRewards({ trigger, onReward }: VariableRewardsProps) {
   const [showReward, setShowReward] = useState(false)
   const [currentReward, setCurrentReward] = useState<Reward | null>(null)
-  const [confettiPieces, setConfettiPieces] = useState<Array<{ id: number; x: number; y: number; rotation: number; delay: number }>>([])
+  const [confettiPieces, setConfettiPieces] = useState<
+    Array<{ id: number; x: number; y: number; rotation: number; delay: number }>
+  >([])
 
   useEffect(() => {
     if (!trigger) return
@@ -166,10 +168,7 @@ export function VariableRewards({ trigger, onReward }: VariableRewardsProps) {
                     ease: 'easeInOut',
                   }}
                 >
-                  <currentReward.icon
-                    className="h-6 w-6"
-                    style={{ color: currentReward.color }}
-                  />
+                  <currentReward.icon className="h-6 w-6" style={{ color: currentReward.color }} />
                 </motion.div>
 
                 {/* Content */}
@@ -193,7 +192,12 @@ export function VariableRewards({ trigger, onReward }: VariableRewardsProps) {
                   aria-label="Close"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -213,7 +217,9 @@ export function VariableRewards({ trigger, onReward }: VariableRewardsProps) {
  * triggerReward('task_complete')
  */
 export function useVariableReward() {
-  const [trigger, setTrigger] = useState<'task_complete' | 'login' | 'manual' | undefined>(undefined)
+  const [trigger, setTrigger] = useState<'task_complete' | 'login' | 'manual' | undefined>(
+    undefined,
+  )
   const [key, setKey] = useState(0)
 
   const triggerReward = (type: 'task_complete' | 'login' | 'manual') => {

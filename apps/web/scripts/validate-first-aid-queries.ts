@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+
 /**
  * First Aid Query Performance Validation Script
  *
@@ -19,8 +20,8 @@
  * - Query 4 (Batch mappings): <300ms
  */
 
-import { PrismaClient } from '@/generated/prisma'
 import { performance } from 'perf_hooks'
+import { PrismaClient } from '@/generated/prisma'
 
 const prisma = new PrismaClient()
 
@@ -63,7 +64,7 @@ async function main() {
   printResults()
 
   // Exit with appropriate code
-  const hasFailures = results.some(r => r.status === 'FAIL')
+  const hasFailures = results.some((r) => r.status === 'FAIL')
   process.exit(hasFailures ? 1 : 0)
 }
 
@@ -138,10 +139,12 @@ async function validateQuery1A() {
     const explainResult = await prisma.$queryRawUnsafe<any[]>(
       `EXPLAIN ${query}`,
       concept.id,
-      user.id
+      user.id,
     )
-    const usesIndex = explainResult.some((row: any) =>
-      row['QUERY PLAN']?.includes('Index Scan') || row['QUERY PLAN']?.includes('first_aid_sections_embedding_idx')
+    const usesIndex = explainResult.some(
+      (row: any) =>
+        row['QUERY PLAN']?.includes('Index Scan') ||
+        row['QUERY PLAN']?.includes('first_aid_sections_embedding_idx'),
     )
 
     results.push({
@@ -209,10 +212,12 @@ async function validateQuery1B() {
     // Check index usage
     const explainResult = await prisma.$queryRawUnsafe<any[]>(
       `EXPLAIN SELECT * FROM lecture_first_aid_mappings WHERE "lectureId" = $1 AND confidence >= 0.65`,
-      mapping.lectureId
+      mapping.lectureId,
     )
-    const usesIndex = explainResult.some((row: any) =>
-      row['QUERY PLAN']?.includes('Index Scan') || row['QUERY PLAN']?.includes('lecture_first_aid_mappings_lectureId')
+    const usesIndex = explainResult.some(
+      (row: any) =>
+        row['QUERY PLAN']?.includes('Index Scan') ||
+        row['QUERY PLAN']?.includes('lecture_first_aid_mappings_lectureId'),
     )
 
     results.push({
@@ -475,7 +480,7 @@ async function validateQuery4() {
     return
   }
 
-  const lectureIds = lectures.map(l => l.id)
+  const lectureIds = lectures.map((l) => l.id)
 
   const startTime = performance.now()
 
@@ -522,21 +527,20 @@ function printResults() {
   console.log('📊 Validation Results')
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n')
 
-  const passed = results.filter(r => r.status === 'PASS').length
-  const warned = results.filter(r => r.status === 'WARN').length
-  const failed = results.filter(r => r.status === 'FAIL').length
+  const passed = results.filter((r) => r.status === 'PASS').length
+  const warned = results.filter((r) => r.status === 'WARN').length
+  const failed = results.filter((r) => r.status === 'FAIL').length
 
   // Print table
   console.log('Query                              Target    Actual    Status  Index')
   console.log('─────────────────────────────────  ────────  ────────  ──────  ─────')
 
   for (const result of results) {
-    const statusIcon =
-      result.status === 'PASS' ? '✓' : result.status === 'WARN' ? '⚠' : '✗'
+    const statusIcon = result.status === 'PASS' ? '✓' : result.status === 'WARN' ? '⚠' : '✗'
     const indexIcon = result.usesIndex ? '✓' : '✗'
 
     console.log(
-      `${result.name.padEnd(33)}  ${result.target.toString().padStart(6)}ms  ${result.actual.toString().padStart(6)}ms  ${statusIcon} ${result.status.padEnd(5)}  ${indexIcon}`
+      `${result.name.padEnd(33)}  ${result.target.toString().padStart(6)}ms  ${result.actual.toString().padStart(6)}ms  ${statusIcon} ${result.status.padEnd(5)}  ${indexIcon}`,
     )
   }
 
@@ -560,7 +564,7 @@ function printResults() {
 
 // Run validation
 main()
-  .catch(error => {
+  .catch((error) => {
     console.error('Fatal error:', error)
     process.exit(1)
   })

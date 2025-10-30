@@ -14,11 +14,21 @@ export class ApiError<T = unknown> extends Error {
   }
 }
 
-export async function toApiError<T = unknown>(resp: Response, meta?: { url?: string; method?: string }) {
+export async function toApiError<T = unknown>(
+  resp: Response,
+  meta?: { url?: string; method?: string },
+) {
   try {
-    const data = (await resp.clone().json().catch(() => undefined)) as T | undefined
-    const message = (data as any)?.message || (data as any)?.detail || resp.statusText || `HTTP ${resp.status}`
-    return new ApiError<T>(message, resp.status, data, { url: meta?.url ?? resp.url, method: meta?.method })
+    const data = (await resp
+      .clone()
+      .json()
+      .catch(() => undefined)) as T | undefined
+    const message =
+      (data as any)?.message || (data as any)?.detail || resp.statusText || `HTTP ${resp.status}`
+    return new ApiError<T>(message, resp.status, data, {
+      url: meta?.url ?? resp.url,
+      method: meta?.method,
+    })
   } catch {
     return new ApiError<T>(resp.statusText || `HTTP ${resp.status}`, resp.status, undefined, {
       url: meta?.url ?? resp.url,

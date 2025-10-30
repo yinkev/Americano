@@ -3,11 +3,10 @@
  * Story 2.3: Intelligent Content Prioritization Algorithm
  */
 
-import { NextRequest } from 'next/server'
-import { successResponse, ApiError } from '@/lib/api-response'
-import { withErrorHandler } from '@/lib/api-response'
-import { PrioritizationEngine } from '@/lib/prioritization-engine'
+import type { NextRequest } from 'next/server'
+import { ApiError, successResponse, withErrorHandler } from '@/lib/api-response'
 import { getCurrentUserId } from '@/lib/auth'
+import { PrioritizationEngine } from '@/lib/prioritization-engine'
 
 /**
  * GET /api/priorities/objectives/:id/explain - Explain priority

@@ -101,8 +101,16 @@ export class ContentSequencer {
     }>
 
     // Fetch cards for review (both new and due)
-    const reviewCards = await this.fetchReviewCards(userId, objectives, mission.reviewCardCount)
-    const newCards = await this.fetchNewCards(userId, objectives, mission.newContentCount)
+    const reviewCards = await ContentSequencer.fetchReviewCards(
+      userId,
+      objectives,
+      mission.reviewCardCount,
+    )
+    const newCards = await ContentSequencer.fetchNewCards(
+      userId,
+      objectives,
+      mission.newContentCount,
+    )
 
     // Calculate phase durations
     const warmUpDuration = Math.min(15, Math.round(sessionDuration * 0.2))
@@ -131,7 +139,7 @@ export class ContentSequencer {
     const peakContent: ContentItem[] = []
 
     // Prioritize kinesthetic content (clinical scenarios) if user preference
-    const clinicalScenarios = await this.fetchClinicalScenarios(userId, objectives)
+    const clinicalScenarios = await ContentSequencer.fetchClinicalScenarios(userId, objectives)
     if (learningStyle.kinesthetic > 0.5 && clinicalScenarios.length > 0) {
       for (const scenario of clinicalScenarios.slice(0, 2)) {
         peakContent.push({
@@ -155,7 +163,7 @@ export class ContentSequencer {
     }
 
     // Add validation prompts (every 2-3 items)
-    const validations = await this.fetchValidationPrompts(userId, objectives)
+    const validations = await ContentSequencer.fetchValidationPrompts(userId, objectives)
     for (let i = 2; i < peakContent.length && validations.length > 0; i += 3) {
       const validation = validations.shift()
       if (validation) {
@@ -169,7 +177,7 @@ export class ContentSequencer {
     }
 
     // Interleave content to avoid monotony
-    const interleavedPeak = this.interleaveContent(peakContent)
+    const interleavedPeak = ContentSequencer.interleaveContent(peakContent)
     sequence.push(...interleavedPeak)
 
     // PHASE 3: WIND-DOWN - Medium difficulty reviews

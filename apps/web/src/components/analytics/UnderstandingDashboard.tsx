@@ -1,18 +1,18 @@
-'use client';
+'use client'
 
-import { Suspense, lazy } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
+import { lazy, Suspense } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { useUnderstandingAnalyticsStore } from '@/store/understanding-analytics-store';
-import { useRefreshAll } from '@/hooks/use-understanding-analytics';
+} from '@/components/ui/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useRefreshAll } from '@/hooks/use-understanding-analytics'
+import { useUnderstandingAnalyticsStore } from '@/store/understanding-analytics-store'
 
 /**
  * Story 4.6 Task 2: Understanding Dashboard Main Layout
@@ -37,14 +37,14 @@ import { useRefreshAll } from '@/hooks/use-understanding-analytics';
  */
 
 // Lazy load tab components for optimal performance (code splitting)
-const OverviewTab = lazy(() => import('./tabs/OverviewTab'));
-const ComparisonTab = lazy(() => import('./tabs/ComparisonTab'));
-const PatternsTab = lazy(() => import('./tabs/PatternsTab'));
-const ProgressTab = lazy(() => import('./tabs/ProgressTab'));
-const PredictionsTab = lazy(() => import('./tabs/PredictionsTab'));
-const RelationshipsTab = lazy(() => import('./tabs/RelationshipsTab'));
-const BenchmarksTab = lazy(() => import('./tabs/BenchmarksTab'));
-const RecommendationsTab = lazy(() => import('./tabs/RecommendationsTab'));
+const OverviewTab = lazy(() => import('./tabs/OverviewTab'))
+const ComparisonTab = lazy(() => import('./tabs/ComparisonTab'))
+const PatternsTab = lazy(() => import('./tabs/PatternsTab'))
+const ProgressTab = lazy(() => import('./tabs/ProgressTab'))
+const PredictionsTab = lazy(() => import('./tabs/PredictionsTab'))
+const RelationshipsTab = lazy(() => import('./tabs/RelationshipsTab'))
+const BenchmarksTab = lazy(() => import('./tabs/BenchmarksTab'))
+const RecommendationsTab = lazy(() => import('./tabs/RecommendationsTab'))
 
 export function UnderstandingDashboard() {
   const {
@@ -58,18 +58,16 @@ export function UnderstandingDashboard() {
     setTopicFilter,
     clearFilters,
     refreshTimestamp,
-  } = useUnderstandingAnalyticsStore();
+  } = useUnderstandingAnalyticsStore()
 
-  const refreshAll = useRefreshAll();
+  const refreshAll = useRefreshAll()
 
   return (
     <div className="w-full space-y-6">
       {/* Header with Global Filters */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-bold font-['DM_Sans']">
-            Understanding Analytics
-          </h1>
+          <h1 className="text-3xl font-bold font-['DM_Sans']">Understanding Analytics</h1>
           <p className="text-sm text-[oklch(0.6_0.05_240)] mt-1">
             Comprehensive validation across all dimensions
           </p>
@@ -79,9 +77,7 @@ export function UnderstandingDashboard() {
           {/* Date Range Filter */}
           <Select
             value={dateRange}
-            onValueChange={(value) =>
-              setDateRange(value as '7d' | '30d' | '90d')
-            }
+            onValueChange={(value) => setDateRange(value as '7d' | '30d' | '90d')}
           >
             <SelectTrigger className="w-[140px] min-h-[44px]">
               <SelectValue placeholder="Date range" />
@@ -96,9 +92,7 @@ export function UnderstandingDashboard() {
           {/* Course Filter */}
           <Select
             value={courseId || 'all'}
-            onValueChange={(value) =>
-              setCourseFilter(value === 'all' ? null : value)
-            }
+            onValueChange={(value) => setCourseFilter(value === 'all' ? null : value)}
           >
             <SelectTrigger className="w-[180px] min-h-[44px]">
               <SelectValue placeholder="All Courses" />
@@ -115,9 +109,7 @@ export function UnderstandingDashboard() {
           {/* Topic Filter */}
           <Select
             value={topic || 'all'}
-            onValueChange={(value) =>
-              setTopicFilter(value === 'all' ? null : value)
-            }
+            onValueChange={(value) => setTopicFilter(value === 'all' ? null : value)}
           >
             <SelectTrigger className="w-[180px] min-h-[44px]">
               <SelectValue placeholder="All Topics" />
@@ -132,11 +124,7 @@ export function UnderstandingDashboard() {
           </Select>
 
           {/* Clear Filters Button */}
-          <Button
-            variant="outline"
-            onClick={clearFilters}
-            className="min-h-[44px]"
-          >
+          <Button variant="outline" onClick={clearFilters} className="min-h-[44px]">
             Clear Filters
           </Button>
 
@@ -233,7 +221,7 @@ export function UnderstandingDashboard() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }
 
 /**
@@ -246,10 +234,7 @@ function TabSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {[1, 2, 3, 4, 5, 6].map((i) => (
-        <Card
-          key={i}
-          className="h-48 bg-white/95 backdrop-blur-xl animate-pulse"
-        >
+        <Card key={i} className="h-48 bg-white/95 backdrop-blur-xl animate-pulse">
           <CardContent className="p-6">
             <div className="space-y-3">
               <div className="h-4 bg-gray-200 rounded w-3/4" />
@@ -260,5 +245,5 @@ function TabSkeleton() {
         </Card>
       ))}
     </div>
-  );
+  )
 }

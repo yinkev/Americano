@@ -7,12 +7,12 @@
  * Story 5.6: Behavioral Insights Dashboard - Task 7
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
-import { GoalManager } from '@/subsystems/behavioral-analytics/goal-manager'
-import { prisma } from '@/lib/db'
 import { ApiError } from '@/lib/api-error'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
+import { GoalManager } from '@/subsystems/behavioral-analytics/goal-manager'
 
 // Zod validation schema for request body
 const CreateGoalSchema = z.object({

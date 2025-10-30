@@ -386,9 +386,7 @@ export class PerformanceCalculator {
         }
 
         // Get estimated time from mission objectives
-        const missionObjective = missionObjectives.find(
-          (mo) => mo.id === completion.objectiveId,
-        )
+        const missionObjective = missionObjectives.find((mo) => mo.id === completion.objectiveId)
         const estimatedTimeMs = (missionObjective?.estimatedMinutes || 20) * 60 * 1000
         const timeSpentMs = completion.timeSpentMs || 0
         const timeDeltaMs = timeSpentMs - estimatedTimeMs
@@ -704,9 +702,7 @@ export class PerformanceCalculator {
 
         if (!objective) continue
 
-        const missionObjective = missionObjectives.find(
-          (mo) => mo.id === completion.objectiveId,
-        )
+        const missionObjective = missionObjectives.find((mo) => mo.id === completion.objectiveId)
         const estimatedTimeMs = (missionObjective?.estimatedMinutes || 20) * 60 * 1000
         const actualTimeMs = completion.timeSpentMs || 0
         const deltaMs = actualTimeMs - estimatedTimeMs

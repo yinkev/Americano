@@ -7,22 +7,22 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Info, TrendingDown, TrendingUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import {
-  LineChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  ReferenceLine,
 } from 'recharts'
-import { TrendingUp, TrendingDown, Info } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -84,7 +84,7 @@ export function PersonalizationEffectivenessChart() {
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<'7d' | '14d' | '30d' | '90d'>('30d')
   const [selectedMetrics, setSelectedMetrics] = useState<Set<keyof typeof METRIC_CONFIGS>>(
-    new Set(['retention', 'performance', 'completion'])
+    new Set(['retention', 'performance', 'completion']),
   )
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export function PersonalizationEffectivenessChart() {
       const endDate = new Date()
 
       const response = await fetch(
-        `/api/personalization/effectiveness?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&metric=all`
+        `/api/personalization/effectiveness?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&metric=all`,
       )
       const result = await response.json()
 
@@ -329,10 +329,7 @@ export function PersonalizationEffectivenessChart() {
         {/* Line Chart */}
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={chartData}
-              margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-            >
+            <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9 0 0)" />
               <XAxis
                 dataKey="dateLabel"
@@ -394,7 +391,8 @@ export function PersonalizationEffectivenessChart() {
               <p className="text-sm font-medium text-foreground mb-1">Statistical Analysis</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-muted-foreground">
                 <div>
-                  <span className="font-semibold">Sample Size:</span> {data.statistical.sampleSize} data points
+                  <span className="font-semibold">Sample Size:</span> {data.statistical.sampleSize}{' '}
+                  data points
                 </div>
                 <div>
                   <span className="font-semibold">Correlation:</span>{' '}

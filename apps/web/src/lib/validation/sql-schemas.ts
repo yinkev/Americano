@@ -163,7 +163,10 @@ export type ConceptCreationResult = z.infer<typeof ConceptCreationResultSchema>
 export const VectorSearchChunkResultSchema = z.object({
   id: z.string().uuid({ message: 'id must be a valid UUID' }),
   content: z.string(),
-  chunkIndex: z.number().int().nonnegative({ message: 'chunkIndex must be a non-negative integer' }),
+  chunkIndex: z
+    .number()
+    .int()
+    .nonnegative({ message: 'chunkIndex must be a non-negative integer' }),
   pageNumber: z.number().int().positive().nullable(),
   lectureId: z.string().uuid({ message: 'lectureId must be a valid UUID' }),
   lectureTitle: z.string().min(1, { message: 'lectureTitle cannot be empty' }),
@@ -189,7 +192,10 @@ export const VectorSearchLectureResultSchema = z.object({
   uploadedAt: z.date(),
   processingStatus: z.enum(['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED']),
   distance: z.number().min(0).max(2, { message: 'distance must be between 0 and 2' }),
-  chunkCount: z.number().int().nonnegative({ message: 'chunkCount must be a non-negative integer' }),
+  chunkCount: z
+    .number()
+    .int()
+    .nonnegative({ message: 'chunkCount must be a non-negative integer' }),
 })
 
 export type VectorSearchLectureResult = z.infer<typeof VectorSearchLectureResultSchema>
@@ -235,7 +241,9 @@ export type KeywordSearchResult = z.infer<typeof KeywordSearchResultSchema>
  */
 export const PopularSearchResultSchema = z.object({
   query: z.string().min(1, { message: 'query cannot be empty' }),
-  count: z.bigint().refine((val) => val > BigInt(0), { message: 'count must be a positive bigint' }),
+  count: z
+    .bigint()
+    .refine((val) => val > BigInt(0), { message: 'count must be a positive bigint' }),
   avgResults: z.number().nonnegative({ message: 'avgResults must be a non-negative number' }),
 })
 
@@ -249,7 +257,9 @@ export type PopularSearchResult = z.infer<typeof PopularSearchResultSchema>
  */
 export const ZeroResultQuerySchema = z.object({
   query: z.string().min(1, { message: 'query cannot be empty' }),
-  count: z.bigint().refine((val) => val > BigInt(0), { message: 'count must be a positive bigint' }),
+  count: z
+    .bigint()
+    .refine((val) => val > BigInt(0), { message: 'count must be a positive bigint' }),
   lastSearched: z.date(),
 })
 
@@ -361,7 +371,7 @@ export type TopQueryByCTR = z.infer<typeof TopQueryByCTRSchema>
  */
 export function validateSQLResults<T extends z.ZodTypeAny>(
   schema: T,
-  results: unknown[]
+  results: unknown[],
 ): z.infer<T>[] {
   return results.map((row) => schema.parse(row))
 }
@@ -375,7 +385,7 @@ export function validateSQLResults<T extends z.ZodTypeAny>(
  */
 export function safeValidateSQLResults<T extends z.ZodTypeAny>(
   schema: T,
-  results: unknown[]
+  results: unknown[],
 ): { success: true; data: z.infer<T>[] } | { success: false; error: z.ZodError } {
   try {
     const validated = validateSQLResults(schema, results)
@@ -398,7 +408,7 @@ export function safeValidateSQLResults<T extends z.ZodTypeAny>(
 export function bigIntToNumber(value: bigint): number {
   if (value > BigInt(Number.MAX_SAFE_INTEGER)) {
     throw new Error(
-      `BigInt value ${value} exceeds Number.MAX_SAFE_INTEGER (${Number.MAX_SAFE_INTEGER})`
+      `BigInt value ${value} exceeds Number.MAX_SAFE_INTEGER (${Number.MAX_SAFE_INTEGER})`,
     )
   }
   return Number(value)
@@ -413,7 +423,7 @@ export function bigIntToNumber(value: bigint): number {
  */
 export function convertBigIntFields<T extends Record<string, any>>(
   results: T[],
-  fields: (keyof T)[]
+  fields: (keyof T)[],
 ): T[] {
   return results.map((result) => {
     const converted = { ...result }

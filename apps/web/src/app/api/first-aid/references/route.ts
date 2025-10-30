@@ -18,10 +18,10 @@
  * - Supports filtering by confidence threshold
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
-import { firstAidMapper } from '@/subsystems/knowledge-graph/first-aid-mapper'
 import { searchRateLimiter } from '@/lib/rate-limiter'
+import { firstAidMapper } from '@/subsystems/knowledge-graph/first-aid-mapper'
 
 const prisma = new PrismaClient()
 
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     if (!guidelineId) {
       return NextResponse.json(
         { error: 'Missing required parameter: guidelineId' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
     if (!result.allowed) {
       return NextResponse.json(
         { error: 'Rate limit exceeded. Please try again later.', retryAfter: result.retryAfter },
-        { status: 429, headers: { 'Retry-After': result.retryAfter.toString() } }
+        { status: 429, headers: { 'Retry-After': result.retryAfter.toString() } },
       )
     }
 
@@ -146,7 +146,7 @@ export async function GET(request: NextRequest) {
           ETag: etag,
           'Cache-Control': 'private, max-age=300', // 5 minutes
         },
-      }
+      },
     )
   } catch (error) {
     console.error('[FirstAidReferences] Error:', error)
@@ -155,7 +155,7 @@ export async function GET(request: NextRequest) {
         error: 'Failed to fetch First Aid references',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -168,7 +168,7 @@ async function getSectionReferences(
   guidelineId: string,
   sectionId: string,
   limit: number,
-  minConfidence: number
+  minConfidence: number,
 ) {
   console.log(`[getSectionReferences] Section: ${sectionId}`)
 
@@ -249,7 +249,7 @@ async function getSectionReferences(
 async function getAllGuidelineReferences(
   guidelineId: string,
   limit: number,
-  minConfidence: number
+  minConfidence: number,
 ) {
   console.log(`[getAllGuidelineReferences] GuidelineId: ${guidelineId}`)
 
@@ -315,11 +315,7 @@ async function getAllGuidelineReferences(
 /**
  * Generate ETag for caching
  */
-function generateETag(
-  guidelineId: string,
-  section: string | null,
-  references: any[]
-): string {
+function generateETag(guidelineId: string, section: string | null, references: any[]): string {
   const data = JSON.stringify({
     guidelineId,
     section,

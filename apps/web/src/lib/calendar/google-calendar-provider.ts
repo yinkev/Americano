@@ -7,7 +7,7 @@
  */
 
 import { OAuth2Client } from 'google-auth-library'
-import type { CalendarProvider, CalendarEvent, CalendarAvailability } from './calendar-provider'
+import type { CalendarAvailability, CalendarEvent, CalendarProvider } from './calendar-provider'
 
 const GOOGLE_CALENDAR_SCOPES = [
   'https://www.googleapis.com/auth/calendar.readonly',

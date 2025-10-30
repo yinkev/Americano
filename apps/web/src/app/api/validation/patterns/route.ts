@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { getCurrentUserId } from '@/lib/auth';
-import { successResponse, errorResponse } from '@/lib/api-response';
-import { validateQuery, patternsQuerySchema } from '@/lib/validation';
+import { type NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getCurrentUserId } from '@/lib/auth'
+import { prisma } from '@/lib/db'
+import { patternsQuerySchema, validateQuery } from '@/lib/validation'
 
 /**
  * GET /api/validation/patterns
@@ -44,21 +44,21 @@ import { validateQuery, patternsQuerySchema } from '@/lib/validation';
  */
 export async function GET(request: NextRequest) {
   try {
-    const userId = await getCurrentUserId();
-    const { searchParams } = new URL(request.url);
+    const userId = await getCurrentUserId()
+    const { searchParams } = new URL(request.url)
 
     // Validate query parameters
-    const { limit } = validateQuery(searchParams, patternsQuerySchema);
+    const { limit } = validateQuery(searchParams, patternsQuerySchema)
 
     // Check for cached patterns (generated within last 24 hours)
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
 
     // Query failure patterns from database
     // Note: In full Story 4.3 implementation, FailurePattern model would exist
     // For now, we'll call Python service directly and cache results in-memory
 
     // Call Python service to detect patterns
-    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000';
+    const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000'
 
     const patternsResponse = await fetch(
       `${pythonServiceUrl}/validation/detect-failure-patterns?user_id=${userId}&limit=${limit}`,
@@ -67,22 +67,22 @@ export async function GET(request: NextRequest) {
         headers: {
           'Content-Type': 'application/json',
         },
-      }
-    );
+      },
+    )
 
     if (!patternsResponse.ok) {
-      const errorText = await patternsResponse.text();
-      console.error('Python service error (pattern detection):', errorText);
+      const errorText = await patternsResponse.text()
+      console.error('Python service error (pattern detection):', errorText)
       return NextResponse.json(
         errorResponse(
           'PYTHON_SERVICE_ERROR',
-          'Failed to detect failure patterns from Python service'
+          'Failed to detect failure patterns from Python service',
         ),
-        { status: 500 }
-      );
+        { status: 500 },
+      )
     }
 
-    const patternsData = await patternsResponse.json();
+    const patternsData = await patternsResponse.json()
 
     // patternsData.patterns: Array<{
     //   pattern_type: 'CATEGORY' | 'SYSTEMATIC_ERROR',
@@ -98,8 +98,8 @@ export async function GET(request: NextRequest) {
         successResponse({
           patterns: [],
           totalPatterns: 0,
-        })
-      );
+        }),
+      )
     }
 
     // Transform Python response to API format
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
       failureCount: pattern.failure_count,
       confidence: pattern.confidence,
       remediation: pattern.remediation || [],
-    }));
+    }))
 
     // Optionally save patterns to database for caching (if FailurePattern model exists)
     // For MVP, we skip this and rely on Python service caching
@@ -119,23 +119,23 @@ export async function GET(request: NextRequest) {
       successResponse({
         patterns,
         totalPatterns: patterns.length,
-      })
-    );
+      }),
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         errorResponse('VALIDATION_ERROR', 'Invalid query parameters', error.issues),
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    console.error('Error fetching failure patterns:', error);
+    console.error('Error fetching failure patterns:', error)
     return NextResponse.json(
       errorResponse(
         'INTERNAL_ERROR',
-        error instanceof Error ? error.message : 'Failed to fetch failure patterns'
+        error instanceof Error ? error.message : 'Failed to fetch failure patterns',
       ),
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }

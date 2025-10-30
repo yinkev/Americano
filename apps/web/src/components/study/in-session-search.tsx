@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 /**
  * InSessionSearch Component
@@ -13,22 +13,22 @@
  * - Session search history tracking
  */
 
-import * as React from "react"
-import { Search, Plus, History, X, Loader2, Command } from "lucide-react"
+import { Command, History, Loader2, Plus, Search, X } from 'lucide-react'
+import * as React from 'react'
+import { type SearchResult, SearchResultItem } from '@/components/search/search-result-item'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Badge } from "@/components/ui/badge"
-import { useToast } from "@/hooks/use-toast"
-import { cn } from "@/lib/utils"
-import { SearchResultItem, type SearchResult } from "@/components/search/search-result-item"
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { useToast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
 
 interface InSessionSearchProps {
   /** Current mission ID (for context) */
@@ -111,10 +111,12 @@ export function InSessionSearch({
       if (stored) {
         try {
           const parsed = JSON.parse(stored) as SearchHistoryItem[]
-          setSearchHistory(parsed.map(item => ({
-            ...item,
-            timestamp: new Date(item.timestamp),
-          })))
+          setSearchHistory(
+            parsed.map((item) => ({
+              ...item,
+              timestamp: new Date(item.timestamp),
+            })),
+          )
         } catch (error) {
           console.error('Failed to parse search history:', error)
         }
@@ -167,9 +169,9 @@ export function InSessionSearch({
     } catch (error) {
       console.error('Search error:', error)
       toast({
-        title: "Search failed",
-        description: error instanceof Error ? error.message : "Failed to perform search",
-        variant: "destructive",
+        title: 'Search failed',
+        description: error instanceof Error ? error.message : 'Failed to perform search',
+        variant: 'destructive',
       })
     } finally {
       setIsSearching(false)
@@ -179,9 +181,9 @@ export function InSessionSearch({
   const handleAddToSession = async (result: SearchResult) => {
     if (!onAddToSession) {
       toast({
-        title: "Not available",
-        description: "Add to session functionality is not configured",
-        variant: "destructive",
+        title: 'Not available',
+        description: 'Add to session functionality is not configured',
+        variant: 'destructive',
       })
       return
     }
@@ -192,7 +194,7 @@ export function InSessionSearch({
       await onAddToSession(result.id, result.type)
 
       toast({
-        title: "Added to session",
+        title: 'Added to session',
         description: `${result.title} has been added to your current study session`,
       })
 
@@ -203,9 +205,9 @@ export function InSessionSearch({
     } catch (error) {
       console.error('Add to session error:', error)
       toast({
-        title: "Failed to add",
-        description: error instanceof Error ? error.message : "Failed to add content to session",
-        variant: "destructive",
+        title: 'Failed to add',
+        description: error instanceof Error ? error.message : 'Failed to add content to session',
+        variant: 'destructive',
       })
     } finally {
       setAddingToSession(null)
@@ -236,9 +238,14 @@ export function InSessionSearch({
               <DialogTitle className="text-lg font-semibold">
                 Search During Study Session
               </DialogTitle>
-              <DialogDescription id="in-session-search-description" className="text-sm text-muted-foreground mt-1">
+              <DialogDescription
+                id="in-session-search-description"
+                className="text-sm text-muted-foreground mt-1"
+              >
                 {currentObjective ? (
-                  <>Searching in context of: <span className="font-medium">{currentObjective}</span></>
+                  <>
+                    Searching in context of: <span className="font-medium">{currentObjective}</span>
+                  </>
                 ) : (
                   <>Find relevant content and add it to your current session</>
                 )}
@@ -255,7 +262,10 @@ export function InSessionSearch({
         <div className="px-6 pb-4">
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" aria-hidden="true" />
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"
+                aria-hidden="true"
+              />
               <Input
                 ref={inputRef}
                 type="text"
@@ -317,10 +327,7 @@ export function InSessionSearch({
             <div className="space-y-3" role="list" aria-label="Search results">
               {results.map((result) => (
                 <div key={result.id} className="relative" role="listitem">
-                  <SearchResultItem
-                    result={result}
-                    searchQuery={query}
-                  />
+                  <SearchResultItem result={result} searchQuery={query} />
                   {onAddToSession && (
                     <div className="absolute top-4 right-4">
                       <Button
@@ -348,7 +355,8 @@ export function InSessionSearch({
               ))}
             </div>
           ) : (
-            !isSearching && query && (
+            !isSearching &&
+            query && (
               <div className="text-center py-8 text-muted-foreground">
                 <Search className="size-12 mx-auto mb-3 opacity-50" aria-hidden="true" />
                 <p>No results found. Try a different search query.</p>

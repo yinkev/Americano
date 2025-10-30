@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { validateRequest, exportReportSchema } from '@/lib/validation'
+import { type NextRequest, NextResponse } from 'next/server'
 import { ApiError } from '@/lib/api-error'
+import { exportReportSchema, validateRequest } from '@/lib/validation'
 
 /**
  * POST /api/analytics/understanding/export-report
@@ -50,7 +50,10 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     if (error instanceof ApiError) {
-      return NextResponse.json({ error: error.message, details: error.details }, { status: error.statusCode })
+      return NextResponse.json(
+        { error: error.message, details: error.details },
+        { status: error.statusCode },
+      )
     }
 
     console.error('Export report API error:', error)

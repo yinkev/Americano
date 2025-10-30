@@ -87,7 +87,7 @@ export class BaseError extends Error {
       retriable?: boolean
       cause?: unknown
       context?: Record<string, unknown>
-    } = {}
+    } = {},
   ) {
     super(message)
     this.name = this.constructor.name
@@ -136,7 +136,7 @@ export class EmbeddingError extends BaseError {
       retriable?: boolean
       cause?: unknown
       context?: Record<string, unknown>
-    } = {}
+    } = {},
   ) {
     super(message, options)
     this.code = code
@@ -176,7 +176,7 @@ export class ExtractionError extends BaseError {
       cause?: unknown
       context?: Record<string, unknown>
       partialCount?: number
-    } = {}
+    } = {},
   ) {
     super(message, options)
     this.code = code
@@ -216,7 +216,7 @@ export class SearchError extends BaseError {
       cause?: unknown
       context?: Record<string, unknown>
       query?: string
-    } = {}
+    } = {},
   ) {
     super(message, options)
     this.code = code
@@ -248,7 +248,7 @@ export class RelationshipError extends BaseError {
       retriable?: boolean
       cause?: unknown
       context?: Record<string, unknown>
-    } = {}
+    } = {},
   ) {
     super(message, options)
     this.code = code
@@ -321,7 +321,7 @@ export function err<E extends BaseError>(error: E): Result<never, E> {
  * ```
  */
 export function isOk<T, E extends BaseError>(
-  result: Result<T, E>
+  result: Result<T, E>,
 ): result is { success: true; value: T } {
   return result.success === true
 }
@@ -342,7 +342,7 @@ export function isOk<T, E extends BaseError>(
  * ```
  */
 export function isErr<T, E extends BaseError>(
-  result: Result<T, E>
+  result: Result<T, E>,
 ): result is { success: false; error: E } {
   return result.success === false
 }
@@ -389,10 +389,7 @@ export function unwrap<T, E extends BaseError>(result: Result<T, E>): T {
  * // Always returns an array, never throws
  * ```
  */
-export function unwrapOr<T, E extends BaseError>(
-  result: Result<T, E>,
-  defaultValue: T
-): T {
+export function unwrapOr<T, E extends BaseError>(result: Result<T, E>, defaultValue: T): T {
   if (isOk(result)) {
     return result.value
   }
@@ -419,10 +416,7 @@ export function unwrapOr<T, E extends BaseError>(
  * )
  * ```
  */
-export function unwrapOrElse<T, E extends BaseError>(
-  result: Result<T, E>,
-  fn: (error: E) => T
-): T {
+export function unwrapOrElse<T, E extends BaseError>(result: Result<T, E>, fn: (error: E) => T): T {
   if (isOk(result)) {
     return result.value
   }
@@ -446,9 +440,7 @@ export function unwrapOrElse<T, E extends BaseError>(
  * }
  * ```
  */
-export function getError<T, E extends BaseError>(
-  result: Result<T, E>
-): E | undefined {
+export function getError<T, E extends BaseError>(result: Result<T, E>): E | undefined {
   if (isErr(result)) {
     return result.error
   }
@@ -477,7 +469,7 @@ export function getError<T, E extends BaseError>(
  */
 export function map<T, U, E extends BaseError>(
   result: Result<T, E>,
-  fn: (value: T) => U
+  fn: (value: T) => U,
 ): Result<U, E> {
   if (isOk(result)) {
     return ok(fn(result.value))
@@ -504,7 +496,7 @@ export function map<T, U, E extends BaseError>(
  */
 export function mapErr<T, E extends BaseError, F extends BaseError>(
   result: Result<T, E>,
-  fn: (error: E) => F
+  fn: (error: E) => F,
 ): Result<T, F> {
   if (isErr(result)) {
     return err(fn(result.error))
@@ -533,7 +525,7 @@ export function mapErr<T, E extends BaseError, F extends BaseError>(
  */
 export async function andThen<T, U, E extends BaseError>(
   result: Result<T, E>,
-  fn: (value: T) => Promise<Result<U, E>>
+  fn: (value: T) => Promise<Result<U, E>>,
 ): Promise<Result<U, E>> {
   if (isOk(result)) {
     return await fn(result.value)
@@ -569,9 +561,7 @@ export async function andThen<T, U, E extends BaseError>(
  * }
  * ```
  */
-export function combine<T, E extends BaseError>(
-  results: Result<T, E>[]
-): Result<T[], E> {
+export function combine<T, E extends BaseError>(results: Result<T, E>[]): Result<T[], E> {
   const values: T[] = []
 
   for (const result of results) {
@@ -609,7 +599,7 @@ export function combine<T, E extends BaseError>(
  * ```
  */
 export function partition<T, E extends BaseError>(
-  results: Result<T, E>[]
+  results: Result<T, E>[],
 ): { successes: T[]; failures: E[] } {
   const successes: T[] = []
   const failures: E[] = []
@@ -654,7 +644,7 @@ export function partition<T, E extends BaseError>(
  */
 export async function fromPromise<T, E extends BaseError>(
   promise: Promise<T>,
-  errorFactory: (error: unknown) => E
+  errorFactory: (error: unknown) => E,
 ): Promise<Result<T, E>> {
   try {
     const value = await promise
@@ -681,9 +671,7 @@ export async function fromPromise<T, E extends BaseError>(
  * // Throws if extraction failed
  * ```
  */
-export function toPromise<T, E extends BaseError>(
-  result: Result<T, E>
-): Promise<T> {
+export function toPromise<T, E extends BaseError>(result: Result<T, E>): Promise<T> {
   if (isOk(result)) {
     return Promise.resolve(result.value)
   }
@@ -734,7 +722,7 @@ export interface RetryConfig {
  */
 export async function retry<T, E extends BaseError>(
   operation: () => Promise<Result<T, E>>,
-  config: RetryConfig
+  config: RetryConfig,
 ): Promise<Result<T, E>> {
   const {
     maxAttempts,

@@ -22,7 +22,9 @@ async function main() {
     }
 
     console.log('🔧 Environment: ' + (process.env.NODE_ENV || 'development'))
-    console.log('🗄️  Database: ' + process.env.DATABASE_URL.split('@')[1]?.split('/')[0] || 'configured')
+    console.log(
+      '🗄️  Database: ' + process.env.DATABASE_URL.split('@')[1]?.split('/')[0] || 'configured',
+    )
     console.log('')
 
     // Run tests

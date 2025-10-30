@@ -1,12 +1,12 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { FileText, ChevronDown, RefreshCw } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { SearchResultItem, type SearchResult } from "./search-result-item"
-import { useVirtualizer } from "@tanstack/react-virtual"
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { ChevronDown, FileText, RefreshCw } from 'lucide-react'
+import * as React from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+import { type SearchResult, SearchResultItem } from './search-result-item'
 
 interface SearchResultsMobileProps {
   results: SearchResult[]
@@ -61,17 +61,20 @@ export function SearchResultsMobile({
     }
   }, [])
 
-  const handleTouchMove = React.useCallback((e: React.TouchEvent) => {
-    if (!isPulling.current || !onRefresh) return
+  const handleTouchMove = React.useCallback(
+    (e: React.TouchEvent) => {
+      if (!isPulling.current || !onRefresh) return
 
-    const currentY = e.touches[0].clientY
-    const distance = currentY - startY.current
+      const currentY = e.touches[0].clientY
+      const distance = currentY - startY.current
 
-    if (distance > 0 && distance < 100) {
-      setPullDistance(distance)
-      e.preventDefault()
-    }
-  }, [onRefresh])
+      if (distance > 0 && distance < 100) {
+        setPullDistance(distance)
+        e.preventDefault()
+      }
+    },
+    [onRefresh],
+  )
 
   const handleTouchEnd = React.useCallback(async () => {
     if (!isPulling.current || !onRefresh) return
@@ -106,7 +109,7 @@ export function SearchResultsMobile({
 
   if (isLoading && results.length === 0) {
     return (
-      <div className={cn("space-y-3", className)} role="status" aria-live="polite">
+      <div className={cn('space-y-3', className)} role="status" aria-live="polite">
         {[...Array(3)].map((_, i) => (
           <Card key={i} className="border-white/40 bg-white/80 backdrop-blur-md animate-pulse">
             <div className="p-4 space-y-3">
@@ -132,10 +135,7 @@ export function SearchResultsMobile({
   if (results.length === 0) {
     return (
       <Card
-        className={cn(
-          "border-white/40 bg-white/80 backdrop-blur-md text-center py-12",
-          className
-        )}
+        className={cn('border-white/40 bg-white/80 backdrop-blur-md text-center py-12', className)}
         role="status"
         aria-live="polite"
       >
@@ -155,13 +155,13 @@ export function SearchResultsMobile({
   }
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn('relative', className)}>
       {/* Pull-to-refresh indicator */}
       {onRefresh && (
         <div
           className={cn(
-            "absolute top-0 left-0 right-0 flex items-center justify-center transition-all duration-200 z-10",
-            pullDistance > 0 ? "opacity-100" : "opacity-0"
+            'absolute top-0 left-0 right-0 flex items-center justify-center transition-all duration-200 z-10',
+            pullDistance > 0 ? 'opacity-100' : 'opacity-0',
           )}
           style={{ transform: `translateY(${Math.min(pullDistance - 60, 0)}px)` }}
           aria-live="polite"
@@ -170,12 +170,18 @@ export function SearchResultsMobile({
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
             <RefreshCw
               className={cn(
-                "size-4 transition-transform",
-                isRefreshing && "animate-spin",
-                pullDistance > 60 && "rotate-180"
+                'size-4 transition-transform',
+                isRefreshing && 'animate-spin',
+                pullDistance > 60 && 'rotate-180',
               )}
             />
-            <span>{isRefreshing ? "Refreshing..." : pullDistance > 60 ? "Release to refresh" : "Pull to refresh"}</span>
+            <span>
+              {isRefreshing
+                ? 'Refreshing...'
+                : pullDistance > 60
+                  ? 'Release to refresh'
+                  : 'Pull to refresh'}
+            </span>
           </div>
         </div>
       )}
@@ -183,7 +189,7 @@ export function SearchResultsMobile({
       {/* Results Count */}
       <div className="flex items-center justify-between px-1 mb-3">
         <p className="text-sm text-muted-foreground" role="status">
-          {results.length} result{results.length !== 1 ? "s" : ""}
+          {results.length} result{results.length !== 1 ? 's' : ''}
         </p>
       </div>
 
@@ -195,15 +201,15 @@ export function SearchResultsMobile({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         className="overflow-auto -mx-1 px-1"
-        style={{ height: "calc(100vh - 280px)" }}
+        style={{ height: 'calc(100vh - 280px)' }}
         role="list"
         aria-label="Search results"
       >
         <div
           style={{
             height: `${virtualizer.getTotalSize()}px`,
-            width: "100%",
-            position: "relative",
+            width: '100%',
+            position: 'relative',
           }}
         >
           {virtualizer.getVirtualItems().map((virtualItem) => {
@@ -213,10 +219,10 @@ export function SearchResultsMobile({
                 key={virtualItem.key}
                 role="listitem"
                 style={{
-                  position: "absolute",
+                  position: 'absolute',
                   top: 0,
                   left: 0,
-                  width: "100%",
+                  width: '100%',
                   transform: `translateY(${virtualItem.start}px)`,
                 }}
               >

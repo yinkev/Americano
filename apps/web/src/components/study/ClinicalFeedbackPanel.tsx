@@ -1,22 +1,22 @@
 'use client'
 
-import { useState } from 'react'
 import {
-  CheckCircle,
   AlertCircle,
   AlertTriangle,
-  Lightbulb,
   BookOpen,
+  CheckCircle,
   ChevronRight,
-  RefreshCw
+  Lightbulb,
+  RefreshCw,
 } from 'lucide-react'
+import { useState } from 'react'
 import {
-  RadarChart,
-  PolarGrid,
   PolarAngleAxis,
+  PolarGrid,
   PolarRadiusAxis,
   Radar,
-  ResponsiveContainer
+  RadarChart,
+  ResponsiveContainer,
 } from 'recharts'
 
 // Types
@@ -78,22 +78,22 @@ export function ClinicalFeedbackPanel({
     {
       competency: 'Data Gathering',
       score: evaluation.competencyScores.dataGathering,
-      fullMark: 100
+      fullMark: 100,
     },
     {
       competency: 'Diagnosis',
       score: evaluation.competencyScores.diagnosis,
-      fullMark: 100
+      fullMark: 100,
     },
     {
       competency: 'Management',
       score: evaluation.competencyScores.management,
-      fullMark: 100
+      fullMark: 100,
     },
     {
       competency: 'Clinical Reasoning',
       score: evaluation.competencyScores.clinicalReasoning,
-      fullMark: 100
+      fullMark: 100,
     },
   ]
 
@@ -116,7 +116,10 @@ export function ClinicalFeedbackPanel({
 
         <div className="flex flex-col md:flex-row items-center gap-8">
           {/* Progress Ring */}
-          <div className="flex-shrink-0 relative" aria-label={`Overall score: ${evaluation.overallScore} out of 100`}>
+          <div
+            className="flex-shrink-0 relative"
+            aria-label={`Overall score: ${evaluation.overallScore} out of 100`}
+          >
             <svg width="160" height="160" className="transform -rotate-90">
               {/* Background circle */}
               <circle
@@ -157,10 +160,7 @@ export function ClinicalFeedbackPanel({
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
                 style={{ backgroundColor: `${scoreColor}/10` }}
               >
-                <span
-                  className="text-sm font-semibold"
-                  style={{ color: scoreColor }}
-                >
+                <span className="text-sm font-semibold" style={{ color: scoreColor }}>
                   {scoreLabel}
                 </span>
               </div>
@@ -208,10 +208,7 @@ export function ClinicalFeedbackPanel({
               dataKey="competency"
               tick={{ fill: 'oklch(0.556 0 0)', fontSize: 14 }}
             />
-            <PolarRadiusAxis
-              domain={[0, 100]}
-              tick={{ fill: 'oklch(0.556 0 0)', fontSize: 12 }}
-            />
+            <PolarRadiusAxis domain={[0, 100]} tick={{ fill: 'oklch(0.556 0 0)', fontSize: 12 }} />
             <Radar
               dataKey="score"
               stroke="oklch(0.65 0.18 200)"
@@ -326,9 +323,9 @@ export function ClinicalFeedbackPanel({
             </h3>
           </div>
           <div className="text-sm text-[oklch(0.145_0_0)] space-y-2">
-            {evaluation.optimalPathway.split('\n').map((paragraph, idx) => (
-              paragraph.trim() && <p key={idx}>{paragraph}</p>
-            ))}
+            {evaluation.optimalPathway
+              .split('\n')
+              .map((paragraph, idx) => paragraph.trim() && <p key={idx}>{paragraph}</p>)}
           </div>
         </div>
       )}

@@ -9,33 +9,31 @@
  * Check if user prefers reduced motion
  */
 export function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 /**
  * Add event listener for motion preference changes
  */
-export function onMotionPreferenceChange(
-  callback: (prefersReduced: boolean) => void
-): () => void {
-  if (typeof window === "undefined") return () => {};
+export function onMotionPreferenceChange(callback: (prefersReduced: boolean) => void): () => void {
+  if (typeof window === 'undefined') return () => {}
 
-  const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const handler = (event: MediaQueryListEvent) => callback(event.matches);
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const handler = (event: MediaQueryListEvent) => callback(event.matches)
 
   // Modern browsers
   if (mediaQuery.addEventListener) {
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
+    mediaQuery.addEventListener('change', handler)
+    return () => mediaQuery.removeEventListener('change', handler)
   }
   // Fallback for older browsers
   else if (mediaQuery.addListener) {
-    mediaQuery.addListener(handler);
-    return () => mediaQuery.removeListener(handler);
+    mediaQuery.addListener(handler)
+    return () => mediaQuery.removeListener(handler)
   }
 
-  return () => {};
+  return () => {}
 }
 
 /**
@@ -43,7 +41,7 @@ export function onMotionPreferenceChange(
  * Returns 0 if user prefers reduced motion
  */
 export function getSafeAnimationDuration(duration: number): number {
-  return prefersReducedMotion() ? 0 : duration;
+  return prefersReducedMotion() ? 0 : duration
 }
 
 /**
@@ -51,7 +49,7 @@ export function getSafeAnimationDuration(duration: number): number {
  * Returns empty string if user prefers reduced motion
  */
 export function safeAnimationClass(className: string): string {
-  return prefersReducedMotion() ? "" : className;
+  return prefersReducedMotion() ? '' : className
 }
 
 /**
@@ -59,7 +57,7 @@ export function safeAnimationClass(className: string): string {
  * Sets to 0.01ms if user prefers reduced motion (instant)
  */
 export function getAnimationDurationVar(duration: string): string {
-  return prefersReducedMotion() ? "0.01ms" : duration;
+  return prefersReducedMotion() ? '0.01ms' : duration
 }
 
 /**
@@ -67,23 +65,21 @@ export function getAnimationDurationVar(duration: string): string {
  * Usage: const shouldAnimate = useMotionPreference()
  */
 export function useMotionPreference() {
-  if (typeof window === "undefined") return true;
+  if (typeof window === 'undefined') return true
 
-  const [shouldAnimate, setShouldAnimate] = React.useState(
-    !prefersReducedMotion()
-  );
+  const [shouldAnimate, setShouldAnimate] = React.useState(!prefersReducedMotion())
 
   React.useEffect(() => {
     const cleanup = onMotionPreferenceChange((prefersReduced) => {
-      setShouldAnimate(!prefersReduced);
-    });
-    return cleanup;
-  }, []);
+      setShouldAnimate(!prefersReduced)
+    })
+    return cleanup
+  }, [])
 
-  return shouldAnimate;
+  return shouldAnimate
 }
 
 /**
  * Export React for hook usage
  */
-import React from "react";
+import React from 'react'

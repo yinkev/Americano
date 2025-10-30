@@ -24,10 +24,10 @@
  * Tests are currently using mocks and will need schema updates for full implementation.
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import type { PrismaClient } from '@/generated/prisma'
 import {
-  PersonalizationEngine,
   type AggregatedInsights,
+  PersonalizationEngine,
 } from '@/subsystems/behavioral-analytics/personalization-engine'
 
 /**
@@ -737,10 +737,21 @@ describe('Story 5.5: PersonalizationEngine Integration Tests', () => {
       })
 
       // Calculate confidence-adjusted scores
-      const adjustedScores = strategies.map((s: { avgImprovement: number; confidence: number; strategyType: string; id: string; userId: string; successCount: number; failureCount: number; lastUsedAt: Date }) => ({
-        ...s,
-        adjustedScore: s.avgImprovement * s.confidence,
-      }))
+      const adjustedScores = strategies.map(
+        (s: {
+          avgImprovement: number
+          confidence: number
+          strategyType: string
+          id: string
+          userId: string
+          successCount: number
+          failureCount: number
+          lastUsedAt: Date
+        }) => ({
+          ...s,
+          adjustedScore: s.avgImprovement * s.confidence,
+        }),
+      )
 
       // Established strategy should have higher adjusted score
       const establishedAdjusted = adjustedScores.find((s) => s.strategyType === 'PATTERN_HEAVY')!
@@ -862,8 +873,10 @@ describe('Story 5.5: PersonalizationEngine Integration Tests', () => {
         .filter((a: { variant: string }) => a.variant === 'B')
         .map((a: { metrics: { retention: number } }) => a.metrics.retention)
 
-      const avgA = variantAMetrics.reduce((sum: number, val: number) => sum + val, 0) / variantAMetrics.length
-      const avgB = variantBMetrics.reduce((sum: number, val: number) => sum + val, 0) / variantBMetrics.length
+      const avgA =
+        variantAMetrics.reduce((sum: number, val: number) => sum + val, 0) / variantAMetrics.length
+      const avgB =
+        variantBMetrics.reduce((sum: number, val: number) => sum + val, 0) / variantBMetrics.length
 
       expect(avgA).toBeCloseTo(0.8, 2) // (0.82 + 0.78) / 2
       expect(avgB).toBeCloseTo(0.825, 2) // (0.85 + 0.80) / 2
@@ -880,10 +893,10 @@ describe('Story 5.5: PersonalizationEngine Integration Tests', () => {
 
       // Calculate variance
       const varianceA =
-        variantAResults.reduce((sum, val) => sum + Math.pow(val - meanA, 2), 0) /
+        variantAResults.reduce((sum, val) => sum + (val - meanA) ** 2, 0) /
         (variantAResults.length - 1)
       const varianceB =
-        variantBResults.reduce((sum, val) => sum + Math.pow(val - meanB, 2), 0) /
+        variantBResults.reduce((sum, val) => sum + (val - meanB) ** 2, 0) /
         (variantBResults.length - 1)
 
       // t-test for independent samples

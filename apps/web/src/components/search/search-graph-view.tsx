@@ -16,26 +16,26 @@
 
 'use client'
 
-import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import {
-  ReactFlow,
-  Controls,
   Background,
-  MiniMap,
-  useNodesState,
-  useEdgesState,
-  useReactFlow,
-  type Node,
-  type Edge,
-  type NodeMouseHandler,
   BackgroundVariant,
+  Controls,
+  type Edge,
+  MiniMap,
+  type Node,
+  type NodeMouseHandler,
   Panel,
+  ReactFlow,
+  useEdgesState,
+  useNodesState,
+  useReactFlow,
 } from '@xyflow/react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import '@xyflow/react/dist/style.css'
 
-import { Button } from '@/components/ui/button'
+import { Filter, Maximize2, Plus, ZoomIn, ZoomOut } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { ZoomIn, ZoomOut, Maximize2, Plus, Filter } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { SearchResult } from './search-result-item'
 
@@ -119,7 +119,7 @@ function getNodeSize(relevance: number): number {
  */
 function clusterResults(
   results: SearchResult[],
-  clusterBy: 'course' | 'topic' = 'course'
+  clusterBy: 'course' | 'topic' = 'course',
 ): Map<string, SearchResult[]> {
   const clusters = new Map<string, SearchResult[]>()
 
@@ -164,14 +164,10 @@ function SearchResultNode({ data }: { data: SearchNodeData }) {
       }}
     >
       <div className="text-center px-2">
-        <div className="text-white font-semibold text-xs line-clamp-2">
-          {data.label}
-        </div>
+        <div className="text-white font-semibold text-xs line-clamp-2">{data.label}</div>
         {data.metadata?.isHighYield && (
           <div className="absolute -top-1 -right-1">
-            <Badge className="h-4 px-1 text-[10px] bg-yellow-500 text-white border-0">
-              HY
-            </Badge>
+            <Badge className="h-4 px-1 text-[10px] bg-yellow-500 text-white border-0">HY</Badge>
           </div>
         )}
       </div>
@@ -198,7 +194,7 @@ const nodeTypes = {
 function calculateForceDirectedLayout(
   clusters: Map<string, SearchResult[]>,
   width: number = 800,
-  height: number = 600
+  height: number = 600,
 ): { nodes: Node<SearchNodeData>[]; edges: Edge[]; clusterConfigs: ClusterConfig[] } {
   const nodes: Node<SearchNodeData>[] = []
   const edges: Edge[] = []
@@ -295,7 +291,11 @@ export function SearchGraphView({
   const { fitView, zoomIn, zoomOut } = useReactFlow()
 
   // Cluster and layout results
-  const { nodes: initialNodes, edges: initialEdges, clusterConfigs } = useMemo(() => {
+  const {
+    nodes: initialNodes,
+    edges: initialEdges,
+    clusterConfigs,
+  } = useMemo(() => {
     const filteredResults = results.slice(0, maxNodes) // Limit to maxNodes
     const clusters = clusterResults(filteredResults, clusterBy)
 
@@ -327,7 +327,7 @@ export function SearchGraphView({
       setSelectedNode(node.id)
       onNodeClick?.(node.id)
     },
-    [onNodeClick]
+    [onNodeClick],
   )
 
   /**
@@ -557,20 +557,19 @@ export function SearchGraphView({
                 />
                 <span className="text-gray-600">High-Yield</span>
               </div>
-              <div className="text-gray-500 text-[10px] mt-2">
-                Size = Relevance
-              </div>
+              <div className="text-gray-500 text-[10px] mt-2">Size = Relevance</div>
             </div>
           </div>
         </Panel>
 
         {/* Selected node info */}
         {selectedNodeData && (
-          <Panel position="top-right" className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg max-w-xs">
+          <Panel
+            position="top-right"
+            className="bg-white/80 backdrop-blur-md rounded-lg p-3 shadow-lg max-w-xs"
+          >
             <div className="text-xs space-y-2">
-              <div className="font-semibold text-gray-900">
-                {selectedNodeData.label}
-              </div>
+              <div className="font-semibold text-gray-900">{selectedNodeData.label}</div>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs">
                   {selectedNodeData.type}
@@ -585,9 +584,7 @@ export function SearchGraphView({
                 Relevance: {Math.round(selectedNodeData.relevance * 100)}%
               </div>
               {selectedNodeData.course && (
-                <div className="text-gray-600">
-                  Course: {selectedNodeData.course}
-                </div>
+                <div className="text-gray-600">Course: {selectedNodeData.course}</div>
               )}
               {onExpandSearch && (
                 <Button
@@ -604,7 +601,10 @@ export function SearchGraphView({
         )}
 
         {/* Keyboard shortcuts hint */}
-        <Panel position="bottom-left" className="bg-white/80 backdrop-blur-md rounded-lg p-2 shadow-lg">
+        <Panel
+          position="bottom-left"
+          className="bg-white/80 backdrop-blur-md rounded-lg p-2 shadow-lg"
+        >
           <div className="text-[10px] text-gray-500 space-y-1">
             <div>↑↓ Navigate • Enter Expand • Esc Deselect</div>
           </div>
@@ -612,7 +612,10 @@ export function SearchGraphView({
 
         {/* Performance warning */}
         {results.length > maxNodes && (
-          <Panel position="bottom-right" className="bg-yellow-500/80 backdrop-blur-md rounded-lg p-2 shadow-lg">
+          <Panel
+            position="bottom-right"
+            className="bg-yellow-500/80 backdrop-blur-md rounded-lg p-2 shadow-lg"
+          >
             <div className="text-[10px] text-white">
               Showing {maxNodes} of {results.length} results
             </div>

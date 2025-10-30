@@ -12,8 +12,8 @@
  * - Edge cases (null data, empty arrays, extreme values)
  */
 
-import { CognitiveLoadMonitor, type SessionBehavioralData } from '../cognitive-load-monitor'
 import type { StressIndicator } from '../cognitive-load-monitor'
+import { CognitiveLoadMonitor, type SessionBehavioralData } from '../cognitive-load-monitor'
 
 // Mock Prisma
 jest.mock('@/generated/prisma', () => ({
@@ -421,7 +421,11 @@ describe('CognitiveLoadMonitor', () => {
 
       // Check for either high or moderate load recommendations
       expect(result.recommendations.length).toBeGreaterThan(0)
-      expect(result.recommendations.some((r) => r.toLowerCase().includes('difficulty') || r.toLowerCase().includes('break'))).toBe(true)
+      expect(
+        result.recommendations.some(
+          (r) => r.toLowerCase().includes('difficulty') || r.toLowerCase().includes('break'),
+        ),
+      ).toBe(true)
     })
 
     it('should generate appropriate recommendations based on load level', async () => {
@@ -520,7 +524,9 @@ describe('CognitiveLoadMonitor', () => {
       expect(result.loadScore).toBe(50)
       expect(result.loadLevel).toBe('MODERATE')
       expect(result.confidenceLevel).toBe(0)
-      expect(result.recommendations.some((r) => r.includes('Unable to calculate cognitive load'))).toBe(true)
+      expect(
+        result.recommendations.some((r) => r.includes('Unable to calculate cognitive load')),
+      ).toBe(true)
     })
   })
 

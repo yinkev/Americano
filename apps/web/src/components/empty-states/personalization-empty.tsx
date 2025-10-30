@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 
 export function PersonalizationEmpty() {
   return (
@@ -87,10 +87,7 @@ export function PersonalizationEmpty() {
               strokeLinecap="round"
             />
             {/* Star at top */}
-            <path
-              d="M0 -5 L1 -1 L5 0 L1 1 L0 5 L-1 1 L-5 0 L-1 -1 Z"
-              fill="oklch(0.65 0.25 60)"
-            />
+            <path d="M0 -5 L1 -1 L5 0 L1 1 L0 5 L-1 1 L-5 0 L-1 -1 Z" fill="oklch(0.65 0.25 60)" />
           </g>
 
           {/* Sparkles */}
@@ -102,13 +99,11 @@ export function PersonalizationEmpty() {
         </svg>
       </div>
 
-      <h3 className="text-xl font-semibold mb-2">
-        No Personalizations Yet
-      </h3>
+      <h3 className="text-xl font-semibold mb-2">No Personalizations Yet</h3>
 
       <p className="text-muted-foreground mb-6 max-w-md">
-        As you study, our AI will learn your preferences and automatically personalize
-        your learning experience. Check your settings to customize manually.
+        As you study, our AI will learn your preferences and automatically personalize your learning
+        experience. Check your settings to customize manually.
       </p>
 
       <div className="flex gap-3">
@@ -120,5 +115,5 @@ export function PersonalizationEmpty() {
         </Button>
       </div>
     </Card>
-  );
+  )
 }

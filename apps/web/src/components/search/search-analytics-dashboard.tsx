@@ -13,9 +13,10 @@
 
 'use client'
 
+import { AlertCircle, BarChart3, Clock, Search, TrendingUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -24,7 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { AlertCircle, Search, TrendingUp, Clock, BarChart3 } from 'lucide-react'
 
 interface SearchAnalytics {
   popularSearches: Array<{ query: string; count: number; avgResults: number }>
@@ -71,9 +71,7 @@ export function SearchAnalyticsDashboard({
       setIsLoading(true)
       setError(null)
 
-      const response = await fetch(
-        `/api/search/analytics?timeWindowDays=${timeWindowDays}`
-      )
+      const response = await fetch(`/api/search/analytics?timeWindowDays=${timeWindowDays}`)
 
       if (!response.ok) {
         throw new Error('Failed to fetch analytics')
@@ -119,12 +117,8 @@ export function SearchAnalyticsDashboard({
       <Card className={className}>
         <CardContent className="flex flex-col items-center justify-center py-12">
           <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-          <p className="text-lg font-medium text-gray-900">
-            Failed to load analytics
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            {error || 'An unknown error occurred'}
-          </p>
+          <p className="text-lg font-medium text-gray-900">Failed to load analytics</p>
+          <p className="text-sm text-gray-500 mt-2">{error || 'An unknown error occurred'}</p>
           <button
             onClick={fetchAnalytics}
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -136,12 +130,7 @@ export function SearchAnalyticsDashboard({
     )
   }
 
-  const {
-    popularSearches,
-    zeroResultQueries,
-    ctrAnalytics,
-    performanceMetrics,
-  } = analytics
+  const { popularSearches, zeroResultQueries, ctrAnalytics, performanceMetrics } = analytics
 
   return (
     <div className={className}>
@@ -156,9 +145,7 @@ export function SearchAnalyticsDashboard({
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">
-              Total Searches
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500">Total Searches</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-gray-900">
@@ -229,15 +216,11 @@ export function SearchAnalyticsDashboard({
               <BarChart3 className="h-5 w-5" />
               Popular Searches
             </CardTitle>
-            <CardDescription>
-              Most frequently searched queries
-            </CardDescription>
+            <CardDescription>Most frequently searched queries</CardDescription>
           </CardHeader>
           <CardContent>
             {popularSearches.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-8">
-                No search data available
-              </p>
+              <p className="text-sm text-gray-500 text-center py-8">No search data available</p>
             ) : (
               <Table>
                 <TableHeader>
@@ -274,9 +257,7 @@ export function SearchAnalyticsDashboard({
               <AlertCircle className="h-5 w-5 text-orange-500" />
               Zero-Result Queries
             </CardTitle>
-            <CardDescription>
-              Searches that returned no results
-            </CardDescription>
+            <CardDescription>Searches that returned no results</CardDescription>
           </CardHeader>
           <CardContent>
             {zeroResultQueries.length === 0 ? (
@@ -317,15 +298,11 @@ export function SearchAnalyticsDashboard({
       <Card>
         <CardHeader>
           <CardTitle>Click-Through Rate by Position</CardTitle>
-          <CardDescription>
-            How often users click on results at each position
-          </CardDescription>
+          <CardDescription>How often users click on results at each position</CardDescription>
         </CardHeader>
         <CardContent>
           {ctrAnalytics.byPosition.length === 0 ? (
-            <p className="text-sm text-gray-500 text-center py-8">
-              No click data available
-            </p>
+            <p className="text-sm text-gray-500 text-center py-8">No click data available</p>
           ) : (
             <div className="space-y-3">
               {ctrAnalytics.byPosition.slice(0, 10).map((pos) => (
@@ -347,9 +324,7 @@ export function SearchAnalyticsDashboard({
                       </div>
                     </div>
                   </div>
-                  <div className="w-24 text-right text-sm text-gray-500">
-                    {pos.clicks} clicks
-                  </div>
+                  <div className="w-24 text-right text-sm text-gray-500">{pos.clicks} clicks</div>
                 </div>
               ))}
             </div>

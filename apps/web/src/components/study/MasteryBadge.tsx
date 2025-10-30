@@ -1,23 +1,18 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Badge } from '@/components/ui/badge';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Star, CheckCircle2, Award } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Award, CheckCircle2, Star } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 
 interface MasteryBadgeProps {
-  verifiedAt: Date;
-  complexityLevel: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
-  size?: 'sm' | 'md' | 'lg';
-  showLabel?: boolean;
-  animated?: boolean;
-  className?: string;
+  verifiedAt: Date
+  complexityLevel: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
+  size?: 'sm' | 'md' | 'lg'
+  showLabel?: boolean
+  animated?: boolean
+  className?: string
 }
 
 /**
@@ -65,48 +60,48 @@ export function MasteryBadge({
   animated = true,
   className,
 }: MasteryBadgeProps) {
-  const [showAnimation, setShowAnimation] = useState(animated);
+  const [showAnimation, setShowAnimation] = useState(animated)
 
   useEffect(() => {
     if (animated) {
       // Stop animation after 2 seconds
-      const timer = setTimeout(() => setShowAnimation(false), 2000);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => setShowAnimation(false), 2000)
+      return () => clearTimeout(timer)
     }
-  }, [animated]);
+  }, [animated])
 
   // Format verification date
   const formatDate = (date: Date) => {
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - date.getTime())
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
 
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    if (diffDays === 0) return 'Today'
+    if (diffDays === 1) return 'Yesterday'
+    if (diffDays < 7) return `${diffDays} days ago`
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
-    });
-  };
+    })
+  }
 
   // Get complexity-specific icon
   const getIcon = () => {
     switch (complexityLevel) {
       case 'BASIC':
-        return CheckCircle2;
+        return CheckCircle2
       case 'INTERMEDIATE':
-        return Award;
+        return Award
       case 'ADVANCED':
-        return Star;
+        return Star
       default:
-        return Star;
+        return Star
     }
-  };
+  }
 
-  const Icon = getIcon();
+  const Icon = getIcon()
 
   // Size variants
   const sizeClasses = {
@@ -122,9 +117,9 @@ export function MasteryBadge({
       badge: 'text-base px-3 py-1.5 gap-2',
       icon: 'h-5 w-5',
     },
-  };
+  }
 
-  const sizes = sizeClasses[size];
+  const sizes = sizeClasses[size]
 
   // Mastery criteria description
   const getMasteryCriteria = () => [
@@ -133,7 +128,7 @@ export function MasteryBadge({
     '✓ Difficulty matching complexity level',
     '✓ Confidence calibration within ±15 points',
     '✓ Time-spaced across ≥ 2 days',
-  ];
+  ]
 
   return (
     <TooltipProvider>
@@ -145,7 +140,7 @@ export function MasteryBadge({
               'cursor-help select-none',
               showAnimation && 'animate-pulse',
               sizes.badge,
-              className
+              className,
             )}
             style={{
               backgroundColor: 'oklch(0.98 0.02 60)',
@@ -182,12 +177,8 @@ export function MasteryBadge({
                 style={{ color: 'oklch(0.8 0.15 60)' }}
               />
               <div>
-                <p className="font-semibold text-base">
-                  {complexityLevel} Mastery Verified
-                </p>
-                <p className="text-xs opacity-80">
-                  Verified {formatDate(verifiedAt)}
-                </p>
+                <p className="font-semibold text-base">{complexityLevel} Mastery Verified</p>
+                <p className="text-xs opacity-80">Verified {formatDate(verifiedAt)}</p>
               </div>
             </div>
 
@@ -206,9 +197,9 @@ export function MasteryBadge({
             {/* Congratulations message */}
             <div className="pt-2 border-t border-white/20">
               <p className="text-xs opacity-90">
-                🎉 Congratulations! You&apos;ve demonstrated comprehensive mastery of
-                this concept at the {complexityLevel.toLowerCase()} level.
-                {complexityLevel === 'ADVANCED' && ' You\'ve achieved the highest level!'}
+                🎉 Congratulations! You&apos;ve demonstrated comprehensive mastery of this concept
+                at the {complexityLevel.toLowerCase()} level.
+                {complexityLevel === 'ADVANCED' && " You've achieved the highest level!"}
                 {complexityLevel === 'INTERMEDIATE' && ' ADVANCED level is now unlocked!'}
                 {complexityLevel === 'BASIC' && ' INTERMEDIATE level is now unlocked!'}
               </p>
@@ -217,7 +208,8 @@ export function MasteryBadge({
             {/* Date Details */}
             <div className="pt-2 border-t border-white/20">
               <p className="text-xs opacity-70">
-                Verified on {verifiedAt.toLocaleDateString('en-US', {
+                Verified on{' '}
+                {verifiedAt.toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
@@ -229,5 +221,5 @@ export function MasteryBadge({
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
+  )
 }

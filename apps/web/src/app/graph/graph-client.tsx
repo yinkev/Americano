@@ -21,14 +21,16 @@
 
 'use client'
 
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
-import KnowledgeGraph, { type GraphNode, type GraphEdge } from '@/components/graph/knowledge-graph'
-import { useGraphCache } from '@/lib/graph-cache'
-import GraphUpdateNotification from '@/components/graph/graph-update-notification'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import GraphExport from '@/components/graph/graph-export'
-import GraphFilters, { type GraphFilters as GraphFiltersType } from '@/components/graph/graph-filters'
+import GraphFilters, {
+  type GraphFilters as GraphFiltersType,
+} from '@/components/graph/graph-filters'
 import GraphSearch, { type ConceptSearchResult } from '@/components/graph/graph-search'
 import GraphStats from '@/components/graph/graph-stats'
+import GraphUpdateNotification from '@/components/graph/graph-update-notification'
+import KnowledgeGraph, { type GraphEdge, type GraphNode } from '@/components/graph/knowledge-graph'
+import { useGraphCache } from '@/lib/graph-cache'
 
 /**
  * API response type
@@ -79,7 +81,10 @@ export default function GraphPageClient() {
   const [conceptDetail, setConceptDetail] = useState<any>(null)
   const [showUpdateNotification, setShowUpdateNotification] = useState(false)
   const [newDataAvailable, setNewDataAvailable] = useState(false)
-  const [filters, setFilters] = useState<GraphFiltersType>({ categories: [], relationshipTypes: [] })
+  const [filters, setFilters] = useState<GraphFiltersType>({
+    categories: [],
+    relationshipTypes: [],
+  })
   const [searchResults, setSearchResults] = useState<ConceptSearchResult[]>([])
   const [focusedNodeIds, setFocusedNodeIds] = useState<string[]>([])
 
@@ -99,7 +104,9 @@ export default function GraphPageClient() {
         setCacheError(null)
 
         const startTime = performance.now()
-        const response = await fetch(`/api/graph/concepts?limit=${INITIAL_NODE_LIMIT}&offset=${offset}`)
+        const response = await fetch(
+          `/api/graph/concepts?limit=${INITIAL_NODE_LIMIT}&offset=${offset}`,
+        )
         const data: GraphApiResponse = await response.json()
         const loadTime = performance.now() - startTime
 
@@ -143,7 +150,7 @@ export default function GraphPageClient() {
         }
       }
     },
-    [setCacheLoading, setCacheError, setGraphData, appendGraphData, updatePerformanceMetrics]
+    [setCacheLoading, setCacheError, setGraphData, appendGraphData, updatePerformanceMetrics],
   )
 
   /**
@@ -185,7 +192,12 @@ export default function GraphPageClient() {
 
           // Compare with last known count
           if (currentCount !== lastKnownCountRef.current) {
-            console.log('[Graph Polling] New data detected:', currentCount, 'vs', lastKnownCountRef.current)
+            console.log(
+              '[Graph Polling] New data detected:',
+              currentCount,
+              'vs',
+              lastKnownCountRef.current,
+            )
             setNewDataAvailable(true)
             setShowUpdateNotification(true)
           }
@@ -272,7 +284,7 @@ export default function GraphPageClient() {
   const handleSearchResults = useCallback((results: ConceptSearchResult[]) => {
     setSearchResults(results)
     // Focus on search result nodes
-    const nodeIds = results.map(r => r.id)
+    const nodeIds = results.map((r) => r.id)
     setFocusedNodeIds(nodeIds)
   }, [])
 
@@ -301,20 +313,16 @@ export default function GraphPageClient() {
 
     // Apply category filters
     if (filters.categories.length > 0) {
-      nodes = nodes.filter(node =>
-        node.category && filters.categories.includes(node.category)
-      )
-      const nodeIds = new Set(nodes.map(n => n.id))
-      edges = edges.filter(edge =>
-        nodeIds.has(edge.fromConceptId) && nodeIds.has(edge.toConceptId)
+      nodes = nodes.filter((node) => node.category && filters.categories.includes(node.category))
+      const nodeIds = new Set(nodes.map((n) => n.id))
+      edges = edges.filter(
+        (edge) => nodeIds.has(edge.fromConceptId) && nodeIds.has(edge.toConceptId),
       )
     }
 
     // Apply relationship type filters
     if (filters.relationshipTypes.length > 0) {
-      edges = edges.filter(edge =>
-        filters.relationshipTypes.includes(edge.relationship)
-      )
+      edges = edges.filter((edge) => filters.relationshipTypes.includes(edge.relationship))
     }
 
     return { nodes, edges }
@@ -472,16 +480,16 @@ export default function GraphPageClient() {
 
       {/* Search bar */}
       <div className="p-4 border-b" style={{ borderColor: 'oklch(0.85 0.05 240)' }}>
-        <GraphSearch
-          onSearchResults={handleSearchResults}
-          onClearSearch={handleClearSearch}
-        />
+        <GraphSearch onSearchResults={handleSearchResults} onClearSearch={handleClearSearch} />
       </div>
 
       {/* Graph visualization with export toolbar */}
       <div className="flex-1 flex overflow-hidden">
         {/* Filters sidebar - collapsible on mobile */}
-        <div className="w-80 border-r p-4 overflow-y-auto hidden lg:block" style={{ borderColor: 'oklch(0.85 0.05 240)' }}>
+        <div
+          className="w-80 border-r p-4 overflow-y-auto hidden lg:block"
+          style={{ borderColor: 'oklch(0.85 0.05 240)' }}
+        >
           <div className="space-y-4">
             <GraphFilters onFilterChange={handleFilterChange} />
             <GraphStats nodes={filteredData.nodes} edges={filteredData.edges} />
@@ -528,9 +536,7 @@ export default function GraphPageClient() {
               >
                 {cacheLoading ? (
                   <>
-                    <div
-                      className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
-                    />
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     <span>Loading...</span>
                   </>
                 ) : (
@@ -555,106 +561,101 @@ export default function GraphPageClient() {
               borderColor: 'oklch(0.85 0.05 240)',
             }}
           >
-          <div className="space-y-4">
-            {/* Close button */}
-            <button
-              onClick={() => setSelectedConceptId(null)}
-              className="mb-4 text-sm"
-              style={{ color: 'oklch(0.5 0.05 240)' }}
-            >
-              ← Back to graph
-            </button>
-
-            {/* Concept details */}
-            <div>
-              <h2
-                className="text-xl font-bold mb-2"
-                style={{ color: 'oklch(0.2 0.05 240)' }}
+            <div className="space-y-4">
+              {/* Close button */}
+              <button
+                onClick={() => setSelectedConceptId(null)}
+                className="mb-4 text-sm"
+                style={{ color: 'oklch(0.5 0.05 240)' }}
               >
-                {conceptDetail.concept.name}
-              </h2>
-              {conceptDetail.concept.description && (
-                <p className="text-sm mb-4" style={{ color: 'oklch(0.4 0.05 240)' }}>
-                  {conceptDetail.concept.description}
-                </p>
+                ← Back to graph
+              </button>
+
+              {/* Concept details */}
+              <div>
+                <h2 className="text-xl font-bold mb-2" style={{ color: 'oklch(0.2 0.05 240)' }}>
+                  {conceptDetail.concept.name}
+                </h2>
+                {conceptDetail.concept.description && (
+                  <p className="text-sm mb-4" style={{ color: 'oklch(0.4 0.05 240)' }}>
+                    {conceptDetail.concept.description}
+                  </p>
+                )}
+                {conceptDetail.concept.category && (
+                  <div
+                    className="inline-block px-2 py-1 rounded text-xs font-semibold capitalize mb-4"
+                    style={{
+                      backgroundColor: 'oklch(0.9 0.1 240)',
+                      color: 'oklch(0.3 0.05 240)',
+                    }}
+                  >
+                    {conceptDetail.concept.category}
+                  </div>
+                )}
+              </div>
+
+              {/* Related concepts */}
+              {conceptDetail.relatedConcepts && conceptDetail.relatedConcepts.length > 0 && (
+                <div>
+                  <h3
+                    className="text-sm font-semibold mb-2"
+                    style={{ color: 'oklch(0.3 0.05 240)' }}
+                  >
+                    Related Concepts ({conceptDetail.relatedConcepts.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {conceptDetail.relatedConcepts.slice(0, 10).map((related: any) => (
+                      <div
+                        key={related.id}
+                        className="p-2 rounded text-sm cursor-pointer transition-colors"
+                        style={{
+                          backgroundColor: 'oklch(0.95 0.05 240)',
+                          color: 'oklch(0.3 0.05 240)',
+                        }}
+                        onClick={() => handleNodeClick(related.id)}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = 'oklch(0.9 0.1 240)'
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = 'oklch(0.95 0.05 240)'
+                        }}
+                      >
+                        {related.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
-              {conceptDetail.concept.category && (
-                <div
-                  className="inline-block px-2 py-1 rounded text-xs font-semibold capitalize mb-4"
-                  style={{
-                    backgroundColor: 'oklch(0.9 0.1 240)',
-                    color: 'oklch(0.3 0.05 240)',
-                  }}
-                >
-                  {conceptDetail.concept.category}
+
+              {/* Relationships */}
+              {conceptDetail.relationships && conceptDetail.relationships.length > 0 && (
+                <div>
+                  <h3
+                    className="text-sm font-semibold mb-2"
+                    style={{ color: 'oklch(0.3 0.05 240)' }}
+                  >
+                    Relationships ({conceptDetail.relationships.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {conceptDetail.relationships.slice(0, 10).map((rel: any) => (
+                      <div
+                        key={rel.id}
+                        className="p-2 rounded text-xs"
+                        style={{
+                          backgroundColor: 'oklch(0.95 0.05 240)',
+                          color: 'oklch(0.4 0.05 240)',
+                        }}
+                      >
+                        <div className="font-semibold mb-1 capitalize">
+                          {rel.relationship.toLowerCase()}
+                        </div>
+                        <div className="text-xs">Strength: {(rel.strength * 100).toFixed(0)}%</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
-
-            {/* Related concepts */}
-            {conceptDetail.relatedConcepts && conceptDetail.relatedConcepts.length > 0 && (
-              <div>
-                <h3
-                  className="text-sm font-semibold mb-2"
-                  style={{ color: 'oklch(0.3 0.05 240)' }}
-                >
-                  Related Concepts ({conceptDetail.relatedConcepts.length})
-                </h3>
-                <div className="space-y-2">
-                  {conceptDetail.relatedConcepts.slice(0, 10).map((related: any) => (
-                    <div
-                      key={related.id}
-                      className="p-2 rounded text-sm cursor-pointer transition-colors"
-                      style={{
-                        backgroundColor: 'oklch(0.95 0.05 240)',
-                        color: 'oklch(0.3 0.05 240)',
-                      }}
-                      onClick={() => handleNodeClick(related.id)}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = 'oklch(0.9 0.1 240)'
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = 'oklch(0.95 0.05 240)'
-                      }}
-                    >
-                      {related.name}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Relationships */}
-            {conceptDetail.relationships && conceptDetail.relationships.length > 0 && (
-              <div>
-                <h3
-                  className="text-sm font-semibold mb-2"
-                  style={{ color: 'oklch(0.3 0.05 240)' }}
-                >
-                  Relationships ({conceptDetail.relationships.length})
-                </h3>
-                <div className="space-y-2">
-                  {conceptDetail.relationships.slice(0, 10).map((rel: any) => (
-                    <div
-                      key={rel.id}
-                      className="p-2 rounded text-xs"
-                      style={{
-                        backgroundColor: 'oklch(0.95 0.05 240)',
-                        color: 'oklch(0.4 0.05 240)',
-                      }}
-                    >
-                      <div className="font-semibold mb-1 capitalize">
-                        {rel.relationship.toLowerCase()}
-                      </div>
-                      <div className="text-xs">
-                        Strength: {(rel.strength * 100).toFixed(0)}%
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
           </div>
         )}
       </div>

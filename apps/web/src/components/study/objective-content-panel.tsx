@@ -1,10 +1,10 @@
 'use client'
 
+import { BookOpen, ChevronLeft, ChevronRight, Target } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { BookOpen, ChevronLeft, ChevronRight, Target } from 'lucide-react'
 
 interface LearningObjective {
   id: string

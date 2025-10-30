@@ -3,13 +3,16 @@
  *
  * Wraps the application with necessary context providers:
  * - React Query: Data fetching, caching, synchronization
+ * - Nuqs: URL state management for shareable links
  *
  * @see https://tanstack.com/query/latest/docs/framework/react/guides/ssr
+ * @see https://nuqs.47ng.com/docs/adapters
  */
 
 'use client'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { useState } from 'react'
 
 /**
@@ -42,8 +45,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
             refetchOnWindowFocus: false,
           },
         },
-      })
+      }),
   )
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  return (
+    <QueryClientProvider client={queryClient}>
+      <NuqsAdapter>{children}</NuqsAdapter>
+    </QueryClientProvider>
+  )
 }

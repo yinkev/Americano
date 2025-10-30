@@ -16,9 +16,9 @@
  * @module AutocompletePerformanceTest
  */
 
+import type { SuggestionType } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
 import { searchSuggestionEngine } from '@/subsystems/knowledge-graph/search-suggestions'
-import { SuggestionType } from '@/generated/prisma'
 
 /**
  * Performance metrics interface
@@ -61,7 +61,7 @@ function calculatePercentile(sortedValues: number[], percentile: number): number
  */
 function calculateStdDev(values: number[], mean: number): number {
   if (values.length === 0) return 0
-  const squaredDiffs = values.map(v => Math.pow(v - mean, 2))
+  const squaredDiffs = values.map((v) => (v - mean) ** 2)
   const variance = squaredDiffs.reduce((a, b) => a + b, 0) / values.length
   return Math.sqrt(variance)
 }
@@ -72,11 +72,11 @@ function calculateStdDev(values: number[], mean: number): number {
 function analyzePerformance(
   testName: string,
   results: TestResult[],
-  threshold: number
+  threshold: number,
 ): PerformanceMetrics {
-  const times = results.map(r => r.responseTimeMs).sort((a, b) => a - b)
+  const times = results.map((r) => r.responseTimeMs).sort((a, b) => a - b)
   const mean = times.reduce((a, b) => a + b, 0) / times.length
-  const passing = results.filter(r => r.responseTimeMs <= threshold).length
+  const passing = results.filter((r) => r.responseTimeMs <= threshold).length
   const passingRate = (passing / results.length) * 100
 
   return {
@@ -124,16 +124,56 @@ async function seedTestData(count: number): Promise<void> {
   console.log(`\n📊 Seeding ${count} test suggestions...`)
 
   const medicalTerms = [
-    'cardiac', 'cardiology', 'cardiovascular', 'myocardial', 'hypertension',
-    'diabetes', 'diabetic', 'glucose', 'insulin', 'metabolism',
-    'neurology', 'neurological', 'brain', 'cerebral', 'stroke',
-    'anatomy', 'anatomical', 'physiology', 'pathology', 'histology',
-    'respiratory', 'pulmonary', 'pneumonia', 'bronchitis', 'asthma',
-    'hepatic', 'liver', 'cirrhosis', 'renal', 'kidney',
-    'hematology', 'anemia', 'leukemia', 'thrombosis', 'coagulation',
-    'dermatology', 'skin', 'lesion', 'rash', 'melanoma',
-    'gastroenterology', 'digestive', 'ulcer', 'colitis', 'crohn',
-    'endocrinology', 'hormone', 'thyroid', 'adrenal', 'pituitary',
+    'cardiac',
+    'cardiology',
+    'cardiovascular',
+    'myocardial',
+    'hypertension',
+    'diabetes',
+    'diabetic',
+    'glucose',
+    'insulin',
+    'metabolism',
+    'neurology',
+    'neurological',
+    'brain',
+    'cerebral',
+    'stroke',
+    'anatomy',
+    'anatomical',
+    'physiology',
+    'pathology',
+    'histology',
+    'respiratory',
+    'pulmonary',
+    'pneumonia',
+    'bronchitis',
+    'asthma',
+    'hepatic',
+    'liver',
+    'cirrhosis',
+    'renal',
+    'kidney',
+    'hematology',
+    'anemia',
+    'leukemia',
+    'thrombosis',
+    'coagulation',
+    'dermatology',
+    'skin',
+    'lesion',
+    'rash',
+    'melanoma',
+    'gastroenterology',
+    'digestive',
+    'ulcer',
+    'colitis',
+    'crohn',
+    'endocrinology',
+    'hormone',
+    'thyroid',
+    'adrenal',
+    'pituitary',
   ]
 
   // Create medical term suggestions
@@ -270,7 +310,10 @@ async function testTermTypes(): Promise<PerformanceMetrics[]> {
   console.log('\n🧪 Test 3: Medical Terms vs Common Words')
 
   const testCases = [
-    { type: 'Medical Terms', queries: ['cardiac', 'diabetes', 'neurology', 'hepatic', 'respiratory'] },
+    {
+      type: 'Medical Terms',
+      queries: ['cardiac', 'diabetes', 'neurology', 'hepatic', 'respiratory'],
+    },
     { type: 'Common Words', queries: ['test', 'example', 'sample', 'demo', 'trial'] },
   ]
 
@@ -371,7 +414,7 @@ async function identifyBottlenecks(): Promise<void> {
 
     // Measure ranking/scoring time
     const rankingStart = performance.now()
-    const scored = dbSuggestions.map(s => ({
+    const scored = dbSuggestions.map((s) => ({
       ...s,
       score: Math.random(), // Simplified for measurement
     }))
@@ -437,15 +480,15 @@ export async function runPerformanceTests(): Promise<void> {
 
     // Test 2: Database state impact
     const dbStateMetrics = await testDatabaseStates()
-    dbStateMetrics.forEach(m => console.log(formatMetrics(m)))
+    dbStateMetrics.forEach((m) => console.log(formatMetrics(m)))
 
     // Test 3: Medical terms vs common words
     const termTypeMetrics = await testTermTypes()
-    termTypeMetrics.forEach(m => console.log(formatMetrics(m)))
+    termTypeMetrics.forEach((m) => console.log(formatMetrics(m)))
 
     // Test 4: Load testing
     const loadMetrics = await testLoadConcurrency()
-    loadMetrics.forEach(m => console.log(formatMetrics(m)))
+    loadMetrics.forEach((m) => console.log(formatMetrics(m)))
 
     // Test 5: Bottleneck identification
     await identifyBottlenecks()
@@ -455,14 +498,9 @@ export async function runPerformanceTests(): Promise<void> {
     console.log('📊 PERFORMANCE TEST SUMMARY')
     console.log('='.repeat(60))
 
-    const allMetrics = [
-      queryLengthMetrics,
-      ...dbStateMetrics,
-      ...termTypeMetrics,
-      ...loadMetrics,
-    ]
+    const allMetrics = [queryLengthMetrics, ...dbStateMetrics, ...termTypeMetrics, ...loadMetrics]
 
-    const overallPassing = allMetrics.filter(m => m.passingRate >= 95).length
+    const overallPassing = allMetrics.filter((m) => m.passingRate >= 95).length
     const overallTotal = allMetrics.length
 
     console.log(`
@@ -490,7 +528,6 @@ export async function runPerformanceTests(): Promise<void> {
     }
 
     console.log('\n' + '='.repeat(60))
-
   } catch (error) {
     console.error('\n❌ Performance test failed:', error)
     throw error

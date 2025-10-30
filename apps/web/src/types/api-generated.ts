@@ -4,4 +4,3 @@
  * This stub keeps imports type-safe until CI generation runs.
  */
 export type __ApiTypesPlaceholder = Record<string, never>
-

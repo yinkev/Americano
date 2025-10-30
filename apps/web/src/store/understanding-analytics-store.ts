@@ -55,20 +55,15 @@ export const useUnderstandingAnalyticsStore = create<UnderstandingAnalyticsState
       refreshTimestamp: null,
 
       // Actions
-      setDateRange: (range) =>
-        set({ dateRange: range, refreshTimestamp: Date.now() }),
+      setDateRange: (range) => set({ dateRange: range, refreshTimestamp: Date.now() }),
 
-      setCourseFilter: (courseId) =>
-        set({ courseId, refreshTimestamp: Date.now() }),
+      setCourseFilter: (courseId) => set({ courseId, refreshTimestamp: Date.now() }),
 
-      setTopicFilter: (topic) =>
-        set({ topic, refreshTimestamp: Date.now() }),
+      setTopicFilter: (topic) => set({ topic, refreshTimestamp: Date.now() }),
 
-      setActiveTab: (tab) =>
-        set({ activeTab: tab }),
+      setActiveTab: (tab) => set({ activeTab: tab }),
 
-      refreshData: () =>
-        set({ refreshTimestamp: Date.now() }),
+      refreshData: () => set({ refreshTimestamp: Date.now() }),
 
       clearFilters: () =>
         set({
@@ -86,6 +81,6 @@ export const useUnderstandingAnalyticsStore = create<UnderstandingAnalyticsState
         topic: state.topic,
         activeTab: state.activeTab,
       }),
-    }
-  )
+    },
+  ),
 )

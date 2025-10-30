@@ -19,31 +19,31 @@
  * @see useRecommendations - React Query hook
  */
 
-'use client';
+'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { useRecommendations } from '@/hooks/use-understanding-analytics';
 import {
-  Sparkles,
-  Target,
   AlertTriangle,
-  TrendingUp,
-  Clock,
   BarChart3,
-  ExternalLink,
-  Lightbulb,
   Brain,
   CheckCircle2,
-} from 'lucide-react';
-import Link from 'next/link';
+  Clock,
+  ExternalLink,
+  Lightbulb,
+  Sparkles,
+  Target,
+  TrendingUp,
+} from 'lucide-react'
+import Link from 'next/link'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useRecommendations } from '@/hooks/use-understanding-analytics'
 
 export default function RecommendationsTab() {
-  const { data, isLoading, error } = useRecommendations();
+  const { data, isLoading, error } = useRecommendations()
 
   if (isLoading) {
-    return <RecommendationsSkeleton />;
+    return <RecommendationsSkeleton />
   }
 
   if (error) {
@@ -53,10 +53,10 @@ export default function RecommendationsTab() {
           Failed to load recommendations. Please try again.
         </p>
       </div>
-    );
+    )
   }
 
-  if (!data) return null;
+  if (!data) return null
 
   return (
     <div className="space-y-6">
@@ -140,8 +140,7 @@ export default function RecommendationsTab() {
               ))
             ) : (
               <p className="text-sm text-[oklch(0.6_0.05_240)] text-center py-6">
-                No recommendations available. Continue studying to generate personalized
-                insights!
+                No recommendations available. Continue studying to generate personalized insights!
               </p>
             )}
           </div>
@@ -224,9 +223,7 @@ export default function RecommendationsTab() {
                 <div className="space-y-3">
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-[oklch(0.5_0.05_240)]">
-                        Next Week
-                      </span>
+                      <span className="text-sm text-[oklch(0.5_0.05_240)]">Next Week</span>
                       <span className="text-sm font-semibold text-[oklch(0.3_0.05_240)]">
                         {Math.round(data.successProbs.nextWeek * 100)}%
                       </span>
@@ -240,9 +237,7 @@ export default function RecommendationsTab() {
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-[oklch(0.5_0.05_240)]">
-                        Next Month
-                      </span>
+                      <span className="text-sm text-[oklch(0.5_0.05_240)]">Next Month</span>
                       <span className="text-sm font-semibold text-[oklch(0.3_0.05_240)]">
                         {Math.round(data.successProbs.nextMonth * 100)}%
                       </span>
@@ -263,15 +258,15 @@ export default function RecommendationsTab() {
           <div className="p-3 bg-[oklch(0.98_0.02_280)] rounded-lg flex items-start gap-2">
             <Brain className="w-4 h-4 text-[oklch(0.6_0.18_280)] flex-shrink-0 mt-0.5" />
             <p className="text-xs text-[oklch(0.5_0.05_240)] leading-relaxed">
-              <span className="font-semibold">AI Analysis:</span> Recommendations are
-              personalized based on your comprehension patterns, calibration accuracy, and
-              historical performance trends. They update dynamically as you progress.
+              <span className="font-semibold">AI Analysis:</span> Recommendations are personalized
+              based on your comprehension patterns, calibration accuracy, and historical performance
+              trends. They update dynamically as you progress.
             </p>
           </div>
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 /**
@@ -280,12 +275,12 @@ export default function RecommendationsTab() {
  * Displays a single recommended objective with reasoning and action button.
  */
 interface WeeklyRecommendationCardProps {
-  rank: number;
-  objectiveId: string;
-  objectiveName: string;
-  reason: string;
-  estimatedTime: number; // minutes
-  priority: number; // 1-10
+  rank: number
+  objectiveId: string
+  objectiveName: string
+  reason: string
+  estimatedTime: number // minutes
+  priority: number // 1-10
 }
 
 function WeeklyRecommendationCard({
@@ -300,7 +295,7 @@ function WeeklyRecommendationCard({
     'oklch(0.65 0.20 25)', // Red for #1
     'oklch(0.75 0.12 85)', // Yellow for #2
     'oklch(0.6 0.18 230)', // Blue for #3
-  ];
+  ]
 
   return (
     <div className="p-4 bg-[oklch(0.99_0.01_240)] rounded-xl border border-[oklch(0.9_0.02_240)] hover:shadow-md transition-shadow">
@@ -316,9 +311,7 @@ function WeeklyRecommendationCard({
         {/* Content */}
         <div className="flex-1 space-y-2">
           <div className="flex items-start justify-between gap-3">
-            <h4 className="font-semibold text-[oklch(0.3_0.05_240)] text-lg">
-              {objectiveName}
-            </h4>
+            <h4 className="font-semibold text-[oklch(0.3_0.05_240)] text-lg">{objectiveName}</h4>
             <Badge
               variant="outline"
               className="bg-[oklch(0.6_0.18_230)]/10 text-[oklch(0.5_0.18_230)] border-[oklch(0.6_0.18_230)]"
@@ -328,8 +321,7 @@ function WeeklyRecommendationCard({
           </div>
 
           <p className="text-sm text-[oklch(0.5_0.05_240)] leading-relaxed">
-            <span className="font-medium text-[oklch(0.4_0.05_240)]">Why now:</span>{' '}
-            {reason}
+            <span className="font-medium text-[oklch(0.4_0.05_240)]">Why now:</span> {reason}
           </p>
 
           <div className="flex items-center gap-4 text-sm text-[oklch(0.6_0.05_240)]">
@@ -359,7 +351,7 @@ function WeeklyRecommendationCard({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -368,10 +360,10 @@ function WeeklyRecommendationCard({
  * Displays a pattern-based intervention suggestion with action button.
  */
 interface InterventionCardProps {
-  type: 'overconfidence' | 'underconfidence' | 'failure_pattern' | 'knowledge_gap';
-  description: string;
-  recommendedAction: string;
-  affectedObjectives: string[];
+  type: 'overconfidence' | 'underconfidence' | 'failure_pattern' | 'knowledge_gap'
+  description: string
+  recommendedAction: string
+  affectedObjectives: string[]
 }
 
 function InterventionCard({
@@ -417,10 +409,10 @@ function InterventionCard({
       actionLabel: 'Review Comprehension',
       actionLink: '/progress/comprehension',
     },
-  };
+  }
 
-  const styles = interventionStyles[type];
-  const Icon = styles.icon;
+  const styles = interventionStyles[type]
+  const Icon = styles.icon
 
   return (
     <div
@@ -449,13 +441,9 @@ function InterventionCard({
                 </Badge>
               )}
             </div>
-            <p className="text-sm text-[oklch(0.4_0.05_240)] leading-relaxed mb-2">
-              {description}
-            </p>
+            <p className="text-sm text-[oklch(0.4_0.05_240)] leading-relaxed mb-2">{description}</p>
             <p className="text-sm text-[oklch(0.5_0.05_240)] mb-3">
-              <span className="font-medium text-[oklch(0.4_0.05_240)]">
-                Recommended:
-              </span>{' '}
+              <span className="font-medium text-[oklch(0.4_0.05_240)]">Recommended:</span>{' '}
               {recommendedAction}
             </p>
             <Link href={styles.actionLink}>
@@ -475,26 +463,26 @@ function InterventionCard({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
  * Helper Functions
  */
 function getPriorityLabel(priority: number): string {
-  if (priority >= 8) return 'HIGH';
-  if (priority >= 5) return 'MEDIUM';
-  return 'LOW';
+  if (priority >= 8) return 'HIGH'
+  if (priority >= 5) return 'MEDIUM'
+  return 'LOW'
 }
 
 function getPriorityBadgeStyles(priority: number): string {
   if (priority >= 8) {
-    return 'bg-[oklch(0.65_0.20_25)]/10 text-[oklch(0.65_0.20_25)] border-[oklch(0.65_0.20_25)]';
+    return 'bg-[oklch(0.65_0.20_25)]/10 text-[oklch(0.65_0.20_25)] border-[oklch(0.65_0.20_25)]'
   }
   if (priority >= 5) {
-    return 'bg-[oklch(0.75_0.12_85)]/10 text-[oklch(0.5_0.12_85)] border-[oklch(0.75_0.12_85)]';
+    return 'bg-[oklch(0.75_0.12_85)]/10 text-[oklch(0.5_0.12_85)] border-[oklch(0.75_0.12_85)]'
   }
-  return 'bg-[oklch(0.6_0.18_230)]/10 text-[oklch(0.5_0.18_230)] border-[oklch(0.6_0.18_230)]';
+  return 'bg-[oklch(0.6_0.18_230)]/10 text-[oklch(0.5_0.18_230)] border-[oklch(0.6_0.18_230)]'
 }
 
 /**
@@ -547,5 +535,5 @@ function RecommendationsSkeleton() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

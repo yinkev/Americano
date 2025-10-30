@@ -5,7 +5,7 @@
  * Measure orchestration effectiveness vs self-scheduled sessions
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,7 +25,9 @@ export async function GET(request: NextRequest) {
       adherenceRate: 0,
       performanceImprovement: 0,
       avgConfidence: 0,
-      insights: ['Orchestration effectiveness tracking not yet implemented. Full implementation pending Story 5.3 completion.'],
+      insights: [
+        'Orchestration effectiveness tracking not yet implemented. Full implementation pending Story 5.3 completion.',
+      ],
       stats: {
         totalSessions: 0,
         orchestratedSessions: 0,

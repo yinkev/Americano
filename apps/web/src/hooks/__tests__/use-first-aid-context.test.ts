@@ -27,9 +27,7 @@ describe('useFirstAidContext', () => {
 
   describe('Initialization', () => {
     it('should initialize with empty state', () => {
-      const { result } = renderHook(() =>
-        useFirstAidContext('lecture-123', { enabled: false })
-      )
+      const { result } = renderHook(() => useFirstAidContext('lecture-123', { enabled: false }))
 
       expect(result.current.references).toEqual([])
       expect(result.current.loading).toBe(false)
@@ -65,9 +63,7 @@ describe('useFirstAidContext', () => {
         json: async () => ({ references: mockReferences }),
       })
 
-      const { result } = renderHook(() =>
-        useFirstAidContext('lecture-123', { enabled: true })
-      )
+      const { result } = renderHook(() => useFirstAidContext('lecture-123', { enabled: true }))
 
       // Simulate section change
       // Note: In real usage, this would be triggered by IntersectionObserver
@@ -94,9 +90,7 @@ describe('useFirstAidContext', () => {
         json: async () => ({ references: mockReferences }),
       })
 
-      const { result } = renderHook(() =>
-        useFirstAidContext('lecture-123', { enabled: true })
-      )
+      const { result } = renderHook(() => useFirstAidContext('lecture-123', { enabled: true }))
 
       // First fetch
       await waitFor(() => {
@@ -112,9 +106,7 @@ describe('useFirstAidContext', () => {
     it('should handle fetch errors gracefully', async () => {
       ;(global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'))
 
-      const { result } = renderHook(() =>
-        useFirstAidContext('lecture-123', { enabled: true })
-      )
+      const { result } = renderHook(() => useFirstAidContext('lecture-123', { enabled: true }))
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false)
@@ -127,9 +119,7 @@ describe('useFirstAidContext', () => {
         statusText: 'Internal Server Error',
       })
 
-      const { result } = renderHook(() =>
-        useFirstAidContext('lecture-123', { enabled: true })
-      )
+      const { result } = renderHook(() => useFirstAidContext('lecture-123', { enabled: true }))
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false)
@@ -139,9 +129,7 @@ describe('useFirstAidContext', () => {
 
   describe('Cache Management', () => {
     it('should provide clearCache function', () => {
-      const { result } = renderHook(() =>
-        useFirstAidContext('lecture-123', { enabled: false })
-      )
+      const { result } = renderHook(() => useFirstAidContext('lecture-123', { enabled: false }))
 
       expect(typeof result.current.clearCache).toBe('function')
       expect(() => result.current.clearCache()).not.toThrow()
@@ -154,7 +142,7 @@ describe('useFirstAidContext', () => {
         useFirstAidContext('lecture-123', {
           enabled: true,
           cacheTTL: shortTTL,
-        })
+        }),
       )
 
       // Cache should expire after TTL
@@ -167,9 +155,7 @@ describe('useFirstAidContext', () => {
 
   describe('Prefetching', () => {
     it('should provide prefetchSection function', () => {
-      const { result } = renderHook(() =>
-        useFirstAidContext('lecture-123', { enabled: false })
-      )
+      const { result } = renderHook(() => useFirstAidContext('lecture-123', { enabled: false }))
 
       expect(typeof result.current.prefetchSection).toBe('function')
     })
@@ -184,7 +170,7 @@ describe('useFirstAidContext', () => {
         useFirstAidContext('lecture-123', {
           enabled: true,
           prefetchThreshold: 300,
-        })
+        }),
       )
 
       await result.current.prefetchSection('section-2')
@@ -196,9 +182,7 @@ describe('useFirstAidContext', () => {
 
   describe('Reload Functionality', () => {
     it('should provide reload function', () => {
-      const { result } = renderHook(() =>
-        useFirstAidContext('lecture-123', { enabled: false })
-      )
+      const { result } = renderHook(() => useFirstAidContext('lecture-123', { enabled: false }))
 
       expect(typeof result.current.reload).toBe('function')
     })
@@ -220,9 +204,7 @@ describe('useFirstAidContext', () => {
         json: async () => ({ references: mockReferences }),
       })
 
-      const { result } = renderHook(() =>
-        useFirstAidContext('lecture-123', { enabled: true })
-      )
+      const { result } = renderHook(() => useFirstAidContext('lecture-123', { enabled: true }))
 
       await result.current.reload()
 
@@ -239,7 +221,7 @@ describe('useFirstAidContext', () => {
         useFirstAidContext('lecture-123', {
           enabled: true,
           debounceMs,
-        })
+        }),
       )
 
       // Multiple scroll events within debounce period

@@ -115,7 +115,9 @@ export class DifficultyAdapter {
     })
 
     // Extract load tolerance from learning profile data or use default
-    const learningStyle = userProfile?.learningStyleProfile as unknown as (LearningStyleProfile & { loadTolerance?: number }) | null
+    const learningStyle = userProfile?.learningStyleProfile as unknown as
+      | (LearningStyleProfile & { loadTolerance?: number })
+      | null
     const loadTolerance = learningStyle?.loadTolerance || 65 // Default threshold
 
     // Critical overload (>80)

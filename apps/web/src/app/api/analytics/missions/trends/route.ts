@@ -7,11 +7,11 @@
  * Story 2.6: Mission Performance Analytics and Adaptation - Task 10.2
  */
 
-import { NextRequest } from 'next/server'
+import { format, startOfDay, subDays } from 'date-fns'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
-import { startOfDay, subDays, format } from 'date-fns'
 
 // Zod validation schema
 const TrendsQuerySchema = z.object({
@@ -129,21 +129,24 @@ function groupAndCalculate(
     let value = 0
 
     switch (metric) {
-      case 'completion_rate':
+      case 'completion_rate': {
         const completed = groupMissions.filter((m) => m.status === 'COMPLETED').length
         value = groupMissions.length > 0 ? completed / groupMissions.length : 0
         break
+      }
 
-      case 'avg_duration':
+      case 'avg_duration': {
         const durations = groupMissions.filter((m) => m.actualMinutes).map((m) => m.actualMinutes!)
         value =
           durations.length > 0 ? durations.reduce((sum, d) => sum + d, 0) / durations.length : 0
         break
+      }
 
-      case 'success_score':
+      case 'success_score': {
         const scores = groupMissions.filter((m) => m.successScore).map((m) => m.successScore!)
         value = scores.length > 0 ? scores.reduce((sum, s) => sum + s, 0) / scores.length : 0
         break
+      }
     }
 
     dataPoints.push({

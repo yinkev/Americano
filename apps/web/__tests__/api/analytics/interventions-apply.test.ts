@@ -5,9 +5,9 @@
  * Tests Next.js → FastAPI proxy layer for applying interventions
  */
 
-import { POST } from '@/app/api/analytics/interventions/[id]/apply/route'
 import { NextRequest } from 'next/server'
-import { server, createErrorHandler, create503Handler } from '../../setup'
+import { POST } from '@/app/api/analytics/interventions/[id]/apply/route'
+import { create503Handler, createErrorHandler, server } from '../../setup'
 
 describe('POST /api/analytics/interventions/[id]/apply', () => {
   describe('Success Cases', () => {

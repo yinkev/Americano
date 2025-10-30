@@ -7,10 +7,10 @@
  * DELETE /api/graph/searches/saved/:id - Delete saved search
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { AlertFrequency } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 /**
  * Update schema
@@ -18,15 +18,19 @@ import { AlertFrequency } from '@/generated/prisma'
 const UpdateSearchSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   query: z.string().min(1).max(500).optional(),
-  filters: z.object({
-    courseIds: z.array(z.string()).optional(),
-    dateRange: z.object({
-      start: z.string(),
-      end: z.string(),
-    }).optional(),
-    contentTypes: z.array(z.string()).optional(),
-    minSimilarity: z.number().min(0).max(1).optional(),
-  }).optional(),
+  filters: z
+    .object({
+      courseIds: z.array(z.string()).optional(),
+      dateRange: z
+        .object({
+          start: z.string(),
+          end: z.string(),
+        })
+        .optional(),
+      contentTypes: z.array(z.string()).optional(),
+      minSimilarity: z.number().min(0).max(1).optional(),
+    })
+    .optional(),
   alertEnabled: z.boolean().optional(),
   alertFrequency: z.enum(['IMMEDIATE', 'DAILY', 'WEEKLY']).optional(),
 })
@@ -34,10 +38,7 @@ const UpdateSearchSchema = z.object({
 /**
  * GET handler - Get single saved search
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
 
@@ -47,7 +48,7 @@ export async function GET(
     const savedSearch = await prisma.savedSearch.findFirst({
       where: {
         id,
-        userId,  // Ensure user owns this search
+        userId, // Ensure user owns this search
       },
       include: {
         alerts: {
@@ -63,7 +64,7 @@ export async function GET(
           success: false,
           error: 'Saved search not found',
         },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
@@ -80,7 +81,7 @@ export async function GET(
         error: 'Failed to fetch saved search',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -88,10 +89,7 @@ export async function GET(
 /**
  * PUT handler - Update saved search
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const body = await request.json()
@@ -106,7 +104,7 @@ export async function PUT(
           error: 'Invalid request body',
           details: validation.error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -124,7 +122,7 @@ export async function PUT(
           success: false,
           error: 'Saved search not found',
         },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
@@ -150,7 +148,7 @@ export async function PUT(
         error: 'Failed to update saved search',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -160,7 +158,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params
@@ -179,7 +177,7 @@ export async function DELETE(
           success: false,
           error: 'Saved search not found',
         },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
@@ -201,7 +199,7 @@ export async function DELETE(
         error: 'Failed to delete saved search',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

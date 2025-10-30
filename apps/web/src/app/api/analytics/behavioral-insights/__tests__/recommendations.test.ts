@@ -5,9 +5,9 @@
  */
 
 import { NextRequest } from 'next/server'
-import { GET } from '../recommendations/route'
 import { prisma } from '@/lib/db'
 import { RecommendationsEngine } from '@/subsystems/behavioral-analytics/recommendations-engine'
+import { GET } from '../recommendations/route'
 
 // Mock dependencies
 jest.mock('@/lib/db', () => ({

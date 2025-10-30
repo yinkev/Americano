@@ -31,14 +31,11 @@ async function main() {
   console.log(`Started at: ${new Date().toISOString()}\n`)
 
   const anonymizationDays = Number(process.env.ANONYMIZATION_DAYS) || 90
-  const deletionDaysAfterAnonymization =
-    Number(process.env.DELETION_DAYS_AFTER_ANONYMIZATION) || 90
+  const deletionDaysAfterAnonymization = Number(process.env.DELETION_DAYS_AFTER_ANONYMIZATION) || 90
 
   console.log(`Configuration:`)
   console.log(`  - Anonymization threshold: ${anonymizationDays} days`)
-  console.log(
-    `  - Deletion after anonymization: ${deletionDaysAfterAnonymization} days`
-  )
+  console.log(`  - Deletion after anonymization: ${deletionDaysAfterAnonymization} days`)
   console.log()
 
   try {
@@ -50,12 +47,10 @@ async function main() {
 
     // Step 2: Delete very old anonymized data
     console.log(
-      `Step 2: Deleting anonymized data older than ${deletionDaysAfterAnonymization} days after anonymization...`
+      `Step 2: Deleting anonymized data older than ${deletionDaysAfterAnonymization} days after anonymization...`,
     )
     const { queriesDeleted, clicksDeleted } =
-      await searchAnalyticsService.deleteAnonymizedSearchData(
-        deletionDaysAfterAnonymization
-      )
+      await searchAnalyticsService.deleteAnonymizedSearchData(deletionDaysAfterAnonymization)
     console.log(`✓ Deleted ${queriesDeleted} queries and ${clicksDeleted} clicks\n`)
 
     // Summary

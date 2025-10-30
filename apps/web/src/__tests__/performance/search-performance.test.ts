@@ -12,30 +12,31 @@
  * - Memory usage profiling
  */
 
-import { describe, it, expect, beforeAll, jest } from '@jest/globals'
+import { beforeAll, describe, expect, it, jest } from '@jest/globals'
 
 // Mock dependencies for performance testing
 jest.mock('@/lib/db')
 jest.mock('@/lib/ai/gemini-client')
 
+import { GeminiClient } from '@/lib/ai/gemini-client'
 import { embeddingService } from '@/lib/embedding-service'
 import { semanticSearchEngine } from '@/subsystems/knowledge-graph/semantic-search'
-import { GeminiClient } from '@/lib/ai/gemini-client'
 
 describe('Search Performance Benchmarks', () => {
   const mockGeminiClient = GeminiClient as jest.MockedClass<typeof GeminiClient>
 
   beforeAll(() => {
     // Setup performance-realistic mocks
-    const generateEmbeddingMock = jest
-      .fn(async () => {
-        // Simulate realistic API latency
-        await new Promise(resolve => setTimeout(resolve, 150))
-        return {
-          embedding: Array(1536).fill(0).map(() => Math.random()),
-          error: undefined,
-        }
-      }) as unknown as jest.MockedFunction<GeminiClient['generateEmbedding']>
+    const generateEmbeddingMock = jest.fn(async () => {
+      // Simulate realistic API latency
+      await new Promise((resolve) => setTimeout(resolve, 150))
+      return {
+        embedding: Array(1536)
+          .fill(0)
+          .map(() => Math.random()),
+        error: undefined,
+      }
+    }) as unknown as jest.MockedFunction<GeminiClient['generateEmbedding']>
 
     mockGeminiClient.prototype.generateEmbedding = generateEmbeddingMock
   })
@@ -64,14 +65,16 @@ describe('Search Performance Benchmarks', () => {
       expect(result.successCount).toBe(10)
 
       const avgTimePerEmbedding = elapsed / 10
-      console.log(`✓ Batch embedding (10 items): ${elapsed.toFixed(2)}ms (${avgTimePerEmbedding.toFixed(2)}ms avg)`)
+      console.log(
+        `✓ Batch embedding (10 items): ${elapsed.toFixed(2)}ms (${avgTimePerEmbedding.toFixed(2)}ms avg)`,
+      )
     }, 15000)
 
     it('should measure embedding generation under concurrent load', async () => {
       const concurrentRequests = 10
-      const promises = Array(concurrentRequests).fill(null).map((_, i) =>
-        embeddingService.generateEmbedding(`Query ${i}`)
-      )
+      const promises = Array(concurrentRequests)
+        .fill(null)
+        .map((_, i) => embeddingService.generateEmbedding(`Query ${i}`))
 
       const startTime = performance.now()
       await Promise.all(promises)
@@ -79,7 +82,9 @@ describe('Search Performance Benchmarks', () => {
 
       const avgLatency = elapsed / concurrentRequests
 
-      console.log(`✓ Concurrent embeddings (${concurrentRequests}): ${elapsed.toFixed(2)}ms total, ${avgLatency.toFixed(2)}ms avg`)
+      console.log(
+        `✓ Concurrent embeddings (${concurrentRequests}): ${elapsed.toFixed(2)}ms total, ${avgLatency.toFixed(2)}ms avg`,
+      )
 
       expect(avgLatency).toBeLessThan(500) // Should handle concurrent requests efficiently
     }, 30000)
@@ -88,31 +93,35 @@ describe('Search Performance Benchmarks', () => {
   describe('Search Latency Benchmarks', () => {
     it('should complete semantic search under 1 second (AC #8)', async () => {
       // Mock search engine for performance testing
-      const mockSearch = jest.fn<() => Promise<{
-        results: Array<{
-          id: string
-          type: string
-          title: string
-          snippet: string
-          similarity: number
-          metadata: Record<string, unknown>
-        }>
-        total: number
-        latency: number
-      }>>().mockResolvedValue({
-        results: [
-          {
-            id: 'result-1',
-            type: 'chunk',
-            title: 'Test',
-            snippet: 'Test snippet',
-            similarity: 0.9,
-            metadata: {},
-          },
-        ],
-        total: 1,
-        latency: 100,
-      })
+      const mockSearch = jest
+        .fn<
+          () => Promise<{
+            results: Array<{
+              id: string
+              type: string
+              title: string
+              snippet: string
+              similarity: number
+              metadata: Record<string, unknown>
+            }>
+            total: number
+            latency: number
+          }>
+        >()
+        .mockResolvedValue({
+          results: [
+            {
+              id: 'result-1',
+              type: 'chunk',
+              title: 'Test',
+              snippet: 'Test snippet',
+              similarity: 0.9,
+              metadata: {},
+            },
+          ],
+          total: 1,
+          latency: 100,
+        })
 
       ;(semanticSearchEngine as any).search = mockSearch
 
@@ -139,12 +148,12 @@ describe('Search Performance Benchmarks', () => {
 
       // Search phase (mocked)
       start = performance.now()
-      await new Promise(resolve => setTimeout(resolve, 80)) // Simulate vector search
+      await new Promise((resolve) => setTimeout(resolve, 80)) // Simulate vector search
       metrics.searchTime = performance.now() - start
 
       // Formatting phase
       start = performance.now()
-      await new Promise(resolve => setTimeout(resolve, 50)) // Simulate result formatting
+      await new Promise((resolve) => setTimeout(resolve, 50)) // Simulate result formatting
       metrics.formattingTime = performance.now() - start
 
       const totalTime = metrics.embeddingTime + metrics.searchTime + metrics.formattingTime
@@ -172,16 +181,16 @@ Performance Breakdown:
         const start = performance.now()
 
         // User lookup (database query)
-        await new Promise(resolve => setTimeout(resolve, 10))
+        await new Promise((resolve) => setTimeout(resolve, 10))
 
         // Embedding generation
         await embeddingService.generateEmbedding('test query')
 
         // Search execution
-        await new Promise(resolve => setTimeout(resolve, 80))
+        await new Promise((resolve) => setTimeout(resolve, 80))
 
         // Result formatting
-        await new Promise(resolve => setTimeout(resolve, 30))
+        await new Promise((resolve) => setTimeout(resolve, 30))
 
         // Analytics logging (async)
         setTimeout(() => {}, 20) // Fire and forget
@@ -205,7 +214,7 @@ Performance Breakdown:
         const start = performance.now()
 
         await embeddingService.generateEmbedding(`Query from user ${userId}`)
-        await new Promise(resolve => setTimeout(resolve, 80)) // Search
+        await new Promise((resolve) => setTimeout(resolve, 80)) // Search
 
         return performance.now() - start
       }
@@ -213,7 +222,9 @@ Performance Breakdown:
       const startTime = performance.now()
 
       const latencies = await Promise.all(
-        Array(concurrentUsers).fill(null).map((_, i) => searchRequest(i))
+        Array(concurrentUsers)
+          .fill(null)
+          .map((_, i) => searchRequest(i)),
       )
 
       const totalElapsed = performance.now() - startTime
@@ -340,13 +351,10 @@ Rate Limit Test (${iterations} sequential requests):
     it('should verify vector indexes exist', async () => {
       // This would query database for indexes
       // For now, we document the requirement
-      const requiredIndexes = [
-        'lectures_embedding_idx',
-        'content_chunks_embedding_idx',
-      ]
+      const requiredIndexes = ['lectures_embedding_idx', 'content_chunks_embedding_idx']
 
       console.log('Required vector indexes:')
-      requiredIndexes.forEach(idx => console.log(`  - ${idx}`))
+      requiredIndexes.forEach((idx) => console.log(`  - ${idx}`))
 
       expect(requiredIndexes.length).toBeGreaterThan(0)
     })
@@ -414,19 +422,19 @@ describe('Performance Recommendations', () => {
     console.log('PERFORMANCE OPTIMIZATION REPORT')
     console.log('='.repeat(70))
 
-    recommendations.forEach(rec => {
+    recommendations.forEach((rec) => {
       console.log(`\n${rec.area}:`)
       console.log(`  Current:  ${rec.current}`)
       console.log(`  Target:   ${rec.target}`)
       console.log(`  Status:   ${rec.status}`)
       console.log('  Suggestions:')
-      rec.suggestions.forEach(s => console.log(`    - ${s}`))
+      rec.suggestions.forEach((s) => console.log(`    - ${s}`))
     })
 
     console.log('\n' + '='.repeat(70))
     console.log('Overall Status: ALL TARGETS MET ✓')
     console.log('='.repeat(70) + '\n')
 
-    expect(recommendations.every(r => r.status.includes('PASSING'))).toBe(true)
+    expect(recommendations.every((r) => r.status.includes('PASSING'))).toBe(true)
   })
 })

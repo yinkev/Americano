@@ -17,74 +17,74 @@
  * Performance target: <500ms query latency
  */
 
-import { prisma } from '@/lib/db';
 import type {
+  ConceptRelationship,
   ContentChunk,
   ContentRecommendation,
-  RecommendationStatus,
   ContentSourceType,
   LearningObjective,
-  ConceptRelationship,
+  RecommendationStatus,
   RelationshipType,
-} from '@/generated/prisma';
+} from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 // ============================================
 // Types and Interfaces
 // ============================================
 
 export interface RecommendationScore {
-  semanticSimilarity: number;    // 0-1, cosine similarity
-  prerequisiteRelation: number;  // 0-1, relationship strength
-  masteryAlignment: number;      // 0-1, complexity appropriateness
-  recency: number;               // 0-1, inverse of days since last viewed
-  userFeedback: number;          // 0-1, avg rating or 0.5 default
+  semanticSimilarity: number // 0-1, cosine similarity
+  prerequisiteRelation: number // 0-1, relationship strength
+  masteryAlignment: number // 0-1, complexity appropriateness
+  recency: number // 0-1, inverse of days since last viewed
+  userFeedback: number // 0-1, avg rating or 0.5 default
 }
 
 export interface RecommendationContext {
-  userId: string;
-  contextType: 'session' | 'objective' | 'mission';
-  contextId: string;
-  currentEmbedding?: number[];
-  currentObjectiveId?: string;
-  userMasteryLevel?: number;
-  limit?: number;
-  sourceTypes?: ContentSourceType[];
-  excludeRecent?: boolean;
+  userId: string
+  contextType: 'session' | 'objective' | 'mission'
+  contextId: string
+  currentEmbedding?: number[]
+  currentObjectiveId?: string
+  userMasteryLevel?: number
+  limit?: number
+  sourceTypes?: ContentSourceType[]
+  excludeRecent?: boolean
 }
 
 export interface CandidateRecommendation {
-  contentId: string;
-  content: string;
-  lectureId: string;
-  lectureTitle?: string;
-  pageNumber?: number;
-  similarity?: number;
-  objectiveId?: string;
-  complexity?: number;
-  sourceType: ContentSourceType;
-  relationshipType?: RelationshipType;
-  relationshipStrength?: number;
+  contentId: string
+  content: string
+  lectureId: string
+  lectureTitle?: string
+  pageNumber?: number
+  similarity?: number
+  objectiveId?: string
+  complexity?: number
+  sourceType: ContentSourceType
+  relationshipType?: RelationshipType
+  relationshipStrength?: number
 }
 
 export interface RecommendationResponse {
-  id: string;
+  id: string
   content: {
-    id: string;
-    title: string;
-    type: ContentSourceType;
-    pageNumber?: number;
-    lectureTitle?: string;
-    preview: string;
-  };
-  score: number;
-  reasoning: string;
-  source: string;
-  createdAt: Date;
+    id: string
+    title: string
+    type: ContentSourceType
+    pageNumber?: number
+    lectureTitle?: string
+    preview: string
+  }
+  score: number
+  reasoning: string
+  source: string
+  createdAt: Date
   actions: {
-    view: string;
-    dismiss: boolean;
-    rate: boolean;
-  };
+    view: string
+    dismiss: boolean
+    rate: boolean
+  }
 }
 
 // ============================================
@@ -97,12 +97,12 @@ const SCORING_WEIGHTS = {
   masteryAlignment: 0.2,
   recency: 0.1,
   userFeedback: 0.1,
-} as const;
+} as const
 
-const MIN_SCORE_THRESHOLD = 0.6;
-const RECENT_CONTENT_WINDOW_HOURS = 24;
-const SIMILARITY_THRESHOLD = 0.7;
-const MAX_RELATIONSHIP_DEPTH = 3;
+const MIN_SCORE_THRESHOLD = 0.6
+const RECENT_CONTENT_WINDOW_HOURS = 24
+const SIMILARITY_THRESHOLD = 0.7
+const MAX_RELATIONSHIP_DEPTH = 3
 
 export class RecommendationEngine {
   /**
@@ -119,70 +119,70 @@ export class RecommendationEngine {
       limit = 10,
       sourceTypes,
       excludeRecent = true,
-    } = context;
+    } = context
 
     try {
       // Step 1: Get candidate recommendations from semantic search
-      const candidates: CandidateRecommendation[] = [];
+      const candidates: CandidateRecommendation[] = []
 
       if (currentEmbedding) {
         const semanticCandidates = await this.semanticSearch(
           currentEmbedding,
           userId,
           excludeRecent,
-          sourceTypes
-        );
-        candidates.push(...semanticCandidates);
+          sourceTypes,
+        )
+        candidates.push(...semanticCandidates)
       }
 
       // Step 2: Get candidates from knowledge graph traversal
       if (currentObjectiveId) {
-        const graphCandidates = await this.graphTraversal(currentObjectiveId, MAX_RELATIONSHIP_DEPTH);
-        candidates.push(...graphCandidates);
+        const graphCandidates = await this.graphTraversal(
+          currentObjectiveId,
+          MAX_RELATIONSHIP_DEPTH,
+        )
+        candidates.push(...graphCandidates)
       }
 
       // Step 3: Remove duplicates
-      const uniqueCandidates = this.deduplicateCandidates(candidates);
+      const uniqueCandidates = this.deduplicateCandidates(candidates)
 
       // Step 4: Calculate final scores for each candidate
       const scoredRecommendations = await Promise.all(
         uniqueCandidates.map(async (candidate) => {
-          const scores = await this.calculateScores(candidate, userId, userMasteryLevel);
-          const finalScore = this.calculateFinalScore(scores);
+          const scores = await this.calculateScores(candidate, userId, userMasteryLevel)
+          const finalScore = this.calculateFinalScore(scores)
 
           return {
             candidate,
             scores,
             finalScore,
-          };
-        })
-      );
+          }
+        }),
+      )
 
       // Step 5: Filter by minimum threshold and sort by score
       const filteredRecommendations = scoredRecommendations
-        .filter(rec => rec.finalScore >= MIN_SCORE_THRESHOLD)
+        .filter((rec) => rec.finalScore >= MIN_SCORE_THRESHOLD)
         .sort((a, b) => b.finalScore - a.finalScore)
-        .slice(0, limit);
+        .slice(0, limit)
 
       // Step 6: Apply user feedback re-ranking
-      const rerankedRecommendations = await this.reRankWithFeedback(
-        filteredRecommendations,
-        userId
-      );
+      const rerankedRecommendations = await this.reRankWithFeedback(filteredRecommendations, userId)
 
       // Step 7: Save recommendations to database
       const savedRecommendations = await this.saveRecommendations(
         rerankedRecommendations,
         userId,
         contextType,
-        contextId
-      );
+        contextId,
+      )
 
       // Step 8: Format response
-      return this.formatRecommendations(savedRecommendations);
+      return this.formatRecommendations(savedRecommendations)
     } catch (error) {
-      console.error('[RecommendationEngine] Error generating recommendations:', error);
-      throw error;
+      console.error('[RecommendationEngine] Error generating recommendations:', error)
+      throw error
     }
   }
 
@@ -193,22 +193,24 @@ export class RecommendationEngine {
     embedding: number[],
     userId: string,
     excludeRecent: boolean,
-    sourceTypes?: ContentSourceType[]
+    sourceTypes?: ContentSourceType[],
   ): Promise<CandidateRecommendation[]> {
     try {
-      const embeddingString = `[${embedding.join(',')}]`;
+      const embeddingString = `[${embedding.join(',')}]`
       const cutoffTime = excludeRecent
         ? new Date(Date.now() - RECENT_CONTENT_WINDOW_HOURS * 60 * 60 * 1000)
-        : new Date(0);
+        : new Date(0)
 
       // Raw SQL query for pgvector similarity search
-      const results = await prisma.$queryRaw<Array<{
-        id: string;
-        content: string;
-        lecture_id: string;
-        page_number: number | null;
-        similarity: number;
-      }>>`
+      const results = await prisma.$queryRaw<
+        Array<{
+          id: string
+          content: string
+          lecture_id: string
+          page_number: number | null
+          similarity: number
+        }>
+      >`
         SELECT
           c.id,
           c.content,
@@ -225,18 +227,18 @@ export class RecommendationEngine {
           )
         ORDER BY similarity DESC
         LIMIT 20
-      `;
+      `
 
       // Fetch lecture details
-      const lectureIds = [...new Set(results.map(r => r.lecture_id))];
+      const lectureIds = [...new Set(results.map((r) => r.lecture_id))]
       const lectures = await prisma.lecture.findMany({
         where: { id: { in: lectureIds } },
         select: { id: true, title: true },
-      });
+      })
 
-      const lectureMap = new Map(lectures.map(l => [l.id, l.title]));
+      const lectureMap = new Map(lectures.map((l) => [l.id, l.title]))
 
-      return results.map(result => ({
+      return results.map((result) => ({
         contentId: result.id,
         content: result.content,
         lectureId: result.lecture_id,
@@ -244,10 +246,10 @@ export class RecommendationEngine {
         pageNumber: result.page_number ?? undefined,
         similarity: result.similarity,
         sourceType: 'LECTURE' as ContentSourceType,
-      }));
+      }))
     } catch (error) {
-      console.error('[RecommendationEngine] Semantic search error:', error);
-      return [];
+      console.error('[RecommendationEngine] Semantic search error:', error)
+      return []
     }
   }
 
@@ -256,7 +258,7 @@ export class RecommendationEngine {
    */
   private async graphTraversal(
     objectiveId: string,
-    maxDepth: number
+    maxDepth: number,
   ): Promise<CandidateRecommendation[]> {
     try {
       // Get the objective's associated concept
@@ -267,19 +269,16 @@ export class RecommendationEngine {
             select: { id: true, title: true },
           },
         },
-      });
+      })
 
-      if (!objective) return [];
+      if (!objective) return []
 
       // Find related concepts via knowledge graph (placeholder - requires concept mapping)
       // This would traverse ConceptRelationship table in production
       // For MVP, we'll use objective prerequisites
       const relationships = await prisma.objectivePrerequisite.findMany({
         where: {
-          OR: [
-            { objectiveId: objectiveId },
-            { prerequisiteId: objectiveId },
-          ],
+          OR: [{ objectiveId: objectiveId }, { prerequisiteId: objectiveId }],
         },
         include: {
           objective: {
@@ -302,12 +301,12 @@ export class RecommendationEngine {
           },
         },
         take: 10,
-      });
+      })
 
-      const candidates: CandidateRecommendation[] = [];
+      const candidates: CandidateRecommendation[] = []
 
       for (const rel of relationships) {
-        const relatedObjective = rel.objectiveId === objectiveId ? rel.prerequisite : rel.objective;
+        const relatedObjective = rel.objectiveId === objectiveId ? rel.prerequisite : rel.objective
 
         // Get content chunks from related objectives
         for (const chunk of relatedObjective.lecture.contentChunks) {
@@ -321,14 +320,14 @@ export class RecommendationEngine {
             sourceType: 'LECTURE' as ContentSourceType,
             relationshipType: 'PREREQUISITE' as RelationshipType,
             relationshipStrength: rel.strength,
-          });
+          })
         }
       }
 
-      return candidates;
+      return candidates
     } catch (error) {
-      console.error('[RecommendationEngine] Graph traversal error:', error);
-      return [];
+      console.error('[RecommendationEngine] Graph traversal error:', error)
+      return []
     }
   }
 
@@ -336,17 +335,17 @@ export class RecommendationEngine {
    * Remove duplicate candidates (same contentId)
    */
   private deduplicateCandidates(candidates: CandidateRecommendation[]): CandidateRecommendation[] {
-    const seen = new Set<string>();
-    const unique: CandidateRecommendation[] = [];
+    const seen = new Set<string>()
+    const unique: CandidateRecommendation[] = []
 
     for (const candidate of candidates) {
       if (!seen.has(candidate.contentId)) {
-        seen.add(candidate.contentId);
-        unique.push(candidate);
+        seen.add(candidate.contentId)
+        unique.push(candidate)
       }
     }
 
-    return unique;
+    return unique
   }
 
   /**
@@ -355,29 +354,30 @@ export class RecommendationEngine {
   private async calculateScores(
     candidate: CandidateRecommendation,
     userId: string,
-    userMasteryLevel: number
+    userMasteryLevel: number,
   ): Promise<RecommendationScore> {
     // Semantic similarity (from pgvector or relationship)
-    const semanticSimilarity = candidate.similarity ?? 0.7;
+    const semanticSimilarity = candidate.similarity ?? 0.7
 
     // Prerequisite relationship score
-    const prerequisiteRelation = candidate.relationshipType === 'PREREQUISITE'
-      ? (candidate.relationshipStrength ?? 1.0)
-      : candidate.relationshipType === 'RELATED'
-      ? 0.7
-      : candidate.relationshipType === 'INTEGRATED'
-      ? 0.5
-      : 0;
+    const prerequisiteRelation =
+      candidate.relationshipType === 'PREREQUISITE'
+        ? (candidate.relationshipStrength ?? 1.0)
+        : candidate.relationshipType === 'RELATED'
+          ? 0.7
+          : candidate.relationshipType === 'INTEGRATED'
+            ? 0.5
+            : 0
 
     // Mastery alignment (complexity appropriateness)
-    const contentComplexity = candidate.complexity ?? 0.5;
-    const masteryAlignment = 1 - Math.abs(userMasteryLevel - contentComplexity);
+    const contentComplexity = candidate.complexity ?? 0.5
+    const masteryAlignment = 1 - Math.abs(userMasteryLevel - contentComplexity)
 
     // Recency (days since last viewed)
-    const recency = 1.0; // Default - would calculate from view history
+    const recency = 1.0 // Default - would calculate from view history
 
     // User feedback (average rating for similar content)
-    const userFeedback = await this.getUserFeedbackScore(userId, candidate.contentId);
+    const userFeedback = await this.getUserFeedbackScore(userId, candidate.contentId)
 
     return {
       semanticSimilarity,
@@ -385,7 +385,7 @@ export class RecommendationEngine {
       masteryAlignment,
       recency,
       userFeedback,
-    };
+    }
   }
 
   /**
@@ -398,7 +398,7 @@ export class RecommendationEngine {
       scores.masteryAlignment * SCORING_WEIGHTS.masteryAlignment +
       scores.recency * SCORING_WEIGHTS.recency +
       scores.userFeedback * SCORING_WEIGHTS.userFeedback
-    );
+    )
   }
 
   /**
@@ -414,15 +414,15 @@ export class RecommendationEngine {
           },
         },
         select: { rating: true },
-      });
+      })
 
-      if (feedback.length === 0) return 0.5; // Default neutral score
+      if (feedback.length === 0) return 0.5 // Default neutral score
 
-      const avgRating = feedback.reduce((sum, f) => sum + f.rating, 0) / feedback.length;
-      return avgRating / 5; // Normalize to 0-1
+      const avgRating = feedback.reduce((sum, f) => sum + f.rating, 0) / feedback.length
+      return avgRating / 5 // Normalize to 0-1
     } catch (error) {
-      console.error('[RecommendationEngine] Error getting user feedback:', error);
-      return 0.5;
+      console.error('[RecommendationEngine] Error getting user feedback:', error)
+      return 0.5
     }
   }
 
@@ -430,9 +430,15 @@ export class RecommendationEngine {
    * Re-rank recommendations based on user feedback patterns
    */
   private async reRankWithFeedback(
-    recommendations: Array<{ candidate: CandidateRecommendation; scores: RecommendationScore; finalScore: number }>,
-    userId: string
-  ): Promise<Array<{ candidate: CandidateRecommendation; scores: RecommendationScore; finalScore: number }>> {
+    recommendations: Array<{
+      candidate: CandidateRecommendation
+      scores: RecommendationScore
+      finalScore: number
+    }>,
+    userId: string,
+  ): Promise<
+    Array<{ candidate: CandidateRecommendation; scores: RecommendationScore; finalScore: number }>
+  > {
     try {
       // Get user's feedback patterns
       const recentFeedback = await prisma.recommendationFeedback.findMany({
@@ -445,37 +451,40 @@ export class RecommendationEngine {
         include: {
           recommendation: true,
         },
-      });
+      })
 
       // Apply feedback adjustments
-      return recommendations.map(rec => {
-        let adjustedScore = rec.finalScore;
+      return recommendations
+        .map((rec) => {
+          let adjustedScore = rec.finalScore
 
-        // Find similar rated content
-        const similarFeedback = recentFeedback.filter(fb =>
-          fb.recommendation.recommendedContentId === rec.candidate.contentId
-        );
+          // Find similar rated content
+          const similarFeedback = recentFeedback.filter(
+            (fb) => fb.recommendation.recommendedContentId === rec.candidate.contentId,
+          )
 
-        if (similarFeedback.length > 0) {
-          const avgRating = similarFeedback.reduce((sum, fb) => sum + fb.rating, 0) / similarFeedback.length;
+          if (similarFeedback.length > 0) {
+            const avgRating =
+              similarFeedback.reduce((sum, fb) => sum + fb.rating, 0) / similarFeedback.length
 
-          if (avgRating >= 4) {
-            // Highly rated similar content - boost by 15%
-            adjustedScore *= 1.15;
-          } else if (avgRating <= 2) {
-            // Poorly rated similar content - reduce by 30%
-            adjustedScore *= 0.7;
+            if (avgRating >= 4) {
+              // Highly rated similar content - boost by 15%
+              adjustedScore *= 1.15
+            } else if (avgRating <= 2) {
+              // Poorly rated similar content - reduce by 30%
+              adjustedScore *= 0.7
+            }
           }
-        }
 
-        return {
-          ...rec,
-          finalScore: Math.min(adjustedScore, 1.0), // Cap at 1.0
-        };
-      }).sort((a, b) => b.finalScore - a.finalScore);
+          return {
+            ...rec,
+            finalScore: Math.min(adjustedScore, 1.0), // Cap at 1.0
+          }
+        })
+        .sort((a, b) => b.finalScore - a.finalScore)
     } catch (error) {
-      console.error('[RecommendationEngine] Error re-ranking with feedback:', error);
-      return recommendations;
+      console.error('[RecommendationEngine] Error re-ranking with feedback:', error)
+      return recommendations
     }
   }
 
@@ -483,15 +492,19 @@ export class RecommendationEngine {
    * Save recommendations to database
    */
   private async saveRecommendations(
-    recommendations: Array<{ candidate: CandidateRecommendation; scores: RecommendationScore; finalScore: number }>,
+    recommendations: Array<{
+      candidate: CandidateRecommendation
+      scores: RecommendationScore
+      finalScore: number
+    }>,
     userId: string,
     contextType: string,
-    contextId: string
+    contextId: string,
   ): Promise<ContentRecommendation[]> {
     try {
       const created = await Promise.all(
         recommendations.map(async (rec) => {
-          const reasoning = this.generateReasoning(rec.candidate, rec.scores, rec.finalScore);
+          const reasoning = this.generateReasoning(rec.candidate, rec.scores, rec.finalScore)
 
           return prisma.contentRecommendation.create({
             data: {
@@ -505,14 +518,14 @@ export class RecommendationEngine {
               contextId,
               sourceType: rec.candidate.sourceType,
             },
-          });
-        })
-      );
+          })
+        }),
+      )
 
-      return created;
+      return created
     } catch (error) {
-      console.error('[RecommendationEngine] Error saving recommendations:', error);
-      throw error;
+      console.error('[RecommendationEngine] Error saving recommendations:', error)
+      throw error
     }
   }
 
@@ -522,40 +535,42 @@ export class RecommendationEngine {
   private generateReasoning(
     candidate: CandidateRecommendation,
     scores: RecommendationScore,
-    finalScore: number
+    finalScore: number,
   ): string {
-    const parts: string[] = [];
+    const parts: string[] = []
 
     if (scores.semanticSimilarity > 0.8) {
-      parts.push(`Highly similar content (${(scores.semanticSimilarity * 100).toFixed(0)}% match)`);
+      parts.push(`Highly similar content (${(scores.semanticSimilarity * 100).toFixed(0)}% match)`)
     } else if (scores.semanticSimilarity > 0.7) {
-      parts.push(`Related content (${(scores.semanticSimilarity * 100).toFixed(0)}% match)`);
+      parts.push(`Related content (${(scores.semanticSimilarity * 100).toFixed(0)}% match)`)
     }
 
     if (candidate.relationshipType === 'PREREQUISITE') {
-      parts.push('Prerequisite for understanding this topic');
+      parts.push('Prerequisite for understanding this topic')
     } else if (candidate.relationshipType === 'RELATED') {
-      parts.push('Related via knowledge graph');
+      parts.push('Related via knowledge graph')
     } else if (candidate.relationshipType === 'INTEGRATED') {
-      parts.push('Integrated cross-course concept');
+      parts.push('Integrated cross-course concept')
     }
 
     if (scores.masteryAlignment > 0.8) {
-      parts.push('Matches your current mastery level');
+      parts.push('Matches your current mastery level')
     }
 
     if (parts.length === 0) {
-      parts.push('Recommended based on learning patterns');
+      parts.push('Recommended based on learning patterns')
     }
 
-    return parts.join(' • ');
+    return parts.join(' • ')
   }
 
   /**
    * Format recommendations for API response
    */
-  private formatRecommendations(recommendations: ContentRecommendation[]): RecommendationResponse[] {
-    return recommendations.map(rec => ({
+  private formatRecommendations(
+    recommendations: ContentRecommendation[],
+  ): RecommendationResponse[] {
+    return recommendations.map((rec) => ({
       id: rec.id,
       content: {
         id: rec.recommendedContentId,
@@ -574,11 +589,11 @@ export class RecommendationEngine {
         dismiss: true,
         rate: true,
       },
-    }));
+    }))
   }
 }
 
 /**
  * Singleton instance
  */
-export const recommendationEngine = new RecommendationEngine();
+export const recommendationEngine = new RecommendationEngine()

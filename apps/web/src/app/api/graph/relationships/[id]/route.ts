@@ -9,15 +9,12 @@
  * - System-generated relationships cannot be deleted
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { withErrorHandler } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
+import { errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 
-async function handler(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+async function handler(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
 
   try {
@@ -27,10 +24,7 @@ async function handler(
     })
 
     if (!relationship) {
-      return Response.json(
-        errorResponse('NOT_FOUND', 'Relationship not found'),
-        { status: 404 }
-      )
+      return Response.json(errorResponse('NOT_FOUND', 'Relationship not found'), { status: 404 })
     }
 
     // Validate that only user-defined relationships can be deleted
@@ -39,9 +33,9 @@ async function handler(
         errorResponse(
           'FORBIDDEN',
           'Cannot delete system-generated relationships. Only user-defined relationships can be deleted.',
-          { isUserDefined: false }
+          { isUserDefined: false },
         ),
-        { status: 403 }
+        { status: 403 },
       )
     }
 
@@ -55,14 +49,13 @@ async function handler(
         success: true,
         message: 'Relationship deleted successfully',
         deletedId: id,
-      })
+      }),
     )
   } catch (error) {
     console.error('Failed to delete relationship:', error)
-    return Response.json(
-      errorResponse('DELETE_FAILED', 'Failed to delete relationship'),
-      { status: 500 }
-    )
+    return Response.json(errorResponse('DELETE_FAILED', 'Failed to delete relationship'), {
+      status: 500,
+    })
   }
 }
 

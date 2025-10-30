@@ -14,10 +14,10 @@
  * Run with: npm run test:integration
  */
 
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals'
-import { SemanticSearchService } from '../semantic-search-service'
-import { embeddingService } from '../embedding-service'
+import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
 import { PrismaClient } from '@/generated/prisma'
+import { embeddingService } from '../embedding-service'
+import { SemanticSearchService } from '../semantic-search-service'
 
 describe('SemanticSearchService Integration Tests', () => {
   let searchService: SemanticSearchService
@@ -133,7 +133,7 @@ describe('SemanticSearchService Integration Tests', () => {
       where: { lectureId: testLectureId },
       select: { id: true },
     })
-    testChunkIds = chunks.map(c => c.id)
+    testChunkIds = chunks.map((c) => c.id)
 
     console.log(`Test data seeded: ${testChunkIds.length} chunks created`)
   }
@@ -182,7 +182,7 @@ describe('SemanticSearchService Integration Tests', () => {
       expect(response.queryTime).toBeLessThan(1000)
 
       // Verify results have required fields
-      response.results.forEach(result => {
+      response.results.forEach((result) => {
         expect(result.id).toBeDefined()
         expect(result.type).toBeDefined()
         expect(result.title).toBeDefined()
@@ -208,7 +208,7 @@ describe('SemanticSearchService Integration Tests', () => {
       // Verify results are ranked by similarity
       for (let i = 0; i < response.results.length - 1; i++) {
         expect(response.results[i].similarity).toBeGreaterThanOrEqual(
-          response.results[i + 1].similarity
+          response.results[i + 1].similarity,
         )
       }
 
@@ -216,7 +216,7 @@ describe('SemanticSearchService Integration Tests', () => {
       const topResult = response.results[0] as any
       expect(
         topResult.content?.toLowerCase().includes('sinoatrial') ||
-        topResult.snippet?.toLowerCase().includes('sinoatrial')
+          topResult.snippet?.toLowerCase().includes('sinoatrial'),
       ).toBe(true)
     })
 
@@ -232,7 +232,7 @@ describe('SemanticSearchService Integration Tests', () => {
       expect(response.results.length).toBeGreaterThan(0)
 
       // Should find content about heart blood flow even with different wording
-      const hasRelevantContent = response.results.some(result => {
+      const hasRelevantContent = response.results.some((result) => {
         const text = (result as any).content || result.snippet
         return (
           text.toLowerCase().includes('atrium') ||
@@ -285,7 +285,7 @@ describe('SemanticSearchService Integration Tests', () => {
       })
 
       // All results should be from the test course
-      response.results.forEach(result => {
+      response.results.forEach((result) => {
         expect(result.metadata.courseId).toBe(testCourseId)
       })
 
@@ -304,7 +304,7 @@ describe('SemanticSearchService Integration Tests', () => {
       })
 
       // All results should meet threshold
-      response.results.forEach(result => {
+      response.results.forEach((result) => {
         expect(result.similarity).toBeGreaterThanOrEqual(0.8)
       })
     })
@@ -321,7 +321,7 @@ describe('SemanticSearchService Integration Tests', () => {
       })
 
       // All results should be chunks
-      response.results.forEach(result => {
+      response.results.forEach((result) => {
         expect(result.type).toBe('chunk')
       })
     })
@@ -377,7 +377,7 @@ describe('SemanticSearchService Integration Tests', () => {
       })
 
       // Snippets should be generated
-      response.results.forEach(result => {
+      response.results.forEach((result) => {
         expect(result.snippet).toBeDefined()
         expect(result.snippet.length).toBeGreaterThan(0)
       })
@@ -392,9 +392,7 @@ describe('SemanticSearchService Integration Tests', () => {
       })
 
       // Check if any snippet has highlighted terms
-      const hasHighlights = response.results.some(result =>
-        result.snippet.includes('<mark>')
-      )
+      const hasHighlights = response.results.some((result) => result.snippet.includes('<mark>'))
 
       // Note: May not always have highlights if semantic match doesn't include exact terms
       console.log('Snippets have highlights:', hasHighlights)
@@ -431,9 +429,7 @@ describe('SemanticSearchService Integration Tests', () => {
 
       // Execute searches concurrently
       const results = await Promise.all(
-        queries.map(query =>
-          searchService.search({ query, limit: 10 })
-        )
+        queries.map((query) => searchService.search({ query, limit: 10 })),
       )
 
       const endTime = Date.now()
@@ -441,7 +437,7 @@ describe('SemanticSearchService Integration Tests', () => {
 
       // All searches should complete
       expect(results).toHaveLength(queries.length)
-      results.forEach(result => {
+      results.forEach((result) => {
         expect(result.results).toBeDefined()
       })
 
@@ -484,7 +480,7 @@ describe('SemanticSearchService Integration Tests', () => {
       if (!process.env.DATABASE_URL) return
 
       const response = await searchService.search({
-        query: 'What is the SA node\'s function? (pacemaker)',
+        query: "What is the SA node's function? (pacemaker)",
         limit: 10,
       })
 
@@ -503,7 +499,7 @@ describe('SemanticSearchService Integration Tests', () => {
       expect(response.results.length).toBeGreaterThan(0)
 
       // Should find relevant content even with acronyms
-      const hasRelevantContent = response.results.some(result => {
+      const hasRelevantContent = response.results.some((result) => {
         const text = ((result as any).content || result.snippet).toLowerCase()
         return text.includes('sinoatrial') || text.includes('atrioventricular')
       })
@@ -550,7 +546,7 @@ describe('SemanticSearchService Integration Tests', () => {
       expect(response.results.length).toBeGreaterThan(0)
 
       // Should find content about cardiac muscle blood supply
-      const hasRelevantContent = response.results.some(result => {
+      const hasRelevantContent = response.results.some((result) => {
         const text = ((result as any).content || result.snippet).toLowerCase()
         return text.includes('coronary') || text.includes('cardiac muscle')
       })

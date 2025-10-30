@@ -5,9 +5,9 @@
  * Reset all performance data for a user
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
 
 export async function DELETE(request: NextRequest) {
   try {

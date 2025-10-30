@@ -8,22 +8,27 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
 import {
-  TrendingUp,
-  TrendingDown,
-  Target,
-  Clock,
-  Award,
   AlertCircle,
+  Award,
   ChevronDown,
   ChevronUp,
+  Clock,
   Sparkles,
+  Target,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { useEffect, useState } from 'react'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface Insight {
   id: string
@@ -212,7 +217,9 @@ export function InsightsPanel() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className="text-sm font-semibold text-foreground">{insight.headline}</h4>
+                        <h4 className="text-sm font-semibold text-foreground">
+                          {insight.headline}
+                        </h4>
                         <Badge
                           variant="secondary"
                           className="text-xs"

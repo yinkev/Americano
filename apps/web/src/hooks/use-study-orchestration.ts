@@ -10,9 +10,9 @@
 'use client'
 
 import { useCallback, useEffect, useRef } from 'react'
-import { useSessionStore } from '@/store/use-session-store'
-import { usePerformanceMonitoring, type PerformanceMetrics } from './use-performance-monitoring'
 import { realtimeOrchestrationService } from '@/services/realtime-orchestration'
+import { useSessionStore } from '@/store/use-session-store'
+import { type PerformanceMetrics, usePerformanceMonitoring } from './use-performance-monitoring'
 
 interface StudyOrchestrationOptions {
   enabled?: boolean

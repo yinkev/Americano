@@ -13,21 +13,21 @@
  */
 
 export interface ParsedQuery {
-  original: string;
-  tokens: Token[];
-  ast: QueryNode | null;
-  errors: string[];
+  original: string
+  tokens: Token[]
+  ast: QueryNode | null
+  errors: string[]
   metadata: {
-    operatorCount: number;
-    nestingDepth: number;
-    hasFieldFilters: boolean;
-  };
+    operatorCount: number
+    nestingDepth: number
+    hasFieldFilters: boolean
+  }
 }
 
 export interface Token {
-  type: 'TERM' | 'AND' | 'OR' | 'NOT' | 'LPAREN' | 'RPAREN' | 'FIELD' | 'EOF';
-  value: string;
-  position: number;
+  type: 'TERM' | 'AND' | 'OR' | 'NOT' | 'LPAREN' | 'RPAREN' | 'FIELD' | 'EOF'
+  value: string
+  position: number
 }
 
 export type QueryNode =
@@ -36,67 +36,59 @@ export type QueryNode =
   | { type: 'DATE_RANGE'; field: string; start: string; end: string }
   | { type: 'AND'; left: QueryNode; right: QueryNode }
   | { type: 'OR'; left: QueryNode; right: QueryNode }
-  | { type: 'NOT'; operand: QueryNode };
+  | { type: 'NOT'; operand: QueryNode }
 
 export interface SemanticQuery {
-  embeddingText: string;
-  weight: number;
+  embeddingText: string
+  weight: number
 }
 
 export interface FilterQuery {
-  AND?: FilterQuery[];
-  OR?: FilterQuery[];
-  NOT?: FilterQuery[];
-  title?: { contains: string; mode?: 'insensitive' };
-  courseName?: { contains: string; mode?: 'insensitive' };
-  uploadedAt?: { gte?: Date; lte?: Date };
-  metadata?: { path?: string[]; equals?: string; string_contains?: string };
+  AND?: FilterQuery[]
+  OR?: FilterQuery[]
+  NOT?: FilterQuery[]
+  title?: { contains: string; mode?: 'insensitive' }
+  courseName?: { contains: string; mode?: 'insensitive' }
+  uploadedAt?: { gte?: Date; lte?: Date }
+  metadata?: { path?: string[]; equals?: string; string_contains?: string }
 }
 
-const VALID_FIELDS = ['title', 'course', 'date', 'author'];
-const MAX_OPERATORS = 5;
-const MAX_NESTING_DEPTH = 3;
+const VALID_FIELDS = ['title', 'course', 'date', 'author']
+const MAX_OPERATORS = 5
+const MAX_NESTING_DEPTH = 3
 
 export class QueryBuilder {
   /**
    * Parse a raw query string into a structured ParsedQuery object
    */
   parseQuery(query: string): ParsedQuery {
-    const errors: string[] = [];
-    const tokens = this.tokenize(query);
+    const errors: string[] = []
+    const tokens = this.tokenize(query)
 
     // Validate operator count
-    const operatorCount = tokens.filter(t =>
-      ['AND', 'OR', 'NOT'].includes(t.type)
-    ).length;
+    const operatorCount = tokens.filter((t) => ['AND', 'OR', 'NOT'].includes(t.type)).length
 
     if (operatorCount > MAX_OPERATORS) {
-      errors.push(
-        `Too many operators: ${operatorCount}. Maximum is ${MAX_OPERATORS}.`
-      );
+      errors.push(`Too many operators: ${operatorCount}. Maximum is ${MAX_OPERATORS}.`)
     }
 
     // Parse AST
-    let ast: QueryNode | null = null;
-    let nestingDepth = 0;
+    let ast: QueryNode | null = null
+    let nestingDepth = 0
 
     try {
-      const parser = new QueryParser(tokens);
-      ast = parser.parse();
-      nestingDepth = this.calculateNestingDepth(ast);
+      const parser = new QueryParser(tokens)
+      ast = parser.parse()
+      nestingDepth = this.calculateNestingDepth(ast)
 
       if (nestingDepth > MAX_NESTING_DEPTH) {
-        errors.push(
-          `Too much nesting: ${nestingDepth} levels. Maximum is ${MAX_NESTING_DEPTH}.`
-        );
+        errors.push(`Too much nesting: ${nestingDepth} levels. Maximum is ${MAX_NESTING_DEPTH}.`)
       }
     } catch (error) {
-      errors.push(
-        error instanceof Error ? error.message : 'Invalid query syntax'
-      );
+      errors.push(error instanceof Error ? error.message : 'Invalid query syntax')
     }
 
-    const hasFieldFilters = tokens.some(t => t.type === 'FIELD');
+    const hasFieldFilters = tokens.some((t) => t.type === 'FIELD')
 
     return {
       original: query,
@@ -108,142 +100,148 @@ export class QueryBuilder {
         nestingDepth,
         hasFieldFilters,
       },
-    };
+    }
   }
 
   /**
    * Tokenize the query string
    */
   private tokenize(query: string): Token[] {
-    const tokens: Token[] = [];
-    let position = 0;
-    let i = 0;
+    const tokens: Token[] = []
+    const position = 0
+    let i = 0
 
-    const trimmed = query.trim();
+    const trimmed = query.trim()
 
     while (i < trimmed.length) {
       // Skip whitespace
       if (/\s/.test(trimmed[i])) {
-        i++;
-        continue;
+        i++
+        continue
       }
 
       // Check for parentheses
       if (trimmed[i] === '(') {
-        tokens.push({ type: 'LPAREN', value: '(', position: i });
-        i++;
-        continue;
+        tokens.push({ type: 'LPAREN', value: '(', position: i })
+        i++
+        continue
       }
 
       if (trimmed[i] === ')') {
-        tokens.push({ type: 'RPAREN', value: ')', position: i });
-        i++;
-        continue;
+        tokens.push({ type: 'RPAREN', value: ')', position: i })
+        i++
+        continue
       }
 
       // Check for field-specific query (field:value or field:start..end)
-      const fieldMatch = trimmed.slice(i).match(/^(\w+):([^\s()]+)/);
+      const fieldMatch = trimmed.slice(i).match(/^(\w+):([^\s()]+)/)
       if (fieldMatch) {
-        const field = fieldMatch[1].toLowerCase();
-        const value = fieldMatch[2];
+        const field = fieldMatch[1].toLowerCase()
+        const value = fieldMatch[2]
 
         if (!VALID_FIELDS.includes(field)) {
-          throw new Error(
-            `Invalid field "${field}". Valid fields are: ${VALID_FIELDS.join(', ')}`
-          );
+          throw new Error(`Invalid field "${field}". Valid fields are: ${VALID_FIELDS.join(', ')}`)
         }
 
         // Check for date range
         if (field === 'date' && value.includes('..')) {
-          const [start, end] = value.split('..');
+          const [start, end] = value.split('..')
           tokens.push({
             type: 'FIELD',
             value: JSON.stringify({ field, type: 'range', start, end }),
             position: i,
-          });
+          })
         } else {
           tokens.push({
             type: 'FIELD',
             value: JSON.stringify({ field, value }),
             position: i,
-          });
+          })
         }
 
-        i += fieldMatch[0].length;
-        continue;
+        i += fieldMatch[0].length
+        continue
       }
 
       // Check for boolean operators (case-insensitive)
-      const upperRemaining = trimmed.slice(i).toUpperCase();
+      const upperRemaining = trimmed.slice(i).toUpperCase()
 
-      if (upperRemaining.startsWith('AND') && (i + 3 >= trimmed.length || /\s/.test(trimmed[i + 3]))) {
-        tokens.push({ type: 'AND', value: 'AND', position: i });
-        i += 3;
-        continue;
+      if (
+        upperRemaining.startsWith('AND') &&
+        (i + 3 >= trimmed.length || /\s/.test(trimmed[i + 3]))
+      ) {
+        tokens.push({ type: 'AND', value: 'AND', position: i })
+        i += 3
+        continue
       }
 
-      if (upperRemaining.startsWith('OR') && (i + 2 >= trimmed.length || /\s/.test(trimmed[i + 2]))) {
-        tokens.push({ type: 'OR', value: 'OR', position: i });
-        i += 2;
-        continue;
+      if (
+        upperRemaining.startsWith('OR') &&
+        (i + 2 >= trimmed.length || /\s/.test(trimmed[i + 2]))
+      ) {
+        tokens.push({ type: 'OR', value: 'OR', position: i })
+        i += 2
+        continue
       }
 
-      if (upperRemaining.startsWith('NOT') && (i + 3 >= trimmed.length || /\s/.test(trimmed[i + 3]))) {
-        tokens.push({ type: 'NOT', value: 'NOT', position: i });
-        i += 3;
-        continue;
+      if (
+        upperRemaining.startsWith('NOT') &&
+        (i + 3 >= trimmed.length || /\s/.test(trimmed[i + 3]))
+      ) {
+        tokens.push({ type: 'NOT', value: 'NOT', position: i })
+        i += 3
+        continue
       }
 
       // Extract term (word or quoted phrase)
-      let term = '';
+      let term = ''
 
       // Handle quoted strings
       if (trimmed[i] === '"') {
-        i++; // Skip opening quote
+        i++ // Skip opening quote
         while (i < trimmed.length && trimmed[i] !== '"') {
-          term += trimmed[i];
-          i++;
+          term += trimmed[i]
+          i++
         }
-        if (i < trimmed.length) i++; // Skip closing quote
+        if (i < trimmed.length) i++ // Skip closing quote
       } else {
         // Regular term
         while (i < trimmed.length && !/[\s()]/.test(trimmed[i])) {
-          term += trimmed[i];
-          i++;
+          term += trimmed[i]
+          i++
         }
       }
 
       if (term) {
-        tokens.push({ type: 'TERM', value: term, position: position });
+        tokens.push({ type: 'TERM', value: term, position: position })
       }
     }
 
-    tokens.push({ type: 'EOF', value: '', position: trimmed.length });
-    return tokens;
+    tokens.push({ type: 'EOF', value: '', position: trimmed.length })
+    return tokens
   }
 
   /**
    * Calculate maximum nesting depth of query AST
    */
   private calculateNestingDepth(node: QueryNode | null): number {
-    if (!node) return 0;
+    if (!node) return 0
 
     if (node.type === 'TERM' || node.type === 'FIELD_QUERY' || node.type === 'DATE_RANGE') {
-      return 1;
+      return 1
     }
 
     if (node.type === 'NOT') {
-      return 1 + this.calculateNestingDepth(node.operand);
+      return 1 + this.calculateNestingDepth(node.operand)
     }
 
     if (node.type === 'AND' || node.type === 'OR') {
-      return 1 + Math.max(
-        this.calculateNestingDepth(node.left),
-        this.calculateNestingDepth(node.right)
-      );
+      return (
+        1 + Math.max(this.calculateNestingDepth(node.left), this.calculateNestingDepth(node.right))
+      )
     }
 
-    return 0;
+    return 0
   }
 
   /**
@@ -252,17 +250,17 @@ export class QueryBuilder {
    */
   buildSemanticQuery(parsed: ParsedQuery): SemanticQuery {
     if (!parsed.ast) {
-      return { embeddingText: parsed.original, weight: 1.0 };
+      return { embeddingText: parsed.original, weight: 1.0 }
     }
 
-    const terms = this.extractTerms(parsed.ast);
-    const embeddingText = terms.join(' ');
+    const terms = this.extractTerms(parsed.ast)
+    const embeddingText = terms.join(' ')
 
     // Weight adjustment based on query complexity
     // Simple queries get higher semantic weight
-    const weight = parsed.metadata.hasFieldFilters ? 0.5 : 0.7;
+    const weight = parsed.metadata.hasFieldFilters ? 0.5 : 0.7
 
-    return { embeddingText, weight };
+    return { embeddingText, weight }
   }
 
   /**
@@ -270,29 +268,26 @@ export class QueryBuilder {
    */
   private extractTerms(node: QueryNode): string[] {
     if (node.type === 'TERM') {
-      return [node.value];
+      return [node.value]
     }
 
     if (node.type === 'FIELD_QUERY') {
-      return [node.value];
+      return [node.value]
     }
 
     if (node.type === 'DATE_RANGE') {
-      return [];
+      return []
     }
 
     if (node.type === 'NOT') {
-      return this.extractTerms(node.operand);
+      return this.extractTerms(node.operand)
     }
 
     if (node.type === 'AND' || node.type === 'OR') {
-      return [
-        ...this.extractTerms(node.left),
-        ...this.extractTerms(node.right),
-      ];
+      return [...this.extractTerms(node.left), ...this.extractTerms(node.right)]
     }
 
-    return [];
+    return []
   }
 
   /**
@@ -300,10 +295,10 @@ export class QueryBuilder {
    */
   buildFilterQuery(parsed: ParsedQuery): FilterQuery {
     if (!parsed.ast) {
-      return {};
+      return {}
     }
 
-    return this.buildFilterFromNode(parsed.ast);
+    return this.buildFilterFromNode(parsed.ast)
   }
 
   /**
@@ -313,33 +308,31 @@ export class QueryBuilder {
     if (node.type === 'TERM') {
       // Simple term - search across all text fields
       return {
-        OR: [
-          { title: { contains: node.value, mode: 'insensitive' } },
-        ],
-      };
+        OR: [{ title: { contains: node.value, mode: 'insensitive' } }],
+      }
     }
 
     if (node.type === 'FIELD_QUERY') {
       // Field-specific query
       if (node.field === 'title') {
-        return { title: { contains: node.value, mode: 'insensitive' } };
+        return { title: { contains: node.value, mode: 'insensitive' } }
       }
       if (node.field === 'course') {
-        return { courseName: { contains: node.value, mode: 'insensitive' } };
+        return { courseName: { contains: node.value, mode: 'insensitive' } }
       }
       if (node.field === 'author') {
-        return { metadata: { path: ['author'], equals: node.value } };
+        return { metadata: { path: ['author'], equals: node.value } }
       }
-      return {};
+      return {}
     }
 
     if (node.type === 'DATE_RANGE') {
       // Date range query
-      const start = new Date(node.start);
-      const end = new Date(node.end);
+      const start = new Date(node.start)
+      const end = new Date(node.end)
 
       if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-        return {};
+        return {}
       }
 
       return {
@@ -347,34 +340,28 @@ export class QueryBuilder {
           gte: start,
           lte: end,
         },
-      };
+      }
     }
 
     if (node.type === 'AND') {
       return {
-        AND: [
-          this.buildFilterFromNode(node.left),
-          this.buildFilterFromNode(node.right),
-        ],
-      };
+        AND: [this.buildFilterFromNode(node.left), this.buildFilterFromNode(node.right)],
+      }
     }
 
     if (node.type === 'OR') {
       return {
-        OR: [
-          this.buildFilterFromNode(node.left),
-          this.buildFilterFromNode(node.right),
-        ],
-      };
+        OR: [this.buildFilterFromNode(node.left), this.buildFilterFromNode(node.right)],
+      }
     }
 
     if (node.type === 'NOT') {
       return {
         NOT: [this.buildFilterFromNode(node.operand)],
-      };
+      }
     }
 
-    return {};
+    return {}
   }
 }
 
@@ -382,71 +369,71 @@ export class QueryBuilder {
  * Recursive descent parser for boolean query syntax
  */
 class QueryParser {
-  private tokens: Token[];
-  private current: number;
+  private tokens: Token[]
+  private current: number
 
   constructor(tokens: Token[]) {
-    this.tokens = tokens;
-    this.current = 0;
+    this.tokens = tokens
+    this.current = 0
   }
 
   parse(): QueryNode | null {
     if (this.peek().type === 'EOF') {
-      return null;
+      return null
     }
-    return this.parseOrExpression();
+    return this.parseOrExpression()
   }
 
   private parseOrExpression(): QueryNode {
-    let left = this.parseAndExpression();
+    let left = this.parseAndExpression()
 
     while (this.peek().type === 'OR') {
-      this.advance(); // consume OR
-      const right = this.parseAndExpression();
-      left = { type: 'OR', left, right };
+      this.advance() // consume OR
+      const right = this.parseAndExpression()
+      left = { type: 'OR', left, right }
     }
 
-    return left;
+    return left
   }
 
   private parseAndExpression(): QueryNode {
-    let left = this.parseNotExpression();
+    let left = this.parseNotExpression()
 
     while (this.peek().type === 'AND') {
-      this.advance(); // consume AND
-      const right = this.parseNotExpression();
-      left = { type: 'AND', left, right };
+      this.advance() // consume AND
+      const right = this.parseNotExpression()
+      left = { type: 'AND', left, right }
     }
 
-    return left;
+    return left
   }
 
   private parseNotExpression(): QueryNode {
     if (this.peek().type === 'NOT') {
-      this.advance(); // consume NOT
-      const operand = this.parsePrimary();
-      return { type: 'NOT', operand };
+      this.advance() // consume NOT
+      const operand = this.parsePrimary()
+      return { type: 'NOT', operand }
     }
 
-    return this.parsePrimary();
+    return this.parsePrimary()
   }
 
   private parsePrimary(): QueryNode {
-    const token = this.peek();
+    const token = this.peek()
 
     if (token.type === 'LPAREN') {
-      this.advance(); // consume (
-      const expr = this.parseOrExpression();
+      this.advance() // consume (
+      const expr = this.parseOrExpression()
       if (this.peek().type !== 'RPAREN') {
-        throw new Error(`Expected closing parenthesis, got ${this.peek().type}`);
+        throw new Error(`Expected closing parenthesis, got ${this.peek().type}`)
       }
-      this.advance(); // consume )
-      return expr;
+      this.advance() // consume )
+      return expr
     }
 
     if (token.type === 'FIELD') {
-      this.advance();
-      const parsed = JSON.parse(token.value);
+      this.advance()
+      const parsed = JSON.parse(token.value)
 
       if (parsed.type === 'range') {
         return {
@@ -454,31 +441,31 @@ class QueryParser {
           field: parsed.field,
           start: parsed.start,
           end: parsed.end,
-        };
+        }
       }
 
       return {
         type: 'FIELD_QUERY',
         field: parsed.field,
         value: parsed.value,
-      };
+      }
     }
 
     if (token.type === 'TERM') {
-      this.advance();
-      return { type: 'TERM', value: token.value };
+      this.advance()
+      return { type: 'TERM', value: token.value }
     }
 
-    throw new Error(`Unexpected token: ${token.type} at position ${token.position}`);
+    throw new Error(`Unexpected token: ${token.type} at position ${token.position}`)
   }
 
   private peek(): Token {
-    return this.tokens[this.current];
+    return this.tokens[this.current]
   }
 
   private advance(): Token {
-    const token = this.tokens[this.current];
-    this.current++;
-    return token;
+    const token = this.tokens[this.current]
+    this.current++
+    return token
   }
 }

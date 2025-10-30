@@ -5,9 +5,9 @@
  * Tests Next.js → FastAPI proxy layer for model performance metrics
  */
 
-import { GET } from '@/app/api/analytics/model-performance/route'
 import { NextRequest } from 'next/server'
-import { server, createErrorHandler, create503Handler } from '../../setup'
+import { GET } from '@/app/api/analytics/model-performance/route'
+import { create503Handler, createErrorHandler, server } from '../../setup'
 
 describe('GET /api/analytics/model-performance', () => {
   describe('Success Cases', () => {

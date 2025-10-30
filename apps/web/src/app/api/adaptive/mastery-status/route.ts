@@ -12,12 +12,12 @@
  * - Performance target: < 200ms
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { getUserId } from '@/lib/auth'
-import { ApiError } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
-import { validateQuery, masteryStatusQuerySchema } from '@/lib/validation'
+import { type NextRequest, NextResponse } from 'next/server'
 import { MasteryVerificationEngine } from '@/lib/adaptive/mastery-verification'
+import { ApiError } from '@/lib/api-error'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { getUserId } from '@/lib/auth'
+import { masteryStatusQuerySchema, validateQuery } from '@/lib/validation'
 
 export async function GET(request: NextRequest) {
   try {
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
           date: a.date,
           calibrationDelta: a.calibrationDelta,
         })),
-      })
+      }),
     )
   } catch (error) {
     console.error('[API] GET /api/adaptive/mastery-status error:', error)
@@ -59,9 +59,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(errorResponse(error), { status: error.statusCode })
     }
 
-    return NextResponse.json(
-      errorResponse(ApiError.internal('Failed to get mastery status')),
-      { status: 500 }
-    )
+    return NextResponse.json(errorResponse(ApiError.internal('Failed to get mastery status')), {
+      status: 500,
+    })
   }
 }

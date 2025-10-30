@@ -5,9 +5,9 @@
  * Tests burnout risk assessment endpoint with MBI-based algorithm
  */
 
-import { GET } from '@/app/api/analytics/burnout-risk/route'
 import { NextRequest } from 'next/server'
 import { mockBurnoutAssessment } from '@/__tests__/fixtures/cognitive-health'
+import { GET } from '@/app/api/analytics/burnout-risk/route'
 
 // Mock subsystem
 const mockBurnoutPreventionEngine = {
@@ -285,7 +285,9 @@ describe('GET /api/analytics/burnout-risk', () => {
     })
 
     it('should handle assessment engine errors gracefully', async () => {
-      mockBurnoutPreventionEngine.assessBurnoutRisk.mockRejectedValue(new Error('Assessment failed'))
+      mockBurnoutPreventionEngine.assessBurnoutRisk.mockRejectedValue(
+        new Error('Assessment failed'),
+      )
 
       const request = new NextRequest(
         `http://localhost:3000/api/analytics/burnout-risk?userId=${validUserId}`,

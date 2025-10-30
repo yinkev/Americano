@@ -13,8 +13,8 @@
  * - Accounts for mission complexity correlation (longer for ADVANCED objectives)
  */
 
-import { prisma } from '@/lib/db'
 import { ObjectiveComplexity } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 /**
  * Duration bucket configuration
@@ -210,7 +210,7 @@ export class SessionDurationAnalyzer {
       if (
         bucket.bucketScore > (optimalBucket?.bucketScore ?? 0) ||
         (bucket.bucketScore === (optimalBucket?.bucketScore ?? 0) &&
-          (bucket.sessionCount > (optimalBucket?.sessionCount ?? 0)))
+          bucket.sessionCount > (optimalBucket?.sessionCount ?? 0))
       ) {
         optimalBucket = bucket
       }

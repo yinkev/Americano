@@ -11,8 +11,8 @@
 // Jest globals (describe, it, expect, beforeEach, afterEach) are available without imports
 import { prisma } from '@/lib/db'
 import {
-  MetacognitiveInterventionEngine,
   InterventionType,
+  MetacognitiveInterventionEngine,
 } from '@/lib/metacognitive-interventions'
 
 // Mock Prisma client
@@ -43,7 +43,7 @@ describe('MetacognitiveInterventionEngine', () => {
   describe('checkCalibrationHealth', () => {
     it('should return needsIntervention=false when insufficient data (< 10 assessments)', async () => {
       // Mock only 5 responses
-      (prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
+      ;(prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
         Array.from({ length: 5 }, (_, i) => ({
           id: `response-${i}`,
           userId: mockUserId,
@@ -80,34 +80,34 @@ describe('MetacognitiveInterventionEngine', () => {
 
     it('should return needsIntervention=false when correlation >= 0.5 (acceptable calibration)', async () => {
       // Mock 15 responses with good calibration (confidence matches score)
-      (prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
-        Array.from({ length: 15 }, (_, i) => ({
-          id: `response-${i}`,
-          userId: mockUserId,
-          preAssessmentConfidence: 3, // Normalized to 50
-          score: 0.5, // 50 when scaled to 0-100
-          respondedAt: new Date(),
-          prompt: { conceptName: mockPromptConceptName },
-          promptId: `prompt-${i}`,
-          sessionId: null,
-          userAnswer: 'Test answer',
-          aiEvaluation: 'Test evaluation',
-          confidence: null,
-          confidenceLevel: 3,
-          calibrationDelta: 0,
-          detailedFeedback: null,
-          skipped: false,
-          isControlledFailure: false,
-          retryAttemptNumber: null,
-          postAssessmentConfidence: null,
-          confidenceShift: null,
-          confidenceRationale: null,
-          reflectionNotes: null,
-          calibrationCategory: 'CALIBRATED',
-        })),
-      )
-
-      (prisma.behavioralEvent.findFirst as jest.Mock).mockResolvedValue(null)
+      ;(prisma.validationResponse.findMany as jest.Mock)
+        .mockResolvedValue(
+          Array.from({ length: 15 }, (_, i) => ({
+            id: `response-${i}`,
+            userId: mockUserId,
+            preAssessmentConfidence: 3, // Normalized to 50
+            score: 0.5, // 50 when scaled to 0-100
+            respondedAt: new Date(),
+            prompt: { conceptName: mockPromptConceptName },
+            promptId: `prompt-${i}`,
+            sessionId: null,
+            userAnswer: 'Test answer',
+            aiEvaluation: 'Test evaluation',
+            confidence: null,
+            confidenceLevel: 3,
+            calibrationDelta: 0,
+            detailedFeedback: null,
+            skipped: false,
+            isControlledFailure: false,
+            retryAttemptNumber: null,
+            postAssessmentConfidence: null,
+            confidenceShift: null,
+            confidenceRationale: null,
+            reflectionNotes: null,
+            calibrationCategory: 'CALIBRATED',
+          })),
+        )(prisma.behavioralEvent.findFirst as jest.Mock)
+        .mockResolvedValue(null)
 
       const result = await MetacognitiveInterventionEngine.checkCalibrationHealth(mockUserId)
 
@@ -118,34 +118,34 @@ describe('MetacognitiveInterventionEngine', () => {
 
     it('should return needsIntervention=true when correlation < 0.5 (poor calibration)', async () => {
       // Mock 15 responses with poor calibration (low confidence, high scores)
-      (prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
-        Array.from({ length: 15 }, (_, i) => ({
-          id: `response-${i}`,
-          userId: mockUserId,
-          preAssessmentConfidence: 2, // Normalized to 25
-          score: 0.8, // 80 when scaled to 0-100
-          respondedAt: new Date(),
-          prompt: { conceptName: mockPromptConceptName },
-          promptId: `prompt-${i}`,
-          sessionId: null,
-          userAnswer: 'Test answer',
-          aiEvaluation: 'Test evaluation',
-          confidence: null,
-          confidenceLevel: 2,
-          calibrationDelta: -55,
-          detailedFeedback: null,
-          skipped: false,
-          isControlledFailure: false,
-          retryAttemptNumber: null,
-          postAssessmentConfidence: null,
-          confidenceShift: null,
-          confidenceRationale: null,
-          reflectionNotes: null,
-          calibrationCategory: 'UNDERCONFIDENT',
-        })),
-      )
-
-      (prisma.behavioralEvent.findFirst as jest.Mock).mockResolvedValue(null)
+      ;(prisma.validationResponse.findMany as jest.Mock)
+        .mockResolvedValue(
+          Array.from({ length: 15 }, (_, i) => ({
+            id: `response-${i}`,
+            userId: mockUserId,
+            preAssessmentConfidence: 2, // Normalized to 25
+            score: 0.8, // 80 when scaled to 0-100
+            respondedAt: new Date(),
+            prompt: { conceptName: mockPromptConceptName },
+            promptId: `prompt-${i}`,
+            sessionId: null,
+            userAnswer: 'Test answer',
+            aiEvaluation: 'Test evaluation',
+            confidence: null,
+            confidenceLevel: 2,
+            calibrationDelta: -55,
+            detailedFeedback: null,
+            skipped: false,
+            isControlledFailure: false,
+            retryAttemptNumber: null,
+            postAssessmentConfidence: null,
+            confidenceShift: null,
+            confidenceRationale: null,
+            reflectionNotes: null,
+            calibrationCategory: 'UNDERCONFIDENT',
+          })),
+        )(prisma.behavioralEvent.findFirst as jest.Mock)
+        .mockResolvedValue(null)
 
       const result = await MetacognitiveInterventionEngine.checkCalibrationHealth(mockUserId)
 
@@ -156,7 +156,7 @@ describe('MetacognitiveInterventionEngine', () => {
 
     it('should enforce 7-day cooldown period after dismissal', async () => {
       // Mock poor calibration data
-      (prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
+      ;(prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
         Array.from({ length: 15 }, (_, i) => ({
           id: `response-${i}`,
           userId: mockUserId,
@@ -185,27 +185,27 @@ describe('MetacognitiveInterventionEngine', () => {
 
       // Mock recent dismissal (3 days ago)
       const threeDaysAgo = new Date()
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
-
-      (prisma.behavioralEvent.findFirst as jest.Mock).mockResolvedValue({
-        id: 'event-123',
-        userId: mockUserId,
-        eventType: 'VALIDATION_COMPLETED',
-        eventData: {
-          type: 'intervention_dismissal',
-          interventionType: InterventionType.OVERCONFIDENCE,
-          correlationAtDismissal: 0.3,
-          assessmentCount: 15,
-        },
-        timestamp: threeDaysAgo,
-        completionQuality: null,
-        contentType: null,
-        dayOfWeek: null,
-        difficultyLevel: null,
-        engagementLevel: null,
-        sessionPerformanceScore: null,
-        timeOfDay: null,
-      })
+      threeDaysAgo
+        .setDate(threeDaysAgo.getDate() - 3)(prisma.behavioralEvent.findFirst as jest.Mock)
+        .mockResolvedValue({
+          id: 'event-123',
+          userId: mockUserId,
+          eventType: 'VALIDATION_COMPLETED',
+          eventData: {
+            type: 'intervention_dismissal',
+            interventionType: InterventionType.OVERCONFIDENCE,
+            correlationAtDismissal: 0.3,
+            assessmentCount: 15,
+          },
+          timestamp: threeDaysAgo,
+          completionQuality: null,
+          contentType: null,
+          dayOfWeek: null,
+          difficultyLevel: null,
+          engagementLevel: null,
+          sessionPerformanceScore: null,
+          timeOfDay: null,
+        })
 
       const result = await MetacognitiveInterventionEngine.checkCalibrationHealth(mockUserId)
 
@@ -216,7 +216,7 @@ describe('MetacognitiveInterventionEngine', () => {
 
     it('should allow intervention after cooldown period expires (8 days)', async () => {
       // Mock poor calibration data
-      (prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
+      ;(prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
         Array.from({ length: 15 }, (_, i) => ({
           id: `response-${i}`,
           userId: mockUserId,
@@ -245,27 +245,27 @@ describe('MetacognitiveInterventionEngine', () => {
 
       // Mock old dismissal (8 days ago - past cooldown)
       const eightDaysAgo = new Date()
-      eightDaysAgo.setDate(eightDaysAgo.getDate() - 8)
-
-      (prisma.behavioralEvent.findFirst as jest.Mock).mockResolvedValue({
-        id: 'event-123',
-        userId: mockUserId,
-        eventType: 'VALIDATION_COMPLETED',
-        eventData: {
-          type: 'intervention_dismissal',
-          interventionType: InterventionType.OVERCONFIDENCE,
-          correlationAtDismissal: 0.3,
-          assessmentCount: 15,
-        },
-        timestamp: eightDaysAgo,
-        completionQuality: null,
-        contentType: null,
-        dayOfWeek: null,
-        difficultyLevel: null,
-        engagementLevel: null,
-        sessionPerformanceScore: null,
-        timeOfDay: null,
-      })
+      eightDaysAgo
+        .setDate(eightDaysAgo.getDate() - 8)(prisma.behavioralEvent.findFirst as jest.Mock)
+        .mockResolvedValue({
+          id: 'event-123',
+          userId: mockUserId,
+          eventType: 'VALIDATION_COMPLETED',
+          eventData: {
+            type: 'intervention_dismissal',
+            interventionType: InterventionType.OVERCONFIDENCE,
+            correlationAtDismissal: 0.3,
+            assessmentCount: 15,
+          },
+          timestamp: eightDaysAgo,
+          completionQuality: null,
+          contentType: null,
+          dayOfWeek: null,
+          difficultyLevel: null,
+          engagementLevel: null,
+          sessionPerformanceScore: null,
+          timeOfDay: null,
+        })
 
       const result = await MetacognitiveInterventionEngine.checkCalibrationHealth(mockUserId)
 
@@ -275,34 +275,34 @@ describe('MetacognitiveInterventionEngine', () => {
 
     it('should detect OVERCONFIDENCE pattern (consistent high deltas)', async () => {
       // Mock responses with consistent overconfidence (high confidence, low scores)
-      (prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
-        Array.from({ length: 15 }, (_, i) => ({
-          id: `response-${i}`,
-          userId: mockUserId,
-          preAssessmentConfidence: 5, // Normalized to 100
-          score: 0.4, // 40 when scaled to 0-100
-          respondedAt: new Date(),
-          prompt: { conceptName: mockPromptConceptName },
-          promptId: `prompt-${i}`,
-          sessionId: null,
-          userAnswer: 'Test answer',
-          aiEvaluation: 'Test evaluation',
-          confidence: null,
-          confidenceLevel: 5,
-          calibrationDelta: 60,
-          detailedFeedback: null,
-          skipped: false,
-          isControlledFailure: false,
-          retryAttemptNumber: null,
-          postAssessmentConfidence: null,
-          confidenceShift: null,
-          confidenceRationale: null,
-          reflectionNotes: null,
-          calibrationCategory: 'OVERCONFIDENT',
-        })),
-      )
-
-      (prisma.behavioralEvent.findFirst as jest.Mock).mockResolvedValue(null)
+      ;(prisma.validationResponse.findMany as jest.Mock)
+        .mockResolvedValue(
+          Array.from({ length: 15 }, (_, i) => ({
+            id: `response-${i}`,
+            userId: mockUserId,
+            preAssessmentConfidence: 5, // Normalized to 100
+            score: 0.4, // 40 when scaled to 0-100
+            respondedAt: new Date(),
+            prompt: { conceptName: mockPromptConceptName },
+            promptId: `prompt-${i}`,
+            sessionId: null,
+            userAnswer: 'Test answer',
+            aiEvaluation: 'Test evaluation',
+            confidence: null,
+            confidenceLevel: 5,
+            calibrationDelta: 60,
+            detailedFeedback: null,
+            skipped: false,
+            isControlledFailure: false,
+            retryAttemptNumber: null,
+            postAssessmentConfidence: null,
+            confidenceShift: null,
+            confidenceRationale: null,
+            reflectionNotes: null,
+            calibrationCategory: 'OVERCONFIDENT',
+          })),
+        )(prisma.behavioralEvent.findFirst as jest.Mock)
+        .mockResolvedValue(null)
 
       const result = await MetacognitiveInterventionEngine.checkCalibrationHealth(mockUserId)
 
@@ -312,34 +312,34 @@ describe('MetacognitiveInterventionEngine', () => {
 
     it('should detect UNDERCONFIDENCE pattern (consistent low deltas)', async () => {
       // Mock responses with consistent underconfidence (low confidence, high scores)
-      (prisma.validationResponse.findMany as jest.Mock).mockResolvedValue(
-        Array.from({ length: 15 }, (_, i) => ({
-          id: `response-${i}`,
-          userId: mockUserId,
-          preAssessmentConfidence: 2, // Normalized to 25
-          score: 0.85, // 85 when scaled to 0-100
-          respondedAt: new Date(),
-          prompt: { conceptName: mockPromptConceptName },
-          promptId: `prompt-${i}`,
-          sessionId: null,
-          userAnswer: 'Test answer',
-          aiEvaluation: 'Test evaluation',
-          confidence: null,
-          confidenceLevel: 2,
-          calibrationDelta: -60,
-          detailedFeedback: null,
-          skipped: false,
-          isControlledFailure: false,
-          retryAttemptNumber: null,
-          postAssessmentConfidence: null,
-          confidenceShift: null,
-          confidenceRationale: null,
-          reflectionNotes: null,
-          calibrationCategory: 'UNDERCONFIDENT',
-        })),
-      )
-
-      (prisma.behavioralEvent.findFirst as jest.Mock).mockResolvedValue(null)
+      ;(prisma.validationResponse.findMany as jest.Mock)
+        .mockResolvedValue(
+          Array.from({ length: 15 }, (_, i) => ({
+            id: `response-${i}`,
+            userId: mockUserId,
+            preAssessmentConfidence: 2, // Normalized to 25
+            score: 0.85, // 85 when scaled to 0-100
+            respondedAt: new Date(),
+            prompt: { conceptName: mockPromptConceptName },
+            promptId: `prompt-${i}`,
+            sessionId: null,
+            userAnswer: 'Test answer',
+            aiEvaluation: 'Test evaluation',
+            confidence: null,
+            confidenceLevel: 2,
+            calibrationDelta: -60,
+            detailedFeedback: null,
+            skipped: false,
+            isControlledFailure: false,
+            retryAttemptNumber: null,
+            postAssessmentConfidence: null,
+            confidenceShift: null,
+            confidenceRationale: null,
+            reflectionNotes: null,
+            calibrationCategory: 'UNDERCONFIDENT',
+          })),
+        )(prisma.behavioralEvent.findFirst as jest.Mock)
+        .mockResolvedValue(null)
 
       const result = await MetacognitiveInterventionEngine.checkCalibrationHealth(mockUserId)
 
@@ -350,7 +350,7 @@ describe('MetacognitiveInterventionEngine', () => {
 
   describe('generateInterventionRecommendations', () => {
     it('should generate OVERCONFIDENCE recommendations', async () => {
-      (prisma.validationResponse.findMany as jest.Mock).mockResolvedValue([
+      ;(prisma.validationResponse.findMany as jest.Mock).mockResolvedValue([
         {
           id: 'response-1',
           userId: mockUserId,
@@ -391,7 +391,7 @@ describe('MetacognitiveInterventionEngine', () => {
     })
 
     it('should generate UNDERCONFIDENCE recommendations', async () => {
-      (prisma.validationResponse.findMany as jest.Mock).mockResolvedValue([
+      ;(prisma.validationResponse.findMany as jest.Mock).mockResolvedValue([
         {
           id: 'response-1',
           userId: mockUserId,
@@ -434,7 +434,7 @@ describe('MetacognitiveInterventionEngine', () => {
 
   describe('trackInterventionDismissal', () => {
     it('should track dismissal in behavioral events', async () => {
-      (prisma.behavioralEvent.create as jest.Mock).mockResolvedValue({
+      ;(prisma.behavioralEvent.create as jest.Mock).mockResolvedValue({
         id: 'event-123',
         userId: mockUserId,
         eventType: 'VALIDATION_COMPLETED',

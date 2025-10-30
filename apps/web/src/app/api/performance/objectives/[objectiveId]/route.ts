@@ -5,10 +5,10 @@
  * Returns performance metrics for a specific learning objective
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
 import { PerformanceCalculator } from '@/lib/performance-calculator'
 
 const ParamsSchema = z.object({

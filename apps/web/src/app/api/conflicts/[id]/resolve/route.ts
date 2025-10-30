@@ -63,11 +63,11 @@
  *         description: Server error
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
+import { ChangeType, ConflictStatus } from '@/generated/prisma'
+import { ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { ConflictStatus, ChangeType } from '@/generated/prisma'
 
 // ============================================
 // Validation Schema
@@ -84,10 +84,7 @@ const ResolveRequestSchema = z.object({
 // POST Handler
 // ============================================
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: conflictId } = await params
 
@@ -103,9 +100,9 @@ export async function POST(
         errorResponse(
           ErrorCodes.VALIDATION_ERROR,
           'Invalid request body',
-          validatedBody.error.issues
+          validatedBody.error.issues,
         ),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -125,10 +122,9 @@ export async function POST(
     })
 
     if (!conflict) {
-      return NextResponse.json(
-        errorResponse(ErrorCodes.NOT_FOUND, 'Conflict not found'),
-        { status: 404 }
-      )
+      return NextResponse.json(errorResponse(ErrorCodes.NOT_FOUND, 'Conflict not found'), {
+        status: 404,
+      })
     }
 
     // Check if already resolved
@@ -144,9 +140,9 @@ export async function POST(
           errorResponse(
             ErrorCodes.CONFLICT,
             'Conflict already resolved by you. Use PATCH /api/conflicts/:id to reopen if needed.',
-            { existingResolutionId: existingResolution.id }
+            { existingResolutionId: existingResolution.id },
           ),
-          { status: 409 }
+          { status: 409 },
         )
       }
     }
@@ -168,9 +164,9 @@ export async function POST(
             {
               providedSourceId: preferredSourceId,
               validSourceIds,
-            }
+            },
           ),
-          { status: 400 }
+          { status: 400 },
         )
       }
     }
@@ -274,14 +270,14 @@ export async function POST(
           resolvedAt: conflictResolution.resolvedAt,
         },
         message: 'Conflict resolved successfully',
-      })
+      }),
     )
   } catch (error) {
     console.error('[POST /api/conflicts/:id/resolve] Error:', error)
 
     return NextResponse.json(
       errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to resolve conflict'),
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

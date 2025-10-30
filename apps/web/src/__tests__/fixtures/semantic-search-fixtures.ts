@@ -98,7 +98,8 @@ export const MOCK_SEARCH_RESULTS = [
     id: 'chunk-001',
     type: 'chunk' as const,
     title: 'Cardiac Function and Physiology',
-    snippet: 'The heart pumps blood throughout the body using a series of coordinated contractions...',
+    snippet:
+      'The heart pumps blood throughout the body using a series of coordinated contractions...',
     similarity: 0.96,
     relevanceScore: 0.94,
     metadata: {
@@ -114,7 +115,8 @@ export const MOCK_SEARCH_RESULTS = [
     id: 'chunk-002',
     type: 'chunk' as const,
     title: 'Cardiac Function and Physiology',
-    snippet: 'The cardiac cycle consists of systole and diastole, alternating contractions and relaxations...',
+    snippet:
+      'The cardiac cycle consists of systole and diastole, alternating contractions and relaxations...',
     similarity: 0.92,
     relevanceScore: 0.89,
     metadata: {
@@ -146,7 +148,8 @@ export const MOCK_SEARCH_RESULTS = [
     id: 'chunk-004',
     type: 'chunk' as const,
     title: 'Cardiac Function and Physiology',
-    snippet: 'The autonomic nervous system regulates heart rate through the sympathetic and parasympathetic divisions...',
+    snippet:
+      'The autonomic nervous system regulates heart rate through the sympathetic and parasympathetic divisions...',
     similarity: 0.85,
     relevanceScore: 0.81,
     metadata: {
@@ -387,7 +390,7 @@ export const CONCURRENCY_TEST_CASES = {
 
   medium: {
     concurrentRequests: 50,
-    expectedSuccessRate: 0.90, // 90%
+    expectedSuccessRate: 0.9, // 90%
   },
 
   high: {
@@ -397,7 +400,7 @@ export const CONCURRENCY_TEST_CASES = {
 
   extreme: {
     concurrentRequests: 500,
-    expectedSuccessRate: 0.70, // 70% (significant rate limiting)
+    expectedSuccessRate: 0.7, // 70% (significant rate limiting)
   },
 }
 
@@ -450,7 +453,7 @@ export function createSearchRequest(
     limit?: number
     offset?: number
     filters?: Record<string, any>
-  }
+  },
 ) {
   return {
     query,
@@ -512,7 +515,7 @@ export function extractPerformanceMetrics(response: any) {
  */
 export async function simulateSearchFlow(
   query: string,
-  userEmail?: string
+  userEmail?: string,
 ): Promise<{
   query: string
   results: any[]

@@ -13,22 +13,22 @@
 
 'use client'
 
-import { useState, useMemo } from 'react'
 import { format, subDays } from 'date-fns'
+import { Calendar, TrendingUp } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import {
-  LineChart,
+  Area,
+  CartesianGrid,
   Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-  Area,
 } from 'recharts'
-import { Calendar, TrendingUp } from 'lucide-react'
-import { chartTheme, chartColors } from '@/lib/chart-theme'
-import { Card, CardHeader, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { chartColors, chartTheme } from '@/lib/chart-theme'
 
 export interface CognitiveLoadDataPoint {
   timestamp: Date
@@ -174,7 +174,9 @@ export function StressPatternsTimeline({
         {/* Header with time range toggle */}
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-heading font-semibold text-foreground text-[16px]">Load Patterns</h3>
+            <h3 className="font-heading font-semibold text-foreground text-[16px]">
+              Load Patterns
+            </h3>
             <p className="text-[13px] text-muted-foreground mt-1">
               {timeRange === '7day' ? 'Past 7 days' : 'Past 30 days'}
             </p>
@@ -231,127 +233,129 @@ export function StressPatternsTimeline({
 
         {/* Line chart with Wave 3 theme */}
         <div className="w-full h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={filteredData}
-            onClick={(e: any) => {
-              if (e && e.activePayload && e.activePayload[0] && onDataPointClick) {
-                onDataPointClick(e.activePayload[0].payload)
-              }
-            }}
-            margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
-          >
-            {/* Grid with Wave 3 theme */}
-            <CartesianGrid {...chartTheme.grid} />
-
-            {/* X-Axis with Wave 3 theme */}
-            <XAxis
-              dataKey="shortDate"
-              {...chartTheme.axis}
-              tick={{ fontSize: 11, fill: chartColors.text }}
-            />
-
-            {/* Y-Axis with Wave 3 theme */}
-            <YAxis
-              domain={[0, 100]}
-              {...chartTheme.axis}
-              tick={{ fontSize: 11, fill: chartColors.text }}
-              label={{
-                value: 'Cognitive Load',
-                angle: -90,
-                position: 'insideLeft',
-                style: { fontSize: 11, fill: chartColors.text, fontWeight: 500 },
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={filteredData}
+              onClick={(e: any) => {
+                if (e && e.activePayload && e.activePayload[0] && onDataPointClick) {
+                  onDataPointClick(e.activePayload[0].payload)
+                }
               }}
-            />
+              margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
+            >
+              {/* Grid with Wave 3 theme */}
+              <CartesianGrid {...chartTheme.grid} />
 
-            {/* Reference lines for load zones with enhanced styling */}
-            <ReferenceLine
-              y={40}
-              stroke={LOAD_COLORS.moderate}
-              strokeDasharray="5 5"
-              strokeWidth={1.5}
-              opacity={0.4}
-              label={{
-                value: 'Moderate',
-                position: 'right',
-                style: { fontSize: 9, fill: LOAD_COLORS.moderate, fontWeight: 600 },
-              }}
-            />
-            <ReferenceLine
-              y={60}
-              stroke={LOAD_COLORS.high}
-              strokeDasharray="5 5"
-              strokeWidth={1.5}
-              opacity={0.4}
-              label={{
-                value: 'High',
-                position: 'right',
-                style: { fontSize: 9, fill: LOAD_COLORS.high, fontWeight: 600 },
-              }}
-            />
-            <ReferenceLine
-              y={80}
-              stroke={LOAD_COLORS.critical}
-              strokeDasharray="5 5"
-              strokeWidth={2}
-              opacity={0.5}
-              label={{
-                value: 'Critical',
-                position: 'right',
-                style: { fontSize: 9, fill: LOAD_COLORS.critical, fontWeight: 700 },
-              }}
-            />
+              {/* X-Axis with Wave 3 theme */}
+              <XAxis
+                dataKey="shortDate"
+                {...chartTheme.axis}
+                tick={{ fontSize: 11, fill: chartColors.text }}
+              />
 
-            {/* Enhanced tooltip with Wave 3 theme */}
-            <Tooltip content={<CustomTooltip />} cursor={chartTheme.tooltip.cursor} />
+              {/* Y-Axis with Wave 3 theme */}
+              <YAxis
+                domain={[0, 100]}
+                {...chartTheme.axis}
+                tick={{ fontSize: 11, fill: chartColors.text }}
+                label={{
+                  value: 'Cognitive Load',
+                  angle: -90,
+                  position: 'insideLeft',
+                  style: { fontSize: 11, fill: chartColors.text, fontWeight: 500 },
+                }}
+              />
 
-            {/* Main load line with smooth animation */}
-            <Line
-              type="monotone"
-              dataKey="loadScore"
-              stroke={chartColors.primary}
-              strokeWidth={3}
-              dot={(props: any) => {
-                const { cx, cy, payload } = props
-                const color =
-                  payload.loadScore < 40
-                    ? LOAD_COLORS.low
-                    : payload.loadScore < 60
-                      ? LOAD_COLORS.moderate
-                      : payload.loadScore < 80
-                        ? LOAD_COLORS.high
-                        : LOAD_COLORS.critical
+              {/* Reference lines for load zones with enhanced styling */}
+              <ReferenceLine
+                y={40}
+                stroke={LOAD_COLORS.moderate}
+                strokeDasharray="5 5"
+                strokeWidth={1.5}
+                opacity={0.4}
+                label={{
+                  value: 'Moderate',
+                  position: 'right',
+                  style: { fontSize: 9, fill: LOAD_COLORS.moderate, fontWeight: 600 },
+                }}
+              />
+              <ReferenceLine
+                y={60}
+                stroke={LOAD_COLORS.high}
+                strokeDasharray="5 5"
+                strokeWidth={1.5}
+                opacity={0.4}
+                label={{
+                  value: 'High',
+                  position: 'right',
+                  style: { fontSize: 9, fill: LOAD_COLORS.high, fontWeight: 600 },
+                }}
+              />
+              <ReferenceLine
+                y={80}
+                stroke={LOAD_COLORS.critical}
+                strokeDasharray="5 5"
+                strokeWidth={2}
+                opacity={0.5}
+                label={{
+                  value: 'Critical',
+                  position: 'right',
+                  style: { fontSize: 9, fill: LOAD_COLORS.critical, fontWeight: 700 },
+                }}
+              />
 
-                return (
-                  <circle
-                    cx={cx}
-                    cy={cy}
-                    r={payload.overloadDetected ? 7 : 5}
-                    fill={color}
-                    stroke="white"
-                    strokeWidth={2.5}
-                    className="transition-all duration-200 hover:r-8"
-                  />
-                )
-              }}
-              activeDot={{
-                r: 8,
-                strokeWidth: 3,
-                stroke: chartColors.primary,
-                fill: 'white',
-              }}
-              isAnimationActive={true}
-              animationDuration={800}
-              animationEasing="ease-out"
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+              {/* Enhanced tooltip with Wave 3 theme */}
+              <Tooltip content={<CustomTooltip />} cursor={chartTheme.tooltip.cursor} />
+
+              {/* Main load line with smooth animation */}
+              <Line
+                type="monotone"
+                dataKey="loadScore"
+                stroke={chartColors.primary}
+                strokeWidth={3}
+                dot={(props: any) => {
+                  const { cx, cy, payload } = props
+                  const color =
+                    payload.loadScore < 40
+                      ? LOAD_COLORS.low
+                      : payload.loadScore < 60
+                        ? LOAD_COLORS.moderate
+                        : payload.loadScore < 80
+                          ? LOAD_COLORS.high
+                          : LOAD_COLORS.critical
+
+                  return (
+                    <circle
+                      cx={cx}
+                      cy={cy}
+                      r={payload.overloadDetected ? 7 : 5}
+                      fill={color}
+                      stroke="white"
+                      strokeWidth={2.5}
+                      className="transition-all duration-200 hover:r-8"
+                    />
+                  )
+                }}
+                activeDot={{
+                  r: 8,
+                  strokeWidth: 3,
+                  stroke: chartColors.primary,
+                  fill: 'white',
+                }}
+                isAnimationActive={true}
+                animationDuration={800}
+                animationEasing="ease-out"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
 
         {/* Trend indicator */}
         {stats.trend !== 'stable' && (
           <div className="flex items-center justify-center gap-2 text-[13px]">
-            <TrendingUp className={`size-4 text-info ${stats.trend === 'down' ? 'rotate-180' : ''}`} />
+            <TrendingUp
+              className={`size-4 text-info ${stats.trend === 'down' ? 'rotate-180' : ''}`}
+            />
             <span className="text-muted-foreground">
               Load is trending {stats.trend === 'up' ? 'upward' : 'downward'} over this period
             </span>

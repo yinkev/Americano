@@ -2,11 +2,11 @@
 // GET: List all courses for current user
 // POST: Create new course
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse } from '@/lib/api-response'
+import type { NextRequest } from 'next/server'
 import { ApiError, withErrorHandler } from '@/lib/api-error'
-import { validateRequest, createCourseSchema } from '@/lib/validation'
+import { successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
+import { createCourseSchema, validateRequest } from '@/lib/validation'
 
 /**
  * GET /api/content/courses

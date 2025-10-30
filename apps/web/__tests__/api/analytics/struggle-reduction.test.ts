@@ -5,9 +5,9 @@
  * Tests Next.js → FastAPI proxy layer for struggle reduction metrics
  */
 
-import { GET } from '@/app/api/analytics/struggle-reduction/route'
 import { NextRequest } from 'next/server'
-import { server, createErrorHandler, create503Handler } from '../../setup'
+import { GET } from '@/app/api/analytics/struggle-reduction/route'
+import { create503Handler, createErrorHandler, server } from '../../setup'
 
 describe('GET /api/analytics/struggle-reduction', () => {
   describe('Success Cases', () => {

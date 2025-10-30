@@ -14,17 +14,17 @@
 
 'use client'
 
+import { differenceInDays, format } from 'date-fns'
 import {
   AlertCircle,
   AlertTriangle,
+  Calendar,
   CheckCircle,
   ShieldAlert,
-  Calendar,
   TrendingDown,
 } from 'lucide-react'
-import { format, differenceInDays } from 'date-fns'
-import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export type BurnoutRiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
 
@@ -90,7 +90,9 @@ export function BurnoutRiskPanel({
   const sortedFactors = [...contributingFactors].sort((a, b) => b.percentage - a.percentage)
 
   return (
-    <Card className={`bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all ${className}`}>
+    <Card
+      className={`bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] hover:shadow-[0_12px_40px_rgba(31,38,135,0.15)] transition-all ${className}`}
+    >
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center justify-between">
           <h3 className="font-heading font-semibold text-foreground text-[16px]">Burnout Risk</h3>
@@ -133,7 +135,9 @@ export function BurnoutRiskPanel({
         <div className="grid grid-cols-2 gap-4">
           <div
             className={`p-4 rounded-lg ${
-              daysSinceLastRest > 7 ? 'bg-destructive/10 border border-destructive/30' : 'bg-muted/30'
+              daysSinceLastRest > 7
+                ? 'bg-destructive/10 border border-destructive/30'
+                : 'bg-muted/30'
             }`}
           >
             <div className="flex items-center gap-2 mb-2">
@@ -149,7 +153,9 @@ export function BurnoutRiskPanel({
             >
               {daysSinceLastRest}
             </div>
-            {daysSinceLastRest > 7 && <p className="text-[11px] text-destructive mt-1">Rest day overdue</p>}
+            {daysSinceLastRest > 7 && (
+              <p className="text-[11px] text-destructive mt-1">Rest day overdue</p>
+            )}
           </div>
 
           {/* Recovery progress (if in recovery) */}
@@ -157,7 +163,9 @@ export function BurnoutRiskPanel({
             <div className="p-4 rounded-lg bg-success/10 border border-success/30">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingDown className="size-4 text-success" />
-                <span className="text-[11px] font-medium text-muted-foreground">Recovery Progress</span>
+                <span className="text-[11px] font-medium text-muted-foreground">
+                  Recovery Progress
+                </span>
               </div>
               <div className="text-[24px] font-bold font-heading text-success">
                 {Math.round(recoveryProgress)}%
@@ -260,7 +268,8 @@ export function BurnoutRiskPanel({
               >
                 <AlertCircle className="size-5 shrink-0 mt-0.5" style={{ color: config.color }} />
                 <p className="text-[13px] font-medium" style={{ color: config.color }}>
-                  Continuing to study at this cognitive load may harm your long-term retention. Please prioritize rest.
+                  Continuing to study at this cognitive load may harm your long-term retention.
+                  Please prioritize rest.
                 </p>
               </div>
             )}
@@ -286,7 +295,8 @@ export function BurnoutRiskPanel({
         {/* ARIA live region for screen readers */}
         <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
           Burnout risk is {config.label} with a score of {Math.round(riskScore)} out of 100.
-          {daysSinceLastRest > 7 && `It has been ${daysSinceLastRest} days since your last rest day.`}
+          {daysSinceLastRest > 7 &&
+            `It has been ${daysSinceLastRest} days since your last rest day.`}
           {recommendations.length > 0 && `${recommendations.length} recommendations available.`}
         </div>
       </CardContent>

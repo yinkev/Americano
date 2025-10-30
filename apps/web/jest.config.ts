@@ -10,6 +10,7 @@ const createJestConfig = nextJest({
 const baseConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/__tests__/(.*)$': '<rootDir>/__tests__/$1',
   },
   testPathIgnorePatterns: ['/node_modules/'],
   transform: {

@@ -25,7 +25,7 @@
  */
 
 import winston from 'winston'
-import { redactPII, hashSensitiveData } from './logger-pii-redaction'
+import { hashSensitiveData, redactPII } from './logger-pii-redaction'
 
 /**
  * Log levels (priority order: error > warn > info > http > debug)
@@ -103,13 +103,13 @@ const devFormat = winston.format.combine(
           }
           return acc
         },
-        {} as Record<string, unknown>
+        {} as Record<string, unknown>,
       )
       log += ` ${JSON.stringify(cleanMeta, null, 2)}`
     }
 
     return log
-  })
+  }),
 )
 
 /**
@@ -118,7 +118,7 @@ const devFormat = winston.format.combine(
 const prodFormat = winston.format.combine(
   winston.format.timestamp(),
   winston.format.errors({ stack: true }),
-  winston.format.json()
+  winston.format.json(),
 )
 
 /**
@@ -179,11 +179,8 @@ function createLogger(config: LoggerConfig = {}): winston.Logger {
   if (enableConsole) {
     transports.push(
       new winston.transports.Console({
-        format:
-          process.env.NODE_ENV === 'production'
-            ? prodFormat
-            : devFormat,
-      })
+        format: process.env.NODE_ENV === 'production' ? prodFormat : devFormat,
+      }),
     )
   }
 
@@ -195,7 +192,7 @@ function createLogger(config: LoggerConfig = {}): winston.Logger {
         format: prodFormat,
         maxsize: 10 * 1024 * 1024, // 10MB
         maxFiles: 5,
-      })
+      }),
     )
 
     // Separate error log file
@@ -206,7 +203,7 @@ function createLogger(config: LoggerConfig = {}): winston.Logger {
         format: prodFormat,
         maxsize: 10 * 1024 * 1024, // 10MB
         maxFiles: 5,
-      })
+      }),
     )
   }
 
@@ -236,17 +233,14 @@ const winstonLogger = createLogger()
 export class Logger {
   constructor(
     private defaultMeta: LogMetadata = {},
-    private winstonInstance: winston.Logger = winstonLogger
+    private winstonInstance: winston.Logger = winstonLogger,
   ) {}
 
   /**
    * Create a child logger with additional default metadata
    */
   child(meta: LogMetadata): Logger {
-    return new Logger(
-      { ...this.defaultMeta, ...meta },
-      this.winstonInstance
-    )
+    return new Logger({ ...this.defaultMeta, ...meta }, this.winstonInstance)
   }
 
   /**
@@ -311,7 +305,13 @@ export class Logger {
   /**
    * Log API response
    */
-  apiResponse(method: string, path: string, statusCode: number, duration: number, meta?: LogMetadata): void {
+  apiResponse(
+    method: string,
+    path: string,
+    statusCode: number,
+    duration: number,
+    meta?: LogMetadata,
+  ): void {
     this.http(`${method} ${path} ${statusCode}`, {
       ...meta,
       method,

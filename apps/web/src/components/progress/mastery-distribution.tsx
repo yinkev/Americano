@@ -7,8 +7,8 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import { useEffect, useState } from 'react'
+import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 interface MasterySummary {
   notStarted: number
@@ -93,12 +93,17 @@ export function MasteryDistribution() {
       {/* Summary Stats */}
       <div className="grid grid-cols-5 gap-2 mb-6">
         {chartData.map((item) => (
-          <div key={item.name} className="text-center p-3 bg-secondary/30 rounded-lg hover:bg-secondary/40 transition-colors duration-150">
+          <div
+            key={item.name}
+            className="text-center p-3 bg-secondary/30 rounded-lg hover:bg-secondary/40 transition-colors duration-150"
+          >
             <div className="text-2xl font-bold mb-1" style={{ color: item.color }}>
               {item.value}
             </div>
             <div className="text-[11px] text-muted-foreground mb-1">{item.name}</div>
-            <div className="text-[11px] font-medium text-muted-foreground">{item.percentage.toFixed(1)}%</div>
+            <div className="text-[11px] font-medium text-muted-foreground">
+              {item.percentage.toFixed(1)}%
+            </div>
           </div>
         ))}
       </div>

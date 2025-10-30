@@ -5,9 +5,9 @@
  * Tests Next.js → FastAPI proxy layer for prediction generation
  */
 
-import { POST } from '@/app/api/analytics/predictions/generate/route'
 import { NextRequest } from 'next/server'
-import { server, createErrorHandler, create503Handler } from '../../setup'
+import { POST } from '@/app/api/analytics/predictions/generate/route'
+import { create503Handler, createErrorHandler, server } from '../../setup'
 
 describe('POST /api/analytics/predictions/generate', () => {
   describe('Success Cases', () => {

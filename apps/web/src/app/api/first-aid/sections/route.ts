@@ -4,7 +4,7 @@
  * Epic 3 - Story 3.3 - Task 4.2: List First Aid sections with filtering
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
 
 const prisma = new PrismaClient()
@@ -22,7 +22,8 @@ export async function GET(request: NextRequest) {
 
     const limit = parseInt(limitStr, 10)
     const offset = parseInt(offsetStr, 10)
-    const isHighYield = isHighYieldStr === 'true' ? true : isHighYieldStr === 'false' ? false : undefined
+    const isHighYield =
+      isHighYieldStr === 'true' ? true : isHighYieldStr === 'false' ? false : undefined
 
     // Build where clause
     const where: any = {
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
         error: 'Failed to fetch sections',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

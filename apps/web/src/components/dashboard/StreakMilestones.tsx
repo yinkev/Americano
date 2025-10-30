@@ -1,8 +1,8 @@
 'use client'
 
+import { Flame, Star, Target, Trophy } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import React, { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { Flame, Trophy, Target, Star } from 'lucide-react'
 import { playSoundEffect } from './SoundToggle'
 
 /**
@@ -34,7 +34,7 @@ const MILESTONES: StreakMilestone[] = [
     days: 14,
     title: 'Two Week Champion',
     emoji: '⚡',
-    message: 'Two weeks of dedication! You\'re forming a strong habit.',
+    message: "Two weeks of dedication! You're forming a strong habit.",
     icon: Target,
   },
   {
@@ -48,7 +48,7 @@ const MILESTONES: StreakMilestone[] = [
     days: 100,
     title: 'Century Legend',
     emoji: '⭐',
-    message: '100 days! You\'re in the top 1% of learners. Unstoppable!',
+    message: "100 days! You're in the top 1% of learners. Unstoppable!",
     icon: Star,
   },
 ]
@@ -63,7 +63,7 @@ export function StreakMilestones({ streakDays }: StreakMilestonesProps) {
 
   useEffect(() => {
     // Check if user just hit a milestone
-    const milestone = MILESTONES.find(m => m.days === streakDays)
+    const milestone = MILESTONES.find((m) => m.days === streakDays)
     if (milestone) {
       setCurrentMilestone(milestone)
       setShowCelebration(true)
@@ -77,12 +77,12 @@ export function StreakMilestones({ streakDays }: StreakMilestonesProps) {
   }, [streakDays])
 
   const getNextMilestone = () => {
-    return MILESTONES.find(m => m.days > streakDays) || MILESTONES[MILESTONES.length - 1]
+    return MILESTONES.find((m) => m.days > streakDays) || MILESTONES[MILESTONES.length - 1]
   }
 
   const getProgressToNextMilestone = () => {
     const next = getNextMilestone()
-    const prev = [...MILESTONES].reverse().find(m => m.days <= streakDays)
+    const prev = [...MILESTONES].reverse().find((m) => m.days <= streakDays)
     const prevDays = prev?.days || 0
     const totalRange = next.days - prevDays
     const currentProgress = streakDays - prevDays
@@ -95,7 +95,9 @@ export function StreakMilestones({ streakDays }: StreakMilestonesProps) {
       <div className="text-xs text-muted-foreground mt-2">
         <div className="flex items-center justify-between mb-1">
           <span>Next: {getNextMilestone().title}</span>
-          <span className="font-medium">{streakDays}/{getNextMilestone().days}</span>
+          <span className="font-medium">
+            {streakDays}/{getNextMilestone().days}
+          </span>
         </div>
         <div className="h-1.5 bg-muted rounded-full overflow-hidden">
           <motion.div
@@ -157,9 +159,7 @@ export function StreakMilestones({ streakDays }: StreakMilestonesProps) {
                 <p className="text-xl font-bold text-[var(--streak-fire)] mb-3">
                   {streakDays} Day Streak!
                 </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  {currentMilestone.message}
-                </p>
+                <p className="text-muted-foreground leading-relaxed">{currentMilestone.message}</p>
               </motion.div>
 
               {/* Close button */}

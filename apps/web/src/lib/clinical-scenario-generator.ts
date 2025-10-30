@@ -1,5 +1,5 @@
-import { prisma } from '@/lib/db'
 import { ChatMockClient } from '@/lib/ai/chatmock-client'
+import { prisma } from '@/lib/db'
 
 // Use types from clinical-scenarios.ts instead of Prisma for consistency
 export type ObjectiveComplexity = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
@@ -118,7 +118,10 @@ export class ClinicalScenarioGenerator {
   /**
    * Find existing scenario for objective within cache period
    */
-  private async findExistingScenario(objectiveId: string, difficulty: string): Promise<ClinicalScenario | null> {
+  private async findExistingScenario(
+    objectiveId: string,
+    difficulty: string,
+  ): Promise<ClinicalScenario | null> {
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
@@ -154,7 +157,7 @@ export class ClinicalScenarioGenerator {
    */
   private async generateScenarioWithAI(
     objective: any,
-    difficulty: string
+    difficulty: string,
   ): Promise<GeneratedScenario> {
     const systemPrompt = this.buildSystemPrompt(difficulty)
     const userPrompt = this.buildUserPrompt(objective)
@@ -166,7 +169,7 @@ export class ClinicalScenarioGenerator {
         model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: userPrompt },
         ],
         temperature: 0.4,
         max_tokens: 4000,

@@ -7,19 +7,19 @@
 
 'use client'
 
+import {
+  AlertCircle,
+  Award,
+  Clock,
+  Flame,
+  Sparkles,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Trophy,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import {
-  TrendingUp,
-  TrendingDown,
-  Target,
-  Clock,
-  Award,
-  AlertCircle,
-  Sparkles,
-  Trophy,
-  Flame,
-} from 'lucide-react'
 
 export type InsightType =
   | 'PERFORMANCE_TREND'

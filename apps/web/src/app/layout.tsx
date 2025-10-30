@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
+import { ChatFAB } from '@/components/ai/chat-fab'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
-import { ChatFAB } from '@/components/ai/chat-fab'
 import { Providers } from './providers'
 import './globals.css'
 

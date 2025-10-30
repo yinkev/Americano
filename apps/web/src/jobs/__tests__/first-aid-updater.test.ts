@@ -4,10 +4,10 @@
  * Epic 3 - Story 3.3 - AC#8: Update system tests
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
-import { FirstAidUpdater } from '../first-aid-updater'
-import { firstAidVersionChecker } from '@/lib/first-aid-version-checker'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { firstAidUpdateNotifier } from '@/lib/first-aid-update-notifier'
+import { firstAidVersionChecker } from '@/lib/first-aid-version-checker'
+import { FirstAidUpdater } from '../first-aid-updater'
 
 // Mock dependencies
 jest.mock('@/lib/first-aid-version-checker')
@@ -154,7 +154,9 @@ describe('FirstAidUpdater', () => {
 
     it('should handle execution errors gracefully', async () => {
       // Mock version checker to throw error
-      jest.mocked(firstAidVersionChecker.checkAllUsers).mockRejectedValue(new Error('Database connection failed'))
+      jest
+        .mocked(firstAidVersionChecker.checkAllUsers)
+        .mockRejectedValue(new Error('Database connection failed'))
 
       const result = await updater.execute()
 
@@ -165,9 +167,11 @@ describe('FirstAidUpdater', () => {
 
     it('should prevent concurrent executions', async () => {
       // Create a long-running mock
-      jest.mocked(firstAidVersionChecker.checkAllUsers).mockImplementation(
-        () => new Promise(resolve => setTimeout(() => resolve(new Map()), 1000))
-      )
+      jest
+        .mocked(firstAidVersionChecker.checkAllUsers)
+        .mockImplementation(
+          () => new Promise((resolve) => setTimeout(() => resolve(new Map()), 1000)),
+        )
 
       const execution1 = updater.execute()
       const execution2 = updater.execute() // Should be skipped

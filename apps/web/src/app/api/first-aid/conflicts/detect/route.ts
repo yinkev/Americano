@@ -4,9 +4,9 @@
  * Epic 3 - Story 3.3 - Task 5.1: Detect conflicts between lecture and First Aid content
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { ConflictDetector } from '@/subsystems/knowledge-graph/conflict-detector'
+import { type NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
+import { ConflictDetector } from '@/subsystems/knowledge-graph/conflict-detector'
 
 const prisma = new PrismaClient()
 const contentConflictDetector = new ConflictDetector()
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     if (!lectureChunkId || !firstAidSectionId) {
       return NextResponse.json(
         { error: 'lectureChunkId and firstAidSectionId are required' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -35,10 +35,7 @@ export async function POST(request: NextRequest) {
     ])
 
     if (!chunk || !section) {
-      return NextResponse.json(
-        { error: 'Content not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Content not found' }, { status: 404 })
     }
 
     // Convert FirstAidSection to ContentChunk-compatible format for comparison
@@ -55,7 +52,7 @@ export async function POST(request: NextRequest) {
     // Detect conflicts using ConflictDetector
     const conflict = await contentConflictDetector.detectConflicts(
       chunk,
-      sectionAsChunk as any // Type assertion since we're adapting the structure
+      sectionAsChunk as any, // Type assertion since we're adapting the structure
     )
 
     return NextResponse.json({
@@ -73,7 +70,7 @@ export async function POST(request: NextRequest) {
         error: 'Conflict detection failed',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

@@ -10,11 +10,11 @@
  * and external services with MSW for API mocking.
  */
 
-import { renderHook, act, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
+import { HttpResponse, http } from 'msw'
 import { useStudyOrchestration } from '@/hooks/use-study-orchestration'
 import { useSessionStore } from '@/store/use-session-store'
-import { server, setupMSW, createErrorHandler } from '../../setup'
-import { http, HttpResponse } from 'msw'
+import { createErrorHandler, server, setupMSW } from '../../setup'
 
 // Initialize MSW server for all tests
 setupMSW()
@@ -40,21 +40,14 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
     // Reset Zustand store to initial state
     useSessionStore.setState({
       sessionId: 'test-session-123',
-      orchestration: {
-        isActive: true,
-        currentPhase: 'content',
-        breakRecommendation: null,
-        contentAdaptation: null,
-        sessionRecommendation: null,
-      },
       settings: {
         enableRealtimeOrchestration: true,
-      },
+      } as any,
       currentObjective: {
         objectiveId: 'obj-123',
-        lectureId: 'lecture-456',
+        estimatedMinutes: 30,
       },
-    })
+    } as any)
   })
 
   afterEach(() => {
@@ -92,9 +85,7 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
     })
 
     it('should respect enabled option when false', () => {
-      const { result } = renderHook(() =>
-        useStudyOrchestration({ enabled: false }),
-      )
+      const { result } = renderHook(() => useStudyOrchestration({ enabled: false }))
 
       // When disabled, orchestration should not be active
       expect(result.current.isEnabled).toBe(false)
@@ -117,9 +108,7 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
 
   describe('Success Cases - Recording Events', () => {
     it('should record correct answers and update performance metrics', async () => {
-      const { result } = renderHook(() =>
-        useStudyOrchestration({ autoRecord: true }),
-      )
+      const { result } = renderHook(() => useStudyOrchestration({ autoRecord: true }))
 
       // Record a correct answer with response time and confidence
       act(() => {
@@ -138,9 +127,7 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
     })
 
     it('should record incorrect answers and detect struggling', async () => {
-      const { result } = renderHook(() =>
-        useStudyOrchestration({ autoRecord: true }),
-      )
+      const { result } = renderHook(() => useStudyOrchestration({ autoRecord: true }))
 
       // Record multiple incorrect answers to trigger struggling detection
       act(() => {
@@ -155,15 +142,11 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
 
       // After multiple incorrect answers with long response times, user should be struggling
       // (This depends on the minSampleSize and performance calculation logic)
-      expect(result.current.performanceMetrics.recentAccuracy).toBeLessThanOrEqual(
-        100,
-      )
+      expect(result.current.performanceMetrics.recentAccuracy).toBeLessThanOrEqual(100)
     })
 
     it('should record interactions and update engagement metrics', async () => {
-      const { result } = renderHook(() =>
-        useStudyOrchestration({ autoRecord: true }),
-      )
+      const { result } = renderHook(() => useStudyOrchestration({ autoRecord: true }))
 
       // Record various user interactions
       act(() => {
@@ -179,9 +162,7 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
     })
 
     it('should record phase changes and update orchestration state', async () => {
-      const { result } = renderHook(() =>
-        useStudyOrchestration({ autoRecord: true }),
-      )
+      const { result } = renderHook(() => useStudyOrchestration({ autoRecord: true }))
 
       // Change phase from content to assessment
       act(() => {
@@ -237,9 +218,7 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
       // Re-render to get updated duration
       const { result: result2 } = renderHook(() => useStudyOrchestration())
 
-      expect(result2.current.sessionDuration).toBeGreaterThanOrEqual(
-        initialDuration,
-      )
+      expect(result2.current.sessionDuration).toBeGreaterThanOrEqual(initialDuration)
     })
   })
 
@@ -251,7 +230,7 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
       act(() => {
         useSessionStore.setState({
           orchestration: {
-            ...useSessionStore.getState().orchestration,
+            ...(useSessionStore.getState() as any).orchestration,
             breakRecommendation: {
               type: 'fatigue_detected',
               urgency: 'high',
@@ -262,7 +241,7 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
               reason: 'Fatigue detected',
             },
           },
-        })
+        } as any)
       })
 
       // Accept the break recommendation
@@ -344,11 +323,9 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
           contentAdaptation: null,
           sessionRecommendation: null,
         },
-      })
+      } as any)
 
-      const { result } = renderHook(() =>
-        useStudyOrchestration({ autoRecord: true }),
-      )
+      const { result } = renderHook(() => useStudyOrchestration({ autoRecord: true }))
 
       act(() => {
         result.current.recordAnswer(true, 5000, 4)
@@ -377,9 +354,7 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
 
   describe('Edge Cases - Performance Boundary Conditions', () => {
     it('should handle zero response time', async () => {
-      const { result } = renderHook(() =>
-        useStudyOrchestration({ autoRecord: true }),
-      )
+      const { result } = renderHook(() => useStudyOrchestration({ autoRecord: true }))
 
       act(() => {
         result.current.recordAnswer(true, 0, 5)
@@ -389,15 +364,11 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
         expect(result.current.performanceMetrics).toBeDefined()
       })
 
-      expect(result.current.performanceMetrics.avgResponseTime).toBeGreaterThanOrEqual(
-        0,
-      )
+      expect(result.current.performanceMetrics.avgResponseTime).toBeGreaterThanOrEqual(0)
     })
 
     it('should handle missing confidence value', async () => {
-      const { result } = renderHook(() =>
-        useStudyOrchestration({ autoRecord: true }),
-      )
+      const { result } = renderHook(() => useStudyOrchestration({ autoRecord: true }))
 
       act(() => {
         result.current.recordAnswer(true, 5000) // No confidence provided
@@ -409,9 +380,7 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
     })
 
     it('should handle rapid phase changes', async () => {
-      const { result } = renderHook(() =>
-        useStudyOrchestration({ autoRecord: true }),
-      )
+      const { result } = renderHook(() => useStudyOrchestration({ autoRecord: true }))
 
       act(() => {
         result.current.recordPhaseChange('content')
@@ -493,9 +462,7 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
 
   describe('Integration - Store Synchronization', () => {
     it('should sync performance metrics with store', async () => {
-      const { result } = renderHook(() =>
-        useStudyOrchestration({ autoRecord: true }),
-      )
+      const { result } = renderHook(() => useStudyOrchestration({ autoRecord: true }))
 
       // Record answers and wait for store update
       act(() => {
@@ -511,16 +478,14 @@ describe('useStudyOrchestration Hook - Integration Tests', () => {
     })
 
     it('should update orchestration phase in store', async () => {
-      const { result } = renderHook(() =>
-        useStudyOrchestration({ autoRecord: true }),
-      )
+      const { result } = renderHook(() => useStudyOrchestration({ autoRecord: true }))
 
       act(() => {
         result.current.recordPhaseChange('assessment')
       })
 
       await waitFor(() => {
-        const storeState = useSessionStore.getState()
+        const storeState = useSessionStore.getState() as any
         expect(storeState.orchestration.currentPhase).toBe('assessment')
       })
     })

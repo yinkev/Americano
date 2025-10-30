@@ -16,9 +16,9 @@
  * @module ValidationUtils
  */
 
-import { z } from 'zod'
-import { err, ok, type Result } from '@/lib/result'
+import type { z } from 'zod'
 import { DatabaseValidationError } from '@/lib/errors'
+import { err, ok, type Result } from '@/lib/result'
 
 /* ============================================================================
  * VALIDATION CONTEXT
@@ -127,7 +127,7 @@ export interface ValidationContext {
 export function validateSqlResult<T>(
   data: unknown,
   schema: z.ZodSchema<T>,
-  context: ValidationContext
+  context: ValidationContext,
 ): Result<T[], DatabaseValidationError> {
   // Step 1: Validate that data is an array
   if (!Array.isArray(data)) {
@@ -141,8 +141,8 @@ export function validateSqlResult<T>(
         {
           receivedType: typeof data,
           ...context.metadata,
-        }
-      )
+        },
+      ),
     )
   }
 
@@ -182,15 +182,19 @@ export function validateSqlResult<T>(
     })
 
     return err(
-      new DatabaseValidationError(validationErrors, {
-        query: context.query,
-        operation: context.operation,
-      }, {
-        totalRows: data.length,
-        validatedRows: validatedResults.length,
-        failedRows: validationErrors.length,
-        ...context.metadata,
-      })
+      new DatabaseValidationError(
+        validationErrors,
+        {
+          query: context.query,
+          operation: context.operation,
+        },
+        {
+          totalRows: data.length,
+          validatedRows: validatedResults.length,
+          failedRows: validationErrors.length,
+          ...context.metadata,
+        },
+      ),
     )
   }
 
@@ -241,7 +245,7 @@ export function validateSqlResult<T>(
 export function validateSingleSqlResult<T>(
   data: unknown,
   schema: z.ZodSchema<T>,
-  context: ValidationContext
+  context: ValidationContext,
 ): Result<T, DatabaseValidationError> {
   // First validate as array
   const arrayResult = validateSqlResult(data, schema, context)
@@ -265,8 +269,8 @@ export function validateSingleSqlResult<T>(
         {
           rowCount: 0,
           ...context.metadata,
-        }
-      )
+        },
+      ),
     )
   }
 
@@ -281,8 +285,8 @@ export function validateSingleSqlResult<T>(
         {
           rowCount: results.length,
           ...context.metadata,
-        }
-      )
+        },
+      ),
     )
   }
 
@@ -324,7 +328,7 @@ export function validateSingleSqlResult<T>(
 export function validateOptionalSqlResult<T>(
   data: unknown,
   schema: z.ZodSchema<T>,
-  context: ValidationContext
+  context: ValidationContext,
 ): Result<T | undefined, DatabaseValidationError> {
   // First validate as array
   const arrayResult = validateSqlResult(data, schema, context)
@@ -352,8 +356,8 @@ export function validateOptionalSqlResult<T>(
         {
           rowCount: results.length,
           ...context.metadata,
-        }
-      )
+        },
+      ),
     )
   }
 

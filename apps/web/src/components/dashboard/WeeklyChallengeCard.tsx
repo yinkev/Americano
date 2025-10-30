@@ -1,11 +1,11 @@
 'use client'
 
-import React from 'react'
+import { CheckCircle, Circle, Clock, Trophy } from 'lucide-react'
 import { motion } from 'motion/react'
-import { Trophy, CheckCircle, Circle, Clock } from 'lucide-react'
+import React from 'react'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { Badge } from '@/components/ui/badge'
 
 /**
  * Weekly Challenge Card
@@ -53,10 +53,7 @@ export function WeeklyChallengeCard() {
             <Trophy className="h-5 w-5 text-yellow-500" />
             Weekly Challenges
           </CardTitle>
-          <Badge
-            variant="secondary"
-            className="bg-success/10 text-success border-success/20"
-          >
+          <Badge variant="secondary" className="bg-success/10 text-success border-success/20">
             {completedCount}/{challenges.length}
           </Badge>
         </div>
@@ -66,12 +63,8 @@ export function WeeklyChallengeCard() {
         {/* Overall progress */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-muted-foreground">
-              Challenge Progress
-            </span>
-            <span className="text-sm font-bold text-primary">
-              {progressPercent.toFixed(0)}%
-            </span>
+            <span className="text-sm font-medium text-muted-foreground">Challenge Progress</span>
+            <span className="text-sm font-bold text-primary">{progressPercent.toFixed(0)}%</span>
           </div>
           <Progress value={progressPercent} className="h-2" />
         </div>
@@ -97,9 +90,7 @@ export function WeeklyChallengeCard() {
               <div className="flex-1 min-w-0">
                 <p
                   className={`text-sm font-medium leading-relaxed ${
-                    challenge.completed
-                      ? 'text-muted-foreground line-through'
-                      : 'text-foreground'
+                    challenge.completed ? 'text-muted-foreground line-through' : 'text-foreground'
                   }`}
                 >
                   {challenge.title}

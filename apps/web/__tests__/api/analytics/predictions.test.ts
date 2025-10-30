@@ -5,9 +5,9 @@
  * Tests Next.js → FastAPI proxy layer for predictions retrieval
  */
 
-import { GET } from '@/app/api/analytics/predictions/route'
 import { NextRequest } from 'next/server'
-import { server, setupMSW, createErrorHandler, create503Handler } from '../../setup'
+import { GET } from '@/app/api/analytics/predictions/route'
+import { create503Handler, createErrorHandler, server, setupMSW } from '../../setup'
 
 // Initialize MSW server
 setupMSW()

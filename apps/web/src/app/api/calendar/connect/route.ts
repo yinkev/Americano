@@ -6,10 +6,10 @@
  * Returns authorization URL for user redirect
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { createGoogleCalendarProvider } from '@/lib/calendar/google-calendar-provider'
 import { randomBytes } from 'crypto'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { createGoogleCalendarProvider } from '@/lib/calendar/google-calendar-provider'
 
 const ConnectSchema = z.object({
   provider: z.enum(['GOOGLE', 'OUTLOOK']),

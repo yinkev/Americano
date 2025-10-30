@@ -32,7 +32,7 @@
  * - Overload alert systems
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
 
 const prisma = new PrismaClient()

@@ -14,10 +14,10 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Filter, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { X, Filter } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
 
 /**
@@ -64,11 +64,9 @@ export default function GraphFilters({
   className,
   initialFilters = { categories: [], relationshipTypes: [] },
 }: GraphFiltersProps) {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    initialFilters.categories
-  )
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(initialFilters.categories)
   const [selectedRelationshipTypes, setSelectedRelationshipTypes] = useState<string[]>(
-    initialFilters.relationshipTypes
+    initialFilters.relationshipTypes,
   )
 
   // Notify parent when filters change
@@ -87,9 +85,7 @@ export default function GraphFilters({
    */
   const toggleCategory = (categoryId: string) => {
     setSelectedCategories((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
+      prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId],
     )
   }
 
@@ -98,9 +94,7 @@ export default function GraphFilters({
    */
   const toggleRelationshipType = (typeId: string) => {
     setSelectedRelationshipTypes((prev) =>
-      prev.includes(typeId)
-        ? prev.filter((id) => id !== typeId)
-        : [...prev, typeId]
+      prev.includes(typeId) ? prev.filter((id) => id !== typeId) : [...prev, typeId],
     )
   }
 
@@ -114,10 +108,7 @@ export default function GraphFilters({
 
   return (
     <div
-      className={cn(
-        'rounded-xl border backdrop-blur-md overflow-hidden',
-        className
-      )}
+      className={cn('rounded-xl border backdrop-blur-md overflow-hidden', className)}
       style={{
         backgroundColor: 'oklch(0.98 0.02 240 / 0.85)',
         borderColor: 'oklch(0.85 0.05 240 / 0.3)',
@@ -129,14 +120,8 @@ export default function GraphFilters({
         style={{ borderColor: 'oklch(0.85 0.05 240 / 0.3)' }}
       >
         <div className="flex items-center gap-2">
-          <Filter
-            className="w-4 h-4"
-            style={{ color: 'oklch(0.4 0.05 240)' }}
-          />
-          <h3
-            className="text-sm font-semibold"
-            style={{ color: 'oklch(0.2 0.05 240)' }}
-          >
+          <Filter className="w-4 h-4" style={{ color: 'oklch(0.4 0.05 240)' }} />
+          <h3 className="text-sm font-semibold" style={{ color: 'oklch(0.2 0.05 240)' }}>
             Filters
           </h3>
           {activeFilterCount > 0 && (

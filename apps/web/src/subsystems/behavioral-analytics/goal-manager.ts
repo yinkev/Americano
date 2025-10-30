@@ -9,18 +9,18 @@
  * @location apps/web/src/subsystems/behavioral-analytics/goal-manager.ts
  */
 
-import { prisma } from '@/lib/db'
-import { Prisma } from '@/generated/prisma'
 import type {
   BehavioralGoal,
   BehavioralGoalType,
-  GoalStatus,
   BehavioralPattern,
+  GoalStatus,
+  Prisma,
 } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import type {
+  GoalProgressEntry,
   PersonalizedForgettingCurve,
   PreferredStudyTime,
-  GoalProgressEntry,
 } from '@/types/prisma-json'
 
 /**
@@ -177,7 +177,7 @@ export class GoalManager {
     }
 
     // Calculate current value for this metric
-    const currentValue = await this.calculateCurrentMetricValue(userId, input.targetMetric)
+    const currentValue = await GoalManager.calculateCurrentMetricValue(userId, input.targetMetric)
 
     if (input.targetValue <= currentValue) {
       throw new Error(
@@ -211,7 +211,7 @@ export class GoalManager {
     })
 
     // Generate notification
-    await this.createGoalNotification(userId, goal.id, 'GOAL_CREATED')
+    await GoalManager.createGoalNotification(userId, goal.id, 'GOAL_CREATED')
 
     return goal
   }
@@ -269,12 +269,12 @@ export class GoalManager {
             : milestone === 0.5
               ? 'GOAL_PROGRESS_50'
               : 'GOAL_PROGRESS_75'
-        await this.createGoalNotification(goal.userId, goalId, milestoneType)
+        await GoalManager.createGoalNotification(goal.userId, goalId, milestoneType)
       }
     }
 
     // Check completion
-    const completed = await this.checkGoalCompletion(goalId, currentValue)
+    const completed = await GoalManager.checkGoalCompletion(goalId, currentValue)
 
     // Update goal
     const updated = await prisma.behavioralGoal.update({
@@ -322,10 +322,10 @@ export class GoalManager {
       })
 
       // Generate completion notification
-      await this.createGoalNotification(goal.userId, goalId, 'GOAL_ACHIEVED')
+      await GoalManager.createGoalNotification(goal.userId, goalId, 'GOAL_ACHIEVED')
 
       // Award achievement badge (if applicable)
-      await this.awardGoalBadge(goal.userId, goal.goalType)
+      await GoalManager.awardGoalBadge(goal.userId, goal.goalType)
     }
 
     return completed
@@ -368,7 +368,7 @@ export class GoalManager {
     const optimalTimePattern = patterns.find((p) => p.patternType === 'OPTIMAL_STUDY_TIME')
     if (optimalTimePattern) {
       const template = GOAL_TEMPLATES.STUDY_TIME_CONSISTENCY
-      const currentValue = this.calculatePeakHourSessions(activeSessions, profile)
+      const currentValue = GoalManager.calculatePeakHourSessions(activeSessions, profile)
       const suggestion: GoalSuggestion = {
         template,
         currentValue,
@@ -442,10 +442,13 @@ export class GoalManager {
 
     for (const goal of goals) {
       try {
-        const currentValue = await this.calculateCurrentMetricValue(goal.userId, goal.targetMetric)
+        const currentValue = await GoalManager.calculateCurrentMetricValue(
+          goal.userId,
+          goal.targetMetric,
+        )
 
         if (currentValue !== goal.currentValue) {
-          await this.updateGoalProgress(goal.id, currentValue, 'Automated daily update')
+          await GoalManager.updateGoalProgress(goal.id, currentValue, 'Automated daily update')
         }
       } catch (error) {
         console.error(`Error tracking goal ${goal.id}:`, error)
@@ -476,7 +479,7 @@ export class GoalManager {
             },
           },
         })
-        return this.calculatePeakHourSessions(sessions, profile)
+        return GoalManager.calculatePeakHourSessions(sessions, profile)
       }
 
       case 'avgSessionDuration':
@@ -492,7 +495,9 @@ export class GoalManager {
       }
 
       case 'retentionHalfLifeDays': {
-        const curve = profile?.personalizedForgettingCurve as unknown as PersonalizedForgettingCurve & { halfLife?: number } | null
+        const curve = profile?.personalizedForgettingCurve as unknown as
+          | (PersonalizedForgettingCurve & { halfLife?: number })
+          | null
         return curve?.halfLife || curve?.stabilityFactor || 0
       }
 

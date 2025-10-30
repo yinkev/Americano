@@ -5,14 +5,14 @@
  * Tests structured logging with PII redaction
  */
 
-import { describe, it, expect, beforeEach, jest } from '@jest/globals'
+import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { Logger, logger } from '../logger'
 import {
-  redactPII,
+  containsMedicalPHI,
   hashSensitiveData,
+  redactPII,
   sanitizeQuery,
   sanitizeURL,
-  containsMedicalPHI,
 } from '../logger-pii-redaction'
 
 describe('Logger', () => {

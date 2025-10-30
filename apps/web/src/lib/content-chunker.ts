@@ -165,9 +165,7 @@ export class ContentChunker {
       ) {
         // Finalize current chunk
         const chunkContent = currentChunk.join(' ')
-        chunks.push(
-          this.createChunk(chunkContent, lectureId, chunkIndex, pageNumber)
-        )
+        chunks.push(this.createChunk(chunkContent, lectureId, chunkIndex, pageNumber))
 
         // Start new chunk with overlap
         const overlapSentences = this.getOverlapSentences(currentChunk)
@@ -188,9 +186,7 @@ export class ContentChunker {
 
       // Only add if meets minimum size requirement
       if (tokens >= this.config.minChunkSizeTokens) {
-        chunks.push(
-          this.createChunk(chunkContent, lectureId, chunkIndex, pageNumber)
-        )
+        chunks.push(this.createChunk(chunkContent, lectureId, chunkIndex, pageNumber))
       } else if (chunks.length > 0) {
         // If too small, append to previous chunk
         const prevChunk = chunks[chunks.length - 1]
@@ -295,7 +291,7 @@ export class ContentChunker {
     content: string,
     lectureId: string,
     chunkIndex: number,
-    pageNumber?: number
+    pageNumber?: number,
   ): ContentChunk {
     const tokenCount = this.estimateTokens(content)
     const wordCount = this.countWords(content)
@@ -351,11 +347,9 @@ export class ContentChunker {
     const totalTokens = this.estimateTokens(text)
 
     // Calculate chunks with overlap
-    const effectiveChunkSize =
-      this.config.chunkSizeTokens - this.config.overlapTokens
+    const effectiveChunkSize = this.config.chunkSizeTokens - this.config.overlapTokens
     const estimatedChunks = Math.ceil(totalTokens / effectiveChunkSize)
-    const avgTokensPerChunk =
-      estimatedChunks > 0 ? totalTokens / estimatedChunks : 0
+    const avgTokensPerChunk = estimatedChunks > 0 ? totalTokens / estimatedChunks : 0
 
     return {
       estimatedChunks,
@@ -388,7 +382,7 @@ export const contentChunker = new ContentChunker()
 export async function chunkText(
   text: string,
   lectureId: string,
-  pageNumber?: number
+  pageNumber?: number,
 ): Promise<ContentChunk[]> {
   return contentChunker.chunkText({ text, lectureId, pageNumber })
 }

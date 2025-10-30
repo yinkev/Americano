@@ -52,12 +52,12 @@
  *         description: Server error
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { z } from 'zod'
 import { withErrorHandler } from '@/lib/api-error'
 import { errorResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 import { searchAnalyticsService } from '@/lib/search-analytics-service'
-import { z } from 'zod'
 
 /**
  * Validation schema for export request
@@ -115,7 +115,7 @@ function convertToCSV(analytics: any): string {
     analytics.contentGaps.forEach((gap: any) => {
       const escapedQuery = gap.query.includes(',') ? `"${gap.query}"` : gap.query
       lines.push(
-        `${escapedQuery},${gap.searchFrequency},${gap.avgResultCount.toFixed(1)},${gap.priorityScore.toFixed(2)},${gap.lastSearched}`
+        `${escapedQuery},${gap.searchFrequency},${gap.avgResultCount.toFixed(1)},${gap.priorityScore.toFixed(2)},${gap.lastSearched}`,
       )
     })
     lines.push('')
@@ -138,7 +138,7 @@ function convertToCSV(analytics: any): string {
     analytics.topQueriesByCTR.forEach((q: any) => {
       const escapedQuery = q.query.includes(',') ? `"${q.query}"` : q.query
       lines.push(
-        `${escapedQuery},${q.searches},${q.clicks},${q.ctr.toFixed(1)},${q.avgPosition.toFixed(1)}`
+        `${escapedQuery},${q.searches},${q.clicks},${q.ctr.toFixed(1)},${q.avgPosition.toFixed(1)}`,
       )
     })
   }
@@ -177,9 +177,9 @@ async function handler(request: NextRequest) {
       errorResponse(
         'VALIDATION_ERROR',
         'Invalid query parameters. Format is required and must be "json" or "csv".',
-        validation.error.flatten().fieldErrors
+        validation.error.flatten().fieldErrors,
       ),
-      { status: 400 }
+      { status: 400 },
     )
   }
 
@@ -187,10 +187,7 @@ async function handler(request: NextRequest) {
 
   try {
     // Get comprehensive dashboard analytics
-    const analytics = await searchAnalyticsService.getDashboardAnalytics(
-      currentUser.id,
-      period
-    )
+    const analytics = await searchAnalyticsService.getDashboardAnalytics(currentUser.id, period)
 
     const exportData = {
       ...analytics,
@@ -228,16 +225,13 @@ async function handler(request: NextRequest) {
   } catch (error) {
     console.error('Failed to export analytics:', error)
 
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error occurred'
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
 
     return Response.json(
-      errorResponse(
-        'EXPORT_FAILED',
-        'Failed to export analytics data. Please try again.',
-        { error: errorMessage }
-      ),
-      { status: 500 }
+      errorResponse('EXPORT_FAILED', 'Failed to export analytics data. Please try again.', {
+        error: errorMessage,
+      }),
+      { status: 500 },
     )
   }
 }

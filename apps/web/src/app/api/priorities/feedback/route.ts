@@ -3,12 +3,11 @@
  * Story 2.3: Intelligent Content Prioritization Algorithm
  */
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse, ApiError } from '@/lib/api-response'
-import { withErrorHandler } from '@/lib/api-response'
-import { priorityFeedbackSchema } from '@/lib/validation/exam'
+import type { NextRequest } from 'next/server'
+import { ApiError, successResponse, withErrorHandler } from '@/lib/api-response'
 import { getCurrentUserId } from '@/lib/auth'
+import { prisma } from '@/lib/db'
+import { priorityFeedbackSchema } from '@/lib/validation/exam'
 
 /**
  * POST /api/priorities/feedback - Submit priority feedback

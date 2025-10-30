@@ -8,8 +8,8 @@
  * Story 2.6: Task 7 - Weekly/Monthly Review System
  */
 
+import { MissionStatus, type Prisma, ReviewPeriod } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
-import { MissionStatus, ReviewPeriod, Prisma } from '@/generated/prisma'
 import { MissionAnalyticsEngine } from './mission-analytics-engine'
 import { MissionInsightsEngine } from './mission-insights-engine'
 

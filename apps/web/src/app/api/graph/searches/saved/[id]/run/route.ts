@@ -6,17 +6,14 @@
  * Executes a saved search and returns results
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { semanticSearchService } from '@/lib/semantic-search-service'
 
 /**
  * POST handler - Execute saved search
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const startTime = Date.now()
 
   try {
@@ -29,7 +26,7 @@ export async function POST(
     const savedSearch = await prisma.savedSearch.findFirst({
       where: {
         id,
-        userId,  // Ensure user owns this search
+        userId, // Ensure user owns this search
       },
     })
 
@@ -39,7 +36,7 @@ export async function POST(
           success: false,
           error: 'Saved search not found',
         },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
@@ -83,7 +80,7 @@ export async function POST(
         error: 'Failed to execute saved search',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

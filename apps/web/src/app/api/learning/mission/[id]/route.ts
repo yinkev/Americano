@@ -4,10 +4,10 @@
  * Story 2.4: Daily Mission Generation and Display (Task 3.3)
  */
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse, errorResponse } from '@/lib/api-response'
+import type { NextRequest } from 'next/server'
 import { withErrorHandler } from '@/lib/api-error'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 import { getMissionObjectives } from '@/types/mission-helpers'
 
 async function handler(request: NextRequest, context: { params: Promise<{ id: string }> }) {

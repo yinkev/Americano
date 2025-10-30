@@ -11,21 +11,21 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Brain, Lock, TrendingUp, Zap } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import {
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
 } from 'recharts'
-import { Lock, TrendingUp, Brain, Zap } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface ConfusionMatrix {
   truePositive: number
@@ -251,9 +251,7 @@ export function ModelPerformanceMetrics({ isAdmin = false }: Props) {
                 </Badge>
               </div>
               <p className="text-3xl font-bold text-[oklch(0.7_0.15_230)]">{trueNegative}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                No prediction & user succeeded
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">No prediction & user succeeded</p>
             </div>
           </div>
 

@@ -5,9 +5,9 @@
  * Returns learning objectives with highest weakness scores
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
+import { ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
 import { PerformanceCalculator } from '@/lib/performance-calculator'
 
 const QuerySchema = z.object({

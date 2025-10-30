@@ -12,7 +12,7 @@
  * - Edge cases and error handling
  */
 
-import { PersonalizationEngine, type AggregatedInsights } from '../personalization-engine'
+import { type AggregatedInsights, PersonalizationEngine } from '../personalization-engine'
 
 // Mock Prisma
 jest.mock('@/generated/prisma', () => ({
@@ -65,9 +65,7 @@ describe('PersonalizationEngine', () => {
         dataQualityScore: 0.8,
         optimalSessionDuration: 50,
         averageSessionDuration: 48,
-        preferredStudyTimes: [
-          { dayOfWeek: 1, startHour: 9, endHour: 11, effectiveness: 0.85 },
-        ],
+        preferredStudyTimes: [{ dayOfWeek: 1, startHour: 9, endHour: 11, effectiveness: 0.85 }],
         learningStyleProfile: {
           visual: 0.4,
           auditory: 0.2,

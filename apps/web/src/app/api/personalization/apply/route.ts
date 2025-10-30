@@ -1,11 +1,11 @@
 // POST /api/personalization/apply
 // Triggers personalization engine for specific context
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse } from '@/lib/api-response'
-import { ApiError, withErrorHandler } from '@/lib/api-error'
+import type { NextRequest } from 'next/server'
 import type { PersonalizationContext } from '@/generated/prisma'
+import { ApiError, withErrorHandler } from '@/lib/api-error'
+import { successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
 /**
  * POST /api/personalization/apply

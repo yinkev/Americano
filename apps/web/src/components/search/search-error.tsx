@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { AlertCircle, RefreshCw } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { AlertCircle, RefreshCw } from 'lucide-react'
+import * as React from 'react'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 interface SearchErrorProps {
   error: string | null
@@ -22,10 +22,7 @@ export function SearchError({ error, onRetry, className }: SearchErrorProps) {
   return (
     <Alert
       variant="destructive"
-      className={cn(
-        "border-red-500/20 bg-red-50/80 backdrop-blur-md",
-        className
-      )}
+      className={cn('border-red-500/20 bg-red-50/80 backdrop-blur-md', className)}
       role="alert"
       aria-live="assertive"
     >

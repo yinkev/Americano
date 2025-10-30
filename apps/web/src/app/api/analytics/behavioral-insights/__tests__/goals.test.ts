@@ -5,8 +5,8 @@
  */
 
 import { NextRequest } from 'next/server'
-import { POST } from '../goals/route'
 import { GoalManager } from '@/subsystems/behavioral-analytics/goal-manager'
+import { POST } from '../goals/route'
 
 // Mock dependencies
 jest.mock('@/subsystems/behavioral-analytics/goal-manager')

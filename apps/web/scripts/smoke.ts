@@ -25,7 +25,7 @@ async function httpGet(path: string) {
     headers: { 'Content-Type': 'application/json' },
   })
   const text = await res.text()
-  let data: unknown = undefined
+  let data: unknown
   try {
     data = text ? JSON.parse(text) : undefined
   } catch {
@@ -42,7 +42,7 @@ async function httpPost(path: string, body: unknown) {
     body: JSON.stringify(body ?? {}),
   })
   const text = await res.text()
-  let data: unknown = undefined
+  let data: unknown
   try {
     data = text ? JSON.parse(text) : undefined
   } catch {
@@ -168,22 +168,18 @@ async function run(): Promise<number> {
   }
 
   // Output
-  const pass = checks.filter(c => c.ok).length
+  const pass = checks.filter((c) => c.ok).length
   const fail = checks.length - pass
-  const criticalFail = checks.some(c => c.critical && !c.ok)
+  const criticalFail = checks.some((c) => c.critical && !c.ok)
 
   // Pretty print
-  const pad = (s: string, n: number) => (s.length >= n ? s.slice(0, n) : s + ' '.repeat(n - s.length))
+  const pad = (s: string, n: number) =>
+    s.length >= n ? s.slice(0, n) : s + ' '.repeat(n - s.length)
   console.log('\nGolden-path Smoke Results')
   console.log('=========================')
   console.log(pad('Check', 34), pad('OK', 4), 'Status  Details')
   for (const c of checks) {
-    console.log(
-      pad(c.name, 34),
-      pad(c.ok ? '✔' : '✘', 4),
-      pad(c.status, 7),
-      c.details || ''
-    )
+    console.log(pad(c.name, 34), pad(c.ok ? '✔' : '✘', 4), pad(c.status, 7), c.details || '')
   }
   console.log('-------------------------')
   console.log(`Total: ${checks.length}, PASS: ${pass}, FAIL: ${fail}`)

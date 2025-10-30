@@ -14,14 +14,14 @@
 
 'use client'
 
-import { memo } from 'react'
 import {
   BaseEdge,
-  EdgeLabelRenderer,
-  getBezierPath,
-  type EdgeProps,
   type Edge,
+  EdgeLabelRenderer,
+  type EdgeProps,
+  getBezierPath,
 } from '@xyflow/react'
+import { memo } from 'react'
 
 /**
  * Custom edge data type for concept relationships
@@ -38,10 +38,10 @@ export type RelationshipEdgeData = {
  * Following visual cues requirements from AC #5
  */
 const RELATIONSHIP_COLORS: Record<string, string> = {
-  PREREQUISITE: 'oklch(0.65 0.18 40)',   // Orange - directional prerequisite
-  RELATED: 'oklch(0.5 0.05 240)',        // Gray - general association
-  INTEGRATED: 'oklch(0.65 0.18 200)',    // Cyan - cross-course integration
-  CLINICAL: 'oklch(0.65 0.18 330)',      // Magenta - clinical application
+  PREREQUISITE: 'oklch(0.65 0.18 40)', // Orange - directional prerequisite
+  RELATED: 'oklch(0.5 0.05 240)', // Gray - general association
+  INTEGRATED: 'oklch(0.65 0.18 200)', // Cyan - cross-course integration
+  CLINICAL: 'oklch(0.65 0.18 330)', // Magenta - clinical application
 }
 
 /**
@@ -148,19 +148,17 @@ function RelationshipEdge({
           <div
             className="px-2 py-1 rounded text-xs font-semibold transition-all duration-200"
             style={{
-              backgroundColor: selected
-                ? strokeColor
-                : `${strokeColor}cc`, // Add alpha for non-selected
+              backgroundColor: selected ? strokeColor : `${strokeColor}cc`, // Add alpha for non-selected
               color: 'white',
               backdropFilter: 'blur(8px)',
-              boxShadow: selected
-                ? '0 2px 8px oklch(0 0 0 / 0.3)'
-                : '0 1px 4px oklch(0 0 0 / 0.2)',
+              boxShadow: selected ? '0 2px 8px oklch(0 0 0 / 0.3)' : '0 1px 4px oklch(0 0 0 / 0.2)',
               fontSize: '10px',
               border: `1px solid ${strokeColor.replace('0.65', '0.45')}`,
               cursor: userNote ? 'pointer' : 'default',
             }}
-            title={userNote || `${getRelationshipLabel(relationship)} (strength: ${strength.toFixed(2)})`}
+            title={
+              userNote || `${getRelationshipLabel(relationship)} (strength: ${strength.toFixed(2)})`
+            }
           >
             {getRelationshipLabel(relationship)}
             {isUserDefined && (

@@ -1,34 +1,40 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { AlertCircle, Minus, TrendingDown, TrendingUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import {
-  LineChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  ScatterChart,
-  Scatter,
   ZAxis,
-} from 'recharts';
-import type { ComprehensionMetric } from '@/types/validation';
+} from 'recharts'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
+import type { ComprehensionMetric } from '@/types/validation'
 
 interface ObjectiveMetrics {
-  objectiveId: string;
-  objectiveName: string;
-  courseName: string;
-  metrics: ComprehensionMetric[];
-  trend: 'IMPROVING' | 'STABLE' | 'WORSENING';
-  avgScore: number;
+  objectiveId: string
+  objectiveName: string
+  courseName: string
+  metrics: ComprehensionMetric[]
+  trend: 'IMPROVING' | 'STABLE' | 'WORSENING'
+  avgScore: number
 }
 
 /**
@@ -47,46 +53,48 @@ interface ObjectiveMetrics {
  * @see Story 4.1 AC#7 (Historical Metrics)
  */
 export default function ComprehensionAnalyticsPage() {
-  const [objectivesData, setObjectivesData] = useState<ObjectiveMetrics[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [dateRange, setDateRange] = useState<'30' | '90'>('30');
-  const [courseFilter, setCourseFilter] = useState<string>('all');
-  const [levelFilter, setLevelFilter] = useState<string>('all');
+  const [objectivesData, setObjectivesData] = useState<ObjectiveMetrics[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [dateRange, setDateRange] = useState<'30' | '90'>('30')
+  const [courseFilter, setCourseFilter] = useState<string>('all')
+  const [levelFilter, setLevelFilter] = useState<string>('all')
 
   useEffect(() => {
-    fetchComprehensionData();
-  }, [dateRange]);
+    fetchComprehensionData()
+  }, [dateRange])
 
   const fetchComprehensionData = async () => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     try {
       // Fetch all learning objectives with their comprehension metrics
-      const objectivesResponse = await fetch(`/api/analytics/objectives?timeframe=${dateRange === '30' ? 'month' : 'quarter'}`);
+      const objectivesResponse = await fetch(
+        `/api/analytics/objectives?timeframe=${dateRange === '30' ? 'month' : 'quarter'}`,
+      )
 
       if (!objectivesResponse.ok) {
-        throw new Error('Failed to fetch objectives');
+        throw new Error('Failed to fetch objectives')
       }
 
-      const objectivesResult = await objectivesResponse.json();
-      const objectives = objectivesResult.data?.objectives || [];
+      const objectivesResult = await objectivesResponse.json()
+      const objectives = objectivesResult.data?.objectives || []
 
       // Fetch comprehension metrics for each objective
       const objectivesWithMetrics = await Promise.all(
         objectives.map(async (obj: any) => {
-          const metricsResponse = await fetch(`/api/validation/metrics/${obj.id}?days=${dateRange}`);
+          const metricsResponse = await fetch(`/api/validation/metrics/${obj.id}?days=${dateRange}`)
 
           if (!metricsResponse.ok) {
-            return null;
+            return null
           }
 
-          const metricsResult = await metricsResponse.json();
-          const metricsData = metricsResult.data;
+          const metricsResult = await metricsResponse.json()
+          const metricsData = metricsResult.data
 
           if (!metricsData || metricsData.metrics.length === 0) {
-            return null;
+            return null
           }
 
           return {
@@ -96,19 +104,21 @@ export default function ComprehensionAnalyticsPage() {
             metrics: metricsData.metrics,
             trend: metricsData.trend,
             avgScore: metricsData.avgScore,
-          };
-        })
-      );
+          }
+        }),
+      )
 
       // Filter out null values (objectives without comprehension metrics)
-      const validObjectives = objectivesWithMetrics.filter((obj): obj is ObjectiveMetrics => obj !== null);
-      setObjectivesData(validObjectives);
+      const validObjectives = objectivesWithMetrics.filter(
+        (obj): obj is ObjectiveMetrics => obj !== null,
+      )
+      setObjectivesData(validObjectives)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load comprehension data');
+      setError(err instanceof Error ? err.message : 'Failed to load comprehension data')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const getTrendIcon = (trend: 'IMPROVING' | 'STABLE' | 'WORSENING') => {
     switch (trend) {
@@ -117,51 +127,51 @@ export default function ComprehensionAnalyticsPage() {
           <div aria-label="Trend: Improving">
             <TrendingUp className="h-4 w-4" style={{ color: 'oklch(0.7 0.15 145)' }} />
           </div>
-        );
+        )
       case 'WORSENING':
         return (
           <div aria-label="Trend: Worsening">
             <TrendingDown className="h-4 w-4" style={{ color: 'oklch(0.65 0.20 25)' }} />
           </div>
-        );
+        )
       default:
         return (
           <div aria-label="Trend: Stable">
             <Minus className="h-4 w-4" style={{ color: 'oklch(0.5 0.02 230)' }} />
           </div>
-        );
+        )
     }
-  };
+  }
 
   const getTrendBadgeColor = (trend: string) => {
     switch (trend) {
       case 'IMPROVING':
-        return 'border-[oklch(0.7_0.15_145)] text-[oklch(0.5_0.15_145)] bg-[oklch(0.95_0.05_145)]';
+        return 'border-[oklch(0.7_0.15_145)] text-[oklch(0.5_0.15_145)] bg-[oklch(0.95_0.05_145)]'
       case 'WORSENING':
-        return 'border-[oklch(0.65_0.20_25)] text-[oklch(0.5_0.20_25)] bg-[oklch(0.95_0.05_25)]';
+        return 'border-[oklch(0.65_0.20_25)] text-[oklch(0.5_0.20_25)] bg-[oklch(0.95_0.05_25)]'
       default:
-        return 'border-[oklch(0.5_0.02_230)] text-[oklch(0.3_0.02_230)] bg-[oklch(0.95_0.01_230)]';
+        return 'border-[oklch(0.5_0.02_230)] text-[oklch(0.3_0.02_230)] bg-[oklch(0.95_0.01_230)]'
     }
-  };
+  }
 
   const getScoreBadgeColor = (score: number) => {
-    if (score >= 80) return 'border-[oklch(0.7_0.15_145)] text-[oklch(0.5_0.15_145)] bg-[oklch(0.95_0.05_145)]';
-    if (score >= 60) return 'border-[oklch(0.75_0.12_85)] text-[oklch(0.5_0.12_85)] bg-[oklch(0.95_0.05_85)]';
-    return 'border-[oklch(0.65_0.20_25)] text-[oklch(0.5_0.20_25)] bg-[oklch(0.95_0.05_25)]';
-  };
+    if (score >= 80)
+      return 'border-[oklch(0.7_0.15_145)] text-[oklch(0.5_0.15_145)] bg-[oklch(0.95_0.05_145)]'
+    if (score >= 60)
+      return 'border-[oklch(0.75_0.12_85)] text-[oklch(0.5_0.12_85)] bg-[oklch(0.95_0.05_85)]'
+    return 'border-[oklch(0.65_0.20_25)] text-[oklch(0.5_0.20_25)] bg-[oklch(0.95_0.05_25)]'
+  }
 
   const filteredData = objectivesData.filter((obj) => {
-    if (courseFilter !== 'all' && obj.courseName !== courseFilter) return false;
-    if (levelFilter === 'weak' && obj.avgScore >= 60) return false;
-    if (levelFilter === 'proficient' && obj.avgScore < 80) return false;
-    return true;
-  });
+    if (courseFilter !== 'all' && obj.courseName !== courseFilter) return false
+    if (levelFilter === 'weak' && obj.avgScore >= 60) return false
+    if (levelFilter === 'proficient' && obj.avgScore < 80) return false
+    return true
+  })
 
-  const weakAreas = objectivesData.filter(
-    (obj) => obj.avgScore < 60 && obj.metrics.length >= 3
-  );
+  const weakAreas = objectivesData.filter((obj) => obj.avgScore < 60 && obj.metrics.length >= 3)
 
-  const uniqueCourses = Array.from(new Set(objectivesData.map((obj) => obj.courseName)));
+  const uniqueCourses = Array.from(new Set(objectivesData.map((obj) => obj.courseName)))
 
   if (isLoading) {
     return (
@@ -176,7 +186,7 @@ export default function ComprehensionAnalyticsPage() {
           ))}
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -197,7 +207,11 @@ export default function ComprehensionAnalyticsPage() {
         <CardContent className="flex flex-wrap gap-4">
           <div className="flex-1 min-w-[200px]">
             <label className="text-sm font-medium mb-2 block">Date Range</label>
-            <Select value={dateRange} onValueChange={(value: '30' | '90') => setDateRange(value)} aria-label="Filter by date range">
+            <Select
+              value={dateRange}
+              onValueChange={(value: '30' | '90') => setDateRange(value)}
+              aria-label="Filter by date range"
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -210,7 +224,11 @@ export default function ComprehensionAnalyticsPage() {
 
           <div className="flex-1 min-w-[200px]">
             <label className="text-sm font-medium mb-2 block">Course</label>
-            <Select value={courseFilter} onValueChange={setCourseFilter} aria-label="Filter by course">
+            <Select
+              value={courseFilter}
+              onValueChange={setCourseFilter}
+              aria-label="Filter by course"
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -227,7 +245,11 @@ export default function ComprehensionAnalyticsPage() {
 
           <div className="flex-1 min-w-[200px]">
             <label className="text-sm font-medium mb-2 block">Comprehension Level</label>
-            <Select value={levelFilter} onValueChange={setLevelFilter} aria-label="Filter by comprehension level">
+            <Select
+              value={levelFilter}
+              onValueChange={setLevelFilter}
+              aria-label="Filter by comprehension level"
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -243,17 +265,25 @@ export default function ComprehensionAnalyticsPage() {
 
       {/* Empty State or Weak Areas Alert */}
       {objectivesData.length === 0 ? (
-        <Alert role="status" aria-live="polite" className="bg-[oklch(0.95_0.05_230)] border border-[oklch(0.85_0.08_230)]">
+        <Alert
+          role="status"
+          aria-live="polite"
+          className="bg-[oklch(0.95_0.05_230)] border border-[oklch(0.85_0.08_230)]"
+        >
           <AlertCircle className="h-4 w-4 text-[oklch(0.55_0.18_230)]" />
           <AlertTitle className="text-[oklch(0.30_0.15_230)]">No Comprehension Data Yet</AlertTitle>
           <AlertDescription className="text-[oklch(0.35_0.16_230)]">
             Start validating your understanding during study sessions to see your comprehension
-            trends here. After each objective review, you'll be prompted to explain concepts in
-            your own words.
+            trends here. After each objective review, you'll be prompted to explain concepts in your
+            own words.
           </AlertDescription>
         </Alert>
       ) : weakAreas.length > 0 ? (
-        <Alert role="alert" aria-live="assertive" className="bg-[oklch(0.95_0.05_85)] border border-[oklch(0.85_0.08_85)]">
+        <Alert
+          role="alert"
+          aria-live="assertive"
+          className="bg-[oklch(0.95_0.05_85)] border border-[oklch(0.85_0.08_85)]"
+        >
           <AlertCircle className="h-4 w-4 text-[oklch(0.55_0.18_85)]" />
           <AlertTitle className="text-[oklch(0.30_0.15_85)]">
             {weakAreas.length} Area{weakAreas.length > 1 ? 's' : ''} Need Attention
@@ -264,7 +294,8 @@ export default function ComprehensionAnalyticsPage() {
             <ul className="list-disc list-inside mt-2 space-y-1">
               {weakAreas.slice(0, 5).map((obj) => (
                 <li key={obj.objectiveId}>
-                  <span className="font-medium">{obj.objectiveName}</span> - Avg: {Math.round(obj.avgScore)}%
+                  <span className="font-medium">{obj.objectiveName}</span> - Avg:{' '}
+                  {Math.round(obj.avgScore)}%
                 </li>
               ))}
             </ul>
@@ -277,9 +308,7 @@ export default function ComprehensionAnalyticsPage() {
         <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
           <CardHeader>
             <CardTitle>Comprehension Score Trends</CardTitle>
-            <CardDescription>
-              Track how your understanding improves over time
-            </CardDescription>
+            <CardDescription>Track how your understanding improves over time</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={400}>
@@ -289,9 +318,14 @@ export default function ComprehensionAnalyticsPage() {
                   dataKey="date"
                   type="category"
                   allowDuplicatedCategory={false}
-                  tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  tickFormatter={(value) =>
+                    new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                  }
                 />
-                <YAxis domain={[0, 100]} label={{ value: 'Score (%)', angle: -90, position: 'insideLeft' }} />
+                <YAxis
+                  domain={[0, 100]}
+                  label={{ value: 'Score (%)', angle: -90, position: 'insideLeft' }}
+                />
                 <Tooltip
                   labelFormatter={(value) => new Date(value).toLocaleDateString()}
                   formatter={(value: number) => [`${Math.round(value)}%`, 'Score']}
@@ -321,14 +355,13 @@ export default function ComprehensionAnalyticsPage() {
           <CardHeader>
             <CardTitle>Confidence Calibration Accuracy</CardTitle>
             <CardDescription>
-              How well does your confidence match your actual comprehension? Points near the diagonal line indicate good calibration.
+              How well does your confidence match your actual comprehension? Points near the
+              diagonal line indicate good calibration.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={400}>
-              <ScatterChart
-                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-              >
+              <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   type="number"
@@ -369,7 +402,7 @@ export default function ComprehensionAnalyticsPage() {
                       confidence: ((m.sampleSize || 3) - 1) * 25, // Approximate confidence from sample size (1-5 scale)
                       score: m.avgScore,
                       objectiveName: obj.objectiveName,
-                    }))
+                    })),
                   )}
                   fill="oklch(0.6 0.18 230)"
                 />
@@ -383,7 +416,10 @@ export default function ComprehensionAnalyticsPage() {
       {filteredData.length > 0 && (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredData.map((obj) => (
-            <Card key={obj.objectiveId} className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
+            <Card
+              key={obj.objectiveId}
+              className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]"
+            >
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
@@ -424,5 +460,5 @@ export default function ComprehensionAnalyticsPage() {
         </Alert>
       )}
     </div>
-  );
+  )
 }

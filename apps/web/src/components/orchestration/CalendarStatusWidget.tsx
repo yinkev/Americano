@@ -11,22 +11,18 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { formatDistanceToNow } from 'date-fns'
 import {
+  AlertCircle,
   Calendar,
   CheckCircle,
+  Clock,
+  Loader2,
+  LogOut,
   RefreshCw,
   Settings,
-  LogOut,
-  Clock,
-  AlertCircle,
-  Loader2,
 } from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
+import { useEffect, useState } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,6 +34,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/hooks/use-toast'
 
 interface CalendarStatus {
@@ -160,7 +160,9 @@ export function CalendarStatusWidget({ userId, onStatusChange, className = '' }:
     return (
       <Card className={`shadow-sm ${className}`}>
         <CardHeader className="p-4 pb-0">
-          <h3 className="font-heading font-semibold text-foreground text-[16px]">Calendar Integration</h3>
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">
+            Calendar Integration
+          </h3>
         </CardHeader>
         <CardContent className="p-4 pt-4">
           <Skeleton className="h-20 w-full" />
@@ -176,7 +178,9 @@ export function CalendarStatusWidget({ userId, onStatusChange, className = '' }:
         <CardHeader className="p-4 pb-0">
           <div className="flex items-center gap-2">
             <Calendar className="size-5 text-info" />
-            <h3 className="font-heading font-semibold text-foreground text-[16px]">Calendar Integration</h3>
+            <h3 className="font-heading font-semibold text-foreground text-[16px]">
+              Calendar Integration
+            </h3>
           </div>
         </CardHeader>
         <CardContent className="p-4 pt-4 space-y-4">
@@ -184,10 +188,7 @@ export function CalendarStatusWidget({ userId, onStatusChange, className = '' }:
             className="p-4 rounded-lg text-center space-y-3"
             style={{ backgroundColor: 'oklch(0.95 0 0)' }}
           >
-            <Calendar
-              className="size-12 mx-auto text-info"
-              style={{ strokeWidth: 1.5 }}
-            />
+            <Calendar className="size-12 mx-auto text-info" style={{ strokeWidth: 1.5 }} />
             <div>
               <p className="text-[13px] font-medium text-foreground mb-1">
                 Connect your calendar for smarter scheduling
@@ -247,7 +248,9 @@ export function CalendarStatusWidget({ userId, onStatusChange, className = '' }:
       <CardHeader className="p-4 pb-0">
         <div className="flex items-center gap-2">
           <Calendar className="size-5" style={{ color: 'oklch(0.7 0.15 145)' }} />
-          <h3 className="font-heading font-semibold text-foreground text-[16px]">Calendar Integration</h3>
+          <h3 className="font-heading font-semibold text-foreground text-[16px]">
+            Calendar Integration
+          </h3>
         </div>
       </CardHeader>
       <CardContent className="p-4 pt-4 space-y-4">
@@ -323,7 +326,9 @@ export function CalendarStatusWidget({ userId, onStatusChange, className = '' }:
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle className="font-heading text-[20px]">Disconnect Calendar?</AlertDialogTitle>
+                <AlertDialogTitle className="font-heading text-[20px]">
+                  Disconnect Calendar?
+                </AlertDialogTitle>
                 <AlertDialogDescription>
                   This will remove calendar integration and stop syncing your availability. Study
                   time recommendations will be based solely on your historical patterns.

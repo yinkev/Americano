@@ -7,8 +7,8 @@
  * Story 2.6 - Task 12.3: Test UI Components
  */
 
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import React from 'react'
-import { render, screen, fireEvent, within } from '@testing-library/react'
 import { ReviewCard } from '@/components/analytics/review-card'
 
 describe('ReviewCard', () => {

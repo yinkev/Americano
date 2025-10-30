@@ -12,7 +12,7 @@
  * - Glassmorphism (bg-white/80 backdrop-blur-md)
  */
 
-import { Brain, TrendingUp, Target, BookOpen } from 'lucide-react'
+import { BookOpen, Brain, Target, TrendingUp } from 'lucide-react'
 import { typography } from '@/lib/design-tokens'
 
 export default function Loading() {
@@ -78,20 +78,29 @@ export default function Loading() {
               }}
             >
               <div className="flex items-center justify-between">
-                <div className="h-6 w-32 rounded" style={{ backgroundColor: 'oklch(0.9 0.02 230)' }} />
+                <div
+                  className="h-6 w-32 rounded"
+                  style={{ backgroundColor: 'oklch(0.9 0.02 230)' }}
+                />
                 <div
                   className="size-8 rounded-full"
                   style={{ backgroundColor: 'oklch(0.92 0.02 230)' }}
                 />
               </div>
               <div className="space-y-2">
-                <div className="h-4 w-full rounded" style={{ backgroundColor: 'oklch(0.92 0.02 230)' }} />
+                <div
+                  className="h-4 w-full rounded"
+                  style={{ backgroundColor: 'oklch(0.92 0.02 230)' }}
+                />
                 <div
                   className="h-4 w-5/6 rounded"
                   style={{ backgroundColor: 'oklch(0.94 0.02 230)' }}
                 />
               </div>
-              <div className="h-10 w-24 rounded" style={{ backgroundColor: 'oklch(0.9 0.02 230)' }} />
+              <div
+                className="h-10 w-24 rounded"
+                style={{ backgroundColor: 'oklch(0.9 0.02 230)' }}
+              />
             </div>
           ))}
         </div>

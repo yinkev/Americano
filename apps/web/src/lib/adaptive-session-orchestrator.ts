@@ -29,9 +29,9 @@
  * ```
  */
 
-import { prisma } from '@/lib/db'
+import { MasteryStatus, ObjectiveComplexity } from '@/generated/prisma'
 import { AdaptiveDifficultyEngine } from '@/lib/adaptive/adaptive-engine'
-import { ObjectiveComplexity, MasteryStatus } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 /**
  * Adaptive session state
@@ -185,12 +185,12 @@ export class AdaptiveSessionOrchestrator {
   async initializeAdaptiveSession(
     userId: string,
     objectiveId: string,
-    sessionId: string | null = null
+    sessionId: string | null = null,
   ): Promise<AdaptiveSessionState> {
     // Calculate initial difficulty from user history
     const initialDifficulty = await this.difficultyEngine.calculateInitialDifficulty(
       userId,
-      objectiveId
+      objectiveId,
     )
 
     // Create adaptive session record in database
@@ -248,7 +248,7 @@ export class AdaptiveSessionOrchestrator {
    */
   async conductAdaptiveAssessment(
     sessionStateId: string,
-    lastScore?: number
+    lastScore?: number,
   ): Promise<AssessmentResult> {
     // Fetch current session state
     const session = await prisma.adaptiveSession.findUnique({
@@ -272,7 +272,7 @@ export class AdaptiveSessionOrchestrator {
       if (adjustmentCount < AdaptiveSessionOrchestrator.MAX_ADJUSTMENTS_PER_SESSION) {
         const difficultyAdjustment = this.difficultyEngine.adjustDifficulty(
           lastScore,
-          session.currentDifficulty
+          session.currentDifficulty,
         )
         newDifficulty = difficultyAdjustment.newDifficulty
         adjustment = difficultyAdjustment.adjustment
@@ -283,14 +283,14 @@ export class AdaptiveSessionOrchestrator {
     const { recommendBreak, breakReason } = this.checkBreakRecommendation(
       session.questionCount,
       session.createdAt,
-      trajectory
+      trajectory,
     )
 
     // Check for early stopping (IRT convergence)
     const canStopEarly = this.checkEarlyStop(
       session.questionCount,
       session.irtEstimate,
-      session.confidenceInterval
+      session.confidenceInterval,
     )
 
     // Select next question at target difficulty
@@ -301,7 +301,7 @@ export class AdaptiveSessionOrchestrator {
     // Calculate efficiency metrics
     const efficiencyMetrics = this.calculateEfficiencyMetrics(
       session.questionCount + 1,
-      session.createdAt
+      session.createdAt,
     )
 
     // Update session state in database
@@ -361,7 +361,7 @@ export class AdaptiveSessionOrchestrator {
   checkBreakRecommendation(
     questionCount: number,
     sessionStart: Date,
-    trajectory: Array<{ score: number; timestamp: Date }>
+    trajectory: Array<{ score: number; timestamp: Date }>,
   ): { recommendBreak: boolean; breakReason?: string } {
     // Check question count threshold
     if (questionCount >= AdaptiveSessionOrchestrator.MAX_QUESTIONS_BEFORE_FATIGUE) {
@@ -427,10 +427,7 @@ export class AdaptiveSessionOrchestrator {
    * }
    * ```
    */
-  async shouldTerminateSession(
-    sessionStateId: string,
-    objectiveId: string
-  ): Promise<boolean> {
+  async shouldTerminateSession(sessionStateId: string, objectiveId: string): Promise<boolean> {
     const session = await prisma.adaptiveSession.findUnique({
       where: { id: sessionStateId },
     })
@@ -613,13 +610,9 @@ export class AdaptiveSessionOrchestrator {
     const adaptations: string[] = []
     trajectory.forEach((t, idx) => {
       if (t.adjustment > 0) {
-        adaptations.push(
-          `Q${idx + 1}: Increased difficulty +${t.adjustment} (score ${t.score}%)`
-        )
+        adaptations.push(`Q${idx + 1}: Increased difficulty +${t.adjustment} (score ${t.score}%)`)
       } else if (t.adjustment < 0) {
-        adaptations.push(
-          `Q${idx + 1}: Decreased difficulty ${t.adjustment} (score ${t.score}%)`
-        )
+        adaptations.push(`Q${idx + 1}: Decreased difficulty ${t.adjustment} (score ${t.score}%)`)
       }
     })
 
@@ -631,7 +624,7 @@ export class AdaptiveSessionOrchestrator {
     const baselineQuestions = 15
     const efficiencyScore = Math.max(
       0,
-      Math.round(((baselineQuestions - session.questionCount) / baselineQuestions) * 100)
+      Math.round(((baselineQuestions - session.questionCount) / baselineQuestions) * 100),
     )
 
     // Count breaks recommended (from trajectory metadata if tracked)
@@ -681,7 +674,7 @@ export class AdaptiveSessionOrchestrator {
   private checkEarlyStop(
     questionCount: number,
     irtEstimate?: number,
-    confidenceInterval?: number
+    confidenceInterval?: number,
   ): boolean {
     // Need minimum questions
     if (questionCount < AdaptiveSessionOrchestrator.MIN_QUESTIONS_FOR_EARLY_STOP) {
@@ -712,7 +705,7 @@ export class AdaptiveSessionOrchestrator {
    */
   private calculateEfficiencyMetrics(
     questionsAsked: number,
-    sessionStart: Date
+    sessionStart: Date,
   ): {
     questionsAsked: number
     timeSaved: number

@@ -3,11 +3,11 @@
 // PATCH: Update course
 // DELETE: Delete course (with safety checks)
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse } from '@/lib/api-response'
+import type { NextRequest } from 'next/server'
 import { ApiError, withErrorHandler } from '@/lib/api-error'
-import { validateRequest, updateCourseSchema } from '@/lib/validation'
+import { successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
+import { updateCourseSchema, validateRequest } from '@/lib/validation'
 
 /**
  * GET /api/content/courses/[id]

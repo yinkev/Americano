@@ -147,15 +147,15 @@
  */
 
 import { withErrorHandler } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
-import { withRateLimit, searchRateLimiter } from '@/lib/rate-limiter'
-import { parseRequestBody, searchRequestSchema } from '@/subsystems/knowledge-graph/validation'
-import { semanticSearchEngine } from '@/subsystems/knowledge-graph/semantic-search'
+import { errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import type { SearchAnalytics } from '@/subsystems/knowledge-graph/types'
-import { QueryBuilder } from '@/lib/query-builder'
-import { searchCache, SearchCache } from '@/lib/search-cache'
 import { performanceMonitor, withPerformanceTracking } from '@/lib/performance-monitor'
+import { QueryBuilder } from '@/lib/query-builder'
+import { searchRateLimiter, withRateLimit } from '@/lib/rate-limiter'
+import { SearchCache, searchCache } from '@/lib/search-cache'
+import { semanticSearchEngine } from '@/subsystems/knowledge-graph/semantic-search'
+import type { SearchAnalytics } from '@/subsystems/knowledge-graph/types'
+import { parseRequestBody, searchRequestSchema } from '@/subsystems/knowledge-graph/validation'
 
 /**
  * POST /api/search handler
@@ -171,20 +171,16 @@ async function handler(request: Request) {
   })
 
   if (!user) {
-    return Response.json(
-      errorResponse('USER_NOT_FOUND', 'User not found'),
-      { status: 404 }
-    )
+    return Response.json(errorResponse('USER_NOT_FOUND', 'User not found'), { status: 404 })
   }
 
   // Parse and validate request body
   const validation = await parseRequestBody(request, searchRequestSchema)
 
   if (!validation.success) {
-    return Response.json(
-      errorResponse('VALIDATION_ERROR', validation.error, validation.details),
-      { status: 400 }
-    )
+    return Response.json(errorResponse('VALIDATION_ERROR', validation.error, validation.details), {
+      status: 400,
+    })
   }
 
   const { query, limit, offset, filters } = validation.data
@@ -227,7 +223,7 @@ async function handler(request: Request) {
           },
           cached: true, // Indicate cache hit
           cacheStats: searchCache.getStats(),
-        })
+        }),
       )
     }
 
@@ -240,12 +236,10 @@ async function handler(request: Request) {
     // Check for parsing errors
     if (parsedQuery.errors.length > 0) {
       return Response.json(
-        errorResponse(
-          'INVALID_QUERY',
-          `Invalid query syntax: ${parsedQuery.errors[0]}`,
-          { errors: parsedQuery.errors }
-        ),
-        { status: 400 }
+        errorResponse('INVALID_QUERY', `Invalid query syntax: ${parsedQuery.errors[0]}`, {
+          errors: parsedQuery.errors,
+        }),
+        { status: 400 },
       )
     }
 
@@ -260,14 +254,11 @@ async function handler(request: Request) {
     }
 
     // Perform semantic search with advanced filters
-    const searchResults = await semanticSearchEngine.search(
-      semanticQuery.embeddingText,
-      {
-        limit,
-        offset,
-        filters: mergedFilters,
-      }
-    )
+    const searchResults = await semanticSearchEngine.search(semanticQuery.embeddingText, {
+      limit,
+      offset,
+      filters: mergedFilters,
+    })
 
     const { results, total, latency: searchLatency } = searchResults
     const totalLatency = Date.now() - startTime
@@ -300,7 +291,7 @@ async function handler(request: Request) {
       topResultId: results.length > 0 ? results[0].id : undefined,
       responseTimeMs: totalLatency,
       timestamp: new Date(),
-    }).catch(error => {
+    }).catch((error) => {
       // Log error but don't fail the request
       console.error('Failed to log search query:', error)
     })
@@ -333,7 +324,7 @@ async function handler(request: Request) {
           searchLatency,
           cacheEnabled: true,
         },
-      })
+      }),
     )
   } catch (error) {
     console.error('Search failed:', error)
@@ -341,12 +332,10 @@ async function handler(request: Request) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
 
     return Response.json(
-      errorResponse(
-        'SEARCH_FAILED',
-        'Failed to perform search. Please try again.',
-        { error: errorMessage }
-      ),
-      { status: 500 }
+      errorResponse('SEARCH_FAILED', 'Failed to perform search. Please try again.', {
+        error: errorMessage,
+      }),
+      { status: 500 },
     )
   }
 }
@@ -382,9 +371,5 @@ async function logSearchQuery(analytics: SearchAnalytics): Promise<void> {
  */
 export const POST = withRateLimit(
   searchRateLimiter,
-  withPerformanceTracking(
-    'search',
-    'POST /api/search',
-    withErrorHandler(handler)
-  )
+  withPerformanceTracking('search', 'POST /api/search', withErrorHandler(handler)),
 )

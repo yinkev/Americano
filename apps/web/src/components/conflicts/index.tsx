@@ -5,12 +5,12 @@
  * Exports all conflict-related components for easy importing
  */
 
-export { ConflictIndicator, ConflictIndicatorList } from './conflict-indicator'
 export { ConflictComparisonView } from './conflict-comparison-view'
 export { ConflictDetailModal } from './conflict-detail-modal'
+export { ConflictIndicator, ConflictIndicatorList } from './conflict-indicator'
 export {
-  showConflictToast,
-  showBatchConflictToast,
-  useConflictNotifications,
   ConflictNotificationBadge,
+  showBatchConflictToast,
+  showConflictToast,
+  useConflictNotifications,
 } from './conflict-notification'

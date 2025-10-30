@@ -8,9 +8,9 @@
 
 'use client'
 
-import { useTransition, ComponentProps } from 'react'
-import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
+import { type ComponentProps, useTransition } from 'react'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 interface OptimisticButtonProps extends Omit<ComponentProps<typeof Button>, 'onClick'> {

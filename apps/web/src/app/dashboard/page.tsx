@@ -13,11 +13,11 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { MissionCompletionChart } from '@/components/analytics/mission-completion-chart'
+import { Activity, Flame, Target, TrendingUp, Trophy } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { InsightsPanel } from '@/components/analytics/insights-panel'
+import { MissionCompletionChart } from '@/components/analytics/mission-completion-chart'
 import { RecommendationsPanel } from '@/components/analytics/recommendations-panel'
-import { Trophy, Target, Flame, TrendingUp, Activity } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { typography } from '@/lib/design-tokens'
@@ -152,9 +152,7 @@ export default function DashboardPage() {
               <Activity className="size-8" style={{ color: 'oklch(0.7 0.15 230)' }} />
             </div>
             <div className="flex-1">
-              <h1 className={`${typography.heading.h1} text-foreground mb-2`}>
-                Mission Analytics
-              </h1>
+              <h1 className={`${typography.heading.h1} text-foreground mb-2`}>Mission Analytics</h1>
               <p className={`${typography.body.base} text-muted-foreground max-w-2xl`}>
                 Track your mission performance and get personalized insights to optimize your
                 learning journey

@@ -7,31 +7,31 @@
  * Epic 3 - Knowledge Graph - Error Handling Examples
  */
 
+import type { Concept } from '@/types/prisma-extensions'
 import {
-  Result,
-  ok,
-  err,
-  isOk,
-  isErr,
-  unwrap,
-  unwrapOr,
-  unwrapOrElse,
-  map,
   andThen,
   combine,
-  partition,
-  fromPromise,
-  retry,
   EmbeddingError,
   EmbeddingErrorCode,
   ExtractionError,
   ExtractionErrorCode,
-  SearchError,
-  SearchErrorCode,
+  err,
+  fromPromise,
+  isErr,
+  isOk,
+  map,
+  ok,
+  partition,
   RelationshipError,
   RelationshipErrorCode,
+  type Result,
+  retry,
+  SearchError,
+  SearchErrorCode,
+  unwrap,
+  unwrapOr,
+  unwrapOrElse,
 } from '../result'
-import type { Concept } from '@/types/prisma-extensions'
 
 // ============================================================================
 // Example 1: Embedding Service with Result type
@@ -48,7 +48,7 @@ class ResultEmbeddingService {
         new EmbeddingError('Empty text provided', EmbeddingErrorCode.INVALID_INPUT, {
           retriable: false,
           context: { textLength: text.length },
-        })
+        }),
       )
     }
 
@@ -64,8 +64,8 @@ class ResultEmbeddingService {
             {
               retriable: true,
               context: { textLength: text.length },
-            }
-          )
+            },
+          ),
         )
       }
 
@@ -74,14 +74,10 @@ class ResultEmbeddingService {
       // Classify error
       if (this.isRateLimitError(error)) {
         return err(
-          new EmbeddingError(
-            'Rate limit exceeded',
-            EmbeddingErrorCode.RATE_LIMIT_EXCEEDED,
-            {
-              retriable: true,
-              cause: error,
-            }
-          )
+          new EmbeddingError('Rate limit exceeded', EmbeddingErrorCode.RATE_LIMIT_EXCEEDED, {
+            retriable: true,
+            cause: error,
+          }),
         )
       }
 
@@ -90,7 +86,7 @@ class ResultEmbeddingService {
           new EmbeddingError('Network error', EmbeddingErrorCode.NETWORK_ERROR, {
             retriable: true,
             cause: error,
-          })
+          }),
         )
       }
 
@@ -98,14 +94,12 @@ class ResultEmbeddingService {
         new EmbeddingError('API error', EmbeddingErrorCode.API_ERROR, {
           retriable: false,
           cause: error,
-        })
+        }),
       )
     }
   }
 
-  async generateBatchEmbeddings(
-    texts: string[]
-  ): Promise<Result<number[][], EmbeddingError>> {
+  async generateBatchEmbeddings(texts: string[]): Promise<Result<number[][], EmbeddingError>> {
     const results = await Promise.all(texts.map((text) => this.generateEmbedding(text)))
 
     // Option 1: Fail if any embedding fails
@@ -146,7 +140,7 @@ class ResultEmbeddingService {
  */
 class ResultGraphBuilder {
   async extractConcepts(
-    chunks: Array<{ id: string; content: string }>
+    chunks: Array<{ id: string; content: string }>,
   ): Promise<Result<Concept[], ExtractionError>> {
     try {
       const concepts: Concept[] = []
@@ -176,8 +170,8 @@ class ResultGraphBuilder {
             {
               retriable: false,
               context: { chunkCount: chunks.length },
-            }
-          )
+            },
+          ),
         )
       }
 
@@ -187,7 +181,7 @@ class ResultGraphBuilder {
         new ExtractionError('Extraction process failed', ExtractionErrorCode.DATABASE_ERROR, {
           retriable: true,
           cause: error,
-        })
+        }),
       )
     }
   }
@@ -214,7 +208,7 @@ class ResultGraphBuilder {
             retriable: true,
             cause: error,
             context: { chunkId: chunk.id },
-          })
+          }),
         )
       }
 
@@ -222,7 +216,7 @@ class ResultGraphBuilder {
         new ExtractionError('Unknown extraction error', ExtractionErrorCode.VALIDATION_ERROR, {
           retriable: false,
           cause: error,
-        })
+        }),
       )
     }
   }
@@ -243,7 +237,7 @@ class ResultGraphBuilder {
           retriable: false,
           cause: error,
           context: { response },
-        })
+        }),
       )
     }
   }
@@ -270,7 +264,7 @@ class ResultSearchService {
         new SearchError('Empty query provided', SearchErrorCode.INVALID_QUERY, {
           retriable: false,
           query,
-        })
+        }),
       )
     }
 
@@ -285,8 +279,8 @@ class ResultSearchService {
             retriable: embeddingResult.error.retriable,
             cause: embeddingResult.error,
             query,
-          }
-        )
+          },
+        ),
       )
     }
 
@@ -302,16 +296,14 @@ class ResultSearchService {
         new SearchError('No results found for query', SearchErrorCode.NO_RESULTS, {
           retriable: false,
           query,
-        })
+        }),
       )
     }
 
     return searchResult
   }
 
-  private async generateQueryEmbedding(
-    query: string
-  ): Promise<Result<number[], EmbeddingError>> {
+  private async generateQueryEmbedding(query: string): Promise<Result<number[], EmbeddingError>> {
     // Use embedding service
     const service = new ResultEmbeddingService()
     return await service.generateEmbedding(query)
@@ -319,7 +311,7 @@ class ResultSearchService {
 
   private async executeVectorSearch(
     embedding: number[],
-    query: string
+    query: string,
   ): Promise<Result<SearchResults, SearchError>> {
     try {
       // Simulate database query
@@ -331,7 +323,7 @@ class ResultSearchService {
           retriable: true,
           cause: error,
           query,
-        })
+        }),
       )
     }
   }
@@ -349,16 +341,12 @@ class ResultSearchService {
 async function exampleWithRetry() {
   const service = new ResultEmbeddingService()
 
-  const result = await retry(
-    async () => await service.generateEmbedding('Medical text'),
-    {
-      maxAttempts: 3,
-      delayMs: 1000,
-      backoffMultiplier: 2,
-      shouldRetry: (error) =>
-        error.retriable && error.code !== EmbeddingErrorCode.INVALID_INPUT,
-    }
-  )
+  const result = await retry(async () => await service.generateEmbedding('Medical text'), {
+    maxAttempts: 3,
+    delayMs: 1000,
+    backoffMultiplier: 2,
+    shouldRetry: (error) => error.retriable && error.code !== EmbeddingErrorCode.INVALID_INPUT,
+  })
 
   if (isOk(result)) {
     console.log('Embedding generated:', result.value.length, 'dimensions')
@@ -380,9 +368,7 @@ async function exampleChaining() {
     await graphBuilder.extractConcepts([{ id: '1', content: 'Medical content' }]),
     async (concepts) => {
       // For each concept, generate embedding
-      const embeddings = await Promise.all(
-        concepts.map((c) => service.generateEmbedding(c.name))
-      )
+      const embeddings = await Promise.all(concepts.map((c) => service.generateEmbedding(c.name)))
 
       const combined = combine(embeddings)
       if (isErr(combined)) {
@@ -390,13 +376,13 @@ async function exampleChaining() {
           new ExtractionError('Failed to generate embeddings', ExtractionErrorCode.DATABASE_ERROR, {
             retriable: combined.error.retriable,
             cause: combined.error,
-          })
+          }),
         )
       }
 
       // Store concepts with embeddings
       return ok(concepts)
-    }
+    },
   )
 
   if (isOk(result)) {
@@ -455,7 +441,7 @@ async function examplePromiseConversion() {
       new SearchError('Failed to fetch data', SearchErrorCode.DATABASE_ERROR, {
         retriable: true,
         cause: error,
-      })
+      }),
   )
 
   // Use Result pattern
@@ -537,7 +523,7 @@ async function exampleErrorLogging() {
 
 class ResultRelationshipDetector {
   async detectRelationships(
-    concepts: Concept[]
+    concepts: Concept[],
   ): Promise<Result<Array<{ from: string; to: string; strength: number }>, RelationshipError>> {
     if (concepts.length < 2) {
       return err(
@@ -547,8 +533,8 @@ class ResultRelationshipDetector {
           {
             retriable: false,
             context: { conceptCount: concepts.length },
-          }
-        )
+          },
+        ),
       )
     }
 
@@ -564,7 +550,7 @@ class ResultRelationshipDetector {
             // Log but continue
             console.error(
               `Failed to calculate similarity between ${concepts[i].id} and ${concepts[j].id}:`,
-              strengthResult.error.message
+              strengthResult.error.message,
             )
             continue
           }
@@ -588,15 +574,15 @@ class ResultRelationshipDetector {
           {
             retriable: true,
             cause: error,
-          }
-        )
+          },
+        ),
       )
     }
   }
 
   private async calculateSimilarity(
     c1: Concept,
-    c2: Concept
+    c2: Concept,
   ): Promise<Result<number, RelationshipError>> {
     try {
       // Simulate similarity calculation
@@ -611,8 +597,8 @@ class ResultRelationshipDetector {
             retriable: true,
             cause: error,
             context: { concept1: c1.id, concept2: c2.id },
-          }
-        )
+          },
+        ),
       )
     }
   }

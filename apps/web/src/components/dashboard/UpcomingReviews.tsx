@@ -1,9 +1,9 @@
 'use client'
 
+import { ChevronRight, Clock } from 'lucide-react'
 import React from 'react'
-import { Card } from '@/components/ui/card'
-import { Clock, ChevronRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 
 const reviews = [
   {
@@ -12,7 +12,7 @@ const reviews = [
     courseColor: 'oklch(0.68 0.25 15)',
     cards: 12,
     time: 'Due now',
-    priority: 'high'
+    priority: 'high',
   },
   {
     topic: 'Muscle Tissue Types',
@@ -20,7 +20,7 @@ const reviews = [
     courseColor: 'oklch(0.72 0.18 190)',
     cards: 8,
     time: 'In 2 hours',
-    priority: 'medium'
+    priority: 'medium',
   },
   {
     topic: 'Nervous System Overview',
@@ -28,7 +28,7 @@ const reviews = [
     courseColor: 'oklch(0.78 0.20 70)',
     cards: 15,
     time: 'Tomorrow',
-    priority: 'low'
+    priority: 'low',
   },
 ]
 
@@ -62,12 +62,18 @@ export function UpcomingReviews() {
                   variant="outline"
                   className="text-xs px-2 py-0 h-4 flex-shrink-0"
                   style={{
-                    borderColor: review.priority === 'high' ? 'var(--accent-intense)' :
-                                 review.priority === 'medium' ? 'var(--neuro-amber)' :
-                                 'var(--primary)',
-                    color: review.priority === 'high' ? 'var(--accent-intense)' :
-                           review.priority === 'medium' ? 'var(--neuro-amber)' :
-                           'var(--primary)'
+                    borderColor:
+                      review.priority === 'high'
+                        ? 'var(--accent-intense)'
+                        : review.priority === 'medium'
+                          ? 'var(--neuro-amber)'
+                          : 'var(--primary)',
+                    color:
+                      review.priority === 'high'
+                        ? 'var(--accent-intense)'
+                        : review.priority === 'medium'
+                          ? 'var(--neuro-amber)'
+                          : 'var(--primary)',
                   }}
                 >
                   {review.time}
@@ -84,7 +90,10 @@ export function UpcomingReviews() {
         ))}
       </div>
 
-      <button className="w-full mt-4 text-xs font-medium transition-colors" style={{ color: 'var(--primary)' }}>
+      <button
+        className="w-full mt-4 text-xs font-medium transition-colors"
+        style={{ color: 'var(--primary)' }}
+      >
         View All Reviews
       </button>
 

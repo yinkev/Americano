@@ -135,7 +135,9 @@ export class StudyTimeAnalyzer {
 
     for (const session of sessions) {
       const startedAt =
-        session.startedAt instanceof Date ? (session.startedAt as Date) : new Date((session as any).startedAt as any)
+        session.startedAt instanceof Date
+          ? (session.startedAt as Date)
+          : new Date((session as any).startedAt as any)
       if (!startedAt || isNaN(startedAt.getTime())) {
         // Skip invalid dates to avoid NaN hour buckets
         continue
@@ -210,18 +212,15 @@ export class StudyTimeAnalyzer {
           : 0
       const avgRetention =
         bucket.retentionScores.length > 0
-          ? bucket.retentionScores.reduce((sum, s) => sum + s, 0) /
-            bucket.retentionScores.length
+          ? bucket.retentionScores.reduce((sum, s) => sum + s, 0) / bucket.retentionScores.length
           : 0
       const completionRate =
         bucket.completionRates.length > 0
-          ? bucket.completionRates.reduce((sum, r) => sum + r, 0) /
-            bucket.completionRates.length
+          ? bucket.completionRates.reduce((sum, r) => sum + r, 0) / bucket.completionRates.length
           : 0
       const avgEngagement =
         bucket.engagementScores.length > 0
-          ? bucket.engagementScores.reduce((sum, s) => sum + s, 0) /
-            bucket.engagementScores.length
+          ? bucket.engagementScores.reduce((sum, s) => sum + s, 0) / bucket.engagementScores.length
           : 0
 
       // Calculate composite time-of-day score
@@ -260,7 +259,8 @@ export class StudyTimeAnalyzer {
 
         const avgPerformanceScore =
           bucket.performanceScores.length > 0
-            ? bucket.performanceScores.reduce((sum, s) => sum + s, 0) / bucket.performanceScores.length
+            ? bucket.performanceScores.reduce((sum, s) => sum + s, 0) /
+              bucket.performanceScores.length
             : 0
         const avgRetention =
           bucket.retentionScores.length > 0
@@ -272,11 +272,15 @@ export class StudyTimeAnalyzer {
             : 0
         const avgEngagement =
           bucket.engagementScores.length > 0
-            ? bucket.engagementScores.reduce((sum, s) => sum + s, 0) / bucket.engagementScores.length
+            ? bucket.engagementScores.reduce((sum, s) => sum + s, 0) /
+              bucket.engagementScores.length
             : 0
 
         const rawScore =
-          avgPerformanceScore * 0.4 + avgRetention * 100 * 0.3 + completionRate * 100 * 0.2 + avgEngagement * 0.1
+          avgPerformanceScore * 0.4 +
+          avgRetention * 100 * 0.3 +
+          completionRate * 100 * 0.2 +
+          avgEngagement * 0.1
         const timeOfDayScore = Math.max(0, Math.min(100, rawScore))
         const confidence = Math.min(1.0, bucket.sessions.length / 50)
 
@@ -301,23 +305,30 @@ export class StudyTimeAnalyzer {
 
           const avgPerformanceScore =
             bucket.performanceScores.length > 0
-              ? bucket.performanceScores.reduce((sum, s) => sum + s, 0) / bucket.performanceScores.length
+              ? bucket.performanceScores.reduce((sum, s) => sum + s, 0) /
+                bucket.performanceScores.length
               : 0
           const avgRetention =
             bucket.retentionScores.length > 0
-              ? bucket.retentionScores.reduce((sum, s) => sum + s, 0) / bucket.retentionScores.length
+              ? bucket.retentionScores.reduce((sum, s) => sum + s, 0) /
+                bucket.retentionScores.length
               : 0
           const completionRate =
             bucket.completionRates.length > 0
-              ? bucket.completionRates.reduce((sum, r) => sum + r, 0) / bucket.completionRates.length
+              ? bucket.completionRates.reduce((sum, r) => sum + r, 0) /
+                bucket.completionRates.length
               : 0
           const avgEngagement =
             bucket.engagementScores.length > 0
-              ? bucket.engagementScores.reduce((sum, s) => sum + s, 0) / bucket.engagementScores.length
+              ? bucket.engagementScores.reduce((sum, s) => sum + s, 0) /
+                bucket.engagementScores.length
               : 0
 
           const rawScore =
-            avgPerformanceScore * 0.4 + avgRetention * 100 * 0.3 + completionRate * 100 * 0.2 + avgEngagement * 0.1
+            avgPerformanceScore * 0.4 +
+            avgRetention * 100 * 0.3 +
+            completionRate * 100 * 0.2 +
+            avgEngagement * 0.1
           const timeOfDayScore = Math.max(0, Math.min(100, rawScore))
           const confidence = Math.min(1.0, bucket.sessions.length / 50)
 
@@ -386,7 +397,9 @@ export class StudyTimeAnalyzer {
 
     for (const session of sessions) {
       const startedAt =
-        session.startedAt instanceof Date ? (session.startedAt as Date) : new Date((session as any).startedAt as any)
+        session.startedAt instanceof Date
+          ? (session.startedAt as Date)
+          : new Date((session as any).startedAt as any)
       const dayOfWeek = startedAt.getUTCDay() // 0=Sunday, 6=Saturday
       const hour = startedAt.getUTCHours()
       const key = `${dayOfWeek}-${hour}`
@@ -444,7 +457,7 @@ export class StudyTimeAnalyzer {
             if (windowStart !== null && hour - windowStart >= 2) {
               // Multi-hour window (at least 2 hours)
               peaks.push(
-                this.createPeakPattern(
+                StudyTimeAnalyzer.createPeakPattern(
                   dayOfWeek,
                   windowStart,
                   hour - 1,
@@ -461,7 +474,7 @@ export class StudyTimeAnalyzer {
           // No data or insufficient data for this hour
           if (windowStart !== null && hour - windowStart >= 2) {
             peaks.push(
-              this.createPeakPattern(
+              StudyTimeAnalyzer.createPeakPattern(
                 dayOfWeek,
                 windowStart,
                 hour - 1,
@@ -479,7 +492,13 @@ export class StudyTimeAnalyzer {
       // Check for window extending to end of day
       if (windowStart !== null && 23 - windowStart >= 1) {
         peaks.push(
-          this.createPeakPattern(dayOfWeek, windowStart, 23, windowScores, windowSessionCount),
+          StudyTimeAnalyzer.createPeakPattern(
+            dayOfWeek,
+            windowStart,
+            23,
+            windowScores,
+            windowSessionCount,
+          ),
         )
       }
     }
@@ -507,7 +526,15 @@ export class StudyTimeAnalyzer {
               windowSessionCount += bucket.sessions.length
             } else {
               if (windowStart !== null && hour - windowStart >= 2) {
-                relaxed.push(this.createPeakPattern(dayOfWeek, windowStart, hour - 1, windowScores, windowSessionCount))
+                relaxed.push(
+                  StudyTimeAnalyzer.createPeakPattern(
+                    dayOfWeek,
+                    windowStart,
+                    hour - 1,
+                    windowScores,
+                    windowSessionCount,
+                  ),
+                )
               }
               windowStart = null
               windowScores = []
@@ -515,7 +542,15 @@ export class StudyTimeAnalyzer {
             }
           } else {
             if (windowStart !== null && hour - windowStart >= 2) {
-              relaxed.push(this.createPeakPattern(dayOfWeek, windowStart, hour - 1, windowScores, windowSessionCount))
+              relaxed.push(
+                StudyTimeAnalyzer.createPeakPattern(
+                  dayOfWeek,
+                  windowStart,
+                  hour - 1,
+                  windowScores,
+                  windowSessionCount,
+                ),
+              )
             }
             windowStart = null
             windowScores = []
@@ -524,7 +559,15 @@ export class StudyTimeAnalyzer {
         }
 
         if (windowStart !== null && 23 - windowStart >= 1) {
-          relaxed.push(this.createPeakPattern(dayOfWeek, windowStart, 23, windowScores, windowSessionCount))
+          relaxed.push(
+            StudyTimeAnalyzer.createPeakPattern(
+              dayOfWeek,
+              windowStart,
+              23,
+              windowScores,
+              windowSessionCount,
+            ),
+          )
         }
       }
       sortedPeaks = relaxed.sort((a, b) => b.avgScore - a.avgScore)
@@ -540,7 +583,7 @@ export class StudyTimeAnalyzer {
    * @returns Array of TimeOfDayScore for all hours with data
    */
   static async calculateTimeOfDayEffectiveness(userId: string): Promise<TimeOfDayScore[]> {
-    const patterns = await this.analyzeOptimalStudyTimes(userId, 6)
+    const patterns = await StudyTimeAnalyzer.analyzeOptimalStudyTimes(userId, 6)
 
     return patterns.map((pattern) => ({
       hour: pattern.hourOfDay,
@@ -708,7 +751,7 @@ export class StudyTimeAnalyzer {
     const avgScore = scores.reduce((sum, s) => sum + s, 0) / scores.length
 
     // Calculate consistency (1.0 - normalized standard deviation)
-    const variance = scores.reduce((sum, s) => sum + Math.pow(s - avgScore, 2), 0) / scores.length
+    const variance = scores.reduce((sum, s) => sum + (s - avgScore) ** 2, 0) / scores.length
     const stdDev = Math.sqrt(variance)
     const consistency = Math.max(0, 1.0 - stdDev / 100)
 

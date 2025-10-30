@@ -100,7 +100,7 @@ export class AcademicPerformanceIntegration {
       end: new Date(),
     }
 
-    const metrics = await this.calculateBehavioralMetrics(userId, range)
+    const metrics = await AcademicPerformanceIntegration.calculateBehavioralMetrics(userId, range)
 
     const score =
       metrics.consistency * BEHAVIORAL_SCORE_WEIGHTS.consistency +
@@ -131,7 +131,10 @@ export class AcademicPerformanceIntegration {
     minWeeks: number = MIN_WEEKS_FOR_CORRELATION,
   ): Promise<CorrelationResult> {
     // Step 1: Gather time-series data
-    const timeSeriesData = await this.gatherTimeSeriesData(userId, minWeeks)
+    const timeSeriesData = await AcademicPerformanceIntegration.gatherTimeSeriesData(
+      userId,
+      minWeeks,
+    )
 
     if (timeSeriesData.length < MIN_DATA_POINTS) {
       throw new Error(
@@ -140,22 +143,32 @@ export class AcademicPerformanceIntegration {
     }
 
     // Step 2: Calculate Pearson r
-    const coefficient = this.calculatePearsonCorrelation(
+    const coefficient = AcademicPerformanceIntegration.calculatePearsonCorrelation(
       timeSeriesData.map((d) => d.behavioralScore),
       timeSeriesData.map((d) => d.academicScore),
     )
 
     // Step 3: Calculate p-value
-    const pValue = this.calculatePValue(coefficient, timeSeriesData.length)
+    const pValue = AcademicPerformanceIntegration.calculatePValue(
+      coefficient,
+      timeSeriesData.length,
+    )
 
     // Step 4: Calculate 95% confidence interval
-    const confidenceInterval = this.calculateConfidenceInterval(coefficient, timeSeriesData.length)
+    const confidenceInterval = AcademicPerformanceIntegration.calculateConfidenceInterval(
+      coefficient,
+      timeSeriesData.length,
+    )
 
     // Step 5: Generate interpretation
-    const interpretation = this.interpretCorrelation(coefficient, pValue)
+    const interpretation = AcademicPerformanceIntegration.interpretCorrelation(coefficient, pValue)
 
     // Step 6: Generate insights
-    const insights = this.generateCorrelationInsights(coefficient, pValue, timeSeriesData)
+    const insights = AcademicPerformanceIntegration.generateCorrelationInsights(
+      coefficient,
+      pValue,
+      timeSeriesData,
+    )
 
     return {
       coefficient,
@@ -266,13 +279,16 @@ export class AcademicPerformanceIntegration {
       const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
 
       // Calculate behavioral score for this week
-      const behavioralScore = await this.calculateBehavioralScore(userId, {
-        start: weekStart,
-        end: weekEnd,
-      })
+      const behavioralScore = await AcademicPerformanceIntegration.calculateBehavioralScore(
+        userId,
+        {
+          start: weekStart,
+          end: weekEnd,
+        },
+      )
 
       // Get academic performance for this week (exams or mission mastery)
-      const academicScore = await this.getAcademicScore(userId, {
+      const academicScore = await AcademicPerformanceIntegration.getAcademicScore(userId, {
         start: weekStart,
         end: weekEnd,
       })
@@ -384,7 +400,7 @@ export class AcademicPerformanceIntegration {
 
     // Approximate p-value using t-distribution
     // Simplified for MVP - use proper t-distribution library in production
-    const pValue = 2 * (1 - this.tDistributionCDF(Math.abs(t), df))
+    const pValue = 2 * (1 - AcademicPerformanceIntegration.tDistributionCDF(Math.abs(t), df))
     return Math.max(0, Math.min(1, pValue))
   }
 
@@ -395,12 +411,12 @@ export class AcademicPerformanceIntegration {
   private static tDistributionCDF(t: number, df: number): number {
     // Approximation using normal distribution for df > 30
     if (df > 30) {
-      return this.normalCDF(t)
+      return AcademicPerformanceIntegration.normalCDF(t)
     }
 
     // For smaller df, use simplified approximation
     const x = df / (df + t * t)
-    return 1 - 0.5 * Math.pow(x, df / 2)
+    return 1 - 0.5 * x ** (df / 2)
   }
 
   /**

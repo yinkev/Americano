@@ -11,14 +11,14 @@
  * Epic 3 - Retry Strategy Testing
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-  RetryService,
-  ErrorCategory,
-  RetriableError,
-  PermanentError,
   CircuitState,
   DEFAULT_POLICIES,
+  ErrorCategory,
+  PermanentError,
+  RetriableError,
+  RetryService,
 } from '../retry-service'
 
 describe('RetryService', () => {
@@ -425,7 +425,10 @@ describe('RetryService', () => {
     })
 
     it('should track total time including delays', async () => {
-      const operation = vi.fn().mockRejectedValueOnce(new Error('Error')).mockResolvedValue('success')
+      const operation = vi
+        .fn()
+        .mockRejectedValueOnce(new Error('Error'))
+        .mockResolvedValue('success')
 
       const promise = retryService.execute(
         operation,

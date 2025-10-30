@@ -27,10 +27,7 @@ export function DashboardSkeleton() {
         {/* Stats cards skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           {[1, 2, 3].map((i) => (
-            <Card
-              key={i}
-              className="bg-white/80 backdrop-blur-md border-white/30"
-            >
+            <Card key={i} className="bg-white/80 backdrop-blur-md border-white/30">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-2 flex-1">
@@ -100,10 +97,7 @@ export function DashboardSkeleton() {
           {/* Right sidebar skeleton */}
           <div className="space-y-4">
             {[1, 2, 3, 4].map((i) => (
-              <Card
-                key={i}
-                className="bg-white/80 backdrop-blur-md border-white/30"
-              >
+              <Card key={i} className="bg-white/80 backdrop-blur-md border-white/30">
                 <CardHeader>
                   <Skeleton className="h-5 w-32" />
                 </CardHeader>

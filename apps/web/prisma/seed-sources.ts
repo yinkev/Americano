@@ -32,8 +32,8 @@ const SOURCES = [
       isbn: '978-1264269419',
       boardExamRelevance: 'USMLE Step 1',
       peerReviewed: true,
-      evidenceLevel: 'LEVEL_II'
-    }
+      evidenceLevel: 'LEVEL_II',
+    },
   },
   {
     name: 'First Aid for the USMLE Step 2 CK',
@@ -44,8 +44,8 @@ const SOURCES = [
       publisher: 'McGraw-Hill',
       boardExamRelevance: 'USMLE Step 2 CK',
       peerReviewed: true,
-      evidenceLevel: 'LEVEL_II'
-    }
+      evidenceLevel: 'LEVEL_II',
+    },
   },
   {
     name: 'First Aid for the COMLEX Level 1',
@@ -56,8 +56,8 @@ const SOURCES = [
       publisher: 'McGraw-Hill',
       boardExamRelevance: 'COMLEX Level 1',
       peerReviewed: true,
-      evidenceLevel: 'LEVEL_II'
-    }
+      evidenceLevel: 'LEVEL_II',
+    },
   },
 
   // GUIDELINE sources
@@ -71,8 +71,8 @@ const SOURCES = [
       url: 'https://www.heart.org/en/health-topics',
       evidenceLevel: 'LEVEL_I',
       peerReviewed: true,
-      updateFrequency: 'Annual'
-    }
+      updateFrequency: 'Annual',
+    },
   },
   {
     name: 'American College of Cardiology (ACC) Guidelines',
@@ -83,8 +83,8 @@ const SOURCES = [
       organization: 'American College of Cardiology',
       url: 'https://www.acc.org/guidelines',
       evidenceLevel: 'LEVEL_I',
-      peerReviewed: true
-    }
+      peerReviewed: true,
+    },
   },
   {
     name: 'Centers for Disease Control and Prevention (CDC) Guidelines',
@@ -95,8 +95,8 @@ const SOURCES = [
       organization: 'CDC',
       url: 'https://www.cdc.gov/guidelines',
       evidenceLevel: 'LEVEL_I',
-      peerReviewed: true
-    }
+      peerReviewed: true,
+    },
   },
   {
     name: 'American Diabetes Association (ADA) Standards of Care',
@@ -108,8 +108,8 @@ const SOURCES = [
       url: 'https://diabetesjournals.org/care/issue/47/Supplement_1',
       evidenceLevel: 'LEVEL_I',
       peerReviewed: true,
-      updateFrequency: 'Annual'
-    }
+      updateFrequency: 'Annual',
+    },
   },
   {
     name: 'UpToDate Clinical Practice Guidelines',
@@ -121,8 +121,8 @@ const SOURCES = [
       url: 'https://www.uptodate.com',
       evidenceLevel: 'LEVEL_I',
       peerReviewed: true,
-      subscription: true
-    }
+      subscription: true,
+    },
   },
 
   // JOURNAL sources
@@ -136,8 +136,8 @@ const SOURCES = [
       publisher: 'Massachusetts Medical Society',
       peerReviewed: true,
       evidenceLevel: 'LEVEL_II',
-      url: 'https://www.nejm.org'
-    }
+      url: 'https://www.nejm.org',
+    },
   },
   {
     name: 'The Lancet',
@@ -149,8 +149,8 @@ const SOURCES = [
       publisher: 'Elsevier',
       peerReviewed: true,
       evidenceLevel: 'LEVEL_II',
-      url: 'https://www.thelancet.com'
-    }
+      url: 'https://www.thelancet.com',
+    },
   },
   {
     name: 'Journal of the American Medical Association (JAMA)',
@@ -162,8 +162,8 @@ const SOURCES = [
       publisher: 'American Medical Association',
       peerReviewed: true,
       evidenceLevel: 'LEVEL_II',
-      url: 'https://jamanetwork.com'
-    }
+      url: 'https://jamanetwork.com',
+    },
   },
   {
     name: 'Circulation (AHA Journal)',
@@ -175,8 +175,8 @@ const SOURCES = [
       publisher: 'American Heart Association',
       peerReviewed: true,
       evidenceLevel: 'LEVEL_II',
-      url: 'https://www.ahajournals.org/journal/circ'
-    }
+      url: 'https://www.ahajournals.org/journal/circ',
+    },
   },
 
   // TEXTBOOK sources
@@ -190,11 +190,11 @@ const SOURCES = [
       publisher: 'McGraw-Hill',
       authors: ['Kasper', 'Fauci', 'Hauser', 'Longo', 'Jameson', 'Loscalzo'],
       isbn: '978-1259644030',
-      evidenceLevel: 'LEVEL_III'
-    }
+      evidenceLevel: 'LEVEL_III',
+    },
   },
   {
-    name: "Robbins and Cotran Pathologic Basis of Disease",
+    name: 'Robbins and Cotran Pathologic Basis of Disease',
     type: SourceType.TEXTBOOK,
     credibilityScore: 85,
     medicalSpecialty: 'Pathology',
@@ -203,8 +203,8 @@ const SOURCES = [
       publisher: 'Elsevier',
       authors: ['Kumar', 'Abbas', 'Aster'],
       isbn: '978-0323531139',
-      evidenceLevel: 'LEVEL_III'
-    }
+      evidenceLevel: 'LEVEL_III',
+    },
   },
   {
     name: "Gray's Anatomy",
@@ -215,11 +215,11 @@ const SOURCES = [
       edition: '42nd Edition',
       publisher: 'Elsevier',
       isbn: '978-0702077050',
-      evidenceLevel: 'LEVEL_III'
-    }
+      evidenceLevel: 'LEVEL_III',
+    },
   },
   {
-    name: "Guyton and Hall Textbook of Medical Physiology",
+    name: 'Guyton and Hall Textbook of Medical Physiology',
     type: SourceType.TEXTBOOK,
     credibilityScore: 85,
     medicalSpecialty: 'Physiology',
@@ -228,8 +228,8 @@ const SOURCES = [
       publisher: 'Elsevier',
       authors: ['Hall', 'Hall'],
       isbn: '978-0323640039',
-      evidenceLevel: 'LEVEL_III'
-    }
+      evidenceLevel: 'LEVEL_III',
+    },
   },
   {
     name: "Katzung's Basic & Clinical Pharmacology",
@@ -241,11 +241,11 @@ const SOURCES = [
       publisher: 'McGraw-Hill',
       authors: ['Katzung', 'Trevor'],
       isbn: '978-1260452310',
-      evidenceLevel: 'LEVEL_III'
-    }
+      evidenceLevel: 'LEVEL_III',
+    },
   },
   {
-    name: "Lippincott Illustrated Reviews: Biochemistry",
+    name: 'Lippincott Illustrated Reviews: Biochemistry',
     type: SourceType.TEXTBOOK,
     credibilityScore: 85,
     medicalSpecialty: 'Biochemistry',
@@ -254,8 +254,8 @@ const SOURCES = [
       publisher: 'Wolters Kluwer',
       authors: ['Ferrier'],
       isbn: '978-1975161033',
-      evidenceLevel: 'LEVEL_III'
-    }
+      evidenceLevel: 'LEVEL_III',
+    },
   },
 
   // LECTURE sources (placeholders - actual lectures added by users)
@@ -267,8 +267,8 @@ const SOURCES = [
     metadata: {
       tier: 'Tier_1',
       description: 'Top-tier medical schools (Johns Hopkins, Harvard, UCSF, etc.)',
-      evidenceLevel: 'LEVEL_IV'
-    }
+      evidenceLevel: 'LEVEL_IV',
+    },
   },
   {
     name: 'Medical School Lecture (Tier 2)',
@@ -278,8 +278,8 @@ const SOURCES = [
     metadata: {
       tier: 'Tier_2',
       description: 'Mid-tier medical schools',
-      evidenceLevel: 'LEVEL_IV'
-    }
+      evidenceLevel: 'LEVEL_IV',
+    },
   },
   {
     name: 'Medical School Lecture (Tier 3)',
@@ -289,8 +289,8 @@ const SOURCES = [
     metadata: {
       tier: 'Tier_3',
       description: 'Lower-tier medical schools or unverified sources',
-      evidenceLevel: 'LEVEL_V'
-    }
+      evidenceLevel: 'LEVEL_V',
+    },
   },
 
   // USER_NOTES (placeholder)
@@ -302,9 +302,9 @@ const SOURCES = [
     metadata: {
       description: 'Personal study notes and annotations',
       evidenceLevel: 'LEVEL_V',
-      peerReviewed: false
-    }
-  }
+      peerReviewed: false,
+    },
+  },
 ]
 
 /**
@@ -321,7 +321,7 @@ async function main() {
           credibilityScore: sourceData.credibilityScore,
           medicalSpecialty: sourceData.medicalSpecialty,
           metadata: sourceData.metadata,
-          lastUpdated: new Date()
+          lastUpdated: new Date(),
         },
         create: {
           name: sourceData.name,
@@ -329,8 +329,8 @@ async function main() {
           credibilityScore: sourceData.credibilityScore,
           medicalSpecialty: sourceData.medicalSpecialty,
           metadata: sourceData.metadata,
-          lastUpdated: new Date()
-        }
+          lastUpdated: new Date(),
+        },
       })
 
       console.log(`✅ ${source.name} (${source.type}, score: ${source.credibilityScore})`)

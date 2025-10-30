@@ -1,9 +1,9 @@
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse } from '@/lib/api-response'
+import type { NextRequest } from 'next/server'
 import { withErrorHandler } from '@/lib/api-error'
-import type { ObjectiveCompletion, MissionObjective } from '@/types/prisma-json'
-import { getObjectiveCompletions, getMissionObjectives } from '@/types/mission-helpers'
+import { successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
+import { getMissionObjectives, getObjectiveCompletions } from '@/types/mission-helpers'
+import type { MissionObjective, ObjectiveCompletion } from '@/types/prisma-json'
 
 /**
  * GET /api/learning/sessions/:id/analytics
@@ -142,7 +142,7 @@ export const GET = withErrorHandler(
       orderBy: {
         respondedAt: 'asc',
       },
-    });
+    })
 
     // Calculate calibration metrics
     const calibrationMetrics = {
@@ -155,27 +155,28 @@ export const GET = withErrorHandler(
       },
       reflectionCompletionRate: 0,
       calibrationTimeMinutes: 0, // To be calculated if timing data available
-    };
+    }
 
     if (validationResponses.length > 0) {
       // Average calibration delta (confidence - performance gap)
       const totalDelta = validationResponses.reduce(
         (sum, r) => sum + Math.abs(r.calibrationDelta || 0),
-        0
-      );
-      calibrationMetrics.avgConfidenceVsPerformanceGap =
-        Math.round(totalDelta / validationResponses.length);
+        0,
+      )
+      calibrationMetrics.avgConfidenceVsPerformanceGap = Math.round(
+        totalDelta / validationResponses.length,
+      )
 
       // Category distribution
       validationResponses.forEach((r) => {
         if (r.calibrationCategory === 'OVERCONFIDENT') {
-          calibrationMetrics.categoryDistribution.overconfident += 1;
+          calibrationMetrics.categoryDistribution.overconfident += 1
         } else if (r.calibrationCategory === 'UNDERCONFIDENT') {
-          calibrationMetrics.categoryDistribution.underconfident += 1;
+          calibrationMetrics.categoryDistribution.underconfident += 1
         } else if (r.calibrationCategory === 'CALIBRATED') {
-          calibrationMetrics.categoryDistribution.calibrated += 1;
+          calibrationMetrics.categoryDistribution.calibrated += 1
         }
-      });
+      })
 
       // Reflection completion rate (responses with reflectionNotes)
       const validationResponsesWithReflection = await prisma.validationResponse.count({
@@ -183,44 +184,50 @@ export const GET = withErrorHandler(
           sessionId: id,
           reflectionNotes: { not: null },
         },
-      });
+      })
       calibrationMetrics.reflectionCompletionRate =
         validationResponses.length > 0
-          ? Math.round(
-              (validationResponsesWithReflection / validationResponses.length) * 100
-            )
-          : 0;
+          ? Math.round((validationResponsesWithReflection / validationResponses.length) * 100)
+          : 0
 
       // Add calibration insights
       if (calibrationMetrics.avgConfidenceVsPerformanceGap > 15) {
         insights.push(
-          `Calibration: Average confidence-performance gap is ${calibrationMetrics.avgConfidenceVsPerformanceGap}% - consider reviewing self-assessment accuracy.`
-        );
+          `Calibration: Average confidence-performance gap is ${calibrationMetrics.avgConfidenceVsPerformanceGap}% - consider reviewing self-assessment accuracy.`,
+        )
       } else {
         insights.push(
-          `Calibration: Well-calibrated with ${calibrationMetrics.avgConfidenceVsPerformanceGap}% average gap.`
-        );
+          `Calibration: Well-calibrated with ${calibrationMetrics.avgConfidenceVsPerformanceGap}% average gap.`,
+        )
       }
 
       if (calibrationMetrics.categoryDistribution.overconfident > validationResponses.length / 2) {
-        insights.push('Calibration: Pattern of overconfidence detected - review areas where confidence exceeded performance.');
-      } else if (calibrationMetrics.categoryDistribution.underconfident > validationResponses.length / 2) {
-        insights.push('Calibration: Pattern of underconfidence detected - trust your understanding more!');
+        insights.push(
+          'Calibration: Pattern of overconfidence detected - review areas where confidence exceeded performance.',
+        )
+      } else if (
+        calibrationMetrics.categoryDistribution.underconfident >
+        validationResponses.length / 2
+      ) {
+        insights.push(
+          'Calibration: Pattern of underconfidence detected - trust your understanding more!',
+        )
       }
     }
 
     return Response.json(
-    successResponse({
-      objectives,
-      cards: { reviewed, accuracy },
-      timeBreakdown: {
-        totalActualMinutes,
-        totalEstimatedMinutes,
-        deltaMinutes,
-        deltaPercent,
-      },
-      insights,
-      calibrationMetrics, // Story 4.4 Task 10.6
-    })
-  );
-});
+      successResponse({
+        objectives,
+        cards: { reviewed, accuracy },
+        timeBreakdown: {
+          totalActualMinutes,
+          totalEstimatedMinutes,
+          deltaMinutes,
+          deltaPercent,
+        },
+        insights,
+        calibrationMetrics, // Story 4.4 Task 10.6
+      }),
+    )
+  },
+)

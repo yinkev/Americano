@@ -1,7 +1,7 @@
 // /api/courses route
 // GET endpoint to fetch all courses for the current user
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest) {

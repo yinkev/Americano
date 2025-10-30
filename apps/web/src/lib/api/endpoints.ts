@@ -2,22 +2,34 @@
  * TODO: Align each path with FastAPI routers once confirmed.
  */
 export const endpoints = {
-  // Health
+  // Service health
   health: () => '/health',
 
-  // Analytics (placeholder)
-  analytics: (id?: string) => (id ? `/analytics/${id}` : '/analytics/summary'),
+  // Analytics (FastAPI analytics router)
+  analytics: {
+    health: () => '/analytics/health',
+    dailyInsight: () => '/analytics/daily-insight',
+    weeklySummary: () => '/analytics/weekly-summary',
+  },
 
-  // Predictions (ML service placeholder)
-  predictions: () => '/ml/predictions/struggle',
-
-  // Interventions (ML service placeholder)
-  interventions: () => '/ml/interventions',
-
-  // Validation (examples)
+  // Validation
   validation: {
-    runs: () => '/validation/runs',
-    run: (id: string) => `/validation/runs/${id}`,
+    generatePrompt: () => '/validation/generate-prompt',
+    evaluate: () => '/validation/evaluate',
+    scenarioMetrics: () => '/validation/scenarios/metrics',
+  },
+
+  // Challenge
+  challenge: {
+    feedback: () => '/challenge/feedback',
+    scheduleRetries: () => '/challenge/schedule-retries',
+  },
+
+  // Adaptive
+  adaptive: {
+    nextQuestion: () => '/adaptive/question/next',
+    sessionMetrics: (sessionId: string, objectiveId: string) =>
+      `/adaptive/session/${encodeURIComponent(sessionId)}/metrics?objective_id=${encodeURIComponent(objectiveId)}`,
   },
 } as const
 

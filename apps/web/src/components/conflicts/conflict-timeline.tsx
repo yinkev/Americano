@@ -1,31 +1,23 @@
 'use client'
 
+import { AlertTriangle, CheckCircle2, Clock, Eye, FileText, Flag, XCircle } from 'lucide-react'
 import * as React from 'react'
 import {
-  LineChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  ReferenceLine,
 } from 'recharts'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  Flag,
-  Eye,
-  Clock,
-  FileText,
-} from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { ConflictHistory, ConflictStatus, ChangeType } from '@/types/conflicts'
+import type { ChangeType, ConflictHistory, ConflictStatus } from '@/types/conflicts'
 
 interface ConflictTimelineProps {
   /**
@@ -67,15 +59,11 @@ interface ConflictTimelineProps {
  * />
  * ```
  */
-export function ConflictTimeline({
-  history,
-  currentStatus,
-  className,
-}: ConflictTimelineProps) {
+export function ConflictTimeline({ history, currentStatus, className }: ConflictTimelineProps) {
   // Sort history by timestamp (oldest first)
   const sortedHistory = React.useMemo(() => {
     return [...history].sort(
-      (a, b) => new Date(a.changedAt).getTime() - new Date(b.changedAt).getTime()
+      (a, b) => new Date(a.changedAt).getTime() - new Date(b.changedAt).getTime(),
     )
   }, [history])
 
@@ -170,13 +158,7 @@ export function ConflictTimeline({
  * TimelineEvent Component
  * Individual event in the timeline
  */
-function TimelineEvent({
-  event,
-  isLast,
-}: {
-  event: ConflictHistory
-  isLast: boolean
-}) {
+function TimelineEvent({ event, isLast }: { event: ConflictHistory; isLast: boolean }) {
   return (
     <div className="flex gap-4">
       {/* Timeline connector */}
@@ -257,10 +239,7 @@ function CustomTooltip({ active, payload }: any) {
  * StatusBadge Component
  */
 function StatusBadge({ status }: { status: ConflictStatus }) {
-  const config: Record<
-    string,
-    { label: string; color: string }
-  > = {
+  const config: Record<string, { label: string; color: string }> = {
     ACTIVE: {
       label: 'Active',
       color: 'oklch(0.65 0.18 240)',

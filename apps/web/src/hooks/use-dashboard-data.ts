@@ -8,7 +8,7 @@
  * @module hooks/use-dashboard-data
  */
 
-import { useQuery, type UseQueryResult } from '@tanstack/react-query'
+import { type UseQueryResult, useQuery } from '@tanstack/react-query'
 
 /**
  * Dashboard summary data structure

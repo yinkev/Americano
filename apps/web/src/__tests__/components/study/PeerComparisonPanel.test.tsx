@@ -14,21 +14,21 @@
  */
 
 // Jest globals (describe, it, expect, beforeEach, afterEach) are available without imports
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { PeerComparisonPanel } from '@/components/study/PeerComparisonPanel';
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { PeerComparisonPanel } from '@/components/study/PeerComparisonPanel'
 
 // Mock fetch
-global.fetch = jest.fn();
+global.fetch = jest.fn()
 
 describe('PeerComparisonPanel', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-  });
+    jest.clearAllMocks()
+  })
 
   afterEach(() => {
-    jest.restoreAllMocks();
-  });
+    jest.restoreAllMocks()
+  })
 
   const mockSuccessResponse = {
     success: true,
@@ -48,260 +48,264 @@ describe('PeerComparisonPanel', () => {
       ],
       peerAvgCorrelation: 0.6,
     },
-  };
+  }
 
   describe('Loading state', () => {
     it('should display loading indicator while fetching data', () => {
-      (fetch as jest.Mock).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
-      );
+      ;(fetch as jest.Mock).mockImplementation(
+        () => new Promise(() => {}), // Never resolves
+      )
 
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
-      expect(screen.getByText(/loading peer comparison/i)).toBeInTheDocument();
-    });
+      expect(screen.getByText(/loading peer comparison/i)).toBeInTheDocument()
+    })
 
     it('should show pulse animation during loading', () => {
-      (fetch as jest.Mock).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
-      );
+      ;(fetch as jest.Mock).mockImplementation(
+        () => new Promise(() => {}), // Never resolves
+      )
 
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
-      const loadingElement = screen.getByText(/loading peer comparison/i);
-      expect(loadingElement).toHaveClass('animate-pulse');
-    });
-  });
+      const loadingElement = screen.getByText(/loading peer comparison/i)
+      expect(loadingElement).toHaveClass('animate-pulse')
+    })
+  })
 
   describe('Not enabled state', () => {
     it('should display opt-in message when peer comparison not enabled', async () => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: false,
         json: async () => ({
           success: false,
           error: 'PEER_COMPARISON_NOT_ENABLED',
           message: 'Please enable peer comparison in settings',
         }),
-      } as Response);
+      } as Response)
 
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/peer comparison not enabled/i)).toBeInTheDocument();
-      });
+        expect(screen.getByText(/peer comparison not enabled/i)).toBeInTheDocument()
+      })
 
-      expect(screen.getByText(/enable peer comparison to see how your calibration/i)).toBeInTheDocument();
-    });
+      expect(
+        screen.getByText(/enable peer comparison to see how your calibration/i),
+      ).toBeInTheDocument()
+    })
 
     it('should display enable button when not enabled', async () => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: false,
         json: async () => ({
           success: false,
           error: 'PEER_COMPARISON_NOT_ENABLED',
           message: 'Please enable peer comparison in settings',
         }),
-      } as Response);
+      } as Response)
 
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /enable in settings/i })).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByRole('button', { name: /enable in settings/i })).toBeInTheDocument()
+      })
+    })
 
     it('should navigate to settings when enable button clicked', async () => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: false,
         json: async () => ({
           success: false,
           error: 'PEER_COMPARISON_NOT_ENABLED',
           message: 'Please enable peer comparison in settings',
         }),
-      } as Response);
+      } as Response)
 
       // Mock window.location.href
-      const originalLocation = window.location;
-      delete (window as any).location;
-      window.location = { href: '' } as any;
+      const originalLocation = window.location
+      delete (window as any).location
+      window.location = { href: '' } as any
 
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /enable in settings/i })).toBeInTheDocument();
-      });
+        expect(screen.getByRole('button', { name: /enable in settings/i })).toBeInTheDocument()
+      })
 
-      const enableButton = screen.getByRole('button', { name: /enable in settings/i });
-      await userEvent.click(enableButton);
+      const enableButton = screen.getByRole('button', { name: /enable in settings/i })
+      await userEvent.click(enableButton)
 
-      expect(window.location.href).toBe('/settings/privacy');
+      expect(window.location.href).toBe('/settings/privacy')
 
       // Restore original location
-      window.location = originalLocation;
-    });
-  });
+      ;(window as any).location = originalLocation
+    })
+  })
 
   describe('Error state', () => {
     it('should display error message when insufficient peer data', async () => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: false,
         json: async () => ({
           success: false,
           error: 'INSUFFICIENT_PEER_POOL',
           message: 'Insufficient peer data for comparison - need 20+ participants',
         }),
-      } as Response);
+      } as Response)
 
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/insufficient peer data for comparison/i)).toBeInTheDocument();
-      });
+        expect(screen.getByText(/insufficient peer data for comparison/i)).toBeInTheDocument()
+      })
 
-      expect(screen.getByText(/more students need to opt-in/i)).toBeInTheDocument();
-    });
+      expect(screen.getByText(/more students need to opt-in/i)).toBeInTheDocument()
+    })
 
     it('should display generic error message for other errors', async () => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: false,
         json: async () => ({
           success: false,
           error: 'INTERNAL_ERROR',
           message: 'Something went wrong',
         }),
-      } as Response);
+      } as Response)
 
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
+      })
+    })
 
     it('should handle fetch errors gracefully', async () => {
-      (fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+      ;(fetch as jest.Mock).mockRejectedValue(new Error('Network error'))
 
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/failed to load peer comparison data/i)).toBeInTheDocument();
-      });
-    });
-  });
+        expect(screen.getByText(/failed to load peer comparison data/i)).toBeInTheDocument()
+      })
+    })
+  })
 
   describe('Success state', () => {
     beforeEach(() => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: async () => mockSuccessResponse,
-      } as Response);
-    });
+      } as Response)
+    })
 
     it('should display peer comparison title', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/peer calibration comparison/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/peer calibration comparison/i)).toBeInTheDocument()
+      })
+    })
 
     it('should display user percentile', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/75th percentile/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/75th percentile/i)).toBeInTheDocument()
+      })
+    })
 
     it('should display pool size', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/25 students/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/25 students/i)).toBeInTheDocument()
+      })
+    })
 
     it('should display percentile interpretation', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/very good! you calibrate better than most peers/i)).toBeInTheDocument();
-      });
-    });
+        expect(
+          screen.getByText(/very good! you calibrate better than most peers/i),
+        ).toBeInTheDocument()
+      })
+    })
 
     it('should display calibration accuracy distribution heading', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/calibration accuracy distribution/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/calibration accuracy distribution/i)).toBeInTheDocument()
+      })
+    })
 
     it('should display user correlation coefficient', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/you \(0\.75\)/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/you \(0\.75\)/i)).toBeInTheDocument()
+      })
+    })
 
     it('should display distribution statistics', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/25th percentile/i)).toBeInTheDocument();
-        expect(screen.getByText(/median/i)).toBeInTheDocument();
-        expect(screen.getByText(/75th percentile/i)).toBeInTheDocument();
-      });
+        expect(screen.getByText(/25th percentile/i)).toBeInTheDocument()
+        expect(screen.getByText(/median/i)).toBeInTheDocument()
+        expect(screen.getByText(/75th percentile/i)).toBeInTheDocument()
+      })
 
       // Check values
-      const values = screen.getAllByText(/0\.\d+/);
-      expect(values.length).toBeGreaterThan(0);
-    });
-  });
+      const values = screen.getAllByText(/0\.\d+/)
+      expect(values.length).toBeGreaterThan(0)
+    })
+  })
 
   describe('Common overconfident topics', () => {
     beforeEach(() => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: async () => mockSuccessResponse,
-      } as Response);
-    });
+      } as Response)
+    })
 
     it('should display common overconfidence areas heading', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/common overconfidence areas/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/common overconfidence areas/i)).toBeInTheDocument()
+      })
+    })
 
     it('should display overconfident topics', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/cardiology/i)).toBeInTheDocument();
-        expect(screen.getByText(/pharmacology/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/cardiology/i)).toBeInTheDocument()
+        expect(screen.getByText(/pharmacology/i)).toBeInTheDocument()
+      })
+    })
 
     it('should display topic prevalence percentage', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/60% of peers/i)).toBeInTheDocument();
-        expect(screen.getByText(/55% of peers/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/60% of peers/i)).toBeInTheDocument()
+        expect(screen.getByText(/55% of peers/i)).toBeInTheDocument()
+      })
+    })
 
     it('should display average overconfidence delta', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/average overconfidence: \+20 points/i)).toBeInTheDocument();
-        expect(screen.getByText(/average overconfidence: \+18 points/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/average overconfidence: \+20 points/i)).toBeInTheDocument()
+        expect(screen.getByText(/average overconfidence: \+18 points/i)).toBeInTheDocument()
+      })
+    })
 
     it('should limit display to top 5 topics', async () => {
       const manyTopicsResponse = {
@@ -314,24 +318,24 @@ describe('PeerComparisonPanel', () => {
             avgDelta: 20 - i,
           })),
         },
-      };
+      }
 
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: async () => manyTopicsResponse,
-      } as Response);
+      } as Response)
 
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/topic 1/i)).toBeInTheDocument();
-        expect(screen.getByText(/topic 5/i)).toBeInTheDocument();
-      });
+        expect(screen.getByText(/topic 1/i)).toBeInTheDocument()
+        expect(screen.getByText(/topic 5/i)).toBeInTheDocument()
+      })
 
       // Topic 6 and beyond should not be visible
-      expect(screen.queryByText(/topic 6/i)).not.toBeInTheDocument();
-      expect(screen.queryByText(/topic 10/i)).not.toBeInTheDocument();
-    });
+      expect(screen.queryByText(/topic 6/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/topic 10/i)).not.toBeInTheDocument()
+    })
 
     it('should not display section when no common topics', async () => {
       const noTopicsResponse = {
@@ -340,55 +344,55 @@ describe('PeerComparisonPanel', () => {
           ...mockSuccessResponse.data,
           commonOverconfidentTopics: [],
         },
-      };
+      }
 
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: async () => noTopicsResponse,
-      } as Response);
+      } as Response)
 
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/peer calibration comparison/i)).toBeInTheDocument();
-      });
+        expect(screen.getByText(/peer calibration comparison/i)).toBeInTheDocument()
+      })
 
-      expect(screen.queryByText(/common overconfidence areas/i)).not.toBeInTheDocument();
-    });
-  });
+      expect(screen.queryByText(/common overconfidence areas/i)).not.toBeInTheDocument()
+    })
+  })
 
   describe('Privacy notice', () => {
     beforeEach(() => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: async () => mockSuccessResponse,
-      } as Response);
-    });
+      } as Response)
+    })
 
     it('should display privacy notice', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/all peer data is anonymized and aggregated/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/all peer data is anonymized and aggregated/i)).toBeInTheDocument()
+      })
+    })
 
     it('should mention opt-out option in privacy notice', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/you can opt-out anytime in settings/i)).toBeInTheDocument();
-      });
-    });
+        expect(screen.getByText(/you can opt-out anytime in settings/i)).toBeInTheDocument()
+      })
+    })
 
     it('should emphasize no individual data visibility', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/no individual student data is visible/i)).toBeInTheDocument();
-      });
-    });
-  });
+        expect(screen.getByText(/no individual student data is visible/i)).toBeInTheDocument()
+      })
+    })
+  })
 
   describe('Percentile interpretation', () => {
     const testPercentiles = [
@@ -398,7 +402,7 @@ describe('PeerComparisonPanel', () => {
       { percentile: 50, expected: 'Average calibration accuracy' },
       { percentile: 30, expected: 'Below average - consider reflection on confidence assessment' },
       { percentile: 10, expected: 'Needs improvement - focus on metacognitive awareness' },
-    ];
+    ]
 
     testPercentiles.forEach(({ percentile, expected }) => {
       it(`should display correct interpretation for ${percentile}th percentile`, async () => {
@@ -408,106 +412,104 @@ describe('PeerComparisonPanel', () => {
             ...mockSuccessResponse.data,
             userPercentile: percentile,
           },
-        };
+        }
 
-        (fetch as jest.Mock).mockResolvedValue({
+        ;(fetch as jest.Mock).mockResolvedValue({
           ok: true,
           json: async () => customResponse,
-        } as Response);
+        } as Response)
 
-        render(<PeerComparisonPanel />);
+        render(<PeerComparisonPanel />)
 
         await waitFor(() => {
-          expect(screen.getByText(new RegExp(expected, 'i'))).toBeInTheDocument();
-        });
-      });
-    });
-  });
+          expect(screen.getByText(new RegExp(expected, 'i'))).toBeInTheDocument()
+        })
+      })
+    })
+  })
 
   describe('Responsive and accessibility', () => {
     beforeEach(() => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: async () => mockSuccessResponse,
-      } as Response);
-    });
+      } as Response)
+    })
 
     it('should apply glassmorphism styling', async () => {
-      const { container } = render(<PeerComparisonPanel />);
+      const { container } = render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/peer calibration comparison/i)).toBeInTheDocument();
-      });
+        expect(screen.getByText(/peer calibration comparison/i)).toBeInTheDocument()
+      })
 
-      const panel = container.firstChild as HTMLElement;
-      expect(panel).toHaveClass('backdrop-blur-xl');
-      expect(panel).toHaveClass('bg-white/95');
-    });
+      const panel = container.firstChild as HTMLElement
+      expect(panel).toHaveClass('backdrop-blur-xl')
+      expect(panel).toHaveClass('bg-white/95')
+    })
 
     it('should have proper semantic structure', async () => {
-      render(<PeerComparisonPanel />);
+      render(<PeerComparisonPanel />)
 
       await waitFor(() => {
-        expect(screen.getByText(/peer calibration comparison/i)).toBeInTheDocument();
-      });
+        expect(screen.getByText(/peer calibration comparison/i)).toBeInTheDocument()
+      })
 
       // Should have heading
-      const heading = screen.getByText(/peer calibration comparison/i);
-      expect(heading.tagName).toBe('H3');
-    });
+      const heading = screen.getByText(/peer calibration comparison/i)
+      expect(heading.tagName).toBe('H3')
+    })
 
     it('should handle custom className prop', () => {
-      render(<PeerComparisonPanel className="custom-class" />);
+      render(<PeerComparisonPanel className="custom-class" />)
 
-      const panel = screen.getByText(/loading peer comparison/i).closest('div');
-      expect(panel).toHaveClass('custom-class');
-    });
-  });
+      const panel = screen.getByText(/loading peer comparison/i).closest('div')
+      expect(panel).toHaveClass('custom-class')
+    })
+  })
 
   describe('API integration', () => {
     it('should include userId in request when provided', async () => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: async () => mockSuccessResponse,
-      } as Response);
+      } as Response)
 
-      render(<PeerComparisonPanel userId="custom-user-id" />);
+      render(<PeerComparisonPanel userId="custom-user-id" />)
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith(
-          expect.stringContaining('userId=custom-user-id')
-        );
-      });
-    });
+        expect(fetch).toHaveBeenCalledWith(expect.stringContaining('userId=custom-user-id'))
+      })
+    })
 
     it('should include courseId in request when provided', async () => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: async () => mockSuccessResponse,
-      } as Response);
+      } as Response)
 
-      render(<PeerComparisonPanel courseId="course-123" />);
+      render(<PeerComparisonPanel courseId="course-123" />)
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith(
-          expect.stringContaining('courseId=course-123')
-        );
-      });
-    });
+        expect(fetch).toHaveBeenCalledWith(expect.stringContaining('courseId=course-123'))
+      })
+    })
 
     it('should include both userId and courseId when provided', async () => {
-      (fetch as jest.Mock).mockResolvedValue({
+      ;(fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: async () => mockSuccessResponse,
-      } as Response);
+      } as Response)
 
-      render(<PeerComparisonPanel userId="user-123" courseId="course-456" />);
+      render(<PeerComparisonPanel userId="user-123" courseId="course-456" />)
 
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledWith(
-          expect.stringMatching(/userId=user-123.*courseId=course-456|courseId=course-456.*userId=user-123/)
-        );
-      });
-    });
-  });
-});
+          expect.stringMatching(
+            /userId=user-123.*courseId=course-456|courseId=course-456.*userId=user-123/,
+          ),
+        )
+      })
+    })
+  })
+})

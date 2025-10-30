@@ -7,10 +7,10 @@
  * Story 5.6: Behavioral Insights Dashboard - Task 11 (Learning Science Articles)
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
 import type { LearningStyleProfile, PersonalizedForgettingCurve } from '@/types/prisma-json'
 
 // Query parameter validation
@@ -67,7 +67,7 @@ async function injectPersonalizedData(
         // Map new properties to legacy if needed
         const r0 = curve.R0 ?? curve.initialRetention
         const k = curve.k ?? curve.decayRate
-        const halfLife = curve.halfLife ?? (curve.stabilityFactor * 24) // Convert days to hours approximation
+        const halfLife = curve.halfLife ?? curve.stabilityFactor * 24 // Convert days to hours approximation
 
         injectedHTML = `
 ## Your Personalized Forgetting Curve
@@ -207,7 +207,11 @@ We'll analyze your content preferences to determine:
         const data = (pattern.evidence as unknown as Record<string, unknown> & {
           optimalStartHour?: number
           sessionsAnalyzed?: number
-          performancePeaks?: Array<{ startHour: number; endHour: number; effectivenessScore?: number }>
+          performancePeaks?: Array<{
+            startHour: number
+            endHour: number
+            effectivenessScore?: number
+          }>
         }) || { optimalStartHour: 10, sessionsAnalyzed: 0, performancePeaks: [] }
 
         // Determine chronotype

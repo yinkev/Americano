@@ -10,13 +10,13 @@
  * Epic 3 - Database Retry Strategy Testing
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  isDatabasePermanentError,
+  isDatabaseTransientError,
+  withDatabaseBatch,
   withDatabaseRetry,
   withDatabaseTransaction,
-  withDatabaseBatch,
-  isDatabaseTransientError,
-  isDatabasePermanentError,
 } from '../database-retry'
 import { PermanentError } from '../retry-service'
 
@@ -79,7 +79,10 @@ describe('withDatabaseRetry', () => {
     mockPrisma.user.create.mockRejectedValue(error)
 
     await expect(
-      withDatabaseRetry(() => mockPrisma.user.create({ data: { email: 'test@example.com' } }), 'create-user'),
+      withDatabaseRetry(
+        () => mockPrisma.user.create({ data: { email: 'test@example.com' } }),
+        'create-user',
+      ),
     ).rejects.toThrow('Unique constraint')
 
     expect(mockPrisma.user.create).toHaveBeenCalledTimes(1) // Only tried once
@@ -89,10 +92,14 @@ describe('withDatabaseRetry', () => {
     mockPrisma.user.findUnique.mockRejectedValue(new Error('Connection pool exhausted'))
 
     await expect(
-      withDatabaseRetry(() => mockPrisma.user.findUnique({ where: { id: '1' } }), 'findUnique-user', {
-        maxAttempts: 2,
-      }),
-    ).rejects.toThrow("failed after 2 attempts")
+      withDatabaseRetry(
+        () => mockPrisma.user.findUnique({ where: { id: '1' } }),
+        'findUnique-user',
+        {
+          maxAttempts: 2,
+        },
+      ),
+    ).rejects.toThrow('failed after 2 attempts')
 
     expect(mockPrisma.user.findUnique).toHaveBeenCalledTimes(2)
   })
@@ -205,7 +212,9 @@ describe('withDatabaseBatch', () => {
   })
 
   it('should process in configurable batch sizes', async () => {
-    const operations = Array.from({ length: 10 }, (_, i) => vi.fn().mockResolvedValue({ id: String(i) }))
+    const operations = Array.from({ length: 10 }, (_, i) =>
+      vi.fn().mockResolvedValue({ id: String(i) }),
+    )
 
     await withDatabaseBatch(operations, 'batch-size-test', 3)
 

@@ -8,13 +8,13 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import type {
-  ClinicalScenario,
-  UserChoices,
   ClinicalReasoningEvaluation,
+  ClinicalScenario,
   ClinicalScenarioStore as IClinicalScenarioStore,
+  ScenarioProgress,
   StageInfo,
   TimerInfo,
-  ScenarioProgress,
+  UserChoices,
 } from '@/types/clinical-scenarios'
 
 // Store state interface
@@ -140,13 +140,7 @@ export const useClinicalScenarioStore = create<ClinicalScenarioStoreState>()(
       },
 
       submitScenario: async (reasoning: string) => {
-        const {
-          currentScenario,
-          userChoices,
-          timeSpent,
-          stageStartTime,
-          sessionId
-        } = get()
+        const { currentScenario, userChoices, timeSpent, stageStartTime, sessionId } = get()
 
         if (!currentScenario) {
           set({ error: 'No scenario to submit' })
@@ -188,7 +182,6 @@ export const useClinicalScenarioStore = create<ClinicalScenarioStoreState>()(
             isLoading: false,
           })
           get().updateComputedState()
-
         } catch (error) {
           set({
             error: error instanceof Error ? error.message : 'Failed to submit scenario',
@@ -276,7 +269,7 @@ export const useClinicalScenarioStore = create<ClinicalScenarioStoreState>()(
         // Update progress info
         const totalStages = currentScenario.caseText.questions.length
         const completedStages = Object.keys(userChoices).filter(
-          stageId => userChoices[stageId]?.selectedAnswer
+          (stageId) => userChoices[stageId]?.selectedAnswer,
         ).length
 
         const progressInfo: ScenarioProgress = {
@@ -315,8 +308,8 @@ export const useClinicalScenarioStore = create<ClinicalScenarioStoreState>()(
         isCompleted: state.isCompleted,
         evaluation: state.evaluation,
       }),
-    }
-  )
+    },
+  ),
 )
 
 // Helper functions for stage information
@@ -344,23 +337,23 @@ function getStageDescription(stage: string): string {
 
 // Export hooks for specific use cases
 export const useScenarioTimer = () => {
-  const timerInfo = useClinicalScenarioStore(state => state.timerInfo)
+  const timerInfo = useClinicalScenarioStore((state) => state.timerInfo)
   return timerInfo
 }
 
 export const useScenarioProgress = () => {
-  const progressInfo = useClinicalScenarioStore(state => state.progressInfo)
-  const currentStageInfo = useClinicalScenarioStore(state => state.currentStageInfo)
+  const progressInfo = useClinicalScenarioStore((state) => state.progressInfo)
+  const currentStageInfo = useClinicalScenarioStore((state) => state.currentStageInfo)
   return { progressInfo, currentStageInfo }
 }
 
 export const useScenarioNavigation = () => {
-  const canGoNext = useClinicalScenarioStore(state => state.canGoNext)
-  const canGoPrevious = useClinicalScenarioStore(state => state.canGoPrevious)
-  const canSubmit = useClinicalScenarioStore(state => state.canSubmit)
-  const nextStage = useClinicalScenarioStore(state => state.nextStage)
-  const previousStage = useClinicalScenarioStore(state => state.previousStage)
-  const submitScenario = useClinicalScenarioStore(state => state.submitScenario)
+  const canGoNext = useClinicalScenarioStore((state) => state.canGoNext)
+  const canGoPrevious = useClinicalScenarioStore((state) => state.canGoPrevious)
+  const canSubmit = useClinicalScenarioStore((state) => state.canSubmit)
+  const nextStage = useClinicalScenarioStore((state) => state.nextStage)
+  const previousStage = useClinicalScenarioStore((state) => state.previousStage)
+  const submitScenario = useClinicalScenarioStore((state) => state.submitScenario)
 
   return {
     canGoNext,

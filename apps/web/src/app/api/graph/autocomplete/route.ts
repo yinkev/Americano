@@ -8,16 +8,19 @@
  * Rate limit: 120 requests/minute per user
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { searchSuggestionEngine } from '@/subsystems/knowledge-graph/search-suggestions'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { searchSuggestionEngine } from '@/subsystems/knowledge-graph/search-suggestions'
 
 /**
  * Query parameter validation schema
  */
 const QuerySchema = z.object({
-  q: z.string().min(0).max(200),  // Partial query
-  limit: z.string().optional().transform(val => val ? parseInt(val, 10) : 10),
+  q: z.string().min(0).max(200), // Partial query
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val, 10) : 10)),
 })
 
 /**
@@ -32,8 +35,8 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
  */
 function checkRateLimit(identifier: string): { allowed: boolean; remaining: number } {
   const now = Date.now()
-  const limit = 120  // requests per minute
-  const windowMs = 60 * 1000  // 1 minute
+  const limit = 120 // requests per minute
+  const windowMs = 60 * 1000 // 1 minute
 
   const record = rateLimitMap.get(identifier)
 
@@ -79,7 +82,7 @@ export async function GET(request: NextRequest) {
           error: 'Invalid query parameters',
           details: validation.error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -102,16 +105,13 @@ export async function GET(request: NextRequest) {
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': new Date(Date.now() + 60000).toISOString(),
           },
-        }
+        },
       )
     }
 
     // Get suggestions
     // TODO: Pass userId when authentication is implemented
-    const suggestions = await searchSuggestionEngine.getSuggestions(
-      query,
-      limit
-    )
+    const suggestions = await searchSuggestionEngine.getSuggestions(query, limit)
 
     const responseTime = Date.now() - startTime
 
@@ -131,9 +131,9 @@ export async function GET(request: NextRequest) {
         headers: {
           'X-RateLimit-Limit': '120',
           'X-RateLimit-Remaining': remaining.toString(),
-          'Cache-Control': 'public, max-age=300',  // Cache for 5 minutes
+          'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
         },
-      }
+      },
     )
   } catch (error) {
     console.error('Autocomplete API error:', error)
@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
         error: 'Failed to fetch suggestions',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

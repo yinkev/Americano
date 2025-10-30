@@ -8,23 +8,23 @@
  * Part of: Day 7-8 Research Analytics Implementation
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
 
 // ==================== TYPE DEFINITIONS ====================
 
 interface CounterfactualChartProps {
   plots: {
-    observed_vs_counterfactual: string; // base64 encoded PNG
-    posterior_predictive_check: string;
-    effect_distribution: string;
-    mcmc_diagnostics: string;
-  };
+    observed_vs_counterfactual: string // base64 encoded PNG
+    posterior_predictive_check: string
+    effect_distribution: string
+    mcmc_diagnostics: string
+  }
   observationCounts: {
-    pre: number;
-    post: number;
-  };
+    pre: number
+    post: number
+  }
 }
 
 // ==================== COMPONENT ====================
@@ -35,7 +35,7 @@ export default function CounterfactualChart({
 }: CounterfactualChartProps) {
   const [selectedPlot, setSelectedPlot] = useState<
     'counterfactual' | 'posterior' | 'effects' | 'diagnostics'
-  >('counterfactual');
+  >('counterfactual')
 
   const plotData = {
     counterfactual: {
@@ -46,14 +46,12 @@ export default function CounterfactualChart({
     },
     posterior: {
       title: 'Posterior Predictive Check',
-      description:
-        'Model fit validation - observed data should fall within credible intervals',
+      description: 'Model fit validation - observed data should fall within credible intervals',
       base64: plots.posterior_predictive_check,
     },
     effects: {
       title: 'Effect Distribution',
-      description:
-        'Posterior distribution of treatment effects with credible intervals',
+      description: 'Posterior distribution of treatment effects with credible intervals',
       base64: plots.effect_distribution,
     },
     diagnostics: {
@@ -61,9 +59,9 @@ export default function CounterfactualChart({
       description: 'Convergence diagnostics for MCMC sampling chains',
       base64: plots.mcmc_diagnostics,
     },
-  };
+  }
 
-  const currentPlot = plotData[selectedPlot];
+  const currentPlot = plotData[selectedPlot]
 
   return (
     <div className="space-y-4">
@@ -77,15 +75,11 @@ export default function CounterfactualChart({
           <div className="flex gap-4 text-sm">
             <div className="rounded-md bg-blue-50 px-3 py-2">
               <span className="font-medium text-blue-900">Pre:</span>{' '}
-              <span className="text-blue-700">
-                {observationCounts.pre} obs
-              </span>
+              <span className="text-blue-700">{observationCounts.pre} obs</span>
             </div>
             <div className="rounded-md bg-green-50 px-3 py-2">
               <span className="font-medium text-green-900">Post:</span>{' '}
-              <span className="text-green-700">
-                {observationCounts.post} obs
-              </span>
+              <span className="text-green-700">{observationCounts.post} obs</span>
             </div>
           </div>
         </div>
@@ -152,29 +146,23 @@ export default function CounterfactualChart({
 
       {/* Interpretation Guide */}
       <div className="rounded-lg border border-blue-100 bg-blue-50 p-4">
-        <h4 className="mb-2 text-sm font-semibold text-blue-900">
-          How to Read This Chart
-        </h4>
+        <h4 className="mb-2 text-sm font-semibold text-blue-900">How to Read This Chart</h4>
         {selectedPlot === 'counterfactual' && (
           <ul className="space-y-1 text-sm text-blue-800">
             <li>
               • <strong>Blue line:</strong> Observed outcomes (actual data)
             </li>
             <li>
-              • <strong>Orange line:</strong> Counterfactual prediction (without
-              intervention)
+              • <strong>Orange line:</strong> Counterfactual prediction (without intervention)
             </li>
             <li>
-              • <strong>Shaded area:</strong> 95% credible interval for
-              counterfactual
+              • <strong>Shaded area:</strong> 95% credible interval for counterfactual
             </li>
             <li>
-              • <strong>Vertical line:</strong> Intervention date (pre/post
-              divider)
+              • <strong>Vertical line:</strong> Intervention date (pre/post divider)
             </li>
             <li>
-              • <strong>Gap between lines:</strong> Estimated causal effect of
-              intervention
+              • <strong>Gap between lines:</strong> Estimated causal effect of intervention
             </li>
           </ul>
         )}
@@ -187,20 +175,17 @@ export default function CounterfactualChart({
               • <strong>Dark line:</strong> Model posterior mean prediction
             </li>
             <li>
-              • <strong>Shaded area:</strong> 95% credible interval (model
-              uncertainty)
+              • <strong>Shaded area:</strong> 95% credible interval (model uncertainty)
             </li>
             <li>
-              • <strong>Good fit:</strong> Most dots should fall within shaded
-              area
+              • <strong>Good fit:</strong> Most dots should fall within shaded area
             </li>
           </ul>
         )}
         {selectedPlot === 'effects' && (
           <ul className="space-y-1 text-sm text-blue-800">
             <li>
-              • <strong>Histogram:</strong> Distribution of effect sizes from
-              MCMC samples
+              • <strong>Histogram:</strong> Distribution of effect sizes from MCMC samples
             </li>
             <li>
               • <strong>Vertical lines:</strong> Credible interval bounds
@@ -216,23 +201,20 @@ export default function CounterfactualChart({
         {selectedPlot === 'diagnostics' && (
           <ul className="space-y-1 text-sm text-blue-800">
             <li>
-              • <strong>Multiple chains:</strong> Different colors = independent
-              MCMC runs
+              • <strong>Multiple chains:</strong> Different colors = independent MCMC runs
             </li>
             <li>
               • <strong>Good convergence:</strong> Chains should mix and overlap
             </li>
             <li>
-              • <strong>Horizontal trend:</strong> Samples exploring stable
-              posterior
+              • <strong>Horizontal trend:</strong> Samples exploring stable posterior
             </li>
             <li>
-              • <strong>No drift:</strong> Chains should not trend up/down over
-              time
+              • <strong>No drift:</strong> Chains should not trend up/down over time
             </li>
           </ul>
         )}
       </div>
     </div>
-  );
+  )
 }

@@ -5,7 +5,7 @@
  * Calculate current cognitive load for user with optional trend
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { StudyIntensityModulator } from '@/subsystems/behavioral-analytics/study-intensity-modulator'
 
 export async function GET(request: NextRequest) {

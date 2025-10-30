@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ObjectiveEditDialog } from './objective-edit-dialog'
 import type { ObjectiveComplexity } from '@/lib/ai/chatmock-client'
+import { ObjectiveEditDialog } from './objective-edit-dialog'
 
 interface Objective {
   id: string
@@ -110,7 +110,11 @@ export function ObjectiveList({ lectureId }: ObjectiveListProps) {
   }, [lectureId])
 
   if (loading) {
-    return <div className="text-center py-8 text-[13px] text-muted-foreground">Loading objectives...</div>
+    return (
+      <div className="text-center py-8 text-[13px] text-muted-foreground">
+        Loading objectives...
+      </div>
+    )
   }
 
   if (error) {

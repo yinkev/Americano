@@ -1,6 +1,9 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { AlertCircle, ArrowDown, ArrowUp, CheckCircle2, Info, TrendingUp, Zap } from 'lucide-react'
+import { useState } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -8,63 +11,47 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import {
-  AlertCircle,
-  ArrowUp,
-  ArrowDown,
-  CheckCircle2,
-  Info,
-  TrendingUp,
-  Zap,
-} from 'lucide-react';
-import { DifficultyIndicator } from './DifficultyIndicator';
-import { ConfidenceIntervalDisplay } from './ConfidenceIntervalDisplay';
+} from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { Progress } from '@/components/ui/progress'
+import { Separator } from '@/components/ui/separator'
+import { Textarea } from '@/components/ui/textarea'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { ConfidenceIntervalDisplay } from './ConfidenceIntervalDisplay'
+import { DifficultyIndicator } from './DifficultyIndicator'
 
 interface AdaptiveAssessmentInterfaceProps {
-  sessionId: string;
-  objectiveId: string;
-  onComplete: (result: AssessmentResult) => void;
+  sessionId: string
+  objectiveId: string
+  onComplete: (result: AssessmentResult) => void
 }
 
 interface AssessmentResult {
-  score: number;
-  responseId: string;
-  difficultyAdjustment?: number;
+  score: number
+  responseId: string
+  difficultyAdjustment?: number
 }
 
 interface QuestionData {
-  id: string;
-  promptText: string;
-  difficulty: number;
-  isFollowUp?: boolean;
-  parentContext?: string;
+  id: string
+  promptText: string
+  difficulty: number
+  isFollowUp?: boolean
+  parentContext?: string
 }
 
 interface DifficultyAdjustment {
-  previousDifficulty: number;
-  newDifficulty: number;
-  reason: string;
-  type: 'increase' | 'decrease' | 'maintain';
+  previousDifficulty: number
+  newDifficulty: number
+  reason: string
+  type: 'increase' | 'decrease' | 'maintain'
 }
 
 interface EfficiencyMetrics {
-  questionsAsked: number;
-  baselineQuestions: number;
-  timeSaved: number;
-  efficiencyScore: number;
+  questionsAsked: number
+  baselineQuestions: number
+  timeSaved: number
+  efficiencyScore: number
 }
 
 /**
@@ -102,46 +89,49 @@ export function AdaptiveAssessmentInterface({
   onComplete,
 }: AdaptiveAssessmentInterfaceProps) {
   // Question state
-  const [currentQuestion, setCurrentQuestion] = useState<QuestionData | null>(null);
-  const [userAnswer, setUserAnswer] = useState('');
+  const [currentQuestion, setCurrentQuestion] = useState<QuestionData | null>(null)
+  const [userAnswer, setUserAnswer] = useState('')
 
   // Difficulty tracking
-  const [currentDifficulty, setCurrentDifficulty] = useState(50);
-  const [difficultyAdjustment, setDifficultyAdjustment] = useState<DifficultyAdjustment | null>(null);
-  const [adjustmentCount, setAdjustmentCount] = useState(0);
+  const [currentDifficulty, setCurrentDifficulty] = useState(50)
+  const [difficultyAdjustment, setDifficultyAdjustment] = useState<DifficultyAdjustment | null>(
+    null,
+  )
+  const [adjustmentCount, setAdjustmentCount] = useState(0)
 
   // IRT and efficiency
-  const [knowledgeEstimate, setKnowledgeEstimate] = useState<number | null>(null);
-  const [confidenceInterval, setConfidenceInterval] = useState<number | null>(null);
-  const [canStopEarly, setCanStopEarly] = useState(false);
-  const [efficiencyMetrics, setEfficiencyMetrics] = useState<EfficiencyMetrics | null>(null);
+  const [knowledgeEstimate, setKnowledgeEstimate] = useState<number | null>(null)
+  const [confidenceInterval, setConfidenceInterval] = useState<number | null>(null)
+  const [canStopEarly, setCanStopEarly] = useState(false)
+  const [efficiencyMetrics, setEfficiencyMetrics] = useState<EfficiencyMetrics | null>(null)
 
   // Progress tracking
-  const [questionsAnswered, setQuestionsAnswered] = useState(0);
-  const [masteryProgress, setMasteryProgress] = useState(0);
+  const [questionsAnswered, setQuestionsAnswered] = useState(0)
+  const [masteryProgress, setMasteryProgress] = useState(0)
 
   // UI state
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // Load initial question (mock for demo)
   useState(() => {
     // TODO: Call API to get initial question based on user history
     setCurrentQuestion({
       id: 'q1',
-      promptText: 'Explain the mechanism of action of ACE inhibitors and their clinical use in hypertension.',
+      promptText:
+        'Explain the mechanism of action of ACE inhibitors and their clinical use in hypertension.',
       difficulty: 50,
-    });
-  });
+    })
+  })
 
   const handleSubmit = async () => {
     if (userAnswer.trim().length < 10) {
-      setError('Please provide a more detailed answer (at least 10 characters)');
-      return;
+      setError('Please provide a more detailed answer (at least 10 characters)')
+      return
     }
 
-    setIsSubmitting(true);
-    setError(null);
+    setIsSubmitting(true)
+    setError(null)
 
     try {
       // Submit answer and get evaluation
@@ -155,36 +145,36 @@ export function AdaptiveAssessmentInterface({
           userAnswer,
           currentDifficulty,
         }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to submit answer');
+        throw new Error('Failed to submit answer')
       }
 
-      const data = await response.json();
+      const data = await response.json()
 
       // Update difficulty if adjusted
       if (data.difficultyAdjustment) {
-        setDifficultyAdjustment(data.difficultyAdjustment);
-        setCurrentDifficulty(data.difficultyAdjustment.newDifficulty);
-        setAdjustmentCount(prev => prev + 1);
+        setDifficultyAdjustment(data.difficultyAdjustment)
+        setCurrentDifficulty(data.difficultyAdjustment.newDifficulty)
+        setAdjustmentCount((prev) => prev + 1)
       }
 
       // Update IRT metrics
       if (data.irtMetrics) {
-        setKnowledgeEstimate(data.irtMetrics.theta);
-        setConfidenceInterval(data.irtMetrics.confidenceInterval);
-        setCanStopEarly(data.irtMetrics.canStopEarly);
+        setKnowledgeEstimate(data.irtMetrics.theta)
+        setConfidenceInterval(data.irtMetrics.confidenceInterval)
+        setCanStopEarly(data.irtMetrics.canStopEarly)
       }
 
       // Update efficiency metrics
       if (data.efficiencyMetrics) {
-        setEfficiencyMetrics(data.efficiencyMetrics);
+        setEfficiencyMetrics(data.efficiencyMetrics)
       }
 
       // Update progress
-      setQuestionsAnswered(prev => prev + 1);
-      setMasteryProgress(data.masteryProgress || 0);
+      setQuestionsAnswered((prev) => prev + 1)
+      setMasteryProgress(data.masteryProgress || 0)
 
       // Check if session should end
       if (data.shouldEnd || data.canStopEarly) {
@@ -192,30 +182,30 @@ export function AdaptiveAssessmentInterface({
           score: data.score,
           responseId: data.responseId,
           difficultyAdjustment: data.difficultyAdjustment?.newDifficulty,
-        });
-        return;
+        })
+        return
       }
 
       // Load next question
       if (data.nextQuestion) {
-        setCurrentQuestion(data.nextQuestion);
-        setUserAnswer('');
-        setDifficultyAdjustment(null); // Clear after showing for 3 seconds
+        setCurrentQuestion(data.nextQuestion)
+        setUserAnswer('')
+        setDifficultyAdjustment(null) // Clear after showing for 3 seconds
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit answer');
+      setError(err instanceof Error ? err.message : 'Failed to submit answer')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleEarlyStop = () => {
     // User opts to stop early based on IRT convergence
     onComplete({
       score: knowledgeEstimate || 0,
       responseId: 'early-stop',
-    });
-  };
+    })
+  }
 
   if (!currentQuestion) {
     return (
@@ -224,7 +214,7 @@ export function AdaptiveAssessmentInterface({
           <p className="text-muted-foreground">Loading question...</p>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -238,14 +228,14 @@ export function AdaptiveAssessmentInterface({
               difficultyAdjustment.type === 'increase'
                 ? 'oklch(0.95 0.05 145)'
                 : difficultyAdjustment.type === 'decrease'
-                ? 'oklch(0.95 0.05 85)'
-                : 'oklch(0.95 0.02 230)',
+                  ? 'oklch(0.95 0.05 85)'
+                  : 'oklch(0.95 0.02 230)',
             borderColor:
               difficultyAdjustment.type === 'increase'
                 ? 'oklch(0.85 0.08 145)'
                 : difficultyAdjustment.type === 'decrease'
-                ? 'oklch(0.85 0.08 85)'
-                : 'oklch(0.85 0.04 230)',
+                  ? 'oklch(0.85 0.08 85)'
+                  : 'oklch(0.85 0.04 230)',
           }}
         >
           {difficultyAdjustment.type === 'increase' ? (
@@ -274,14 +264,15 @@ export function AdaptiveAssessmentInterface({
             borderColor: 'oklch(0.85 0.04 250)',
           }}
         >
-          <Info className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: 'oklch(0.55 0.18 250)' }} />
+          <Info
+            className="h-5 w-5 flex-shrink-0 mt-0.5"
+            style={{ color: 'oklch(0.55 0.18 250)' }}
+          />
           <div>
             <p className="font-semibold text-sm mb-1" style={{ color: 'oklch(0.3 0.15 250)' }}>
               Follow-Up Question
             </p>
-            <p className="text-sm text-muted-foreground">
-              {currentQuestion.parentContext}
-            </p>
+            <p className="text-sm text-muted-foreground">{currentQuestion.parentContext}</p>
           </div>
         </div>
       )}
@@ -376,8 +367,8 @@ export function AdaptiveAssessmentInterface({
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
                       <p className="text-sm">
-                        IRT confidence interval has converged. You can stop now to save time
-                        while maintaining accurate assessment.
+                        IRT confidence interval has converged. You can stop now to save time while
+                        maintaining accurate assessment.
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -411,7 +402,10 @@ export function AdaptiveAssessmentInterface({
                   <p className="font-medium text-lg">{efficiencyMetrics.timeSaved}%</p>
                 </div>
               </div>
-              <Progress value={efficiencyMetrics.efficiencyScore} className="mt-3 h-2 motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-out motion-reduce:transition-none" />
+              <Progress
+                value={efficiencyMetrics.efficiencyScore}
+                className="mt-3 h-2 motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-out motion-reduce:transition-none"
+              />
               <p className="text-xs text-muted-foreground mt-2">
                 Efficiency Score: {Math.round(efficiencyMetrics.efficiencyScore)}%
               </p>
@@ -423,9 +417,14 @@ export function AdaptiveAssessmentInterface({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label className="text-sm font-medium">Mastery Progress</Label>
-                <span className="text-sm text-muted-foreground">{Math.round(masteryProgress)}%</span>
+                <span className="text-sm text-muted-foreground">
+                  {Math.round(masteryProgress)}%
+                </span>
               </div>
-              <Progress value={masteryProgress} className="h-2 motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-out motion-reduce:transition-none" />
+              <Progress
+                value={masteryProgress}
+                className="h-2 motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-out motion-reduce:transition-none"
+              />
             </div>
           )}
         </CardContent>
@@ -470,5 +469,5 @@ export function AdaptiveAssessmentInterface({
         </CardFooter>
       </Card>
     </div>
-  );
+  )
 }

@@ -7,14 +7,14 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { ArrowLeft, Award, Calendar, Target, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
-import { Target, TrendingUp, Award, Calendar, ArrowLeft } from 'lucide-react'
-import { MissionCompletionChart } from '@/components/analytics/mission-completion-chart'
-import { PerformanceCorrelationPanel } from '@/components/analytics/performance-correlation-panel'
-import { MissionEffectivenessTable } from '@/components/analytics/mission-effectiveness-table'
-import { RecommendationsPanel } from '@/components/analytics/recommendations-panel'
+import { useEffect, useState } from 'react'
 import { InsightsPanel } from '@/components/analytics/insights-panel'
+import { MissionCompletionChart } from '@/components/analytics/mission-completion-chart'
+import { MissionEffectivenessTable } from '@/components/analytics/mission-effectiveness-table'
+import { PerformanceCorrelationPanel } from '@/components/analytics/performance-correlation-panel'
+import { RecommendationsPanel } from '@/components/analytics/recommendations-panel'
 
 interface MissionStats {
   completionRate: number

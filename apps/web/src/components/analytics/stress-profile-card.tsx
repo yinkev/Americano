@@ -13,18 +13,18 @@
 
 'use client'
 
+import { AlertTriangle, CheckCircle, Target } from 'lucide-react'
 import { useMemo } from 'react'
 import {
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
   Radar,
   RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
   ResponsiveContainer,
   Tooltip,
 } from 'recharts'
-import { AlertTriangle, CheckCircle, Target } from 'lucide-react'
-import { Card, CardHeader, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export interface StressTrigger {
   dimension: string // e.g., "Topic Difficulty", "Time Pressure"
@@ -88,9 +88,7 @@ export function StressProfileCard({
             <span className="font-semibold text-foreground">{Math.round(data.tolerance)}</span>
           </div>
           {isAboveTolerance && (
-            <div className="pt-1 mt-1 border-t border-muted text-orange-600">
-              ⚠️ Above tolerance
-            </div>
+            <div className="pt-1 mt-1 border-t border-muted text-orange-600">⚠️ Above tolerance</div>
           )}
         </div>
       </div>
@@ -115,48 +113,48 @@ export function StressProfileCard({
       <CardContent className="p-4 pt-4 space-y-4">
         {/* Radar chart */}
         <div className="w-full h-[320px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <RadarChart data={radarData}>
-            <PolarGrid stroke="oklch(0.85 0 0)" strokeDasharray="3 3" />
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart data={radarData}>
+              <PolarGrid stroke="oklch(0.85 0 0)" strokeDasharray="3 3" />
 
-            <PolarAngleAxis
-              dataKey="dimension"
-              tick={{ fontSize: 12, fill: 'oklch(0.5 0 0)' }}
-              tickLine={false}
-            />
+              <PolarAngleAxis
+                dataKey="dimension"
+                tick={{ fontSize: 12, fill: 'oklch(0.5 0 0)' }}
+                tickLine={false}
+              />
 
-            <PolarRadiusAxis
-              angle={90}
-              domain={[0, 100]}
-              tick={{ fontSize: 10, fill: 'oklch(0.6 0 0)' }}
-              tickCount={5}
-            />
+              <PolarRadiusAxis
+                angle={90}
+                domain={[0, 100]}
+                tick={{ fontSize: 10, fill: 'oklch(0.6 0 0)' }}
+                tickCount={5}
+              />
 
-            <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip />} />
 
-            {/* Tolerance reference line */}
-            <Radar
-              name="Load Tolerance"
-              dataKey="tolerance"
-              stroke="oklch(0.8 0.15 90)" // Yellow
-              fill="oklch(0.8 0.15 90)"
-              fillOpacity={0.1}
-              strokeWidth={2}
-              strokeDasharray="5 5"
-            />
+              {/* Tolerance reference line */}
+              <Radar
+                name="Load Tolerance"
+                dataKey="tolerance"
+                stroke="oklch(0.8 0.15 90)" // Yellow
+                fill="oklch(0.8 0.15 90)"
+                fillOpacity={0.1}
+                strokeWidth={2}
+                strokeDasharray="5 5"
+              />
 
-            {/* Actual stress scores */}
-            <Radar
-              name="Stress Score"
-              dataKey="score"
-              stroke="oklch(0.6 0.15 240)" // Blue
-              fill="oklch(0.6 0.15 240)"
-              fillOpacity={0.3}
-              strokeWidth={3}
-            />
-          </RadarChart>
-        </ResponsiveContainer>
-      </div>
+              {/* Actual stress scores */}
+              <Radar
+                name="Stress Score"
+                dataKey="score"
+                stroke="oklch(0.6 0.15 240)" // Blue
+                fill="oklch(0.6 0.15 240)"
+                fillOpacity={0.3}
+                strokeWidth={3}
+              />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
 
         {/* Primary stressors */}
         {primaryStressors.length > 0 && (
@@ -186,7 +184,9 @@ export function StressProfileCard({
         {/* Load tolerance indicator */}
         <div className="p-3 rounded-lg bg-muted/30">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-medium text-muted-foreground">Your Load Tolerance</span>
+            <span className="text-[11px] font-medium text-muted-foreground">
+              Your Load Tolerance
+            </span>
             <span className="text-[20px] font-bold font-heading text-foreground">
               {Math.round(loadTolerance)}
             </span>
@@ -220,9 +220,10 @@ export function StressProfileCard({
         {/* ARIA live region for screen readers */}
         <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
           Stress profile shows {primaryStressors.length} primary stressor
-          {primaryStressors.length !== 1 ? 's' : ''}: {primaryStressors.map((s) => s.dimension).join(', ')}.
-          Your load tolerance is {Math.round(loadTolerance)}. You have {copingStrategies.length}{' '}
-          effective coping strategies.
+          {primaryStressors.length !== 1 ? 's' : ''}:{' '}
+          {primaryStressors.map((s) => s.dimension).join(', ')}. Your load tolerance is{' '}
+          {Math.round(loadTolerance)}. You have {copingStrategies.length} effective coping
+          strategies.
         </div>
       </CardContent>
     </Card>

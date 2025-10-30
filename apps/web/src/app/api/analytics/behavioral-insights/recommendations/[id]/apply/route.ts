@@ -6,13 +6,17 @@
  * Story 5.6: Behavioral Insights Dashboard - Task 6
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
+import type { Prisma } from '@/generated/prisma'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { Prisma } from '@/generated/prisma'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
 import { RecommendationsEngine } from '@/subsystems/behavioral-analytics/recommendations-engine'
-import type { PreferredStudyTime, ContentPreferences, PersonalizedForgettingCurve } from '@/types/prisma-json'
+import type {
+  ContentPreferences,
+  PersonalizedForgettingCurve,
+  PreferredStudyTime,
+} from '@/types/prisma-json'
 
 // Zod validation schema for request body
 const ApplyRecommendationSchema = z.object({
@@ -113,27 +117,37 @@ async function applyRecommendationSettings(
 
   // Parse recommendation description to extract values
   switch (recommendation.recommendationType) {
-    case 'STUDY_TIME_OPTIMIZATION':
+    case 'STUDY_TIME_OPTIMIZATION': {
       // Extract hour range from title (e.g., "Study during your peak hours (14:00-15:00)")
       const hourMatch = recommendation.title.match(/\((\d+):00-(\d+):00\)/)
       if (hourMatch) {
         const startHour = parseInt(hourMatch[1], 10)
         const endHour = parseInt(hourMatch[2], 10)
         const existingTimes = (profile.preferredStudyTimes as unknown as PreferredStudyTime[]) || []
-        const newTime: PreferredStudyTime = { startHour, endHour, dayOfWeek: -1, effectiveness: 0.8 }
-        updates.preferredStudyTimes = [...existingTimes, newTime] as unknown as Prisma.InputJsonValue
+        const newTime: PreferredStudyTime = {
+          startHour,
+          endHour,
+          dayOfWeek: -1,
+          effectiveness: 0.8,
+        }
+        updates.preferredStudyTimes = [
+          ...existingTimes,
+          newTime,
+        ] as unknown as Prisma.InputJsonValue
       }
       break
+    }
 
-    case 'SESSION_DURATION_ADJUSTMENT':
+    case 'SESSION_DURATION_ADJUSTMENT': {
       // Extract duration from title (e.g., "Optimize session length to 45 minutes")
       const durationMatch = recommendation.title.match(/to (\d+) minutes/)
       if (durationMatch) {
         updates.optimalSessionDuration = parseInt(durationMatch[1], 10)
       }
       break
+    }
 
-    case 'CONTENT_TYPE_BALANCE':
+    case 'CONTENT_TYPE_BALANCE': {
       // Extract content type from title (e.g., "Increase flashcards content to 40%")
       const contentMatch = recommendation.title.match(/Increase (\w+) content to (\d+)%/)
       if (contentMatch) {
@@ -148,22 +162,25 @@ async function applyRecommendationSettings(
         updates.contentPreferences = updatedPrefs as unknown as Prisma.InputJsonValue
       }
       break
+    }
 
-    case 'RETENTION_STRATEGY':
+    case 'RETENTION_STRATEGY': {
       // Extract review frequency from title (e.g., "Review every 3 days for optimal retention")
       const reviewMatch = recommendation.title.match(/every (\d+) days/)
       if (reviewMatch) {
         const reviewDays = parseInt(reviewMatch[1], 10)
         // Update forgetting curve with recommended review schedule
-        const curve = (profile.personalizedForgettingCurve as unknown as PersonalizedForgettingCurve) || {
-          initialRetention: 1.0,
-          decayRate: 0.14,
-          stabilityFactor: 5,
-        }
+        const curve =
+          (profile.personalizedForgettingCurve as unknown as PersonalizedForgettingCurve) || {
+            initialRetention: 1.0,
+            decayRate: 0.14,
+            stabilityFactor: 5,
+          }
         const updatedCurve = { ...curve, recommendedReviewInterval: reviewDays }
         updates.personalizedForgettingCurve = updatedCurve as unknown as Prisma.InputJsonValue
       }
       break
+    }
 
     default:
       // For other types, apply custom settings if provided

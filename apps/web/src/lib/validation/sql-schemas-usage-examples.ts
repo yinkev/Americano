@@ -9,16 +9,16 @@
 
 import { prisma } from '@/lib/db'
 import {
-  CoOccurrenceResultSchema,
-  VectorSearchChunkResultSchema,
-  PopularSearchResultSchema,
-  validateSQLResults,
-  safeValidateSQLResults,
   bigIntToNumber,
-  convertBigIntFields,
-  SQLSchemas,
   type CoOccurrenceResult,
+  CoOccurrenceResultSchema,
+  convertBigIntFields,
+  PopularSearchResultSchema,
+  SQLSchemas,
+  safeValidateSQLResults,
   type VectorSearchChunkResult,
+  VectorSearchChunkResultSchema,
+  validateSQLResults,
 } from './sql-schemas'
 
 /**
@@ -55,7 +55,9 @@ export async function exampleCoOccurrenceDetection() {
 
     // Now TypeScript knows the exact shape of the data
     validated.forEach((result: CoOccurrenceResult) => {
-      console.log(`  ${result.concept1_name} <-> ${result.concept2_name}: ${result.co_occurrence_count} occurrences`)
+      console.log(
+        `  ${result.concept1_name} <-> ${result.concept2_name}: ${result.co_occurrence_count} occurrences`,
+      )
     })
   } catch (error) {
     console.error('Validation failed:', error)
@@ -104,7 +106,7 @@ export async function exampleVectorSearch(queryEmbedding: number[]) {
     ORDER BY distance
     LIMIT 20
     `,
-    embeddingStr
+    embeddingStr,
   )
 
   // Validate results
@@ -119,7 +121,7 @@ export async function exampleVectorSearch(queryEmbedding: number[]) {
       lectureTitle: result.lectureTitle,
       courseName: result.courseName,
       pageNumber: result.pageNumber,
-    }
+    },
   }))
 
   return searchResults
@@ -153,7 +155,7 @@ export async function examplePopularSearches() {
   const validated = validateSQLResults(PopularSearchResultSchema, rawResults)
 
   // Method 1: Manual bigint conversion
-  const results = validated.map(result => ({
+  const results = validated.map((result) => ({
     query: result.query,
     count: bigIntToNumber(result.count), // Safe conversion to number
     avgResults: result.avgResults,
@@ -236,16 +238,13 @@ export class ExampleSearchService {
     const rawResults = await this.executeVectorQuery(embedding)
 
     // 3. Add validation layer (NEW)
-    const validationResult = safeValidateSQLResults(
-      VectorSearchChunkResultSchema,
-      rawResults
-    )
+    const validationResult = safeValidateSQLResults(VectorSearchChunkResultSchema, rawResults)
 
     if (!validationResult.success) {
       // Log validation errors for monitoring
       console.error('[SearchService] Result validation failed:', {
         query,
-        errors: validationResult.error.errors.map(e => ({
+        errors: validationResult.error.errors.map((e) => ({
           path: e.path,
           message: e.message,
         })),

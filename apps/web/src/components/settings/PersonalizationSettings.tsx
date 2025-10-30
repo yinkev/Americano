@@ -7,14 +7,19 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { Slider } from '@/components/ui/slider'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+import {
+  Activity,
+  BookOpen,
+  Brain,
+  Clock,
+  Info,
+  Pause,
+  RotateCcw,
+  Sparkles,
+  Target,
+  TrendingUp,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,18 +30,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import {
-  Brain,
-  Clock,
-  BookOpen,
-  Target,
-  Activity,
-  RotateCcw,
-  Pause,
-  Info,
-  TrendingUp,
-  Sparkles,
-} from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
+import { Slider } from '@/components/ui/slider'
+import { Switch } from '@/components/ui/switch'
 
 interface PersonalizationPreferences {
   personalizationLevel: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH'
@@ -139,7 +139,8 @@ export function PersonalizationSettings() {
   }
 
   function handleLevelChange(values: number[]) {
-    const newLevel = PERSONALIZATION_LEVELS[values[0]].label as PersonalizationPreferences['personalizationLevel']
+    const newLevel = PERSONALIZATION_LEVELS[values[0]]
+      .label as PersonalizationPreferences['personalizationLevel']
     setPreferences((prev) => (prev ? { ...prev, personalizationLevel: newLevel } : null))
     setHasChanges(true)
   }
@@ -211,7 +212,9 @@ export function PersonalizationSettings() {
     )
   }
 
-  const currentLevelIndex = PERSONALIZATION_LEVELS.findIndex((l) => l.label === preferences.personalizationLevel)
+  const currentLevelIndex = PERSONALIZATION_LEVELS.findIndex(
+    (l) => l.label === preferences.personalizationLevel,
+  )
   const currentLevel = PERSONALIZATION_LEVELS[currentLevelIndex]
 
   return (
@@ -268,7 +271,12 @@ export function PersonalizationSettings() {
               />
               <div className="flex justify-between text-[11px] text-muted-foreground">
                 {PERSONALIZATION_LEVELS.map((level) => (
-                  <span key={level.value} className={level.value === currentLevelIndex ? 'font-semibold text-foreground' : ''}>
+                  <span
+                    key={level.value}
+                    className={
+                      level.value === currentLevelIndex ? 'font-semibold text-foreground' : ''
+                    }
+                  >
                     {level.label}
                   </span>
                 ))}
@@ -296,7 +304,8 @@ export function PersonalizationSettings() {
                   )}
                   {preferences.personalizationLevel === 'HIGH' && (
                     <p className="text-[11px] text-muted-foreground">
-                      Full adaptive experience with cognitive load monitoring and proactive interventions.
+                      Full adaptive experience with cognitive load monitoring and proactive
+                      interventions.
                     </p>
                   )}
                 </div>
@@ -313,9 +322,15 @@ export function PersonalizationSettings() {
               {/* Mission Timing */}
               <div className="flex items-center justify-between p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-start gap-3 flex-1">
-                  <Clock className="size-5 shrink-0 mt-1" style={{ color: 'oklch(0.7 0.15 230)' }} />
+                  <Clock
+                    className="size-5 shrink-0 mt-1"
+                    style={{ color: 'oklch(0.7 0.15 230)' }}
+                  />
                   <div className="flex-1">
-                    <Label htmlFor="mission-timing" className="text-[13px] font-medium cursor-pointer">
+                    <Label
+                      htmlFor="mission-timing"
+                      className="text-[13px] font-medium cursor-pointer"
+                    >
                       Adapt Mission Timing
                     </Label>
                     <p className="text-[11px] text-muted-foreground mt-1">
@@ -334,9 +349,15 @@ export function PersonalizationSettings() {
               {/* Session Duration */}
               <div className="flex items-center justify-between p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-start gap-3 flex-1">
-                  <Activity className="size-5 shrink-0 mt-1" style={{ color: 'oklch(0.7 0.15 145)' }} />
+                  <Activity
+                    className="size-5 shrink-0 mt-1"
+                    style={{ color: 'oklch(0.7 0.15 145)' }}
+                  />
                   <div className="flex-1">
-                    <Label htmlFor="session-duration" className="text-[13px] font-medium cursor-pointer">
+                    <Label
+                      htmlFor="session-duration"
+                      className="text-[13px] font-medium cursor-pointer"
+                    >
                       Adapt Session Duration
                     </Label>
                     <p className="text-[11px] text-muted-foreground mt-1">
@@ -355,9 +376,15 @@ export function PersonalizationSettings() {
               {/* Content Recommendations */}
               <div className="flex items-center justify-between p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-start gap-3 flex-1">
-                  <BookOpen className="size-5 shrink-0 mt-1" style={{ color: 'oklch(0.8 0.15 85)' }} />
+                  <BookOpen
+                    className="size-5 shrink-0 mt-1"
+                    style={{ color: 'oklch(0.8 0.15 85)' }}
+                  />
                   <div className="flex-1">
-                    <Label htmlFor="content-recs" className="text-[13px] font-medium cursor-pointer">
+                    <Label
+                      htmlFor="content-recs"
+                      className="text-[13px] font-medium cursor-pointer"
+                    >
                       Personalize Content Recommendations
                     </Label>
                     <p className="text-[11px] text-muted-foreground mt-1">
@@ -369,16 +396,25 @@ export function PersonalizationSettings() {
                   id="content-recs"
                   checked={preferences.contentPersonalizationEnabled}
                   onCheckedChange={() => handleFeatureToggle('contentPersonalizationEnabled')}
-                  disabled={preferences.personalizationLevel === 'NONE' || preferences.personalizationLevel === 'LOW'}
+                  disabled={
+                    preferences.personalizationLevel === 'NONE' ||
+                    preferences.personalizationLevel === 'LOW'
+                  }
                 />
               </div>
 
               {/* Assessment Difficulty */}
               <div className="flex items-center justify-between p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-start gap-3 flex-1">
-                  <Target className="size-5 shrink-0 mt-1" style={{ color: 'oklch(0.6 0.15 25)' }} />
+                  <Target
+                    className="size-5 shrink-0 mt-1"
+                    style={{ color: 'oklch(0.6 0.15 25)' }}
+                  />
                   <div className="flex-1">
-                    <Label htmlFor="assessment-diff" className="text-[13px] font-medium cursor-pointer">
+                    <Label
+                      htmlFor="assessment-diff"
+                      className="text-[13px] font-medium cursor-pointer"
+                    >
                       Adapt Assessment Difficulty
                     </Label>
                     <p className="text-[11px] text-muted-foreground mt-1">
@@ -390,16 +426,25 @@ export function PersonalizationSettings() {
                   id="assessment-diff"
                   checked={preferences.assessmentPersonalizationEnabled}
                   onCheckedChange={() => handleFeatureToggle('assessmentPersonalizationEnabled')}
-                  disabled={preferences.personalizationLevel === 'NONE' || preferences.personalizationLevel === 'LOW'}
+                  disabled={
+                    preferences.personalizationLevel === 'NONE' ||
+                    preferences.personalizationLevel === 'LOW'
+                  }
                 />
               </div>
 
               {/* Cognitive Load Auto-Adjust */}
               <div className="flex items-center justify-between p-4 rounded-lg bg-muted/10 border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-200">
                 <div className="flex items-start gap-3 flex-1">
-                  <Brain className="size-5 shrink-0 mt-1" style={{ color: 'oklch(0.7 0.15 300)' }} />
+                  <Brain
+                    className="size-5 shrink-0 mt-1"
+                    style={{ color: 'oklch(0.7 0.15 300)' }}
+                  />
                   <div className="flex-1">
-                    <Label htmlFor="cognitive-load" className="text-[13px] font-medium cursor-pointer">
+                    <Label
+                      htmlFor="cognitive-load"
+                      className="text-[13px] font-medium cursor-pointer"
+                    >
                       Auto-Adjust Based on Cognitive Load
                     </Label>
                     <p className="text-[11px] text-muted-foreground mt-1">
@@ -447,16 +492,26 @@ export function PersonalizationSettings() {
               </Button>
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Reset will clear all personalization data and restart from defaults. Pause temporarily disables
-              personalization while keeping your data.
+              Reset will clear all personalization data and restart from defaults. Pause temporarily
+              disables personalization while keeping your data.
             </p>
           </div>
 
           {/* Save Changes */}
           {hasChanges && (
-            <div className="flex items-center justify-between p-4 rounded-lg border" style={{ backgroundColor: 'oklch(0.7 0.15 230 / 0.1)', borderColor: 'oklch(0.7 0.15 230 / 0.3)' }}>
+            <div
+              className="flex items-center justify-between p-4 rounded-lg border"
+              style={{
+                backgroundColor: 'oklch(0.7 0.15 230 / 0.1)',
+                borderColor: 'oklch(0.7 0.15 230 / 0.3)',
+              }}
+            >
               <p className="text-[13px] font-medium">You have unsaved changes</p>
-              <Button onClick={handleSave} disabled={saving} className="gap-2 text-[13px] hover:scale-[1.02] active:scale-[0.98] transition-transform duration-150">
+              <Button
+                onClick={handleSave}
+                disabled={saving}
+                className="gap-2 text-[13px] hover:scale-[1.02] active:scale-[0.98] transition-transform duration-150"
+              >
                 {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>

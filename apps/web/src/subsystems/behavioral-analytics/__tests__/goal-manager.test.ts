@@ -4,9 +4,9 @@
  * Story 5.6 Task 5
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { GoalManager } from '../goal-manager'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '@/lib/db'
+import { GoalManager } from '../goal-manager'
 
 // Mock Prisma
 vi.mock('@/lib/db', () => ({

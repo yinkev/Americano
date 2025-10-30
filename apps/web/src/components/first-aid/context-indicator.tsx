@@ -1,15 +1,11 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { BookOpen, Star, ExternalLink } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { cn } from "@/lib/utils"
+import { BookOpen, ExternalLink, Star } from 'lucide-react'
+import * as React from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 
 export interface FirstAidContextIndicatorProps {
   guidelineId: string
@@ -19,7 +15,7 @@ export interface FirstAidContextIndicatorProps {
   relevanceScore?: number
   previewSnippet?: string
   onExpand?: () => void
-  variant?: "badge" | "icon" | "inline"
+  variant?: 'badge' | 'icon' | 'inline'
   showTooltip?: boolean
   className?: string
 }
@@ -28,11 +24,11 @@ export interface FirstAidContextIndicatorProps {
  * Returns the appropriate icon color based on relevance score
  */
 function getIndicatorColor(relevanceScore?: number, isHighYield?: boolean): string {
-  if (isHighYield) return "oklch(0.7 0.2 60)" // Gold for high-yield
-  if (!relevanceScore) return "oklch(0.7 0.15 230)" // Blue default
-  if (relevanceScore >= 0.8) return "oklch(0.7 0.15 150)" // Green
-  if (relevanceScore >= 0.65) return "oklch(0.7 0.15 60)" // Yellow
-  return "oklch(0.7 0.05 230)" // Gray
+  if (isHighYield) return 'oklch(0.7 0.2 60)' // Gold for high-yield
+  if (!relevanceScore) return 'oklch(0.7 0.15 230)' // Blue default
+  if (relevanceScore >= 0.8) return 'oklch(0.7 0.15 150)' // Green
+  if (relevanceScore >= 0.65) return 'oklch(0.7 0.15 60)' // Yellow
+  return 'oklch(0.7 0.05 230)' // Gray
 }
 
 /**
@@ -80,36 +76,36 @@ export function FirstAidContextIndicator({
   relevanceScore,
   previewSnippet,
   onExpand,
-  variant = "badge",
+  variant = 'badge',
   showTooltip = true,
   className,
 }: FirstAidContextIndicatorProps) {
   const indicatorColor = getIndicatorColor(relevanceScore, isHighYield)
 
   // Badge Variant
-  if (variant === "badge") {
+  if (variant === 'badge') {
     const BadgeContent = (
       <Badge
         variant="outline"
         className={cn(
-          "cursor-pointer transition-all duration-200",
-          "hover:shadow-md hover:scale-105",
-          "bg-white/80 backdrop-blur-sm",
-          isHighYield && "border-yellow-500/40",
-          className
+          'cursor-pointer transition-all duration-200',
+          'hover:shadow-md hover:scale-105',
+          'bg-white/80 backdrop-blur-sm',
+          isHighYield && 'border-yellow-500/40',
+          className,
         )}
         onClick={onExpand}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
+          if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
             onExpand?.()
           }
         }}
         aria-label={`First Aid reference: ${title}${
-          pageNumber ? `, page ${pageNumber}` : ""
-        }${isHighYield ? ", high-yield content" : ""}`}
+          pageNumber ? `, page ${pageNumber}` : ''
+        }${isHighYield ? ', high-yield content' : ''}`}
       >
         <div className="flex items-center gap-1.5">
           {isHighYield ? (
@@ -120,16 +116,10 @@ export function FirstAidContextIndicator({
               aria-hidden="true"
             />
           ) : (
-            <BookOpen
-              className="size-3"
-              style={{ color: indicatorColor }}
-              aria-hidden="true"
-            />
+            <BookOpen className="size-3" style={{ color: indicatorColor }} aria-hidden="true" />
           )}
           <span className="text-xs font-medium">First Aid</span>
-          {pageNumber && (
-            <span className="text-xs text-muted-foreground">p.{pageNumber}</span>
-          )}
+          {pageNumber && <span className="text-xs text-muted-foreground">p.{pageNumber}</span>}
         </div>
       </Badge>
     )
@@ -138,19 +128,11 @@ export function FirstAidContextIndicator({
       return (
         <Tooltip>
           <TooltipTrigger asChild>{BadgeContent}</TooltipTrigger>
-          <TooltipContent
-            side="top"
-            className="max-w-xs"
-            aria-label="First Aid reference preview"
-          >
+          <TooltipContent side="top" className="max-w-xs" aria-label="First Aid reference preview">
             <div className="space-y-1">
               <p className="font-semibold text-sm">{title}</p>
-              {previewSnippet && (
-                <p className="text-xs line-clamp-3">{previewSnippet}</p>
-              )}
-              <p className="text-xs text-background/70 mt-2">
-                Click to view full reference
-              </p>
+              {previewSnippet && <p className="text-xs line-clamp-3">{previewSnippet}</p>}
+              <p className="text-xs text-background/70 mt-2">Click to view full reference</p>
             </div>
           </TooltipContent>
         </Tooltip>
@@ -161,20 +143,20 @@ export function FirstAidContextIndicator({
   }
 
   // Icon Variant
-  if (variant === "icon") {
+  if (variant === 'icon') {
     const IconContent = (
       <Button
         variant="ghost"
         size="icon-sm"
         className={cn(
-          "relative transition-all duration-200",
-          "hover:shadow-md hover:scale-110",
-          className
+          'relative transition-all duration-200',
+          'hover:shadow-md hover:scale-110',
+          className,
         )}
         onClick={onExpand}
         aria-label={`First Aid reference: ${title}${
-          pageNumber ? `, page ${pageNumber}` : ""
-        }${isHighYield ? ", high-yield content" : ""}`}
+          pageNumber ? `, page ${pageNumber}` : ''
+        }${isHighYield ? ', high-yield content' : ''}`}
       >
         {isHighYield ? (
           <Star
@@ -184,17 +166,13 @@ export function FirstAidContextIndicator({
             aria-hidden="true"
           />
         ) : (
-          <BookOpen
-            className="size-4"
-            style={{ color: indicatorColor }}
-            aria-hidden="true"
-          />
+          <BookOpen className="size-4" style={{ color: indicatorColor }} aria-hidden="true" />
         )}
         {/* Notification dot for high-yield */}
         {isHighYield && (
           <span
             className="absolute -top-0.5 -right-0.5 size-2 rounded-full"
-            style={{ backgroundColor: "oklch(0.7 0.2 60)" }}
+            style={{ backgroundColor: 'oklch(0.7 0.2 60)' }}
             aria-hidden="true"
           />
         )}
@@ -205,11 +183,7 @@ export function FirstAidContextIndicator({
       return (
         <Tooltip>
           <TooltipTrigger asChild>{IconContent}</TooltipTrigger>
-          <TooltipContent
-            side="top"
-            className="max-w-xs"
-            aria-label="First Aid reference preview"
-          >
+          <TooltipContent side="top" className="max-w-xs" aria-label="First Aid reference preview">
             <div className="space-y-1">
               <div className="flex items-center gap-1.5">
                 <p className="font-semibold text-sm">{title}</p>
@@ -217,23 +191,17 @@ export function FirstAidContextIndicator({
                   <Badge
                     className="text-[10px] px-1 py-0 h-4"
                     style={{
-                      backgroundColor: "oklch(0.7 0.2 60)",
-                      color: "white",
+                      backgroundColor: 'oklch(0.7 0.2 60)',
+                      color: 'white',
                     }}
                   >
                     High-Yield
                   </Badge>
                 )}
               </div>
-              {pageNumber && (
-                <p className="text-xs text-background/70">Page {pageNumber}</p>
-              )}
-              {previewSnippet && (
-                <p className="text-xs line-clamp-3 mt-1">{previewSnippet}</p>
-              )}
-              <p className="text-xs text-background/70 mt-2">
-                Click to expand reference
-              </p>
+              {pageNumber && <p className="text-xs text-background/70">Page {pageNumber}</p>}
+              {previewSnippet && <p className="text-xs line-clamp-3 mt-1">{previewSnippet}</p>}
+              <p className="text-xs text-background/70 mt-2">Click to expand reference</p>
             </div>
           </TooltipContent>
         </Tooltip>
@@ -248,15 +216,15 @@ export function FirstAidContextIndicator({
     <button
       onClick={onExpand}
       className={cn(
-        "inline-flex items-center gap-1.5 px-2 py-1 rounded-md",
-        "transition-all duration-200",
-        "hover:bg-white/60 hover:shadow-sm",
-        "text-sm text-foreground",
-        className
+        'inline-flex items-center gap-1.5 px-2 py-1 rounded-md',
+        'transition-all duration-200',
+        'hover:bg-white/60 hover:shadow-sm',
+        'text-sm text-foreground',
+        className,
       )}
       aria-label={`First Aid reference: ${title}${
-        pageNumber ? `, page ${pageNumber}` : ""
-      }${isHighYield ? ", high-yield content" : ""}`}
+        pageNumber ? `, page ${pageNumber}` : ''
+      }${isHighYield ? ', high-yield content' : ''}`}
     >
       {isHighYield ? (
         <Star
@@ -266,18 +234,12 @@ export function FirstAidContextIndicator({
           aria-hidden="true"
         />
       ) : (
-        <BookOpen
-          className="size-3.5"
-          style={{ color: indicatorColor }}
-          aria-hidden="true"
-        />
+        <BookOpen className="size-3.5" style={{ color: indicatorColor }} aria-hidden="true" />
       )}
       <span className="font-medium" style={{ color: indicatorColor }}>
         {title}
       </span>
-      {pageNumber && (
-        <span className="text-xs text-muted-foreground">(p.{pageNumber})</span>
-      )}
+      {pageNumber && <span className="text-xs text-muted-foreground">(p.{pageNumber})</span>}
       <ExternalLink className="size-3 text-muted-foreground" aria-hidden="true" />
     </button>
   )
@@ -286,18 +248,10 @@ export function FirstAidContextIndicator({
     return (
       <Tooltip>
         <TooltipTrigger asChild>{InlineContent}</TooltipTrigger>
-        <TooltipContent
-          side="top"
-          className="max-w-xs"
-          aria-label="First Aid reference preview"
-        >
+        <TooltipContent side="top" className="max-w-xs" aria-label="First Aid reference preview">
           <div className="space-y-1">
-            {previewSnippet && (
-              <p className="text-xs line-clamp-3">{previewSnippet}</p>
-            )}
-            <p className="text-xs text-background/70 mt-2">
-              Click to view full reference
-            </p>
+            {previewSnippet && <p className="text-xs line-clamp-3">{previewSnippet}</p>}
+            <p className="text-xs text-background/70 mt-2">Click to view full reference</p>
           </div>
         </TooltipContent>
       </Tooltip>
@@ -313,13 +267,13 @@ export function FirstAidContextIndicator({
 export function FirstAidContextIndicatorGroup({
   indicators,
   maxVisible = 3,
-  variant = "badge",
+  variant = 'badge',
   onViewAll,
   className,
 }: {
   indicators: FirstAidContextIndicatorProps[]
   maxVisible?: number
-  variant?: "badge" | "icon" | "inline"
+  variant?: 'badge' | 'icon' | 'inline'
   onViewAll?: () => void
   className?: string
 }) {
@@ -329,19 +283,15 @@ export function FirstAidContextIndicatorGroup({
   return (
     <div
       className={cn(
-        "flex items-center flex-wrap gap-2",
-        variant === "inline" && "gap-1",
-        className
+        'flex items-center flex-wrap gap-2',
+        variant === 'inline' && 'gap-1',
+        className,
       )}
       role="group"
       aria-label="First Aid references"
     >
       {visibleIndicators.map((indicator) => (
-        <FirstAidContextIndicator
-          key={indicator.guidelineId}
-          {...indicator}
-          variant={variant}
-        />
+        <FirstAidContextIndicator key={indicator.guidelineId} {...indicator} variant={variant} />
       ))}
       {remainingCount > 0 && (
         <Badge
@@ -351,7 +301,7 @@ export function FirstAidContextIndicatorGroup({
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
+            if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault()
               onViewAll?.()
             }

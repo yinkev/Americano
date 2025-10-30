@@ -1,13 +1,12 @@
 'use client'
 
-import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { motion } from 'motion/react'
 import { Check, Loader2 } from 'lucide-react'
-
-import { cn } from '@/lib/utils'
+import { motion } from 'motion/react'
+import * as React from 'react'
 import { buttonVariants as animationVariants, getAnimationConfig } from '@/lib/animation-variants'
+import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium motion-safe:transition-all motion-safe:duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive motion-safe:active:scale-[0.98] disabled:motion-safe:active:scale-100 motion-reduce:transition-none motion-reduce:active:scale-100",
@@ -23,7 +22,8 @@ const buttonVariants = cva(
         ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
         // Playful gamification variants
-        success: 'bg-success text-success-foreground hover:bg-success/90 focus-visible:ring-success/20',
+        success:
+          'bg-success text-success-foreground hover:bg-success/90 focus-visible:ring-success/20',
         info: 'bg-info text-info-foreground hover:bg-info/90 focus-visible:ring-info/20',
         energy: 'bg-energy text-energy-foreground hover:bg-energy/90 focus-visible:ring-energy/20',
       },
@@ -60,7 +60,20 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, loading = false, success = false, disabled, children, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      loading = false,
+      success = false,
+      disabled,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     // Extract any potential conflicting props to ensure they don't get spread
     const {
       onAnimationStart: _onAnimationStart,
@@ -82,7 +95,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     // Determine current state
     const isDisabled = disabled || loading
-    const currentIcon = showSuccess ? <Check className="size-4" /> : loading ? <Loader2 className="size-4 animate-spin" /> : null
+    const currentIcon = showSuccess ? (
+      <Check className="size-4" />
+    ) : loading ? (
+      <Loader2 className="size-4 animate-spin" />
+    ) : null
 
     // Motion animation props (only when not asChild)
     const motionProps = asChild
@@ -123,7 +140,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </motion.button>
     )
-  }
+  },
 )
 
 Button.displayName = 'Button'

@@ -1,17 +1,17 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { Calendar as CalendarIcon, Filter, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
-import { format } from "date-fns"
+import { format } from 'date-fns'
+import { Calendar as CalendarIcon, Filter, X } from 'lucide-react'
+import * as React from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Separator } from '@/components/ui/separator'
+import { cn } from '@/lib/utils'
 
 export interface SearchFilters {
   courseIds: string[]
@@ -37,28 +37,21 @@ interface SearchFiltersProps {
 }
 
 const CONTENT_TYPES = [
-  { value: "lecture", label: "Lectures" },
-  { value: "objective", label: "Learning Objectives" },
-  { value: "card", label: "Flashcards" },
-  { value: "concept", label: "Concepts" },
+  { value: 'lecture', label: 'Lectures' },
+  { value: 'objective', label: 'Learning Objectives' },
+  { value: 'card', label: 'Flashcards' },
+  { value: 'concept', label: 'Concepts' },
 ]
 
-export function SearchFilters({
-  courses,
-  filters,
-  onChange,
-  className,
-}: SearchFiltersProps) {
+export function SearchFilters({ courses, filters, onChange, className }: SearchFiltersProps) {
   const [dateRangeOpen, setDateRangeOpen] = React.useState(false)
 
   const activeFilterCount =
-    filters.courseIds.length +
-    filters.contentTypes.length +
-    (filters.dateRange ? 1 : 0)
+    filters.courseIds.length + filters.contentTypes.length + (filters.dateRange ? 1 : 0)
 
   const handleCourseToggle = (courseId: string) => {
     const newCourseIds = filters.courseIds.includes(courseId)
-      ? filters.courseIds.filter(id => id !== courseId)
+      ? filters.courseIds.filter((id) => id !== courseId)
       : [...filters.courseIds, courseId]
 
     onChange({ ...filters, courseIds: newCourseIds })
@@ -66,7 +59,7 @@ export function SearchFilters({
 
   const handleContentTypeToggle = (type: string) => {
     const newTypes = filters.contentTypes.includes(type)
-      ? filters.contentTypes.filter(t => t !== type)
+      ? filters.contentTypes.filter((t) => t !== type)
       : [...filters.contentTypes, type]
 
     onChange({ ...filters, contentTypes: newTypes })
@@ -78,7 +71,7 @@ export function SearchFilters({
     } else {
       onChange({
         ...filters,
-        dateRange: { start: range.start, end: range.end }
+        dateRange: { start: range.start, end: range.end },
       })
     }
   }
@@ -92,10 +85,7 @@ export function SearchFilters({
   }
 
   return (
-    <Card className={cn(
-      "border-white/40 bg-white/80 backdrop-blur-md shadow-lg",
-      className
-    )}>
+    <Card className={cn('border-white/40 bg-white/80 backdrop-blur-md shadow-lg', className)}>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -139,9 +129,7 @@ export function SearchFilters({
                 >
                   {course.name}
                   {course.code && (
-                    <span className="text-xs text-muted-foreground ml-1">
-                      ({course.code})
-                    </span>
+                    <span className="text-xs text-muted-foreground ml-1">({course.code})</span>
                   )}
                 </Label>
               </div>
@@ -184,16 +172,16 @@ export function SearchFilters({
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal h-10 rounded-xl",
-                  "bg-white/60 hover:bg-white/80 border-white/40",
-                  !filters.dateRange && "text-muted-foreground"
+                  'w-full justify-start text-left font-normal h-10 rounded-xl',
+                  'bg-white/60 hover:bg-white/80 border-white/40',
+                  !filters.dateRange && 'text-muted-foreground',
                 )}
               >
                 <CalendarIcon className="mr-2 size-4" />
                 {filters.dateRange ? (
                   <>
-                    {format(filters.dateRange.start, "MMM d, yyyy")} -{" "}
-                    {format(filters.dateRange.end, "MMM d, yyyy")}
+                    {format(filters.dateRange.start, 'MMM d, yyyy')} -{' '}
+                    {format(filters.dateRange.end, 'MMM d, yyyy')}
                   </>
                 ) : (
                   <span>Pick a date range</span>
@@ -206,7 +194,11 @@ export function SearchFilters({
             >
               <Calendar
                 mode="range"
-                selected={filters.dateRange ? { from: filters.dateRange.start, to: filters.dateRange.end } : undefined}
+                selected={
+                  filters.dateRange
+                    ? { from: filters.dateRange.start, to: filters.dateRange.end }
+                    : undefined
+                }
                 onSelect={(range) => {
                   if (!range || !range.from || !range.to) {
                     handleDateRangeChange(undefined)

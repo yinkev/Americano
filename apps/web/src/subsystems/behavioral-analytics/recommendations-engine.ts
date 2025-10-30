@@ -9,18 +9,18 @@
  * @location apps/web/src/subsystems/behavioral-analytics/recommendations-engine.ts
  */
 
-import { prisma } from '@/lib/db'
 import type {
-  Recommendation,
-  BehavioralPattern,
   BehavioralInsight,
+  BehavioralPattern,
   InterventionRecommendation,
+  Recommendation,
   RecommendationType,
 } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 import type {
+  BehavioralPatternData,
   RecommendationBaselineMetrics,
   RecommendationCurrentMetrics,
-  BehavioralPatternData,
 } from '@/types/prisma-json'
 
 /**
@@ -199,24 +199,24 @@ export class RecommendationsEngine {
 
     // From patterns
     for (const pattern of patterns) {
-      const rec = this.createRecommendationFromPattern(userId, pattern)
+      const rec = RecommendationsEngine.createRecommendationFromPattern(userId, pattern)
       if (rec) recommendations.push(rec)
     }
 
     // From insights
     for (const insight of insights) {
-      const rec = this.createRecommendationFromInsight(userId, insight)
+      const rec = RecommendationsEngine.createRecommendationFromInsight(userId, insight)
       if (rec) recommendations.push(rec)
     }
 
     // From interventions
     for (const intervention of interventions) {
-      const rec = this.createRecommendationFromIntervention(userId, intervention)
+      const rec = RecommendationsEngine.createRecommendationFromIntervention(userId, intervention)
       if (rec) recommendations.push(rec)
     }
 
     // Step 3: Prioritize recommendations
-    const prioritized = this.prioritizeRecommendations(recommendations)
+    const prioritized = RecommendationsEngine.prioritizeRecommendations(recommendations)
 
     // Step 4: Save top recommendations (OPTIMIZED: Batch create)
     const topRecommendations = prioritized.slice(0, MAX_RECOMMENDATIONS)
@@ -324,7 +324,7 @@ export class RecommendationsEngine {
     }
 
     // Capture baseline metrics
-    const baselineMetrics = await this.captureBaselineMetrics(userId)
+    const baselineMetrics = await RecommendationsEngine.captureBaselineMetrics(userId)
 
     // Create tracking record
     const applied = await prisma.appliedRecommendation.create({
@@ -373,7 +373,7 @@ export class RecommendationsEngine {
     }
 
     // Capture current metrics
-    const currentMetrics = await this.captureBaselineMetrics(applied.userId)
+    const currentMetrics = await RecommendationsEngine.captureBaselineMetrics(applied.userId)
 
     // Calculate effectiveness (improvement percentage)
     const baseline = applied.baselineMetrics as unknown as RecommendationBaselineMetrics
@@ -425,19 +425,19 @@ export class RecommendationsEngine {
     if (!template) return null
 
     const evidence = pattern.evidence as unknown as BehavioralPatternData & Record<string, unknown>
-    const placeholders = this.extractPlaceholders(pattern, evidence)
+    const placeholders = RecommendationsEngine.extractPlaceholders(pattern, evidence)
 
     return {
       userId,
       recommendationType: template.type,
       status: 'PENDING',
-      title: this.fillTemplate(template.titleTemplate, placeholders),
-      description: this.fillTemplate(template.descriptionTemplate, placeholders),
-      actionableText: this.fillTemplate(template.actionableTemplate, placeholders),
+      title: RecommendationsEngine.fillTemplate(template.titleTemplate, placeholders),
+      description: RecommendationsEngine.fillTemplate(template.descriptionTemplate, placeholders),
+      actionableText: RecommendationsEngine.fillTemplate(template.actionableTemplate, placeholders),
       confidence: pattern.confidence,
       estimatedImpact: template.estimatedImpactBase * pattern.confidence,
       easeOfImplementation: template.easeOfImplementationBase,
-      userReadiness: this.calculateUserReadiness(pattern),
+      userReadiness: RecommendationsEngine.calculateUserReadiness(pattern),
       priorityScore: 0, // Calculated in prioritization
       sourcePatternIds: [pattern.id],
       sourceInsightIds: [],
@@ -528,32 +528,33 @@ export class RecommendationsEngine {
     const placeholders: Record<string, string> = {}
 
     switch (pattern.patternType) {
-      case 'OPTIMAL_STUDY_TIME':
+      case 'OPTIMAL_STUDY_TIME': {
         const hourOfDay = (evidence.hourOfDay as number) ?? 9
         const timeOfDayScore = (evidence.timeOfDayScore as number) ?? 70
         const sessionCount = (evidence.sessionCount as number) ?? 0
         placeholders.hourRange = `${hourOfDay}:00-${hourOfDay + 1}:00`
-        placeholders.performanceIncrease = Math.round(
-          ((timeOfDayScore - 70) / 70) * 100,
-        ).toString()
+        placeholders.performanceIncrease = Math.round(((timeOfDayScore - 70) / 70) * 100).toString()
         placeholders.sessionCount = sessionCount.toString()
         break
+      }
 
-      case 'SESSION_DURATION_PREFERENCE':
+      case 'SESSION_DURATION_PREFERENCE': {
         const recommendedDuration = (evidence.recommendedDuration as number) ?? 45
         placeholders.duration = recommendedDuration.toString()
         placeholders.completionRate = '85' // Placeholder
         break
+      }
 
-      case 'CONTENT_TYPE_PREFERENCE':
+      case 'CONTENT_TYPE_PREFERENCE': {
         const topContentType = (evidence.topContentType as string) ?? 'flashcards'
         const effectiveness = (evidence.effectiveness as number) ?? 0.5
         placeholders.contentType = topContentType
         placeholders.targetPercentage = Math.round(effectiveness * 100).toString()
         placeholders.effectiveness = Math.round(effectiveness * 100).toString()
         break
+      }
 
-      case 'FORGETTING_CURVE':
+      case 'FORGETTING_CURVE': {
         const halfLife = (evidence.halfLife as number) ?? 5
         const k = (evidence.k as number) ?? 0.14
         placeholders.halfLife = halfLife.toString()
@@ -561,6 +562,7 @@ export class RecommendationsEngine {
         placeholders.deviationPercent = '15' // Placeholder
         placeholders.fasterSlower = k > 0.14 ? 'faster' : 'slower'
         break
+      }
     }
 
     return placeholders

@@ -8,13 +8,12 @@
  */
 
 // Core Search Components
-export { SearchBar } from "./search-bar"
-export { SearchFilters } from "./search-filters"
-export { SearchResults } from "./search-results"
-export { SearchResultItem } from "./search-result-item"
-export { SearchDialog } from "./search-dialog"
-export { SearchError } from "./search-error"
-
+export { SearchBar } from './search-bar'
+export { SearchDialog } from './search-dialog'
+export { SearchError } from './search-error'
 // Types
-export type { SearchFilters as SearchFiltersType } from "./search-filters"
-export type { SearchResult } from "./search-result-item"
+export type { SearchFilters as SearchFiltersType } from './search-filters'
+export { SearchFilters } from './search-filters'
+export type { SearchResult } from './search-result-item'
+export { SearchResultItem } from './search-result-item'
+export { SearchResults } from './search-results'

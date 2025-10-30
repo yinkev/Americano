@@ -11,7 +11,7 @@
  * @route GET /api/analytics/behavioral-insights/correlation
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { AcademicPerformanceIntegration } from '@/subsystems/behavioral-analytics/academic-performance-integration'
 

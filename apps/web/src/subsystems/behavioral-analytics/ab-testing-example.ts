@@ -6,8 +6,8 @@
  * Demonstrates how to use the A/B testing framework for personalization experiments
  */
 
-import { ABTestingFramework } from './ab-testing-framework'
 import type { ExperimentConfig } from './ab-testing-framework'
+import { ABTestingFramework } from './ab-testing-framework'
 
 // ============================================================================
 // Example 1: Create and Run Experiment

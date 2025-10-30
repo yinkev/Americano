@@ -6,10 +6,10 @@
  * Measures effectiveness of orchestration over time
  */
 
+import { addDays, differenceInHours } from 'date-fns'
+import type { AdaptationType } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
 import { StudyTimeRecommender } from './study-time-recommender'
-import type { AdaptationType } from '@/generated/prisma'
-import { addDays, differenceInHours } from 'date-fns'
 
 interface ScheduleChange {
   type: AdaptationType
@@ -201,9 +201,7 @@ export class OrchestrationAdaptationEngine {
       if (!plannedStart) return false
 
       return changes.some((change) =>
-        change.affectedTimeSlots.some(
-          (slot) => differenceInHours(plannedStart, slot) < 2,
-        ),
+        change.affectedTimeSlots.some((slot) => differenceInHours(plannedStart, slot) < 2),
       )
     }).length
 
@@ -272,11 +270,11 @@ export class OrchestrationAdaptationEngine {
         adaptationType: changes[0]?.type || 'TIME_SHIFT',
         adaptationDetails: {
           reason: impact.description,
-          changes: changes.map(c => ({
+          changes: changes.map((c) => ({
             type: c.type,
             reason: c.reason,
             severity: c.severity,
-            affectedTimeSlots: c.affectedTimeSlots.map(t => t.toISOString()),
+            affectedTimeSlots: c.affectedTimeSlots.map((t) => t.toISOString()),
           })),
         },
       },

@@ -8,10 +8,10 @@
 'use client'
 
 import * as React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 
 export function PerformancePrivacySettings() {
   const [trackingEnabled, setTrackingEnabled] = React.useState(true)
@@ -102,8 +102,12 @@ export function PerformancePrivacySettings() {
     return (
       <Card className="bg-white border shadow-sm rounded-lg">
         <CardHeader className="p-4">
-          <CardTitle className="text-[20px] font-heading font-semibold tracking-tight">Performance Privacy</CardTitle>
-          <CardDescription className="text-[13px] text-muted-foreground">Loading...</CardDescription>
+          <CardTitle className="text-[20px] font-heading font-semibold tracking-tight">
+            Performance Privacy
+          </CardTitle>
+          <CardDescription className="text-[13px] text-muted-foreground">
+            Loading...
+          </CardDescription>
         </CardHeader>
       </Card>
     )
@@ -112,7 +116,9 @@ export function PerformancePrivacySettings() {
   return (
     <Card className="bg-white border shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg">
       <CardHeader className="p-4">
-        <CardTitle className="text-[20px] font-heading font-semibold tracking-tight">Performance Privacy</CardTitle>
+        <CardTitle className="text-[20px] font-heading font-semibold tracking-tight">
+          Performance Privacy
+        </CardTitle>
         <CardDescription className="text-[13px] text-muted-foreground">
           Control how your learning performance data is tracked and used
         </CardDescription>
@@ -161,7 +167,13 @@ export function PerformancePrivacySettings() {
 
         {/* Data Management */}
         <div className="space-y-4">
-          <div className="p-4 rounded-lg border" style={{ backgroundColor: 'oklch(0.65 0.18 240 / 0.1)', borderColor: 'oklch(0.65 0.18 240 / 0.3)' }}>
+          <div
+            className="p-4 rounded-lg border"
+            style={{
+              backgroundColor: 'oklch(0.65 0.18 240 / 0.1)',
+              borderColor: 'oklch(0.65 0.18 240 / 0.3)',
+            }}
+          >
             <h4 className="text-[13px] font-medium mb-2">Data Ownership</h4>
             <p className="text-[11px]" style={{ color: 'oklch(0.4 0.15 240)' }}>
               You own your learning data. Export it anytime in JSON format (FERPA compliant).
@@ -196,16 +208,35 @@ export function PerformancePrivacySettings() {
             </Button>
           ) : (
             <div className="space-y-4">
-              <div className="p-4 rounded-lg border" style={{ backgroundColor: 'oklch(0.6 0.20 30 / 0.1)', borderColor: 'oklch(0.6 0.20 30 / 0.3)' }}>
-                <p className="text-[13px] font-semibold mb-2" style={{ color: 'oklch(0.4 0.2 30)' }}>Are you sure?</p>
-                <p className="text-[11px]" style={{ color: 'oklch(0.4 0.2 30)' }}>This will permanently delete:</p>
-                <ul className="text-[11px] list-disc list-inside mt-2 space-y-1" style={{ color: 'oklch(0.4 0.2 30)' }}>
+              <div
+                className="p-4 rounded-lg border"
+                style={{
+                  backgroundColor: 'oklch(0.6 0.20 30 / 0.1)',
+                  borderColor: 'oklch(0.6 0.20 30 / 0.3)',
+                }}
+              >
+                <p
+                  className="text-[13px] font-semibold mb-2"
+                  style={{ color: 'oklch(0.4 0.2 30)' }}
+                >
+                  Are you sure?
+                </p>
+                <p className="text-[11px]" style={{ color: 'oklch(0.4 0.2 30)' }}>
+                  This will permanently delete:
+                </p>
+                <ul
+                  className="text-[11px] list-disc list-inside mt-2 space-y-1"
+                  style={{ color: 'oklch(0.4 0.2 30)' }}
+                >
                   <li>All performance metric records (time-series data)</li>
                   <li>All weakness scores and mastery levels</li>
                   <li>All self-assessment confidence ratings</li>
                   <li>Study time and review history aggregates</li>
                 </ul>
-                <p className="text-[11px] font-semibold mt-3" style={{ color: 'oklch(0.4 0.2 30)' }}>
+                <p
+                  className="text-[11px] font-semibold mt-3"
+                  style={{ color: 'oklch(0.4 0.2 30)' }}
+                >
                   This action cannot be undone. Individual review records and flashcards will not be
                   affected.
                 </p>

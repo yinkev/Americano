@@ -18,10 +18,11 @@
 
 'use client'
 
+import { AlertCircle, Check, Loader2 } from 'lucide-react'
 import * as React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -30,7 +31,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Loader2, Check, AlertCircle } from 'lucide-react'
 
 // Types
 type SourceType = 'FIRST_AID' | 'GUIDELINE' | 'JOURNAL' | 'TEXTBOOK' | 'LECTURE' | 'USER_NOTES'
@@ -85,7 +85,7 @@ function getSourceTypeBadge(type: SourceType): { label: string; color: string } 
     JOURNAL: { label: 'Journal', color: 'bg-[oklch(0.65_0.15_220)] text-white' }, // Indigo
     TEXTBOOK: { label: 'Textbook', color: 'bg-[oklch(0.7_0.15_180)] text-white' }, // Cyan
     LECTURE: { label: 'Lecture', color: 'bg-[oklch(0.7_0.15_100)] text-white' }, // Lime
-    USER_NOTES: { label: 'User Notes', color: 'bg-gray-400 text-white' }
+    USER_NOTES: { label: 'User Notes', color: 'bg-gray-400 text-white' },
   }
 
   return badges[type] || { label: type, color: 'bg-gray-300 text-gray-800' }
@@ -103,7 +103,7 @@ export default function SourcesPage() {
 
   // Local preference state (for editing before save)
   const [preferences, setPreferences] = React.useState<Map<string, Partial<UserSourcePreference>>>(
-    new Map()
+    new Map(),
   )
 
   // Fetch sources and preferences on mount
@@ -135,7 +135,7 @@ export default function SourcesPage() {
           prefMap.set(source.id, {
             trustLevel: source.userPreference.trustLevel,
             priority: source.userPreference.priority,
-            notes: source.userPreference.notes
+            notes: source.userPreference.notes,
           })
         }
       })
@@ -151,10 +151,7 @@ export default function SourcesPage() {
   /**
    * Update local preference state
    */
-  function updatePreference(
-    sourceId: string,
-    updates: Partial<UserSourcePreference>
-  ) {
+  function updatePreference(sourceId: string, updates: Partial<UserSourcePreference>) {
     setPreferences((prev) => {
       const newMap = new Map(prev)
       const existing = newMap.get(sourceId) || {}
@@ -177,13 +174,13 @@ export default function SourcesPage() {
         sourceId,
         trustLevel: pref.trustLevel || 'MEDIUM',
         priority: pref.priority || 50,
-        notes: pref.notes || null
+        notes: pref.notes || null,
       }))
 
       const response = await fetch('/api/settings/sources/preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ preferences: preferencesArray })
+        body: JSON.stringify({ preferences: preferencesArray }),
       })
 
       if (!response.ok) {
@@ -241,7 +238,9 @@ export default function SourcesPage() {
    */
   const hasChanges = React.useMemo(() => {
     return Array.from(preferences.values()).some((pref) => {
-      return pref.trustLevel !== undefined || pref.priority !== undefined || pref.notes !== undefined
+      return (
+        pref.trustLevel !== undefined || pref.priority !== undefined || pref.notes !== undefined
+      )
     })
   }, [preferences])
 
@@ -301,13 +300,15 @@ export default function SourcesPage() {
             <li className="flex items-start gap-2">
               <span className="text-[oklch(0.6_0.15_260)] font-semibold">•</span>
               <span>
-                <strong>Trust Level:</strong> Set how much you trust each source (HIGH, MEDIUM, LOW, BLOCKED)
+                <strong>Trust Level:</strong> Set how much you trust each source (HIGH, MEDIUM, LOW,
+                BLOCKED)
               </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-[oklch(0.6_0.15_260)] font-semibold">•</span>
               <span>
-                <strong>Priority:</strong> Higher numbers = higher priority when resolving conflicts (1-100)
+                <strong>Priority:</strong> Higher numbers = higher priority when resolving conflicts
+                (1-100)
               </span>
             </li>
             <li className="flex items-start gap-2">
@@ -340,9 +341,7 @@ export default function SourcesPage() {
                     </CardTitle>
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge className={typeBadge.color}>{typeBadge.label}</Badge>
-                      <Badge className={getTrustLevelColor(trustLevel)}>
-                        Trust: {trustLevel}
-                      </Badge>
+                      <Badge className={getTrustLevelColor(trustLevel)}>Trust: {trustLevel}</Badge>
                       <Badge variant="outline" className="text-gray-600">
                         Credibility: {source.credibilityScore}/100
                       </Badge>
@@ -360,7 +359,10 @@ export default function SourcesPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Trust Level Selector */}
                   <div className="space-y-2">
-                    <label htmlFor={`trust-${source.id}`} className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor={`trust-${source.id}`}
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Trust Level
                     </label>
                     <Select
@@ -369,7 +371,10 @@ export default function SourcesPage() {
                         updatePreference(source.id, { trustLevel: value as TrustLevel })
                       }
                     >
-                      <SelectTrigger id={`trust-${source.id}`} className="bg-white/50 backdrop-blur-sm">
+                      <SelectTrigger
+                        id={`trust-${source.id}`}
+                        className="bg-white/50 backdrop-blur-sm"
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -383,7 +388,10 @@ export default function SourcesPage() {
 
                   {/* Priority Selector */}
                   <div className="space-y-2">
-                    <label htmlFor={`priority-${source.id}`} className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor={`priority-${source.id}`}
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Priority (1-100)
                     </label>
                     <input
@@ -401,16 +409,19 @@ export default function SourcesPage() {
 
                   {/* Notes */}
                   <div className="space-y-2 md:col-span-1">
-                    <label htmlFor={`notes-${source.id}`} className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor={`notes-${source.id}`}
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Notes (Optional)
                     </label>
                     <Textarea
                       id={`notes-${source.id}`}
                       placeholder="Add personal notes..."
-                      value={preferences.get(source.id)?.notes || source.userPreference?.notes || ''}
-                      onChange={(e) =>
-                        updatePreference(source.id, { notes: e.target.value })
+                      value={
+                        preferences.get(source.id)?.notes || source.userPreference?.notes || ''
                       }
+                      onChange={(e) => updatePreference(source.id, { notes: e.target.value })}
                       className="bg-white/50 backdrop-blur-sm min-h-[80px]"
                     />
                   </div>
@@ -448,7 +459,9 @@ export default function SourcesPage() {
       {sources.length === 0 && (
         <Card className="bg-white/80 backdrop-blur-md border-white/30 shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl">
           <CardContent className="py-12 text-center">
-            <p className="text-gray-600">No sources found. Run the seed script to populate sources.</p>
+            <p className="text-gray-600">
+              No sources found. Run the seed script to populate sources.
+            </p>
             <code className="mt-4 inline-block px-4 py-2 bg-gray-100 rounded-md text-sm text-gray-700">
               cd apps/web && npx ts-node prisma/seed-sources.ts
             </code>

@@ -1,5 +1,5 @@
 import OpenAI from 'openai'
-import { retryService, DEFAULT_POLICIES } from '../retry/retry-service'
+import { DEFAULT_POLICIES, retryService } from '../retry/retry-service'
 
 export type ObjectiveComplexity = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
 
@@ -107,7 +107,7 @@ Return a JSON object with this exact structure:
   ]
 }`
 
-      const userContent = `Context:
+        const userContent = `Context:
 - Course: ${context.courseName}
 - Lecture: ${context.lectureName}
 ${context.pageNumbers ? `- Pages: ${context.pageNumbers.join(', ')}` : ''}

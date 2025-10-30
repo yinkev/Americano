@@ -9,30 +9,37 @@
  * - Calibration accuracy metrics
  */
 
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import React from 'react';
+import { render, screen } from '@testing-library/react'
+import '@testing-library/jest-dom'
+import type React from 'react'
 
 interface CalibrationMetrics {
-  calibration_score: number;
-  mean_absolute_error: number;
-  correlation_coefficient: number;
-  overconfident_examples: Array<{ concept: string; confidence: number; score: number; delta: number }>;
-  underconfident_examples: Array<{ concept: string; confidence: number; score: number; delta: number }>;
-  trend: 'improving' | 'stable' | 'worsening';
-  total_challenges: number;
+  calibration_score: number
+  mean_absolute_error: number
+  correlation_coefficient: number
+  overconfident_examples: Array<{
+    concept: string
+    confidence: number
+    score: number
+    delta: number
+  }>
+  underconfident_examples: Array<{
+    concept: string
+    confidence: number
+    score: number
+    delta: number
+  }>
+  trend: 'improving' | 'stable' | 'worsening'
+  total_challenges: number
 }
 
 interface CalibrationDashboardProps {
-  metrics: CalibrationMetrics;
+  metrics: CalibrationMetrics
 }
 
 // Mock CalibrationDashboard component
 const CalibrationDashboard: React.FC<CalibrationDashboardProps> = ({ metrics }) => {
-  const dataPoints = [
-    ...metrics.overconfident_examples,
-    ...metrics.underconfident_examples,
-  ];
+  const dataPoints = [...metrics.overconfident_examples, ...metrics.underconfident_examples]
 
   return (
     <div data-testid="calibration-dashboard">
@@ -89,9 +96,9 @@ const CalibrationDashboard: React.FC<CalibrationDashboardProps> = ({ metrics }) 
 
           {/* Data points */}
           {dataPoints.map((point, idx) => {
-            const x = 50 + (point.confidence / 5) * 500;
-            const y = 350 - (point.score / 100) * 300;
-            const isOverconfident = point.delta > 0;
+            const x = 50 + (point.confidence / 5) * 500
+            const y = 350 - (point.score / 100) * 300
+            const isOverconfident = point.delta > 0
 
             return (
               <circle
@@ -102,7 +109,7 @@ const CalibrationDashboard: React.FC<CalibrationDashboardProps> = ({ metrics }) 
                 fill={isOverconfident ? '#FF6B6B' : '#4CAF50'}
                 data-testid={`data-point-${idx}`}
               />
-            );
+            )
           })}
 
           {/* Axes */}
@@ -123,7 +130,8 @@ const CalibrationDashboard: React.FC<CalibrationDashboardProps> = ({ metrics }) 
       <div data-testid="trend-chart">
         <h3>Your Calibration Progress</h3>
         <div data-testid="trend-status">
-          Trend: <span style={{ color: metrics.trend === 'improving' ? 'green' : 'gray' }}>
+          Trend:{' '}
+          <span style={{ color: metrics.trend === 'improving' ? 'green' : 'gray' }}>
             {metrics.trend}
           </span>
         </div>
@@ -176,11 +184,11 @@ const CalibrationDashboard: React.FC<CalibrationDashboardProps> = ({ metrics }) 
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 describe('Calibration Dashboard Component', () => {
-  let mockMetrics: CalibrationMetrics;
+  let mockMetrics: CalibrationMetrics
 
   beforeEach(() => {
     mockMetrics = {
@@ -223,207 +231,205 @@ describe('Calibration Dashboard Component', () => {
       ],
       trend: 'improving',
       total_challenges: 15,
-    };
-  });
+    }
+  })
 
   describe('Dashboard Structure and Metrics Display', () => {
     it('should render calibration dashboard', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByTestId('calibration-dashboard')).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('calibration-dashboard')).toBeInTheDocument()
+    })
 
     it('should display calibration score', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByTestId('calibration-score')).toBeInTheDocument();
-      expect(screen.getByText(/Calibration Accuracy: 75%/i)).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('calibration-score')).toBeInTheDocument()
+      expect(screen.getByText(/Calibration Accuracy: 75%/i)).toBeInTheDocument()
+    })
 
     it('should display mean absolute error', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByTestId('mae')).toBeInTheDocument();
-      expect(screen.getByText(/Mean Absolute Error: 12.50/i)).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('mae')).toBeInTheDocument()
+      expect(screen.getByText(/Mean Absolute Error: 12.50/i)).toBeInTheDocument()
+    })
 
     it('should display correlation coefficient', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByTestId('correlation')).toBeInTheDocument();
-      expect(screen.getByText(/Correlation Coefficient: 0.82/i)).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByTestId('correlation')).toBeInTheDocument()
+      expect(screen.getByText(/Correlation Coefficient: 0.82/i)).toBeInTheDocument()
+    })
+  })
 
   describe('Scatter Plot (AC#7)', () => {
     it('should render scatter plot', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByTestId('scatter-plot')).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('scatter-plot')).toBeInTheDocument()
+    })
 
     it('should display data points on scatter plot', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      const totalPoints = mockMetrics.overconfident_examples.length +
-        mockMetrics.underconfident_examples.length;
+      const totalPoints =
+        mockMetrics.overconfident_examples.length + mockMetrics.underconfident_examples.length
 
       for (let i = 0; i < totalPoints; i++) {
-        expect(screen.getByTestId(`data-point-${i}`)).toBeInTheDocument();
+        expect(screen.getByTestId(`data-point-${i}`)).toBeInTheDocument()
       }
-    });
+    })
 
     it('should highlight overconfidence zone (top left)', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      const overconfidenceZone = screen.getByTestId('overconfidence-zone');
-      expect(overconfidenceZone).toBeInTheDocument();
-      expect(overconfidenceZone).toHaveAttribute('fill', '#FFE6E6');
-    });
+      const overconfidenceZone = screen.getByTestId('overconfidence-zone')
+      expect(overconfidenceZone).toBeInTheDocument()
+      expect(overconfidenceZone).toHaveAttribute('fill', '#FFE6E6')
+    })
 
     it('should highlight underconfidence zone (bottom right)', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      const underconfidenceZone = screen.getByTestId('underconfidence-zone');
-      expect(underconfidenceZone).toBeInTheDocument();
-      expect(underconfidenceZone).toHaveAttribute('fill', '#E6F7E6');
-    });
+      const underconfidenceZone = screen.getByTestId('underconfidence-zone')
+      expect(underconfidenceZone).toBeInTheDocument()
+      expect(underconfidenceZone).toHaveAttribute('fill', '#E6F7E6')
+    })
 
     it('should use red for overconfident data points', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
       // First 3 points are overconfident
       for (let i = 0; i < 3; i++) {
-        expect(screen.getByTestId(`data-point-${i}`)).toHaveAttribute('fill', '#FF6B6B');
+        expect(screen.getByTestId(`data-point-${i}`)).toHaveAttribute('fill', '#FF6B6B')
       }
-    });
+    })
 
     it('should use green for underconfident data points', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
       // Last 2 points are underconfident
       for (let i = 3; i < 5; i++) {
-        expect(screen.getByTestId(`data-point-${i}`)).toHaveAttribute('fill', '#4CAF50');
+        expect(screen.getByTestId(`data-point-${i}`)).toHaveAttribute('fill', '#4CAF50')
       }
-    });
-  });
+    })
+  })
 
   describe('Trend Chart (AC#7)', () => {
     it('should display trend chart section', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByTestId('trend-chart')).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('trend-chart')).toBeInTheDocument()
+    })
 
     it('should display calibration trend status', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      const trendStatus = screen.getByTestId('trend-status');
-      expect(trendStatus).toBeInTheDocument();
-      expect(trendStatus.textContent).toMatch(/Trend: improving/i);
-    });
+      const trendStatus = screen.getByTestId('trend-status')
+      expect(trendStatus).toBeInTheDocument()
+      expect(trendStatus.textContent).toMatch(/Trend: improving/i)
+    })
 
     it('should show green for improving trend', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      const trendSpan = screen.getByTestId('trend-status').querySelector('span');
-      expect(trendSpan).toBeInTheDocument();
+      const trendSpan = screen.getByTestId('trend-status').querySelector('span')
+      expect(trendSpan).toBeInTheDocument()
       if (trendSpan) {
         // Check the style attribute for color property
-        const style = window.getComputedStyle(trendSpan);
-        expect(style.color || trendSpan.getAttribute('style')).toBeTruthy();
+        const style = window.getComputedStyle(trendSpan)
+        expect(style.color || trendSpan.getAttribute('style')).toBeTruthy()
       }
-    });
+    })
 
     it('should show gray for stable/worsening trend', () => {
-      const stableMetrics = { ...mockMetrics, trend: 'stable' as const };
-      render(<CalibrationDashboard metrics={stableMetrics} />);
+      const stableMetrics = { ...mockMetrics, trend: 'stable' as const }
+      render(<CalibrationDashboard metrics={stableMetrics} />)
 
-      const trendSpan = screen.getByTestId('trend-status').querySelector('span');
-      expect(trendSpan).toBeInTheDocument();
+      const trendSpan = screen.getByTestId('trend-status').querySelector('span')
+      expect(trendSpan).toBeInTheDocument()
       if (trendSpan) {
         // Check that the span exists and contains the trend value
-        expect(trendSpan.textContent).toMatch(/stable/i);
+        expect(trendSpan.textContent).toMatch(/stable/i)
       }
-    });
-  });
+    })
+  })
 
   describe('Overconfident Examples (AC#7)', () => {
     it('should display overconfident examples section', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByTestId('overconfident-examples')).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('overconfident-examples')).toBeInTheDocument()
+    })
 
     it('should display up to 3 overconfident examples', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByTestId('overconfident-example-0')).toBeInTheDocument();
-      expect(screen.getByTestId('overconfident-example-1')).toBeInTheDocument();
-      expect(screen.getByTestId('overconfident-example-2')).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('overconfident-example-0')).toBeInTheDocument()
+      expect(screen.getByTestId('overconfident-example-1')).toBeInTheDocument()
+      expect(screen.getByTestId('overconfident-example-2')).toBeInTheDocument()
+    })
 
     it('should show specific confidence and score discrepancy', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByText(/You felt very confident \(5\/5\) but scored 40%/i)).toBeInTheDocument();
-      expect(screen.getByText(/ACE Inhibitor Mechanism/i)).toBeInTheDocument();
-    });
+      expect(
+        screen.getByText(/You felt very confident \(5\/5\) but scored 40%/i),
+      ).toBeInTheDocument()
+      expect(screen.getByText(/ACE Inhibitor Mechanism/i)).toBeInTheDocument()
+    })
 
     it('should not display section when no overconfident examples', () => {
-      const noOverconfidentMetrics = { ...mockMetrics, overconfident_examples: [] };
-      const { queryByTestId } = render(
-        <CalibrationDashboard metrics={noOverconfidentMetrics} />
-      );
+      const noOverconfidentMetrics = { ...mockMetrics, overconfident_examples: [] }
+      const { queryByTestId } = render(<CalibrationDashboard metrics={noOverconfidentMetrics} />)
 
-      expect(queryByTestId('overconfident-examples')).not.toBeInTheDocument();
-    });
-  });
+      expect(queryByTestId('overconfident-examples')).not.toBeInTheDocument()
+    })
+  })
 
   describe('Underconfident Examples (AC#7)', () => {
     it('should display underconfident examples section', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByTestId('underconfident-examples')).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('underconfident-examples')).toBeInTheDocument()
+    })
 
     it('should display up to 3 underconfident examples', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByTestId('underconfident-example-0')).toBeInTheDocument();
-      expect(screen.getByTestId('underconfident-example-1')).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('underconfident-example-0')).toBeInTheDocument()
+      expect(screen.getByTestId('underconfident-example-1')).toBeInTheDocument()
+    })
 
     it('should show encouraging message for underconfident cases', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      const underconfidentSection = screen.getByTestId('underconfident-examples');
-      expect(underconfidentSection.textContent).toMatch(/trust yourself more/i);
-    });
+      const underconfidentSection = screen.getByTestId('underconfident-examples')
+      expect(underconfidentSection.textContent).toMatch(/trust yourself more/i)
+    })
 
     it('should not display section when no underconfident examples', () => {
-      const noUnderconfidentMetrics = { ...mockMetrics, underconfident_examples: [] };
-      const { queryByTestId } = render(
-        <CalibrationDashboard metrics={noUnderconfidentMetrics} />
-      );
+      const noUnderconfidentMetrics = { ...mockMetrics, underconfident_examples: [] }
+      const { queryByTestId } = render(<CalibrationDashboard metrics={noUnderconfidentMetrics} />)
 
-      expect(queryByTestId('underconfident-examples')).not.toBeInTheDocument();
-    });
-  });
+      expect(queryByTestId('underconfident-examples')).not.toBeInTheDocument()
+    })
+  })
 
   describe('Calibration Tips and Recommendations', () => {
     it('should display tips section', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByTestId('tips-section')).toBeInTheDocument();
-    });
+      expect(screen.getByTestId('tips-section')).toBeInTheDocument()
+    })
 
     it('should show encouragement when improving', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByText(/You're doing great/i)).toBeInTheDocument();
-      expect(screen.getByText(/Your calibration is improving/i)).toBeInTheDocument();
-    });
+      expect(screen.getByText(/You're doing great/i)).toBeInTheDocument()
+      expect(screen.getByText(/Your calibration is improving/i)).toBeInTheDocument()
+    })
 
     it('should recommend caution when trending toward overconfidence', () => {
       const overconfidentMetrics = {
@@ -434,81 +440,77 @@ describe('Calibration Dashboard Component', () => {
           score: 50,
           delta: 50,
         }),
-        underconfident_examples: [
-          { concept: 'test', confidence: 2, score: 80, delta: -80 },
-        ],
-      };
+        underconfident_examples: [{ concept: 'test', confidence: 2, score: 80, delta: -80 }],
+      }
 
-      render(<CalibrationDashboard metrics={overconfidentMetrics} />);
+      render(<CalibrationDashboard metrics={overconfidentMetrics} />)
 
-      expect(screen.getByText(/You tend to be overconfident/i)).toBeInTheDocument();
-      expect(screen.getByText(/Try being more cautious/i)).toBeInTheDocument();
-    });
+      expect(screen.getByText(/You tend to be overconfident/i)).toBeInTheDocument()
+      expect(screen.getByText(/Try being more cautious/i)).toBeInTheDocument()
+    })
 
     it('should encourage confidence when trending toward underconfidence', () => {
       const underconfidentMetrics = {
         ...mockMetrics,
-        overconfident_examples: [
-          { concept: 'test', confidence: 5, score: 40, delta: 60 },
-        ],
+        overconfident_examples: [{ concept: 'test', confidence: 5, score: 40, delta: 60 }],
         underconfident_examples: Array(5).fill({
           concept: 'test',
           confidence: 1,
           score: 90,
           delta: -80,
         }),
-      };
+      }
 
-      render(<CalibrationDashboard metrics={underconfidentMetrics} />);
+      render(<CalibrationDashboard metrics={underconfidentMetrics} />)
 
-      expect(screen.getByText(/You tend to underestimate yourself/i)).toBeInTheDocument();
-      expect(screen.getByText(/Trust your knowledge more/i)).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText(/You tend to underestimate yourself/i)).toBeInTheDocument()
+      expect(screen.getByText(/Trust your knowledge more/i)).toBeInTheDocument()
+    })
+  })
 
   describe('Calibration Score Interpretation', () => {
     it('should display high calibration as strong performance', () => {
       const highCalibrationMetrics = {
         ...mockMetrics,
         calibration_score: 0.95,
-      };
+      }
 
-      render(<CalibrationDashboard metrics={highCalibrationMetrics} />);
+      render(<CalibrationDashboard metrics={highCalibrationMetrics} />)
 
-      expect(screen.getByText(/Calibration Accuracy: 95%/i)).toBeInTheDocument();
-    });
+      expect(screen.getByText(/Calibration Accuracy: 95%/i)).toBeInTheDocument()
+    })
 
     it('should display low calibration as room for improvement', () => {
       const lowCalibrationMetrics = {
         ...mockMetrics,
         calibration_score: 0.45,
-      };
+      }
 
-      render(<CalibrationDashboard metrics={lowCalibrationMetrics} />);
+      render(<CalibrationDashboard metrics={lowCalibrationMetrics} />)
 
-      expect(screen.getByText(/Calibration Accuracy: 45%/i)).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText(/Calibration Accuracy: 45%/i)).toBeInTheDocument()
+    })
+  })
 
   describe('Accessibility and Usability', () => {
     it('should have descriptive heading', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByText('Confidence Recalibration')).toBeInTheDocument();
-    });
+      expect(screen.getByText('Confidence Recalibration')).toBeInTheDocument()
+    })
 
     it('should have axis labels on scatter plot', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByText('Confidence (1-5)')).toBeInTheDocument();
-      expect(screen.getByText('Score (0-100%)')).toBeInTheDocument();
-    });
+      expect(screen.getByText('Confidence (1-5)')).toBeInTheDocument()
+      expect(screen.getByText('Score (0-100%)')).toBeInTheDocument()
+    })
 
     it('should clearly distinguish example types with headings', () => {
-      render(<CalibrationDashboard metrics={mockMetrics} />);
+      render(<CalibrationDashboard metrics={mockMetrics} />)
 
-      expect(screen.getByText('Times You Were Too Confident:')).toBeInTheDocument();
-      expect(screen.getByText('Times You Were Too Modest:')).toBeInTheDocument();
-    });
-  });
-});
+      expect(screen.getByText('Times You Were Too Confident:')).toBeInTheDocument()
+      expect(screen.getByText('Times You Were Too Modest:')).toBeInTheDocument()
+    })
+  })
+})

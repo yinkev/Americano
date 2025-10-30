@@ -1,8 +1,9 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { useRouter } from "next/navigation"
-import { Search, FileText, Loader2, TrendingUp } from "lucide-react"
+import { FileText, Loader2, Search, TrendingUp } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import * as React from 'react'
+import { Badge } from '@/components/ui/badge'
 import {
   CommandDialog,
   CommandEmpty,
@@ -11,11 +12,10 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command"
-import { Badge } from "@/components/ui/badge"
-import { useDebounce } from "@/hooks/use-debounce"
-import { cn } from "@/lib/utils"
-import type { SearchResult } from "./search-result-item"
+} from '@/components/ui/command'
+import { useDebounce } from '@/hooks/use-debounce'
+import { cn } from '@/lib/utils'
+import type { SearchResult } from './search-result-item'
 
 interface SearchDialogProps {
   open?: boolean
@@ -29,7 +29,7 @@ interface SearchDialogProps {
 export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   const router = useRouter()
   const [isOpen, setIsOpen] = React.useState(open ?? false)
-  const [query, setQuery] = React.useState("")
+  const [query, setQuery] = React.useState('')
   const [results, setResults] = React.useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
   const [recentSearches, setRecentSearches] = React.useState<string[]>([])
@@ -39,14 +39,14 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   // Keyboard shortcut handler
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
         setIsOpen((prev) => !prev)
       }
     }
 
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
   }, [])
 
   // Sync with external open state
@@ -58,12 +58,12 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
 
   // Load recent searches from localStorage
   React.useEffect(() => {
-    const stored = localStorage.getItem("americano:recent-searches")
+    const stored = localStorage.getItem('americano:recent-searches')
     if (stored) {
       try {
         setRecentSearches(JSON.parse(stored))
       } catch (error) {
-        console.error("Failed to parse recent searches:", error)
+        console.error('Failed to parse recent searches:', error)
       }
     }
   }, [])
@@ -80,10 +80,10 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       setIsLoading(true)
 
       try {
-        const response = await fetch("/api/graph/search", {
-          method: "POST",
+        const response = await fetch('/api/graph/search', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             query: debouncedQuery,
@@ -92,7 +92,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
         })
 
         if (!response.ok) {
-          throw new Error("Search failed")
+          throw new Error('Search failed')
         }
 
         const data = await response.json()
@@ -103,7 +103,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
           setResults([])
         }
       } catch (error) {
-        console.error("Search error:", error)
+        console.error('Search error:', error)
         setResults([])
       } finally {
         setIsLoading(false)
@@ -120,7 +120,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
 
     // Clear query when closing
     if (!open) {
-      setQuery("")
+      setQuery('')
       setResults([])
     }
   }
@@ -128,13 +128,10 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   // Save recent search and navigate
   const handleSelect = (result: SearchResult) => {
     // Save to recent searches
-    const updated = [
-      query,
-      ...recentSearches.filter((s) => s !== query),
-    ].slice(0, 5)
+    const updated = [query, ...recentSearches.filter((s) => s !== query)].slice(0, 5)
 
     setRecentSearches(updated)
-    localStorage.setItem("americano:recent-searches", JSON.stringify(updated))
+    localStorage.setItem('americano:recent-searches', JSON.stringify(updated))
 
     // Navigate to result
     router.push(`/library/${result.id}`)
@@ -152,16 +149,16 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     setQuery(searchQuery)
   }
 
-  const getResultIcon = (type: SearchResult["type"]) => {
+  const getResultIcon = (type: SearchResult['type']) => {
     switch (type) {
-      case "lecture":
-        return "📚"
-      case "objective":
-        return "💡"
-      case "card":
-        return "🃏"
-      case "concept":
-        return "📝"
+      case 'lecture':
+        return '📚'
+      case 'objective':
+        return '💡'
+      case 'card':
+        return '🃏'
+      case 'concept':
+        return '📝'
     }
   }
 
@@ -179,11 +176,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       />
       <CommandList>
         {isLoading && (
-          <div
-            className="flex items-center justify-center py-6"
-            role="status"
-            aria-live="polite"
-          >
+          <div className="flex items-center justify-center py-6" role="status" aria-live="polite">
             <Loader2 className="size-4 animate-spin text-muted-foreground mr-2" />
             <span className="text-sm text-muted-foreground">Searching...</span>
           </div>
@@ -214,9 +207,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
             <p className="text-sm text-muted-foreground">
               No results found for &quot;{query}&quot;
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Try adjusting your search terms
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Try adjusting your search terms</p>
           </CommandEmpty>
         )}
 
@@ -231,10 +222,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                   <CommandItem
                     key={result.id}
                     onSelect={() => handleSelect(result)}
-                    className={cn(
-                      "cursor-pointer py-3",
-                      "data-[selected='true']:bg-white/60"
-                    )}
+                    className={cn('cursor-pointer py-3', "data-[selected='true']:bg-white/60")}
                     aria-label={`${result.title}, ${similarityPercent}% match`}
                   >
                     <div className="flex items-start gap-3 w-full">
@@ -243,9 +231,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                       </span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className="text-sm font-medium line-clamp-1">
-                            {result.title}
-                          </p>
+                          <p className="text-sm font-medium line-clamp-1">{result.title}</p>
                           {result.metadata?.isHighYield && (
                             <Badge
                               className="text-xs py-0 px-1 bg-yellow-500/10 text-yellow-700 border-yellow-500/20"
@@ -261,16 +247,11 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                         {result.source.courseName && (
                           <p className="text-xs text-muted-foreground/70 mt-1">
                             {result.source.courseName}
-                            {result.source.pageNumber &&
-                              ` • Page ${result.source.pageNumber}`}
+                            {result.source.pageNumber && ` • Page ${result.source.pageNumber}`}
                           </p>
                         )}
                       </div>
-                      <Badge
-                        variant="outline"
-                        className="text-xs shrink-0"
-                        aria-hidden="true"
-                      >
+                      <Badge variant="outline" className="text-xs shrink-0" aria-hidden="true">
                         {similarityPercent}%
                       </Badge>
                     </div>
@@ -289,9 +270,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                     aria-label="View all search results"
                   >
                     <Search className="size-4 mr-2" />
-                    <span className="font-medium">
-                      View all results for &quot;{query}&quot;
-                    </span>
+                    <span className="font-medium">View all results for &quot;{query}&quot;</span>
                   </CommandItem>
                 </CommandGroup>
               </>
@@ -308,21 +287,17 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       >
         <div className="flex items-center justify-between">
           <span>
-            <kbd className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono">
-              ↑↓
-            </kbd>{" "}
+            <kbd className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono">↑↓</kbd>{' '}
             Navigate
           </span>
           <span>
-            <kbd className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono">
-              ↵
-            </kbd>{" "}
+            <kbd className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono">↵</kbd>{' '}
             Select
           </span>
           <span>
             <kbd className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono">
               Esc
-            </kbd>{" "}
+            </kbd>{' '}
             Close
           </span>
         </div>

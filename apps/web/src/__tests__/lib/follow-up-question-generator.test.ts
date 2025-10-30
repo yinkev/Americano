@@ -11,8 +11,8 @@
  * - Calculate difficulty adjustments (-20 for prerequisite, +20 for advanced)
  */
 
-import { FollowUpQuestionGenerator } from '@/lib/follow-up-question-generator'
 import { prisma } from '@/lib/db'
+import { FollowUpQuestionGenerator } from '@/lib/follow-up-question-generator'
 
 // Mock Prisma with complete mock chains
 jest.mock('@/lib/db', () => ({
@@ -152,7 +152,9 @@ describe('FollowUpQuestionGenerator', () => {
 
     it('should handle missing objectiveId gracefully', async () => {
       jest.mocked(prisma.validationResponse.count).mockResolvedValue(0)
-      jest.mocked(prisma.validationPrompt.findUnique).mockResolvedValue({ objectiveId: null } as any)
+      jest
+        .mocked(prisma.validationPrompt.findUnique)
+        .mockResolvedValue({ objectiveId: null } as any)
 
       const result = await generator.generateFollowUp('parent-prompt-123', 45, 'user-1')
 
@@ -184,7 +186,9 @@ describe('FollowUpQuestionGenerator', () => {
       jest.mocked(prisma.validationResponse.count).mockResolvedValue(0)
       jest.mocked(prisma.validationPrompt.findUnique).mockResolvedValue(mockPrompt as any)
       jest.mocked(prisma.objectivePrerequisite.findMany).mockResolvedValue([]) // No dependents
-      jest.mocked(prisma.learningObjective.findUnique).mockResolvedValue(mockCurrentObjective as any)
+      jest
+        .mocked(prisma.learningObjective.findUnique)
+        .mockResolvedValue(mockCurrentObjective as any)
 
       const result = await generator.generateFollowUp('parent-prompt-123', 92, 'user-1')
 
@@ -220,7 +224,7 @@ describe('FollowUpQuestionGenerator', () => {
           where: { objectiveId: 'obj-123' },
           orderBy: { strength: 'desc' },
           take: 1,
-        })
+        }),
       )
     })
 
@@ -236,7 +240,9 @@ describe('FollowUpQuestionGenerator', () => {
     })
 
     it('should return null when prompt has no objectiveId', async () => {
-      jest.mocked(prisma.validationPrompt.findUnique).mockResolvedValue({ objectiveId: null } as any)
+      jest
+        .mocked(prisma.validationPrompt.findUnique)
+        .mockResolvedValue({ objectiveId: null } as any)
 
       const result = await generator.generatePrerequisiteFollowUp('parent-prompt-123')
 
@@ -251,7 +257,11 @@ describe('FollowUpQuestionGenerator', () => {
         {
           objectiveId: 'dependent-obj',
           strength: 0.8,
-          objective: { id: 'dependent-obj', objective: 'Depends on current', complexity: 'ADVANCED' },
+          objective: {
+            id: 'dependent-obj',
+            objective: 'Depends on current',
+            complexity: 'ADVANCED',
+          },
         },
       ]
 
@@ -265,7 +275,7 @@ describe('FollowUpQuestionGenerator', () => {
         expect.objectContaining({
           where: { prerequisiteId: 'obj-123' },
           orderBy: { strength: 'desc' },
-        })
+        }),
       )
     })
 
@@ -276,14 +286,16 @@ describe('FollowUpQuestionGenerator', () => {
         complexity: 'BASIC',
         lecture: { courseId: 'course-1' },
       }
-      const mockAdvancedObjectives = [
-        { id: 'advanced-obj', complexity: 'INTERMEDIATE' },
-      ]
+      const mockAdvancedObjectives = [{ id: 'advanced-obj', complexity: 'INTERMEDIATE' }]
 
       jest.mocked(prisma.validationPrompt.findUnique).mockResolvedValue(mockPrompt as any)
       jest.mocked(prisma.objectivePrerequisite.findMany).mockResolvedValue([]) // No dependents
-      jest.mocked(prisma.learningObjective.findUnique).mockResolvedValue(mockCurrentObjective as any)
-      jest.mocked(prisma.learningObjective.findMany).mockResolvedValue(mockAdvancedObjectives as any)
+      jest
+        .mocked(prisma.learningObjective.findUnique)
+        .mockResolvedValue(mockCurrentObjective as any)
+      jest
+        .mocked(prisma.learningObjective.findMany)
+        .mockResolvedValue(mockAdvancedObjectives as any)
 
       const result = await generator.generateAdvancedFollowUp('parent-prompt-123')
 
@@ -293,7 +305,7 @@ describe('FollowUpQuestionGenerator', () => {
           where: expect.objectContaining({
             complexity: 'INTERMEDIATE',
           }),
-        })
+        }),
       )
     })
 
@@ -307,7 +319,9 @@ describe('FollowUpQuestionGenerator', () => {
 
       jest.mocked(prisma.validationPrompt.findUnique).mockResolvedValue(mockPrompt as any)
       jest.mocked(prisma.objectivePrerequisite.findMany).mockResolvedValue([])
-      jest.mocked(prisma.learningObjective.findUnique).mockResolvedValue(mockCurrentObjective as any)
+      jest
+        .mocked(prisma.learningObjective.findUnique)
+        .mockResolvedValue(mockCurrentObjective as any)
 
       const result = await generator.generateAdvancedFollowUp('parent-prompt-123')
 
@@ -348,7 +362,9 @@ describe('FollowUpQuestionGenerator', () => {
         { objectiveId: 'dependent-1', strength: 0.9, objective: { id: 'dependent-1' } },
       ]
 
-      jest.mocked(prisma.learningObjective.findUnique).mockResolvedValue(mockCurrentObjective as any)
+      jest
+        .mocked(prisma.learningObjective.findUnique)
+        .mockResolvedValue(mockCurrentObjective as any)
       jest.mocked(prisma.objectivePrerequisite.findMany).mockResolvedValue(mockDependents as any)
 
       const result = await generator.findAdvancedQuestions('obj-123')
@@ -364,13 +380,15 @@ describe('FollowUpQuestionGenerator', () => {
         complexity: 'BASIC',
         lecture: { courseId: 'course-1' },
       }
-      const mockIntermediateObjectives = [
-        { id: 'intermediate-obj', complexity: 'INTERMEDIATE' },
-      ]
+      const mockIntermediateObjectives = [{ id: 'intermediate-obj', complexity: 'INTERMEDIATE' }]
 
-      jest.mocked(prisma.learningObjective.findUnique).mockResolvedValue(mockCurrentObjective as any)
+      jest
+        .mocked(prisma.learningObjective.findUnique)
+        .mockResolvedValue(mockCurrentObjective as any)
       jest.mocked(prisma.objectivePrerequisite.findMany).mockResolvedValue([])
-      jest.mocked(prisma.learningObjective.findMany).mockResolvedValue(mockIntermediateObjectives as any)
+      jest
+        .mocked(prisma.learningObjective.findMany)
+        .mockResolvedValue(mockIntermediateObjectives as any)
 
       const result = await generator.findAdvancedQuestions('obj-123')
 
@@ -380,7 +398,7 @@ describe('FollowUpQuestionGenerator', () => {
           where: expect.objectContaining({
             complexity: 'INTERMEDIATE',
           }),
-        })
+        }),
       )
     })
 

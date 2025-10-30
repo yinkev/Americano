@@ -11,10 +11,10 @@
  * based on data availability.
  */
 
-import { PrismaClient } from '@/generated/prisma'
+import type { PrismaClient } from '@/generated/prisma'
 import type {
-  LearningStyleProfile,
   ContentPreferences,
+  LearningStyleProfile,
   PersonalizedForgettingCurve,
   PreferredStudyTime,
 } from '@/types/prisma-json'
@@ -206,11 +206,13 @@ export class PersonalizationEngine {
       if (profile && profile.dataQualityScore >= this.MIN_DATA_QUALITY_SCORE) {
         const times = profile.preferredStudyTimes as unknown as PreferredStudyTime[] | null
         const learningStyle = profile.learningStyleProfile as unknown as LearningStyleProfile | null
-        const curve = profile.personalizedForgettingCurve as unknown as (PersonalizedForgettingCurve & { R0?: number; k?: number; halfLife?: number }) | null
+        const curve = profile.personalizedForgettingCurve as unknown as
+          | (PersonalizedForgettingCurve & { R0?: number; k?: number; halfLife?: number })
+          | null
         const contentPrefs = profile.contentPreferences as unknown as ContentPreferences | null
 
         insights.patterns = {
-          optimalStudyTimes: (times || []).map(t => ({
+          optimalStudyTimes: (times || []).map((t) => ({
             dayOfWeek: t.dayOfWeek,
             startHour: t.startHour,
             endHour: t.endHour,
@@ -230,7 +232,8 @@ export class PersonalizationEngine {
           forgettingCurve: {
             R0: curve?.R0 ?? curve?.initialRetention ?? 0.9,
             k: curve?.k ?? curve?.decayRate ?? 0.15,
-            halfLife: curve?.halfLife ?? (curve?.stabilityFactor ? curve.stabilityFactor * 24 : 4.6),
+            halfLife:
+              curve?.halfLife ?? (curve?.stabilityFactor ? curve.stabilityFactor * 24 : 4.6),
             confidence: 0.5,
           },
           contentPreferences: (contentPrefs as Record<string, number>) || {},
@@ -313,11 +316,15 @@ export class PersonalizationEngine {
         lastRecommendation: lastRecommendation
           ? {
               startTime: (() => {
-                const schedule = lastRecommendation.recommendedSchedule as { startTime?: string } | null
+                const schedule = lastRecommendation.recommendedSchedule as {
+                  startTime?: string
+                } | null
                 return schedule?.startTime ? new Date(schedule.startTime) : new Date()
               })(),
               duration: (() => {
-                const schedule = lastRecommendation.recommendedSchedule as { duration?: number } | null
+                const schedule = lastRecommendation.recommendedSchedule as {
+                  duration?: number
+                } | null
                 return schedule?.duration ?? 50
               })(),
               confidence: 0.7, // Default confidence since it's not in schema

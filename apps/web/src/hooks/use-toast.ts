@@ -9,10 +9,10 @@ export function useToast() {
     toast: (options: {
       title?: string
       description?: string
-      variant?: "default" | "destructive"
+      variant?: 'default' | 'destructive'
     }) => {
       // Stub implementation - just log for now
       console.log('[Toast]', options.title, options.description)
-    }
+    },
   }
 }

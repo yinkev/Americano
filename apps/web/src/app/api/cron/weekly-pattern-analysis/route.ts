@@ -18,7 +18,7 @@
  * @location apps/web/src/app/api/cron/weekly-pattern-analysis/route.ts
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { BehavioralPatternEngine } from '@/subsystems/behavioral-analytics/behavioral-pattern-engine'
 

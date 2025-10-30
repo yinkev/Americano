@@ -1,7 +1,7 @@
 // /api/content/lectures/[id]/tags route
 // PATCH: Update lecture topic tags
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {

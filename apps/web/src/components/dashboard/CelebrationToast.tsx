@@ -1,7 +1,7 @@
 'use client'
 
-import React from 'react'
 import { CheckCircle } from 'lucide-react'
+import React from 'react'
 
 interface CelebrationToastProps {
   message: string

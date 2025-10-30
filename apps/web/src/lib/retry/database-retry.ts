@@ -11,8 +11,8 @@
  * Epic 3 - Database Retry Strategy
  */
 
-import { PrismaClient } from '@/generated/prisma'
-import { retryService, DEFAULT_POLICIES, RetryPolicy, PermanentError } from './retry-service'
+import type { PrismaClient } from '@/generated/prisma'
+import { DEFAULT_POLICIES, PermanentError, type RetryPolicy, retryService } from './retry-service'
 
 /**
  * Database-specific retry policy (optimized for Postgres transient errors)
@@ -104,7 +104,9 @@ export async function withDatabaseRetry<T>(
  */
 export async function withDatabaseTransaction<T>(
   prisma: PrismaClient,
-  transactionFn: (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'>) => Promise<T>,
+  transactionFn: (
+    tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'>,
+  ) => Promise<T>,
   operationName: string,
   customPolicy?: Partial<RetryPolicy>,
 ): Promise<T> {
@@ -155,7 +157,9 @@ export async function withDatabaseBatch<T>(
     const batchNumber = Math.floor(i / batchSize) + 1
     const totalBatches = Math.ceil(operations.length / batchSize)
 
-    console.log(`[DatabaseRetry] Processing batch ${batchNumber}/${totalBatches} for ${operationName}`)
+    console.log(
+      `[DatabaseRetry] Processing batch ${batchNumber}/${totalBatches} for ${operationName}`,
+    )
 
     // Execute batch operations in parallel with retry
     const batchResults = await Promise.all(

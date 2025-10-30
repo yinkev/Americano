@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 
 export function OrchestrationEmpty() {
   return (
@@ -27,13 +27,7 @@ export function OrchestrationEmpty() {
             strokeWidth="2.5"
           />
           {/* Calendar header */}
-          <rect
-            x="50"
-            y="45"
-            width="60"
-            height="12"
-            fill="oklch(0.60 0.20 340)"
-          />
+          <rect x="50" y="45" width="60" height="12" fill="oklch(0.60 0.20 340)" />
           {/* Calendar grid */}
           <g stroke="oklch(0.70 0.15 340)" strokeWidth="1">
             <line x1="50" y1="67" x2="110" y2="67" />
@@ -81,18 +75,16 @@ export function OrchestrationEmpty() {
         </svg>
       </div>
 
-      <h3 className="text-xl font-semibold mb-2">
-        Ready to Schedule
-      </h3>
+      <h3 className="text-xl font-semibold mb-2">Ready to Schedule</h3>
 
       <p className="text-muted-foreground mb-6 max-w-md">
-        Connect your calendar to get AI-powered study session recommendations based
-        on your availability, energy levels, and learning patterns.
+        Connect your calendar to get AI-powered study session recommendations based on your
+        availability, energy levels, and learning patterns.
       </p>
 
       <Button asChild size="lg">
         <Link href="/settings">Connect Calendar</Link>
       </Button>
     </Card>
-  );
+  )
 }

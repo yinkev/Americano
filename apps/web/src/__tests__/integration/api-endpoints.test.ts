@@ -12,76 +12,76 @@
 
 // Mock API response types
 interface ValidationPrompt {
-  id: string;
-  objective_id: string;
-  question_text: string;
-  options: Array<{ text: string; is_correct: boolean }>;
-  correct_answer_id: number;
-  prompt_type: string;
+  id: string
+  objective_id: string
+  question_text: string
+  options: Array<{ text: string; is_correct: boolean }>
+  correct_answer_id: number
+  prompt_type: string
 }
 
 interface ChallengeNextResponse {
-  challenge: ValidationPrompt;
-  vulnerability_type: string;
+  challenge: ValidationPrompt
+  vulnerability_type: string
   retry_info?: {
-    attempt_number: number;
-    previous_score: number;
-  };
+    attempt_number: number
+    previous_score: number
+  }
 }
 
 interface CorrectiveFeedback {
-  misconception_explained: string;
-  why_answer_wrong: string;
-  correct_concept: string;
-  clinical_context: string;
+  misconception_explained: string
+  why_answer_wrong: string
+  correct_concept: string
+  clinical_context: string
   memory_anchor: {
-    type: string;
-    content: string;
-    explanation: string;
-  };
+    type: string
+    content: string
+    explanation: string
+  }
 }
 
 interface ChallengeSubmitResponse {
-  is_correct: boolean;
-  feedback?: CorrectiveFeedback;
-  retry_schedule?: string[];
-  celebration?: string;
-  score?: number;
+  is_correct: boolean
+  feedback?: CorrectiveFeedback
+  retry_schedule?: string[]
+  celebration?: string
+  score?: number
 }
 
 interface FailurePattern {
-  pattern_id: string;
-  category: string;
-  affected_objectives: string[];
-  failure_count: number;
-  remediation: string;
+  pattern_id: string
+  category: string
+  affected_objectives: string[]
+  failure_count: number
+  remediation: string
 }
 
 interface PatternsResponse {
-  patterns: FailurePattern[];
+  patterns: FailurePattern[]
 }
 
 interface CalibrationResponse {
-  calibration_score: number;
-  mean_absolute_error: number;
-  correlation_coefficient: number;
-  overconfident_examples: Array<{ concept: string; confidence: number; score: number }>;
-  underconfident_examples: Array<{ concept: string; confidence: number; score: number }>;
-  trend: string;
+  calibration_score: number
+  mean_absolute_error: number
+  correlation_coefficient: number
+  overconfident_examples: Array<{ concept: string; confidence: number; score: number }>
+  underconfident_examples: Array<{ concept: string; confidence: number; score: number }>
+  trend: string
 }
 
 describe('Story 4.3 API Endpoints', () => {
-  const API_BASE = '/api/validation';
-  let mockFetch: any;
+  const API_BASE = '/api/validation'
+  let mockFetch: any
 
   beforeEach(() => {
-    mockFetch = jest.fn();
-    global.fetch = mockFetch;
-  });
+    mockFetch = jest.fn()
+    global.fetch = mockFetch
+  })
 
   afterEach(() => {
-    jest.clearAllMocks();
-  });
+    jest.clearAllMocks()
+  })
 
   describe('GET /api/validation/challenges/next (AC#1, #2, #8)', () => {
     it('should return 200 status with valid challenge response', async () => {
@@ -100,26 +100,26 @@ describe('Story 4.3 API Endpoints', () => {
           prompt_type: 'CONTROLLED_FAILURE',
         },
         vulnerability_type: 'overconfidence',
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
       const response = await fetch(`${API_BASE}/challenges/next`, {
         method: 'GET',
-      });
+      })
 
-      expect(response.ok).toBe(true);
-      expect(response.status).toBe(200);
+      expect(response.ok).toBe(true)
+      expect(response.status).toBe(200)
 
-      const data = await response.json();
-      expect(data.challenge).toBeDefined();
-      expect(data.challenge.question_text).toBeDefined();
-      expect(data.vulnerability_type).toBe('overconfidence');
-    });
+      const data = await response.json()
+      expect(data.challenge).toBeDefined()
+      expect(data.challenge.question_text).toBeDefined()
+      expect(data.vulnerability_type).toBe('overconfidence')
+    })
 
     it('should return challenge with prompt_type=CONTROLLED_FAILURE', async () => {
       const mockResponse: ChallengeNextResponse = {
@@ -137,19 +137,19 @@ describe('Story 4.3 API Endpoints', () => {
           prompt_type: 'CONTROLLED_FAILURE',
         },
         vulnerability_type: 'misconception',
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/challenges/next`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/challenges/next`)
+      const data = await response.json()
 
-      expect(data.challenge.prompt_type).toBe('CONTROLLED_FAILURE');
-    });
+      expect(data.challenge.prompt_type).toBe('CONTROLLED_FAILURE')
+    })
 
     it('should include retry_info for retry challenges', async () => {
       const mockResponse: ChallengeNextResponse = {
@@ -171,35 +171,35 @@ describe('Story 4.3 API Endpoints', () => {
           attempt_number: 2,
           previous_score: 30,
         },
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/challenges/next`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/challenges/next`)
+      const data = await response.json()
 
-      expect(data.retry_info).toBeDefined();
-      expect(data.retry_info.attempt_number).toBe(2);
-      expect(data.retry_info.previous_score).toBe(30);
-    });
+      expect(data.retry_info).toBeDefined()
+      expect(data.retry_info.attempt_number).toBe(2)
+      expect(data.retry_info.previous_score).toBe(30)
+    })
 
     it('should handle missing challenges gracefully (no pending or new)', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 404,
         json: async () => ({ error: 'No challenges available' }),
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/challenges/next`);
+      const response = await fetch(`${API_BASE}/challenges/next`)
 
-      expect(response.ok).toBe(false);
-      expect(response.status).toBe(404);
-    });
-  });
+      expect(response.ok).toBe(false)
+      expect(response.status).toBe(404)
+    })
+  })
 
   describe('POST /api/validation/challenges/submit (AC#3, #4, #5)', () => {
     it('should return 201 status with valid response', async () => {
@@ -216,20 +216,14 @@ describe('Story 4.3 API Endpoints', () => {
             explanation: 'Remember this way...',
           },
         },
-        retry_schedule: [
-          '2025-10-18',
-          '2025-10-20',
-          '2025-10-24',
-          '2025-10-31',
-          '2025-11-16',
-        ],
-      };
+        retry_schedule: ['2025-10-18', '2025-10-20', '2025-10-24', '2025-10-31', '2025-11-16'],
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 201,
         json: async () => mockResponse,
-      });
+      })
 
       const payload = {
         challenge_id: 'q_123',
@@ -237,21 +231,21 @@ describe('Story 4.3 API Endpoints', () => {
         confidence: 4,
         emotion_tag: 'CONFUSION',
         personal_notes: 'I got confused here',
-      };
+      }
 
       const response = await fetch(`${API_BASE}/challenges/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      });
+      })
 
-      expect(response.ok).toBe(true);
-      expect(response.status).toBe(201);
+      expect(response.ok).toBe(true)
+      expect(response.status).toBe(201)
 
-      const data = await response.json();
-      expect(data.is_correct).toBe(false);
-      expect(data.feedback).toBeDefined();
-    });
+      const data = await response.json()
+      expect(data.is_correct).toBe(false)
+      expect(data.feedback).toBeDefined()
+    })
 
     it('should return corrective feedback with all required components', async () => {
       const mockResponse: ChallengeSubmitResponse = {
@@ -268,27 +262,27 @@ describe('Story 4.3 API Endpoints', () => {
           },
         },
         retry_schedule: ['2025-10-18'],
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 201,
         json: async () => mockResponse,
-      });
+      })
 
       const response = await fetch(`${API_BASE}/challenges/submit`, {
         method: 'POST',
         body: JSON.stringify({ challenge_id: 'q_1', user_answer: 'wrong' }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
-      expect(data.feedback.misconception_explained).toBeDefined();
-      expect(data.feedback.correct_concept).toBeDefined();
-      expect(data.feedback.clinical_context).toBeDefined();
-      expect(data.feedback.memory_anchor).toBeDefined();
-      expect(data.feedback.memory_anchor.type).toMatch(/mnemonic|analogy|patient_story/);
-    });
+      expect(data.feedback.misconception_explained).toBeDefined()
+      expect(data.feedback.correct_concept).toBeDefined()
+      expect(data.feedback.clinical_context).toBeDefined()
+      expect(data.feedback.memory_anchor).toBeDefined()
+      expect(data.feedback.memory_anchor.type).toMatch(/mnemonic|analogy|patient_story/)
+    })
 
     it('should return retry schedule with [+1, +3, +7, +14, +30] day intervals', async () => {
       const mockResponse: ChallengeSubmitResponse = {
@@ -300,49 +294,49 @@ describe('Story 4.3 API Endpoints', () => {
           '2025-10-31', // +14 days
           '2025-11-16', // +30 days
         ],
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 201,
         json: async () => mockResponse,
-      });
+      })
 
       const response = await fetch(`${API_BASE}/challenges/submit`, {
         method: 'POST',
         body: JSON.stringify({ challenge_id: 'q_1', user_answer: 'wrong' }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
-      expect(data.retry_schedule.length).toBe(5);
+      expect(data.retry_schedule.length).toBe(5)
       // Verify dates are spaced correctly (simplified check)
-      expect(data.retry_schedule[0]).toBeDefined();
-      expect(data.retry_schedule[4]).toBeDefined();
-    });
+      expect(data.retry_schedule[0]).toBeDefined()
+      expect(data.retry_schedule[4]).toBeDefined()
+    })
 
     it('should return celebration message on correct answer', async () => {
       const mockResponse: ChallengeSubmitResponse = {
         is_correct: true,
         celebration: "You've conquered this concept! From failure to mastery.",
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 201,
         json: async () => mockResponse,
-      });
+      })
 
       const response = await fetch(`${API_BASE}/challenges/submit`, {
         method: 'POST',
         body: JSON.stringify({ challenge_id: 'q_1', user_answer: 'correct' }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
-      expect(data.is_correct).toBe(true);
-      expect(data.celebration).toContain('conquered');
-    });
+      expect(data.is_correct).toBe(true)
+      expect(data.celebration).toContain('conquered')
+    })
 
     it('should validate emotion_tag enum (optional)', async () => {
       const payload = {
@@ -350,28 +344,28 @@ describe('Story 4.3 API Endpoints', () => {
         user_answer: 'B',
         confidence: 3,
         emotion_tag: 'INVALID_EMOTION',
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
         json: async () => ({ error: 'Invalid emotion_tag' }),
-      });
+      })
 
       const response = await fetch(`${API_BASE}/challenges/submit`, {
         method: 'POST',
         body: JSON.stringify(payload),
-      });
+      })
 
-      expect(response.ok).toBe(false);
-    });
+      expect(response.ok).toBe(false)
+    })
 
     it('should save ControlledFailure record', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 201,
         json: async () => ({ is_correct: false }),
-      });
+      })
 
       const payload = {
         challenge_id: 'q_123',
@@ -379,17 +373,17 @@ describe('Story 4.3 API Endpoints', () => {
         confidence: 4,
         emotion_tag: 'CONFUSION',
         personal_notes: 'Confused mechanism',
-      };
+      }
 
       const response = await fetch(`${API_BASE}/challenges/submit`, {
         method: 'POST',
         body: JSON.stringify(payload),
-      });
+      })
 
-      expect(response.ok).toBe(true);
+      expect(response.ok).toBe(true)
       // In real test, would verify database record created
-    });
-  });
+    })
+  })
 
   describe('GET /api/validation/patterns (AC#6)', () => {
     it('should return 200 with valid patterns response', async () => {
@@ -410,25 +404,25 @@ describe('Story 4.3 API Endpoints', () => {
             remediation: 'Compare sympathetic (fight/flight) vs parasympathetic (rest/digest)',
           },
         ],
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
       const response = await fetch(`${API_BASE}/patterns`, {
         method: 'GET',
-      });
+      })
 
-      expect(response.ok).toBe(true);
-      expect(response.status).toBe(200);
+      expect(response.ok).toBe(true)
+      expect(response.status).toBe(200)
 
-      const data = await response.json();
-      expect(data.patterns).toBeDefined();
-      expect(data.patterns.length).toBeGreaterThan(0);
-    });
+      const data = await response.json()
+      expect(data.patterns).toBeDefined()
+      expect(data.patterns.length).toBeGreaterThan(0)
+    })
 
     it('should return top 5 patterns', async () => {
       const mockResponse: PatternsResponse = {
@@ -469,19 +463,19 @@ describe('Story 4.3 API Endpoints', () => {
             remediation: 'Remediation 5',
           },
         ],
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/patterns`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/patterns`)
+      const data = await response.json()
 
-      expect(data.patterns.length).toBeLessThanOrEqual(5);
-    });
+      expect(data.patterns.length).toBeLessThanOrEqual(5)
+    })
 
     it('should include remediation recommendations', async () => {
       const mockResponse: PatternsResponse = {
@@ -494,20 +488,20 @@ describe('Story 4.3 API Endpoints', () => {
             remediation: 'Review pharmacology chapter 5, complete practice set B',
           },
         ],
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/patterns`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/patterns`)
+      const data = await response.json()
 
-      expect(data.patterns[0].remediation).toBeDefined();
-      expect(data.patterns[0].remediation.length).toBeGreaterThan(0);
-    });
+      expect(data.patterns[0].remediation).toBeDefined()
+      expect(data.patterns[0].remediation.length).toBeGreaterThan(0)
+    })
 
     it('should group patterns by category', async () => {
       const mockResponse: PatternsResponse = {
@@ -520,33 +514,33 @@ describe('Story 4.3 API Endpoints', () => {
             remediation: 'Review',
           },
         ],
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/patterns`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/patterns`)
+      const data = await response.json()
 
-      expect(data.patterns[0].category).toContain('Pharmacology');
-    });
+      expect(data.patterns[0].category).toContain('Pharmacology')
+    })
 
     it('should return empty patterns for new user', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => ({ patterns: [] }),
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/patterns`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/patterns`)
+      const data = await response.json()
 
-      expect(data.patterns).toEqual([]);
-    });
-  });
+      expect(data.patterns).toEqual([])
+    })
+  })
 
   describe('GET /api/validation/calibration (AC#7)', () => {
     it('should return 200 with valid calibration response', async () => {
@@ -569,26 +563,26 @@ describe('Story 4.3 API Endpoints', () => {
           },
         ],
         trend: 'improving',
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
       const response = await fetch(`${API_BASE}/calibration`, {
         method: 'GET',
-      });
+      })
 
-      expect(response.ok).toBe(true);
-      expect(response.status).toBe(200);
+      expect(response.ok).toBe(true)
+      expect(response.status).toBe(200)
 
-      const data = await response.json();
-      expect(data.calibration_score).toBeDefined();
-      expect(data.overconfident_examples).toBeDefined();
-      expect(data.trend).toMatch(/improving|stable|worsening/);
-    });
+      const data = await response.json()
+      expect(data.calibration_score).toBeDefined()
+      expect(data.overconfident_examples).toBeDefined()
+      expect(data.trend).toMatch(/improving|stable|worsening/)
+    })
 
     it('should return calibration metrics (score, MAE, correlation)', async () => {
       const mockResponse: CalibrationResponse = {
@@ -598,24 +592,24 @@ describe('Story 4.3 API Endpoints', () => {
         overconfident_examples: [],
         underconfident_examples: [],
         trend: 'improving',
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/calibration`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/calibration`)
+      const data = await response.json()
 
-      expect(typeof data.calibration_score).toBe('number');
-      expect(data.calibration_score).toBeGreaterThanOrEqual(0);
-      expect(data.calibration_score).toBeLessThanOrEqual(1);
+      expect(typeof data.calibration_score).toBe('number')
+      expect(data.calibration_score).toBeGreaterThanOrEqual(0)
+      expect(data.calibration_score).toBeLessThanOrEqual(1)
 
-      expect(typeof data.mean_absolute_error).toBe('number');
-      expect(typeof data.correlation_coefficient).toBe('number');
-    });
+      expect(typeof data.mean_absolute_error).toBe('number')
+      expect(typeof data.correlation_coefficient).toBe('number')
+    })
 
     it('should include overconfident examples', async () => {
       const mockResponse: CalibrationResponse = {
@@ -636,23 +630,23 @@ describe('Story 4.3 API Endpoints', () => {
         ],
         underconfident_examples: [],
         trend: 'stable',
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/calibration`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/calibration`)
+      const data = await response.json()
 
-      expect(data.overconfident_examples.length).toBeGreaterThan(0);
-      expect(data.overconfident_examples[0].concept).toBeDefined();
+      expect(data.overconfident_examples.length).toBeGreaterThan(0)
+      expect(data.overconfident_examples[0].concept).toBeDefined()
       expect(data.overconfident_examples[0].confidence).toBeGreaterThan(
-        data.overconfident_examples[0].score / 20
-      );
-    });
+        data.overconfident_examples[0].score / 20,
+      )
+    })
 
     it('should include underconfident examples', async () => {
       const mockResponse: CalibrationResponse = {
@@ -668,22 +662,22 @@ describe('Story 4.3 API Endpoints', () => {
           },
         ],
         trend: 'improving',
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/calibration`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/calibration`)
+      const data = await response.json()
 
-      expect(data.underconfident_examples.length).toBeGreaterThan(0);
+      expect(data.underconfident_examples.length).toBeGreaterThan(0)
       expect(data.underconfident_examples[0].score).toBeGreaterThan(
-        data.underconfident_examples[0].confidence * 20
-      );
-    });
+        data.underconfident_examples[0].confidence * 20,
+      )
+    })
 
     it('should return trend (improving/stable/worsening)', async () => {
       const mockResponse: CalibrationResponse = {
@@ -693,19 +687,19 @@ describe('Story 4.3 API Endpoints', () => {
         overconfident_examples: [],
         underconfident_examples: [],
         trend: 'improving',
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/calibration`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/calibration`)
+      const data = await response.json()
 
-      expect(['improving', 'stable', 'worsening']).toContain(data.trend);
-    });
+      expect(['improving', 'stable', 'worsening']).toContain(data.trend)
+    })
 
     it('should return empty examples for new user', async () => {
       const mockResponse: CalibrationResponse = {
@@ -715,60 +709,55 @@ describe('Story 4.3 API Endpoints', () => {
         overconfident_examples: [],
         underconfident_examples: [],
         trend: 'stable',
-      };
+      }
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockResponse,
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/calibration`);
-      const data = await response.json();
+      const response = await fetch(`${API_BASE}/calibration`)
+      const data = await response.json()
 
-      expect(data.overconfident_examples).toEqual([]);
-      expect(data.underconfident_examples).toEqual([]);
-    });
-  });
+      expect(data.overconfident_examples).toEqual([])
+      expect(data.underconfident_examples).toEqual([])
+    })
+  })
 
   describe('Error Handling', () => {
     it('should handle network errors gracefully', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+      mockFetch.mockRejectedValueOnce(new Error('Network error'))
 
-      try {
-        await fetch(`${API_BASE}/challenges/next`);
-        expect.fail('Should have thrown');
-      } catch (error: any) {
-        expect(error.message).toContain('Network error');
-      }
-    });
+      await expect(fetch(`${API_BASE}/challenges/next`)).rejects.toThrow('Network error')
+    })
 
     it('should handle 500 server errors', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 500,
         json: async () => ({ error: 'Internal server error' }),
-      });
+      })
 
-      const response = await fetch(`${API_BASE}/challenges/next`);
+      const response = await fetch(`${API_BASE}/challenges/next`)
 
-      expect(response.ok).toBe(false);
-      expect(response.status).toBe(500);
-    });
+      expect(response.ok).toBe(false)
+      expect(response.status).toBe(500)
+    })
 
     it('should handle 400 validation errors', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
         json: async () => ({ error: 'Invalid request' }),
-      });
+      })
 
       const response = await fetch(`${API_BASE}/challenges/submit`, {
         method: 'POST',
         body: JSON.stringify({}),
-      });
+      })
 
-      expect(response.status).toBe(400);
-    });
-  });
-});
+      expect(response.status).toBe(400)
+    })
+  })
+})

@@ -5,16 +5,16 @@
  * Full workflow tests through the proxy layer
  */
 
-import { GET as getPredictions } from '@/app/api/analytics/predictions/route'
-import { POST as generatePredictions } from '@/app/api/analytics/predictions/generate/route'
-import { POST as submitFeedback } from '@/app/api/analytics/predictions/[id]/feedback/route'
-import { GET as getInterventions } from '@/app/api/analytics/interventions/route'
-import { POST as applyIntervention } from '@/app/api/analytics/interventions/[id]/apply/route'
-import { GET as getModelPerformance } from '@/app/api/analytics/model-performance/route'
-import { GET as getStruggleReduction } from '@/app/api/analytics/struggle-reduction/route'
+import { HttpResponse, http } from 'msw'
 import { NextRequest } from 'next/server'
-import { server, createErrorHandler, create503Handler, setupMSW } from '../setup'
-import { http, HttpResponse } from 'msw'
+import { POST as applyIntervention } from '@/app/api/analytics/interventions/[id]/apply/route'
+import { GET as getInterventions } from '@/app/api/analytics/interventions/route'
+import { GET as getModelPerformance } from '@/app/api/analytics/model-performance/route'
+import { POST as submitFeedback } from '@/app/api/analytics/predictions/[id]/feedback/route'
+import { POST as generatePredictions } from '@/app/api/analytics/predictions/generate/route'
+import { GET as getPredictions } from '@/app/api/analytics/predictions/route'
+import { GET as getStruggleReduction } from '@/app/api/analytics/struggle-reduction/route'
+import { create503Handler, createErrorHandler, server, setupMSW } from '../setup'
 
 describe('ML Service Proxy Integration', () => {
   // Initialize MSW server to mock ML service responses

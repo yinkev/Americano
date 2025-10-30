@@ -1,63 +1,63 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
+import { AlertCircle, CheckCircle2, HelpCircle, Info, Loader2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { AlertCircle, CheckCircle2, Loader2, HelpCircle, Info } from 'lucide-react';
-import { PreAssessmentConfidenceDialog } from './PreAssessmentConfidenceDialog';
-import { PostAssessmentConfidenceDialog } from './PostAssessmentConfidenceDialog';
-import { ReflectionPromptDialog } from './ReflectionPromptDialog';
-import { CalibrationFeedbackPanel } from './CalibrationFeedbackPanel';
-import { DifficultyIndicator } from './DifficultyIndicator';
-import { ConfidenceIntervalDisplay } from './ConfidenceIntervalDisplay';
-import { ComplexitySkillTree } from './ComplexitySkillTree';
-import { MasteryBadge } from './MasteryBadge';
-import { BreakReminderDialog } from './break-reminder-dialog';
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Progress } from '@/components/ui/progress'
+import { Separator } from '@/components/ui/separator'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Textarea } from '@/components/ui/textarea'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type {
-  ValidationPromptData,
-  ResponseEvaluationResponse,
-  EvaluationResult,
   CalibrationFeedbackData,
-} from '@/types/validation';
+  EvaluationResult,
+  ResponseEvaluationResponse,
+  ValidationPromptData,
+} from '@/types/validation'
+import { BreakReminderDialog } from './break-reminder-dialog'
+import { CalibrationFeedbackPanel } from './CalibrationFeedbackPanel'
+import { ComplexitySkillTree } from './ComplexitySkillTree'
+import { ConfidenceIntervalDisplay } from './ConfidenceIntervalDisplay'
+import { DifficultyIndicator } from './DifficultyIndicator'
+import { MasteryBadge } from './MasteryBadge'
+import { PostAssessmentConfidenceDialog } from './PostAssessmentConfidenceDialog'
+import { PreAssessmentConfidenceDialog } from './PreAssessmentConfidenceDialog'
+import { ReflectionPromptDialog } from './ReflectionPromptDialog'
 
 interface AdaptiveComprehensionPromptDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  prompt: ValidationPromptData;
-  objectiveId: string;
-  sessionId?: string;
-  onComplete: (response: ResponseEvaluationResponse) => void;
-  onSkip: () => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  prompt: ValidationPromptData
+  objectiveId: string
+  sessionId?: string
+  onComplete: (response: ResponseEvaluationResponse) => void
+  onSkip: () => void
   // Adaptive features
-  enableAdaptive?: boolean;
-  showComplexityTree?: boolean;
-  currentDifficulty?: number;
-  nextDifficulty?: number;
+  enableAdaptive?: boolean
+  showComplexityTree?: boolean
+  currentDifficulty?: number
+  nextDifficulty?: number
   irtMetrics?: {
-    estimate: number;
-    confidenceInterval: number;
-  };
+    estimate: number
+    confidenceInterval: number
+  }
   masteryStatus?: {
-    isMastered: boolean;
-    verifiedAt?: Date;
-    complexityLevel?: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
-  };
+    isMastered: boolean
+    verifiedAt?: Date
+    complexityLevel?: 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
+  }
   sessionMetrics?: {
-    questionsAnswered: number;
-    durationMinutes: number;
-  };
+    questionsAnswered: number
+    durationMinutes: number
+  }
 }
 
 const CONFIDENCE_LABELS = [
@@ -66,15 +66,15 @@ const CONFIDENCE_LABELS = [
   'Neutral',
   'Somewhat Confident',
   'Very Confident',
-];
+]
 
 // Workflow states for confidence capture integration (Story 4.4 Task 2.9)
 type WorkflowState =
-  | 'PRE_ASSESSMENT_CONFIDENCE'  // Step 1: Capture initial confidence BEFORE prompt shown
-  | 'PROMPT_DISPLAY'             // Step 2: Show prompt and allow answering
+  | 'PRE_ASSESSMENT_CONFIDENCE' // Step 1: Capture initial confidence BEFORE prompt shown
+  | 'PROMPT_DISPLAY' // Step 2: Show prompt and allow answering
   | 'POST_ASSESSMENT_CONFIDENCE' // Step 3: Optionally update confidence AFTER prompt visible
-  | 'EVALUATION_RESULTS'         // Step 4: Show results and calibration
-  | 'REFLECTION';                // Step 5: Metacognitive reflection
+  | 'EVALUATION_RESULTS' // Step 4: Show results and calibration
+  | 'REFLECTION' // Step 5: Metacognitive reflection
 
 /**
  * AdaptiveComprehensionPromptDialog
@@ -122,105 +122,108 @@ export function AdaptiveComprehensionPromptDialog({
   sessionMetrics,
 }: AdaptiveComprehensionPromptDialogProps) {
   // Workflow state management
-  const [workflowState, setWorkflowState] = useState<WorkflowState>('PRE_ASSESSMENT_CONFIDENCE');
+  const [workflowState, setWorkflowState] = useState<WorkflowState>('PRE_ASSESSMENT_CONFIDENCE')
 
   // User input state
-  const [userAnswer, setUserAnswer] = useState('');
-  const [confidenceLevel, setConfidenceLevel] = useState(3);
+  const [userAnswer, setUserAnswer] = useState('')
+  const [confidenceLevel, setConfidenceLevel] = useState(3)
 
   // Confidence tracking (Story 4.4)
-  const [preAssessmentConfidence, setPreAssessmentConfidence] = useState<number | null>(null);
-  const [preConfidenceRationale, setPreConfidenceRationale] = useState<string | undefined>(undefined);
-  const [postAssessmentConfidence, setPostAssessmentConfidence] = useState<number | null>(null);
-  const [postConfidenceRationale, setPostConfidenceRationale] = useState<string | undefined>(undefined);
+  const [preAssessmentConfidence, setPreAssessmentConfidence] = useState<number | null>(null)
+  const [preConfidenceRationale, setPreConfidenceRationale] = useState<string | undefined>(
+    undefined,
+  )
+  const [postAssessmentConfidence, setPostAssessmentConfidence] = useState<number | null>(null)
+  const [postConfidenceRationale, setPostConfidenceRationale] = useState<string | undefined>(
+    undefined,
+  )
 
   // Evaluation state
-  const [isEvaluating, setIsEvaluating] = useState(false);
-  const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [responseId, setResponseId] = useState<string | null>(null);
+  const [isEvaluating, setIsEvaluating] = useState(false)
+  const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [responseId, setResponseId] = useState<string | null>(null)
 
   // Calibration feedback state
-  const [calibrationData, setCalibrationData] = useState<CalibrationFeedbackData | null>(null);
+  const [calibrationData, setCalibrationData] = useState<CalibrationFeedbackData | null>(null)
 
   // Reflection state
-  const [showReflection, setShowReflection] = useState(false);
-  const [isUpdatingReflection, setIsUpdatingReflection] = useState(false);
+  const [showReflection, setShowReflection] = useState(false)
+  const [isUpdatingReflection, setIsUpdatingReflection] = useState(false)
 
   // Break reminder state (Story 4.5 AC#8)
-  const [showBreakReminder, setShowBreakReminder] = useState(false);
-  const [breakType, setBreakType] = useState<'short' | 'long'>('short');
+  const [showBreakReminder, setShowBreakReminder] = useState(false)
+  const [breakType, setBreakType] = useState<'short' | 'long'>('short')
 
   // Check if break is recommended (Story 4.5 AC#8)
   useEffect(() => {
     if (sessionMetrics && enableAdaptive) {
       const shouldRecommendBreak =
-        sessionMetrics.questionsAnswered >= 10 ||
-        sessionMetrics.durationMinutes >= 30;
+        sessionMetrics.questionsAnswered >= 10 || sessionMetrics.durationMinutes >= 30
 
       if (shouldRecommendBreak && !showBreakReminder) {
-        setBreakType(sessionMetrics.durationMinutes >= 30 ? 'long' : 'short');
+        setBreakType(sessionMetrics.durationMinutes >= 30 ? 'long' : 'short')
         // Show break reminder after completing this question
       }
     }
-  }, [sessionMetrics, enableAdaptive, showBreakReminder]);
+  }, [sessionMetrics, enableAdaptive, showBreakReminder])
 
   // Reset state when dialog opens/closes
   useEffect(() => {
     if (!open) {
       setTimeout(() => {
-        setWorkflowState('PRE_ASSESSMENT_CONFIDENCE');
-        setUserAnswer('');
-        setConfidenceLevel(3);
-        setPreAssessmentConfidence(null);
-        setPreConfidenceRationale(undefined);
-        setPostAssessmentConfidence(null);
-        setPostConfidenceRationale(undefined);
-        setEvaluation(null);
-        setError(null);
-        setResponseId(null);
-        setCalibrationData(null);
-        setShowReflection(false);
-        setIsUpdatingReflection(false);
-      }, 300);
+        setWorkflowState('PRE_ASSESSMENT_CONFIDENCE')
+        setUserAnswer('')
+        setConfidenceLevel(3)
+        setPreAssessmentConfidence(null)
+        setPreConfidenceRationale(undefined)
+        setPostAssessmentConfidence(null)
+        setPostConfidenceRationale(undefined)
+        setEvaluation(null)
+        setError(null)
+        setResponseId(null)
+        setCalibrationData(null)
+        setShowReflection(false)
+        setIsUpdatingReflection(false)
+      }, 300)
     } else {
-      setWorkflowState('PRE_ASSESSMENT_CONFIDENCE');
+      setWorkflowState('PRE_ASSESSMENT_CONFIDENCE')
     }
-  }, [open]);
+  }, [open])
 
   // Handler: Pre-assessment confidence captured
   const handlePreAssessmentConfidenceCaptured = (confidence: number, rationale?: string) => {
-    setPreAssessmentConfidence(confidence);
-    setPreConfidenceRationale(rationale);
-    setConfidenceLevel(confidence);
-    setWorkflowState('PROMPT_DISPLAY');
-  };
+    setPreAssessmentConfidence(confidence)
+    setPreConfidenceRationale(rationale)
+    setConfidenceLevel(confidence)
+    setWorkflowState('PROMPT_DISPLAY')
+  }
 
   // Handler: Continue to post-confidence
   const handleContinueToPostConfidence = () => {
     if (userAnswer.trim().length < 10) {
-      setError('Please provide a more detailed explanation (at least 10 characters)');
-      return;
+      setError('Please provide a more detailed explanation (at least 10 characters)')
+      return
     }
-    setError(null);
-    setWorkflowState('POST_ASSESSMENT_CONFIDENCE');
-  };
+    setError(null)
+    setWorkflowState('POST_ASSESSMENT_CONFIDENCE')
+  }
 
   // Handler: Post-assessment confidence captured
   const handlePostAssessmentConfidenceCaptured = (confidence: number, rationale?: string) => {
-    setPostAssessmentConfidence(confidence);
-    setPostConfidenceRationale(rationale);
-    handleSubmit();
-  };
+    setPostAssessmentConfidence(confidence)
+    setPostConfidenceRationale(rationale)
+    handleSubmit()
+  }
 
   const handleSubmit = async () => {
     if (userAnswer.trim().length < 10) {
-      setError('Please provide a more detailed explanation (at least 10 characters)');
-      return;
+      setError('Please provide a more detailed explanation (at least 10 characters)')
+      return
     }
 
-    setIsEvaluating(true);
-    setError(null);
+    setIsEvaluating(true)
+    setError(null)
 
     try {
       const requestBody: any = {
@@ -228,24 +231,24 @@ export function AdaptiveComprehensionPromptDialog({
         sessionId,
         userAnswer,
         objectiveId,
-      };
+      }
 
       if (preAssessmentConfidence) {
-        requestBody.preAssessmentConfidence = preAssessmentConfidence;
+        requestBody.preAssessmentConfidence = preAssessmentConfidence
         if (preConfidenceRationale) {
-          requestBody.confidenceRationale = preConfidenceRationale;
+          requestBody.confidenceRationale = preConfidenceRationale
         }
       }
 
       if (postAssessmentConfidence) {
-        requestBody.postAssessmentConfidence = postAssessmentConfidence;
+        requestBody.postAssessmentConfidence = postAssessmentConfidence
         if (postConfidenceRationale) {
-          requestBody.confidenceRationale = postConfidenceRationale;
+          requestBody.confidenceRationale = postConfidenceRationale
         }
       }
 
       if (!preAssessmentConfidence && !postAssessmentConfidence) {
-        requestBody.confidenceLevel = confidenceLevel;
+        requestBody.confidenceLevel = confidenceLevel
       }
 
       const response = await fetch('/api/validation/responses', {
@@ -254,16 +257,16 @@ export function AdaptiveComprehensionPromptDialog({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestBody),
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to evaluate response');
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to evaluate response')
       }
 
-      const data = await response.json();
-      setEvaluation(data.data.evaluation);
-      setResponseId(data.data.responseId);
+      const data = await response.json()
+      setEvaluation(data.data.evaluation)
+      setResponseId(data.data.responseId)
 
       if (data.data.calibration) {
         setCalibrationData({
@@ -274,53 +277,52 @@ export function AdaptiveComprehensionPromptDialog({
           confidenceNormalized: data.data.calibration.confidenceNormalized,
           score: data.data.evaluation.overall_score,
           feedbackMessage: data.data.calibration.feedbackMessage,
-        });
+        })
       }
 
-      setWorkflowState('EVALUATION_RESULTS');
+      setWorkflowState('EVALUATION_RESULTS')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to evaluate response');
+      setError(err instanceof Error ? err.message : 'Failed to evaluate response')
     } finally {
-      setIsEvaluating(false);
+      setIsEvaluating(false)
     }
-  };
+  }
 
   const handleRetry = () => {
-    setUserAnswer('');
-    setEvaluation(null);
-    setError(null);
-    setResponseId(null);
-    setWorkflowState('PROMPT_DISPLAY');
-  };
+    setUserAnswer('')
+    setEvaluation(null)
+    setError(null)
+    setResponseId(null)
+    setWorkflowState('PROMPT_DISPLAY')
+  }
 
   const handleSkip = () => {
-    onSkip();
-    onOpenChange(false);
-  };
+    onSkip()
+    onOpenChange(false)
+  }
 
   const handleContinueToReflection = () => {
     // Check if break is recommended before reflection
     if (sessionMetrics && enableAdaptive) {
       const shouldRecommendBreak =
-        sessionMetrics.questionsAnswered >= 10 ||
-        sessionMetrics.durationMinutes >= 30;
+        sessionMetrics.questionsAnswered >= 10 || sessionMetrics.durationMinutes >= 30
 
       if (shouldRecommendBreak) {
-        setShowBreakReminder(true);
-        return;
+        setShowBreakReminder(true)
+        return
       }
     }
 
-    setShowReflection(true);
-  };
+    setShowReflection(true)
+  }
 
   const handleReflectionSubmit = async (reflectionNotes: string) => {
     if (!responseId) {
-      console.error('No responseId available for reflection update');
-      return;
+      console.error('No responseId available for reflection update')
+      return
     }
 
-    setIsUpdatingReflection(true);
+    setIsUpdatingReflection(true)
     try {
       const response = await fetch(`/api/validation/responses/${responseId}`, {
         method: 'PATCH',
@@ -330,53 +332,53 @@ export function AdaptiveComprehensionPromptDialog({
         body: JSON.stringify({
           reflectionNotes,
         }),
-      });
+      })
 
       if (!response.ok) {
-        console.error('Failed to save reflection notes');
+        console.error('Failed to save reflection notes')
       }
     } catch (err) {
-      console.error('Error saving reflection:', err);
+      console.error('Error saving reflection:', err)
     } finally {
-      setIsUpdatingReflection(false);
-      setShowReflection(false);
+      setIsUpdatingReflection(false)
+      setShowReflection(false)
       if (evaluation) {
-        onComplete({ evaluation, score: evaluation.overall_score, responseId: responseId! });
+        onComplete({ evaluation, score: evaluation.overall_score, responseId: responseId! })
       }
-      onOpenChange(false);
+      onOpenChange(false)
     }
-  };
+  }
 
   const handleReflectionSkip = () => {
-    setShowReflection(false);
+    setShowReflection(false)
     if (evaluation && responseId) {
-      onComplete({ evaluation, score: evaluation.overall_score, responseId });
+      onComplete({ evaluation, score: evaluation.overall_score, responseId })
     }
-    onOpenChange(false);
-  };
+    onOpenChange(false)
+  }
 
   const handleTakeBreak = () => {
-    setShowBreakReminder(false);
-    setShowReflection(true);
-  };
+    setShowBreakReminder(false)
+    setShowReflection(true)
+  }
 
   const handleSkipBreak = () => {
-    setShowBreakReminder(false);
-    setShowReflection(true);
-  };
+    setShowBreakReminder(false)
+    setShowReflection(true)
+  }
 
   // Determine score color (OKLCH color space)
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'oklch(0.7 0.15 145)'; // Green
-    if (score >= 60) return 'oklch(0.75 0.12 85)'; // Yellow
-    return 'oklch(0.65 0.20 25)'; // Red
-  };
+    if (score >= 80) return 'oklch(0.7 0.15 145)' // Green
+    if (score >= 60) return 'oklch(0.75 0.12 85)' // Yellow
+    return 'oklch(0.65 0.20 25)' // Red
+  }
 
   const getScoreLabel = (score: number) => {
-    if (score >= 80) return 'Proficient';
-    if (score >= 60) return 'Developing';
-    return 'Needs Review';
-  };
+    if (score >= 80) return 'Proficient'
+    if (score >= 60) return 'Developing'
+    return 'Needs Review'
+  }
 
   return (
     <>
@@ -389,18 +391,19 @@ export function AdaptiveComprehensionPromptDialog({
 
       {/* Steps 2 & 4: Main Dialog (Prompt Display or Evaluation Results) */}
       <Dialog
-        open={open && (workflowState === 'PROMPT_DISPLAY' || workflowState === 'EVALUATION_RESULTS')}
+        open={
+          open && (workflowState === 'PROMPT_DISPLAY' || workflowState === 'EVALUATION_RESULTS')
+        }
         onOpenChange={onOpenChange}
       >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
           <DialogHeader>
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1">
-                <DialogTitle className="text-2xl font-dm-sans">
-                  Explain to a Patient
-                </DialogTitle>
+                <DialogTitle className="text-2xl font-dm-sans">Explain to a Patient</DialogTitle>
                 <DialogDescription className="text-base">
-                  Demonstrate your understanding by explaining this concept in patient-friendly language.
+                  Demonstrate your understanding by explaining this concept in patient-friendly
+                  language.
                 </DialogDescription>
               </div>
 
@@ -408,13 +411,15 @@ export function AdaptiveComprehensionPromptDialog({
               {enableAdaptive && (
                 <div className="flex items-center gap-3">
                   <DifficultyIndicator currentDifficulty={currentDifficulty} size="sm" />
-                  {masteryStatus?.isMastered && masteryStatus.verifiedAt && masteryStatus.complexityLevel && (
-                    <MasteryBadge
-                      verifiedAt={masteryStatus.verifiedAt}
-                      complexityLevel={masteryStatus.complexityLevel}
-                      size="sm"
-                    />
-                  )}
+                  {masteryStatus?.isMastered &&
+                    masteryStatus.verifiedAt &&
+                    masteryStatus.complexityLevel && (
+                      <MasteryBadge
+                        verifiedAt={masteryStatus.verifiedAt}
+                        complexityLevel={masteryStatus.complexityLevel}
+                        size="sm"
+                      />
+                    )}
                 </div>
               )}
             </div>
@@ -437,7 +442,10 @@ export function AdaptiveComprehensionPromptDialog({
                     <span>Current difficulty: {currentDifficulty}/100</span>
                     {nextDifficulty && <span>Next: {nextDifficulty}/100</span>}
                     {irtMetrics && (
-                      <span>Knowledge estimate: {Math.round(irtMetrics.estimate)}±{Math.round(irtMetrics.confidenceInterval)}</span>
+                      <span>
+                        Knowledge estimate: {Math.round(irtMetrics.estimate)}±
+                        {Math.round(irtMetrics.confidenceInterval)}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -553,11 +561,7 @@ export function AdaptiveComprehensionPromptDialog({
                       'Continue to Submit'
                     )}
                   </Button>
-                  <Button
-                    onClick={handleSkip}
-                    variant="outline"
-                    className="min-h-[44px]"
-                  >
+                  <Button onClick={handleSkip} variant="outline" className="min-h-[44px]">
                     Skip
                   </Button>
                 </div>
@@ -606,14 +610,20 @@ export function AdaptiveComprehensionPromptDialog({
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-4xl font-bold" style={{ color: getScoreColor(evaluation.overall_score) }}>
+                          <span
+                            className="text-4xl font-bold"
+                            style={{ color: getScoreColor(evaluation.overall_score) }}
+                          >
                             {Math.round(evaluation.overall_score)}
                           </span>
                           <span className="text-xs text-muted-foreground">/ 100</span>
                         </div>
                       </div>
                       <div className="text-center">
-                        <p className="text-lg font-semibold" style={{ color: getScoreColor(evaluation.overall_score) }}>
+                        <p
+                          className="text-lg font-semibold"
+                          style={{ color: getScoreColor(evaluation.overall_score) }}
+                        >
                           {getScoreLabel(evaluation.overall_score)}
                         </p>
                         <p className="text-sm text-muted-foreground mt-1">
@@ -627,28 +637,36 @@ export function AdaptiveComprehensionPromptDialog({
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span>Terminology</span>
-                          <span className="font-medium">{Math.round(evaluation.terminology_score)}%</span>
+                          <span className="font-medium">
+                            {Math.round(evaluation.terminology_score)}%
+                          </span>
                         </div>
                         <Progress value={evaluation.terminology_score} className="h-2" />
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span>Relationships</span>
-                          <span className="font-medium">{Math.round(evaluation.relationships_score)}%</span>
+                          <span className="font-medium">
+                            {Math.round(evaluation.relationships_score)}%
+                          </span>
                         </div>
                         <Progress value={evaluation.relationships_score} className="h-2" />
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span>Application</span>
-                          <span className="font-medium">{Math.round(evaluation.application_score)}%</span>
+                          <span className="font-medium">
+                            {Math.round(evaluation.application_score)}%
+                          </span>
                         </div>
                         <Progress value={evaluation.application_score} className="h-2" />
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span>Clarity</span>
-                          <span className="font-medium">{Math.round(evaluation.clarity_score)}%</span>
+                          <span className="font-medium">
+                            {Math.round(evaluation.clarity_score)}%
+                          </span>
                         </div>
                         <Progress value={evaluation.clarity_score} className="h-2" />
                       </div>
@@ -668,10 +686,7 @@ export function AdaptiveComprehensionPromptDialog({
                             className="h-5 w-5"
                             style={{ color: 'oklch(0.55 0.18 145)' }}
                           />
-                          <h3
-                            className="font-semibold"
-                            style={{ color: 'oklch(0.30 0.15 145)' }}
-                          >
+                          <h3 className="font-semibold" style={{ color: 'oklch(0.30 0.15 145)' }}>
                             Strengths
                           </h3>
                         </div>
@@ -704,10 +719,7 @@ export function AdaptiveComprehensionPromptDialog({
                             className="h-5 w-5"
                             style={{ color: 'oklch(0.55 0.18 85)' }}
                           />
-                          <h3
-                            className="font-semibold"
-                            style={{ color: 'oklch(0.30 0.15 85)' }}
-                          >
+                          <h3 className="font-semibold" style={{ color: 'oklch(0.30 0.15 85)' }}>
                             Areas for Improvement
                           </h3>
                         </div>
@@ -802,5 +814,5 @@ export function AdaptiveComprehensionPromptDialog({
         onSkip={handleReflectionSkip}
       />
     </>
-  );
+  )
 }

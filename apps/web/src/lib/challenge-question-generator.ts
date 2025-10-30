@@ -6,33 +6,33 @@
  */
 
 export interface MultipleChoiceOption {
-  option_letter: string; // A, B, C, D, E
-  option_text: string;
-  is_correct: boolean;
-  distractor_rationale: string; // Why this distractor is plausible
+  option_letter: string // A, B, C, D, E
+  option_text: string
+  is_correct: boolean
+  distractor_rationale: string // Why this distractor is plausible
 }
 
 export interface ChallengeQuestion {
-  question_stem: string;
-  clinical_vignette?: string;
-  options: MultipleChoiceOption[];
-  correct_answer_letter: string;
-  explanation: string;
-  teaching_point: string;
-  difficulty_rationale: string;
+  question_stem: string
+  clinical_vignette?: string
+  options: MultipleChoiceOption[]
+  correct_answer_letter: string
+  explanation: string
+  teaching_point: string
+  difficulty_rationale: string
 }
 
 export interface ChallengeQuestionResponse {
-  question: ChallengeQuestion;
-  objective_id: string;
-  vulnerability_type: string;
-  prompt_type: "CONTROLLED_FAILURE";
+  question: ChallengeQuestion
+  objective_id: string
+  vulnerability_type: string
+  prompt_type: 'CONTROLLED_FAILURE'
 }
 
 export interface ChallengeGenerationRequest {
-  objective_id: string;
-  objective_text: string;
-  vulnerability_type: "overconfidence" | "partial_understanding" | "recent_mistakes";
+  objective_id: string
+  objective_text: string
+  vulnerability_type: 'overconfidence' | 'partial_understanding' | 'recent_mistakes'
 }
 
 /**
@@ -42,24 +42,24 @@ export interface ChallengeGenerationRequest {
  * @returns Structured challenge question with near-miss distractors
  */
 export async function generateChallengeQuestion(
-  request: ChallengeGenerationRequest
+  request: ChallengeGenerationRequest,
 ): Promise<ChallengeQuestionResponse> {
-  const apiUrl = process.env.NEXT_PUBLIC_PYTHON_API_URL || "http://localhost:8000";
+  const apiUrl = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://localhost:8000'
 
   const response = await fetch(`${apiUrl}/validation/challenge/generate`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(request),
-  });
+  })
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: "Unknown error" }));
-    throw new Error(`Challenge generation failed: ${error.detail || response.statusText}`);
+    const error = await response.json().catch(() => ({ detail: 'Unknown error' }))
+    throw new Error(`Challenge generation failed: ${error.detail || response.statusText}`)
   }
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -69,13 +69,13 @@ export async function generateChallengeQuestion(
  * @returns Formatted options array
  */
 export function formatMultipleChoiceOptions(
-  options: MultipleChoiceOption[]
+  options: MultipleChoiceOption[],
 ): Array<{ label: string; value: string; text: string }> {
   return options.map((option) => ({
     label: option.option_letter,
     value: option.option_letter,
     text: option.option_text,
-  }));
+  }))
 }
 
 /**
@@ -86,7 +86,7 @@ export function formatMultipleChoiceOptions(
  * @returns True if correct, false otherwise
  */
 export function isAnswerCorrect(question: ChallengeQuestion, userAnswer: string): boolean {
-  return userAnswer.toUpperCase() === question.correct_answer_letter.toUpperCase();
+  return userAnswer.toUpperCase() === question.correct_answer_letter.toUpperCase()
 }
 
 /**
@@ -96,7 +96,7 @@ export function isAnswerCorrect(question: ChallengeQuestion, userAnswer: string)
  * @returns The correct option object
  */
 export function getCorrectOption(question: ChallengeQuestion): MultipleChoiceOption | undefined {
-  return question.options.find((option) => option.is_correct);
+  return question.options.find((option) => option.is_correct)
 }
 
 /**
@@ -108,11 +108,11 @@ export function getCorrectOption(question: ChallengeQuestion): MultipleChoiceOpt
  */
 export function getSelectedOption(
   question: ChallengeQuestion,
-  userAnswer: string
+  userAnswer: string,
 ): MultipleChoiceOption | undefined {
   return question.options.find(
-    (option) => option.option_letter.toUpperCase() === userAnswer.toUpperCase()
-  );
+    (option) => option.option_letter.toUpperCase() === userAnswer.toUpperCase(),
+  )
 }
 
 /**
@@ -124,10 +124,10 @@ export function getSelectedOption(
  */
 export function getDistractorRationale(
   question: ChallengeQuestion,
-  userAnswer: string
+  userAnswer: string,
 ): string | null {
-  const selectedOption = getSelectedOption(question, userAnswer);
-  return selectedOption && !selectedOption.is_correct ? selectedOption.distractor_rationale : null;
+  const selectedOption = getSelectedOption(question, userAnswer)
+  return selectedOption && !selectedOption.is_correct ? selectedOption.distractor_rationale : null
 }
 
 /**
@@ -137,33 +137,33 @@ export function getDistractorRationale(
  * @returns Array of validation errors (empty if valid)
  */
 export function validateChallengeQuestion(response: ChallengeQuestionResponse): string[] {
-  const errors: string[] = [];
-  const { question } = response;
+  const errors: string[] = []
+  const { question } = response
 
   // Check required fields
-  if (!question.question_stem) errors.push("Missing question stem");
-  if (!question.correct_answer_letter) errors.push("Missing correct answer letter");
-  if (!question.explanation) errors.push("Missing explanation");
-  if (!question.teaching_point) errors.push("Missing teaching point");
+  if (!question.question_stem) errors.push('Missing question stem')
+  if (!question.correct_answer_letter) errors.push('Missing correct answer letter')
+  if (!question.explanation) errors.push('Missing explanation')
+  if (!question.teaching_point) errors.push('Missing teaching point')
 
   // Check options
   if (!question.options || question.options.length < 4 || question.options.length > 5) {
-    errors.push("Must have 4-5 multiple choice options");
+    errors.push('Must have 4-5 multiple choice options')
   }
 
   // Check exactly one correct answer
-  const correctCount = question.options.filter((opt) => opt.is_correct).length;
+  const correctCount = question.options.filter((opt) => opt.is_correct).length
   if (correctCount !== 1) {
-    errors.push(`Must have exactly 1 correct answer (found ${correctCount})`);
+    errors.push(`Must have exactly 1 correct answer (found ${correctCount})`)
   }
 
   // Verify correct_answer_letter matches a correct option
-  const correctOption = question.options.find((opt) => opt.is_correct);
+  const correctOption = question.options.find((opt) => opt.is_correct)
   if (correctOption && correctOption.option_letter !== question.correct_answer_letter) {
     errors.push(
-      `Correct answer letter mismatch: ${question.correct_answer_letter} vs ${correctOption.option_letter}`
-    );
+      `Correct answer letter mismatch: ${question.correct_answer_letter} vs ${correctOption.option_letter}`,
+    )
   }
 
-  return errors;
+  return errors
 }

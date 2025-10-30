@@ -9,7 +9,7 @@
  * - Efficiency metrics
  */
 
-import { IrtEngine, ResponseData, IrtEstimate } from '@/lib/adaptive/irt-engine'
+import { IrtEngine, IrtEstimate, type ResponseData } from '@/lib/adaptive/irt-engine'
 
 describe('IrtEngine', () => {
   let engine: IrtEngine
@@ -24,9 +24,7 @@ describe('IrtEngine', () => {
     })
 
     it('should estimate theta from single response', () => {
-      const responses: ResponseData[] = [
-        { difficulty: 50, correct: true },
-      ]
+      const responses: ResponseData[] = [{ difficulty: 50, correct: true }]
 
       const estimate = engine.estimateKnowledgeLevel(responses)
 
@@ -98,7 +96,7 @@ describe('IrtEngine', () => {
 
     it('should converge within 10 iterations', () => {
       const responses: ResponseData[] = Array.from({ length: 5 }, (_, i) => ({
-        difficulty: 30 + (i * 15),
+        difficulty: 30 + i * 15,
         correct: i < 3,
       }))
 
@@ -141,7 +139,7 @@ describe('IrtEngine', () => {
       ]
 
       const manyResponses: ResponseData[] = Array.from({ length: 10 }, (_, i) => ({
-        difficulty: 40 + (i * 5),
+        difficulty: 40 + i * 5,
         correct: i < 6,
       }))
 
@@ -209,9 +207,7 @@ describe('IrtEngine', () => {
     })
 
     it('should not signal early stop with < 3 responses even if CI < 10', () => {
-      const responses: ResponseData[] = [
-        { difficulty: 50, correct: true },
-      ]
+      const responses: ResponseData[] = [{ difficulty: 50, correct: true }]
 
       const estimate = engine.estimateKnowledgeLevel(responses)
 
@@ -289,13 +285,9 @@ describe('IrtEngine', () => {
 
   describe('Rasch model probability', () => {
     it('should estimate higher theta when passing high-difficulty items', () => {
-      const easyCorrect: ResponseData[] = [
-        { difficulty: 20, correct: true },
-      ]
+      const easyCorrect: ResponseData[] = [{ difficulty: 20, correct: true }]
 
-      const hardCorrect: ResponseData[] = [
-        { difficulty: 80, correct: true },
-      ]
+      const hardCorrect: ResponseData[] = [{ difficulty: 80, correct: true }]
 
       const easyEstimate = engine.estimateKnowledgeLevel(easyCorrect)
       const hardEstimate = engine.estimateKnowledgeLevel(hardCorrect)
@@ -308,13 +300,9 @@ describe('IrtEngine', () => {
     })
 
     it('should estimate lower theta when failing low-difficulty items', () => {
-      const easyWrong: ResponseData[] = [
-        { difficulty: 20, correct: false },
-      ]
+      const easyWrong: ResponseData[] = [{ difficulty: 20, correct: false }]
 
-      const hardWrong: ResponseData[] = [
-        { difficulty: 80, correct: false },
-      ]
+      const hardWrong: ResponseData[] = [{ difficulty: 80, correct: false }]
 
       const easyEstimate = engine.estimateKnowledgeLevel(easyWrong)
       const hardEstimate = engine.estimateKnowledgeLevel(hardWrong)
@@ -347,7 +335,7 @@ describe('IrtEngine', () => {
   describe('convergence behavior', () => {
     it('should converge faster with consistent response pattern', () => {
       const consistentCorrect: ResponseData[] = Array.from({ length: 5 }, (_, i) => ({
-        difficulty: 40 + (i * 2),
+        difficulty: 40 + i * 2,
         correct: true,
       }))
 
@@ -368,7 +356,7 @@ describe('IrtEngine', () => {
 
     it('should handle cases where convergence takes max iterations', () => {
       const responses: ResponseData[] = Array.from({ length: 20 }, (_, i) => ({
-        difficulty: 25 + (i * 2.5),
+        difficulty: 25 + i * 2.5,
         correct: Math.random() > 0.5,
       }))
 
@@ -426,7 +414,7 @@ describe('IrtEngine', () => {
 
     it('should flag expertise with consistently high performance', () => {
       const responses: ResponseData[] = Array.from({ length: 4 }, (_, i) => ({
-        difficulty: 70 + (i * 5),
+        difficulty: 70 + i * 5,
         correct: true,
       }))
 
@@ -442,7 +430,7 @@ describe('IrtEngine', () => {
 
     it('should flag knowledge gaps with consistently low performance', () => {
       const responses: ResponseData[] = Array.from({ length: 4 }, (_, i) => ({
-        difficulty: 30 - (i * 5),
+        difficulty: 30 - i * 5,
         correct: false,
       }))
 

@@ -5,9 +5,9 @@
  * Trigger manual calendar sync and return conflicts
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { syncUserCalendar } from '@/lib/calendar/calendar-sync-service'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { syncUserCalendar } from '@/lib/calendar/calendar-sync-service'
 
 const SyncSchema = z.object({
   userId: z.string().min(1),

@@ -176,7 +176,7 @@ export class EmbeddingRateLimitError extends Epic3Error {
   constructor(
     public readonly retryAfterSeconds: number,
     public readonly limitType: 'minute' | 'day',
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(
       `Embedding API rate limit exceeded. Retry after ${retryAfterSeconds}s (${limitType} limit)`,
@@ -184,7 +184,7 @@ export class EmbeddingRateLimitError extends Epic3Error {
         retryAfterSeconds,
         limitType,
         ...metadata,
-      }
+      },
     )
   }
 }
@@ -202,7 +202,7 @@ export class EmbeddingQuotaExceededError extends Epic3Error {
 
   constructor(
     public readonly quotaResetTime: Date,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Embedding API quota exceeded. Resets at ${quotaResetTime.toISOString()}`, {
       quotaResetTime: quotaResetTime.toISOString(),
@@ -224,7 +224,7 @@ export class EmbeddingInvalidInputError extends Epic3Error {
 
   constructor(
     public readonly reason: string,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Invalid embedding input: ${reason}`, { reason, ...metadata })
   }
@@ -243,7 +243,7 @@ export class EmbeddingNetworkError extends Epic3Error {
 
   constructor(
     public readonly originalError: Error,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Network error during embedding generation: ${originalError.message}`, {
       originalError: originalError.message,
@@ -266,7 +266,7 @@ export class EmbeddingAPIError extends Epic3Error {
   constructor(
     public readonly apiStatusCode: number,
     public readonly apiMessage: string,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Embedding API error (${apiStatusCode}): ${apiMessage}`, {
       apiStatusCode,
@@ -293,7 +293,7 @@ export class EmbeddingTimeoutError extends Epic3Error {
 
   constructor(
     public readonly timeoutMs: number,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Embedding generation timed out after ${timeoutMs}ms`, {
       timeoutMs,
@@ -319,11 +319,11 @@ export class ExtractionModelOverloadError extends Epic3Error {
 
   constructor(
     public readonly retryAfterSeconds?: number,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(
       `Extraction model is overloaded${retryAfterSeconds ? `. Retry after ${retryAfterSeconds}s` : ''}`,
-      { retryAfterSeconds, ...metadata }
+      { retryAfterSeconds, ...metadata },
     )
   }
 }
@@ -342,7 +342,7 @@ export class ExtractionInvalidResponseError extends Epic3Error {
   constructor(
     public readonly reason: string,
     public readonly response?: string,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Invalid extraction response: ${reason}`, {
       reason,
@@ -366,7 +366,7 @@ export class ExtractionJSONParseError extends Epic3Error {
   constructor(
     public readonly parseError: Error,
     public readonly rawResponse?: string,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Failed to parse extraction response as JSON: ${parseError.message}`, {
       parseError: parseError.message,
@@ -389,7 +389,7 @@ export class ExtractionTimeoutError extends Epic3Error {
 
   constructor(
     public readonly timeoutMs: number,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Extraction timed out after ${timeoutMs}ms`, { timeoutMs, ...metadata })
   }
@@ -408,7 +408,7 @@ export class ExtractionSchemaValidationError extends Epic3Error {
 
   constructor(
     public readonly validationErrors: string[],
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Extraction schema validation failed: ${validationErrors.join(', ')}`, {
       validationErrors,
@@ -434,7 +434,7 @@ export class SearchDatabaseError extends Epic3Error {
 
   constructor(
     public readonly dbError: Error,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Search database error: ${dbError.message}`, {
       dbError: dbError.message,
@@ -457,7 +457,7 @@ export class SearchQueryTimeoutError extends Epic3Error {
   constructor(
     public readonly timeoutMs: number,
     public readonly query: string,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Search query timed out after ${timeoutMs}ms`, {
       timeoutMs,
@@ -481,7 +481,7 @@ export class SearchEmbeddingFailedError extends Epic3Error {
   constructor(
     public readonly embeddingError: Epic3Error,
     public readonly fallbackAvailable: boolean,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(
       `Search embedding failed: ${embeddingError.message}${fallbackAvailable ? ' (fallback available)' : ''}`,
@@ -489,7 +489,7 @@ export class SearchEmbeddingFailedError extends Epic3Error {
         embeddingError: embeddingError.toJSON(),
         fallbackAvailable,
         ...metadata,
-      }
+      },
     )
   }
 }
@@ -507,7 +507,7 @@ export class SearchInvalidQueryError extends Epic3Error {
 
   constructor(
     public readonly reason: string,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Invalid search query: ${reason}`, { reason, ...metadata })
   }
@@ -526,7 +526,7 @@ export class SearchNoResultsError extends Epic3Error {
 
   constructor(
     public readonly query: string,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`No search results found for query`, {
       query: query.substring(0, 100),
@@ -554,18 +554,15 @@ export class GraphConceptExtractionFailedError extends Epic3Error {
     public readonly failedChunks: number,
     public readonly totalChunks: number,
     public readonly errors: Error[],
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
-    super(
-      `Concept extraction failed for ${failedChunks}/${totalChunks} chunks`,
-      {
-        failedChunks,
-        totalChunks,
-        successRate: ((totalChunks - failedChunks) / totalChunks) * 100,
-        errors: errors.map((e) => e.message),
-        ...metadata,
-      }
-    )
+    super(`Concept extraction failed for ${failedChunks}/${totalChunks} chunks`, {
+      failedChunks,
+      totalChunks,
+      successRate: ((totalChunks - failedChunks) / totalChunks) * 100,
+      errors: errors.map((e) => e.message),
+      ...metadata,
+    })
   }
 }
 
@@ -584,18 +581,15 @@ export class GraphRelationshipDetectionFailedError extends Epic3Error {
     public readonly failedPairs: number,
     public readonly totalPairs: number,
     public readonly errors: Error[],
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
-    super(
-      `Relationship detection failed for ${failedPairs}/${totalPairs} concept pairs`,
-      {
-        failedPairs,
-        totalPairs,
-        successRate: ((totalPairs - failedPairs) / totalPairs) * 100,
-        errors: errors.map((e) => e.message),
-        ...metadata,
-      }
-    )
+    super(`Relationship detection failed for ${failedPairs}/${totalPairs} concept pairs`, {
+      failedPairs,
+      totalPairs,
+      successRate: ((totalPairs - failedPairs) / totalPairs) * 100,
+      errors: errors.map((e) => e.message),
+      ...metadata,
+    })
   }
 }
 
@@ -612,7 +606,7 @@ export class GraphStorageError extends Epic3Error {
 
   constructor(
     public readonly storageError: Error,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Graph storage error: ${storageError.message}`, {
       storageError: storageError.message,
@@ -634,7 +628,7 @@ export class GraphInvalidInputError extends Epic3Error {
 
   constructor(
     public readonly reason: string,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Invalid graph input: ${reason}`, { reason, ...metadata })
   }
@@ -653,7 +647,7 @@ export class GraphCycleDetectedError extends Epic3Error {
 
   constructor(
     public readonly cycle: string[],
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
     super(`Cycle detected in knowledge graph: ${cycle.join(' -> ')}`, {
       cycle,
@@ -710,11 +704,7 @@ export type GraphBuildError =
 /**
  * Union type of all Epic 3 errors
  */
-export type AllEpic3Errors =
-  | EmbeddingError
-  | ExtractionError
-  | SearchError
-  | GraphBuildError
+export type AllEpic3Errors = EmbeddingError | ExtractionError | SearchError | GraphBuildError
 
 /* ============================================================================
  * HELPER FUNCTIONS
@@ -747,7 +737,7 @@ export function isRetriableError(error: unknown): boolean {
  * ```
  */
 export function getErrorCategory(
-  error: unknown
+  error: unknown,
 ): 'embedding' | 'extraction' | 'search' | 'graph' | 'unknown' {
   if (!(error instanceof Epic3Error)) {
     return 'unknown'
@@ -819,17 +809,14 @@ export class DatabaseValidationError extends Epic3Error {
       query: string
       operation: string
     },
-    metadata: Record<string, any> = {}
+    metadata: Record<string, any> = {},
   ) {
-    super(
-      `Database validation failed for ${context.operation}: ${validationErrors.join(', ')}`,
-      {
-        validationErrors,
-        query: context.query.substring(0, 200), // Truncate for logging
-        operation: context.operation,
-        ...metadata,
-      }
-    )
+    super(`Database validation failed for ${context.operation}: ${validationErrors.join(', ')}`, {
+      validationErrors,
+      query: context.query.substring(0, 200), // Truncate for logging
+      operation: context.operation,
+      ...metadata,
+    })
   }
 }
 
@@ -850,10 +837,10 @@ export class DatabaseValidationError extends Epic3Error {
 export function calculateRetryDelay(
   attemptNumber: number,
   baseDelayMs: number = 1000,
-  maxDelayMs: number = 30000
+  maxDelayMs: number = 30000,
 ): number {
   // Exponential backoff: base * 2^attempt + jitter
-  const exponentialDelay = Math.min(baseDelayMs * Math.pow(2, attemptNumber), maxDelayMs)
+  const exponentialDelay = Math.min(baseDelayMs * 2 ** attemptNumber, maxDelayMs)
 
   // Add jitter (±25%)
   const jitter = exponentialDelay * (Math.random() * 0.5 - 0.25)
@@ -905,7 +892,7 @@ export function serializeErrorForLogging(error: unknown): Record<string, any> {
  */
 export function wrapUnknownError(
   error: unknown,
-  category: 'embedding' | 'extraction' | 'search' | 'graph'
+  category: 'embedding' | 'extraction' | 'search' | 'graph',
 ): Epic3Error {
   // Already an Epic3Error, return as-is
   if (error instanceof Epic3Error) {
@@ -922,14 +909,8 @@ export function wrapUnknownError(
     case 'extraction':
       return new ExtractionInvalidResponseError(message, undefined, metadata)
     case 'search':
-      return new SearchDatabaseError(
-        error instanceof Error ? error : new Error(message),
-        metadata
-      )
+      return new SearchDatabaseError(error instanceof Error ? error : new Error(message), metadata)
     case 'graph':
-      return new GraphStorageError(
-        error instanceof Error ? error : new Error(message),
-        metadata
-      )
+      return new GraphStorageError(error instanceof Error ? error : new Error(message), metadata)
   }
 }

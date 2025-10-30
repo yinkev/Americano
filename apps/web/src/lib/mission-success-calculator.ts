@@ -8,8 +8,8 @@
  * Story 2.6: Mission Performance Analytics and Adaptation - Task 9
  */
 
-import { prisma } from '@/lib/db'
 import { MissionStatus } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 // Formula weights (must sum to 1.0)
 const WEIGHTS = {

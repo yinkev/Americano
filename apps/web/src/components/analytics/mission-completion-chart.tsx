@@ -7,21 +7,21 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { format } from 'date-fns'
+import { BarChart3, Calendar, TrendingUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import {
-  LineChart,
-  Line,
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
 } from 'recharts'
-import { format } from 'date-fns'
-import { Calendar, TrendingUp, BarChart3 } from 'lucide-react'
 
 interface TrendData {
   date: string

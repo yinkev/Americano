@@ -13,24 +13,24 @@
  */
 
 import {
-  // Error classes
-  EmbeddingRateLimitError,
-  EmbeddingInvalidInputError,
-  EmbeddingAPIError,
-  ExtractionJSONParseError,
-  SearchEmbeddingFailedError,
-  SearchNoResultsError,
-  GraphConceptExtractionFailedError,
-  // Type guards
-  isRetriableError,
-  isEmbeddingError,
-  isSearchError,
-  isEpic3Error,
+  type AllEpic3Errors,
   // Helper functions
   calculateRetryDelay,
+  EmbeddingAPIError,
+  EmbeddingInvalidInputError,
+  // Error classes
+  EmbeddingRateLimitError,
+  ExtractionJSONParseError,
+  GraphConceptExtractionFailedError,
+  isEmbeddingError,
+  isEpic3Error,
+  // Type guards
+  isRetriableError,
+  isSearchError,
+  SearchEmbeddingFailedError,
+  SearchNoResultsError,
   serializeErrorForLogging,
   wrapUnknownError,
-  type AllEpic3Errors,
 } from './errors'
 
 /* ============================================================================
@@ -42,7 +42,7 @@ import {
  */
 export async function generateEmbeddingWithRetry(
   text: string,
-  maxRetries: number = 3
+  maxRetries: number = 3,
 ): Promise<number[]> {
   let lastError: AllEpic3Errors | undefined
 
@@ -64,9 +64,7 @@ export async function generateEmbeddingWithRetry(
       return embedding
     } catch (error) {
       // Wrap unknown errors
-      const epic3Error = isEpic3Error(error)
-        ? error
-        : wrapUnknownError(error, 'embedding')
+      const epic3Error = isEpic3Error(error) ? error : wrapUnknownError(error, 'embedding')
 
       lastError = epic3Error
 
@@ -86,7 +84,7 @@ export async function generateEmbeddingWithRetry(
       const delay = calculateRetryDelay(attempt)
       console.warn(
         `Retriable error on attempt ${attempt + 1}/${maxRetries + 1}. Retrying in ${delay}ms...`,
-        epic3Error.message
+        epic3Error.message,
       )
 
       await sleep(delay)
@@ -129,9 +127,7 @@ function sleep(ms: number): Promise<void> {
 /**
  * Example: Process batch with graceful degradation
  */
-export async function processBatchWithPartialFailure(
-  texts: string[]
-): Promise<{
+export async function processBatchWithPartialFailure(texts: string[]): Promise<{
   embeddings: number[][]
   errors: Map<number, AllEpic3Errors>
   successRate: number
@@ -146,8 +142,8 @@ export async function processBatchWithPartialFailure(
         const epic3Error = isEpic3Error(error) ? error : wrapUnknownError(error, 'embedding')
         errors.set(index, epic3Error)
         return null
-      })
-    )
+      }),
+    ),
   )
 
   // Collect successful embeddings
@@ -160,7 +156,9 @@ export async function processBatchWithPartialFailure(
   const successRate = (embeddings.length / texts.length) * 100
 
   // Log summary
-  console.log(`Batch processing complete: ${embeddings.length}/${texts.length} successful (${successRate.toFixed(1)}%)`)
+  console.log(
+    `Batch processing complete: ${embeddings.length}/${texts.length} successful (${successRate.toFixed(1)}%)`,
+  )
 
   if (errors.size > 0) {
     console.warn(`Failed embeddings: ${errors.size}`)
@@ -221,7 +219,7 @@ export async function POST_searchEndpoint(request: Request): Promise<Response> {
           retriable: false,
         },
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -229,10 +227,7 @@ export async function POST_searchEndpoint(request: Request): Promise<Response> {
 /**
  * Simulate semantic search
  */
-async function performSemanticSearch(
-  query: string,
-  userId: string
-): Promise<any[]> {
+async function performSemanticSearch(query: string, userId: string): Promise<any[]> {
   // Generate query embedding
   let queryEmbedding: number[]
   try {
@@ -264,7 +259,10 @@ async function performSemanticSearch(
 async function vectorSearch(embedding: number[]): Promise<any[]> {
   // Return mock results
   return Math.random() < 0.9
-    ? [{ id: '1', similarity: 0.95 }, { id: '2', similarity: 0.87 }]
+    ? [
+        { id: '1', similarity: 0.95 },
+        { id: '2', similarity: 0.87 },
+      ]
     : []
 }
 
@@ -372,7 +370,7 @@ export class ErrorMonitor {
  */
 export async function buildKnowledgeGraphWithTolerance(
   chunks: string[],
-  maxFailureRate: number = 0.1 // Allow up to 10% failure
+  maxFailureRate: number = 0.1, // Allow up to 10% failure
 ): Promise<{
   concepts: any[]
   relationships: any[]
@@ -397,15 +395,10 @@ export async function buildKnowledgeGraphWithTolerance(
       const currentFailureRate = failedChunks.length / (i + 1)
       if (currentFailureRate > maxFailureRate) {
         // Failure rate exceeded, throw aggregate error
-        throw new GraphConceptExtractionFailedError(
-          failedChunks.length,
-          i + 1,
-          errors,
-          {
-            maxFailureRate,
-            currentFailureRate: currentFailureRate * 100,
-          }
-        )
+        throw new GraphConceptExtractionFailedError(failedChunks.length, i + 1, errors, {
+          maxFailureRate,
+          currentFailureRate: currentFailureRate * 100,
+        })
       }
     }
   }
@@ -416,10 +409,10 @@ export async function buildKnowledgeGraphWithTolerance(
   // Log final stats
   const finalFailureRate = (failedChunks.length / chunks.length) * 100
   console.log(
-    `Knowledge graph built: ${concepts.length} concepts, ${relationships.length} relationships`
+    `Knowledge graph built: ${concepts.length} concepts, ${relationships.length} relationships`,
   )
   console.log(
-    `Failed chunks: ${failedChunks.length}/${chunks.length} (${finalFailureRate.toFixed(1)}%)`
+    `Failed chunks: ${failedChunks.length}/${chunks.length} (${finalFailureRate.toFixed(1)}%)`,
   )
 
   return { concepts, relationships, failedChunks: failedChunks.length }
@@ -446,9 +439,7 @@ async function extractConcepts(chunk: string): Promise<any[]> {
  */
 async function detectRelationships(concepts: any[]): Promise<any[]> {
   // Return mock relationships
-  return [
-    { from: concepts[0]?.name, to: concepts[1]?.name, type: 'relates_to' },
-  ]
+  return [{ from: concepts[0]?.name, to: concepts[1]?.name, type: 'relates_to' }]
 }
 
 /* ============================================================================
@@ -465,7 +456,7 @@ export class CircuitBreaker {
 
   constructor(
     private readonly failureThreshold: number = 5,
-    private readonly resetTimeoutMs: number = 60000 // 1 minute
+    private readonly resetTimeoutMs: number = 60000, // 1 minute
   ) {}
 
   /**
@@ -483,7 +474,7 @@ export class CircuitBreaker {
           {
             state: this.state,
             failureCount: this.failureCount,
-          }
+          },
         )
       }
 
@@ -510,9 +501,7 @@ export class CircuitBreaker {
       // Check if we should open the circuit
       if (this.failureCount >= this.failureThreshold) {
         this.state = 'open'
-        console.error(
-          `[CircuitBreaker] Opening circuit after ${this.failureCount} failures`
-        )
+        console.error(`[CircuitBreaker] Opening circuit after ${this.failureCount} failures`)
       }
 
       throw error
@@ -598,7 +587,7 @@ export function logErrorWithContext(
     operation: string
     userId?: string
     additionalData?: Record<string, any>
-  }
+  },
 ): void {
   const serialized = serializeErrorForLogging(error)
 
@@ -634,7 +623,7 @@ export function logErrorWithContext(
  */
 function sendToExternalLogging(
   logEntry: Record<string, any>,
-  level: 'info' | 'warn' | 'error'
+  level: 'info' | 'warn' | 'error',
 ): void {
   // In production, send to CloudWatch, Datadog, Sentry, etc.
   console.log(`[EXTERNAL LOGGING - ${level.toUpperCase()}]`, logEntry)

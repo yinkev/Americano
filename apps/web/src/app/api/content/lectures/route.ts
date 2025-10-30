@@ -1,9 +1,9 @@
 // /api/content/lectures route
 // GET: List all lectures with filtering, sorting, and pagination
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import type { ProcessingStatus } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
-import { ProcessingStatus } from '@/generated/prisma'
 
 export async function GET(request: NextRequest) {
   try {

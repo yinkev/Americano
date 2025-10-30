@@ -11,7 +11,7 @@
  * - Get cache performance statistics
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { firstAidCache } from '@/lib/first-aid-cache'
 
 /**
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
         error: 'Failed to get cache statistics',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
         if (!guidelineId) {
           return NextResponse.json(
             { error: 'guidelineId required for invalidateGuideline action' },
-            { status: 400 }
+            { status: 400 },
           )
         }
         firstAidCache.invalidateGuideline(guidelineId)
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
         if (!edition) {
           return NextResponse.json(
             { error: 'edition required for invalidateEdition action' },
-            { status: 400 }
+            { status: 400 },
           )
         }
         firstAidCache.invalidateEdition(edition)
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
         if (!conceptId) {
           return NextResponse.json(
             { error: 'conceptId required for invalidateConcept action' },
-            { status: 400 }
+            { status: 400 },
           )
         }
         firstAidCache.invalidateConcept(conceptId)
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
               'resetStats',
             ],
           },
-          { status: 400 }
+          { status: 400 },
         )
     }
   } catch (error) {
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
         error: 'Failed to perform cache operation',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -209,7 +209,7 @@ export async function DELETE(request: NextRequest) {
         error: 'Failed to clear cache',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

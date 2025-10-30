@@ -11,23 +11,29 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Clock, Brain, Coffee, Zap, BookOpen, CheckCircle, X } from 'lucide-react'
+import { BookOpen, Brain, CheckCircle, Clock, Coffee, X, Zap } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Slider } from '@/components/ui/slider'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Slider } from '@/components/ui/slider'
 
 interface SessionPlan {
   id: string
@@ -92,7 +98,10 @@ export function SessionPlanCustomizeDialog({ open, onOpenChange, currentPlan, on
   const handleSave = () => {
     // Calculate new break intervals based on frequency
     const breakCount = Math.floor(duration / parseInt(breakFrequency))
-    const breakIntervals = Array.from({ length: breakCount }, (_, i) => (i + 1) * parseInt(breakFrequency))
+    const breakIntervals = Array.from(
+      { length: breakCount },
+      (_, i) => (i + 1) * parseInt(breakFrequency),
+    )
     const breakDurations = Array(breakCount).fill(parseInt(breakDuration))
 
     const customPlan: Partial<SessionPlan> = {
@@ -307,8 +316,9 @@ export function SessionPlanCustomizeDialog({ open, onOpenChange, currentPlan, on
               style={{ backgroundColor: 'oklch(0.95 0.01 230)' }}
             >
               <p>
-                <strong>Breaks planned:</strong> {Math.floor(duration / parseInt(breakFrequency))} breaks (
-                {Math.floor(duration / parseInt(breakFrequency)) * parseInt(breakDuration)} min total)
+                <strong>Breaks planned:</strong> {Math.floor(duration / parseInt(breakFrequency))}{' '}
+                breaks ({Math.floor(duration / parseInt(breakFrequency)) * parseInt(breakDuration)}{' '}
+                min total)
               </p>
             </div>
           </div>
@@ -337,7 +347,8 @@ export function SessionPlanCustomizeDialog({ open, onOpenChange, currentPlan, on
                 {breakDuration} min
               </p>
               <p>
-                <strong>Content Types:</strong> {Object.values(contentTypes).filter(Boolean).length}/4
+                <strong>Content Types:</strong> {Object.values(contentTypes).filter(Boolean).length}
+                /4
               </p>
             </div>
           </div>

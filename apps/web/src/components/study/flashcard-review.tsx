@@ -1,10 +1,10 @@
 'use client'
 
+import { Eye, Minus, Sparkles, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { useState } from 'react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Eye, ThumbsDown, Minus, ThumbsUp, Sparkles } from 'lucide-react'
 
 export interface FlashCard {
   id: string

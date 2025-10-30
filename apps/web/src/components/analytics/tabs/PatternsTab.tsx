@@ -23,19 +23,19 @@
  * @see usePatternsAnalysis - React Query hook
  */
 
-'use client';
+'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { usePatternsAnalysis } from '@/hooks/use-understanding-analytics';
-import { AlertTriangle, TrendingUp, Activity, Brain, ExternalLink } from 'lucide-react';
-import Link from 'next/link';
+import { Activity, AlertTriangle, Brain, ExternalLink, TrendingUp } from 'lucide-react'
+import Link from 'next/link'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { usePatternsAnalysis } from '@/hooks/use-understanding-analytics'
 
 export default function PatternsTab() {
-  const { data, isLoading, error } = usePatternsAnalysis();
+  const { data, isLoading, error } = usePatternsAnalysis()
 
   if (isLoading) {
-    return <PatternsSkeleton />;
+    return <PatternsSkeleton />
   }
 
   if (error) {
@@ -45,10 +45,10 @@ export default function PatternsTab() {
           Failed to load pattern analysis. Please try again.
         </p>
       </div>
-    );
+    )
   }
 
-  if (!data) return null;
+  if (!data) return null
 
   // Calculate calibration issues from data
   // TODO: Backend should provide these categories, this is placeholder logic
@@ -73,7 +73,7 @@ export default function PatternsTab() {
       issue: 'Weak performance with high confidence',
       severity: 'danger' as const,
     })),
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -254,9 +254,7 @@ export default function PatternsTab() {
             {/* Overconfident Topics */}
             {calibrationIssues.overconfident.length > 0 && (
               <div className="space-y-2">
-                <h4 className="font-medium text-[oklch(0.4_0.05_240)]">
-                  Overconfident Topics
-                </h4>
+                <h4 className="font-medium text-[oklch(0.4_0.05_240)]">Overconfident Topics</h4>
                 <p className="text-xs text-[oklch(0.6_0.05_240)]">
                   Confidence exceeds performance - practice metacognitive calibration
                 </p>
@@ -271,9 +269,7 @@ export default function PatternsTab() {
             {/* Underconfident Topics */}
             {calibrationIssues.underconfident.length > 0 && (
               <div className="space-y-2">
-                <h4 className="font-medium text-[oklch(0.4_0.05_240)]">
-                  Underconfident Topics
-                </h4>
+                <h4 className="font-medium text-[oklch(0.4_0.05_240)]">Underconfident Topics</h4>
                 <p className="text-xs text-[oklch(0.6_0.05_240)]">
                   Performance exceeds confidence - you know more than you think!
                 </p>
@@ -288,9 +284,7 @@ export default function PatternsTab() {
             {/* Hidden Strengths */}
             {calibrationIssues.hiddenStrengths.length > 0 && (
               <div className="space-y-2">
-                <h4 className="font-medium text-[oklch(0.4_0.05_240)]">
-                  Hidden Strengths
-                </h4>
+                <h4 className="font-medium text-[oklch(0.4_0.05_240)]">Hidden Strengths</h4>
                 <p className="text-xs text-[oklch(0.6_0.05_240)]">
                   Strong performance with low confidence - trust yourself more!
                 </p>
@@ -348,15 +342,14 @@ export default function PatternsTab() {
               ))
             ) : (
               <p className="text-sm text-[oklch(0.6_0.05_240)]">
-                No AI insights available yet. Continue studying to generate personalized
-                insights!
+                No AI insights available yet. Continue studying to generate personalized insights!
               </p>
             )}
           </div>
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
 
 /**
@@ -366,11 +359,11 @@ export default function PatternsTab() {
  * Used for strengths and weaknesses with color-coded badges.
  */
 interface TopicBadgeProps {
-  topic: string;
-  score: number;
-  objectiveIds: string[];
-  color: string;
-  bgColor: string;
+  topic: string
+  score: number
+  objectiveIds: string[]
+  color: string
+  bgColor: string
 }
 
 function TopicBadge({ topic, score, objectiveIds, color, bgColor }: TopicBadgeProps) {
@@ -403,7 +396,7 @@ function TopicBadge({ topic, score, objectiveIds, color, bgColor }: TopicBadgePr
         </Link>
       )}
     </div>
-  );
+  )
 }
 
 /**
@@ -412,9 +405,9 @@ function TopicBadge({ topic, score, objectiveIds, color, bgColor }: TopicBadgePr
  * Displays a single calibration issue with appropriate styling.
  */
 interface CalibrationIssueItemProps {
-  topic: string;
-  issue: string;
-  severity: 'danger' | 'warning' | 'info';
+  topic: string
+  issue: string
+  severity: 'danger' | 'warning' | 'info'
 }
 
 function CalibrationIssueItem({ topic, issue, severity }: CalibrationIssueItemProps) {
@@ -434,9 +427,9 @@ function CalibrationIssueItem({ topic, issue, severity }: CalibrationIssueItemPr
       text: 'oklch(0.5 0.18 230)',
       border: 'oklch(0.6 0.18 230)',
     },
-  };
+  }
 
-  const styles = severityStyles[severity];
+  const styles = severityStyles[severity]
 
   return (
     <div
@@ -450,7 +443,7 @@ function CalibrationIssueItem({ topic, issue, severity }: CalibrationIssueItemPr
         <p className="text-xs text-[oklch(0.6_0.05_240)] mt-0.5">{issue}</p>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -480,5 +473,5 @@ function PatternsSkeleton() {
         </Card>
       ))}
     </div>
-  );
+  )
 }

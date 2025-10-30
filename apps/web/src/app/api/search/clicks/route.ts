@@ -85,12 +85,12 @@
  *         description: Server error
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { z } from 'zod'
 import { withErrorHandler } from '@/lib/api-error'
-import { successResponse, errorResponse } from '@/lib/api-response'
+import { errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 import { searchAnalyticsService } from '@/lib/search-analytics-service'
-import { z } from 'zod'
 
 /**
  * Validation schema for click tracking request
@@ -125,10 +125,9 @@ async function handler(request: NextRequest) {
   try {
     body = await request.json()
   } catch (error) {
-    return Response.json(
-      errorResponse('INVALID_JSON', 'Invalid JSON in request body'),
-      { status: 400 }
-    )
+    return Response.json(errorResponse('INVALID_JSON', 'Invalid JSON in request body'), {
+      status: 400,
+    })
   }
 
   const validation = clickTrackingSchema.safeParse(body)
@@ -138,14 +137,13 @@ async function handler(request: NextRequest) {
       errorResponse(
         'VALIDATION_ERROR',
         'Invalid request data',
-        validation.error.flatten().fieldErrors
+        validation.error.flatten().fieldErrors,
       ),
-      { status: 400 }
+      { status: 400 },
     )
   }
 
-  const { searchQueryId, resultId, resultType, position, similarity } =
-    validation.data
+  const { searchQueryId, resultId, resultType, position, similarity } = validation.data
 
   try {
     // Verify search query exists
@@ -154,10 +152,9 @@ async function handler(request: NextRequest) {
     })
 
     if (!searchQuery) {
-      return Response.json(
-        errorResponse('SEARCH_QUERY_NOT_FOUND', 'Search query not found'),
-        { status: 404 }
-      )
+      return Response.json(errorResponse('SEARCH_QUERY_NOT_FOUND', 'Search query not found'), {
+        status: 404,
+      })
     }
 
     // Track the click (async, non-blocking)
@@ -174,21 +171,18 @@ async function handler(request: NextRequest) {
       successResponse({
         message: 'Click tracked successfully',
       }),
-      { status: 201 }
+      { status: 201 },
     )
   } catch (error) {
     console.error('Failed to track search click:', error)
 
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error occurred'
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
 
     return Response.json(
-      errorResponse(
-        'CLICK_TRACKING_FAILED',
-        'Failed to track click. Please try again.',
-        { error: errorMessage }
-      ),
-      { status: 500 }
+      errorResponse('CLICK_TRACKING_FAILED', 'Failed to track click. Please try again.', {
+        error: errorMessage,
+      }),
+      { status: 500 },
     )
   }
 }

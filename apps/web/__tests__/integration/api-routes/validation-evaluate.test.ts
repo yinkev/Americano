@@ -13,11 +13,11 @@
  * - Error handling and edge cases
  */
 
-import { POST } from '@/app/api/validation/prompts/generate/route'
+import { HttpResponse, http } from 'msw'
 import { NextRequest } from 'next/server'
+import { POST } from '@/app/api/validation/prompts/generate/route'
 import { prisma } from '@/lib/db'
-import { server, setupMSW, createErrorHandler, create503Handler } from '../../setup'
-import { http, HttpResponse } from 'msw'
+import { create503Handler, createErrorHandler, server, setupMSW } from '../../setup'
 
 // Initialize MSW server
 setupMSW()
@@ -65,8 +65,7 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
     // Default mock: Prompt creation succeeds
     ;(prisma.validationPrompt.create as jest.Mock).mockResolvedValue({
       id: 'prompt-new-123',
-      promptText:
-        'Explain the cardiac conduction system to a patient who just had an EKG.',
+      promptText: 'Explain the cardiac conduction system to a patient who just had an EKG.',
       promptType: 'EXPLAIN_TO_PATIENT',
       conceptName: 'Cardiac Conduction System',
       expectedCriteria: [
@@ -110,16 +109,13 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
 
   describe('Success Cases - Prompt Generation', () => {
     it('should generate new prompt when no cache exists', async () => {
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-            sessionId: 'session-456',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+          sessionId: 'session-456',
+        }),
+      })
 
       const response = await POST(request)
       const data = await response.json()
@@ -166,15 +162,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
         createdAt: threeDaysAgo,
       })
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+        }),
+      })
 
       const response = await POST(request)
       const data = await response.json()
@@ -206,15 +199,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
         }),
       )
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+        }),
+      })
 
       await POST(request)
 
@@ -244,15 +234,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
     })
 
     it('should save prompt with correct metadata', async () => {
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+        }),
+      })
 
       await POST(request)
 
@@ -276,13 +263,10 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
 
   describe('Error Cases - Validation Errors', () => {
     it('should return 400 for missing objectiveId', async () => {
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({}), // Missing objectiveId
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({}), // Missing objectiveId
+      })
 
       const response = await POST(request)
       const data = await response.json()
@@ -293,15 +277,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
     })
 
     it('should return 400 for invalid objectiveId format', async () => {
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'invalid-id-format', // Not a CUID
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'invalid-id-format', // Not a CUID
+        }),
+      })
 
       const response = await POST(request)
       const data = await response.json()
@@ -311,16 +292,13 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
     })
 
     it('should return 400 for invalid sessionId format', async () => {
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'clxyz12345678901234567', // Valid CUID
-            sessionId: 'not-a-cuid', // Invalid CUID
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'clxyz12345678901234567', // Valid CUID
+          sessionId: 'not-a-cuid', // Invalid CUID
+        }),
+      })
 
       const response = await POST(request)
       const data = await response.json()
@@ -330,13 +308,10 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
     })
 
     it('should return 400 for malformed JSON', async () => {
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: 'not-valid-json', // Malformed JSON
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: 'not-valid-json', // Malformed JSON
+      })
 
       const response = await POST(request)
 
@@ -349,15 +324,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
       // Mock objective not found
       ;(prisma.learningObjective.findUnique as jest.Mock).mockResolvedValue(null)
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-nonexistent',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-nonexistent',
+        }),
+      })
 
       const response = await POST(request)
       const data = await response.json()
@@ -373,15 +345,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
         new Error('Database connection failed'),
       )
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+        }),
+      })
 
       const response = await POST(request)
       const data = await response.json()
@@ -396,15 +365,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
         new Error('Failed to save prompt'),
       )
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+        }),
+      })
 
       const response = await POST(request)
       const data = await response.json()
@@ -417,23 +383,15 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
   describe('Error Cases - Python Service Errors', () => {
     it('should return 500 when Python service returns 500', async () => {
       server.use(
-        createErrorHandler(
-          'post',
-          '/validation/generate-prompt',
-          500,
-          'Internal server error',
-        ),
+        createErrorHandler('post', '/validation/generate-prompt', 500, 'Internal server error'),
       )
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+        }),
+      })
 
       const response = await POST(request)
       const data = await response.json()
@@ -445,15 +403,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
     it('should return 500 when Python service is unavailable (503)', async () => {
       server.use(create503Handler('post', '/validation/generate-prompt'))
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+        }),
+      })
 
       const response = await POST(request)
       const data = await response.json()
@@ -472,15 +427,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
         }),
       )
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+        }),
+      })
 
       const response = await POST(request)
 
@@ -496,15 +448,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
         }),
       )
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+        }),
+      })
 
       const response = await POST(request)
 
@@ -526,15 +475,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
         createdAt: eightDaysAgo,
       })
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+        }),
+      })
 
       const response = await POST(request)
       const data = await response.json()
@@ -556,15 +502,12 @@ describe('POST /api/validation/prompts/generate - Integration Tests', () => {
         createdAt: twoDaysAgo,
       })
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/validation/prompts/generate',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            objectiveId: 'obj-123',
-          }),
-        },
-      )
+      const request = new NextRequest('http://localhost:3000/api/validation/prompts/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          objectiveId: 'obj-123',
+        }),
+      })
 
       const response = await POST(request)
       const data = await response.json()

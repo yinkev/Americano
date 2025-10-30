@@ -3,10 +3,10 @@
  * Story 5.3 Task 2
  */
 
-import { describe, it, expect, beforeEach } from '@jest/globals'
-import { StudyTimeRecommender } from '@/subsystems/behavioral-analytics/study-time-recommender'
-import { StudyTimeAnalyzer } from '@/subsystems/behavioral-analytics/study-time-analyzer'
+import { beforeEach, describe, expect, it } from '@jest/globals'
 import { prisma } from '@/lib/db'
+import { StudyTimeAnalyzer } from '@/subsystems/behavioral-analytics/study-time-analyzer'
+import { StudyTimeRecommender } from '@/subsystems/behavioral-analytics/study-time-recommender'
 
 // Mock dependencies
 jest.mock('@/lib/db', () => ({

@@ -12,6 +12,7 @@ import type { PrismaClient } from '@/generated/prisma'
 jest.mock('@/lib/db', () => {
   const { mockDeep } = require('jest-mock-extended')
   return {
+    // @ts-expect-error - mockDeep is untyped at runtime
     prisma: mockDeep<PrismaClient>(),
   }
 })
@@ -29,12 +30,14 @@ jest.mock('@/lib/init-redis', () => ({
   ensureRedisInitialized: jest.fn(() => Promise.resolve()),
 }))
 
+import { NextRequest } from 'next/server'
+import type { DeepMockProxy } from 'jest-mock-extended'
 // Import after jest.mock to avoid module resolution issues
 import { GET } from '@/app/api/analytics/patterns/route'
-import { NextRequest } from 'next/server'
+import { prisma } from '@/lib/db'
 
 // Get the mocked prisma instance
-const { prisma: prismaMock } = require('@/lib/db')
+const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>
 
 describe('GET /api/analytics/patterns', () => {
   const validUserId = 'test-user-id'
@@ -246,9 +249,7 @@ describe('GET /api/analytics/patterns', () => {
     })
 
     it('should filter by pattern type', async () => {
-      const optimalTimePatterns = mockPatterns.filter(
-        (p) => p.patternType === 'OPTIMAL_STUDY_TIME',
-      )
+      const optimalTimePatterns = mockPatterns.filter((p) => p.patternType === 'OPTIMAL_STUDY_TIME')
       prismaMock.behavioralPattern.findMany.mockResolvedValue(optimalTimePatterns)
 
       const request = new NextRequest(

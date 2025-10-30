@@ -4,7 +4,7 @@
  * Verifies React Testing Library setup and component rendering
  */
 
-import { render, screen } from '@/__tests__/test-utils'
+import { render, screen } from '../test-utils'
 import '@testing-library/jest-dom'
 
 // Simple test component

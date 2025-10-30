@@ -1,17 +1,17 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { BookOpen, FileText, CreditCard, Lightbulb, ExternalLink } from "lucide-react"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { cn } from "@/lib/utils"
-import Link from "next/link"
+import { BookOpen, CreditCard, ExternalLink, FileText, Lightbulb } from 'lucide-react'
+import Link from 'next/link'
+import type * as React from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { cn } from '@/lib/utils'
 
 export interface SearchResult {
   id: string
-  type: "lecture" | "objective" | "card" | "concept"
+  type: 'lecture' | 'objective' | 'card' | 'concept'
   title: string
   snippet: string
   source: {
@@ -37,29 +37,29 @@ interface SearchResultItemProps {
   className?: string
 }
 
-const getResultIcon = (type: SearchResult["type"]) => {
+const getResultIcon = (type: SearchResult['type']) => {
   switch (type) {
-    case "lecture":
+    case 'lecture':
       return BookOpen
-    case "objective":
+    case 'objective':
       return Lightbulb
-    case "card":
+    case 'card':
       return CreditCard
-    case "concept":
+    case 'concept':
       return FileText
   }
 }
 
-const getResultTypeLabel = (type: SearchResult["type"]) => {
+const getResultTypeLabel = (type: SearchResult['type']) => {
   switch (type) {
-    case "lecture":
-      return "Lecture"
-    case "objective":
-      return "Learning Objective"
-    case "card":
-      return "Flashcard"
-    case "concept":
-      return "Concept"
+    case 'lecture':
+      return 'Lecture'
+    case 'objective':
+      return 'Learning Objective'
+    case 'card':
+      return 'Flashcard'
+    case 'concept':
+      return 'Concept'
   }
 }
 
@@ -75,18 +75,15 @@ function highlightText(text: string, query?: string): React.ReactNode {
   }
 
   // Escape special regex characters
-  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
   // Split by query matches (case insensitive)
-  const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"))
+  const parts = text.split(new RegExp(`(${escapedQuery})`, 'gi'))
 
   return parts.map((part, index) => {
     if (part.toLowerCase() === query.toLowerCase()) {
       return (
-        <mark
-          key={index}
-          className="bg-yellow-200/60 text-foreground font-semibold rounded px-0.5"
-        >
+        <mark key={index} className="bg-yellow-200/60 text-foreground font-semibold rounded px-0.5">
           {part}
         </mark>
       )
@@ -115,10 +112,10 @@ export function SearchResultItem({
   return (
     <Card
       className={cn(
-        "border-white/40 bg-white/80 backdrop-blur-md",
-        "hover:bg-white/95 hover:shadow-lg transition-all duration-200",
-        "group cursor-pointer",
-        className
+        'border-white/40 bg-white/80 backdrop-blur-md',
+        'hover:bg-white/95 hover:shadow-lg transition-all duration-200',
+        'group cursor-pointer',
+        className,
       )}
       onClick={handleClick}
       role="article"
@@ -151,17 +148,10 @@ export function SearchResultItem({
             className="flex flex-col items-end gap-1 shrink-0"
             aria-label={`Relevance: ${similarityPercent}%`}
           >
-            <span
-              className="text-xs font-semibold text-muted-foreground"
-              aria-hidden="true"
-            >
+            <span className="text-xs font-semibold text-muted-foreground" aria-hidden="true">
               {similarityPercent}% match
             </span>
-            <Progress
-              value={similarityPercent}
-              className="w-16 h-1.5"
-              aria-hidden="true"
-            />
+            <Progress value={similarityPercent} className="w-16 h-1.5" aria-hidden="true" />
           </div>
         </div>
       </CardHeader>
@@ -193,9 +183,7 @@ export function SearchResultItem({
               {result.source.lectureTitle && <span>•</span>}
               <span className="text-foreground">{result.source.courseName}</span>
               {result.source.courseCode && (
-                <span className="text-muted-foreground">
-                  ({result.source.courseCode})
-                </span>
+                <span className="text-muted-foreground">({result.source.courseCode})</span>
               )}
             </>
           )}

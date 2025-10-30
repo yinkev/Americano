@@ -10,7 +10,7 @@
  * - Track session search history
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { PrismaClient } from '@/generated/prisma'
 
@@ -45,16 +45,13 @@ export async function POST(req: NextRequest) {
     })
 
     if (!session) {
-      return NextResponse.json(
-        { error: 'Study session not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Study session not found' }, { status: 404 })
     }
 
     if (session.completedAt) {
       return NextResponse.json(
         { error: 'Cannot add content to completed session' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -76,10 +73,7 @@ export async function POST(req: NextRequest) {
         })
 
         if (!chunk) {
-          return NextResponse.json(
-            { error: 'Content chunk not found' },
-            { status: 404 }
-          )
+          return NextResponse.json({ error: 'Content chunk not found' }, { status: 404 })
         }
 
         addedContent = {
@@ -106,10 +100,7 @@ export async function POST(req: NextRequest) {
         })
 
         if (!lecture) {
-          return NextResponse.json(
-            { error: 'Lecture not found' },
-            { status: 404 }
-          )
+          return NextResponse.json({ error: 'Lecture not found' }, { status: 404 })
         }
 
         addedContent = {
@@ -137,10 +128,7 @@ export async function POST(req: NextRequest) {
         })
 
         if (!objective) {
-          return NextResponse.json(
-            { error: 'Learning objective not found' },
-            { status: 404 }
-          )
+          return NextResponse.json({ error: 'Learning objective not found' }, { status: 404 })
         }
 
         addedContent = {
@@ -162,10 +150,7 @@ export async function POST(req: NextRequest) {
         })
 
         if (!concept) {
-          return NextResponse.json(
-            { error: 'Concept not found' },
-            { status: 404 }
-          )
+          return NextResponse.json({ error: 'Concept not found' }, { status: 404 })
         }
 
         addedContent = {
@@ -182,7 +167,9 @@ export async function POST(req: NextRequest) {
     if (searchQuery) {
       // In a full implementation, we would track this in a SessionSearchHistory model
       // For now, we'll log it
-      console.log(`Session ${sessionId} added ${contentType} ${contentId} via search: "${searchQuery}"`)
+      console.log(
+        `Session ${sessionId} added ${contentType} ${contentId} via search: "${searchQuery}"`,
+      )
     }
 
     // Update session's objective completions (if applicable)
@@ -210,7 +197,7 @@ export async function POST(req: NextRequest) {
           error: 'Validation error',
           details: error.issues,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -219,7 +206,7 @@ export async function POST(req: NextRequest) {
         error: 'Failed to add content to session',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   } finally {
     await prisma.$disconnect()

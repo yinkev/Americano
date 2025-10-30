@@ -14,12 +14,12 @@
  * @see docs/stories/story-4.4.md - Task 8: Metacognitive Intervention Engine
  */
 
-import { prisma } from '@/lib/db'
 import {
+  type CalibrationCategory,
   calculateCorrelation,
   normalizeConfidence,
-  type CalibrationCategory,
 } from '@/lib/confidence-calibrator'
+import { prisma } from '@/lib/db'
 
 /**
  * Intervention types based on calibration patterns
@@ -123,9 +123,7 @@ export class MetacognitiveInterventionEngine {
    * @param userId - User ID to check
    * @returns Calibration health check result
    */
-  public static async checkCalibrationHealth(
-    userId: string,
-  ): Promise<CalibrationHealthCheck> {
+  public static async checkCalibrationHealth(userId: string): Promise<CalibrationHealthCheck> {
     try {
       // Fetch recent validation responses with confidence data
       const recentResponses = await prisma.validationResponse.findMany({
@@ -146,13 +144,13 @@ export class MetacognitiveInterventionEngine {
       })
 
       // Check if sufficient data exists
-      if (recentResponses.length < this.MIN_ASSESSMENTS) {
+      if (recentResponses.length < MetacognitiveInterventionEngine.MIN_ASSESSMENTS) {
         return {
           needsIntervention: false,
           interventionType: null,
           correlationCoeff: null,
           assessmentCount: recentResponses.length,
-          reason: `Insufficient data: Need at least ${this.MIN_ASSESSMENTS} assessments, have ${recentResponses.length}`,
+          reason: `Insufficient data: Need at least ${MetacognitiveInterventionEngine.MIN_ASSESSMENTS} assessments, have ${recentResponses.length}`,
         }
       }
 
@@ -166,7 +164,10 @@ export class MetacognitiveInterventionEngine {
       const correlationCoeff = calculateCorrelation(confidenceArray, scoreArray)
 
       // Check if correlation is below threshold
-      if (correlationCoeff === null || correlationCoeff >= this.INTERVENTION_THRESHOLD) {
+      if (
+        correlationCoeff === null ||
+        correlationCoeff >= MetacognitiveInterventionEngine.INTERVENTION_THRESHOLD
+      ) {
         return {
           needsIntervention: false,
           interventionType: null,
@@ -180,18 +181,18 @@ export class MetacognitiveInterventionEngine {
       }
 
       // Check cooldown period
-      const lastDismissal = await this.getLastDismissal(userId)
+      const lastDismissal = await MetacognitiveInterventionEngine.getLastDismissal(userId)
       if (lastDismissal) {
         const daysSinceDismissal = Math.floor(
           (Date.now() - lastDismissal.dismissedAt.getTime()) / (1000 * 60 * 60 * 24),
         )
-        if (daysSinceDismissal < this.COOLDOWN_DAYS) {
+        if (daysSinceDismissal < MetacognitiveInterventionEngine.COOLDOWN_DAYS) {
           return {
             needsIntervention: false,
             interventionType: null,
             correlationCoeff,
             assessmentCount: recentResponses.length,
-            reason: `Cooldown period: ${this.COOLDOWN_DAYS - daysSinceDismissal} days remaining`,
+            reason: `Cooldown period: ${MetacognitiveInterventionEngine.COOLDOWN_DAYS - daysSinceDismissal} days remaining`,
           }
         }
       }
@@ -206,7 +207,7 @@ export class MetacognitiveInterventionEngine {
         .filter((d) => !isNaN(d))
 
       const avgDelta = deltas.reduce((sum, d) => sum + d, 0) / deltas.length
-      const interventionType = this.determineInterventionType(avgDelta)
+      const interventionType = MetacognitiveInterventionEngine.determineInterventionType(avgDelta)
 
       return {
         needsIntervention: true,
@@ -280,9 +281,9 @@ export class MetacognitiveInterventionEngine {
       }))
       .filter((ex) => {
         if (interventionType === InterventionType.OVERCONFIDENCE) {
-          return ex.delta > this.OVERCONFIDENCE_THRESHOLD
+          return ex.delta > MetacognitiveInterventionEngine.OVERCONFIDENCE_THRESHOLD
         } else if (interventionType === InterventionType.UNDERCONFIDENCE) {
-          return ex.delta < this.UNDERCONFIDENCE_THRESHOLD
+          return ex.delta < MetacognitiveInterventionEngine.UNDERCONFIDENCE_THRESHOLD
         }
         return true
       })
@@ -321,7 +322,7 @@ Overconfidence occurs when we overestimate our knowledge or abilities. This is e
         return {
           type: InterventionType.UNDERCONFIDENCE,
           message:
-            "Great news: Your understanding is stronger than you think! You consistently score higher than your confidence suggests.",
+            'Great news: Your understanding is stronger than you think! You consistently score higher than your confidence suggests.',
           recommendations: [
             'Review your past successful assessments to build confidence',
             'Recognize patterns where you doubt yourself but perform well',
@@ -425,9 +426,7 @@ Metacognition is "thinking about thinking" - being aware of what you know and do
    * @param userId - User ID
    * @returns Last dismissal record or null
    */
-  private static async getLastDismissal(
-    userId: string,
-  ): Promise<{ dismissedAt: Date } | null> {
+  private static async getLastDismissal(userId: string): Promise<{ dismissedAt: Date } | null> {
     try {
       const lastEvent = await prisma.behavioralEvent.findFirst({
         where: {

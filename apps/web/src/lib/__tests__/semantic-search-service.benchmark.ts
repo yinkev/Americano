@@ -18,8 +18,8 @@
  * Run with: npm run benchmark
  */
 
-import { SemanticSearchService } from '../semantic-search-service'
 import { embeddingService } from '../embedding-service'
+import { SemanticSearchService } from '../semantic-search-service'
 
 interface BenchmarkResult {
   testName: string
@@ -280,9 +280,7 @@ class SemanticSearchBenchmark {
 
         try {
           await Promise.all(
-            batchQueries.map(query =>
-              this.searchService.search({ query, limit: 10 })
-            )
+            batchQueries.map((query) => this.searchService.search({ query, limit: 10 })),
           )
 
           const endTime = performance.now()
@@ -296,7 +294,7 @@ class SemanticSearchBenchmark {
       const result = this.calculateStatistics(
         `Concurrent Search (${concurrency} parallel)`,
         times,
-        times.length
+        times.length,
       )
       this.results.push(result)
       this.printResult(result)
@@ -395,7 +393,7 @@ class SemanticSearchBenchmark {
   private calculateStatistics(
     testName: string,
     times: number[],
-    totalRuns: number
+    totalRuns: number,
   ): BenchmarkResult {
     if (times.length === 0) {
       return {
@@ -464,9 +462,9 @@ class SemanticSearchBenchmark {
     console.log('Results:')
     console.log()
 
-    const basicSearch = this.results.find(r => r.testName === 'Basic Search')
-    const hybridSearch = this.results.find(r => r.testName === 'Hybrid Search')
-    const embeddingGen = this.results.find(r => r.testName === 'Embedding Generation')
+    const basicSearch = this.results.find((r) => r.testName === 'Basic Search')
+    const hybridSearch = this.results.find((r) => r.testName === 'Hybrid Search')
+    const embeddingGen = this.results.find((r) => r.testName === 'Embedding Generation')
 
     if (basicSearch) {
       const status = basicSearch.avgTime < 1000 ? '✓ PASS' : '✗ FAIL'

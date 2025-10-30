@@ -1,8 +1,8 @@
 'use client'
 
+import { Calendar, Clock } from 'lucide-react'
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Calendar, Clock } from 'lucide-react'
 
 export function ExamCountdown() {
   // Mock exam date - 90 days from now

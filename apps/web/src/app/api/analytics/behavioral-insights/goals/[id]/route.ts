@@ -6,9 +6,9 @@
  * Story 5.6: Behavioral Insights Dashboard - Task 7
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
 
 interface ProgressCheckpoint {
   date: string

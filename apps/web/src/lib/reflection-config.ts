@@ -9,10 +9,10 @@
  */
 
 export interface ReflectionQuestion {
-  id: string;
-  question: string;
-  category: 'strategy' | 'insight' | 'planning' | 'connection' | 'metacognition';
-  placeholder?: string;
+  id: string
+  question: string
+  category: 'strategy' | 'insight' | 'planning' | 'connection' | 'metacognition'
+  placeholder?: string
 }
 
 /**
@@ -110,7 +110,7 @@ export const REFLECTION_QUESTIONS: ReflectionQuestion[] = [
     category: 'metacognition',
     placeholder: 'Reflect on your learning process and preferences...',
   },
-];
+]
 
 /**
  * Selects a random reflection question from the bank
@@ -121,28 +121,28 @@ export const REFLECTION_QUESTIONS: ReflectionQuestion[] = [
  */
 export function getRandomReflectionQuestion(
   excludeIds: string[] = [],
-  category?: ReflectionQuestion['category']
+  category?: ReflectionQuestion['category'],
 ): ReflectionQuestion {
-  let availableQuestions = REFLECTION_QUESTIONS;
+  let availableQuestions = REFLECTION_QUESTIONS
 
   // Filter by category if provided
   if (category) {
-    availableQuestions = availableQuestions.filter((q) => q.category === category);
+    availableQuestions = availableQuestions.filter((q) => q.category === category)
   }
 
   // Exclude recently shown questions
   if (excludeIds.length > 0) {
-    availableQuestions = availableQuestions.filter((q) => !excludeIds.includes(q.id));
+    availableQuestions = availableQuestions.filter((q) => !excludeIds.includes(q.id))
   }
 
   // Fallback to all questions if filtering removed all options
   if (availableQuestions.length === 0) {
-    availableQuestions = REFLECTION_QUESTIONS;
+    availableQuestions = REFLECTION_QUESTIONS
   }
 
   // Select random question
-  const randomIndex = Math.floor(Math.random() * availableQuestions.length);
-  return availableQuestions[randomIndex];
+  const randomIndex = Math.floor(Math.random() * availableQuestions.length)
+  return availableQuestions[randomIndex]
 }
 
 /**
@@ -154,22 +154,22 @@ export function getRandomReflectionQuestion(
  */
 export function getRandomReflectionQuestions(
   count: number,
-  excludeIds: string[] = []
+  excludeIds: string[] = [],
 ): ReflectionQuestion[] {
-  const selected: ReflectionQuestion[] = [];
-  const usedIds = new Set(excludeIds);
+  const selected: ReflectionQuestion[] = []
+  const usedIds = new Set(excludeIds)
 
-  let availableQuestions = REFLECTION_QUESTIONS.filter((q) => !usedIds.has(q.id));
+  let availableQuestions = REFLECTION_QUESTIONS.filter((q) => !usedIds.has(q.id))
 
   for (let i = 0; i < count && availableQuestions.length > 0; i++) {
-    const randomIndex = Math.floor(Math.random() * availableQuestions.length);
-    const question = availableQuestions[randomIndex];
-    selected.push(question);
-    usedIds.add(question.id);
-    availableQuestions = availableQuestions.filter((q) => !usedIds.has(q.id));
+    const randomIndex = Math.floor(Math.random() * availableQuestions.length)
+    const question = availableQuestions[randomIndex]
+    selected.push(question)
+    usedIds.add(question.id)
+    availableQuestions = availableQuestions.filter((q) => !usedIds.has(q.id))
   }
 
-  return selected;
+  return selected
 }
 
 /**
@@ -188,20 +188,20 @@ export function getRandomReflectionQuestions(
 export function calculateMetacognitiveEngagementScore(
   completedCount: number,
   totalPromptedCount: number,
-  avgResponseLength: number = 0
+  avgResponseLength: number = 0,
 ): number {
-  if (totalPromptedCount === 0) return 0;
+  if (totalPromptedCount === 0) return 0
 
   // Completion rate (70% weight)
-  const completionRate = (completedCount / totalPromptedCount) * 100;
-  const completionScore = completionRate * 0.7;
+  const completionRate = (completedCount / totalPromptedCount) * 100
+  const completionScore = completionRate * 0.7
 
   // Response quality based on length (30% weight)
   // Minimum meaningful response: 50 characters
   // Well-developed response: 200+ characters
-  const qualityScore = Math.min(avgResponseLength / 200, 1.0) * 30;
+  const qualityScore = Math.min(avgResponseLength / 200, 1.0) * 30
 
-  return Math.round(completionScore + qualityScore);
+  return Math.round(completionScore + qualityScore)
 }
 
 /**
@@ -211,34 +211,34 @@ export function calculateMetacognitiveEngagementScore(
  * @returns Human-readable engagement level
  */
 export function getEngagementLevel(score: number): {
-  level: string;
-  color: string;
-  description: string;
+  level: string
+  color: string
+  description: string
 } {
   if (score >= 80) {
     return {
       level: 'Highly Engaged',
       color: 'oklch(0.7 0.15 145)', // Green
       description: 'Excellent metacognitive awareness and consistent reflection',
-    };
+    }
   }
   if (score >= 60) {
     return {
       level: 'Moderately Engaged',
       color: 'oklch(0.75 0.12 85)', // Yellow
       description: 'Good reflection habits with room for deeper insights',
-    };
+    }
   }
   if (score >= 40) {
     return {
       level: 'Developing',
       color: 'oklch(0.65 0.18 60)', // Orange
       description: 'Building reflection skills, aim for more consistent practice',
-    };
+    }
   }
   return {
     level: 'Needs Improvement',
     color: 'oklch(0.65 0.20 25)', // Red
     description: 'Take time to reflect on your learning process after assessments',
-  };
+  }
 }

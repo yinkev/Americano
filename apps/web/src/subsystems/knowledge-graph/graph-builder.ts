@@ -22,15 +22,15 @@
  * Enhanced with Retry Logic - Epic 3 Knowledge Graph Reliability
  */
 
-import { Prisma, type ConceptRelationship, RelationshipType } from '@/generated/prisma'
-import type { Concept } from '@/types/prisma-extensions'
+import { type ConceptRelationship, Prisma, RelationshipType } from '@/generated/prisma'
 import { ChatMockClient, type ExtractedObjective } from '@/lib/ai/chatmock-client'
-import { EmbeddingService } from '@/lib/embedding-service'
 import { prisma } from '@/lib/db'
-import { retryService, DEFAULT_POLICIES, type RetryResult } from '@/lib/retry/retry-service'
-import { validateSqlResult } from '@/lib/validation/validate-sql-result'
-import { CoOccurrenceResultSchema, type CoOccurrenceResult } from '@/lib/validation/sql-schemas'
+import { EmbeddingService } from '@/lib/embedding-service'
 import { isOk } from '@/lib/result'
+import { DEFAULT_POLICIES, type RetryResult, retryService } from '@/lib/retry/retry-service'
+import { type CoOccurrenceResult, CoOccurrenceResultSchema } from '@/lib/validation/sql-schemas'
+import { validateSqlResult } from '@/lib/validation/validate-sql-result'
+import type { Concept } from '@/types/prisma-extensions'
 
 /**
  * Extracted medical concept from content
@@ -182,7 +182,7 @@ export class KnowledgeGraphBuilder {
    * @returns Promise resolving to array of Concept records
    */
   async extractConcepts(
-    chunks: Array<{ id: string; content: string; lectureId: string; lecture: any }>
+    chunks: Array<{ id: string; content: string; lectureId: string; lecture: any }>,
   ): Promise<Concept[]> {
     const extractedConcepts: ExtractedConcept[] = []
     const startTime = Date.now()
@@ -200,7 +200,7 @@ export class KnowledgeGraphBuilder {
 
       // Extract concepts from each chunk with retry logic
       const batchResults = await Promise.all(
-        batch.map((chunk) => this.extractConceptsFromChunk(chunk))
+        batch.map((chunk) => this.extractConceptsFromChunk(chunk)),
       )
 
       // Collect successful extractions
@@ -213,9 +213,7 @@ export class KnowledgeGraphBuilder {
       // Log batch statistics
       const batchSuccesses = batchResults.filter((r) => r.success).length
       const batchFailures = batchResults.filter((r) => !r.success).length
-      this.log(
-        `Batch ${batchNumber} complete: ${batchSuccesses} success, ${batchFailures} failed`
-      )
+      this.log(`Batch ${batchNumber} complete: ${batchSuccesses} success, ${batchFailures} failed`)
 
       // Delay between batches to respect rate limits
       if (i + this.config.batchSize < chunks.length) {
@@ -231,13 +229,13 @@ export class KnowledgeGraphBuilder {
     const successRate = ((successfulChunks / totalChunks) * 100).toFixed(1)
 
     this.log(
-      `Extraction complete: ${successfulChunks}/${totalChunks} chunks successful (${successRate}%) in ${(extractionTime / 1000).toFixed(1)}s`
+      `Extraction complete: ${successfulChunks}/${totalChunks} chunks successful (${successRate}%) in ${(extractionTime / 1000).toFixed(1)}s`,
     )
 
     if (this.extractionFailures.length > 0) {
       const permanentFailures = this.extractionFailures.filter((f) => f.isPermanentFailure).length
       console.warn(
-        `[KnowledgeGraphBuilder] ${this.extractionFailures.length} extraction failures (${permanentFailures} permanent, ${this.extractionFailures.length - permanentFailures} transient)`
+        `[KnowledgeGraphBuilder] ${this.extractionFailures.length} extraction failures (${permanentFailures} permanent, ${this.extractionFailures.length - permanentFailures} transient)`,
       )
     }
 
@@ -467,7 +465,8 @@ ${chunk.content}`
       for (const similar of similarConcepts) {
         // Convert distance to similarity score
         const similarity = 1 - similar.distance
-        const strength = (similarity - this.config.semanticThreshold) / (1 - this.config.semanticThreshold)
+        const strength =
+          (similarity - this.config.semanticThreshold) / (1 - this.config.semanticThreshold)
 
         relationships.push({
           fromConceptId: concept.id,
@@ -545,24 +544,18 @@ ${chunk.content}`
       `
 
       // Validate SQL results with Zod schema (Story 3.2: Type Safety)
-      const validationResult = validateSqlResult(
-        rawResults,
-        CoOccurrenceResultSchema,
-        {
-          query: 'detectCoOccurrence',
-          operation: 'co-occurrence detection',
-          metadata: {
-            conceptCount: concepts.length,
-            threshold: coOccurrenceThreshold,
-          },
-        }
-      )
+      const validationResult = validateSqlResult(rawResults, CoOccurrenceResultSchema, {
+        query: 'detectCoOccurrence',
+        operation: 'co-occurrence detection',
+        metadata: {
+          conceptCount: concepts.length,
+          threshold: coOccurrenceThreshold,
+        },
+      })
 
       // Handle validation failure
       if (!isOk(validationResult)) {
-        this.log(
-          `Validation error in co-occurrence detection: ${validationResult.error.message}`
-        )
+        this.log(`Validation error in co-occurrence detection: ${validationResult.error.message}`)
         console.error('[KnowledgeGraphBuilder] Co-occurrence validation failed:', {
           error: validationResult.error.message,
           validationErrors: validationResult.error.validationErrors,
@@ -577,7 +570,7 @@ ${chunk.content}`
 
       const queryDuration = Date.now() - startTime
       this.log(
-        `Co-occurrence query executed in ${queryDuration}ms (found ${coOccurrences.length} concept pairs)`
+        `Co-occurrence query executed in ${queryDuration}ms (found ${coOccurrences.length} concept pairs)`,
       )
 
       // Convert query results to DetectedRelationship objects
@@ -593,7 +586,7 @@ ${chunk.content}`
       }
 
       this.log(
-        `Co-occurrence detection complete: found ${relationships.length} relationships above threshold (${coOccurrenceThreshold})`
+        `Co-occurrence detection complete: found ${relationships.length} relationships above threshold (${coOccurrenceThreshold})`,
       )
     } catch (error) {
       console.error('Error detecting co-occurrences:', error)
@@ -621,10 +614,10 @@ ${chunk.content}`
     // Map learning objectives to concepts via fuzzy name matching
     for (const prereq of objectivePrereqs) {
       const objectiveConcept = concepts.find((c) =>
-        this.fuzzyMatch(c.name, prereq.objective.objective)
+        this.fuzzyMatch(c.name, prereq.objective.objective),
       )
       const prerequisiteConcept = concepts.find((c) =>
-        this.fuzzyMatch(c.name, prereq.prerequisite.objective)
+        this.fuzzyMatch(c.name, prereq.prerequisite.objective),
       )
 
       if (objectiveConcept && prerequisiteConcept) {
@@ -669,11 +662,14 @@ ${chunk.content}`
 
       // Generate embedding for new concept
       const embeddingResult = await this.embeddingService.generateEmbedding(
-        `${concept.name}: ${concept.description}`
+        `${concept.name}: ${concept.description}`,
       )
 
       if (embeddingResult.error) {
-        console.error(`Failed to generate embedding for concept "${concept.name}":`, embeddingResult.error)
+        console.error(
+          `Failed to generate embedding for concept "${concept.name}":`,
+          embeddingResult.error,
+        )
         return null
       }
 
@@ -777,10 +773,7 @@ ${chunk.content}`
     // Find concepts with no relationships
     const orphaned = await prisma.concept.findMany({
       where: {
-        AND: [
-          { relatedFrom: { none: {} } },
-          { relatedTo: { none: {} } },
-        ],
+        AND: [{ relatedFrom: { none: {} } }, { relatedTo: { none: {} } }],
       },
     })
 

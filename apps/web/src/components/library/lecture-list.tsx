@@ -1,27 +1,17 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
 import {
-  FileText,
-  Clock,
-  CheckCircle2,
   AlertCircle,
-  XCircle,
-  Trash2,
+  CheckCircle2,
+  Clock,
+  FileText,
   RefreshCw,
+  Trash2,
+  XCircle,
 } from 'lucide-react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { useState } from 'react'
+import { toast } from 'sonner'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,8 +22,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { ProcessingProgress } from './processing-progress'
-import { toast } from 'sonner'
 
 interface Course {
   id: string

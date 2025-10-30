@@ -10,7 +10,7 @@
  * - Edge cases (insufficient data, missing prerequisites)
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 
 // Custom matcher declarations
 declare global {

@@ -79,9 +79,7 @@ describe('Embedding Generation Pipeline', () => {
 
         // Second chunk should start with content from first chunk (overlap)
         const firstChunkEnd = firstChunk.slice(-100)
-        expect(secondChunk.toLowerCase()).toContain(
-          firstChunkEnd.slice(0, 50).toLowerCase()
-        )
+        expect(secondChunk.toLowerCase()).toContain(firstChunkEnd.slice(0, 50).toLowerCase())
       }
     })
 
@@ -111,7 +109,7 @@ describe('Embedding Generation Pipeline', () => {
   describe('EmbeddingService', () => {
     it('should generate embedding for single text', async () => {
       const result = await embeddingService.generateEmbedding(
-        'The cardiac conduction system initiates electrical impulses.'
+        'The cardiac conduction system initiates electrical impulses.',
       )
 
       expect(result.error).toBeUndefined()

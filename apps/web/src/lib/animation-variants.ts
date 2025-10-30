@@ -340,12 +340,12 @@ export const prefersReducedMotion = (): boolean => {
  */
 export const getAnimationConfig = <T extends Record<string, any>>(
   variant: T,
-  reducedVariant?: Partial<T>
+  reducedVariant?: Partial<T>,
 ): T => {
   if (prefersReducedMotion()) {
     return reducedVariant
       ? { ...variant, ...reducedVariant }
-      : { ...variant, transition: { duration: 0.01 } } as T
+      : ({ ...variant, transition: { duration: 0.01 } } as T)
   }
   return variant
 }

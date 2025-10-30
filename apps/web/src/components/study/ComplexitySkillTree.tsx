@@ -1,34 +1,29 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { CheckCircle2, Lock, Circle, Star } from 'lucide-react';
-import { MasteryBadge } from './MasteryBadge';
-import { cn } from '@/lib/utils';
+import { CheckCircle2, Circle, Lock, Star } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
+import { MasteryBadge } from './MasteryBadge'
 
 interface ComplexitySkillTreeProps {
-  userId: string;
-  conceptId: string;
-  onLevelSelect?: (level: ComplexityLevel) => void;
+  userId: string
+  conceptId: string
+  onLevelSelect?: (level: ComplexityLevel) => void
 }
 
-type ComplexityLevel = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
+type ComplexityLevel = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED'
 
 interface LevelStatus {
-  level: ComplexityLevel;
-  isMastered: boolean;
-  isUnlocked: boolean;
-  isCurrent: boolean;
-  masteredAt?: Date;
-  progress: number;
-  requirementsText: string;
+  level: ComplexityLevel
+  isMastered: boolean
+  isUnlocked: boolean
+  isCurrent: boolean
+  masteredAt?: Date
+  progress: number
+  requirementsText: string
 }
 
 /**
@@ -90,61 +85,61 @@ export function ComplexitySkillTree({
       progress: 0,
       requirementsText: 'Requires: Master INTERMEDIATE level',
     },
-  ]);
+  ])
 
-  const [showUnlockAnimation, setShowUnlockAnimation] = useState<ComplexityLevel | null>(null);
+  const [showUnlockAnimation, setShowUnlockAnimation] = useState<ComplexityLevel | null>(null)
 
   // Load level statuses from API
   useEffect(() => {
     const fetchLevelStatuses = async () => {
       try {
-        const response = await fetch(`/api/mastery/complexity/${conceptId}?userId=${userId}`);
+        const response = await fetch(`/api/mastery/complexity/${conceptId}?userId=${userId}`)
         if (response.ok) {
-          const data = await response.json();
-          setLevelStatuses(data.levels);
+          const data = await response.json()
+          setLevelStatuses(data.levels)
 
           // Check if a new level was just unlocked
           const recentlyUnlocked = data.levels.find(
-            (level: LevelStatus) => level.isUnlocked && !level.isMastered && !level.isCurrent
-          );
+            (level: LevelStatus) => level.isUnlocked && !level.isMastered && !level.isCurrent,
+          )
           if (recentlyUnlocked) {
-            setShowUnlockAnimation(recentlyUnlocked.level);
-            setTimeout(() => setShowUnlockAnimation(null), 3000);
+            setShowUnlockAnimation(recentlyUnlocked.level)
+            setTimeout(() => setShowUnlockAnimation(null), 3000)
           }
         }
       } catch (error) {
-        console.error('Failed to fetch level statuses:', error);
+        console.error('Failed to fetch level statuses:', error)
       }
-    };
+    }
 
-    fetchLevelStatuses();
-  }, [userId, conceptId]);
+    fetchLevelStatuses()
+  }, [userId, conceptId])
 
   const handleLevelClick = (level: LevelStatus) => {
     if (level.isUnlocked && onLevelSelect) {
-      onLevelSelect(level.level);
+      onLevelSelect(level.level)
     }
-  };
+  }
 
   const getLevelColor = (level: LevelStatus) => {
-    if (level.isMastered) return 'oklch(0.8 0.15 60)'; // Gold
-    if (level.isCurrent) return 'oklch(0.6 0.18 230)'; // Blue
-    if (level.isUnlocked) return 'oklch(0.7 0.15 145)'; // Green
-    return 'oklch(0.556 0 0)'; // Gray (locked)
-  };
+    if (level.isMastered) return 'oklch(0.8 0.15 60)' // Gold
+    if (level.isCurrent) return 'oklch(0.6 0.18 230)' // Blue
+    if (level.isUnlocked) return 'oklch(0.7 0.15 145)' // Green
+    return 'oklch(0.556 0 0)' // Gray (locked)
+  }
 
   const getLevelIcon = (level: LevelStatus) => {
     if (level.isMastered) {
-      return <Star className="h-6 w-6" fill="currentColor" />;
+      return <Star className="h-6 w-6" fill="currentColor" />
     }
     if (level.isCurrent) {
-      return <Circle className="h-6 w-6" fill="currentColor" />;
+      return <Circle className="h-6 w-6" fill="currentColor" />
     }
     if (level.isUnlocked) {
-      return <CheckCircle2 className="h-6 w-6" />;
+      return <CheckCircle2 className="h-6 w-6" />
     }
-    return <Lock className="h-6 w-6" />;
-  };
+    return <Lock className="h-6 w-6" />
+  }
 
   return (
     <Card className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)]">
@@ -207,12 +202,10 @@ export function ComplexitySkillTree({
                         'focus:outline-none focus:ring-2 focus:ring-offset-2',
                         level.isUnlocked
                           ? 'cursor-pointer hover:scale-[1.02] hover:shadow-lg'
-                          : 'cursor-not-allowed opacity-60'
+                          : 'cursor-not-allowed opacity-60',
                       )}
                       style={{
-                        backgroundColor: level.isUnlocked
-                          ? 'oklch(1 0 0)'
-                          : 'oklch(0.97 0 0)',
+                        backgroundColor: level.isUnlocked ? 'oklch(1 0 0)' : 'oklch(0.97 0 0)',
                         borderColor: getLevelColor(level),
                         boxShadow: level.isCurrent
                           ? `0 4px 12px ${getLevelColor(level)}40`
@@ -222,10 +215,10 @@ export function ComplexitySkillTree({
                         level.isMastered
                           ? 'Mastered'
                           : level.isCurrent
-                          ? 'Current'
-                          : level.isUnlocked
-                          ? 'Unlocked'
-                          : 'Locked'
+                            ? 'Current'
+                            : level.isUnlocked
+                              ? 'Unlocked'
+                              : 'Locked'
                       }`}
                     >
                       <div className="flex items-center gap-4">
@@ -243,9 +236,7 @@ export function ComplexitySkillTree({
                         {/* Level Info */}
                         <div className="flex-1 text-left">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-lg font-dm-sans">
-                              {level.level}
-                            </h3>
+                            <h3 className="font-semibold text-lg font-dm-sans">{level.level}</h3>
                             {level.isCurrent && (
                               <Badge
                                 variant="secondary"
@@ -304,14 +295,10 @@ export function ComplexitySkillTree({
                   >
                     <p className="text-sm">{level.requirementsText}</p>
                     {level.isMastered && (
-                      <p className="text-xs mt-2 opacity-80">
-                        ✓ Click to review mastered material
-                      </p>
+                      <p className="text-xs mt-2 opacity-80">✓ Click to review mastered material</p>
                     )}
                     {level.isUnlocked && !level.isMastered && !level.isCurrent && (
-                      <p className="text-xs mt-2 opacity-80">
-                        Click to start this level
-                      </p>
+                      <p className="text-xs mt-2 opacity-80">Click to start this level</p>
                     )}
                   </TooltipContent>
                 </Tooltip>
@@ -352,5 +339,5 @@ export function ComplexitySkillTree({
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

@@ -7,15 +7,15 @@
  * Interactive exam management with CRUD operations
  */
 
-import { useState } from 'react'
+import { format, isPast, parseISO } from 'date-fns'
+import { BookOpen, Calendar as CalendarIcon, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { format, parseISO, isPast } from 'date-fns'
-import { Plus, Calendar as CalendarIcon, Pencil, Trash2, BookOpen } from 'lucide-react'
+import { useState } from 'react'
+import { ExamDialog } from '@/components/exams/ExamDialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ExamDialog } from '@/components/exams/ExamDialog'
-import { type CreateExamInput } from '@/lib/validation/exam'
+import type { CreateExamInput } from '@/lib/validation/exam'
 
 interface Course {
   id: string

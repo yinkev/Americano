@@ -14,8 +14,8 @@
  * - Flag ineffective questions (discrimination < 0.2)
  */
 
-import { prisma } from '@/lib/db'
 import type { ValidationPrompt } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 export interface QuestionBankQuestion {
   id: string
@@ -95,13 +95,13 @@ export class QuestionBankManager {
    */
   filterByDifficulty(
     questions: QuestionBankQuestion[],
-    targetDifficulty: number
+    targetDifficulty: number,
   ): QuestionBankQuestion[] {
     const minDifficulty = Math.max(0, targetDifficulty - 10)
     const maxDifficulty = Math.min(100, targetDifficulty + 10)
 
     return questions.filter(
-      (q) => q.difficultyLevel >= minDifficulty && q.difficultyLevel <= maxDifficulty
+      (q) => q.difficultyLevel >= minDifficulty && q.difficultyLevel <= maxDifficulty,
     )
   }
 
@@ -116,7 +116,7 @@ export class QuestionBankManager {
    */
   async enforceCooldown(
     questions: QuestionBankQuestion[],
-    userId: string
+    userId: string,
   ): Promise<QuestionBankQuestion[]> {
     const cooldownDate = new Date()
     cooldownDate.setDate(cooldownDate.getDate() - 14) // 14 days ago
@@ -156,14 +156,14 @@ export class QuestionBankManager {
    */
   selectBestQuestion(
     questions: QuestionBankQuestion[],
-    criteria: QuestionSelectionCriteria
+    criteria: QuestionSelectionCriteria,
   ): QuestionBankQuestion | null {
     if (questions.length === 0) {
       return null
     }
 
     // Create copy for sorting
-    let sortedQuestions = [...questions]
+    const sortedQuestions = [...questions]
 
     // Sort based on criteria
     sortedQuestions.sort((a, b) => {
@@ -219,7 +219,7 @@ export class QuestionBankManager {
   async updateQuestionStats(
     promptId: string,
     difficulty: number,
-    responseScore: number
+    responseScore: number,
   ): Promise<QuestionStats> {
     const now = new Date()
 
@@ -391,7 +391,7 @@ export class QuestionBankManager {
    * @returns Array of flagged questions with statistics
    */
   async getFlaggedQuestions(
-    objectiveId?: string
+    objectiveId?: string,
   ): Promise<Array<QuestionBankQuestion & { flagReason: string }>> {
     const questions = await prisma.validationPrompt.findMany({
       where: {

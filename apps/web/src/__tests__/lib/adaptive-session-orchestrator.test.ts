@@ -9,25 +9,25 @@
  * - AC#8: Adaptive session orchestration (breaks, recalibration, strategic ending)
  */
 
-import { describe, it, expect, beforeEach, jest, afterEach } from '@jest/globals'
-import { AdaptiveSessionOrchestrator } from '@/lib/adaptive-session-orchestrator'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { MasteryStatus } from '@/generated/prisma'
+import { AdaptiveSessionOrchestrator } from '@/lib/adaptive-session-orchestrator'
 
 // Mock Prisma client
 const mockPrisma = {
   adaptiveSession: {
-    create: jest.fn(),
-    findUnique: jest.fn(),
-    update: jest.fn(),
+    create: jest.fn() as any,
+    findUnique: jest.fn() as any,
+    update: jest.fn() as any,
   },
   validationResponse: {
-    findMany: jest.fn(),
+    findMany: jest.fn() as any,
   },
   calibrationMetric: {
-    findMany: jest.fn(),
+    findMany: jest.fn() as any,
   },
   masteryVerification: {
-    findUnique: jest.fn(),
+    findUnique: jest.fn() as any,
   },
 }
 
@@ -91,7 +91,7 @@ describe('AdaptiveSessionOrchestrator', () => {
           score: 0.9, // 90% converted to 0-1 scale
           respondedAt: new Date(),
           prompt: { objectiveId: 'obj456' },
-        }) as any
+        }) as any,
       )
       mockPrisma.calibrationMetric.findMany.mockResolvedValue([])
       mockPrisma.adaptiveSession.create.mockResolvedValue({
@@ -131,11 +131,7 @@ describe('AdaptiveSessionOrchestrator', () => {
         updatedAt: new Date(),
       } as any)
 
-      const session = await orchestrator.initializeAdaptiveSession(
-        'user123',
-        'obj456',
-        'study789'
-      )
+      const session = await orchestrator.initializeAdaptiveSession('user123', 'obj456', 'study789')
 
       expect(session.sessionId).toBe('study789')
       expect(mockPrisma.adaptiveSession.create).toHaveBeenCalledWith({
@@ -312,7 +308,7 @@ describe('AdaptiveSessionOrchestrator', () => {
       const { recommendBreak, breakReason } = orchestrator.checkBreakRecommendation(
         12,
         new Date(),
-        []
+        [],
       )
 
       expect(recommendBreak).toBe(true)
@@ -325,7 +321,7 @@ describe('AdaptiveSessionOrchestrator', () => {
       const { recommendBreak, breakReason } = orchestrator.checkBreakRecommendation(
         5,
         sessionStart,
-        []
+        [],
       )
 
       expect(recommendBreak).toBe(true)
@@ -342,7 +338,7 @@ describe('AdaptiveSessionOrchestrator', () => {
       const { recommendBreak, breakReason } = orchestrator.checkBreakRecommendation(
         3,
         new Date(),
-        trajectory
+        trajectory,
       )
 
       expect(recommendBreak).toBe(true)
@@ -359,7 +355,7 @@ describe('AdaptiveSessionOrchestrator', () => {
       const { recommendBreak } = orchestrator.checkBreakRecommendation(
         3,
         new Date(Date.now() - 10 * 60 * 1000), // 10 minutes
-        trajectory
+        trajectory,
       )
 
       expect(recommendBreak).toBe(false)
@@ -605,7 +601,7 @@ describe('AdaptiveSessionOrchestrator', () => {
       const summary = await orchestrator.endStrategically('session123')
 
       expect(summary.adaptations).toContainEqual(
-        expect.stringContaining('Confidence-building easy question')
+        expect.stringContaining('Confidence-building easy question'),
       )
       // Check that update was called with modified trajectory
       expect(mockPrisma.adaptiveSession.update).toHaveBeenCalled()
@@ -640,9 +636,7 @@ describe('AdaptiveSessionOrchestrator', () => {
       expect(summary.sessionId).toBe('session123')
       expect(summary.totalQuestions).toBe(5)
       expect(summary.difficultyProgression).toHaveLength(5)
-      expect(summary.adaptations).toContain(
-        expect.stringContaining('Increased difficulty +15')
-      )
+      expect(summary.adaptations).toContain(expect.stringContaining('Increased difficulty +15'))
       expect(summary.adaptations).toContain(expect.stringContaining('Decreased difficulty -15'))
       expect(summary.finalKnowledgeEstimate).toBe(0.72)
       expect(summary.efficiencyScore).toBeGreaterThan(0) // Efficiency vs baseline

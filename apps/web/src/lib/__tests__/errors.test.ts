@@ -9,43 +9,43 @@
  * - Retry logic
  */
 
-import { describe, it, expect } from '@jest/globals'
+import { describe, expect, it } from '@jest/globals'
 import {
-  // Error classes
-  EmbeddingRateLimitError,
-  EmbeddingQuotaExceededError,
+  calculateRetryDelay,
+  EmbeddingAPIError,
   EmbeddingInvalidInputError,
   EmbeddingNetworkError,
-  EmbeddingAPIError,
+  EmbeddingQuotaExceededError,
+  // Error classes
+  EmbeddingRateLimitError,
   EmbeddingTimeoutError,
-  ExtractionModelOverloadError,
+  ErrorCode,
   ExtractionInvalidResponseError,
   ExtractionJSONParseError,
-  ExtractionTimeoutError,
+  ExtractionModelOverloadError,
   ExtractionSchemaValidationError,
+  ExtractionTimeoutError,
+  GraphConceptExtractionFailedError,
+  GraphCycleDetectedError,
+  GraphInvalidInputError,
+  GraphRelationshipDetectionFailedError,
+  GraphStorageError,
+  // Helper functions
+  getErrorCategory,
+  isEmbeddingError,
+  isEpic3Error,
+  isExtractionError,
+  isGraphBuildError,
+  // Type guards
+  isRetriableError,
+  isSearchError,
   SearchDatabaseError,
-  SearchQueryTimeoutError,
   SearchEmbeddingFailedError,
   SearchInvalidQueryError,
   SearchNoResultsError,
-  GraphConceptExtractionFailedError,
-  GraphRelationshipDetectionFailedError,
-  GraphStorageError,
-  GraphInvalidInputError,
-  GraphCycleDetectedError,
-  // Type guards
-  isRetriableError,
-  isEmbeddingError,
-  isExtractionError,
-  isSearchError,
-  isGraphBuildError,
-  isEpic3Error,
-  // Helper functions
-  getErrorCategory,
-  calculateRetryDelay,
+  SearchQueryTimeoutError,
   serializeErrorForLogging,
   wrapUnknownError,
-  ErrorCode,
 } from '../errors'
 
 describe('EmbeddingErrors', () => {
@@ -321,10 +321,7 @@ describe('Type Guards', () => {
   })
 
   it('should identify extraction errors', () => {
-    const extractionError = new ExtractionJSONParseError(
-      new SyntaxError('Invalid JSON'),
-      '{}'
-    )
+    const extractionError = new ExtractionJSONParseError(new SyntaxError('Invalid JSON'), '{}')
     const graphError = new GraphStorageError(new Error('Storage failed'))
 
     expect(isExtractionError(extractionError)).toBe(true)
@@ -361,7 +358,7 @@ describe('Helper Functions', () => {
     it('should categorize errors correctly', () => {
       expect(getErrorCategory(new EmbeddingRateLimitError(60, 'minute'))).toBe('embedding')
       expect(getErrorCategory(new ExtractionJSONParseError(new SyntaxError(), ''))).toBe(
-        'extraction'
+        'extraction',
       )
       expect(getErrorCategory(new SearchDatabaseError(new Error('')))).toBe('search')
       expect(getErrorCategory(new GraphStorageError(new Error('')))).toBe('graph')

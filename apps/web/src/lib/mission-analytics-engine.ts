@@ -7,8 +7,8 @@
  * Story 2.6: Mission Performance Analytics and Adaptation
  */
 
-import { prisma } from '@/lib/db'
 import { MissionStatus, AnalyticsPeriod as PrismaAnalyticsPeriod } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
 
 // Constants for analytics calculations
 const OPTIMAL_COMPLETION_RATE_MIN = 0.7 // 70% minimum
@@ -782,8 +782,8 @@ export class MissionAnalyticsEngine {
 
     // Degrees of freedom (Welch-Satterthwaite equation)
     const df =
-      Math.pow(variance1 / n1 + variance2 / n2, 2) /
-      (Math.pow(variance1 / n1, 2) / (n1 - 1) + Math.pow(variance2 / n2, 2) / (n2 - 1))
+      (variance1 / n1 + variance2 / n2) ** 2 /
+      ((variance1 / n1) ** 2 / (n1 - 1) + (variance2 / n2) ** 2 / (n2 - 1))
 
     // Simplified p-value approximation (two-tailed)
     // For more accurate results, use a statistical library
@@ -812,7 +812,7 @@ export class MissionAnalyticsEngine {
   private calculateVariance(values: number[], mean: number): number {
     if (values.length === 0) return 0
 
-    const squaredDiffs = values.map((v) => Math.pow(v - mean, 2))
+    const squaredDiffs = values.map((v) => (v - mean) ** 2)
     return squaredDiffs.reduce((sum, v) => sum + v, 0) / values.length
   }
 }

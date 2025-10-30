@@ -7,11 +7,11 @@
  * Story 5.1: Learning Pattern Recognition and Analysis - Task 8.2
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
+import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
+import { CACHE_TTL, withCache } from '@/lib/cache'
 import { prisma } from '@/lib/db'
-import { successResponse, errorResponse, withErrorHandler } from '@/lib/api-response'
-import { withCache, CACHE_TTL } from '@/lib/cache'
 import { ensureRedisInitialized } from '@/lib/init-redis'
 
 // Ensure Redis initialization attempt (safe - will fallback to in-memory if fails)
@@ -19,7 +19,10 @@ let redisInitPromise: Promise<void> | null = null
 function ensureRedis() {
   if (!redisInitPromise) {
     redisInitPromise = ensureRedisInitialized().catch((err) => {
-      console.warn('[Patterns API] Redis initialization failed, using in-memory cache:', err.message)
+      console.warn(
+        '[Patterns API] Redis initialization failed, using in-memory cache:',
+        err.message,
+      )
     })
   }
   return redisInitPromise

@@ -1,14 +1,14 @@
 import {
-  generateScenarioSchema,
-  submitScenarioSchema,
-  scenarioMetricsQuerySchema,
-  competencyScoresSchema,
-  caseTextSchema,
-  type GenerateScenarioInput,
-  type SubmitScenarioInput,
-  type ScenarioMetricsQuery,
   type CaseText,
   type CompetencyScores,
+  caseTextSchema,
+  competencyScoresSchema,
+  type GenerateScenarioInput,
+  generateScenarioSchema,
+  type ScenarioMetricsQuery,
+  type SubmitScenarioInput,
+  scenarioMetricsQuerySchema,
+  submitScenarioSchema,
 } from '@/lib/validation'
 
 describe('Clinical Scenario Validation Schemas', () => {
@@ -81,7 +81,8 @@ describe('Clinical Scenario Validation Schemas', () => {
         managementPlan: 'Administer aspirin and nitroglycerin',
         additionalInfo: ['CBC', 'CMP'],
       },
-      userReasoning: 'The patient presents with classic signs of acute coronary syndrome requiring immediate intervention.',
+      userReasoning:
+        'The patient presents with classic signs of acute coronary syndrome requiring immediate intervention.',
     }
 
     it('should validate correct submit scenario input', () => {

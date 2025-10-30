@@ -12,11 +12,11 @@
 
 'use client'
 
-import { format, addDays, isAfter, isBefore, isWithinInterval } from 'date-fns'
-import { AlertTriangle, Calendar, BookOpen, FileCheck2 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { addDays, format, isAfter, isBefore, isWithinInterval } from 'date-fns'
+import { AlertTriangle, BookOpen, Calendar, FileCheck2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { typography, colors } from '@/lib/design-tokens'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { colors, typography } from '@/lib/design-tokens'
 
 interface TimelineEvent {
   id: string
@@ -247,7 +247,9 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
               <div className="flex items-center gap-2 transition-all duration-200 hover:scale-105">
                 <div
                   className="p-1.5 rounded"
-                  style={{ backgroundColor: `color-mix(in oklch, ${colors.alert}, transparent 85%)` }}
+                  style={{
+                    backgroundColor: `color-mix(in oklch, ${colors.alert}, transparent 85%)`,
+                  }}
                 >
                   <AlertTriangle className="size-4" style={{ color: colors.alert }} />
                 </div>
@@ -258,7 +260,9 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
               <div className="flex items-center gap-2 transition-all duration-200 hover:scale-105">
                 <div
                   className="p-1.5 rounded"
-                  style={{ backgroundColor: `color-mix(in oklch, ${colors.clinical}, transparent 85%)` }}
+                  style={{
+                    backgroundColor: `color-mix(in oklch, ${colors.clinical}, transparent 85%)`,
+                  }}
                 >
                   <BookOpen className="size-4" style={{ color: colors.clinical }} />
                 </div>
@@ -269,17 +273,23 @@ export function StruggleRiskTimeline({ predictions = [], daysAhead = 7 }: Props)
               <div className="flex items-center gap-2 transition-all duration-200 hover:scale-105">
                 <div
                   className="p-1.5 rounded"
-                  style={{ backgroundColor: `color-mix(in oklch, ${colors.energy}, transparent 85%)` }}
+                  style={{
+                    backgroundColor: `color-mix(in oklch, ${colors.energy}, transparent 85%)`,
+                  }}
                 >
                   <FileCheck2 className="size-4" style={{ color: colors.energy }} />
                 </div>
-                <span className={`${typography.body.tiny} text-muted-foreground`}>Upcoming Exam</span>
+                <span className={`${typography.body.tiny} text-muted-foreground`}>
+                  Upcoming Exam
+                </span>
               </div>
             </div>
 
             {/* Mobile Event List (visible on small screens) */}
             <div className="sm:hidden space-y-2 pt-4 border-t border-border">
-              <p className={`${typography.body.tiny} font-semibold text-muted-foreground uppercase tracking-wide`}>
+              <p
+                className={`${typography.body.tiny} font-semibold text-muted-foreground uppercase tracking-wide`}
+              >
                 Event Details
               </p>
               {events.map((event) => {

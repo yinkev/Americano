@@ -1,11 +1,11 @@
 // GET /api/personalization/effectiveness
 // Returns effectiveness metrics for personalization over time period
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse } from '@/lib/api-response'
+import type { NextRequest } from 'next/server'
 import { ApiError, withErrorHandler } from '@/lib/api-error'
-import { withCache, CACHE_TTL } from '@/lib/cache'
+import { successResponse } from '@/lib/api-response'
+import { CACHE_TTL, withCache } from '@/lib/cache'
+import { prisma } from '@/lib/db'
 
 /**
  * GET /api/personalization/effectiveness

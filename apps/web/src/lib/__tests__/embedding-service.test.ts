@@ -11,9 +11,9 @@
  * - Performance tracking
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
-import { EmbeddingService, type EmbeddingResult } from '../embedding-service'
-import { GeminiClient } from '../ai/gemini-client'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
+import type { GeminiClient } from '../ai/gemini-client'
+import { type EmbeddingResult, EmbeddingService } from '../embedding-service'
 
 // Mock GeminiClient
 jest.mock('../ai/gemini-client')
@@ -28,13 +28,13 @@ describe('EmbeddingService', () => {
     jest.clearAllMocks()
 
     // Setup mock responses
-    const mockEmbedding = Array(1536).fill(0).map(() => Math.random())
-    generateEmbeddingMock = (
-      jest.fn(async (text: string) => ({
-        embedding: mockEmbedding,
-        error: undefined,
-      })) as unknown as jest.MockedFunction<GeminiClient['generateEmbedding']>
-    )
+    const mockEmbedding = Array(1536)
+      .fill(0)
+      .map(() => Math.random())
+    generateEmbeddingMock = jest.fn(async (text: string) => ({
+      embedding: mockEmbedding,
+      error: undefined,
+    })) as unknown as jest.MockedFunction<GeminiClient['generateEmbedding']>
 
     mockGeminiClient = {
       generateEmbedding: generateEmbeddingMock,
@@ -128,7 +128,9 @@ describe('EmbeddingService', () => {
 
     it('should process in batches according to batch size', async () => {
       // Create 6 texts (should process in 2 batches of 5, 1)
-      const texts = Array(6).fill('Medical text').map((_, i) => `${_} ${i}`)
+      const texts = Array(6)
+        .fill('Medical text')
+        .map((_, i) => `${_} ${i}`)
 
       // Process batches
       const result = await service.generateBatchEmbeddings(texts)
@@ -229,11 +231,7 @@ describe('EmbeddingService', () => {
     it('should provide accurate rate limit status', () => {
       // Set specific timestamps
       const now = Date.now()
-      ;(service as any).requestTimestamps = [
-        now - 50000,
-        now - 40000,
-        now - 30000,
-      ]
+      ;(service as any).requestTimestamps = [now - 50000, now - 40000, now - 30000]
 
       const status = service.getRateLimitStatus()
 
@@ -289,9 +287,7 @@ describe('EmbeddingService', () => {
 
   describe('Error Handling', () => {
     it('should handle network errors from GeminiClient', async () => {
-      generateEmbeddingMock.mockRejectedValue(
-        new Error('Network timeout')
-      )
+      generateEmbeddingMock.mockRejectedValue(new Error('Network timeout'))
 
       const result = await service.generateEmbedding('test')
 
@@ -366,7 +362,9 @@ describe('EmbeddingService', () => {
     })
 
     it('should handle GeminiClient embedding result format', async () => {
-      const mockEmbedding = Array(1536).fill(0).map((_, i) => i / 1536)
+      const mockEmbedding = Array(1536)
+        .fill(0)
+        .map((_, i) => i / 1536)
       generateEmbeddingMock.mockResolvedValue({
         embedding: mockEmbedding,
         error: undefined,
@@ -392,7 +390,7 @@ describe('EmbeddingService', () => {
 
       const results = await Promise.all(promises)
 
-      results.forEach(result => {
+      results.forEach((result) => {
         expect(result.error).toBeUndefined()
         expect(result.embedding).toHaveLength(1536)
       })

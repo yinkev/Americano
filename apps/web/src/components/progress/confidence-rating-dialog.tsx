@@ -7,8 +7,8 @@
 
 'use client'
 
-import { useState } from 'react'
 import { X } from 'lucide-react'
+import { useState } from 'react'
 
 interface Props {
   objectiveId: string
@@ -84,9 +84,7 @@ export function ConfidenceRatingDialog({
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="text-[20px] font-heading font-semibold">
-                How confident are you?
-              </h3>
+              <h3 className="text-[20px] font-heading font-semibold">How confident are you?</h3>
               <p className="text-[13px] text-muted-foreground mt-1">
                 Rate your understanding of this learning objective
               </p>
@@ -121,13 +119,9 @@ export function ConfidenceRatingDialog({
                   <span className="text-2xl">{level.emoji}</span>
                   <div className="flex-1">
                     <div className="font-medium text-[15px]">{level.label}</div>
-                    <div className="text-[11px] opacity-80">
-                      {level.description}
-                    </div>
+                    <div className="text-[11px] opacity-80">{level.description}</div>
                   </div>
-                  <div className="text-lg font-bold">
-                    {level.value}/5
-                  </div>
+                  <div className="text-lg font-bold">{level.value}/5</div>
                 </div>
               </button>
             ))}
@@ -135,7 +129,9 @@ export function ConfidenceRatingDialog({
 
           {/* Optional Notes */}
           <div className="mb-6">
-            <label className="block text-[11px] font-medium text-foreground mb-2 uppercase tracking-wide">Notes (Optional)</label>
+            <label className="block text-[11px] font-medium text-foreground mb-2 uppercase tracking-wide">
+              Notes (Optional)
+            </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

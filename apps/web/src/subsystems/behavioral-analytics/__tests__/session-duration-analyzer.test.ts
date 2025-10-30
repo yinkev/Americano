@@ -6,9 +6,9 @@
  * Target: 60%+ coverage
  */
 
-import { SessionDurationAnalyzer } from '../session-duration-analyzer'
-import { prisma } from '@/lib/db'
 import { ObjectiveComplexity } from '@/generated/prisma'
+import { prisma } from '@/lib/db'
+import { SessionDurationAnalyzer } from '../session-duration-analyzer'
 
 jest.mock('@/lib/db')
 

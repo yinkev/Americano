@@ -11,7 +11,7 @@
 
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 type PredictionStatus = 'PENDING' | 'STUDIED' | 'FEEDBACK_RECORDED'
 

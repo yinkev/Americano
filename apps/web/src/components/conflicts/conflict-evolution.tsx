@@ -1,21 +1,21 @@
 'use client'
 
+import {
+  AlertTriangle,
+  Calendar,
+  FileText,
+  Loader2,
+  Minus,
+  RefreshCw,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react'
 import * as React from 'react'
-import { Card } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import {
-  RefreshCw,
-  AlertTriangle,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  FileText,
-  Calendar,
-  Loader2,
-} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface StatementChange {
@@ -121,7 +121,7 @@ export function ConflictEvolution({
 
     const recentChanges = changes.slice(-3)
     const hasSignificantChanges = recentChanges.some(
-      (change) => change.diff.added.length > 0 || change.diff.removed.length > 0
+      (change) => change.diff.added.length > 0 || change.diff.removed.length > 0,
     )
 
     return hasSignificantChanges ? 'evolving' : 'stable'
@@ -208,9 +208,7 @@ export function ConflictEvolution({
               No changes recorded yet
             </div>
           ) : (
-            changes.map((change, index) => (
-              <ChangeItem key={index} change={change} />
-            ))
+            changes.map((change, index) => <ChangeItem key={index} change={change} />)
           )}
         </div>
       </Card>
@@ -325,10 +323,7 @@ function ChangeItem({ change }: { change: StatementChange }) {
               <div className="space-y-2">
                 <p className="text-xs font-medium text-red-700">Removed:</p>
                 {change.diff.removed.map((text, idx) => (
-                  <div
-                    key={idx}
-                    className="rounded-md bg-red-50 border border-red-200 p-2 text-sm"
-                  >
+                  <div key={idx} className="rounded-md bg-red-50 border border-red-200 p-2 text-sm">
                     <span className="line-through text-red-700">{text}</span>
                   </div>
                 ))}

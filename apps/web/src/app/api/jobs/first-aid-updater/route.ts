@@ -9,7 +9,7 @@
  * - PATCH: Update job configuration (admin only)
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { getFirstAidUpdater, runFirstAidUpdateCheck } from '@/jobs/first-aid-updater'
 
 /**
@@ -30,7 +30,7 @@ export async function GET() {
           lastExecution,
         },
       },
-      { status: 200 }
+      { status: 200 },
     )
   } catch (error) {
     return NextResponse.json(
@@ -38,7 +38,7 @@ export async function GET() {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to get job status',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         success: result.success,
         data: result,
       },
-      { status: 200 }
+      { status: 200 },
     )
   } catch (error) {
     return NextResponse.json(
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to run update check',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -112,7 +112,7 @@ export async function PATCH(request: NextRequest) {
           config: updater.getStatus(),
         },
       },
-      { status: 200 }
+      { status: 200 },
     )
   } catch (error) {
     return NextResponse.json(
@@ -120,7 +120,7 @@ export async function PATCH(request: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to update job configuration',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

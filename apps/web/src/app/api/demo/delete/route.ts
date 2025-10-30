@@ -1,7 +1,7 @@
 // /api/demo/delete route
 // DELETE endpoint to remove Dumpling demo user and all associated data
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db'
 
 export async function DELETE(request: NextRequest) {

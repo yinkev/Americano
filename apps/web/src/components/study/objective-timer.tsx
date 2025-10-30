@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Clock, AlertCircle } from 'lucide-react'
+import { AlertCircle, Clock } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 // Timer configuration constants
 const ALERT_THRESHOLD_80 = 80

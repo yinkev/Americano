@@ -65,9 +65,9 @@
  *         description: Server error
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { successResponse, errorResponse, ErrorCodes } from '@/lib/api-response'
+import { ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 import { conflictDetector } from '@/subsystems/knowledge-graph/conflict-detector'
 
@@ -98,7 +98,7 @@ const FlagRequestSchema = z
     },
     {
       message: 'Must provide a valid pair of sources to flag',
-    }
+    },
   )
 
 // ============================================
@@ -119,9 +119,9 @@ export async function POST(request: NextRequest) {
         errorResponse(
           ErrorCodes.VALIDATION_ERROR,
           'Invalid request body',
-          validatedBody.error.issues
+          validatedBody.error.issues,
         ),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -148,16 +148,12 @@ export async function POST(request: NextRequest) {
 
     if (recentFlagsCount >= 10) {
       return NextResponse.json(
-        errorResponse(
-          ErrorCodes.CONFLICT,
-          'Rate limit exceeded. Maximum 10 flags per hour.',
-          {
-            limit: 10,
-            period: '1 hour',
-            current: recentFlagsCount,
-          }
-        ),
-        { status: 429 }
+        errorResponse(ErrorCodes.CONFLICT, 'Rate limit exceeded. Maximum 10 flags per hour.', {
+          limit: 10,
+          period: '1 hour',
+          current: recentFlagsCount,
+        }),
+        { status: 429 },
       )
     }
 
@@ -169,7 +165,7 @@ export async function POST(request: NextRequest) {
       if (!chunkExists) {
         return NextResponse.json(
           errorResponse(ErrorCodes.NOT_FOUND, `Source A chunk ${sourceAChunkId} not found`),
-          { status: 404 }
+          { status: 404 },
         )
       }
     }
@@ -181,7 +177,7 @@ export async function POST(request: NextRequest) {
       if (!chunkExists) {
         return NextResponse.json(
           errorResponse(ErrorCodes.NOT_FOUND, `Source B chunk ${sourceBChunkId} not found`),
-          { status: 404 }
+          { status: 404 },
         )
       }
     }
@@ -192,8 +188,11 @@ export async function POST(request: NextRequest) {
       })
       if (!faExists) {
         return NextResponse.json(
-          errorResponse(ErrorCodes.NOT_FOUND, `Source A First Aid section ${sourceAFirstAidId} not found`),
-          { status: 404 }
+          errorResponse(
+            ErrorCodes.NOT_FOUND,
+            `Source A First Aid section ${sourceAFirstAidId} not found`,
+          ),
+          { status: 404 },
         )
       }
     }
@@ -204,8 +203,11 @@ export async function POST(request: NextRequest) {
       })
       if (!faExists) {
         return NextResponse.json(
-          errorResponse(ErrorCodes.NOT_FOUND, `Source B First Aid section ${sourceBFirstAidId} not found`),
-          { status: 404 }
+          errorResponse(
+            ErrorCodes.NOT_FOUND,
+            `Source B First Aid section ${sourceBFirstAidId} not found`,
+          ),
+          { status: 404 },
         )
       }
     }
@@ -227,9 +229,9 @@ export async function POST(request: NextRequest) {
         errorResponse(
           ErrorCodes.CONFLICT,
           'You have already flagged this conflict. It is pending review.',
-          { existingFlagId: duplicateFlag.id }
+          { existingFlagId: duplicateFlag.id },
         ),
-        { status: 409 }
+        { status: 409 },
       )
     }
 
@@ -324,14 +326,13 @@ export async function POST(request: NextRequest) {
         message: conflictId
           ? 'Conflict flagged and created for review'
           : 'Conflict flagged for community review',
-      })
+      }),
     )
   } catch (error) {
     console.error('[POST /api/conflicts/flag] Error:', error)
 
-    return NextResponse.json(
-      errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to flag conflict'),
-      { status: 500 }
-    )
+    return NextResponse.json(errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to flag conflict'), {
+      status: 500,
+    })
   }
 }

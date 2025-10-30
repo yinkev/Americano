@@ -12,7 +12,7 @@ Object.assign(global, {
 
 // Mock fetch if not available
 if (typeof (global as any).fetch === 'undefined') {
-  (global as any).fetch = jest.fn(() =>
+  ;(global as any).fetch = jest.fn(() =>
     Promise.resolve({
       ok: true,
       status: 200,
@@ -25,7 +25,7 @@ if (typeof (global as any).fetch === 'undefined') {
 
 // Mock crypto for next/server
 if (typeof (global as any).crypto === 'undefined') {
-  (global as any).crypto = {
+  ;(global as any).crypto = {
     getRandomValues: (arr: Uint8Array) => {
       for (let i = 0; i < arr.length; i++) {
         arr[i] = Math.floor(Math.random() * 256)
@@ -56,7 +56,7 @@ jest.mock('next/navigation', () => ({
   },
 }))
 
- // Note: '@/lib/db' is NOT globally mocked; use per-test mocks to avoid hoisting/order issues.
+// Note: '@/lib/db' is NOT globally mocked; use per-test mocks to avoid hoisting/order issues.
 jest.mock('@/lib/performance-calculator', () => ({
   PerformanceCalculator: {
     calculateRetentionScore: jest.fn(),
@@ -172,62 +172,62 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   takeRecords: jest.fn(),
 }))
 
- // Ensure '@/lib/db' is mocked before modules under test import it
- // Provides a constructable prisma-like shape with jest.fn methods that tests can control
- jest.mock('@/lib/db', () => {
-   const studySession = {
-     findMany: jest.fn(),
-     update: jest.fn(),
-     create: jest.fn(),
-     count: jest.fn(),
-   }
-   const review = {
-     findMany: jest.fn(),
-     findFirst: jest.fn(),
-     create: jest.fn(),
-     count: jest.fn(),
-   }
-   const behavioralGoal = {
-     create: jest.fn(),
-     findMany: jest.fn(),
-     findUnique: jest.fn(),
-     update: jest.fn(),
-     count: jest.fn(),
-   }
-   const userLearningProfile = {
-     findUnique: jest.fn(),
-     update: jest.fn(),
-   }
-   const insightNotification = {
-     create: jest.fn(),
-   }
-   const achievement = {
-     create: jest.fn(),
-   }
-   const behavioralPattern = {
-     findMany: jest.fn(),
-     create: jest.fn(),
-   }
+// Ensure '@/lib/db' is mocked before modules under test import it
+// Provides a constructable prisma-like shape with jest.fn methods that tests can control
+jest.mock('@/lib/db', () => {
+  const studySession = {
+    findMany: jest.fn(),
+    update: jest.fn(),
+    create: jest.fn(),
+    count: jest.fn(),
+  }
+  const review = {
+    findMany: jest.fn(),
+    findFirst: jest.fn(),
+    create: jest.fn(),
+    count: jest.fn(),
+  }
+  const behavioralGoal = {
+    create: jest.fn(),
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    count: jest.fn(),
+  }
+  const userLearningProfile = {
+    findUnique: jest.fn(),
+    update: jest.fn(),
+  }
+  const insightNotification = {
+    create: jest.fn(),
+  }
+  const achievement = {
+    create: jest.fn(),
+  }
+  const behavioralPattern = {
+    findMany: jest.fn(),
+    create: jest.fn(),
+  }
 
-   return {
-     prisma: {
-       studySession,
-       review,
-       behavioralGoal,
-       userLearningProfile,
-       insightNotification,
-       achievement,
-       behavioralPattern,
-     },
-   }
- })
+  return {
+    prisma: {
+      studySession,
+      review,
+      behavioralGoal,
+      userLearningProfile,
+      insightNotification,
+      achievement,
+      behavioralPattern,
+    },
+  }
+})
 
- // Setup will be imported by individual test files to avoid ESM issues
- // DO NOT import MSW setup here - it causes Jest/ESM conflicts
+// Setup will be imported by individual test files to avoid ESM issues
+// DO NOT import MSW setup here - it causes Jest/ESM conflicts
 
- // Suppress console errors in tests (optional)
- global.console = {
-   ...console,
-   error: jest.fn(),
-   warn: jest.fn(),
- }
+// Suppress console errors in tests (optional)
+global.console = {
+  ...console,
+  error: jest.fn(),
+  warn: jest.fn(),
+}

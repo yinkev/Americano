@@ -1,10 +1,10 @@
 // /api/analytics/export route
 // GET: Export all behavioral data as JSON (Story 5.1 Task 11)
 
-import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/db'
-import { successResponse } from '@/lib/api-response'
+import type { NextRequest } from 'next/server'
 import { ApiError, withErrorHandler } from '@/lib/api-error'
+import { successResponse } from '@/lib/api-response'
+import { prisma } from '@/lib/db'
 
 /**
  * GET /api/analytics/export

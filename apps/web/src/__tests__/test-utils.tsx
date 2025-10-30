@@ -1,5 +1,6 @@
-import React, { ReactElement } from 'react'
-import { render, RenderOptions } from '@testing-library/react'
+import { type RenderOptions, render } from '@testing-library/react'
+import type React from 'react'
+import type { ReactElement } from 'react'
 
 /**
  * Custom render function that wraps components with common providers

@@ -12,7 +12,7 @@
  * - Performance requirements
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach, jest } from '@jest/globals'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { NextRequest } from 'next/server'
 
 // Mock dependencies
@@ -20,9 +20,9 @@ jest.mock('@/lib/db')
 jest.mock('@/subsystems/knowledge-graph/semantic-search')
 jest.mock('@/lib/rate-limiter')
 
-import { POST } from '../route'
 import { prisma } from '@/lib/db'
 import { semanticSearchEngine } from '@/subsystems/knowledge-graph/semantic-search'
+import { POST } from '../route'
 
 describe('POST /api/search - Integration Tests', () => {
   const mockPrisma = prisma as jest.Mocked<typeof prisma>
@@ -163,7 +163,7 @@ describe('POST /api/search - Integration Tests', () => {
             highYieldOnly: true,
             minSimilarity: 0.7,
           }),
-        })
+        }),
       )
     })
 
@@ -343,7 +343,7 @@ describe('POST /api/search - Integration Tests', () => {
       await POST(request)
 
       // Wait for async logging
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise((resolve) => setTimeout(resolve, 100))
 
       expect(mockPrisma.searchQuery.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -368,7 +368,7 @@ describe('POST /api/search - Integration Tests', () => {
       })
 
       await POST(request)
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise((resolve) => setTimeout(resolve, 100))
 
       expect(mockPrisma.searchQuery.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -378,9 +378,7 @@ describe('POST /api/search - Integration Tests', () => {
     })
 
     it('should not fail search if logging fails', async () => {
-      mockPrisma.searchQuery.create.mockRejectedValue(
-        new Error('Database error')
-      )
+      mockPrisma.searchQuery.create.mockRejectedValue(new Error('Database error'))
 
       const request = new NextRequest('http://localhost:3000/api/search', {
         method: 'POST',
@@ -402,9 +400,7 @@ describe('POST /api/search - Integration Tests', () => {
 
   describe('Error Handling', () => {
     it('should return 500 when search engine fails', async () => {
-      mockSearchEngine.search.mockRejectedValue(
-        new Error('Vector search failed')
-      )
+      mockSearchEngine.search.mockRejectedValue(new Error('Vector search failed'))
 
       const request = new NextRequest('http://localhost:3000/api/search', {
         method: 'POST',
@@ -426,9 +422,7 @@ describe('POST /api/search - Integration Tests', () => {
     })
 
     it('should handle database connection errors', async () => {
-      mockPrisma.user.findUnique.mockRejectedValue(
-        new Error('Connection timeout')
-      )
+      mockPrisma.user.findUnique.mockRejectedValue(new Error('Connection timeout'))
 
       const request = new NextRequest('http://localhost:3000/api/search', {
         method: 'POST',

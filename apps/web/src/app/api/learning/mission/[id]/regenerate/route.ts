@@ -4,13 +4,13 @@
  * Story 2.4: Daily Mission Generation and Display (Task 3.5)
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { Prisma } from '@/generated/prisma'
+import type { Prisma } from '@/generated/prisma'
+import { withErrorHandler } from '@/lib/api-error'
+import { errorResponse, successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 import { MissionGenerator } from '@/lib/mission-generator'
-import { successResponse, errorResponse } from '@/lib/api-response'
-import { withErrorHandler } from '@/lib/api-error'
 
 const regenerateSchema = z.object({
   targetMinutes: z.number().int().min(15).max(120).optional(),

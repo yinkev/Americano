@@ -1,11 +1,11 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { Search, X, Loader2, Mic, MicOff } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { useSpeechRecognition } from "@/hooks/use-speech-recognition"
+import { Loader2, Mic, MicOff, Search, X } from 'lucide-react'
+import * as React from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useSpeechRecognition } from '@/hooks/use-speech-recognition'
+import { cn } from '@/lib/utils'
 
 interface SearchBarMobileProps {
   value: string
@@ -33,7 +33,7 @@ export function SearchBarMobile({
   onChange,
   onSearch,
   isLoading = false,
-  placeholder = "Search lectures, concepts...",
+  placeholder = 'Search lectures, concepts...',
   className,
   autoFocus = false,
   enableVoiceSearch = true,
@@ -95,10 +95,7 @@ export function SearchBarMobile({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={cn("relative w-full", className)}
-    >
+    <form onSubmit={handleSubmit} className={cn('relative w-full', className)}>
       <div className="relative flex items-center">
         {/* Search Icon */}
         <div className="absolute left-4 flex items-center pointer-events-none">
@@ -117,17 +114,17 @@ export function SearchBarMobile({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           aria-label="Search medical content"
-          aria-describedby={isListening ? "voice-search-active" : undefined}
+          aria-describedby={isListening ? 'voice-search-active' : undefined}
           className={cn(
             // Mobile-first sizing: min 44px height for touch targets
-            "h-14 pl-12 pr-24 rounded-2xl text-base",
-            "bg-white/90 backdrop-blur-md border-2 border-white/60",
-            "focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/50",
-            "placeholder:text-muted-foreground/70",
+            'h-14 pl-12 pr-24 rounded-2xl text-base',
+            'bg-white/90 backdrop-blur-md border-2 border-white/60',
+            'focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/50',
+            'placeholder:text-muted-foreground/70',
             // Prevent zoom on focus (iOS)
-            "text-[16px] md:text-base",
+            'text-[16px] md:text-base',
             // Voice search active state
-            isListening && "ring-2 ring-primary/50 border-primary/70 animate-pulse"
+            isListening && 'ring-2 ring-primary/50 border-primary/70 animate-pulse',
           )}
         />
 
@@ -140,21 +137,17 @@ export function SearchBarMobile({
               variant="ghost"
               size="icon"
               onClick={handleVoiceToggle}
-              aria-label={isListening ? "Stop voice search" : "Start voice search"}
+              aria-label={isListening ? 'Stop voice search' : 'Start voice search'}
               aria-pressed={isListening}
               className={cn(
                 // Min 44px touch target
-                "h-11 w-11 rounded-xl transition-colors",
+                'h-11 w-11 rounded-xl transition-colors',
                 isListening
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "hover:bg-white/80"
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : 'hover:bg-white/80',
               )}
             >
-              {isListening ? (
-                <MicOff className="size-5" />
-              ) : (
-                <Mic className="size-5" />
-              )}
+              {isListening ? <MicOff className="size-5" /> : <Mic className="size-5" />}
             </Button>
           )}
 

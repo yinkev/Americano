@@ -1,7 +1,7 @@
 'use client'
 
+import { CheckCircle2, Circle, Target } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Target, CheckCircle2, Circle } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 
 interface MissionObjective {

@@ -11,9 +11,9 @@
  * Epic 3 - Story 3.1 - Task 2.2
  */
 
+import type { ProcessingStatus } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
 import { embeddingService } from '@/lib/embedding-service'
-import type { ProcessingStatus } from '@/generated/prisma'
 
 /**
  * Configuration for batch embedding job
@@ -113,9 +113,7 @@ export class EmbeddingBatchJob {
 
     // Find lectures with chunks that don't have embeddings
     const lectures = await this.findLecturesWithMissingEmbeddings()
-    console.log(
-      `[EmbeddingBatchJob] Found ${lectures.length} lectures with missing embeddings`
-    )
+    console.log(`[EmbeddingBatchJob] Found ${lectures.length} lectures with missing embeddings`)
 
     if (lectures.length === 0) {
       return {
@@ -130,19 +128,15 @@ export class EmbeddingBatchJob {
 
     // Process lectures in batches (parallel processing)
     const results: LectureEmbeddingResult[] = []
-    for (
-      let i = 0;
-      i < lectures.length;
-      i += this.config.maxParallelLectures
-    ) {
+    for (let i = 0; i < lectures.length; i += this.config.maxParallelLectures) {
       const batch = lectures.slice(i, i + this.config.maxParallelLectures)
       console.log(
-        `[EmbeddingBatchJob] Processing batch ${Math.floor(i / this.config.maxParallelLectures) + 1}/${Math.ceil(lectures.length / this.config.maxParallelLectures)} (${batch.length} lectures)`
+        `[EmbeddingBatchJob] Processing batch ${Math.floor(i / this.config.maxParallelLectures) + 1}/${Math.ceil(lectures.length / this.config.maxParallelLectures)} (${batch.length} lectures)`,
       )
 
       // Process batch in parallel
       const batchResults = await Promise.all(
-        batch.map((lecture) => this.processLectureEmbeddings(lecture.id))
+        batch.map((lecture) => this.processLectureEmbeddings(lecture.id)),
       )
 
       results.push(...batchResults)
@@ -151,14 +145,11 @@ export class EmbeddingBatchJob {
     // Calculate statistics
     const successCount = results.filter((r) => r.success).length
     const failureCount = results.filter((r) => !r.success).length
-    const embeddingsGenerated = results.reduce(
-      (sum, r) => sum + r.embeddingsGenerated,
-      0
-    )
+    const embeddingsGenerated = results.reduce((sum, r) => sum + r.embeddingsGenerated, 0)
 
     const totalTimeMs = Date.now() - startTime
     console.log(
-      `[EmbeddingBatchJob] Completed: ${successCount}/${lectures.length} lectures, ${embeddingsGenerated} embeddings, ${(totalTimeMs / 1000).toFixed(1)}s`
+      `[EmbeddingBatchJob] Completed: ${successCount}/${lectures.length} lectures, ${embeddingsGenerated} embeddings, ${(totalTimeMs / 1000).toFixed(1)}s`,
     )
 
     return {
@@ -178,9 +169,7 @@ export class EmbeddingBatchJob {
    * @param lectureId - ID of lecture to process
    * @returns Result of embedding generation
    */
-  async processLectureEmbeddings(
-    lectureId: string
-  ): Promise<LectureEmbeddingResult> {
+  async processLectureEmbeddings(lectureId: string): Promise<LectureEmbeddingResult> {
     const startTime = Date.now()
 
     try {
@@ -194,22 +183,16 @@ export class EmbeddingBatchJob {
         throw new Error(`Lecture not found: ${lectureId}`)
       }
 
-      console.log(
-        `[EmbeddingBatchJob] Processing lecture: ${lecture.title} (${lectureId})`
-      )
+      console.log(`[EmbeddingBatchJob] Processing lecture: ${lecture.title} (${lectureId})`)
 
       // Update status to EMBEDDING
       await this.updateLectureStatus(lectureId, 'EMBEDDING')
 
       // Find chunks without embeddings
-      const chunksWithoutEmbeddings = await this.findChunksWithoutEmbeddings(
-        lectureId
-      )
+      const chunksWithoutEmbeddings = await this.findChunksWithoutEmbeddings(lectureId)
 
       if (chunksWithoutEmbeddings.length === 0) {
-        console.log(
-          `[EmbeddingBatchJob] No missing embeddings for ${lecture.title}`
-        )
+        console.log(`[EmbeddingBatchJob] No missing embeddings for ${lecture.title}`)
         return {
           lectureId,
           title: lecture.title,
@@ -225,21 +208,12 @@ export class EmbeddingBatchJob {
       let embeddingsGenerated = 0
       let failedCount = 0
 
-      for (
-        let i = 0;
-        i < chunksWithoutEmbeddings.length;
-        i += this.config.embeddingBatchSize
-      ) {
-        const batchChunks = chunksWithoutEmbeddings.slice(
-          i,
-          i + this.config.embeddingBatchSize
-        )
+      for (let i = 0; i < chunksWithoutEmbeddings.length; i += this.config.embeddingBatchSize) {
+        const batchChunks = chunksWithoutEmbeddings.slice(i, i + this.config.embeddingBatchSize)
 
         // Generate embeddings for batch
         const texts = batchChunks.map((c) => c.content)
-        const batchResult = await embeddingService.generateBatchEmbeddings(
-          texts
-        )
+        const batchResult = await embeddingService.generateBatchEmbeddings(texts)
 
         // Update chunks with embeddings
         for (let j = 0; j < batchChunks.length; j++) {
@@ -252,7 +226,7 @@ export class EmbeddingBatchJob {
             failedCount++
             const errorMsg = batchResult.errors.get(j) || 'Unknown error'
             console.error(
-              `[EmbeddingBatchJob] Failed embedding for chunk ${batchChunks[j].id}: ${errorMsg}`
+              `[EmbeddingBatchJob] Failed embedding for chunk ${batchChunks[j].id}: ${errorMsg}`,
             )
           }
         }
@@ -268,7 +242,7 @@ export class EmbeddingBatchJob {
       })
 
       console.log(
-        `[EmbeddingBatchJob] Completed ${lecture.title}: ${embeddingsGenerated}/${chunksWithoutEmbeddings.length} embeddings`
+        `[EmbeddingBatchJob] Completed ${lecture.title}: ${embeddingsGenerated}/${chunksWithoutEmbeddings.length} embeddings`,
       )
 
       return {
@@ -281,12 +255,9 @@ export class EmbeddingBatchJob {
         processingTimeMs: Date.now() - startTime,
       }
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error'
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
 
-      console.error(
-        `[EmbeddingBatchJob] Error processing lecture ${lectureId}: ${errorMessage}`
-      )
+      console.error(`[EmbeddingBatchJob] Error processing lecture ${lectureId}: ${errorMessage}`)
 
       // Update status to EMBEDDING_FAILED
       await this.updateLectureStatus(lectureId, 'EMBEDDING_FAILED')
@@ -310,9 +281,7 @@ export class EmbeddingBatchJob {
    * @private
    * @returns Array of lectures with missing embeddings
    */
-  private async findLecturesWithMissingEmbeddings(): Promise<
-    Array<{ id: string; title: string }>
-  > {
+  private async findLecturesWithMissingEmbeddings(): Promise<Array<{ id: string; title: string }>> {
     // Use raw SQL to find lectures with chunks missing embeddings
     const lectures = await prisma.$queryRaw<
       Array<{ id: string; title: string; missingCount: number }>
@@ -335,9 +304,9 @@ export class EmbeddingBatchJob {
    * @param lectureId - ID of lecture
    * @returns Array of chunks without embeddings
    */
-  private async findChunksWithoutEmbeddings(lectureId: string): Promise<
-    Array<{ id: string; content: string }>
-  > {
+  private async findChunksWithoutEmbeddings(
+    lectureId: string,
+  ): Promise<Array<{ id: string; content: string }>> {
     return await prisma.contentChunk.findMany({
       where: {
         lectureId,
@@ -360,10 +329,7 @@ export class EmbeddingBatchJob {
    * @param chunkId - ID of chunk to update
    * @param embedding - Embedding vector (1536 dimensions)
    */
-  private async updateChunkEmbedding(
-    chunkId: string,
-    embedding: number[]
-  ): Promise<void> {
+  private async updateChunkEmbedding(chunkId: string, embedding: number[]): Promise<void> {
     const embeddingStr = JSON.stringify(embedding)
     await prisma.$executeRaw`
       UPDATE content_chunks
@@ -383,7 +349,7 @@ export class EmbeddingBatchJob {
   private async updateLectureStatus(
     lectureId: string,
     status: ProcessingStatus,
-    additionalData: Record<string, any> = {}
+    additionalData: Record<string, any> = {},
   ): Promise<void> {
     await prisma.lecture.update({
       where: { id: lectureId },
@@ -401,10 +367,7 @@ export class EmbeddingBatchJob {
    * @param lectureId - ID of lecture to update
    * @param progress - Progress value (0.0 to 1.0)
    */
-  private async updateLectureProgress(
-    lectureId: string,
-    progress: number
-  ): Promise<void> {
+  private async updateLectureProgress(lectureId: string, progress: number): Promise<void> {
     await prisma.lecture.update({
       where: { id: lectureId },
       data: {
