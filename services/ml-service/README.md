@@ -60,6 +60,9 @@ This will start:
 - Next.js on http://localhost:3000
 - FastAPI on http://localhost:8000
 
+Next.js automatically proxies API traffic to the ML service when the
+`ML_SERVICE_URL` environment variable is set (see below).
+
 #### Option 2: ML Service Only
 ```bash
 cd services/ml-service
@@ -71,6 +74,34 @@ uvicorn app.main:app --reload --port 8000
 ```bash
 npm run dev:ml-only
 ```
+
+### Running with Next.js (`next dev`)
+
+To exercise the mock endpoints from the web application, run the ML service
+and `next dev` side-by-side:
+
+1. **Terminal A – FastAPI**
+   ```bash
+   cd services/ml-service
+   source venv/bin/activate  # optional but recommended
+   uvicorn app.main:app --reload --port 8000
+   ```
+
+2. **Terminal B – Next.js**
+   ```bash
+   cd apps/web
+   ML_SERVICE_URL=http://localhost:8000 next dev
+   ```
+
+   Alternatively, create or update `apps/web/.env.local`:
+   ```bash
+   ML_SERVICE_URL=http://localhost:8000
+   ```
+   and simply run `next dev`.
+
+When `ML_SERVICE_URL` is defined, the Next.js API routes proxy requests to the
+FastAPI instance. Remove or change this variable to switch back to any future
+live endpoints.
 
 ## Service Endpoints
 
