@@ -1,4 +1,4 @@
-import rawContracts from '../../data/mock/analytics/contracts.json';
+import rawContracts from '../../../../data/mock/analytics/contracts.json';
 
 export const ANALYTICS_MOCK_KEYS = [
   'FailurePattern',
