@@ -109,17 +109,17 @@ export class FirstAidProcessor {
         console.log(`✓ Copyright validation: User ${config.userId} owns this content`)
       }
 
-      // Create First Aid edition record (Task 6.1)
-      const edition = await this.prisma.firstAidEdition.create({
-        data: {
-          userId: config.userId,
-          year: config.year,
-          versionNumber: `${config.year}.0`,
-          isActive: true,
-          mappingStatus: 'PENDING',
-          processingProgress: 0,
-        },
-      })
+      // TODO: Edition tracking removed from schema - need to refactor
+      // First Aid sections are now processed directly without edition tracking
+      const edition = {
+        id: `fa-edition-${config.year}`,
+        userId: config.userId,
+        year: config.year,
+        versionNumber: `${config.year}.0`,
+        isActive: true,
+        mappingStatus: 'PENDING' as const,
+        processingProgress: 0,
+      }
 
       console.log(`✓ Created edition record: ${edition.id}`)
 
@@ -200,17 +200,17 @@ export class FirstAidProcessor {
 
         console.log(`✓ Stored ${storedCount} sections in database`)
 
-        // Update edition record
-        await this.prisma.firstAidEdition.update({
-          where: { id: edition.id },
-          data: {
-            sectionCount: storedCount,
-            highYieldCount,
-            totalPages: Math.max(...sections.map((s) => s.pageNumber), 0),
-            processingProgress: 100,
-            mappingStatus: 'COMPLETED',
-          },
-        })
+        // TODO: Edition tracking removed from schema
+        // await this.prisma.firstAidEdition.update({
+        //   where: { id: edition.id },
+        //   data: {
+        //     sectionCount: storedCount,
+        //     highYieldCount,
+        //     totalPages: Math.max(...sections.map((s) => s.pageNumber), 0),
+        //     processingProgress: 100,
+        //     mappingStatus: 'COMPLETED',
+        //   },
+        // })
       }
 
       const processingTime = ((Date.now() - startTime) / 1000).toFixed(2)

@@ -1,6 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
+import type { HTMLMotionProps } from 'framer-motion'
 import { Calendar, Filter, X } from 'lucide-react'
 import * as React from 'react'
 import { Badge } from '@/components/ui/badge'
@@ -43,7 +44,7 @@ export interface QuickFilter {
 /**
  * Props for the FilterBar component
  */
-export interface FilterBarProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface FilterBarProps extends HTMLMotionProps<'div'> {
   /**
    * Time range options
    */

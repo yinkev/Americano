@@ -318,7 +318,7 @@ export default function ComprehensionAnalyticsPage() {
                   dataKey="date"
                   type="category"
                   allowDuplicatedCategory={false}
-                  tickFormatter={(value) =>
+                  tickFormatter={(value: any) =>
                     new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                   }
                 />
@@ -327,7 +327,7 @@ export default function ComprehensionAnalyticsPage() {
                   label={{ value: 'Score (%)', angle: -90, position: 'insideLeft' }}
                 />
                 <Tooltip
-                  labelFormatter={(value) => new Date(value).toLocaleDateString()}
+                  labelFormatter={(value: any) => new Date(value).toLocaleDateString()}
                   formatter={(value: number) => [`${Math.round(value)}%`, 'Score']}
                 />
                 <Legend />

@@ -87,7 +87,7 @@ export function SessionResumeDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(open) => !open && onCancel()}>
+    <Dialog open={open} onOpenChange={(open: any) => !open && onCancel()}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

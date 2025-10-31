@@ -5,9 +5,21 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
+type SliderProps = React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> & {
+  id?: string
+  className?: string
+  value?: number[]
+  onValueChange?: (value: number[]) => void
+  min?: number
+  max?: number
+  step?: number
+  disabled?: boolean
+  style?: React.CSSProperties
+}
+
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
+  SliderProps
 >(({ className, ...props }, ref) => (
   <SliderPrimitive.Root
     ref={ref}

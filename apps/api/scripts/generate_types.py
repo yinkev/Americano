@@ -141,7 +141,7 @@ def generate_json_schema(models: List[Type[BaseModel]]) -> dict:
 def json_schema_to_typescript(schema: dict, output_file: Path) -> None:
     """
     Convert JSON Schema to TypeScript using json-schema-to-typescript.
-    Generates each definition as a separate export interface.
+    Converts the entire schema at once to avoid duplicate exports.
 
     Args:
         schema: JSON Schema dictionary with definitions
@@ -149,63 +149,54 @@ def json_schema_to_typescript(schema: dict, output_file: Path) -> None:
     """
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
-    all_typescript = []
+    # Write entire schema to temporary file
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        json.dump(schema, f, indent=2)
+        schema_file = f.name
 
-    # Generate TypeScript for each definition individually
-    for def_name, def_schema in schema.get("definitions", {}).items():
-        # Create a standalone schema for this definition
-        standalone_schema = {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "title": def_name,
-            "definitions": schema["definitions"],  # Include all definitions for $ref resolution
-            **def_schema  # Merge in the specific model schema
-        }
+    try:
+        # Run json-schema-to-typescript on entire schema
+        # This converts all definitions at once, avoiding duplicates
+        # --unreachableDefinitions flag ensures all definitions are exported
+        cmd = f'npx json-schema-to-typescript {schema_file} --bannerComment "" --unreachableDefinitions'
+        result = subprocess.run(
+            cmd,
+            shell=True,
+            capture_output=True,
+            text=True,
+            cwd=str(api_root.parent / "web"),
+        )
 
-        # Write to temporary file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-            json.dump(standalone_schema, f, indent=2)
-            schema_file = f.name
+        if result.returncode != 0:
+            print(f"❌ Error generating TypeScript: {result.stderr}")
+            raise RuntimeError("TypeScript generation failed")
 
-        try:
-            # Run json-schema-to-typescript with --bannerComment option
-            cmd = f'npx json-schema-to-typescript {schema_file} --bannerComment ""'
-            result = subprocess.run(
-                cmd,
-                shell=True,
-                capture_output=True,
-                text=True,
-                cwd=str(api_root.parent / "web"),
-            )
+        # Clean up the output - remove eslint-disable and generic comments
+        ts_output = result.stdout
+        lines = ts_output.split("\n")
+        cleaned_lines = []
+        skip_until_export = True
 
-            if result.returncode != 0:
-                print(f"⚠ Warning: Failed to generate {def_name}: {result.stderr}")
-                continue
+        for line in lines:
+            if "export " in line:
+                skip_until_export = False
 
-            # Clean up the output - remove eslint-disable and generic comments
-            ts_output = result.stdout
-            lines = ts_output.split("\n")
-            cleaned_lines = []
-            skip_until_export = True
+            if not skip_until_export:
+                cleaned_lines.append(line)
 
-            for line in lines:
-                if "export " in line:
-                    skip_until_export = False
+        combined_ts = "\n".join(cleaned_lines).strip()
 
-                if not skip_until_export:
-                    cleaned_lines.append(line)
+        # Write final output
+        with open(output_file, 'w') as f:
+            f.write(combined_ts)
 
-            all_typescript.append("\n".join(cleaned_lines).strip())
+        # Count unique exports for logging
+        export_count = combined_ts.count("export interface") + combined_ts.count("export type")
+        print(f"✅ Generated {export_count} unique TypeScript exports (no duplicates)")
 
-        finally:
-            # Clean up temp file
-            os.unlink(schema_file)
-
-    # Combine all TypeScript definitions
-    combined_ts = "\n\n".join(all_typescript)
-
-    # Write final output
-    with open(output_file, 'w') as f:
-        f.write(combined_ts)
+    finally:
+        # Clean up temp file
+        os.unlink(schema_file)
 
 
 def main():

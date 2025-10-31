@@ -43,7 +43,7 @@
  *                 maxLength: 2000
  *               preferredSourceId:
  *                 type: string
- *                 description: ID of the preferred source (chunk or First Aid section)
+ *                 description: ID of the preferred content chunk
  *               evidence:
  *                 type: string
  *                 description: Supporting evidence for resolution
@@ -109,15 +109,23 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const { resolution, preferredSourceId, evidence, notes } = validatedBody.data
 
     // Fetch conflict to validate it exists and can be resolved
-    const conflict = await prisma.conflict.findUnique({
+    const conflict = await prisma.conflicts.findUnique({
       where: { id: conflictId },
       select: {
         id: true,
         status: true,
+        // Optional foreign keys used for null-safety guards
         sourceAChunkId: true,
         sourceBChunkId: true,
-        sourceAFirstAidId: true,
-        sourceBFirstAidId: true,
+        content_chunks_conflicts_sourceAChunkIdTocontent_chunks: {
+          select: { id: true },
+        },
+        content_chunks_conflicts_sourceBChunkIdTocontent_chunks: {
+          select: { id: true },
+        },
+        // NOTE: FirstAid fields don't exist in conflicts model
+        // sourceAFirstAidId: true,
+        // sourceBFirstAidId: true,
       },
     })
 
@@ -130,7 +138,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Check if already resolved
     if (conflict.status === ConflictStatus.RESOLVED) {
       // Check if user is trying to update an existing resolution
-      const existingResolution = await prisma.conflictResolution.findFirst({
+      const existingResolution = await prisma.conflict_resolutions.findFirst({
         where: { conflictId },
         orderBy: { resolvedAt: 'desc' },
       })
@@ -149,11 +157,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     // Validate preferredSourceId if provided
     if (preferredSourceId) {
+      // Only consider relations when their optional IDs are present
       const validSourceIds = [
-        conflict.sourceAChunkId,
-        conflict.sourceBChunkId,
-        conflict.sourceAFirstAidId,
-        conflict.sourceBFirstAidId,
+        ...(conflict.sourceAChunkId
+          ? [conflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks?.id]
+          : []),
+        ...(conflict.sourceBChunkId
+          ? [conflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks?.id]
+          : []),
+        // NOTE: FirstAid fields don't exist in conflicts model
+        // (conflict as any).sourceAFirstAidId,
+        // (conflict as any).sourceBFirstAidId,
       ].filter(Boolean)
 
       if (!validSourceIds.includes(preferredSourceId)) {
@@ -174,7 +188,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Create resolution and update conflict in transaction
     const [conflictResolution, updatedConflict] = await prisma.$transaction([
       // Create ConflictResolution record
-      prisma.conflictResolution.create({
+      prisma.conflict_resolutions.create({
         data: {
           conflictId,
           resolvedBy: userId,
@@ -186,20 +200,20 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       }),
 
       // Update Conflict status to RESOLVED
-      prisma.conflict.update({
+      prisma.conflicts.update({
         where: { id: conflictId },
         data: {
           status: ConflictStatus.RESOLVED,
           resolvedAt: new Date(),
         },
         include: {
-          concept: {
+          concepts: {
             select: {
               id: true,
               name: true,
             },
           },
-          sourceAChunk: {
+          content_chunks_conflicts_sourceAChunkIdTocontent_chunks: {
             select: {
               id: true,
               lecture: {
@@ -209,7 +223,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
               },
             },
           },
-          sourceBChunk: {
+          content_chunks_conflicts_sourceBChunkIdTocontent_chunks: {
             select: {
               id: true,
               lecture: {
@@ -219,25 +233,38 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
               },
             },
           },
-          sourceAFirstAid: {
-            select: {
-              id: true,
-              system: true,
-              section: true,
-            },
+          // Include related resolution/history/flags per handoff doc (Phase 1.2)
+          conflict_resolutions: {
+            orderBy: { resolvedAt: 'desc' },
+            take: 10,
           },
-          sourceBFirstAid: {
-            select: {
-              id: true,
-              system: true,
-              section: true,
-            },
+          conflict_history: {
+            orderBy: { changedAt: 'desc' },
+            take: 20,
           },
+          conflict_flags: {
+            orderBy: { flaggedAt: 'desc' },
+          },
+          // NOTE: FirstAid relations don't exist in conflicts model
+          // sourceAFirstAid: {
+          //   select: {
+          //     id: true,
+          //     system: true,
+          //     section: true,
+          //   },
+          // },
+          // sourceBFirstAid: {
+          //   select: {
+          //     id: true,
+          //     system: true,
+          //     section: true,
+          //   },
+          // },
         },
       }),
 
       // Create ConflictHistory entry
-      prisma.conflictHistory.create({
+      prisma.conflict_history.create({
         data: {
           conflictId,
           changeType: ChangeType.RESOLVED,
@@ -249,16 +276,19 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       }),
     ])
 
+    // Type assertion for included relations
+    const typedConflict = updatedConflict as typeof updatedConflict & { concepts?: any }
+
     return NextResponse.json(
       successResponse({
         conflict: {
-          id: updatedConflict.id,
-          status: updatedConflict.status,
-          conflictType: updatedConflict.conflictType,
-          severity: updatedConflict.severity,
-          description: updatedConflict.description,
-          resolvedAt: updatedConflict.resolvedAt,
-          concept: updatedConflict.concept,
+          id: typedConflict.id,
+          status: typedConflict.status,
+          conflictType: typedConflict.conflictType,
+          severity: typedConflict.severity,
+          description: typedConflict.description,
+          resolvedAt: typedConflict.resolvedAt,
+          concept: typedConflict.concepts,
         },
         resolution: {
           id: conflictResolution.id,

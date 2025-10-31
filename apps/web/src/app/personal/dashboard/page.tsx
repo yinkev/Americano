@@ -146,9 +146,11 @@ const WeeklyTop3Card = ({
   data,
   loading,
 }: {
-  data: any[]
+  // Accept unknown from react-query wrappers and narrow safely at runtime
+  data: unknown
   loading: boolean
 }) => {
+  const items = Array.isArray(data) ? (data as any[]) : []
   if (loading) {
     return (
       <Card>
@@ -182,7 +184,7 @@ const WeeklyTop3Card = ({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {data?.slice(0, 3).map((obj: any, idx: number) => (
+            {items.slice(0, 3).map((obj: any, idx: number) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, x: -20 }}
@@ -284,12 +286,16 @@ export default function PersonalDashboardPage() {
     error: benchmarkError,
   } = usePeerBenchmark(USER_ID)
 
-  // Derive metrics from API data
+  const weeklyGrowth =
+    (longitudinalData as import('@/types/api-generated').LongitudinalMetric | undefined)?.
+      improvement_rates?.['week']?.rate ?? 0
   const metrics = {
     totalSessions: 42, // Mock data
     avgScore: 78.5, // Mock data
-    percentile: benchmarkData?.user_percentile || 0,
-    weeklyGrowth: longitudinalData?.improvement_rate.weekly || 0,
+    percentile:
+      (benchmarkData as import('@/types/api-generated').PeerBenchmark | undefined)?.
+        user_percentile ?? 0,
+    weeklyGrowth,
     masteryCount: 12, // Mock data
   }
 

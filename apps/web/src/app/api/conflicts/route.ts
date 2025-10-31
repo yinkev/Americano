@@ -118,17 +118,17 @@ export async function GET(request: NextRequest) {
 
     // Fetch conflicts with source details
     const [conflicts, total] = await Promise.all([
-      prisma.conflict.findMany({
+      prisma.conflicts.findMany({
         where,
         include: {
-          concept: {
+          concepts: {
             select: {
               id: true,
               name: true,
               category: true,
             },
           },
-          sourceAChunk: {
+          content_chunks_conflicts_sourceAChunkIdTocontent_chunks: {
             select: {
               id: true,
               content: true,
@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
               },
             },
           },
-          sourceBChunk: {
+          content_chunks_conflicts_sourceBChunkIdTocontent_chunks: {
             select: {
               id: true,
               content: true,
@@ -168,23 +168,17 @@ export async function GET(request: NextRequest) {
               },
             },
           },
-          sourceAFirstAid: {
-            select: {
-              id: true,
-              edition: true,
-              system: true,
-              section: true,
-              pageNumber: true,
-            },
+          // Include related resolution/history/flags per handoff doc (Phase 1.2)
+          conflict_resolutions: {
+            orderBy: { resolvedAt: 'desc' },
+            take: 10,
           },
-          sourceBFirstAid: {
-            select: {
-              id: true,
-              edition: true,
-              system: true,
-              section: true,
-              pageNumber: true,
-            },
+          conflict_history: {
+            orderBy: { changedAt: 'desc' },
+            take: 20,
+          },
+          conflict_flags: {
+            orderBy: { flaggedAt: 'desc' },
           },
         },
         orderBy: {
@@ -193,14 +187,14 @@ export async function GET(request: NextRequest) {
         skip: offset,
         take: limit,
       }),
-      prisma.conflict.count({ where }),
+      prisma.conflicts.count({ where }),
     ])
 
     const latency = Date.now() - startTime
 
     return NextResponse.json(
       successResponse({
-        conflicts: conflicts.map((conflict) => ({
+        conflicts: conflicts.map((conflict: any) => ({
           id: conflict.id,
           conceptId: conflict.conceptId,
           conflictType: conflict.conflictType,
@@ -209,49 +203,38 @@ export async function GET(request: NextRequest) {
           description: conflict.description,
           createdAt: conflict.createdAt,
           resolvedAt: conflict.resolvedAt,
-          concept: conflict.concept
+          concept: conflict.concepts
             ? {
-                id: conflict.concept.id,
-                name: conflict.concept.name,
-                category: conflict.concept.category,
+                id: conflict.concepts.id,
+                name: conflict.concepts.name,
+                category: conflict.concepts.category,
               }
             : null,
-          sourceA: conflict.sourceAChunk
+          // Guard optional relations with presence of their IDs
+          sourceA:
+            conflict.sourceAChunkId &&
+            conflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks
             ? {
                 type: 'lecture',
-                id: conflict.sourceAChunk.id,
-                title: conflict.sourceAChunk.lecture.title,
-                course: conflict.sourceAChunk.lecture.course.name,
-                pageNumber: conflict.sourceAChunk.pageNumber,
-                snippet: conflict.sourceAChunk.content.substring(0, 200) + '...',
+                id: conflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.id,
+                title: conflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.lecture.title,
+                course: conflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.lecture.course.name,
+                pageNumber: conflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.pageNumber,
+                snippet: conflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.content.substring(0, 200) + '...',
               }
-            : conflict.sourceAFirstAid
-              ? {
-                  type: 'first_aid',
-                  id: conflict.sourceAFirstAid.id,
-                  title: `${conflict.sourceAFirstAid.system} - ${conflict.sourceAFirstAid.section}`,
-                  edition: conflict.sourceAFirstAid.edition,
-                  pageNumber: conflict.sourceAFirstAid.pageNumber,
-                }
-              : null,
-          sourceB: conflict.sourceBChunk
+            : null,
+          sourceB:
+            conflict.sourceBChunkId &&
+            conflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks
             ? {
                 type: 'lecture',
-                id: conflict.sourceBChunk.id,
-                title: conflict.sourceBChunk.lecture.title,
-                course: conflict.sourceBChunk.lecture.course.name,
-                pageNumber: conflict.sourceBChunk.pageNumber,
-                snippet: conflict.sourceBChunk.content.substring(0, 200) + '...',
+                id: conflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.id,
+                title: conflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.lecture.title,
+                course: conflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.lecture.course.name,
+                pageNumber: conflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.pageNumber,
+                snippet: conflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.content.substring(0, 200) + '...',
               }
-            : conflict.sourceBFirstAid
-              ? {
-                  type: 'first_aid',
-                  id: conflict.sourceBFirstAid.id,
-                  title: `${conflict.sourceBFirstAid.system} - ${conflict.sourceBFirstAid.section}`,
-                  edition: conflict.sourceBFirstAid.edition,
-                  pageNumber: conflict.sourceBFirstAid.pageNumber,
-                }
-              : null,
+            : null,
         })),
         total,
         pagination: {

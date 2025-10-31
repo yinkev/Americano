@@ -9,11 +9,11 @@
  * @see https://nuqs.47ng.com/docs/adapters
  */
 
-'use client'
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { NuqsAdapter } from 'nuqs/adapters/next/app'
-import { useState } from 'react'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { useState, type ReactNode } from "react";
 
 /**
  * Create QueryClient provider with default options
@@ -24,7 +24,7 @@ import { useState } from 'react'
  * - retry: 2 attempts on failure
  * - refetchOnWindowFocus: false (avoid unnecessary refetches)
  */
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children }: { children: ReactNode }) {
   // Create QueryClient inside component to ensure one instance per request
   // in RSC (React Server Components) environment
   const [queryClient] = useState(
@@ -46,11 +46,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
           },
         },
       }),
-  )
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
       <NuqsAdapter>{children}</NuqsAdapter>
     </QueryClientProvider>
-  )
+  );
 }

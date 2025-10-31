@@ -346,10 +346,10 @@ export default function PredictionsPage() {
                   <YAxis
                     label={{ value: 'Success Probability', angle: -90, position: 'insideLeft' }}
                     domain={[0, 1]}
-                    tickFormatter={(value) => `${Math.round(value * 100)}%`}
+                    tickFormatter={(value: number) => `${Math.round(value * 100)}%`}
                   />
                   <Tooltip
-                    content={({ active, payload }) => {
+                    content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload
                         return (
@@ -426,10 +426,10 @@ export default function PredictionsPage() {
                   <XAxis dataKey="week" />
                   <YAxis
                     domain={[0.6, 1]}
-                    tickFormatter={(value) => `${Math.round(value * 100)}%`}
+                    tickFormatter={(value: number) => `${Math.round(value * 100)}%`}
                   />
                   <Tooltip
-                    content={({ active, payload }) => {
+                    content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload
                         return (
@@ -732,10 +732,10 @@ export default function PredictionsPage() {
                   <YAxis
                     label={{ value: 'Success Probability', angle: -90, position: 'insideLeft' }}
                     domain={[0, 1]}
-                    tickFormatter={(value) => `${Math.round(value * 100)}%`}
+                    tickFormatter={(value: number) => `${Math.round(value * 100)}%`}
                   />
                   <Tooltip
-                    content={({ active, payload }) => {
+                    content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                       if (active && payload && payload.length) {
                         return (
                           <div className="bg-white/95 backdrop-blur-sm border rounded-lg p-3 shadow-lg">

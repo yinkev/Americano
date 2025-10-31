@@ -61,6 +61,9 @@ interface MissionState {
   // Preferences (persisted)
   preferences: MissionPreferences
 
+  // Selectors
+  selectActiveFiltersCount: number
+
   // Actions
   setActiveMission: (missionId: string | null) => void
   updateFilters: (filters: Partial<MissionFilters>) => void
@@ -103,6 +106,18 @@ export const useMissionStore = create<MissionState>()(
         activeMissionId: null,
         filters: defaultFilters,
         preferences: defaultPreferences,
+
+        // Selectors
+        get selectActiveFiltersCount() {
+          const state = get()
+          let count = 0
+          if (state.filters.statuses.length > 0) count++
+          if (state.filters.priorities.length > 0) count++
+          if (state.filters.objectives.length > 0) count++
+          if (state.filters.searchQuery.trim().length > 0) count++
+          if (state.filters.dateRange.start || state.filters.dateRange.end) count++
+          return count
+        },
 
         // Mission actions
         setActiveMission: (activeMissionId) =>

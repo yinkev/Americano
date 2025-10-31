@@ -130,7 +130,6 @@ export class MetacognitiveInterventionEngine {
         where: {
           userId,
           preAssessmentConfidence: { not: null },
-          score: { not: null },
         },
         orderBy: { respondedAt: 'desc' },
         take: 50, // Analyze up to 50 recent assessments
@@ -257,11 +256,12 @@ export class MetacognitiveInterventionEngine {
       where: {
         userId,
         preAssessmentConfidence: { not: null },
-        score: { not: null },
       },
       orderBy: { respondedAt: 'desc' },
       take: 20,
-      include: {
+      select: {
+        preAssessmentConfidence: true,
+        score: true,
         prompt: {
           select: {
             conceptName: true,
@@ -480,7 +480,6 @@ Metacognition is "thinking about thinking" - being aware of what you know and do
         where: {
           userId,
           preAssessmentConfidence: { not: null },
-          score: { not: null },
           respondedAt: {
             gte: beforeDate,
             lt: interventionDate,
@@ -497,7 +496,6 @@ Metacognition is "thinking about thinking" - being aware of what you know and do
         where: {
           userId,
           preAssessmentConfidence: { not: null },
-          score: { not: null },
           respondedAt: {
             gte: interventionDate,
             lte: afterDate,

@@ -81,9 +81,9 @@ export default function ComparisonTab() {
   }))
 
   // Calculate gap severity distribution
-  const highGaps = data.gaps.filter((g) => g.gap > 30).length
-  const mediumGaps = data.gaps.filter((g) => g.gap > 20 && g.gap <= 30).length
-  const lowGaps = data.gaps.filter((g) => g.gap <= 20).length
+  const highGaps = data.gaps.filter((g: any) => g.gap > 30).length
+  const mediumGaps = data.gaps.filter((g: any) => g.gap > 20 && g.gap <= 30).length
+  const lowGaps = data.gaps.filter((g: any) => g.gap <= 20).length
 
   return (
     <div className="space-y-6">
@@ -230,7 +230,7 @@ export default function ComparisonTab() {
                 <XAxis
                   dataKey="date"
                   stroke="oklch(0.6 0.05 240)"
-                  tickFormatter={(date) =>
+                  tickFormatter={(date: any) =>
                     new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                   }
                   style={{ fontSize: '12px' }}
@@ -317,9 +317,9 @@ export default function ComparisonTab() {
           <CardContent>
             <div className="space-y-3">
               {data.gaps
-                .filter((gap) => gap.gap > 20)
+                .filter((gap: any) => gap.gap > 20)
                 .sort((a, b) => b.gap - a.gap)
-                .map((gap) => (
+                .map((gap: any) => (
                   <Alert
                     key={gap.objectiveId}
                     variant={gap.gap > 30 ? 'destructive' : 'default'}
@@ -429,7 +429,7 @@ function LoadingSkeleton() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3].map((i: any) => (
           <Card key={i} className="h-40 bg-white/95 backdrop-blur-xl animate-pulse">
             <CardContent className="p-6">
               <div className="space-y-3">

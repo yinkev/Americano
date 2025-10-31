@@ -386,17 +386,22 @@ async function fetchRecentAssessments(
       respondedAt: {
         gte: cutoffDate,
       },
-      score: {
-        not: null,
-      },
     },
-    include: {
+    select: {
+      id: true,
+      score: true,
+      respondedAt: true,
+      confidenceLevel: true,
+      calibrationDelta: true,
+      // include minimal prompt fields needed for mapping
       prompt: {
         select: {
           promptType: true,
           difficultyLevel: true,
         },
       },
+      // also keep initialDifficulty in case prompt difficulty is null
+      initialDifficulty: true,
     },
     orderBy: {
       respondedAt: 'desc',
@@ -432,10 +437,12 @@ async function fetchRecentAssessments(
   const comprehensionAssessments: RecentAssessment[] = comprehensionResponses.map((r) => ({
     id: r.id,
     score: r.score * 100, // Convert 0.0-1.0 to 0-100
-    type: r.prompt.promptType === 'CLINICAL_REASONING' ? 'REASONING' : 'COMPREHENSION',
-    difficulty: r.prompt.difficultyLevel,
-    confidenceLevel: r.confidenceLevel || undefined,
-    calibrationDelta: r.calibrationDelta || undefined,
+    type: r.prompt?.promptType === 'CLINICAL_REASONING' ? 'REASONING' : 'COMPREHENSION',
+    // Coerce nullable difficulty fields to a sane numeric value (0-100)
+    difficulty:
+      (r.prompt?.difficultyLevel ?? (r.initialDifficulty ?? 0.5) * 100) as number,
+    confidenceLevel: r.confidenceLevel ?? undefined,
+    calibrationDelta: r.calibrationDelta ?? undefined,
     respondedAt: r.respondedAt,
   }))
 

@@ -188,10 +188,11 @@ export class AdaptiveSessionOrchestrator {
     sessionId: string | null = null,
   ): Promise<AdaptiveSessionState> {
     // Calculate initial difficulty from user history
-    const initialDifficulty = await this.difficultyEngine.calculateInitialDifficulty(
+    const initialDifficultyResult = await this.difficultyEngine.calculateInitialDifficulty(
       userId,
       objectiveId,
     )
+    const initialDifficulty = initialDifficultyResult.difficulty
 
     // Create adaptive session record in database
     const adaptiveSession = await prisma.adaptiveSession.create({
@@ -271,8 +272,10 @@ export class AdaptiveSessionOrchestrator {
 
       if (adjustmentCount < AdaptiveSessionOrchestrator.MAX_ADJUSTMENTS_PER_SESSION) {
         const difficultyAdjustment = this.difficultyEngine.adjustDifficulty(
-          lastScore,
           session.currentDifficulty,
+          lastScore,
+          undefined,
+          adjustmentCount,
         )
         newDifficulty = difficultyAdjustment.newDifficulty
         adjustment = difficultyAdjustment.adjustment
@@ -289,8 +292,8 @@ export class AdaptiveSessionOrchestrator {
     // Check for early stopping (IRT convergence)
     const canStopEarly = this.checkEarlyStop(
       session.questionCount,
-      session.irtEstimate,
-      session.confidenceInterval,
+      session.irtEstimate ?? undefined,
+      session.confidenceInterval ?? undefined,
     )
 
     // Select next question at target difficulty

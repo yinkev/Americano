@@ -15,7 +15,7 @@
  */
 
 import { endOfDay, startOfDay, subDays } from 'date-fns'
-import { type NextRequest, NextResponse } from 'next'
+import { type NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
 // Hardcoded user for MVP (as per Story 4.4 constraint #14)
@@ -112,10 +112,7 @@ async function aggregateCalibrationMetrics(date: Date) {
       preAssessmentConfidence: {
         not: null,
       },
-      // Only process responses with actual scores
-      score: {
-        not: null,
-      },
+      // Score is non-nullable in schema; no extra filter needed
     },
     select: {
       userId: true,
@@ -173,10 +170,25 @@ async function aggregateCalibrationMetrics(date: Date) {
   console.log(`Grouped into ${groupedResponses.size} unique user/objective combinations`)
 
   // Calculate metrics for each group
-  const metricsToCreate = []
+  type MetricCreate = {
+    userId: string
+    objectiveId: string | null
+    date: Date
+    avgDelta: number
+    correlationCoeff: number
+    sampleSize: number
+    trend: 'IMPROVING' | 'STABLE' | 'DECLINING'
+    overconfidentCount: number
+    underconfidentCount: number
+    calibratedCount: number
+    meanAbsoluteError: number
+  }
+  const metricsToCreate: MetricCreate[] = []
 
   for (const [key, groupResponses] of groupedResponses.entries()) {
-    const [userId, objectiveId] = key.includes(':') ? key.split(':') : [key, null]
+    const parts = key.split(':')
+    const userId: string = parts[0]
+    const objectiveId: string | null = parts.length > 1 ? parts[1] : null
 
     // Extract confidence and score arrays for correlation calculation
     const confidenceArray: number[] = []
@@ -212,7 +224,7 @@ async function aggregateCalibrationMetrics(date: Date) {
     // Calculate Mean Absolute Error (MAE) for calibration quality
     const sumAbsoluteDelta = groupResponses.reduce((sum, r) => {
       const confidence = r.preAssessmentConfidence!
-      const score = r.score! * 100
+      const score = r.score * 100
       const delta = normalizeConfidence(confidence) - score
       return sum + Math.abs(delta)
     }, 0)
@@ -256,10 +268,42 @@ async function aggregateCalibrationMetrics(date: Date) {
   console.log(`Creating ${metricsToCreate.length} calibration metrics`)
 
   // Upsert metrics (update if exists, create if not)
-  // This handles re-running aggregation for the same day
+  // Handle nullable objectiveId explicitly since the compound unique key
+  // requires a non-null objectiveId in the generated types.
   const results = await Promise.all(
-    metricsToCreate.map((metric) =>
-      prisma.calibrationMetric.upsert({
+    metricsToCreate.map(async (metric) => {
+      if (metric.objectiveId === null) {
+        // Manually emulate upsert for rows without an objectiveId
+        const existing = await prisma.calibrationMetric.findFirst({
+          where: {
+            userId: metric.userId,
+            date: metric.date,
+            objectiveId: null,
+          },
+          select: { id: true },
+        })
+
+        if (existing) {
+          return prisma.calibrationMetric.update({
+            where: { id: existing.id },
+            data: {
+              avgDelta: metric.avgDelta,
+              correlationCoeff: metric.correlationCoeff,
+              sampleSize: metric.sampleSize,
+              trend: metric.trend,
+              overconfidentCount: metric.overconfidentCount,
+              underconfidentCount: metric.underconfidentCount,
+              calibratedCount: metric.calibratedCount,
+              meanAbsoluteError: metric.meanAbsoluteError,
+            },
+          })
+        }
+
+        return prisma.calibrationMetric.create({ data: metric })
+      }
+
+      // Safe to use compound unique when objectiveId is a string
+      return prisma.calibrationMetric.upsert({
         where: {
           userId_date_objectiveId: {
             userId: metric.userId,
@@ -278,8 +322,8 @@ async function aggregateCalibrationMetrics(date: Date) {
           meanAbsoluteError: metric.meanAbsoluteError,
         },
         create: metric,
-      }),
-    ),
+      })
+    }),
   )
 
   console.log(`Successfully aggregated ${results.length} calibration metrics`)

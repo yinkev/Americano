@@ -67,7 +67,6 @@ export async function request<T = JsonValue>(
     if (resp.status === 204) return undefined as T
     const ct = resp.headers.get('Content-Type') || ''
     if (ct.includes('application/json')) return (await resp.json()) as T
-    // @ts-expect-error allow text fallback for generic
     return (await resp.text()) as T
   } catch (err: any) {
     if (err?.name === 'AbortError' || err instanceof TypeError) {

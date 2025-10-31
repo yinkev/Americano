@@ -80,8 +80,18 @@ interface LoggerConfig {
 const devFormat = winston.format.combine(
   winston.format.colorize(),
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-  winston.format.printf(({ timestamp, level, message, service, correlationId, ...meta }) => {
-    let log = `${timestamp} [${level}]`
+  winston.format.printf((info) => {
+    const { timestamp, level, message, service, correlationId, ...meta } = info as {
+      timestamp?: string
+      level: string
+      message: string
+      service?: string
+      correlationId?: string
+      [key: string]: unknown
+    }
+
+    const ts = timestamp ?? new Date().toISOString()
+    let log = `${ts} [${level}]`
 
     if (service) {
       log += ` [${service}]`
@@ -91,15 +101,16 @@ const devFormat = winston.format.combine(
       log += ` [cid:${correlationId.substring(0, 8)}]`
     }
 
-    log += `: ${message}`
+    log += `: ${String(message)}`
 
     // Add metadata if present
     const metaKeys = Object.keys(meta).filter((key) => key !== 'timestamp')
     if (metaKeys.length > 0) {
       const cleanMeta = metaKeys.reduce(
         (acc, key) => {
-          if (meta[key] !== undefined) {
-            acc[key] = meta[key]
+          const value = (meta as Record<string, unknown>)[key]
+          if (value !== undefined) {
+            acc[key] = value
           }
           return acc
         },
@@ -124,7 +135,7 @@ const prodFormat = winston.format.combine(
 /**
  * PII redaction format (applied before other formats)
  */
-const piiRedactionFormat = winston.format((info) => {
+const piiRedactionFormat = winston.format((info: any) => {
   // Redact PII from message
   if (typeof info.message === 'string') {
     info.message = redactPII(info.message)

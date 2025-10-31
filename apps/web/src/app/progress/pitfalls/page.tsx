@@ -243,7 +243,7 @@ export default function PitfallsDashboardPage() {
               }}
             />
             <Tooltip
-              content={({ active, payload }) => {
+              content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                 if (active && payload && payload.length > 0) {
                   return (
                     <div className="bg-white/95 backdrop-blur-xl border border-white/30 shadow-lg p-3 rounded-lg max-w-xs">

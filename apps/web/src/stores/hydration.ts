@@ -37,6 +37,7 @@ export function useHasHydrated<T>(
     persist?: {
       hasHydrated: () => boolean
       rehydrate: () => void
+      onFinishHydration?: (cb: (state?: unknown) => void) => () => void
     }
   },
 ): boolean {

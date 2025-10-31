@@ -146,7 +146,7 @@ export default function BenchmarksTab() {
               </p>
             ) : (
               <div className="space-y-3">
-                {data.relativeStrengths.map((strength) => (
+                {data.relativeStrengths.map((strength: any) => (
                   <div
                     key={strength.metric}
                     className="flex items-center justify-between p-3 rounded-xl bg-[oklch(0.95_0.15_145)]/50"
@@ -188,7 +188,7 @@ export default function BenchmarksTab() {
               </p>
             ) : (
               <div className="space-y-3">
-                {data.relativeWeaknesses.map((weakness) => (
+                {data.relativeWeaknesses.map((weakness: any) => (
                   <div
                     key={weakness.metric}
                     className="flex items-center justify-between p-3 rounded-xl bg-[oklch(0.98_0.20_25)]/50"
@@ -383,13 +383,13 @@ function PeerDistributionBoxPlot({ metricData, userPercentile }: PeerDistributio
             {/* IQR (Interquartile Range) - 25th to 75th percentile */}
             <Bar dataKey="q1" stackId="box" fill="oklch(0.8 0.18 230)" barSize={40} />
             <Bar
-              dataKey={(d) => d.median - d.q1}
+              dataKey={(d: any) => d.median - d.q1}
               stackId="box"
               fill="oklch(0.6 0.18 230)"
               barSize={40}
             />
             <Bar
-              dataKey={(d) => d.q3 - d.median}
+              dataKey={(d: any) => d.q3 - d.median}
               stackId="box"
               fill="oklch(0.8 0.18 230)"
               barSize={40}
@@ -552,7 +552,7 @@ function GrowthRateComparison({ sampleSize }: GrowthRateComparisonProps) {
                   }}
                 />
                 <Tooltip
-                  content={({ active, payload }) => {
+                  content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                     if (!active || !payload || !payload.length) return null
                     const data = payload[0]
                     return (
@@ -628,7 +628,7 @@ function BenchmarksSkeleton() {
         </CardHeader>
         <CardContent>
           <div className="space-y-8">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map((i: any) => (
               <div key={i} className="h-32 bg-[oklch(0.9_0.05_240)] rounded" />
             ))}
           </div>
@@ -637,7 +637,7 @@ function BenchmarksSkeleton() {
 
       {/* Strengths/weaknesses skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {[1, 2].map((i) => (
+        {[1, 2].map((i: any) => (
           <Card
             key={i}
             className="h-64 animate-pulse bg-white/95 backdrop-blur-xl rounded-2xl border-0"
@@ -647,7 +647,7 @@ function BenchmarksSkeleton() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {[1, 2, 3].map((j) => (
+                {[1, 2, 3].map((j: any) => (
                   <div key={j} className="h-16 bg-[oklch(0.9_0.05_240)] rounded" />
                 ))}
               </div>

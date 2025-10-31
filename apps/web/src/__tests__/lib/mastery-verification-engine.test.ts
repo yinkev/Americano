@@ -39,13 +39,12 @@ describe('Mastery Verification Engine', () => {
   describe('checkMasteryStatus', () => {
     it('should return NOT_STARTED status with no assessments', async () => {
       // Setup mocks
-      ;(prisma.learningObjective.findUnique as jest.Mock)
-        .mockResolvedValue({
-          id: 'obj-1',
-          complexity: 'INTERMEDIATE',
-        } as any)(prisma.validationResponse.findMany as jest.Mock)
-        .mockResolvedValue([])(prisma.scenarioResponse.findMany as jest.Mock)
-        .mockResolvedValue([])
+      ;(prisma.learningObjective.findUnique as jest.Mock).mockResolvedValue({
+        id: 'obj-1',
+        complexity: 'INTERMEDIATE',
+      } as any)
+      ;(prisma.validationResponse.findMany as jest.Mock).mockResolvedValue([])
+      ;(prisma.scenarioResponse.findMany as jest.Mock).mockResolvedValue([])
 
       // Execute
       const result = await checkMasteryStatus('user-1', 'obj-1')
@@ -60,15 +59,14 @@ describe('Mastery Verification Engine', () => {
 
     it('should return IN_PROGRESS status with partial criteria met', async () => {
       // Setup mocks - objective
-      ;(prisma.learningObjective.findUnique as jest.Mock)
-        .mockResolvedValue({
-          id: 'obj-1',
-          complexity: 'INTERMEDIATE',
-        } as any)(
-          // Mock 2 high-scoring comprehension assessments (same day)
-          prisma.validationResponse.findMany as jest.Mock,
-        )
-        .mockResolvedValue([
+      ;(prisma.learningObjective.findUnique as jest.Mock).mockResolvedValue({
+        id: 'obj-1',
+        complexity: 'INTERMEDIATE',
+      } as any)
+      ;(
+        // Mock 2 high-scoring comprehension assessments (same day)
+        prisma.validationResponse.findMany as jest.Mock
+      ).mockResolvedValue([
           {
             id: 'resp-1',
             score: 0.85, // 85%
@@ -91,8 +89,8 @@ describe('Mastery Verification Engine', () => {
               difficultyLevel: 60,
             },
           },
-        ] as any)(prisma.scenarioResponse.findMany as jest.Mock)
-        .mockResolvedValue([])
+        ] as any)
+      ;(prisma.scenarioResponse.findMany as jest.Mock).mockResolvedValue([])
 
       // Execute
       const result = await checkMasteryStatus('user-1', 'obj-1')
@@ -107,15 +105,14 @@ describe('Mastery Verification Engine', () => {
 
     it('should return VERIFIED status when all 5 criteria are met', async () => {
       // Setup mocks - objective
-      ;(prisma.learningObjective.findUnique as jest.Mock)
-        .mockResolvedValue({
-          id: 'obj-1',
-          complexity: 'INTERMEDIATE',
-        } as any)(
-          // Mock 3 high-scoring comprehension assessments across 3 days
-          prisma.validationResponse.findMany as jest.Mock,
-        )
-        .mockResolvedValue([
+      ;(prisma.learningObjective.findUnique as jest.Mock).mockResolvedValue({
+        id: 'obj-1',
+        complexity: 'INTERMEDIATE',
+      } as any)
+      ;(
+        // Mock 3 high-scoring comprehension assessments across 3 days
+        prisma.validationResponse.findMany as jest.Mock
+      ).mockResolvedValue([
           {
             id: 'resp-1',
             score: 0.85, // 85%
@@ -149,11 +146,11 @@ describe('Mastery Verification Engine', () => {
               difficultyLevel: 58,
             },
           },
-        ] as any)(
-          // Mock 1 clinical reasoning assessment
-          prisma.scenarioResponse.findMany as jest.Mock,
-        )
-        .mockResolvedValue([
+        ] as any)
+      ;(
+        // Mock 1 clinical reasoning assessment
+        prisma.scenarioResponse.findMany as jest.Mock
+      ).mockResolvedValue([
           {
             id: 'scenario-1',
             score: 82, // 82%
@@ -179,15 +176,14 @@ describe('Mastery Verification Engine', () => {
     })
 
     it('should check consecutive high scores correctly', async () => {
-      ;(prisma.learningObjective.findUnique as jest.Mock)
-        .mockResolvedValue({
-          id: 'obj-1',
-          complexity: 'INTERMEDIATE',
-        } as any)(
-          // Mock: 90%, 85%, 70%, 95% scores (consecutive broken by 70%)
-          prisma.validationResponse.findMany as jest.Mock,
-        )
-        .mockResolvedValue([
+      ;(prisma.learningObjective.findUnique as jest.Mock).mockResolvedValue({
+        id: 'obj-1',
+        complexity: 'INTERMEDIATE',
+      } as any)
+      ;(
+        // Mock: 90%, 85%, 70%, 95% scores (consecutive broken by 70%)
+        prisma.validationResponse.findMany as jest.Mock
+      ).mockResolvedValue([
           {
             id: 'resp-1',
             score: 0.9,
@@ -212,8 +208,8 @@ describe('Mastery Verification Engine', () => {
             respondedAt: new Date('2025-01-12T10:00:00Z'),
             prompt: { promptType: 'EXPLAIN_TO_PATIENT', difficultyLevel: 50 },
           },
-        ] as any)(prisma.scenarioResponse.findMany as jest.Mock)
-        .mockResolvedValue([])
+        ] as any)
+      ;(prisma.scenarioResponse.findMany as jest.Mock).mockResolvedValue([])
 
       const result = await checkMasteryStatus('user-1', 'obj-1')
 
@@ -223,15 +219,14 @@ describe('Mastery Verification Engine', () => {
     })
 
     it('should check multiple assessment types correctly', async () => {
-      ;(prisma.learningObjective.findUnique as jest.Mock)
-        .mockResolvedValue({
-          id: 'obj-1',
-          complexity: 'INTERMEDIATE',
-        } as any)(
-          // Mock 2 comprehension + 1 reasoning assessment
-          prisma.validationResponse.findMany as jest.Mock,
-        )
-        .mockResolvedValue([
+      ;(prisma.learningObjective.findUnique as jest.Mock).mockResolvedValue({
+        id: 'obj-1',
+        complexity: 'INTERMEDIATE',
+      } as any)
+      ;(
+        // Mock 2 comprehension + 1 reasoning assessment
+        prisma.validationResponse.findMany as jest.Mock
+      ).mockResolvedValue([
           {
             id: 'resp-1',
             score: 0.85,
@@ -244,8 +239,8 @@ describe('Mastery Verification Engine', () => {
             respondedAt: new Date('2025-01-14T10:00:00Z'),
             prompt: { promptType: 'CLINICAL_REASONING', difficultyLevel: 55 },
           },
-        ] as any)(prisma.scenarioResponse.findMany as jest.Mock)
-        .mockResolvedValue([])
+        ] as any)
+      ;(prisma.scenarioResponse.findMany as jest.Mock).mockResolvedValue([])
 
       const result = await checkMasteryStatus('user-1', 'obj-1')
 
@@ -255,15 +250,14 @@ describe('Mastery Verification Engine', () => {
     })
 
     it('should check calibration accuracy correctly', async () => {
-      ;(prisma.learningObjective.findUnique as jest.Mock)
-        .mockResolvedValue({
-          id: 'obj-1',
-          complexity: 'INTERMEDIATE',
-        } as any)(
-          // Mock assessments with varying calibration
-          prisma.validationResponse.findMany as jest.Mock,
-        )
-        .mockResolvedValue([
+      ;(prisma.learningObjective.findUnique as jest.Mock).mockResolvedValue({
+        id: 'obj-1',
+        complexity: 'INTERMEDIATE',
+      } as any)
+      ;(
+        // Mock assessments with varying calibration
+        prisma.validationResponse.findMany as jest.Mock
+      ).mockResolvedValue([
           {
             id: 'resp-1',
             score: 0.85,
@@ -285,8 +279,8 @@ describe('Mastery Verification Engine', () => {
             respondedAt: new Date('2025-01-13T10:00:00Z'),
             prompt: { promptType: 'EXPLAIN_TO_PATIENT', difficultyLevel: 50 },
           },
-        ] as any)(prisma.scenarioResponse.findMany as jest.Mock)
-        .mockResolvedValue([])
+        ] as any)
+      ;(prisma.scenarioResponse.findMany as jest.Mock).mockResolvedValue([])
 
       const result = await checkMasteryStatus('user-1', 'obj-1')
 
@@ -296,15 +290,14 @@ describe('Mastery Verification Engine', () => {
     })
 
     it('should check time spacing correctly', async () => {
-      ;(prisma.learningObjective.findUnique as jest.Mock)
-        .mockResolvedValue({
-          id: 'obj-1',
-          complexity: 'INTERMEDIATE',
-        } as any)(
-          // Mock assessments 3 days apart
-          prisma.validationResponse.findMany as jest.Mock,
-        )
-        .mockResolvedValue([
+      ;(prisma.learningObjective.findUnique as jest.Mock).mockResolvedValue({
+        id: 'obj-1',
+        complexity: 'INTERMEDIATE',
+      } as any)
+      ;(
+        // Mock assessments 3 days apart
+        prisma.validationResponse.findMany as jest.Mock
+      ).mockResolvedValue([
           {
             id: 'resp-1',
             score: 0.85,
@@ -323,8 +316,8 @@ describe('Mastery Verification Engine', () => {
             respondedAt: new Date('2025-01-13T10:00:00Z'), // Day 4
             prompt: { promptType: 'EXPLAIN_TO_PATIENT', difficultyLevel: 50 },
           },
-        ] as any)(prisma.scenarioResponse.findMany as jest.Mock)
-        .mockResolvedValue([])
+        ] as any)
+      ;(prisma.scenarioResponse.findMany as jest.Mock).mockResolvedValue([])
 
       const result = await checkMasteryStatus('user-1', 'obj-1')
 
@@ -334,15 +327,14 @@ describe('Mastery Verification Engine', () => {
     })
 
     it('should check difficulty match for INTERMEDIATE complexity', async () => {
-      ;(prisma.learningObjective.findUnique as jest.Mock)
-        .mockResolvedValue({
-          id: 'obj-1',
-          complexity: 'INTERMEDIATE',
-        } as any)(
-          // Mock assessments at appropriate difficulty (41-70 for INTERMEDIATE)
-          prisma.validationResponse.findMany as jest.Mock,
-        )
-        .mockResolvedValue([
+      ;(prisma.learningObjective.findUnique as jest.Mock).mockResolvedValue({
+        id: 'obj-1',
+        complexity: 'INTERMEDIATE',
+      } as any)
+      ;(
+        // Mock assessments at appropriate difficulty (41-70 for INTERMEDIATE)
+        prisma.validationResponse.findMany as jest.Mock
+      ).mockResolvedValue([
           {
             id: 'resp-1',
             score: 0.85,
@@ -355,8 +347,8 @@ describe('Mastery Verification Engine', () => {
             respondedAt: new Date('2025-01-14T10:00:00Z'),
             prompt: { promptType: 'EXPLAIN_TO_PATIENT', difficultyLevel: 35 }, // Too easy
           },
-        ] as any)(prisma.scenarioResponse.findMany as jest.Mock)
-        .mockResolvedValue([])
+        ] as any)
+      ;(prisma.scenarioResponse.findMany as jest.Mock).mockResolvedValue([])
 
       const result = await checkMasteryStatus('user-1', 'obj-1')
 
@@ -378,7 +370,8 @@ describe('Mastery Verification Engine', () => {
         },
         overallProgress: 0.73,
         nextSteps: ['Get one more high score'],
-      }(prisma.masteryVerification.upsert as jest.Mock).mockResolvedValue({} as any)
+      }
+      ;(prisma.masteryVerification.upsert as jest.Mock).mockResolvedValue({} as any)
 
       await updateMasteryStatus('user-1', 'obj-1', mockResult)
 
@@ -420,7 +413,8 @@ describe('Mastery Verification Engine', () => {
         overallProgress: 1.0,
         verifiedAt: new Date('2025-01-15T12:00:00Z'),
         nextSteps: ['Congratulations!'],
-      }(prisma.masteryVerification.upsert as jest.Mock).mockResolvedValue({} as any)
+      }
+      ;(prisma.masteryVerification.upsert as jest.Mock).mockResolvedValue({} as any)
 
       await updateMasteryStatus('user-1', 'obj-1', mockResult)
 

@@ -134,7 +134,8 @@ export function useFirstAidContext(
 
   // Cache storage (in-memory)
   const cacheRef = useRef<Map<string, CacheEntry>>(new Map())
-  const scrollTimeoutRef = useRef<NodeJS.Timeout>()
+  // Use cross-platform timer type for browser+node environments
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const sectionObserverRef = useRef<IntersectionObserver | null>(null)
   const sectionPositionsRef = useRef<Map<string, SectionPosition>>(new Map())
   const abortControllerRef = useRef<AbortController | null>(null)

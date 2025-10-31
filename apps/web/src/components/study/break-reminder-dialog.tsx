@@ -42,7 +42,7 @@ export function BreakReminderDialog({
     }
 
     const interval = setInterval(() => {
-      setCountdown((prev) => {
+      setCountdown((prev: any) => {
         if (prev <= 1) {
           clearInterval(interval)
           onTakeBreak()
@@ -69,7 +69,7 @@ export function BreakReminderDialog({
   const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 
   return (
-    <Dialog open={open} onOpenChange={(open) => !open && handleSkipBreak()}>
+    <Dialog open={open} onOpenChange={(open: any) => !open && handleSkipBreak()}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

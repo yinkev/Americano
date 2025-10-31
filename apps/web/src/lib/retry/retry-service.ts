@@ -119,7 +119,7 @@ export interface RetryResult<T> {
 /**
  * Circuit breaker state for a specific operation
  */
-interface CircuitBreakerState {
+export interface CircuitBreakerState {
   state: CircuitState
   failureCount: number
   lastFailureTime?: Date

@@ -1,6 +1,5 @@
 'use client'
 
-import { Award, Calendar, CheckCircle2, Clock, Target, TrendingUp } from 'lucide-react'
 import { StatCard } from '@/components/ui/stat-card'
 
 interface MissionStatsProps {
@@ -27,88 +26,73 @@ export function MissionStats({ stats }: MissionStatsProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Total Missions */}
       <StatCard
-        title="Total Missions"
+        label="Total Missions"
         value={stats.totalMissions}
-        icon={Calendar}
-        trend={
+        percentageChange={
           stats.totalMissions > 10
-            ? {
-                value: (stats.completedMissions / stats.totalMissions) * 100,
-                direction: 'up',
-                label: 'completion rate',
-              }
+            ? (stats.completedMissions / stats.totalMissions) * 100
             : undefined
         }
+        trend={stats.totalMissions > 10 ? 'up' : undefined}
+        sublabel={stats.totalMissions > 10 ? 'completion rate' : undefined}
         variant="primary"
       />
 
       {/* Completion Rate */}
       <StatCard
-        title="Completion Rate"
-        value={`${Math.round(stats.completionRate)}%`}
-        icon={CheckCircle2}
-        trend={
-          stats.completionRate >= 80
-            ? { value: stats.completionRate, direction: 'up', label: 'excellent' }
-            : stats.completionRate >= 60
-              ? { value: stats.completionRate, direction: 'up', label: 'good' }
-              : { value: stats.completionRate, direction: 'down', label: 'needs improvement' }
-        }
+        label="Completion Rate"
+        value={Math.round(stats.completionRate)}
+        formatValue={(v) => `${v}%`}
+        percentageChange={stats.completionRate}
+        trend={stats.completionRate >= 60 ? 'up' : 'down'}
         variant={stats.completionRate >= 80 ? 'success' : 'warning'}
       />
 
       {/* Average Objectives */}
       <StatCard
-        title="Avg Objectives"
-        value={stats.avgObjectives.toFixed(1)}
-        icon={Target}
-        subtitle={`per mission`}
-        variant="info"
+        label="Avg Objectives"
+        value={stats.avgObjectives}
+        formatValue={(v) => v.toFixed(1)}
+        sublabel="per mission"
+        variant="primary"
       />
 
       {/* Success Score or Time Accuracy */}
       {stats.avgSuccessScore !== undefined && stats.avgSuccessScore > 0 ? (
         <StatCard
-          title="Avg Success Score"
-          value={`${Math.round(stats.avgSuccessScore * 100)}%`}
-          icon={Award}
-          trend={
-            stats.avgSuccessScore >= 0.8
-              ? { value: stats.avgSuccessScore * 100, direction: 'up', label: 'excellent' }
-              : { value: stats.avgSuccessScore * 100, direction: 'neutral', label: 'good' }
-          }
+          label="Avg Success Score"
+          value={Math.round(stats.avgSuccessScore * 100)}
+          formatValue={(v) => `${v}%`}
+          percentageChange={stats.avgSuccessScore * 100}
+          trend={stats.avgSuccessScore >= 0.8 ? 'up' : 'neutral'}
           variant="success"
         />
       ) : timeAccuracy !== null ? (
         <StatCard
-          title="Time Accuracy"
-          value={`${Math.round(timeAccuracy)}%`}
-          icon={Clock}
-          subtitle={`est. ${stats.avgTimeEstimate?.toFixed(0)}min vs ${stats.avgTimeActual?.toFixed(0)}min`}
+          label="Time Accuracy"
+          value={Math.round(timeAccuracy)}
+          formatValue={(v) => `${v}%`}
+          sublabel={`est. ${stats.avgTimeEstimate?.toFixed(0)}min vs ${stats.avgTimeActual?.toFixed(0)}min`}
           variant={timeAccuracy >= 80 ? 'success' : 'warning'}
         />
       ) : (
         <StatCard
-          title="Avg Time"
-          value={`${stats.avgTimeEstimate?.toFixed(0) || 0}min`}
-          icon={Clock}
-          subtitle="estimated"
-          variant="info"
+          label="Avg Time"
+          value={Number(stats.avgTimeEstimate?.toFixed(0) ?? 0)}
+          formatValue={(v) => `${v}min`}
+          sublabel="estimated"
+          variant="primary"
         />
       )}
 
       {/* Current Streak (if available) */}
       {stats.currentStreak !== undefined && stats.currentStreak > 0 && (
         <StatCard
-          title="Current Streak"
+          label="Current Streak"
           value={stats.currentStreak}
-          icon={TrendingUp}
-          subtitle={`${stats.currentStreak} ${stats.currentStreak === 1 ? 'day' : 'days'} in a row`}
-          trend={{
-            value: stats.currentStreak,
-            direction: 'up',
-            label: 'Keep going!',
-          }}
+          sublabel={`${stats.currentStreak} ${stats.currentStreak === 1 ? 'day' : 'days'} in a row`}
+          percentageChange={stats.currentStreak}
+          trend="up"
           variant="success"
         />
       )}

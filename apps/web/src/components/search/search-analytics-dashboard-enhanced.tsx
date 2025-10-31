@@ -16,7 +16,6 @@
 
 import { AlertCircle, BarChart3, Clock, Download, Search, TrendingUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import type { PieLabelRenderProps } from 'recharts'
 import {
   Bar,
   BarChart,
@@ -53,6 +52,25 @@ const CHART_COLORS = [
   'oklch(0.60 0.15 290)', // Purple
   'oklch(0.65 0.15 180)', // Cyan
 ]
+
+interface PieLabelRenderProps {
+  name?: string | number
+  percent?: number
+  value?: number
+  cx?: number
+  cy?: number
+  midAngle?: number
+  innerRadius?: number
+  outerRadius?: number
+  fill?: string
+  dataKey?: string
+  payload?: {
+    name?: string
+    value?: number
+    [key: string]: unknown
+  }
+  [key: string]: unknown
+}
 
 const renderContentTypeLabel = ({ name, percent }: PieLabelRenderProps): string => {
   if (typeof name !== 'string' || percent == null) {
@@ -387,7 +405,7 @@ export function SearchAnalyticsDashboardEnhanced({
                     border: '1px solid oklch(0.9 0.01 250)',
                     borderRadius: '8px',
                   }}
-                  content={({ active, payload }) => {
+                  content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                     if (active && payload && payload[0]) {
                       const data = payload[0].payload
                       return (

@@ -20,7 +20,12 @@
  * - Circuit breaker pattern for failing services
  */
 
-import { Prisma, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientInitializationError,
+  PrismaClientValidationError,
+} from '@prisma/client/runtime/library'
 import { embeddingService } from './embedding-service'
 import {
   DEFAULT_POLICIES,
@@ -195,6 +200,55 @@ interface KeywordMatch {
 }
 
 /**
+ * Row types for raw SQL queries to maintain type safety
+ */
+interface ChunkVectorRow {
+  id: string
+  content: string
+  chunkIndex: number
+  pageNumber: number | null
+  lectureId: string
+  lectureTitle: string
+  courseId: string
+  courseName: string
+  uploadedAt: string | Date
+  distance: number
+}
+
+interface LectureVectorRow {
+  id: string
+  title: string
+  courseId: string
+  courseName: string
+  uploadedAt: string | Date
+  processingStatus: string | null
+  distance: number
+  chunkCount: string | number
+}
+
+interface ConceptVectorRow {
+  id: string
+  name: string
+  description: string | null
+  category: string | null
+  distance: number
+}
+
+interface ChunkKeywordRow {
+  id: string
+  rank: number | string
+}
+
+interface LectureKeywordRow {
+  id: string
+  rank: number | string
+}
+
+interface SnippetRow {
+  content: string
+}
+
+/**
  * SemanticSearchService - Core search engine implementation
  *
  * @example
@@ -222,6 +276,8 @@ interface KeywordMatch {
 export class SemanticSearchService {
   private prisma: PrismaClient
   private retryAttempts: number = 0
+  // Provide a class-scoped handle to the shared retry service (for future extensibility)
+  private readonly retry = retryService
 
   constructor() {
     this.prisma = new PrismaClient()
@@ -254,7 +310,7 @@ export class SemanticSearchService {
       }
     }
 
-    return retryService.execute(wrappedOperation, DEFAULT_POLICIES.DATABASE, operationName)
+    return this.retry.execute(wrappedOperation, DEFAULT_POLICIES.DATABASE, operationName)
   }
 
   /**
@@ -266,7 +322,7 @@ export class SemanticSearchService {
     const errorString = errorMessage.toLowerCase()
 
     // Prisma-specific error handling
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error instanceof PrismaClientKnownRequestError) {
       const code = error.code
 
       // Retryable errors with suggested delays
@@ -332,12 +388,12 @@ export class SemanticSearchService {
     }
 
     // Prisma initialization errors (NOT RETRYABLE)
-    if (error instanceof Prisma.PrismaClientInitializationError) {
+    if (error instanceof PrismaClientInitializationError) {
       return new PermanentError('Database initialization failed', error)
     }
 
     // Prisma validation errors (NOT RETRYABLE)
-    if (error instanceof Prisma.PrismaClientValidationError) {
+    if (error instanceof PrismaClientValidationError) {
       return new PermanentError('Query validation failed', error)
     }
 
@@ -439,14 +495,17 @@ export class SemanticSearchService {
         queryEmbedding = embeddingResult.embedding
       }
     } catch (error) {
-      console.error('[SemanticSearchService] Unexpected embedding error:', error)
+      console.error(
+        '[SemanticSearchService] Unexpected embedding error:',
+        error instanceof Error ? error.message : String(error),
+      )
       embeddingFailed = true
       fallbackToKeywordSearch = true
     }
 
     // Step 2: Execute vector similarity search (with retry)
     if (!embeddingFailed && queryEmbedding.length > 0) {
-      const vectorSearchResult = await this.retryService.executeWithRetry(
+      const vectorSearchResult = await this.executeWithRetry(
         async () => {
           return await this.executeVectorSearch(
             queryEmbedding,
@@ -455,29 +514,23 @@ export class SemanticSearchService {
             limit * 2, // Get 2x results for hybrid re-ranking
           )
         },
-        (error) => this.classifyPrismaError(error),
-        (metadata) => {
-          this.retryAttempts = metadata.attempt
-          console.warn(
-            `[SemanticSearchService] Vector search retry ${metadata.attempt}/${metadata.maxAttempts} after ${metadata.delayMs}ms delay`,
-          )
-        },
+        'vector-search',
       )
 
-      if (vectorSearchResult.success) {
-        vectorResults = vectorSearchResult.value
+      this.retryAttempts = vectorSearchResult.attempts
+      if (!vectorSearchResult.error) {
+        vectorResults = vectorSearchResult.value as SearchResult[]
       } else {
         console.error(
           '[SemanticSearchService] Vector search failed after retries:',
           vectorSearchResult.error.message,
-          vectorSearchResult.permanent ? '(PERMANENT)' : '(TRANSIENT)',
         )
 
         // Gracefully fallback to keyword search
         fallbackToKeywordSearch = true
         searchError = {
           message: `Vector search failed: ${vectorSearchResult.error.message}`,
-          type: vectorSearchResult.error.type,
+          type: vectorSearchResult.error.name || 'ERROR',
           degradedMode: true,
         }
       }
@@ -491,20 +544,15 @@ export class SemanticSearchService {
     let hybridSearchUsed = false
 
     if ((includeKeywordBoost || fallbackToKeywordSearch) && params.query.trim().length > 0) {
-      const keywordSearchResult = await this.retryService.executeWithRetry(
+      const keywordSearchResult = await this.executeWithRetry(
         async () => {
           return await this.executeKeywordSearch(params.query, params.filters)
         },
-        (error) => this.classifyPrismaError(error),
-        (metadata) => {
-          console.warn(
-            `[SemanticSearchService] Keyword search retry ${metadata.attempt}/${metadata.maxAttempts}`,
-          )
-        },
+        'keyword-search',
       )
 
-      if (keywordSearchResult.success) {
-        const keywordMatches = keywordSearchResult.value
+      if (!keywordSearchResult.error) {
+        const keywordMatches = keywordSearchResult.value as KeywordMatch[]
 
         if (fallbackToKeywordSearch) {
           // Convert keyword matches to search results (keyword-only mode)
@@ -715,7 +763,7 @@ export class SemanticSearchService {
     params.push(maxDistance)
     params.push(limit)
 
-    const rows = await this.prisma.$queryRawUnsafe<any[]>(
+    const rows = (await this.prisma.$queryRawUnsafe(
       `
       SELECT
         cc.id,
@@ -738,9 +786,9 @@ export class SemanticSearchService {
       LIMIT $${params.length}
     `,
       ...params,
-    )
+    )) as ChunkVectorRow[]
 
-    return rows.map((row: any) => ({
+    return rows.map((row) => ({
       id: row.id,
       type: 'chunk' as const,
       title: row.lectureTitle,
@@ -754,7 +802,7 @@ export class SemanticSearchService {
         courseName: row.courseName,
         lectureId: row.lectureId,
         lectureTitle: row.lectureTitle,
-        pageNumber: row.pageNumber,
+        pageNumber: row.pageNumber ?? undefined,
         uploadDate: new Date(row.uploadedAt),
       },
     }))
@@ -797,7 +845,7 @@ export class SemanticSearchService {
     params.push(limit)
 
     // Note: Using Unsupported type in Prisma, so we use raw SQL
-    const rows = await this.prisma.$queryRawUnsafe<any[]>(
+    const rows = (await this.prisma.$queryRawUnsafe(
       `
       SELECT
         l.id,
@@ -817,15 +865,15 @@ export class SemanticSearchService {
       LIMIT $${params.length}
     `,
       ...params,
-    )
+    )) as LectureVectorRow[]
 
-    return rows.map((row: any) => ({
+    return rows.map((row) => ({
       id: row.id,
       type: 'lecture' as const,
       title: row.title,
       snippet: '', // Will be enriched later
-      chunkCount: parseInt(row.chunkCount, 10),
-      processingStatus: row.processingStatus,
+      chunkCount: typeof row.chunkCount === 'string' ? parseInt(row.chunkCount, 10) : row.chunkCount,
+      processingStatus: row.processingStatus ?? undefined,
       similarity: this.distanceToSimilarity(row.distance),
       relevanceScore: this.distanceToSimilarity(row.distance),
       metadata: {
@@ -862,7 +910,7 @@ export class SemanticSearchService {
     params.push(maxDistance)
     params.push(limit)
 
-    const rows = await this.prisma.$queryRawUnsafe<any[]>(
+    const rows = (await this.prisma.$queryRawUnsafe(
       `
       SELECT
         c.id,
@@ -878,18 +926,18 @@ export class SemanticSearchService {
       LIMIT $${params.length}
     `,
       ...params,
-    )
+    )) as ConceptVectorRow[]
 
-    return rows.map((row: any) => ({
+    return rows.map((row) => ({
       id: row.id,
       type: 'concept' as const,
       title: row.name,
       snippet: '', // Will be enriched later
-      description: row.description,
+      description: row.description ?? undefined,
       similarity: this.distanceToSimilarity(row.distance),
       relevanceScore: this.distanceToSimilarity(row.distance),
       metadata: {
-        category: row.category,
+        category: row.category ?? undefined,
       },
     }))
   }
@@ -947,7 +995,7 @@ export class SemanticSearchService {
 
     const whereClause = whereClauses.length > 0 ? `AND ${whereClauses.join(' AND ')}` : ''
 
-    const rows = await this.prisma.$queryRawUnsafe<any[]>(
+    const rows = (await this.prisma.$queryRawUnsafe(
       `
       SELECT
         cc.id,
@@ -960,12 +1008,12 @@ export class SemanticSearchService {
       LIMIT 100
     `,
       ...params,
-    )
+    )) as ChunkKeywordRow[]
 
-    return rows.map((row: any) => ({
+    return rows.map((row) => ({
       id: row.id,
       type: 'chunk' as const,
-      matchScore: parseFloat(row.rank),
+      matchScore: typeof row.rank === 'string' ? parseFloat(row.rank) : row.rank,
       matchedTerms: terms,
     }))
   }
@@ -990,7 +1038,7 @@ export class SemanticSearchService {
 
     const whereClause = whereClauses.length > 0 ? `AND ${whereClauses.join(' AND ')}` : ''
 
-    const rows = await this.prisma.$queryRawUnsafe<any[]>(
+    const rows = (await this.prisma.$queryRawUnsafe(
       `
       SELECT
         l.id,
@@ -1002,12 +1050,12 @@ export class SemanticSearchService {
       LIMIT 100
     `,
       ...params,
-    )
+    )) as LectureKeywordRow[]
 
-    return rows.map((row: any) => ({
+    return rows.map((row) => ({
       id: row.id,
       type: 'lecture' as const,
-      matchScore: parseFloat(row.rank),
+      matchScore: typeof row.rank === 'string' ? parseFloat(row.rank) : row.rank,
       matchedTerms: terms,
     }))
   }
@@ -1100,7 +1148,10 @@ export class SemanticSearchService {
             } as ChunkSearchResult)
           }
         } catch (error) {
-          console.error(`[SemanticSearchService] Error fetching chunk ${match.id}:`, error)
+          console.error(
+            `[SemanticSearchService] Error fetching chunk ${match.id}:`,
+            error instanceof Error ? error.message : String(error),
+          )
         }
       } else if (match.type === 'lecture') {
         try {
@@ -1132,7 +1183,10 @@ export class SemanticSearchService {
             } as LectureSearchResult)
           }
         } catch (error) {
-          console.error(`[SemanticSearchService] Error fetching lecture ${match.id}:`, error)
+          console.error(
+            `[SemanticSearchService] Error fetching lecture ${match.id}:`,
+            error instanceof Error ? error.message : String(error),
+          )
         }
       }
     }
@@ -1186,7 +1240,7 @@ export class SemanticSearchService {
    */
   private async getLectureSnippet(lectureId: string, query: string): Promise<string> {
     try {
-      const rows = await this.prisma.$queryRawUnsafe<any[]>(
+      const rows = (await this.prisma.$queryRawUnsafe(
         `
         SELECT content
         FROM content_chunks
@@ -1195,13 +1249,16 @@ export class SemanticSearchService {
         LIMIT 1
       `,
         lectureId,
-      )
+      )) as SnippetRow[]
 
       if (rows.length > 0) {
         return this.generateSnippet(rows[0].content, query)
       }
     } catch (error) {
-      console.error('Error fetching lecture snippet:', error)
+      console.error(
+        'Error fetching lecture snippet:',
+        error instanceof Error ? error.message : String(error),
+      )
     }
 
     return 'No preview available'

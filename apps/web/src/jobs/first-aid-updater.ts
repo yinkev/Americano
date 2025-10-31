@@ -21,6 +21,7 @@
  */
 
 import cron from 'node-cron'
+import type { ScheduledTask } from 'node-cron'
 import type { NotificationMethod } from '@/lib/first-aid-update-notifier'
 import { firstAidUpdateNotifier } from '@/lib/first-aid-update-notifier'
 import { firstAidVersionChecker } from '@/lib/first-aid-version-checker'
@@ -67,7 +68,7 @@ export interface FirstAidUpdaterConfig {
  * ```
  */
 export class FirstAidUpdater {
-  private job: cron.ScheduledTask | null = null
+  private job: ScheduledTask | null = null
   private config: FirstAidUpdaterConfig
   private lastExecution: JobExecutionResult | null = null
   private isRunning = false

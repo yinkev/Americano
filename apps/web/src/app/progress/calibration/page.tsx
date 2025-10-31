@@ -424,7 +424,7 @@ export default function CalibrationDashboardPage() {
             </YAxis>
             <Tooltip
               cursor={{ strokeDasharray: '3 3' }}
-              content={({ active, payload }) => {
+              content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                 if (active && payload && payload.length > 0) {
                   const data = payload[0].payload
                   return (

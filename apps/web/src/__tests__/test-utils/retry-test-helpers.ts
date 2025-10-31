@@ -238,13 +238,67 @@ export class BatchFailureSimulator {
 
   private createError(errorType: TransientErrorType | PermanentErrorType): Error {
     if (Object.values(TransientErrorType).includes(errorType as TransientErrorType)) {
-      return new TransientErrorSimulator(errorType as TransientErrorType)
-        .execute(() => Promise.reject(new Error()))
-        .catch((e) => e)
+      // Create a synchronous Error matching the transient type
+      switch (errorType as TransientErrorType) {
+        case TransientErrorType.RATE_LIMIT: {
+          const err = new Error('Rate limit exceeded')
+          ;(err as any).status = 429
+          ;(err as any).retryAfter = 60
+          return err
+        }
+        case TransientErrorType.TIMEOUT: {
+          const err = new Error('Request timeout')
+          ;(err as any).code = 'ECONNABORTED'
+          ;(err as any).timeout = 5000
+          return err
+        }
+        case TransientErrorType.CONNECTION_ERROR: {
+          const err = new Error('Connection refused')
+          ;(err as any).code = 'ECONNREFUSED'
+          return err
+        }
+        case TransientErrorType.SERVICE_UNAVAILABLE: {
+          const err = new Error('Service temporarily unavailable')
+          ;(err as any).status = 503
+          return err
+        }
+        case TransientErrorType.TEMPORARY_FAILURE:
+          return new Error('Temporary failure, please retry')
+        default:
+          return new Error('Unknown transient error')
+      }
     } else {
-      return new PermanentErrorSimulator(errorType as PermanentErrorType)
-        .execute(() => Promise.reject(new Error()))
-        .catch((e) => e)
+      // Create a synchronous Error matching the permanent type
+      switch (errorType as PermanentErrorType) {
+        case PermanentErrorType.INVALID_INPUT: {
+          const err = new Error('Invalid input provided')
+          ;(err as any).status = 400
+          ;(err as any).code = 'INVALID_INPUT'
+          return err
+        }
+        case PermanentErrorType.AUTHENTICATION_ERROR: {
+          const err = new Error('Authentication failed')
+          ;(err as any).status = 401
+          return err
+        }
+        case PermanentErrorType.FORBIDDEN: {
+          const err = new Error('Access forbidden')
+          ;(err as any).status = 403
+          return err
+        }
+        case PermanentErrorType.NOT_FOUND: {
+          const err = new Error('Resource not found')
+          ;(err as any).status = 404
+          return err
+        }
+        case PermanentErrorType.INVALID_JSON: {
+          const err = new Error('Invalid JSON: Unexpected token')
+          ;(err as any).code = 'INVALID_JSON'
+          return err
+        }
+        default:
+          return new Error('Unknown permanent error')
+      }
     }
   }
 }
@@ -634,7 +688,13 @@ export const mockFactories = {
       findMany: jest.fn(async () => []),
       findFirst: jest.fn(async () => null),
       create: jest.fn(async (data) => data),
-      update: jest.fn(async (data) => data.data),
+      update: jest.fn(async (data) => {
+        // Narrow unknown input before property access
+        if (data && typeof data === 'object' && 'data' in data) {
+          return (data as { data: unknown }).data
+        }
+        return undefined
+      }),
       delete: jest.fn(async () => ({})),
     },
     conceptRelationship: {

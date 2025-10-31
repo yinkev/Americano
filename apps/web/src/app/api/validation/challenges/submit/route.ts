@@ -60,7 +60,6 @@ export async function POST(request: NextRequest) {
     const prompt = await prisma.validationPrompt.findUnique({
       where: { id: challengeId },
       include: {
-        learningObjective: true,
       },
     })
 

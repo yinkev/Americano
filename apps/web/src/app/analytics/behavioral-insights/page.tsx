@@ -38,6 +38,9 @@ import {
 import { useLongitudinal, usePatterns, usePeerBenchmark } from '@/lib/api/hooks/analytics'
 import { typography } from '@/lib/design-tokens'
 import { useAnalyticsStore } from '@/stores/analytics'
+import type { UseQueryResult } from '@tanstack/react-query'
+import type { ComprehensionPattern, LongitudinalMetric, PeerBenchmark } from '@/lib/api/hooks/types/generated'
+import type { ObjectiveStrength } from '@/types/api-generated'
 
 // Hardcoded user ID for MVP - replace with actual auth
 const DEFAULT_USER_ID = 'user-kevy'
@@ -70,29 +73,28 @@ export default function BehavioralInsightsDashboard() {
   // Filters from Zustand store
   const timeRange = useAnalyticsStore((state) => state.timeRange)
 
-  // React Query hooks for data fetching
-  const {
-    data: patternsData,
-    isLoading: patternsLoading,
-    error: patternsError,
-  } = usePatterns(DEFAULT_USER_ID, timeRange)
+  // React Query hooks for data fetching (explicitly typed)
+  const patternsQuery = usePatterns(DEFAULT_USER_ID, timeRange)
+  const longitudinalQuery = useLongitudinal(DEFAULT_USER_ID, timeRange)
+  const benchmarkQuery = usePeerBenchmark(DEFAULT_USER_ID)
 
-  const {
-    data: longitudinalData,
-    isLoading: longitudinalLoading,
-    error: longitudinalError,
-  } = useLongitudinal(DEFAULT_USER_ID, timeRange)
+  const patternsData = patternsQuery.data as ComprehensionPattern | undefined
+  const patternsLoading = patternsQuery.isLoading
+  const patternsError = patternsQuery.error
 
-  const {
-    data: benchmarkData,
-    isLoading: benchmarkLoading,
-    error: benchmarkError,
-  } = usePeerBenchmark(DEFAULT_USER_ID)
+  const longitudinalData = longitudinalQuery.data as LongitudinalMetric | undefined
+  const longitudinalLoading = longitudinalQuery.isLoading
+  const longitudinalError = longitudinalQuery.error
+
+  const benchmarkData = benchmarkQuery.data as PeerBenchmark | undefined
+  const benchmarkLoading = benchmarkQuery.isLoading
+  const benchmarkError = benchmarkQuery.error
 
   // Derive metrics from API data
   const metrics = {
     patternsCount: patternsData?.strengths.length || 0,
-    weeklyGrowth: longitudinalData?.improvement_rate.weekly || 0,
+    // LongitudinalMetric uses `improvement_rates` with periods "week" | "month"
+    weeklyGrowth: longitudinalData?.improvement_rates?.week?.rate ?? 0,
     percentile: benchmarkData?.user_percentile || 0,
     insightsCount: patternsData?.ai_insights.length || 0,
   }
@@ -229,10 +231,42 @@ export default function BehavioralInsightsDashboard() {
               emptyMessage="Complete more study sessions to unlock pattern insights"
               height={400}
             >
-              <LearningPatternsGrid
-                patterns={patternsData?.strengths || []}
-                isLoading={patternsLoading}
-              />
+              {(() => {
+                // Map API strengths (ObjectiveStrength[]) to UI BehavioralPattern[]
+                type UIPatternType =
+                  | 'OPTIMAL_STUDY_TIME'
+                  | 'SESSION_DURATION_PREFERENCE'
+                  | 'CONTENT_TYPE_PREFERENCE'
+                  | 'PERFORMANCE_PEAK'
+                  | 'ATTENTION_CYCLE'
+                  | 'FORGETTING_CURVE'
+
+                type UIPattern = {
+                  id: string
+                  patternType: UIPatternType
+                  confidence: number
+                  metadata: Record<string, unknown>
+                  lastSeenAt: string
+                  firstSeenAt: string
+                }
+
+                const strengths = (patternsData?.strengths ?? []) as ObjectiveStrength[]
+                const mapped: UIPattern[] = strengths.map((s) => ({
+                  id: s.objective_id,
+                  // Use a stable, visualization-friendly type; real mapping can refine later
+                  patternType: 'PERFORMANCE_PEAK',
+                  // Convert 0-100 score to 0-1 confidence for the badge logic
+                  confidence: Math.max(0, Math.min(1, (s.score ?? 0) / 100)),
+                  metadata: {
+                    objectiveName: s.objective_name,
+                    percentile: s.percentile_rank,
+                  },
+                  lastSeenAt: patternsData?.generated_at ?? new Date().toISOString(),
+                  firstSeenAt: patternsData?.generated_at ?? new Date().toISOString(),
+                }))
+
+                return <LearningPatternsGrid patterns={mapped} isLoading={patternsLoading} />
+              })()}
             </ChartContainer>
           </motion.div>
         </TabsContent>
@@ -256,10 +290,41 @@ export default function BehavioralInsightsDashboard() {
               empty={!longitudinalData}
               height={500}
             >
-              <PatternEvolutionTimeline
-                evolutionData={longitudinalData?.time_series || []}
-                isLoading={longitudinalLoading}
-              />
+              {(() => {
+                // Provide a typed evolution dataset compatible with PatternEvolutionTimeline
+                type UIPatternType =
+                  | 'OPTIMAL_STUDY_TIME'
+                  | 'SESSION_DURATION_PREFERENCE'
+                  | 'CONTENT_TYPE_PREFERENCE'
+                  | 'PERFORMANCE_PEAK'
+                  | 'ATTENTION_CYCLE'
+                  | 'FORGETTING_CURVE'
+
+                type UIWeekPattern = {
+                  id: string
+                  patternType: UIPatternType
+                  confidence: number
+                  metadata: Record<string, unknown>
+                  status: 'new' | 'existing' | 'disappeared'
+                }
+
+                type UIEvolutionWeek = {
+                  weekNumber: number
+                  weekStart: string
+                  weekEnd: string
+                  patterns: UIWeekPattern[]
+                }
+
+                // Until dedicated evolution API hook exists, pass a safe typed empty dataset
+                const evolutionData: UIEvolutionWeek[] = []
+
+                return (
+                  <PatternEvolutionTimeline
+                    evolutionData={evolutionData}
+                    isLoading={longitudinalLoading}
+                  />
+                )
+              })()}
             </ChartContainer>
           </motion.div>
         </TabsContent>

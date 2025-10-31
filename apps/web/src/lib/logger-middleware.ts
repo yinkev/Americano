@@ -61,11 +61,11 @@ export function getCorrelationId(request: NextRequest | Request): string {
 /**
  * Add correlation ID to response headers
  */
-export function addCorrelationHeaders(
-  response: NextResponse,
+export function addCorrelationHeaders<T = unknown>(
+  response: NextResponse<T>,
   correlationId: string,
   requestId?: string,
-): NextResponse {
+): NextResponse<T> {
   response.headers.set(CORRELATION_ID_HEADER, correlationId)
   if (requestId) {
     response.headers.set(REQUEST_ID_HEADER, requestId)

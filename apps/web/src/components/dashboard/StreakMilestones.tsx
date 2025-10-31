@@ -63,7 +63,7 @@ export function StreakMilestones({ streakDays }: StreakMilestonesProps) {
 
   useEffect(() => {
     // Check if user just hit a milestone
-    const milestone = MILESTONES.find((m) => m.days === streakDays)
+    const milestone = MILESTONES.find((m: any) => m.days === streakDays)
     if (milestone) {
       setCurrentMilestone(milestone)
       setShowCelebration(true)
@@ -77,12 +77,12 @@ export function StreakMilestones({ streakDays }: StreakMilestonesProps) {
   }, [streakDays])
 
   const getNextMilestone = () => {
-    return MILESTONES.find((m) => m.days > streakDays) || MILESTONES[MILESTONES.length - 1]
+    return MILESTONES.find((m: any) => m.days > streakDays) || MILESTONES[MILESTONES.length - 1]
   }
 
   const getProgressToNextMilestone = () => {
     const next = getNextMilestone()
-    const prev = [...MILESTONES].reverse().find((m) => m.days <= streakDays)
+    const prev = [...MILESTONES].reverse().find((m: any) => m.days <= streakDays)
     const prevDays = prev?.days || 0
     const totalRange = next.days - prevDays
     const currentProgress = streakDays - prevDays
@@ -125,7 +125,7 @@ export function StreakMilestones({ streakDays }: StreakMilestonesProps) {
               exit={{ scale: 0.8, y: 20 }}
               transition={{ type: 'spring', damping: 15 }}
               className="bg-card border-2 border-[var(--streak-fire)] rounded-2xl p-6 max-w-md mx-4 text-center shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: any) => e.stopPropagation()}
             >
               {/* Icon with pulse animation */}
               <motion.div

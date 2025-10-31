@@ -9,7 +9,8 @@
  * - Complexity-to-difficulty mapping
  */
 
-import { ObjectiveComplexity } from '@prisma/client'
+// Use enums from generated Prisma client
+import { ObjectiveComplexity } from '@/generated/prisma'
 import {
   AdaptiveDifficultyEngine,
   DifficultyAdjustment,
@@ -17,7 +18,13 @@ import {
 } from '@/lib/adaptive-difficulty-engine'
 import { prisma } from '@/lib/db'
 
-jest.mock('@/lib/db')
+// Provide explicit prisma mock for this test file
+jest.mock('@/lib/db', () => ({
+  prisma: {
+    validationResponse: { findMany: jest.fn() },
+    validationPrompt: { findMany: jest.fn() },
+  },
+}))
 
 describe('AdaptiveDifficultyEngine', () => {
   let engine: AdaptiveDifficultyEngine

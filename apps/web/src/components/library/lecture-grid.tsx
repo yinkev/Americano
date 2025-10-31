@@ -64,7 +64,7 @@ export interface LectureGridProps {
 
 export function LectureGrid({ lectures, onLectureClick, onLectureAction }: LectureGridProps) {
   const preferences = useLibraryStore(selectLibraryPreferences)
-  const selectedLectureIds = useLibraryStore((state) => state.selectedLectureIds)
+  const selectedLectureIds = useLibraryStore((state: any) => state.selectedLectureIds)
   const { toggleLectureSelection } = useLibraryStore()
 
   const getStatusConfig = (status: Lecture['processingStatus']) => {
@@ -162,7 +162,7 @@ export function LectureGrid({ lectures, onLectureClick, onLectureAction }: Lectu
                       checked={isSelected}
                       onCheckedChange={() => toggleLectureSelection(lecture.id)}
                       className="bg-white/90 backdrop-blur-sm"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e: any) => e.stopPropagation()}
                     />
                   </div>
 
@@ -174,7 +174,7 @@ export function LectureGrid({ lectures, onLectureClick, onLectureAction }: Lectu
                           variant="secondary"
                           size="sm"
                           className="h-8 w-8 p-0 bg-white/90 backdrop-blur-sm"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e: any) => e.stopPropagation()}
                         >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
@@ -253,7 +253,7 @@ export function LectureGrid({ lectures, onLectureClick, onLectureAction }: Lectu
                 {/* Tags */}
                 {lecture.topicTags.length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-3">
-                    {lecture.topicTags.slice(0, 3).map((tag) => (
+                    {lecture.topicTags.slice(0, 3).map((tag: any) => (
                       <Badge key={tag} variant="outline" className="text-xs">
                         {tag}
                       </Badge>

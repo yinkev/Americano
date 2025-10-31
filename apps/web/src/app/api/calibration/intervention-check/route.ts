@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
         errorResponse(
           ErrorCodes.VALIDATION_ERROR,
           'Invalid request body',
-          validationResult.error.errors,
+          validationResult.error.issues,
         ),
         { status: 400 },
       )

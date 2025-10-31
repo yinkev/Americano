@@ -160,7 +160,13 @@ export function useScheduleRetries() {
  */
 export function useDetectPatterns(request: PatternDetectionRequest) {
   return useQuery({
-    queryKey: challengeKeys.patterns(request.user_id, request.objective_id),
+    // PatternDetectionRequest only guarantees user_id; extra fields are unknown.
+    // Guard objective_id to a string if provided; otherwise undefined.
+    queryKey: (() => {
+      const objectiveUnknown = (request as { objective_id?: unknown }).objective_id
+      const objectiveId = typeof objectiveUnknown === 'string' ? objectiveUnknown : undefined
+      return challengeKeys.patterns(request.user_id, objectiveId)
+    })(),
     queryFn: async (): Promise<PatternDetectionResponse> => {
       return api.post<PatternDetectionResponse>('/challenge/detect-patterns', request)
     },

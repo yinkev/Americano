@@ -13,6 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useRefreshAll } from '@/hooks/use-understanding-analytics'
 import { useUnderstandingAnalyticsStore } from '@/store/understanding-analytics-store'
+import type { Tab } from '@/store/understanding-analytics-store'
 
 /**
  * Story 4.6 Task 2: Understanding Dashboard Main Layout
@@ -143,7 +144,11 @@ export function UnderstandingDashboard() {
       )}
 
       {/* Tabbed Analytics Views */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as Tab)}
+        className="w-full"
+      >
         <TabsList className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] p-1 rounded-2xl flex-wrap h-auto">
           <TabsTrigger value="overview" className="min-h-[44px]">
             Overview

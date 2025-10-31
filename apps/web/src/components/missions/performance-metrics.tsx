@@ -33,6 +33,9 @@ export function PerformanceMetrics({ mission, showRecommendations = true }: Perf
 
   const successPercentage = mission.successScore ? mission.successScore * 100 : null
 
+  // Normalize difficulty rating to a number for safe narrowing
+  const difficulty = mission.difficultyRating ?? 0
+
   // Generate insights
   const insights = []
 
@@ -109,32 +112,32 @@ export function PerformanceMetrics({ mission, showRecommendations = true }: Perf
           title="Completion Rate"
           value={`${Math.round(completionRate)}%`}
           subtitle={`${mission.completedObjectivesCount}/${mission.totalObjectives} objectives`}
-          icon={Target}
+          icon={<Target />}
           trend={
-            completionRate >= 80
-              ? { direction: 'up', value: completionRate, label: 'excellent' }
-              : completionRate >= 60
-                ? { direction: 'neutral', value: completionRate, label: 'good' }
-                : { direction: 'down', value: completionRate, label: 'needs work' }
+            completionRate >= 80 ? 'up' : completionRate >= 60 ? 'neutral' : 'down'
           }
-          variant={completionRate >= 80 ? 'success' : completionRate >= 60 ? 'warning' : 'default'}
+          percentageChange={completionRate}
+          status={completionRate >= 80 ? 'success' : completionRate >= 60 ? 'warning' : 'default'}
         />
 
         <MetricCard
           title="Time Spent"
           value={`${mission.actualMinutes || mission.estimatedMinutes}min`}
           subtitle={`est. ${mission.estimatedMinutes}min`}
-          icon={Clock}
+          icon={<Clock />}
           trend={
             timeDifference !== null
-              ? {
-                  direction: timeDifference > 0 ? 'up' : timeDifference < 0 ? 'down' : 'neutral',
-                  value: Math.abs(timeDifference),
-                  label: timeDifference > 0 ? 'over' : timeDifference < 0 ? 'under' : 'exact',
-                }
+              ? timeDifference > 0
+                ? 'up'
+                : timeDifference < 0
+                  ? 'down'
+                  : 'neutral'
               : undefined
           }
-          variant={
+          percentageChange={
+            timeAccuracy !== null ? Math.max(0, 100 - timeAccuracy) : undefined
+          }
+          status={
             timeAccuracy !== null
               ? timeAccuracy >= 90
                 ? 'success'
@@ -150,13 +153,10 @@ export function PerformanceMetrics({ mission, showRecommendations = true }: Perf
             title="Time Accuracy"
             value={`${Math.round(timeAccuracy)}%`}
             subtitle="estimation accuracy"
-            icon={Zap}
-            trend={{
-              direction: timeAccuracy >= 80 ? 'up' : 'neutral',
-              value: timeAccuracy,
-              label: timeAccuracy >= 90 ? 'excellent' : 'good',
-            }}
-            variant={timeAccuracy >= 80 ? 'success' : 'info'}
+            icon={<Zap />}
+            trend={timeAccuracy >= 80 ? 'up' : 'neutral'}
+            percentageChange={timeAccuracy}
+            status={timeAccuracy >= 80 ? 'success' : 'info'}
           />
         )}
 
@@ -165,30 +165,22 @@ export function PerformanceMetrics({ mission, showRecommendations = true }: Perf
             title="Success Score"
             value={`${Math.round(successPercentage)}%`}
             subtitle="overall performance"
-            icon={Award}
-            trend={{
-              direction: successPercentage >= 80 ? 'up' : successPercentage >= 60 ? 'neutral' : 'down',
-              value: successPercentage,
-              label:
-                successPercentage >= 90
-                  ? 'excellent'
-                  : successPercentage >= 70
-                    ? 'good'
-                    : 'fair',
-            }}
-            variant={
+            icon={<Award />}
+            trend={successPercentage >= 80 ? 'up' : successPercentage >= 60 ? 'neutral' : 'down'}
+            percentageChange={successPercentage}
+            status={
               successPercentage >= 80 ? 'success' : successPercentage >= 60 ? 'info' : 'warning'
             }
           />
         )}
 
-        {mission.difficultyRating && (
+        {difficulty > 0 && (
           <MetricCard
             title="Difficulty"
-            value={'⭐'.repeat(mission.difficultyRating)}
-            subtitle={`${mission.difficultyRating} out of 5`}
-            icon={TrendingUp}
-            variant="default"
+            value={'⭐'.repeat(difficulty)}
+            subtitle={`${difficulty} out of 5`}
+            icon={<TrendingUp />}
+            status="default"
           />
         )}
       </div>
@@ -245,7 +237,7 @@ export function PerformanceMetrics({ mission, showRecommendations = true }: Perf
                     </span>
                   </li>
                 )}
-                {mission.difficultyRating && mission.difficultyRating >= 4 && (
+                {difficulty >= 4 && (
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-0.5">•</span>
                     <span>

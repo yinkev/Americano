@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["@testing-library/jest-dom", "node"]
+  },
+  "include": [
+    "src/lib/embedding-service.ts",
+    "src/lib/api/hooks/validation.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "prisma/**/*.ts",
+    "src/app/api/adaptive/**/*.ts",
+    "src/subsystems/knowledge-graph/search-suggestions.ts",
+    "__tests__/**",
+    "src/**/__tests__/**",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
+  ]
+}

@@ -345,7 +345,9 @@ async function exampleWithRetry() {
     maxAttempts: 3,
     delayMs: 1000,
     backoffMultiplier: 2,
-    shouldRetry: (error) => error.retriable && error.code !== EmbeddingErrorCode.INVALID_INPUT,
+    // `error` is typed as BaseError in RetryConfig; narrow before accessing `.code`
+    shouldRetry: (error) =>
+      error.retriable && (!(error instanceof EmbeddingError) || error.code !== EmbeddingErrorCode.INVALID_INPUT),
   })
 
   if (isOk(result)) {

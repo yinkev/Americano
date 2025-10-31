@@ -95,7 +95,6 @@ function generateMockConcepts(count: number): Concept[] {
       category: categories[i % categories.length],
       embedding: Array(1536).fill(0.1 + i * 0.0001),
       createdAt: new Date(),
-      updatedAt: new Date(),
     })
   }
 
@@ -369,7 +368,6 @@ describe('Co-Occurrence Detection Performance Tests', () => {
           category: 'anatomy',
           embedding: Array(1536).fill(0.1),
           createdAt: new Date(),
-          updatedAt: new Date(),
         },
         {
           id: 'concept-1',
@@ -378,7 +376,6 @@ describe('Co-Occurrence Detection Performance Tests', () => {
           category: 'anatomy',
           embedding: Array(1536).fill(0.1),
           createdAt: new Date(),
-          updatedAt: new Date(),
         },
         {
           id: 'concept-2',
@@ -387,7 +384,6 @@ describe('Co-Occurrence Detection Performance Tests', () => {
           category: 'anatomy',
           embedding: Array(1536).fill(0.1),
           createdAt: new Date(),
-          updatedAt: new Date(),
         },
       ]
 
@@ -520,7 +516,6 @@ describe('Co-Occurrence Detection Performance Tests', () => {
           category: 'biochemistry',
           embedding: Array(1536).fill(0.1),
           createdAt: new Date(),
-          updatedAt: new Date(),
         },
         {
           id: 'concept-1',
@@ -529,7 +524,6 @@ describe('Co-Occurrence Detection Performance Tests', () => {
           category: 'physiology',
           embedding: Array(1536).fill(0.1),
           createdAt: new Date(),
-          updatedAt: new Date(),
         },
         {
           id: 'concept-2',
@@ -538,7 +532,6 @@ describe('Co-Occurrence Detection Performance Tests', () => {
           category: 'physiology',
           embedding: Array(1536).fill(0.1),
           createdAt: new Date(),
-          updatedAt: new Date(),
         },
       ]
 
@@ -562,7 +555,6 @@ describe('Co-Occurrence Detection Performance Tests', () => {
           category: 'clinical',
           embedding: Array(1536).fill(0.1),
           createdAt: new Date(),
-          updatedAt: new Date(),
         },
         {
           id: 'concept-1',
@@ -571,7 +563,6 @@ describe('Co-Occurrence Detection Performance Tests', () => {
           category: 'anatomy',
           embedding: Array(1536).fill(0.1),
           createdAt: new Date(),
-          updatedAt: new Date(),
         },
       ]
 
@@ -600,7 +591,6 @@ describe('Co-Occurrence Detection Performance Tests', () => {
           category: 'anatomy',
           embedding: Array(1536).fill(0.1 + i * 0.001),
           createdAt: new Date(),
-          updatedAt: new Date(),
         }))
 
       let queryCount = 0

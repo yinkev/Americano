@@ -48,7 +48,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const { rating, feedbackText, helpful } = validatedBody.data
 
     // Check if recommendation exists
-    const recommendation = await prisma.contentRecommendation.findUnique({
+    const recommendation = await prisma.content_recommendations.findUnique({
       where: { id: recommendationId },
     })
 
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // Create feedback
-    const feedback = await prisma.recommendationFeedback.create({
+    const feedback = await prisma.recommendation_feedback.create({
       data: {
         recommendationId,
         userId,
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     })
 
     // Update recommendation status to RATED
-    const updatedRecommendation = await prisma.contentRecommendation.update({
+    const updatedRecommendation = await prisma.content_recommendations.update({
       where: { id: recommendationId },
       data: { status: 'RATED' },
     })

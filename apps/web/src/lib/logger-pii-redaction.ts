@@ -22,7 +22,7 @@
  * ```
  */
 
-import crypto from 'crypto'
+import { createHash } from 'crypto'
 
 /**
  * Common PII patterns
@@ -150,10 +150,13 @@ export function redactPII(text: string, preserveLength = false): string {
  * // => true
  * ```
  */
-export function hashSensitiveData(data: string, algorithm: 'sha256' | 'md5' = 'sha256'): string {
+export function hashSensitiveData(
+  data: string,
+  algorithm: 'sha256' | 'md5' = 'sha256',
+): string {
   if (!data) return ''
 
-  const hash = crypto.createHash(algorithm).update(data.toLowerCase().trim()).digest('hex')
+  const hash = createHash(algorithm).update(data.toLowerCase().trim()).digest('hex')
 
   // Return with algorithm prefix for clarity
   return `${algorithm}:${hash.substring(0, 16)}...` // Shortened for log readability
@@ -360,24 +363,28 @@ export function isPIIField(fieldName: string): boolean {
 export function redactPIIFromObject<T extends Record<string, unknown>>(obj: T): T {
   if (!obj || typeof obj !== 'object') return obj
 
-  const redacted = { ...obj }
+  // Use a writable, indexable accumulator to avoid TS2862 when assigning by dynamic keys
+  const redactedRecord: Record<string, unknown> = { ...obj }
 
-  for (const [key, value] of Object.entries(redacted)) {
+  for (const [key, value] of Object.entries(obj)) {
     // If field name suggests PII, redact completely
     if (isPIIField(key)) {
-      redacted[key] = '[REDACTED]'
+      redactedRecord[key] = '[REDACTED]'
     }
     // If value is string, apply PII redaction
     else if (typeof value === 'string') {
-      redacted[key] = redactPII(value)
+      redactedRecord[key] = redactPII(value)
     }
     // If value is nested object, recurse
     else if (value && typeof value === 'object' && !Array.isArray(value)) {
-      redacted[key] = redactPIIFromObject(value as Record<string, unknown>)
+      redactedRecord[key] = redactPIIFromObject(value as Record<string, unknown>)
+    } else {
+      // Preserve non-string primitives and arrays as-is
+      redactedRecord[key] = value
     }
   }
 
-  return redacted
+  return redactedRecord as T
 }
 
 /**

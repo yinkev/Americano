@@ -121,7 +121,7 @@ export const GET = withErrorHandler(
         comprehensionResponses.length > 0
           ? comprehensionResponses
               .filter((r) => !r.skipped && r.score !== null)
-              .reduce((sum, r) => sum + (r.score || 0), 0) /
+              .reduce((sum, r) => sum + (r.score ?? 0), 0) /
             comprehensionResponses.filter((r) => !r.skipped && r.score !== null).length
           : null,
       skippedCount: comprehensionResponses.filter((r) => r.skipped).length,
@@ -141,11 +141,11 @@ export const GET = withErrorHandler(
       where: {
         sessionId: id,
         preAssessmentConfidence: { not: null },
-        score: { not: null },
       },
       select: {
         preAssessmentConfidence: true,
-        postAssessmentConfidence: true,
+        // NOTE: postAssessmentConfidence field doesn't exist in Prisma schema
+        // postAssessmentConfidence: true,
         calibrationDelta: true,
         calibrationCategory: true,
         reflectionNotes: true,
@@ -168,7 +168,7 @@ export const GET = withErrorHandler(
     if (calibrationResponses.length > 0) {
       // Average calibration delta (absolute value for gap measurement)
       const totalDelta = calibrationResponses.reduce(
-        (sum, r) => sum + Math.abs(r.calibrationDelta || 0),
+        (sum, r) => sum + Math.abs(r.calibrationDelta ?? 0),
         0,
       )
       calibrationMetrics.avgConfidenceVsPerformanceGap = Math.round(

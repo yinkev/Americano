@@ -1,4 +1,3 @@
-import { CalibrationCategory } from '@prisma/client'
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { errorResponse, successResponse } from '@/lib/api-response'
@@ -122,9 +121,10 @@ export async function POST(request: NextRequest) {
         calibrationDelta: calibration.calibrationDelta,
         // Story 4.4: Pre/Post assessment confidence tracking
         preAssessmentConfidence,
-        postAssessmentConfidence: postAssessmentConfidence || null,
-        confidenceShift,
-        confidenceRationale: confidenceRationale || null,
+        // NOTE: postAssessmentConfidence, confidenceShift, and confidenceRationale fields don't exist in Prisma schema
+        // postAssessmentConfidence: postAssessmentConfidence || null,
+        // confidenceShift,
+        // confidenceRationale: confidenceRationale || null,
         reflectionNotes: reflectionNotes || null,
         calibrationCategory: calibration.category,
         detailedFeedback: {
@@ -167,7 +167,6 @@ export async function POST(request: NextRequest) {
     const yesterdayMetric = await prisma.comprehensionMetric.findFirst({
       where: {
         objectiveId,
-        userId,
         date: yesterday,
       },
     })
@@ -182,10 +181,9 @@ export async function POST(request: NextRequest) {
     // Upsert ComprehensionMetric for today
     await prisma.comprehensionMetric.upsert({
       where: {
-        conceptName_date_userId: {
+        conceptName_date: {
           conceptName: prompt.conceptName,
           date: today,
-          userId,
         },
       },
       update: {
@@ -196,7 +194,6 @@ export async function POST(request: NextRequest) {
       create: {
         conceptName: prompt.conceptName,
         objectiveId,
-        userId,
         date: today,
         avgScore,
         sampleSize: todayResponses.length,

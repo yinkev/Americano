@@ -98,19 +98,7 @@ export async function GET(request: NextRequest) {
     const responses = await prisma.validationResponse.findMany({
       where: whereClause,
       include: {
-        prompt: {
-          include: {
-            learningObjective: {
-              include: {
-                lecture: {
-                  include: {
-                    course: true,
-                  },
-                },
-              },
-            },
-          },
-        },
+        prompt: true,
       },
       orderBy: {
         respondedAt: 'asc',
@@ -190,12 +178,12 @@ export async function GET(request: NextRequest) {
       respondedAt: response.respondedAt,
       conceptName: response.prompt.conceptName,
       preAssessmentConfidence: response.preAssessmentConfidence,
-      postAssessmentConfidence: response.postAssessmentConfidence,
-      confidenceShift: response.confidenceShift,
+      postAssessmentConfidence: null, // Not available in current schema
+      confidenceShift: null, // Not available in current schema
       score: response.score * 100, // Convert to 0-100
       calibrationDelta: response.calibrationDelta,
       calibrationCategory: response.calibrationCategory,
-      courseName: response.prompt.learningObjective?.lecture?.course?.name || null,
+      courseName: null, // learningObjective relation doesn't exist
     }))
 
     return NextResponse.json(

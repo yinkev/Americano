@@ -9,7 +9,6 @@
 
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { AlertFrequency } from '@/generated/prisma'
 import { prisma } from '@/lib/db'
 
 /**
@@ -49,12 +48,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       where: {
         id,
         userId, // Ensure user owns this search
-      },
-      include: {
-        alerts: {
-          orderBy: { createdAt: 'desc' },
-          take: 10,
-        },
       },
     })
 

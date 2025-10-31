@@ -29,19 +29,28 @@ export interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * Trend direction
    */
-  trend?: TrendDirection
+  // Accepts 'flat' as an alias for 'neutral' for convenience
+  trend?: TrendDirection | 'flat'
   /**
-   * Percentage change
+   * Percentage change (alias: change)
    */
   percentageChange?: number
+  /**
+   * Alias for percentageChange
+   */
+  change?: number
   /**
    * Whether upward trend is positive
    */
   upIsGood?: boolean
   /**
-   * Description or subtitle
+   * Description or subtitle (alias: subtitle)
    */
   description?: string
+  /**
+   * Alias for description
+   */
+  subtitle?: string
   /**
    * Sparkline data (optional)
    */
@@ -156,8 +165,10 @@ export const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
       value,
       trend,
       percentageChange,
+      change,
       upIsGood = true,
       description,
+      subtitle,
       sparklineData,
       loading = false,
       empty = false,
@@ -170,6 +181,9 @@ export const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
     },
     ref,
   ) => {
+    // Handle aliases
+    const finalPercentageChange = percentageChange ?? change
+    const finalDescription = description ?? subtitle
     if (loading) {
       return (
         <Card
@@ -183,7 +197,7 @@ export const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
           </CardHeader>
           <CardContent>
             <div className="h-8 w-32 animate-pulse rounded bg-muted" />
-            {description && <div className="mt-2 h-3 w-40 animate-pulse rounded bg-muted" />}
+            {finalDescription && <div className="mt-2 h-3 w-40 animate-pulse rounded bg-muted" />}
           </CardContent>
         </Card>
       )
@@ -233,17 +247,17 @@ export const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
             <div className="text-2xl font-bold tabular-nums" role="status" aria-live="polite">
               {value}
             </div>
-            {trend && percentageChange !== undefined && (
+            {trend && finalPercentageChange !== undefined && (
               <TrendIndicator
-                direction={trend}
-                value={percentageChange}
+                direction={trend === 'flat' ? 'neutral' : trend}
+                value={finalPercentageChange}
                 upIsGood={upIsGood}
                 size="sm"
               />
             )}
           </div>
 
-          {description && <p className="mt-1 text-xs text-muted-foreground">{description}</p>}
+          {finalDescription && <p className="mt-1 text-xs text-muted-foreground">{finalDescription}</p>}
 
           {sparklineData && sparklineData.length > 0 && (
             <div className="mt-3 text-muted-foreground">

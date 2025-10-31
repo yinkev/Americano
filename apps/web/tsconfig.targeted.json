@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["@testing-library/jest-dom", "@types/node", "@types/react", "@types/react-dom"]
+  },
+  "include": [
+    "src/jobs/first-aid-updater.ts",
+    "src/hooks/use-first-aid-context.ts",
+    "src/components/ui/trend-indicator.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

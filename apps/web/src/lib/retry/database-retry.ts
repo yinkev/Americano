@@ -11,7 +11,7 @@
  * Epic 3 - Database Retry Strategy
  */
 
-import type { PrismaClient } from '@/generated/prisma'
+import type { Prisma, PrismaClient } from '@/generated/prisma'
 import { DEFAULT_POLICIES, PermanentError, type RetryPolicy, retryService } from './retry-service'
 
 /**
@@ -52,9 +52,11 @@ export async function withDatabaseRetry<T>(
   operationName: string,
   customPolicy?: Partial<RetryPolicy>,
 ): Promise<T> {
-  const policy = customPolicy
-    ? { ...DATABASE_RETRY_POLICY, ...customPolicy }
-    : DATABASE_RETRY_POLICY
+  // Merge with defaults while keeping a fully-specified policy shape
+  const policy: Required<RetryPolicy> = {
+    ...DATABASE_RETRY_POLICY,
+    ...(customPolicy ?? {}),
+  }
 
   const result = await retryService.execute(operation, policy, `db:${operationName}`)
 
@@ -65,14 +67,16 @@ export async function withDatabaseRetry<T>(
     }
 
     // Otherwise throw the error with retry metadata
-    const error = new Error(
+    throw new Error(
       `Database operation '${operationName}' failed after ${result.attempts} attempts: ${result.error.message}`,
+      { cause: result.error },
     )
-    error.cause = result.error
-    throw error
   }
 
-  return result.value!
+  // At this point, result.error is falsy; result.value should be present
+  if (typeof result.value !== 'undefined') return result.value
+  // Safety net: this should be unreachable but keeps types happy without non-null assertions
+  throw new Error(`Database operation '${operationName}' failed with no result and no error`)
 }
 
 /**
@@ -104,9 +108,7 @@ export async function withDatabaseRetry<T>(
  */
 export async function withDatabaseTransaction<T>(
   prisma: PrismaClient,
-  transactionFn: (
-    tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'>,
-  ) => Promise<T>,
+  transactionFn: (tx: Prisma.TransactionClient) => Promise<T>,
   operationName: string,
   customPolicy?: Partial<RetryPolicy>,
 ): Promise<T> {

@@ -9,7 +9,7 @@
 
 'use client'
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { realtimeOrchestrationService } from '@/services/realtime-orchestration'
 import { useSessionStore } from '@/store/use-session-store'
 import { type PerformanceMetrics, usePerformanceMonitoring } from './use-performance-monitoring'
@@ -23,19 +23,15 @@ interface StudyOrchestrationOptions {
 export function useStudyOrchestration(options: StudyOrchestrationOptions = {}) {
   const { enabled = true, autoRecord = true, sensitivity = 'medium' } = options
 
-  const {
-    orchestration,
-    sessionId,
-    currentObjective,
-    settings,
-    updateCurrentPhase,
-    setBreakRecommendation,
-    setContentAdaptation,
-    setSessionRecommendation,
-    handleBreakTaken,
-    handleContentAdaptation,
-    handleSessionRecommendation,
-  } = useSessionStore()
+  const { sessionId, currentObjective, settings } = useSessionStore()
+
+  // Local orchestration state; keep in sync to store for tests/consumers
+  const [isActive, setIsActive] = useState<boolean>(
+    Boolean(enabled && settings.enableRealtimeOrchestration),
+  )
+  const [currentPhase, setCurrentPhase] = useState<'content' | 'cards' | 'assessment' | 'break'>(
+    'content',
+  )
 
   const performanceMonitoring = usePerformanceMonitoring({
     enabled: enabled && settings.enableRealtimeOrchestration,
@@ -177,77 +173,112 @@ export function useStudyOrchestration(options: StudyOrchestrationOptions = {}) {
 
   // Check performance and trigger adaptations
   const checkPerformanceAndTriggerAdaptations = useCallback(() => {
-    if (!sessionId || !orchestration.isActive) return
+    if (!sessionId || !isActive) return
 
     const metrics = performanceMonitoring.getCurrentMetrics()
     const isStruggling = performanceMonitoring.isStruggling()
     const isExcelling = performanceMonitoring.isExcelling()
 
     // Update performance metrics in store
-    updateCurrentPhase(orchestration.currentPhase)
+    // Keep store phase in sync for integration tests/consumers expecting it on the store
+    useSessionStore.setState(
+      (prev) =>
+        ({
+          orchestration: {
+            ...(prev as unknown as { orchestration?: any }).orchestration,
+            isActive: true,
+            currentPhase,
+          },
+        }) as any,
+    )
 
     // Check for break recommendations
     if (shouldRecommendBreak(metrics, isStruggling)) {
       const breakRecommendation = generateBreakRecommendation(metrics, isStruggling)
-      setBreakRecommendation(breakRecommendation)
+      useSessionStore.setState(
+        (prev) =>
+          ({
+            orchestration: {
+              ...(prev as unknown as { orchestration?: any }).orchestration,
+              breakRecommendation,
+            },
+          }) as any,
+      )
       // The UI component will handle showing the dialog
     }
 
     // Check for content adaptations
     if (shouldRecommendContentAdaptation(metrics, isStruggling, isExcelling)) {
       const adaptation = generateContentAdaptation(metrics, isStruggling, isExcelling)
-      setContentAdaptation(adaptation)
+      useSessionStore.setState(
+        (prev) =>
+          ({
+            orchestration: {
+              ...(prev as unknown as { orchestration?: any }).orchestration,
+              contentAdaptation: adaptation,
+            },
+          }) as any,
+      )
       // The UI component will handle showing the dialog
     }
 
     // Check for session recommendations
     if (shouldRecommendSessionExtension(metrics, isExcelling)) {
       const recommendation = generateSessionRecommendation(metrics, isExcelling)
-      setSessionRecommendation(recommendation)
+      useSessionStore.setState(
+        (prev) =>
+          ({
+            orchestration: {
+              ...(prev as unknown as { orchestration?: any }).orchestration,
+              sessionRecommendation: recommendation,
+            },
+          }) as any,
+      )
       // The UI component will handle showing the dialog
     }
 
     lastCheckTime.current = Date.now()
   }, [
     sessionId,
-    orchestration.isActive,
-    orchestration.currentPhase,
+    isActive,
+    currentPhase,
     performanceMonitoring,
-    updateCurrentPhase,
     shouldRecommendBreak,
     generateBreakRecommendation,
-    setBreakRecommendation,
     shouldRecommendContentAdaptation,
     generateContentAdaptation,
-    setContentAdaptation,
     shouldRecommendSessionExtension,
     generateSessionRecommendation,
-    setSessionRecommendation,
   ])
 
   // Initialize orchestration when session starts
   useEffect(() => {
-    if (sessionId && enabled && settings.enableRealtimeOrchestration && !orchestration.isActive) {
+    if (sessionId && enabled && settings.enableRealtimeOrchestration && !isActive) {
       realtimeOrchestrationService
         .initializeSession(sessionId, undefined, 'content')
         .then(() => {
-          updateCurrentPhase('content')
+          setIsActive(true)
+          setCurrentPhase('content')
+          useSessionStore.setState(
+            (prev) =>
+              ({
+                orchestration: {
+                  ...(prev as unknown as { orchestration?: any }).orchestration,
+                  isActive: true,
+                  currentPhase: 'content',
+                },
+              }) as any,
+          )
         })
         .catch((error) => {
           console.error('Failed to initialize orchestration:', error)
         })
     }
-  }, [
-    sessionId,
-    enabled,
-    settings.enableRealtimeOrchestration,
-    orchestration.isActive,
-    updateCurrentPhase,
-  ])
+  }, [sessionId, enabled, settings.enableRealtimeOrchestration, isActive])
 
   // Periodic performance checks and adaptation triggers
   useEffect(() => {
-    if (!enabled || !sessionId || !orchestration.isActive) {
+    if (!enabled || !sessionId || !isActive) {
       if (checkInterval.current) {
         clearInterval(checkInterval.current)
         checkInterval.current = null
@@ -277,7 +308,7 @@ export function useStudyOrchestration(options: StudyOrchestrationOptions = {}) {
   }, [
     enabled,
     sessionId,
-    orchestration.isActive,
+    isActive,
     sensitivity,
     checkPerformanceAndTriggerAdaptations,
   ])
@@ -303,7 +334,17 @@ export function useStudyOrchestration(options: StudyOrchestrationOptions = {}) {
 
   const recordPhaseChange = useCallback(
     (phase: 'content' | 'cards' | 'assessment' | 'break') => {
-      updateCurrentPhase(phase)
+      setCurrentPhase(phase)
+      useSessionStore.setState(
+        (prev) =>
+          ({
+            orchestration: {
+              ...(prev as unknown as { orchestration?: any }).orchestration,
+              isActive: true,
+              currentPhase: phase,
+            },
+          }) as any,
+      )
       if (autoRecord) {
         if (phase === 'break') {
           performanceMonitoring.recordPause()
@@ -312,52 +353,68 @@ export function useStudyOrchestration(options: StudyOrchestrationOptions = {}) {
         }
       }
     },
-    [autoRecord, performanceMonitoring, updateCurrentPhase],
+    [autoRecord, performanceMonitoring],
   )
 
   // Handle user responses to recommendations
   const acceptBreakRecommendation = useCallback(() => {
-    handleBreakTaken()
-  }, [handleBreakTaken])
+    // For now, simply clear the recommendation and mark break taken in store shape
+    useSessionStore.setState(
+      (prev) =>
+        ({
+          orchestration: {
+            ...(prev as unknown as { orchestration?: any }).orchestration,
+            breakRecommendation: null,
+            lastEvent: { type: 'break_taken', at: Date.now() },
+          },
+        }) as any,
+    )
+  }, [])
 
-  const acceptContentAdaptation = useCallback(
-    (selectedOption?: string) => {
-      handleContentAdaptation(true)
-      // TODO: Implement actual content adaptation based on selectedOption
-    },
-    [handleContentAdaptation],
-  )
+  const acceptContentAdaptation = useCallback((selectedOption?: string) => {
+    useSessionStore.setState(
+      (prev) =>
+        ({
+          orchestration: {
+            ...(prev as unknown as { orchestration?: any }).orchestration,
+            contentAdaptation: null,
+            lastEvent: { type: 'content_adaptation_accepted', option: selectedOption },
+          },
+        }) as any,
+    )
+  }, [])
 
-  const acceptSessionRecommendation = useCallback(
-    (selectedOption?: string) => {
-      handleSessionRecommendation(true)
-      // TODO: Implement actual session extension/early completion
-    },
-    [handleSessionRecommendation],
-  )
+  const acceptSessionRecommendation = useCallback((selectedOption?: string) => {
+    useSessionStore.setState(
+      (prev) =>
+        ({
+          orchestration: {
+            ...(prev as unknown as { orchestration?: any }).orchestration,
+            sessionRecommendation: null,
+            lastEvent: { type: 'session_recommendation_accepted', option: selectedOption },
+          },
+        }) as any,
+    )
+  }, [])
 
-  const declineRecommendation = useCallback(
-    (type: 'break' | 'content' | 'session') => {
-      switch (type) {
-        case 'break':
-          // User declined break
-          break
-        case 'content':
-          handleContentAdaptation(false)
-          break
-        case 'session':
-          handleSessionRecommendation(false)
-          break
+  const declineRecommendation = useCallback((type: 'break' | 'content' | 'session') => {
+    useSessionStore.setState((prev) => {
+      const orchestration = (prev as unknown as { orchestration?: any }).orchestration || {}
+      if (type === 'break') {
+        return { orchestration: { ...orchestration, breakRecommendation: null } } as any
       }
-    },
-    [handleContentAdaptation, handleSessionRecommendation],
-  )
+      if (type === 'content') {
+        return { orchestration: { ...orchestration, contentAdaptation: null } } as any
+      }
+      return { orchestration: { ...orchestration, sessionRecommendation: null } } as any
+    })
+  }, [])
 
   return {
     // State
-    isActive: orchestration.isActive,
+    isActive,
     isEnabled: enabled && settings.enableRealtimeOrchestration,
-    currentPhase: orchestration.currentPhase,
+    currentPhase,
     performanceMetrics: performanceMonitoring.getCurrentMetrics(),
 
     // Recording methods

@@ -22,12 +22,12 @@
  * - Validation of allowed transitions
  */
 
-import { type NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { ChangeType, ConflictStatus } from '@/generated/prisma'
-import { ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
-import { prisma } from '@/lib/db'
-import { ebmEvaluator } from '@/lib/ebm-evaluator'
+import { type NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { ChangeType, ConflictStatus } from "@/generated/prisma";
+import { ErrorCodes, errorResponse, successResponse } from "@/lib/api-response";
+import { prisma } from "@/lib/db";
+import { ebmEvaluator } from "@/lib/ebm-evaluator";
 
 // ============================================
 // Validation Schemas
@@ -36,7 +36,7 @@ import { ebmEvaluator } from '@/lib/ebm-evaluator'
 const PatchBodySchema = z.object({
   status: z.nativeEnum(ConflictStatus),
   notes: z.string().optional(),
-})
+});
 
 // ============================================
 // GET Handler
@@ -44,14 +44,14 @@ const PatchBodySchema = z.object({
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const startTime = Date.now()
-    const { id } = await params
+    const startTime = Date.now();
+    const { id } = await params;
 
     // Fetch conflict with all related data
-    const conflict = await prisma.conflict.findUnique({
+    const conflict = await prisma.conflicts.findUnique({
       where: { id },
       include: {
-        concept: {
+        concepts: {
           select: {
             id: true,
             name: true,
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             category: true,
           },
         },
-        sourceAChunk: {
+        content_chunks_conflicts_sourceAChunkIdTocontent_chunks: {
           select: {
             id: true,
             content: true,
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             },
           },
         },
-        sourceBChunk: {
+        content_chunks_conflicts_sourceBChunkIdTocontent_chunks: {
           select: {
             id: true,
             content: true,
@@ -103,45 +103,19 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             },
           },
         },
-        sourceAFirstAid: {
-          select: {
-            id: true,
-            edition: true,
-            year: true,
-            system: true,
-            section: true,
-            subsection: true,
-            pageNumber: true,
-            content: true,
-            isHighYield: true,
-          },
-        },
-        sourceBFirstAid: {
-          select: {
-            id: true,
-            edition: true,
-            year: true,
-            system: true,
-            section: true,
-            subsection: true,
-            pageNumber: true,
-            content: true,
-            isHighYield: true,
-          },
-        },
-        resolutions: {
+        conflict_resolutions: {
           orderBy: {
-            resolvedAt: 'desc',
+            resolvedAt: "desc",
           },
           take: 10, // Limit to most recent resolutions
         },
-        history: {
+        conflict_history: {
           orderBy: {
-            changedAt: 'desc',
+            changedAt: "desc",
           },
           take: 20, // Limit to recent history
         },
-        flags: {
+        conflict_flags: {
           select: {
             id: true,
             userId: true,
@@ -151,112 +125,121 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             status: true,
           },
           orderBy: {
-            flaggedAt: 'desc',
+            flaggedAt: "desc",
           },
         },
       },
-    })
+    });
 
     if (!conflict) {
-      return NextResponse.json(errorResponse(ErrorCodes.NOT_FOUND, 'Conflict not found'), {
+      return NextResponse.json(errorResponse(ErrorCodes.NOT_FOUND, "Conflict not found"), {
         status: 404,
-      })
+      });
     }
 
+    // Type assertion to help TypeScript understand the included relations
+    const typedConflict = conflict as typeof conflict & {
+      concepts?: any;
+      content_chunks_conflicts_sourceAChunkIdTocontent_chunks?: any;
+      content_chunks_conflicts_sourceBChunkIdTocontent_chunks?: any;
+      conflict_resolutions?: any[];
+      conflict_history?: any[];
+      conflict_flags?: any[];
+    };
+
     // Get EBM evaluation for this conflict
-    let ebmComparison = null
+    let ebmComparison = null;
     try {
-      ebmComparison = await ebmEvaluator.compareEvidence(id)
+      ebmComparison = await ebmEvaluator.compareEvidence(id);
     } catch (error) {
-      console.error('EBM evaluation failed:', error)
+      console.error("EBM evaluation failed:", error);
       // Continue without EBM comparison (non-critical)
     }
 
-    const latency = Date.now() - startTime
+    const latency = Date.now() - startTime;
 
     return NextResponse.json(
       successResponse({
         conflict: {
-          id: conflict.id,
-          conceptId: conflict.conceptId,
-          conflictType: conflict.conflictType,
-          severity: conflict.severity,
-          status: conflict.status,
-          description: conflict.description,
-          createdAt: conflict.createdAt,
-          resolvedAt: conflict.resolvedAt,
-          concept: conflict.concept,
-          sourceA: conflict.sourceAChunk
+          id: typedConflict.id,
+          conceptId: typedConflict.conceptId,
+          conflictType: typedConflict.conflictType,
+          severity: typedConflict.severity,
+          status: typedConflict.status,
+          description: typedConflict.description,
+          createdAt: typedConflict.createdAt,
+          resolvedAt: typedConflict.resolvedAt,
+          concept: typedConflict.concepts,
+          // Guard optional relations with presence of their IDs
+          sourceA:
+            typedConflict.sourceAChunkId &&
+            typedConflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks
             ? {
-                type: 'lecture',
-                id: conflict.sourceAChunk.id,
-                content: conflict.sourceAChunk.content,
-                pageNumber: conflict.sourceAChunk.pageNumber,
-                chunkIndex: conflict.sourceAChunk.chunkIndex,
+                type: "lecture",
+                id: typedConflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.id,
+                content:
+                  typedConflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.content,
+                pageNumber:
+                  typedConflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.pageNumber,
+                chunkIndex:
+                  typedConflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.chunkIndex,
                 lecture: {
-                  id: conflict.sourceAChunk.lecture.id,
-                  title: conflict.sourceAChunk.lecture.title,
-                  fileName: conflict.sourceAChunk.lecture.fileName,
-                  course: conflict.sourceAChunk.lecture.course,
+                  id: typedConflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.lecture
+                    .id,
+                  title:
+                    typedConflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.lecture
+                      .title,
+                  fileName:
+                    typedConflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.lecture
+                      .fileName,
+                  course:
+                    typedConflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks.lecture
+                      .course,
                 },
               }
-            : conflict.sourceAFirstAid
-              ? {
-                  type: 'first_aid',
-                  id: conflict.sourceAFirstAid.id,
-                  content: conflict.sourceAFirstAid.content,
-                  edition: conflict.sourceAFirstAid.edition,
-                  year: conflict.sourceAFirstAid.year,
-                  system: conflict.sourceAFirstAid.system,
-                  section: conflict.sourceAFirstAid.section,
-                  subsection: conflict.sourceAFirstAid.subsection,
-                  pageNumber: conflict.sourceAFirstAid.pageNumber,
-                  isHighYield: conflict.sourceAFirstAid.isHighYield,
-                }
-              : null,
-          sourceB: conflict.sourceBChunk
+            : null,
+          sourceB:
+            typedConflict.sourceBChunkId &&
+            typedConflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks
             ? {
-                type: 'lecture',
-                id: conflict.sourceBChunk.id,
-                content: conflict.sourceBChunk.content,
-                pageNumber: conflict.sourceBChunk.pageNumber,
-                chunkIndex: conflict.sourceBChunk.chunkIndex,
+                type: "lecture",
+                id: typedConflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.id,
+                content:
+                  typedConflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.content,
+                pageNumber:
+                  typedConflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.pageNumber,
+                chunkIndex:
+                  typedConflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.chunkIndex,
                 lecture: {
-                  id: conflict.sourceBChunk.lecture.id,
-                  title: conflict.sourceBChunk.lecture.title,
-                  fileName: conflict.sourceBChunk.lecture.fileName,
-                  course: conflict.sourceBChunk.lecture.course,
+                  id: typedConflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.lecture
+                    .id,
+                  title:
+                    typedConflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.lecture
+                      .title,
+                  fileName:
+                    typedConflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.lecture
+                      .fileName,
+                  course:
+                    typedConflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks.lecture
+                      .course,
                 },
               }
-            : conflict.sourceBFirstAid
-              ? {
-                  type: 'first_aid',
-                  id: conflict.sourceBFirstAid.id,
-                  content: conflict.sourceBFirstAid.content,
-                  edition: conflict.sourceBFirstAid.edition,
-                  year: conflict.sourceBFirstAid.year,
-                  system: conflict.sourceBFirstAid.system,
-                  section: conflict.sourceBFirstAid.section,
-                  subsection: conflict.sourceBFirstAid.subsection,
-                  pageNumber: conflict.sourceBFirstAid.pageNumber,
-                  isHighYield: conflict.sourceBFirstAid.isHighYield,
-                }
-              : null,
-          resolutions: conflict.resolutions,
-          history: conflict.history,
-          flags: conflict.flags,
+            : null,
+          resolutions: typedConflict.conflict_resolutions,
+          history: typedConflict.conflict_history,
+          flags: typedConflict.conflict_flags,
         },
         ebmComparison,
         latency,
       }),
-    )
+    );
   } catch (error) {
-    console.error('[GET /api/conflicts/:id] Error:', error)
+    console.error("[GET /api/conflicts/:id] Error:", error);
 
     return NextResponse.json(
-      errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to fetch conflict details'),
+      errorResponse(ErrorCodes.INTERNAL_ERROR, "Failed to fetch conflict details"),
       { status: 500 },
-    )
+    );
   }
 }
 
@@ -266,38 +249,38 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params
+    const { id } = await params;
 
     // Hard-coded user for MVP (Story 1.5 constraint)
-    const userId = 'kevy@americano.dev'
+    const userId = "kevy@americano.dev";
 
     // Parse and validate request body
-    const body = await request.json()
-    const validatedBody = PatchBodySchema.safeParse(body)
+    const body = await request.json();
+    const validatedBody = PatchBodySchema.safeParse(body);
 
     if (!validatedBody.success) {
       return NextResponse.json(
         errorResponse(
           ErrorCodes.VALIDATION_ERROR,
-          'Invalid request body',
+          "Invalid request body",
           validatedBody.error.issues,
         ),
         { status: 400 },
-      )
+      );
     }
 
-    const { status, notes } = validatedBody.data
+    const { status, notes } = validatedBody.data;
 
     // Fetch current conflict
-    const currentConflict = await prisma.conflict.findUnique({
+    const currentConflict = await prisma.conflicts.findUnique({
       where: { id },
       select: { status: true },
-    })
+    });
 
     if (!currentConflict) {
-      return NextResponse.json(errorResponse(ErrorCodes.NOT_FOUND, 'Conflict not found'), {
+      return NextResponse.json(errorResponse(ErrorCodes.NOT_FOUND, "Conflict not found"), {
         status: 404,
-      })
+      });
     }
 
     // Validate status transition
@@ -306,9 +289,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       UNDER_REVIEW: [ConflictStatus.ACTIVE, ConflictStatus.RESOLVED, ConflictStatus.DISMISSED],
       RESOLVED: [ConflictStatus.ACTIVE], // Can reopen
       DISMISSED: [ConflictStatus.ACTIVE], // Can reopen
-    }
+    };
 
-    const allowed = allowedTransitions[currentConflict.status]
+    const allowed = allowedTransitions[currentConflict.status];
     if (!allowed || !allowed.includes(status)) {
       return NextResponse.json(
         errorResponse(
@@ -321,34 +304,34 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           },
         ),
         { status: 400 },
-      )
+      );
     }
 
     // Determine change type
-    let changeType: ChangeType
+    let changeType: ChangeType;
     if (status === ConflictStatus.RESOLVED) {
-      changeType = ChangeType.RESOLVED
+      changeType = ChangeType.RESOLVED;
     } else if (status === ConflictStatus.DISMISSED) {
-      changeType = ChangeType.DISMISSED
+      changeType = ChangeType.DISMISSED;
     } else if (
       currentConflict.status === ConflictStatus.RESOLVED ||
       currentConflict.status === ConflictStatus.DISMISSED
     ) {
-      changeType = ChangeType.REOPENED
+      changeType = ChangeType.REOPENED;
     } else {
-      changeType = ChangeType.DETECTED // Default
+      changeType = ChangeType.DETECTED; // Default
     }
 
     // Update conflict and create history record in transaction
     const [updatedConflict] = await prisma.$transaction([
-      prisma.conflict.update({
+      prisma.conflicts.update({
         where: { id },
         data: {
           status,
           resolvedAt: status === ConflictStatus.RESOLVED ? new Date() : null,
         },
         include: {
-          concept: {
+          concepts: {
             select: {
               id: true,
               name: true,
@@ -356,7 +339,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           },
         },
       }),
-      prisma.conflictHistory.create({
+      prisma.conflict_history.create({
         data: {
           conflictId: id,
           changeType,
@@ -366,20 +349,20 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           notes,
         },
       }),
-    ])
+    ]);
 
     return NextResponse.json(
       successResponse({
         conflict: updatedConflict,
         message: `Conflict status updated to ${status}`,
       }),
-    )
+    );
   } catch (error) {
-    console.error('[PATCH /api/conflicts/:id] Error:', error)
+    console.error("[PATCH /api/conflicts/:id] Error:", error);
 
     return NextResponse.json(
-      errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to update conflict status'),
+      errorResponse(ErrorCodes.INTERNAL_ERROR, "Failed to update conflict status"),
       { status: 500 },
-    )
+    );
   }
 }

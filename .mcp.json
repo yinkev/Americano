@@ -7,10 +7,7 @@
         "DEFAULT_MINIMUM_TOKENS": ""
       },
       "timeout": 60,
-      "alwaysAllow": [
-        "get-library-docs",
-        "resolve-library-id"
-      ]
+      "alwaysAllow": ["get-library-docs", "resolve-library-id"]
     },
     "shadcn": {
       "command": "npx",

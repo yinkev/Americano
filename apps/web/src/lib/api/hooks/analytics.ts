@@ -334,7 +334,11 @@ export function useRecommendations(userId: string | null) {
  * }
  * ```
  */
-export function usePredictions(userId: string | null, dateRange?: string, examType?: string) {
+export function usePredictions(
+  userId: string | null,
+  dateRange?: string,
+  examType?: string,
+) {
   return useQuery({
     queryKey: analyticsKeys.predictions(userId || ''),
     queryFn: async (): Promise<UnderstandingPrediction> => {

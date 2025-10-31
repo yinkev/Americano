@@ -21,7 +21,7 @@ jest.mock('@/lib/db', () => ({
     user: {
       findUnique: jest.fn(),
     },
-    searchQuery: {
+    search_queries: {
       findUnique: jest.fn(),
     },
   },

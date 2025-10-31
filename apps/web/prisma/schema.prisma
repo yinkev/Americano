@@ -26,6 +26,7 @@ model User {
   behavioralAnalysisEnabled     Boolean          @default(true)
   learningStyleProfilingEnabled Boolean          @default(true)
   shareAnonymizedPatterns       Boolean          @default(false)
+  sharePeerCalibrationData      Boolean          @default(false)
   achievements                  Achievement[]
   coursePriorities              CoursePriority[]
   courses                       Course[]
@@ -299,33 +300,46 @@ model ConceptRelationship {
 }
 
 model ValidationPrompt {
-  id               String               @id @default(cuid())
-  promptText       String
-  promptType       PromptType
-  conceptName      String
-  expectedCriteria String[]
-  createdAt        DateTime             @default(now())
-  responses        ValidationResponse[]
+  id                  String               @id @default(cuid())
+  promptText          String
+  promptType          PromptType
+  conceptName         String
+  expectedCriteria    String[]
+  createdAt           DateTime             @default(now())
+  objectiveId         String?
+  promptData          Json?
+  difficultyLevel     Float?               @default(0.5)
+  timesUsed           Int                  @default(0)
+  lastUsedAt          DateTime?
+  discriminationIndex Float?               @default(0.5)
+  responses           ValidationResponse[]
 
+  @@index([objectiveId])
+  @@index([difficultyLevel])
   @@map("validation_prompts")
 }
 
 model ValidationResponse {
-  id               String           @id @default(cuid())
-  promptId         String
-  sessionId        String?
-  userAnswer       String
-  aiEvaluation     String
-  score            Float
-  confidence       Float?
-  respondedAt      DateTime         @default(now())
-  userId           String
-  confidenceLevel  Int?
-  calibrationDelta Float?
-  detailedFeedback Json?
-  skipped          Boolean          @default(false)
-  prompt           ValidationPrompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
-  session          StudySession?    @relation(fields: [sessionId], references: [id])
+  id                       String           @id @default(cuid())
+  promptId                 String
+  sessionId                String?
+  userAnswer               String
+  aiEvaluation             String
+  score                    Float
+  confidence               Float?
+  preAssessmentConfidence  Float?
+  respondedAt              DateTime         @default(now())
+  userId                   String
+  confidenceLevel          Int?
+  calibrationDelta         Float?
+  calibrationCategory      CalibrationCategory?
+  detailedFeedback         Json?
+  reflectionNotes          String?          @db.Text
+  skipped                  Boolean          @default(false)
+  updatedAt                DateTime         @updatedAt
+  initialDifficulty        Float?
+  prompt                   ValidationPrompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  session                  StudySession?    @relation(fields: [sessionId], references: [id])
 
   @@index([promptId])
   @@index([respondedAt])
@@ -336,15 +350,19 @@ model ValidationResponse {
 }
 
 model ComprehensionMetric {
-  id          String   @id @default(cuid())
-  conceptName String
-  date        DateTime @default(now())
-  avgScore    Float
-  sampleSize  Int
-  trend       String?
+  id                        String   @id @default(cuid())
+  conceptName               String
+  date                      DateTime @default(now())
+  avgScore                  Float
+  sampleSize                Int
+  trend                     String?
+  objectiveId               String?
+  total_scenarios_completed Int?     @default(0)
+  average_score             Float?
 
   @@unique([conceptName, date])
   @@index([conceptName])
+  @@index([objectiveId])
   @@map("comprehension_metrics")
 }
 
@@ -854,7 +872,7 @@ model MissionReview {
 }
 
 model conflict_flags {
-  id             String     @id
+  id             String     @id @default(cuid())
   conflictId     String?
   userId         String
   sourceAChunkId String
@@ -871,7 +889,7 @@ model conflict_flags {
 }
 
 model conflict_history {
-  id         String          @id
+  id         String          @id @default(cuid())
   conflictId String
   changeType ChangeType
   oldStatus  ConflictStatus?
@@ -886,7 +904,7 @@ model conflict_history {
 }
 
 model conflict_resolutions {
-  id                String    @id
+  id                String    @id @default(cuid())
   conflictId        String
   resolvedBy        String
   resolution        String
@@ -901,7 +919,7 @@ model conflict_resolutions {
 }
 
 model conflicts {
-  id                                                      String                 @id
+  id                                                      String                 @id @default(cuid())
   conceptId                                               String?
   sourceAChunkId                                          String
   sourceBChunkId                                          String
@@ -925,7 +943,7 @@ model conflicts {
 }
 
 model content_recommendations {
-  id                                                                          String                    @id
+  id                                                                          String                    @id @default(cuid())
   userId                                                                      String
   recommendedContentId                                                        String
   sourceContentId                                                             String?
@@ -950,7 +968,7 @@ model content_recommendations {
 }
 
 model recommendation_analytics {
-  id                   String   @id
+  id                   String   @id @default(cuid())
   userId               String
   date                 DateTime @default(now())
   totalRecommendations Int
@@ -967,7 +985,7 @@ model recommendation_analytics {
 }
 
 model recommendation_feedback {
-  id                      String                  @id
+  id                      String                  @id @default(cuid())
   recommendationId        String
   userId                  String
   rating                  Int
@@ -981,42 +999,44 @@ model recommendation_feedback {
   @@index([userId])
 }
 
-model search_clicks {
-  id             String         @id
-  searchQueryId  String
-  userId         String
-  resultId       String
-  resultType     String
-  position       Int
-  similarity     Float?
-  timestamp      DateTime       @default(now())
-  search_queries search_queries @relation(fields: [searchQueryId], references: [id], onDelete: Cascade)
+model SearchClick {
+  id            String      @id @default(cuid())
+  searchQueryId String
+  userId        String
+  resultId      String
+  resultType    String
+  position      Int
+  similarity    Float?
+  timestamp     DateTime    @default(now())
+  searchQuery   SearchQuery @relation(fields: [searchQueryId], references: [id], onDelete: Cascade)
 
   @@index([resultId, resultType])
   @@index([searchQueryId])
   @@index([userId, timestamp])
+  @@map("search_clicks")
 }
 
-model search_queries {
-  id             String          @id
+model SearchQuery {
+  id             String        @id @default(cuid())
   userId         String
   query          String
   filters        Json?
-  resultCount    Int             @default(0)
+  resultCount    Int           @default(0)
   topResultId    String?
   responseTimeMs Int?
-  timestamp      DateTime        @default(now())
-  isAnonymized   Boolean         @default(false)
+  timestamp      DateTime      @default(now())
+  isAnonymized   Boolean       @default(false)
   anonymizedAt   DateTime?
-  search_clicks  search_clicks[]
+  searchClicks   SearchClick[]
 
   @@index([isAnonymized])
   @@index([timestamp])
   @@index([userId, timestamp])
+  @@map("search_queries")
 }
 
 model sources {
-  id                      String                    @id
+  id                      String                    @id @default(cuid())
   name                    String                    @unique
   type                    SourceType
   credibilityScore        Int
@@ -1031,7 +1051,7 @@ model sources {
 }
 
 model user_source_preferences {
-  id         String     @id
+  id         String     @id @default(cuid())
   userId     String
   sourceId   String
   trustLevel TrustLevel
@@ -1315,6 +1335,20 @@ enum RelationshipType {
   RELATED
   INTEGRATED
   CLINICAL
+}
+
+enum AlertFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  IMMEDIATE
+}
+
+enum SuggestionType {
+  RECENT
+  POPULAR
+  SAVED
+  RECOMMENDED
 }
 
 enum PromptType {
@@ -2208,6 +2242,128 @@ model StressResponsePattern {
 
   @@index([userId])
   @@map("stress_response_patterns")
+}
+
+model FirstAidSection {
+  id                    String   @id @default(cuid())
+  edition               String   // e.g., "2024", "2023"
+  year                  Int
+  system                String   // e.g., "Cardiovascular", "Respiratory"
+  section               String
+  subsection            String?
+  pageNumber            Int
+  content               String   @db.Text
+  isHighYield           Boolean  @default(false)
+  mnemonics             Json?    // Array of mnemonics
+  clinicalCorrelations  Json?    // Array of clinical correlations
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  lectureMapping        LectureFirstAidMapping[]
+
+  @@index([system])
+  @@index([isHighYield])
+  @@map("first_aid_sections")
+}
+
+model LectureFirstAidMapping {
+  id                    String   @id @default(cuid())
+  lectureId             String
+  firstAidSectionId     String
+  confidence            Float    // Mapping confidence score 0-1
+  mappingRationale      String?  @db.Text
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  priority              Int?     @default(5)
+  rationale             String?  @db.Text
+  userFeedback          Json?
+
+  firstAidSection       FirstAidSection @relation(fields: [firstAidSectionId], references: [id], onDelete: Cascade)
+
+  @@unique([lectureId, firstAidSectionId])
+  @@index([lectureId])
+  @@index([firstAidSectionId])
+  @@index([confidence])
+  @@index([priority])
+  @@map("lecture_first_aid_mappings")
+}
+
+model SavedSearch {
+  id                    String         @id @default(cuid())
+  userId                String
+  name                  String
+  query                 String
+  filters               Json           @default("{}")
+  alertEnabled          Boolean        @default(false)
+  alertFrequency        AlertFrequency @default(WEEKLY)
+  lastRun               DateTime?
+  resultCount           Int?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  useCount              Int            @default(0)
+  lastUsed              DateTime?
+
+  searchAlerts          SearchAlert[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([lastUsed])
+  @@map("saved_searches")
+}
+
+model SearchSuggestion {
+  id              String         @id @default(cuid())
+  term            String         @unique
+  suggestionType  SuggestionType
+  frequency       Int            @default(1)
+  lastUsed        DateTime       @default(now())
+  metadata        Json?
+  createdAt       DateTime       @default(now())
+
+  @@index([term, frequency])
+  @@index([suggestionType])
+  @@index([lastUsed])
+  @@map("search_suggestions")
+}
+
+model SearchAlert {
+  id                String       @id @default(cuid())
+  savedSearchId     String
+  userId            String
+  triggeredBy       String
+  triggeredType     String
+  newResultCount    Int
+  lastNotified      DateTime     @default(now())
+  notificationSent  Boolean      @default(false)
+  viewed            Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+
+  savedSearch       SavedSearch  @relation(fields: [savedSearchId], references: [id], onDelete: Cascade)
+
+  @@index([savedSearchId])
+  @@index([userId])
+  @@index([notificationSent])
+  @@index([createdAt])
+  @@index([viewed])
+  @@map("search_alerts")
+}
+
+model SearchAnalytics {
+  id               String    @id @default(cuid())
+  userId           String?
+  date             DateTime  @default(now())
+  query            String
+  searchCount      Int       @default(1)
+  avgResultCount   Float
+  avgSimilarity    Float?
+  avgClickPosition Float?
+  zeroResultCount  Int       @default(0)
+
+  @@unique([userId, date, query])
+  @@index([userId, date])
+  @@index([date])
+  @@index([query])
+  @@map("search_analytics")
 }
 
 // Epic 4 Enums

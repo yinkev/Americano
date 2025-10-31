@@ -346,10 +346,10 @@ export default function StrugglePredictionsPage() {
                 <YAxis
                   label={{ value: 'Risk Probability', angle: -90, position: 'insideLeft' }}
                   domain={[0, 1]}
-                  tickFormatter={(value) => `${Math.round(value * 100)}%`}
+                  tickFormatter={(value: number) => `${Math.round(value * 100)}%`}
                 />
                 <Tooltip
-                  content={({ active, payload }) => {
+                  content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload
                       return (
@@ -454,9 +454,9 @@ export default function StrugglePredictionsPage() {
               <LineChart data={accuracyHistory.slice(-14)}>
                 <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
                 <XAxis dataKey="date" />
-                <YAxis domain={[0, 1]} tickFormatter={(value) => `${Math.round(value * 100)}%`} />
+                <YAxis domain={[0, 1]} tickFormatter={(value: number) => `${Math.round(value * 100)}%`} />
                 <Tooltip
-                  content={({ active, payload }) => {
+                  content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload
                       return (
@@ -510,7 +510,7 @@ export default function StrugglePredictionsPage() {
               <XAxis type="number" />
               <YAxis dataKey="category" type="category" width={120} />
               <Tooltip
-                content={({ active, payload }) => {
+                content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload
                     return (

@@ -359,7 +359,8 @@ export class AdaptiveDifficultyEngine {
     // Return question metadata
     return {
       id: selectedPrompt.id,
-      difficultyLevel: selectedPrompt.difficultyLevel,
+      // Prisma type is number | null; coalesce to 0 for strict typing
+      difficultyLevel: selectedPrompt.difficultyLevel ?? 0,
       complexity, // From criteria (complexity not stored in prompt currently)
       timesUsed: selectedPrompt.timesUsed,
       lastUsedAt: selectedPrompt.lastUsedAt?.toISOString() || null,

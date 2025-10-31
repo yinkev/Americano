@@ -37,6 +37,34 @@ export interface FirstAidMapping {
 }
 
 /**
+ * Convert priority string to database integer value
+ */
+function priorityToInt(priority: 'HIGH_YIELD' | 'STANDARD' | 'SUGGESTED'): number {
+  switch (priority) {
+    case 'HIGH_YIELD':
+      return 1
+    case 'STANDARD':
+      return 5
+    case 'SUGGESTED':
+      return 10
+    default:
+      return 5
+  }
+}
+
+/**
+ * Convert database integer value back to priority string
+ * Map: 1 → HIGH_YIELD, 5 → STANDARD, 10 → SUGGESTED
+ */
+export function intToPriority(
+  value: number | null | undefined,
+): 'HIGH_YIELD' | 'STANDARD' | 'SUGGESTED' {
+  if (value === 1) return 'HIGH_YIELD'
+  if (value === 10) return 'SUGGESTED'
+  return 'STANDARD'
+}
+
+/**
  * Mapping quality metrics
  */
 export interface MappingQualityMetrics {
@@ -328,13 +356,12 @@ export class FirstAidMapper {
             lectureId,
             firstAidSectionId: mapping.firstAidSectionId,
             confidence: mapping.similarity,
-            priority: mapping.priority,
+            priority: priorityToInt(mapping.priority),
             rationale: mapping.rationale,
-            autoMapped: true,
           },
           update: {
             confidence: mapping.similarity,
-            priority: mapping.priority,
+            priority: priorityToInt(mapping.priority),
             rationale: mapping.rationale,
           },
         })
@@ -578,27 +605,28 @@ export class FirstAidMapper {
    * @returns Array of First Aid mappings
    */
   async getReferencesForChunk(chunkId: string, limit: number = 5): Promise<FirstAidMapping[]> {
-    // Get the chunk with its embedding
+    // Get the chunk
     const chunk = await this.prisma.contentChunk.findUnique({
       where: { id: chunkId },
       select: {
         id: true,
         content: true,
-        embedding: true,
         lectureId: true,
       },
     })
 
-    if (!chunk || !chunk.embedding) {
-      console.warn(`Chunk ${chunkId} not found or has no embedding`)
+    if (!chunk) {
+      console.warn(`Chunk ${chunkId} not found`)
       return []
     }
 
-    // Convert embedding from database format
-    const embedding = chunk.embedding as unknown as number[]
+    // TODO: Embedding-based similarity not yet implemented
+    // When embeddings are added to ContentChunk schema, implement:
+    // const embedding = chunk.embedding as unknown as number[]
+    // return this.findRelevantFirstAidSectionsForEmbedding(embedding, limit)
 
-    // Find relevant First Aid sections
-    return this.findRelevantFirstAidSectionsForEmbedding(embedding, limit)
+    console.warn('Embedding-based First Aid references not yet implemented')
+    return []
   }
 
   /**

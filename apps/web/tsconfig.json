@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["@testing-library/jest-dom"],
+    "types": ["jest", "node", "@testing-library/jest-dom"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -48,7 +48,6 @@
   "exclude": [
     "node_modules",
     "prisma/**/*.ts",
-    "src/types/api-generated.ts",
     "src/app/api/adaptive/**/*.ts",
     "src/subsystems/knowledge-graph/search-suggestions.ts"
   ]

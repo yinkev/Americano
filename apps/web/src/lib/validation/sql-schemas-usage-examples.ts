@@ -8,6 +8,7 @@
  */
 
 import { prisma } from '@/lib/db'
+import type { ZodIssue } from 'zod'
 import {
   bigIntToNumber,
   type CoOccurrenceResult,
@@ -70,7 +71,7 @@ export async function exampleCoOccurrenceDetection() {
     console.log(`✓ Safe validation successful: ${safeResult.data.length} results`)
     return safeResult.data
   } else {
-    console.error('Validation errors:', safeResult.error.errors)
+    console.error('Validation errors:', safeResult.error.issues)
     return []
   }
 }
@@ -202,7 +203,7 @@ export async function exampleErrorHandling() {
       // Handle validation errors gracefully
       console.error('Validation failed with the following errors:')
 
-      result.error.errors.forEach((err, index) => {
+      result.error.issues.forEach((err: ZodIssue, index: number) => {
         console.error(`  Error ${index + 1}:`, {
           path: err.path.join('.'),
           message: err.message,
@@ -244,7 +245,7 @@ export class ExampleSearchService {
       // Log validation errors for monitoring
       console.error('[SearchService] Result validation failed:', {
         query,
-        errors: validationResult.error.errors.map((e) => ({
+        errors: validationResult.error.issues.map((e: ZodIssue) => ({
           path: e.path,
           message: e.message,
         })),
@@ -311,6 +312,6 @@ export function exampleTesting() {
   console.assert(invalidResult.success === false, 'Invalid data should fail validation')
 
   if (!invalidResult.success) {
-    console.log('Expected validation errors:', invalidResult.error.errors.length)
+    console.log('Expected validation errors:', invalidResult.error.issues.length)
   }
 }

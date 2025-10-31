@@ -103,7 +103,7 @@ export function ConflictTimeline({ history, currentStatus, className }: Conflict
               ticks={[0, 1, 2, 3, 4]}
               tick={{ fontSize: 12, fill: 'oklch(0.556 0 0)' }}
               stroke="oklch(0.75 0 0)"
-              tickFormatter={(value) => getStatusLabel(value)}
+              tickFormatter={(value: any) => getStatusLabel(value)}
             />
             <Tooltip content={<CustomTooltip />} />
             <Line

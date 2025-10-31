@@ -23,7 +23,8 @@ type AnalyticsSummary = unknown // TODO: replace with generated type
 export function useAnalyticsSummary(options?: UseQueryOptions<AnalyticsSummary>) {
   return useQuery<AnalyticsSummary>({
     queryKey: queryKeys.analytics('summary'),
-    queryFn: () => api.get<AnalyticsSummary>(endpoints.analytics()),
+    // Use the weekly summary endpoint as the default analytics summary
+    queryFn: () => api.get<AnalyticsSummary>(endpoints.analytics.weeklySummary()),
     staleTime: 30_000,
     gcTime: 5 * 60_000,
     ...options,

@@ -48,9 +48,12 @@ export interface RelationshipFilter {
  */
 export interface SavedSearch {
   id: string
+  name: string
   query: string
   timestamp: number
   resultCount: number
+  useCount: number
+  lastUsed?: number
 }
 
 /**
@@ -301,9 +304,12 @@ export const useGraphStore = create<GraphState>()(
           set((state) => {
             const newSearch: SavedSearch = {
               id: `${Date.now()}-${Math.random()}`,
+              name: query,
               query,
               resultCount,
               timestamp: Date.now(),
+              useCount: 1,
+              lastUsed: Date.now(),
             }
             return {
               savedSearches: [newSearch, ...state.savedSearches].slice(0, 20),

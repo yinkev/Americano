@@ -83,7 +83,7 @@ export async function PATCH(request: NextRequest) {
           success: false,
           error: 'VALIDATION_ERROR',
           message: 'Invalid preferences data',
-          details: error.errors,
+          details: error.issues,
         },
         { status: 400 },
       )

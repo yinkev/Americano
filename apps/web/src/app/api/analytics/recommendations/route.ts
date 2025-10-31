@@ -51,20 +51,19 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - days)
 
     // Fetch recommendations in period
-    const recommendations = await prisma.contentRecommendation.findMany({
+    const recommendations = await prisma.content_recommendations.findMany({
       where: {
         userId,
         createdAt: { gte: startDate },
       },
       include: {
-        feedback: true,
       },
     })
 
     // Calculate metrics
     const totalRecommendations = recommendations.length
-    const viewedCount = recommendations.filter((r) => r.viewedAt !== null).length
-    const dismissedCount = recommendations.filter((r) => r.status === 'DISMISSED').length
+    const viewedCount = recommendations.filter((r: any) => r.viewedAt !== null).length
+    const dismissedCount = recommendations.filter((r: any) => r.status === 'DISMISSED').length
 
     // Fetch behavioral events for click tracking
     const clickEvents = await prisma.behavioralEvent.findMany({
@@ -80,10 +79,10 @@ export async function GET(request: NextRequest) {
     const ctr = totalRecommendations > 0 ? clickedCount / totalRecommendations : 0
 
     // Calculate average rating
-    const allFeedback = recommendations.flatMap((r) => r.feedback)
+    const allFeedback = recommendations.flatMap((r: any) => r.feedback)
     const avgRating =
       allFeedback.length > 0
-        ? allFeedback.reduce((sum, f) => sum + f.rating, 0) / allFeedback.length
+        ? allFeedback.reduce((sum: number, f: any) => sum + f.rating, 0) / allFeedback.length
         : 0
 
     // Calculate average engagement time (placeholder - would track actual time)

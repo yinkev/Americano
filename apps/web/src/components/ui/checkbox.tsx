@@ -6,9 +6,16 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
+type CheckboxProps = React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> & {
+  id?: string
+  className?: string
+  style?: React.CSSProperties
+  onClick?: React.MouseEventHandler<HTMLButtonElement>
+}
+
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
+  CheckboxProps
 >(({ className, ...props }, ref) => (
   <CheckboxPrimitive.Root
     ref={ref}

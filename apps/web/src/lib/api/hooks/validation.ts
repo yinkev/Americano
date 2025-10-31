@@ -277,12 +277,14 @@ export function useScenarioMetrics() {
  */
 export function useIdentifyChallenge(request: ChallengeIdentificationRequest) {
   return useQuery({
-    queryKey: validationKeys.challenge(request.objective_id),
+    // Use user_id for a stable cache key; request shape comes from generated types
+    queryKey: validationKeys.challenge(request.user_id),
     queryFn: async (): Promise<ChallengeIdentificationResponse> => {
       return api.post<ChallengeIdentificationResponse>('/validation/identify-challenge', request)
     },
     ...frequentQueryOptions,
-    enabled: request.recent_scores.length >= 3, // Need at least 3 scores
+    // Guard against unknown performance_data shape and require at least 3 records
+    enabled: Array.isArray(request.performance_data) && request.performance_data.length >= 3,
   })
 }
 

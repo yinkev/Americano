@@ -27,6 +27,12 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { MetricCard } from '@/components/ui/metric-card'
 import { Progress } from '@/components/ui/progress'
 import { usePatterns, usePredictions } from '@/lib/api/hooks/analytics'
+import type {
+  AIInsight,
+  ComprehensionPattern,
+  UnderstandingPrediction,
+} from '@/types/api-generated'
+import type { UseQueryResult } from '@tanstack/react-query'
 import { typography } from '@/lib/design-tokens'
 import { useAnalyticsStore } from '@/stores/analytics'
 
@@ -155,13 +161,13 @@ export default function LearningPatternsPage() {
     data: patternsData,
     isLoading: patternsLoading,
     error: patternsError,
-  } = usePatterns(DEFAULT_USER_ID, timeRange)
+  } = usePatterns(DEFAULT_USER_ID, timeRange) as UseQueryResult<ComprehensionPattern, unknown>
 
   const {
     data: predictionsData,
     isLoading: predictionsLoading,
     error: predictionsError,
-  } = usePredictions(DEFAULT_USER_ID)
+  } = usePredictions(DEFAULT_USER_ID) as UseQueryResult<UnderstandingPrediction, unknown>
 
   // Derive metrics from API data
   const metrics = {
@@ -169,7 +175,7 @@ export default function LearningPatternsPage() {
     optimalDuration: 52, // Mock data
     learningStyle: 'Visual', // Mock data
     dataQuality: patternsData ? 0.85 : 0,
-    forgettingRisks: predictionsData?.forgetting_risks?.length || 0,
+    forgettingRisks: predictionsData?.forgetting_risks?.length ?? 0,
   }
 
   // Loading state
@@ -179,7 +185,7 @@ export default function LearningPatternsPage() {
   const error = patternsError || predictionsError
 
   // Check if sufficient data exists
-  const hasSufficientData = patternsData && patternsData.strengths.length > 0
+  const hasSufficientData = ((patternsData?.strengths?.length ?? 0) > 0)
 
   // Show error state if API fails
   if (error) {
@@ -220,7 +226,7 @@ export default function LearningPatternsPage() {
       </motion.div>
 
       {/* Show insufficient data warning if needed */}
-      {!hasSufficientData && !isLoading && <InsufficientDataMessage />}
+      {(!hasSufficientData && !isLoading) ? <InsufficientDataMessage /> : null}
 
       {/* Key Metrics */}
       {hasSufficientData && (
@@ -308,7 +314,7 @@ export default function LearningPatternsPage() {
           >
             <h3 className={`${typography.heading.h3} mb-4 text-blue-900`}>Actionable Insights</h3>
             <div className="space-y-3">
-              {patternsData?.ai_insights.map((insight: string, idx: number) => (
+              {patternsData?.ai_insights?.map((insight: AIInsight, idx: number) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, x: -20 }}
@@ -317,7 +323,10 @@ export default function LearningPatternsPage() {
                   className="flex items-start gap-3"
                 >
                   <div className="mt-1 size-2 rounded-full bg-blue-500 shrink-0" />
-                  <p className="text-sm text-blue-900">{insight}</p>
+                  <p className="text-sm text-blue-900">
+                    {insight.observation}
+                    {insight.action ? ` — ${insight.action}` : ''}
+                  </p>
                 </motion.div>
               ))}
             </div>

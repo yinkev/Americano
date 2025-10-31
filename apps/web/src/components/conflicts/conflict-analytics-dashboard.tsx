@@ -173,7 +173,7 @@ export function ConflictAnalyticsDashboard({ data, className }: ConflictAnalytic
                     cx="50%"
                     cy="50%"
                     outerRadius={100}
-                    label={(entry) => `${entry.status}: ${entry.percentage}%`}
+                    label={(entry: any) => `${entry.status}: ${entry.percentage}%`}
                   >
                     {data.byStatus.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={getStatusColor(entry.status)} />

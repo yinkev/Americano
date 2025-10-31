@@ -38,7 +38,7 @@ function getPerformanceColor(performance: number): string {
 }
 
 function isOptimalWindow(day: number, hour: number, windows: OptimalWindow[]): boolean {
-  return windows.some((w) => w.day === day && hour >= w.startHour && hour <= w.endHour)
+  return windows.some((w: any) => w.day === day && hour >= w.startHour && hour <= w.endHour)
 }
 
 export function StudyTimeHeatmap() {
@@ -96,7 +96,7 @@ export function StudyTimeHeatmap() {
 
   const getCellData = (day: number, hour: number): HeatmapCell => {
     return (
-      data.heatmapData.find((d) => d.day === day && d.hour === hour) || {
+      data.heatmapData.find((d: any) => d.day === day && d.hour === hour) || {
         day,
         hour,
         avgPerformance: 0,
@@ -112,7 +112,7 @@ export function StudyTimeHeatmap() {
           {/* Hour labels */}
           <div className="flex mb-2">
             <div className="w-12" /> {/* Spacer for day labels */}
-            {HOURS.filter((h) => h % 2 === 0).map((hour) => (
+            {HOURS.filter((h: any) => h % 2 === 0).map((hour: any) => (
               <div
                 key={hour}
                 className="flex-1 text-center text-[13px]"
@@ -141,7 +141,7 @@ export function StudyTimeHeatmap() {
                   {dayLabel}
                 </div>
                 <div className="flex gap-1 flex-1">
-                  {HOURS.map((hour) => {
+                  {HOURS.map((hour: any) => {
                     const cellData = getCellData(dayIndex, hour)
                     const isOptimal = isOptimalWindow(dayIndex, hour, data.optimalWindows)
                     return (
@@ -159,7 +159,7 @@ export function StudyTimeHeatmap() {
                         variants={getAnimationConfig(chartVariants.heatmapCell)}
                         whileHover={{ scale: 1.1 }}
                         transition={{ duration: 0.15, ease: 'easeOut' }}
-                        onMouseEnter={(e) => handleMouseEnter(cellData, e)}
+                        onMouseEnter={(e: any) => handleMouseEnter(cellData, e)}
                         onMouseMove={handleMouseMove}
                         onMouseLeave={handleMouseLeave}
                       />

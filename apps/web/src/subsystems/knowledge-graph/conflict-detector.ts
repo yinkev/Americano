@@ -24,10 +24,10 @@ import {
   type ConflictType,
   type ContentChunk,
   PrismaClient,
-} from '@/generated/prisma'
-import { ChatMockClient } from '@/lib/ai/chatmock-client'
-import { GeminiClient } from '@/lib/ai/gemini-client'
-import { semanticSearchService } from '@/lib/semantic-search-service'
+} from "@/generated/prisma";
+import { ChatMockClient } from "@/lib/ai/chatmock-client";
+import { GeminiClient } from "@/lib/ai/gemini-client";
+import { semanticSearchService } from "@/lib/semantic-search-service";
 
 /**
  * Contradiction pattern detected in content
@@ -35,29 +35,29 @@ import { semanticSearchService } from '@/lib/semantic-search-service'
 export interface ContradictionPattern {
   /** Pattern type */
   type:
-    | 'NEGATION'
-    | 'OPPOSING_TERMS'
-    | 'NUMERICAL_CONFLICT'
-    | 'DOSAGE_CONFLICT'
-    | 'TEMPORAL_CONFLICT'
+    | "NEGATION"
+    | "OPPOSING_TERMS"
+    | "NUMERICAL_CONFLICT"
+    | "DOSAGE_CONFLICT"
+    | "TEMPORAL_CONFLICT";
   /** Pattern description */
-  description: string
+  description: string;
   /** Confidence score (0.0-1.0) */
-  confidence: number
+  confidence: number;
   /** Evidence from content */
   evidence: {
-    sourceA: string
-    sourceB: string
-  }
+    sourceA: string;
+    sourceB: string;
+  };
 }
 
 /**
  * Medical term variant for normalization
  */
 interface MedicalTermVariant {
-  term: string
-  variants: string[]
-  type: 'SYNONYM' | 'ABBREVIATION' | 'ACRONYM' | 'LATIN' | 'COLLOQUIAL'
+  term: string;
+  variants: string[];
+  type: "SYNONYM" | "ABBREVIATION" | "ACRONYM" | "LATIN" | "COLLOQUIAL";
 }
 
 /**
@@ -65,19 +65,19 @@ interface MedicalTermVariant {
  */
 export interface ConflictAnalysis {
   /** Is this a true conflict? */
-  isConflict: boolean
+  isConflict: boolean;
   /** Conflict type classification */
-  conflictType: ConflictType
+  conflictType: ConflictType;
   /** Severity level */
-  severity: ConflictSeverity
+  severity: ConflictSeverity;
   /** Human-readable explanation */
-  explanation: string
+  explanation: string;
   /** Recommended resolution */
-  recommendation: string
+  recommendation: string;
   /** Confidence in analysis (0.0-1.0) */
-  confidence: number
+  confidence: number;
   /** Key differences identified */
-  keyDifferences: string[]
+  keyDifferences: string[];
 }
 
 /**
@@ -85,25 +85,21 @@ export interface ConflictAnalysis {
  */
 export interface DetectedConflict {
   /** Concept ID (if applicable) */
-  conceptId?: string
+  conceptId?: string;
   /** Source A chunk ID */
-  sourceAChunkId?: string
+  sourceAChunkId?: string;
   /** Source B chunk ID */
-  sourceBChunkId?: string
-  /** Source A First Aid section ID */
-  sourceAFirstAidId?: string
-  /** Source B First Aid section ID */
-  sourceBFirstAidId?: string
+  sourceBChunkId?: string;
   /** Conflict type */
-  conflictType: ConflictType
+  conflictType: ConflictType;
   /** Severity level */
-  severity: ConflictSeverity
+  severity: ConflictSeverity;
   /** Human-readable description */
-  description: string
+  description: string;
   /** Similarity score that triggered detection */
-  similarity: number
+  similarity: number;
   /** Confidence in conflict detection */
-  confidence: number
+  confidence: number;
 }
 
 /**
@@ -111,15 +107,15 @@ export interface DetectedConflict {
  */
 export interface ScanParams {
   /** Concept ID to scan */
-  conceptId?: string
+  conceptId?: string;
   /** Specific source IDs to include (optional) */
-  sourceIds?: string[]
+  sourceIds?: string[];
   /** Minimum similarity threshold (default: 0.85) */
-  minSimilarity?: number
+  minSimilarity?: number;
   /** Maximum number of conflicts to detect (default: 100) */
-  maxConflicts?: number
+  maxConflicts?: number;
   /** Skip GPT-5 analysis (for faster scanning) */
-  skipAIAnalysis?: boolean
+  skipAIAnalysis?: boolean;
 }
 
 /**
@@ -144,9 +140,9 @@ export interface ScanParams {
  * ```
  */
 export class ConflictDetector {
-  private prisma: PrismaClient
-  private chatmock: ChatMockClient
-  private gemini: GeminiClient
+  private prisma: PrismaClient;
+  private chatmock: ChatMockClient;
+  private gemini: GeminiClient;
 
   /**
    * Medical terminology normalization database
@@ -155,126 +151,126 @@ export class ConflictDetector {
   private medicalTerms: Map<string, MedicalTermVariant> = new Map([
     // Cardiac terminology
     [
-      'myocardial infarction',
+      "myocardial infarction",
       {
-        term: 'myocardial infarction',
-        variants: ['MI', 'heart attack', 'myocardial infarct', 'coronary occlusion'],
-        type: 'SYNONYM',
+        term: "myocardial infarction",
+        variants: ["MI", "heart attack", "myocardial infarct", "coronary occlusion"],
+        type: "SYNONYM",
       },
     ],
     [
-      'heart failure',
+      "heart failure",
       {
-        term: 'heart failure',
-        variants: ['HF', 'CHF', 'congestive heart failure', 'cardiac failure'],
-        type: 'SYNONYM',
+        term: "heart failure",
+        variants: ["HF", "CHF", "congestive heart failure", "cardiac failure"],
+        type: "SYNONYM",
       },
     ],
     [
-      'atrial fibrillation',
+      "atrial fibrillation",
       {
-        term: 'atrial fibrillation',
-        variants: ['AFib', 'AF', 'atrial fib'],
-        type: 'ABBREVIATION',
+        term: "atrial fibrillation",
+        variants: ["AFib", "AF", "atrial fib"],
+        type: "ABBREVIATION",
       },
     ],
 
     // Dosage-related
     [
-      'aspirin',
+      "aspirin",
       {
-        term: 'aspirin',
-        variants: ['ASA', 'acetylsalicylic acid'],
-        type: 'SYNONYM',
+        term: "aspirin",
+        variants: ["ASA", "acetylsalicylic acid"],
+        type: "SYNONYM",
       },
     ],
 
     // Common medical abbreviations
     [
-      'blood pressure',
+      "blood pressure",
       {
-        term: 'blood pressure',
-        variants: ['BP'],
-        type: 'ABBREVIATION',
+        term: "blood pressure",
+        variants: ["BP"],
+        type: "ABBREVIATION",
       },
     ],
     [
-      'diabetes mellitus',
+      "diabetes mellitus",
       {
-        term: 'diabetes mellitus',
-        variants: ['DM', 'diabetes'],
-        type: 'ABBREVIATION',
+        term: "diabetes mellitus",
+        variants: ["DM", "diabetes"],
+        type: "ABBREVIATION",
       },
     ],
     [
-      'chronic kidney disease',
+      "chronic kidney disease",
       {
-        term: 'chronic kidney disease',
-        variants: ['CKD'],
-        type: 'ABBREVIATION',
+        term: "chronic kidney disease",
+        variants: ["CKD"],
+        type: "ABBREVIATION",
       },
     ],
-  ])
+  ]);
 
   /**
    * Contradiction patterns for linguistic analysis
    */
   private contradictionMarkers = {
     negation: [
-      'not',
-      'never',
-      'no',
-      'none',
-      'neither',
-      'nor',
-      'without',
-      'absence of',
-      'lacks',
-      'does not',
-      'cannot',
-      'contraindicated',
-      'prohibited',
-      'avoid',
+      "not",
+      "never",
+      "no",
+      "none",
+      "neither",
+      "nor",
+      "without",
+      "absence of",
+      "lacks",
+      "does not",
+      "cannot",
+      "contraindicated",
+      "prohibited",
+      "avoid",
     ],
     opposition: [
-      'however',
-      'but',
-      'although',
-      'despite',
-      'in contrast',
-      'conversely',
-      'on the other hand',
-      'whereas',
-      'unlike',
-      'contrary to',
-      'opposite',
-      'different from',
+      "however",
+      "but",
+      "although",
+      "despite",
+      "in contrast",
+      "conversely",
+      "on the other hand",
+      "whereas",
+      "unlike",
+      "contrary to",
+      "opposite",
+      "different from",
     ],
-    uncertainty: ['may', 'might', 'possibly', 'rarely', 'sometimes', 'occasionally', 'uncommonly'],
+    uncertainty: ["may", "might", "possibly", "rarely", "sometimes", "occasionally", "uncommonly"],
     certainty: [
-      'always',
-      'must',
-      'definitely',
-      'certainly',
-      'commonly',
-      'typically',
-      'usually',
-      'frequently',
-      'invariably',
+      "always",
+      "must",
+      "definitely",
+      "certainly",
+      "commonly",
+      "typically",
+      "usually",
+      "frequently",
+      "invariably",
     ],
-  }
+  };
 
   constructor() {
-    this.prisma = new PrismaClient()
-    this.chatmock = new ChatMockClient()
-    this.gemini = new GeminiClient()
+    this.prisma = new PrismaClient();
+    this.chatmock = new ChatMockClient();
+    this.gemini = new GeminiClient();
   }
 
   /**
    * Disconnect Prisma client
    */
   async disconnect(): Promise<void> {
-    await this.prisma.$disconnect()
+    await this.prisma.$disconnect();
   }
 
   /**
@@ -294,46 +290,46 @@ export class ConflictDetector {
     useAIAnalysis: boolean = true,
   ): Promise<DetectedConflict | null> {
     // Step 1: Calculate semantic similarity
-    const similarity = await this.calculateSimilarity(sourceA, sourceB)
+    const similarity = await this.calculateSimilarity(sourceA, sourceB);
 
     // If content is not topically similar, skip (no conflict possible)
     if (similarity < 0.85) {
-      return null
+      return null;
     }
 
     // Step 2: Normalize medical terminology
-    const normalizedA = this.normalizeMedicalTerms(sourceA.content)
-    const normalizedB = this.normalizeMedicalTerms(sourceB.content)
+    const normalizedA = this.normalizeMedicalTerms(sourceA.content);
+    const normalizedB = this.normalizeMedicalTerms(sourceB.content);
 
     // Step 3: Detect contradiction patterns
-    const patterns = this.detectContradictionPatterns(normalizedA, normalizedB)
+    const patterns = this.detectContradictionPatterns(normalizedA, normalizedB);
 
     // If no patterns detected, no conflict
     if (patterns.length === 0) {
-      return null
+      return null;
     }
 
     // Step 4: Calculate initial confidence based on pattern strength
-    const patternConfidence = Math.max(...patterns.map((p) => p.confidence))
+    const patternConfidence = Math.max(...patterns.map((p) => p.confidence));
 
     // Step 5: Use GPT-5 for detailed analysis if enabled
-    let analysis: ConflictAnalysis | null = null
+    let analysis: ConflictAnalysis | null = null;
 
     if (useAIAnalysis) {
-      analysis = await this.analyzeWithGPT5(sourceA.content, sourceB.content, patterns)
+      analysis = await this.analyzeWithGPT5(sourceA.content, sourceB.content, patterns);
 
       // If GPT-5 says no conflict, trust it
       if (!analysis.isConflict) {
-        return null
+        return null;
       }
     }
 
     // Step 6: Determine conflict type and severity
-    const conflictType = analysis?.conflictType || this.inferConflictType(patterns)
-    const severity = analysis?.severity || this.calculateSeverity(patterns, patternConfidence)
+    const conflictType = analysis?.conflictType || this.inferConflictType(patterns);
+    const severity = analysis?.severity || this.calculateSeverity(patterns, patternConfidence);
 
     // Step 7: Generate description
-    const description = analysis?.explanation || this.generateDescription(patterns, similarity)
+    const description = analysis?.explanation || this.generateDescription(patterns, similarity);
 
     return {
       sourceAChunkId: sourceA.id,
@@ -343,7 +339,7 @@ export class ConflictDetector {
       description,
       similarity,
       confidence: analysis?.confidence || patternConfidence,
-    }
+    };
   }
 
   /**
@@ -362,17 +358,17 @@ export class ConflictDetector {
       minSimilarity = 0.85,
       maxConflicts = 100,
       skipAIAnalysis = false,
-    } = params
+    } = params;
 
-    const conflicts: DetectedConflict[] = []
+    const conflicts: DetectedConflict[] = [];
 
     // Fetch all content chunks for the concept
-    let chunks: ChunkWithEmbedding[]
+    let chunks: ChunkWithEmbedding[];
 
     if (conceptId) {
       // Get chunks related to concept (via lecture relationship)
       // TODO: Implement concept-to-chunk mapping
-      chunks = await this.getChunksForConcept(conceptId)
+      chunks = await this.getChunksForConcept(conceptId);
     } else if (sourceIds && sourceIds.length > 0) {
       // Get chunks from specific sources
       chunks = (await this.prisma.contentChunk.findMany({
@@ -382,9 +378,9 @@ export class ConflictDetector {
           },
         },
         take: 1000, // Limit for performance
-      })) as unknown as ChunkWithEmbedding[]
+      })) as unknown as ChunkWithEmbedding[];
     } else {
-      throw new Error('Either conceptId or sourceIds must be provided')
+      throw new Error("Either conceptId or sourceIds must be provided");
     }
 
     // Optimize: Use vector similarity pre-filtering to reduce N×N comparisons
@@ -392,31 +388,31 @@ export class ConflictDetector {
 
     for (let i = 0; i < chunks.length && conflicts.length < maxConflicts; i++) {
       for (let j = i + 1; j < chunks.length && conflicts.length < maxConflicts; j++) {
-        const chunkA = chunks[i]
-        const chunkB = chunks[j]
+        const chunkA = chunks[i];
+        const chunkB = chunks[j];
 
         // Skip if same lecture (not a source conflict)
         if (chunkA.lectureId === chunkB.lectureId) {
-          continue
+          continue;
         }
 
         try {
-          const conflict = await this.detectConflicts(chunkA, chunkB, !skipAIAnalysis)
+          const conflict = await this.detectConflicts(chunkA, chunkB, !skipAIAnalysis);
 
           if (conflict) {
             conflicts.push({
               ...conflict,
               conceptId: conceptId,
-            })
+            });
           }
         } catch (error) {
-          console.error(`Error detecting conflict between ${chunkA.id} and ${chunkB.id}:`, error)
+          console.error(`Error detecting conflict between ${chunkA.id} and ${chunkB.id}:`, error);
           // Continue scanning even if one pair fails
         }
       }
     }
 
-    return conflicts
+    return conflicts;
   }
 
   /**
@@ -429,35 +425,39 @@ export class ConflictDetector {
    */
   async analyzeExistingConflict(conflictId: string): Promise<ConflictAnalysis> {
     // Fetch conflict from database
-    const conflict = await this.prisma.conflict.findUnique({
+    const conflict = await this.prisma.conflicts.findUnique({
       where: { id: conflictId },
       include: {
-        sourceAChunk: true,
-        sourceBChunk: true,
-        sourceAFirstAid: true,
-        sourceBFirstAid: true,
+        content_chunks_conflicts_sourceAChunkIdTocontent_chunks: {
+          select: { content: true },
+        },
+        content_chunks_conflicts_sourceBChunkIdTocontent_chunks: {
+          select: { content: true },
+        },
       },
-    })
+    });
 
     if (!conflict) {
-      throw new Error(`Conflict ${conflictId} not found`)
+      throw new Error(`Conflict ${conflictId} not found`);
     }
 
     // Get content from sources
-    const contentA = conflict.sourceAChunk?.content || conflict.sourceAFirstAid?.content || ''
-    const contentB = conflict.sourceBChunk?.content || conflict.sourceBFirstAid?.content || ''
+    const contentA =
+      conflict.content_chunks_conflicts_sourceAChunkIdTocontent_chunks?.content || "";
+    const contentB =
+      conflict.content_chunks_conflicts_sourceBChunkIdTocontent_chunks?.content || "";
 
     if (!contentA || !contentB) {
-      throw new Error('Conflict missing source content')
+      throw new Error("Conflict missing source content");
     }
 
     // Detect patterns
-    const normalizedA = this.normalizeMedicalTerms(contentA)
-    const normalizedB = this.normalizeMedicalTerms(contentB)
-    const patterns = this.detectContradictionPatterns(normalizedA, normalizedB)
+    const normalizedA = this.normalizeMedicalTerms(contentA);
+    const normalizedB = this.normalizeMedicalTerms(contentB);
+    const patterns = this.detectContradictionPatterns(normalizedA, normalizedB);
 
     // Analyze with GPT-5
-    return await this.analyzeWithGPT5(contentA, contentB, patterns)
+    return await this.analyzeWithGPT5(contentA, contentB, patterns);
   }
 
   /**
@@ -474,59 +474,59 @@ export class ConflictDetector {
    * @returns Array of detected contradiction patterns
    */
   private detectContradictionPatterns(textA: string, textB: string): ContradictionPattern[] {
-    const patterns: ContradictionPattern[] = []
+    const patterns: ContradictionPattern[] = [];
 
     // Pattern 1: Negation detection
-    const negationPattern = this.detectNegationPattern(textA, textB)
-    if (negationPattern) patterns.push(negationPattern)
+    const negationPattern = this.detectNegationPattern(textA, textB);
+    if (negationPattern) patterns.push(negationPattern);
 
     // Pattern 2: Opposing terms
-    const opposingPattern = this.detectOpposingTerms(textA, textB)
-    if (opposingPattern) patterns.push(opposingPattern)
+    const opposingPattern = this.detectOpposingTerms(textA, textB);
+    if (opposingPattern) patterns.push(opposingPattern);
 
     // Pattern 3: Numerical conflicts
-    const numericalPatterns = this.detectNumericalConflicts(textA, textB)
-    patterns.push(...numericalPatterns)
+    const numericalPatterns = this.detectNumericalConflicts(textA, textB);
+    patterns.push(...numericalPatterns);
 
     // Pattern 4: Dosage conflicts
-    const dosagePattern = this.detectDosageConflicts(textA, textB)
-    if (dosagePattern) patterns.push(dosagePattern)
+    const dosagePattern = this.detectDosageConflicts(textA, textB);
+    if (dosagePattern) patterns.push(dosagePattern);
 
     // Pattern 5: Certainty conflicts (always vs. rarely)
-    const certaintyPattern = this.detectCertaintyConflicts(textA, textB)
-    if (certaintyPattern) patterns.push(certaintyPattern)
+    const certaintyPattern = this.detectCertaintyConflicts(textA, textB);
+    if (certaintyPattern) patterns.push(certaintyPattern);
 
-    return patterns
+    return patterns;
   }
 
   /**
    * Detect negation patterns (affirmation vs. negation)
    */
   private detectNegationPattern(textA: string, textB: string): ContradictionPattern | null {
-    const aLower = textA.toLowerCase()
-    const bLower = textB.toLowerCase()
+    const aLower = textA.toLowerCase();
+    const bLower = textB.toLowerCase();
 
     const aHasNegation = this.contradictionMarkers.negation.some((marker) =>
       aLower.includes(marker),
-    )
+    );
     const bHasNegation = this.contradictionMarkers.negation.some((marker) =>
       bLower.includes(marker),
-    )
+    );
 
     // If one has negation and the other doesn't, potential conflict
     if (aHasNegation !== bHasNegation) {
       return {
-        type: 'NEGATION',
-        description: 'One source affirms while the other negates the same statement',
+        type: "NEGATION",
+        description: "One source affirms while the other negates the same statement",
         confidence: 0.7,
         evidence: {
           sourceA: this.extractSentence(textA, this.contradictionMarkers.negation),
           sourceB: this.extractSentence(textB, this.contradictionMarkers.negation),
         },
-      }
+      };
     }
 
-    return null
+    return null;
   }
 
   /**
@@ -534,76 +534,76 @@ export class ConflictDetector {
    */
   private detectOpposingTerms(textA: string, textB: string): ContradictionPattern | null {
     const opposingPairs = [
-      ['increase', 'decrease'],
-      ['effective', 'ineffective'],
-      ['safe', 'unsafe'],
-      ['recommended', 'contraindicated'],
-      ['beneficial', 'harmful'],
-      ['elevated', 'reduced'],
-      ['high', 'low'],
-      ['positive', 'negative'],
-    ]
+      ["increase", "decrease"],
+      ["effective", "ineffective"],
+      ["safe", "unsafe"],
+      ["recommended", "contraindicated"],
+      ["beneficial", "harmful"],
+      ["elevated", "reduced"],
+      ["high", "low"],
+      ["positive", "negative"],
+    ];
 
     for (const [term1, term2] of opposingPairs) {
-      const aHasTerm1 = textA.toLowerCase().includes(term1)
-      const bHasTerm1 = textB.toLowerCase().includes(term1)
-      const aHasTerm2 = textA.toLowerCase().includes(term2)
-      const bHasTerm2 = textB.toLowerCase().includes(term2)
+      const aHasTerm1 = textA.toLowerCase().includes(term1);
+      const bHasTerm1 = textB.toLowerCase().includes(term1);
+      const aHasTerm2 = textA.toLowerCase().includes(term2);
+      const bHasTerm2 = textB.toLowerCase().includes(term2);
 
       // If A has term1 and B has term2 (or vice versa), conflict
       if ((aHasTerm1 && bHasTerm2) || (aHasTerm2 && bHasTerm1)) {
         return {
-          type: 'OPPOSING_TERMS',
+          type: "OPPOSING_TERMS",
           description: `Sources use opposing terms: "${term1}" vs "${term2}"`,
           confidence: 0.8,
           evidence: {
             sourceA: this.extractSentence(textA, [term1, term2]),
             sourceB: this.extractSentence(textB, [term1, term2]),
           },
-        }
+        };
       }
     }
 
-    return null
+    return null;
   }
 
   /**
    * Detect numerical conflicts (different values for same measurement)
    */
   private detectNumericalConflicts(textA: string, textB: string): ContradictionPattern[] {
-    const patterns: ContradictionPattern[] = []
+    const patterns: ContradictionPattern[] = [];
 
     // Extract numbers with units
-    const numberPattern = /(\d+(?:\.\d+)?)\s*(mg|g|ml|%|mmHg|mg\/dL|units?)/gi
-    const numbersA = [...textA.matchAll(numberPattern)]
-    const numbersB = [...textB.matchAll(numberPattern)]
+    const numberPattern = /(\d+(?:\.\d+)?)\s*(mg|g|ml|%|mmHg|mg\/dL|units?)/gi;
+    const numbersA = [...textA.matchAll(numberPattern)];
+    const numbersB = [...textB.matchAll(numberPattern)];
 
     // Compare numbers with same units
     for (const [, valueA, unitA] of numbersA) {
       for (const [, valueB, unitB] of numbersB) {
         if (unitA.toLowerCase() === unitB.toLowerCase()) {
-          const numA = parseFloat(valueA)
-          const numB = parseFloat(valueB)
+          const numA = parseFloat(valueA);
+          const numB = parseFloat(valueB);
 
           // If values differ by >20%, potential conflict
-          const percentDiff = Math.abs(numA - numB) / Math.max(numA, numB)
+          const percentDiff = Math.abs(numA - numB) / Math.max(numA, numB);
 
           if (percentDiff > 0.2) {
             patterns.push({
-              type: 'NUMERICAL_CONFLICT',
+              type: "NUMERICAL_CONFLICT",
               description: `Numerical discrepancy: ${valueA} ${unitA} vs ${valueB} ${unitB}`,
               confidence: Math.min(0.9, 0.5 + percentDiff),
               evidence: {
                 sourceA: this.extractSentence(textA, [valueA]),
                 sourceB: this.extractSentence(textB, [valueB]),
               },
-            })
+            });
           }
         }
       }
     }
 
-    return patterns
+    return patterns;
   }
 
   /**
@@ -611,9 +611,9 @@ export class ConflictDetector {
    */
   private detectDosageConflicts(textA: string, textB: string): ContradictionPattern | null {
     // Look for dosage patterns: drug name + number + unit
-    const dosagePattern = /(\w+)\s+(\d+(?:\.\d+)?)\s*(mg|g|ml|units?)/gi
-    const dosagesA = [...textA.matchAll(dosagePattern)]
-    const dosagesB = [...textB.matchAll(dosagePattern)]
+    const dosagePattern = /(\w+)\s+(\d+(?:\.\d+)?)\s*(mg|g|ml|units?)/gi;
+    const dosagesA = [...textA.matchAll(dosagePattern)];
+    const dosagesB = [...textB.matchAll(dosagePattern)];
 
     for (const [, drugA, valueA, unitA] of dosagesA) {
       for (const [, drugB, valueB, unitB] of dosagesB) {
@@ -624,38 +624,38 @@ export class ConflictDetector {
           parseFloat(valueA) !== parseFloat(valueB)
         ) {
           return {
-            type: 'DOSAGE_CONFLICT',
+            type: "DOSAGE_CONFLICT",
             description: `Dosage discrepancy for ${drugA}: ${valueA}${unitA} vs ${valueB}${unitB}`,
             confidence: 0.9,
             evidence: {
               sourceA: this.extractSentence(textA, [drugA]),
               sourceB: this.extractSentence(textB, [drugB]),
             },
-          }
+          };
         }
       }
     }
 
-    return null
+    return null;
   }
 
   /**
    * Detect certainty conflicts (always vs. rarely, common vs. uncommon)
    */
   private detectCertaintyConflicts(textA: string, textB: string): ContradictionPattern | null {
-    const aLower = textA.toLowerCase()
-    const bLower = textB.toLowerCase()
+    const aLower = textA.toLowerCase();
+    const bLower = textB.toLowerCase();
 
-    const aHasCertainty = this.contradictionMarkers.certainty.some((m) => aLower.includes(m))
-    const aHasUncertainty = this.contradictionMarkers.uncertainty.some((m) => aLower.includes(m))
-    const bHasCertainty = this.contradictionMarkers.certainty.some((m) => bLower.includes(m))
-    const bHasUncertainty = this.contradictionMarkers.uncertainty.some((m) => bLower.includes(m))
+    const aHasCertainty = this.contradictionMarkers.certainty.some((m) => aLower.includes(m));
+    const aHasUncertainty = this.contradictionMarkers.uncertainty.some((m) => aLower.includes(m));
+    const bHasCertainty = this.contradictionMarkers.certainty.some((m) => bLower.includes(m));
+    const bHasUncertainty = this.contradictionMarkers.uncertainty.some((m) => bLower.includes(m));
 
     // If one expresses certainty and the other uncertainty, conflict
     if ((aHasCertainty && bHasUncertainty) || (aHasUncertainty && bHasCertainty)) {
       return {
-        type: 'OPPOSING_TERMS',
-        description: 'Sources disagree on certainty/frequency of occurrence',
+        type: "OPPOSING_TERMS",
+        description: "Sources disagree on certainty/frequency of occurrence",
         confidence: 0.6,
         evidence: {
           sourceA: this.extractSentence(textA, [
@@ -667,10 +667,10 @@ export class ConflictDetector {
             ...this.contradictionMarkers.uncertainty,
           ]),
         },
-      }
+      };
     }
 
-    return null
+    return null;
   }
 
   /**
@@ -678,17 +678,17 @@ export class ConflictDetector {
    * Maps variants to canonical terms
    */
   private normalizeMedicalTerms(text: string): string {
-    let normalized = text
+    let normalized = text;
 
     for (const [canonical, variant] of this.medicalTerms) {
       for (const v of variant.variants) {
         // Case-insensitive replacement
-        const regex = new RegExp(`\\b${v}\\b`, 'gi')
-        normalized = normalized.replace(regex, canonical)
+        const regex = new RegExp(`\\b${v}\\b`, "gi");
+        normalized = normalized.replace(regex, canonical);
       }
     }
 
-    return normalized
+    return normalized;
   }
 
   /**
@@ -703,7 +703,7 @@ export class ConflictDetector {
       return this.cosineSimilarity(
         chunkA.embedding as unknown as number[],
         chunkB.embedding as unknown as number[],
-      )
+      );
     }
 
     // If no embeddings, generate them
@@ -714,13 +714,13 @@ export class ConflictDetector {
       chunkB.embedding
         ? Promise.resolve({ embedding: chunkB.embedding as unknown as number[], error: undefined })
         : this.gemini.generateEmbedding(chunkB.content),
-    ])
+    ]);
 
     if (embeddingA.error || embeddingB.error) {
-      throw new Error('Failed to generate embeddings for similarity calculation')
+      throw new Error("Failed to generate embeddings for similarity calculation");
     }
 
-    return this.cosineSimilarity(embeddingA.embedding, embeddingB.embedding)
+    return this.cosineSimilarity(embeddingA.embedding, embeddingB.embedding);
   }
 
   /**
@@ -728,27 +728,27 @@ export class ConflictDetector {
    */
   private cosineSimilarity(vecA: number[], vecB: number[]): number {
     if (vecA.length !== vecB.length) {
-      throw new Error('Vectors must have same dimension')
+      throw new Error("Vectors must have same dimension");
     }
 
-    let dotProduct = 0
-    let normA = 0
-    let normB = 0
+    let dotProduct = 0;
+    let normA = 0;
+    let normB = 0;
 
     for (let i = 0; i < vecA.length; i++) {
-      dotProduct += vecA[i] * vecB[i]
-      normA += vecA[i] * vecA[i]
-      normB += vecB[i] * vecB[i]
+      dotProduct += vecA[i] * vecB[i];
+      normA += vecA[i] * vecA[i];
+      normB += vecB[i] * vecB[i];
     }
 
-    normA = Math.sqrt(normA)
-    normB = Math.sqrt(normB)
+    normA = Math.sqrt(normA);
+    normB = Math.sqrt(normB);
 
     if (normA === 0 || normB === 0) {
-      return 0
+      return 0;
     }
 
-    return dotProduct / (normA * normB)
+    return dotProduct / (normA * normB);
   }
 
   /**
@@ -793,7 +793,7 @@ Severity guidelines:
 - CRITICAL: Life-threatening contradictions (e.g., contradictory emergency drug dosages)
 - HIGH: Significant clinical impact (e.g., major contraindication disagreement)
 - MEDIUM: Important but not immediately dangerous (e.g., conflicting non-urgent treatment)
-- LOW: Minor discrepancies with limited clinical impact`
+- LOW: Minor discrepancies with limited clinical impact`;
 
     const userContent = `Content A:
 ${contentA}
@@ -802,36 +802,36 @@ Content B:
 ${contentB}
 
 Detected patterns:
-${patterns.map((p) => `- ${p.type}: ${p.description} (confidence: ${p.confidence})`).join('\n')}`
+${patterns.map((p) => `- ${p.type}: ${p.description} (confidence: ${p.confidence})`).join("\n")}`;
 
     try {
       const response = await this.chatmock.createChatCompletion({
-        model: 'gpt-5',
+        model: "gpt-5",
         messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userContent },
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userContent },
         ],
         temperature: 0.3, // Low for consistency
         max_tokens: 16000,
-      })
+      });
 
-      const content = response.choices[0]?.message?.content
+      const content = response.choices[0]?.message?.content;
 
       if (!content) {
-        throw new Error('No response from GPT-5')
+        throw new Error("No response from GPT-5");
       }
 
       // Extract JSON (strip thinking tags if present)
-      let jsonContent = content.replace(/<think>[\s\S]*?<\/think>/gi, '')
-      const jsonStart = jsonContent.indexOf('{')
-      const jsonEnd = jsonContent.lastIndexOf('}') + 1
+      let jsonContent = content.replace(/<think>[\s\S]*?<\/think>/gi, "");
+      const jsonStart = jsonContent.indexOf("{");
+      const jsonEnd = jsonContent.lastIndexOf("}") + 1;
 
       if (jsonStart === -1 || jsonEnd === 0) {
-        throw new Error('No JSON in GPT-5 response')
+        throw new Error("No JSON in GPT-5 response");
       }
 
-      jsonContent = jsonContent.substring(jsonStart, jsonEnd)
-      const parsed = JSON.parse(jsonContent)
+      jsonContent = jsonContent.substring(jsonStart, jsonEnd);
+      const parsed = JSON.parse(jsonContent);
 
       return {
         isConflict: parsed.isConflict,
@@ -841,20 +841,20 @@ ${patterns.map((p) => `- ${p.type}: ${p.description} (confidence: ${p.confidence
         recommendation: parsed.recommendation,
         confidence: parsed.confidence,
         keyDifferences: parsed.keyDifferences || [],
-      }
+      };
     } catch (error) {
-      console.error('GPT-5 analysis error:', error)
+      console.error("GPT-5 analysis error:", error);
 
       // Fallback to pattern-based analysis
       return {
         isConflict: patterns.length > 0,
         conflictType: this.inferConflictType(patterns),
         severity: this.calculateSeverity(patterns, 0.5),
-        explanation: `Pattern-based detection (GPT-5 unavailable): ${patterns.map((p) => p.description).join('; ')}`,
-        recommendation: 'Requires manual review - AI analysis failed',
+        explanation: `Pattern-based detection (GPT-5 unavailable): ${patterns.map((p) => p.description).join("; ")}`,
+        recommendation: "Requires manual review - AI analysis failed",
         confidence: 0.5,
         keyDifferences: patterns.map((p) => p.description),
-      }
+      };
     }
   }
 
@@ -863,12 +863,12 @@ ${patterns.map((p) => `- ${p.type}: ${p.description} (confidence: ${p.confidence
    */
   private inferConflictType(patterns: ContradictionPattern[]): ConflictType {
     for (const pattern of patterns) {
-      if (pattern.type === 'DOSAGE_CONFLICT') return 'DOSAGE'
-      if (pattern.type === 'NUMERICAL_CONFLICT') return 'DOSAGE'
+      if (pattern.type === "DOSAGE_CONFLICT") return "DOSAGE";
+      if (pattern.type === "NUMERICAL_CONFLICT") return "DOSAGE";
     }
 
     // Default to OTHER
-    return 'OTHER'
+    return "OTHER";
   }
 
   /**
@@ -880,44 +880,44 @@ ${patterns.map((p) => `- ${p.type}: ${p.description} (confidence: ${p.confidence
   ): ConflictSeverity {
     // Dosage conflicts are always at least MEDIUM severity
     const hasDosageConflict = patterns.some(
-      (p) => p.type === 'DOSAGE_CONFLICT' || p.type === 'NUMERICAL_CONFLICT',
-    )
+      (p) => p.type === "DOSAGE_CONFLICT" || p.type === "NUMERICAL_CONFLICT",
+    );
 
     if (hasDosageConflict && confidence > 0.8) {
-      return 'HIGH'
+      return "HIGH";
     }
 
     if (hasDosageConflict || confidence > 0.7) {
-      return 'MEDIUM'
+      return "MEDIUM";
     }
 
-    return 'LOW'
+    return "LOW";
   }
 
   /**
    * Generate human-readable description of conflict
    */
   private generateDescription(patterns: ContradictionPattern[], similarity: number): string {
-    const descriptions = patterns.map((p) => p.description)
+    const descriptions = patterns.map((p) => p.description);
 
-    return `Conflict detected (${(similarity * 100).toFixed(1)}% similarity): ${descriptions.join('; ')}`
+    return `Conflict detected (${(similarity * 100).toFixed(1)}% similarity): ${descriptions.join("; ")}`;
   }
 
   /**
    * Extract sentence containing keywords
    */
   private extractSentence(text: string, keywords: string[]): string {
-    const sentences = text.split(/[.!?]+/)
+    const sentences = text.split(/[.!?]+/);
 
     for (const sentence of sentences) {
-      const lowerSentence = sentence.toLowerCase()
+      const lowerSentence = sentence.toLowerCase();
       if (keywords.some((kw) => lowerSentence.includes(kw.toLowerCase()))) {
-        return sentence.trim()
+        return sentence.trim();
       }
     }
 
     // Return first 100 characters if no match
-    return text.substring(0, 100) + '...'
+    return text.substring(0, 100) + "...";
   }
 
   /**
@@ -938,11 +938,11 @@ ${patterns.map((p) => `- ${p.type}: ${p.description} (confidence: ${p.confidence
     // Fetch concept with its embedding
     const concept = (await this.prisma.concept.findUnique({
       where: { id: conceptId },
-    })) as ConceptWithEmbedding | null
+    })) as ConceptWithEmbedding | null;
 
     if (!concept || !concept.embedding) {
-      console.warn(`Concept ${conceptId} not found or has no embedding`)
-      return []
+      console.warn(`Concept ${conceptId} not found or has no embedding`);
+      return [];
     }
 
     // Use pgvector similarity search to find related chunks
@@ -961,26 +961,26 @@ ${patterns.map((p) => `- ${p.type}: ${p.description} (confidence: ${p.confidence
       WHERE embedding IS NOT NULL
       ORDER BY embedding <=> ${concept.embedding}::vector
       LIMIT 100
-    `
+    `;
 
     // Filter by similarity threshold (cosine similarity > 0.7)
     // Convert L2 distance to cosine similarity for consistent thresholding
-    const filteredChunks: ChunkWithEmbedding[] = []
+    const filteredChunks: ChunkWithEmbedding[] = [];
     for (const chunk of chunks) {
       if (chunk.embedding) {
         const similarity = this.cosineSimilarity(
           concept.embedding as unknown as number[],
           chunk.embedding as unknown as number[],
-        )
+        );
 
         // Only include chunks with strong semantic relationship
         if (similarity > 0.7) {
-          filteredChunks.push(chunk)
+          filteredChunks.push(chunk);
         }
       }
     }
 
-    return filteredChunks
+    return filteredChunks;
   }
 
   /**
@@ -998,40 +998,40 @@ ${patterns.map((p) => `- ${p.type}: ${p.description} (confidence: ${p.confidence
     textA: string,
     textB: string,
     options?: {
-      sourceAId?: string
-      sourceBId?: string
-      conceptId?: string
-      useAI?: boolean
+      sourceAId?: string;
+      sourceBId?: string;
+      conceptId?: string;
+      useAI?: boolean;
     },
   ): Promise<{
-    isConflict: boolean
-    severity: ConflictSeverity | null
-    contradictionPattern: string | null
-    explanation: string | null
-    confidence: number
+    isConflict: boolean;
+    severity: ConflictSeverity | null;
+    contradictionPattern: string | null;
+    explanation: string | null;
+    confidence: number;
   }> {
     // Call existing detectConflicts with minimal source objects
     const result = await this.detectConflicts(
       {
-        id: options?.sourceAId || 'source-a',
+        id: options?.sourceAId || "source-a",
         content: textA,
-        lectureId: options?.sourceAId || 'unknown',
+        lectureId: options?.sourceAId || "unknown",
         chunkIndex: 0,
         pageNumber: null,
         embedding: null,
         createdAt: new Date(),
       } as ChunkWithEmbedding,
       {
-        id: options?.sourceBId || 'source-b',
+        id: options?.sourceBId || "source-b",
         content: textB,
-        lectureId: options?.sourceBId || 'unknown',
+        lectureId: options?.sourceBId || "unknown",
         chunkIndex: 0,
         pageNumber: null,
         embedding: null,
         createdAt: new Date(),
       } as ChunkWithEmbedding,
       options?.useAI ?? true,
-    )
+    );
 
     // If no conflict detected, return null values
     if (!result) {
@@ -1041,7 +1041,7 @@ ${patterns.map((p) => `- ${p.type}: ${p.description} (confidence: ${p.confidence
         contradictionPattern: null,
         explanation: null,
         confidence: 0,
-      }
+      };
     }
 
     // Return formatted result
@@ -1051,22 +1051,22 @@ ${patterns.map((p) => `- ${p.type}: ${p.description} (confidence: ${p.confidence
       contradictionPattern: result.conflictType,
       explanation: result.description,
       confidence: result.confidence,
-    }
+    };
   }
 }
 
 /**
  * Singleton instance
  */
-export const conflictDetector = new ConflictDetector()
+export const conflictDetector = new ConflictDetector();
 
 /**
  * Cleanup handler
  */
-if (typeof process !== 'undefined') {
-  process.on('beforeExit', async () => {
-    await conflictDetector.disconnect()
-  })
+if (typeof process !== "undefined") {
+  process.on("beforeExit", async () => {
+    await conflictDetector.disconnect();
+  });
 }
-type ChunkWithEmbedding = ContentChunk & { embedding?: number[] | null }
-type ConceptWithEmbedding = Concept & { embedding?: number[] | null }
+type ChunkWithEmbedding = ContentChunk & { embedding?: number[] | null };
+type ConceptWithEmbedding = Concept & { embedding?: number[] | null };

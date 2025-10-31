@@ -195,7 +195,8 @@ export const useSearchStore = create<SearchState>()(
               id: `${Date.now()}-${Math.random()}`,
               name,
               query,
-              filters,
+              // Ensure required keys (like `type`) are present when persisting
+              filters: { ...defaultFilters, ...filters },
               createdAt: Date.now(),
               useCount: 0,
             }
@@ -210,7 +211,8 @@ export const useSearchStore = create<SearchState>()(
           if (search) {
             set({
               query: search.query,
-              filters: search.filters,
+              // Merge defaults to satisfy `SearchFilters` requirements
+              filters: { ...defaultFilters, ...search.filters },
             })
             get().updateSavedSearchUsage(id)
           }

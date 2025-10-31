@@ -168,6 +168,13 @@ export class EmbeddingService {
     this.checkRateLimitWarning()
 
     // Execute with retry logic using the production-ready RetryService
+    // Avoid duplicate option keys by omitting maxAttempts from the default policy
+    const { maxAttempts: _defaultMaxAttempts, ...basePolicy } =
+      DEFAULT_POLICIES.GEMINI_API
+    const retryPolicy = {
+      ...basePolicy,
+      maxAttempts: this.config.maxRetries,
+    }
     const result = await retryService.execute(
       async () => {
         const embeddingResult = await this.geminiClient.generateEmbedding(text)
@@ -179,10 +186,7 @@ export class EmbeddingService {
 
         return embeddingResult.embedding
       },
-      {
-        maxAttempts: this.config.maxRetries,
-        ...DEFAULT_POLICIES.GEMINI_API,
-      },
+      retryPolicy,
       'embedding-service',
     )
 
@@ -274,7 +278,6 @@ export class EmbeddingService {
             if (result.permanent && this.config.enableRetryLogging) {
               console.error(
                 `[EmbeddingService] Permanent error for text ${originalIndex}: ${result.error}`,
-                result.errorDetails?.type,
               )
             }
 

@@ -175,7 +175,7 @@ async function getRecentSearches(userId: string, limit: number): Promise<Suggest
       distinct: ['query'],
     })
 
-    return recentSearches.map((search) => ({
+    return recentSearches.map((search: any) => ({
       text: search.query,
       type: 'PREVIOUS_SEARCH' as SuggestionType,
       metadata: {
@@ -213,7 +213,7 @@ async function getUserSearchSuggestions(
       distinct: ['query'],
     })
 
-    return searches.map((search) => ({
+    return searches.map((search: any) => ({
       text: search.query,
       type: 'PREVIOUS_SEARCH' as SuggestionType,
       metadata: {

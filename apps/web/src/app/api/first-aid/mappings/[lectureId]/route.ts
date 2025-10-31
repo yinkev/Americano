@@ -5,53 +5,54 @@
  * AC#3: Caching layer to avoid re-fetching First Aid references on scroll
  */
 
-import { type NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@/generated/prisma'
-import { type ConceptReference, firstAidCache } from '@/lib/first-aid-cache'
+import { type NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@/generated/prisma";
+import { type ConceptReference, firstAidCache } from "@/lib/first-aid-cache";
+import { intToPriority } from "@/subsystems/knowledge-graph/first-aid-mapper";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ lectureId: string }> },
 ) {
   try {
-    const { lectureId } = await params
-    const { searchParams } = new URL(request.url)
-    const section = searchParams.get('section')
-    const position = searchParams.get('position')
+    const { lectureId } = await params;
+    const { searchParams } = new URL(request.url);
+    const section = searchParams.get("section");
+    const position = searchParams.get("position");
 
     // Generate cache key based on request type
-    let cacheKey: string
+    let cacheKey: string;
     if (position) {
       // Position-based caching for scroll optimization
       cacheKey = firstAidCache.generateKey({
-        type: 'scroll',
+        type: "scroll",
         guidelineId: lectureId,
         position: parseInt(position),
-      })
+      });
     } else if (section) {
       // Section-specific caching
       cacheKey = firstAidCache.generateKey({
-        type: 'guideline',
+        type: "guideline",
         guidelineId: lectureId,
         section,
-      })
+      });
     } else {
       // Full lecture mapping cache
       cacheKey = firstAidCache.generateKey({
-        type: 'guideline',
+        type: "guideline",
         guidelineId: lectureId,
-      })
+      });
     }
 
     // Try to get from cache
-    const startTime = performance.now()
-    const cachedReferences = firstAidCache.get(cacheKey)
+    const startTime = performance.now();
+    const cachedReferences = firstAidCache.get(cacheKey);
 
     if (cachedReferences) {
-      const cacheHitTime = performance.now() - startTime
-      console.log(`✓ Cache hit for ${cacheKey} (${cacheHitTime.toFixed(2)}ms)`)
+      const cacheHitTime = performance.now() - startTime;
+      console.log(`✓ Cache hit for ${cacheKey} (${cacheHitTime.toFixed(2)}ms)`);
 
       // Transform cached references back to API response format
       return NextResponse.json({
@@ -75,24 +76,24 @@ export async function GET(
           userFeedback: null,
         })),
         confidence: calculateConfidenceLevel(cachedReferences),
-        priority: cachedReferences.some((r) => r.priority === 'HIGH_YIELD')
-          ? 'high_yield'
-          : 'standard',
+        priority: cachedReferences.some((r) => r.priority === "HIGH_YIELD")
+          ? "high_yield"
+          : "standard",
         summary: {
           totalMappings: cachedReferences.length,
           avgConfidence: (
             cachedReferences.reduce((sum, r) => sum + r.confidence, 0) / cachedReferences.length
           ).toFixed(3),
-          highYieldCount: cachedReferences.filter((r) => r.priority === 'HIGH_YIELD').length,
+          highYieldCount: cachedReferences.filter((r) => r.priority === "HIGH_YIELD").length,
         },
         cached: true,
         cacheHitTime: cacheHitTime.toFixed(2),
-      })
+      });
     }
 
     // Cache miss - fetch from database
-    console.log(`× Cache miss for ${cacheKey}, fetching from database...`)
-    const dbStartTime = performance.now()
+    console.log(`× Cache miss for ${cacheKey}, fetching from database...`);
+    const dbStartTime = performance.now();
 
     // Get mappings for this lecture
     const mappings = await prisma.lectureFirstAidMapping.findMany({
@@ -113,17 +114,19 @@ export async function GET(
           },
         },
       },
-      orderBy: { confidence: 'desc' },
-    })
+      orderBy: { confidence: "desc" },
+    });
 
     // Calculate overall confidence level
     const avgConfidence =
-      mappings.length > 0 ? mappings.reduce((sum, m) => sum + m.confidence, 0) / mappings.length : 0
+      mappings.length > 0
+        ? mappings.reduce((sum, m) => sum + m.confidence, 0) / mappings.length
+        : 0;
 
-    const confidenceLevel: 'high' | 'medium' | 'low' =
-      avgConfidence >= 0.75 ? 'high' : avgConfidence >= 0.65 ? 'medium' : 'low'
+    const confidenceLevel: "high" | "medium" | "low" =
+      avgConfidence >= 0.75 ? "high" : avgConfidence >= 0.65 ? "medium" : "low";
 
-    const dbFetchTime = performance.now() - dbStartTime
+    const dbFetchTime = performance.now() - dbStartTime;
 
     // Transform to ConceptReference format for caching
     const conceptReferences: ConceptReference[] = mappings.map((m) => ({
@@ -137,12 +140,20 @@ export async function GET(
       content: m.firstAidSection.content,
       similarity: m.confidence,
       confidence: m.confidence,
-      priority: m.priority as 'HIGH_YIELD' | 'STANDARD' | 'SUGGESTED',
-      rationale: m.rationale,
+      priority: intToPriority(m.priority ?? 5),
+      rationale: m.rationale ?? "",
       isHighYield: m.firstAidSection.isHighYield,
-      mnemonics: m.firstAidSection.mnemonics,
-      clinicalCorrelations: m.firstAidSection.clinicalCorrelations,
-    }))
+      mnemonics:
+        Array.isArray(m.firstAidSection.mnemonics) &&
+        m.firstAidSection.mnemonics.every((item) => typeof item === "string")
+          ? (m.firstAidSection.mnemonics as string[])
+          : null,
+      clinicalCorrelations:
+        Array.isArray(m.firstAidSection.clinicalCorrelations) &&
+        m.firstAidSection.clinicalCorrelations.every((item) => typeof item === "string")
+          ? (m.firstAidSection.clinicalCorrelations as string[])
+          : null,
+    }));
 
     // Store in cache
     firstAidCache.set(cacheKey, conceptReferences, {
@@ -150,53 +161,56 @@ export async function GET(
         ? 30 * 60 * 1000 // 30 min for scroll-based
         : 60 * 60 * 1000, // 1 hour for section/full
       edition: conceptReferences[0]?.edition,
-    })
+    });
 
     console.log(
       `✓ Cached ${conceptReferences.length} references for ${cacheKey} (DB: ${dbFetchTime.toFixed(2)}ms)`,
-    )
+    );
 
     // Determine if this lecture has high-yield content
-    const hasHighYield = mappings.some((m) => m.priority === 'HIGH_YIELD')
+    const hasHighYield = mappings.some((m) => intToPriority(m.priority ?? 5) === "HIGH_YIELD");
 
     return NextResponse.json({
       mappings: mappings.map((m) => ({
         id: m.id,
         confidence: m.confidence,
-        priority: m.priority,
-        rationale: m.rationale,
+        priority: intToPriority(m.priority ?? 5),
+        rationale: m.rationale ?? "",
         firstAidSection: m.firstAidSection,
         userFeedback: m.userFeedback,
       })),
       confidence: confidenceLevel,
-      priority: hasHighYield ? 'high_yield' : 'standard',
+      priority: hasHighYield ? "high_yield" : "standard",
       summary: {
         totalMappings: mappings.length,
         avgConfidence: avgConfidence.toFixed(3),
-        highYieldCount: mappings.filter((m) => m.priority === 'HIGH_YIELD').length,
+        highYieldCount: mappings.filter((m) => intToPriority(m.priority ?? 5) === "HIGH_YIELD")
+          .length,
       },
       cached: false,
       dbFetchTime: dbFetchTime.toFixed(2),
-    })
+    });
   } catch (error) {
-    console.error('Error fetching lecture mappings:', error)
+    console.error("Error fetching lecture mappings:", error);
     return NextResponse.json(
       {
-        error: 'Failed to fetch mappings',
-        details: error instanceof Error ? error.message : 'Unknown error',
+        error: "Failed to fetch mappings",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },
-    )
+    );
   }
 }
 
 /**
  * Calculate confidence level from references
  */
-function calculateConfidenceLevel(references: ConceptReference[]): 'high' | 'medium' | 'low' {
-  if (references.length === 0) return 'low'
+function calculateConfidenceLevel(
+  references: readonly ConceptReference[],
+): "high" | "medium" | "low" {
+  if (references.length === 0) return "low";
 
-  const avgConfidence = references.reduce((sum, r) => sum + r.confidence, 0) / references.length
+  const avgConfidence = references.reduce((sum, r) => sum + r.confidence, 0) / references.length;
 
-  return avgConfidence >= 0.75 ? 'high' : avgConfidence >= 0.65 ? 'medium' : 'low'
+  return avgConfidence >= 0.75 ? "high" : avgConfidence >= 0.65 ? "medium" : "low";
 }

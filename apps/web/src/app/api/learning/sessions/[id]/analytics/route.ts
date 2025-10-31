@@ -53,7 +53,7 @@ export const GET = withErrorHandler(
     // Build objectives dataset for charts/table
     const objectives = objectiveCompletions.map((completion, index) => {
       const missionObj = missionObjectives.find((o) => o.id === completion.objectiveId)
-      const timeSpentMinutes = Math.round((completion.timeSpentMs || 0) / 60000)
+      const timeSpentMinutes = Math.round((completion.timeSpentMs ?? 0) / 60000)
       const estimatedMinutes = missionObj?.estimatedMinutes ?? 0
 
       return {
@@ -84,10 +84,10 @@ export const GET = withErrorHandler(
 
     // Time breakdown
     const totalActualMinutes = Math.round(
-      objectiveCompletions.reduce((sum, c) => sum + (c.timeSpentMs || 0), 0) / 60000,
+      objectiveCompletions.reduce((sum, c) => sum + (c.timeSpentMs ?? 0), 0) / 60000,
     )
     const totalEstimatedMinutes = missionObjectives.reduce(
-      (sum, o) => sum + (o.estimatedMinutes || 0),
+      (sum, o) => sum + (o.estimatedMinutes ?? 0),
       0,
     )
     const deltaMinutes = totalActualMinutes - totalEstimatedMinutes
@@ -129,11 +129,13 @@ export const GET = withErrorHandler(
       where: {
         sessionId: id,
         preAssessmentConfidence: { not: null },
-        score: { not: null },
+        // `score` is non-nullable in the Prisma schema (Float),
+        // so no need to add a not-null filter here.
       },
       select: {
         preAssessmentConfidence: true,
-        postAssessmentConfidence: true,
+        // NOTE: postAssessmentConfidence field doesn't exist in Prisma schema
+        // postAssessmentConfidence: true,
         calibrationDelta: true,
         calibrationCategory: true,
         score: true,
@@ -160,7 +162,7 @@ export const GET = withErrorHandler(
     if (validationResponses.length > 0) {
       // Average calibration delta (confidence - performance gap)
       const totalDelta = validationResponses.reduce(
-        (sum, r) => sum + Math.abs(r.calibrationDelta || 0),
+        (sum, r) => sum + Math.abs(r.calibrationDelta ?? 0),
         0,
       )
       calibrationMetrics.avgConfidenceVsPerformanceGap = Math.round(

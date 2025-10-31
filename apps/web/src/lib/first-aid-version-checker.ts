@@ -41,7 +41,7 @@ export interface VersionComparisonResult {
   currentEdition?: {
     id: string
     year: number
-    uploadedAt: Date
+    createdAt: Date
   }
   latestEdition: FirstAidVersionInfo
 }
@@ -103,7 +103,7 @@ export class FirstAidVersionChecker {
         ? {
             id: currentEdition.id,
             year: currentEdition.year,
-            uploadedAt: currentEdition.uploadedAt,
+            createdAt: currentEdition.createdAt,
           }
         : undefined,
       latestEdition: latestVersion,
@@ -114,14 +114,12 @@ export class FirstAidVersionChecker {
    * Get user's current First Aid edition (most recent active edition)
    */
   private async getCurrentEdition(userId: string) {
-    return this.prisma.firstAidEdition.findFirst({
-      where: {
-        userId,
-        isActive: true,
-      },
-      orderBy: {
-        year: 'desc',
-      },
+    // NOTE: FirstAidSection is not user-scoped in the current schema.
+    // Return the most recent First Aid edition available in the database.
+    // The userId is accepted for API compatibility but not used.
+    return this.prisma.firstAidSection.findFirst({
+      select: { id: true, year: true, createdAt: true },
+      orderBy: { year: 'desc' },
     })
   }
 
@@ -137,38 +135,36 @@ export class FirstAidVersionChecker {
    * MVP: Returns mock data with current year + 1
    */
   private async getLatestVersion(): Promise<FirstAidVersionInfo> {
-    // MVP: Mock implementation
-    // Production: Replace with actual version checking logic
+    // Prefer the latest edition present in our database; fallback to current year
+    const latest = await this.prisma.firstAidSection.findFirst({
+      select: { year: true, edition: true, createdAt: true },
+      orderBy: { year: 'desc' },
+    })
 
-    const currentYear = new Date().getFullYear()
-    const latestYear = currentYear // In production, check actual latest version
-
-    console.log(`📡 Checking external source for latest version...`)
-    console.log(`   Source: MOCK (use web scraping or API in production)`)
-
-    // Simulate checking McGraw Hill website
-    const mockLatestVersion: FirstAidVersionInfo = {
-      edition: `${latestYear}`,
-      year: latestYear,
-      publishedDate: new Date(`${latestYear}-01-01`),
-      downloadUrl: undefined, // User must purchase and upload
-      releaseNotes: `First Aid for the USMLE Step 1 ${latestYear} Edition`,
-      source: 'MOCK',
+    if (latest) {
+      return {
+        edition: latest.edition,
+        year: latest.year,
+        publishedDate: latest.createdAt,
+        source: 'MANUAL',
+      }
     }
 
-    return mockLatestVersion
+    const fallbackYear = new Date().getFullYear()
+    return {
+      edition: `${fallbackYear}`,
+      year: fallbackYear,
+      publishedDate: new Date(`${fallbackYear}-01-01`),
+      source: 'MOCK',
+    }
   }
 
   /**
    * Check if a specific version exists in the database
    */
   async versionExists(userId: string, year: number): Promise<boolean> {
-    const edition = await this.prisma.firstAidEdition.findFirst({
-      where: {
-        userId,
-        year,
-      },
-    })
+    // Schema has no user linkage; check globally for any section with the year
+    const edition = await this.prisma.firstAidSection.findFirst({ where: { year } })
     return !!edition
   }
 
@@ -176,13 +172,10 @@ export class FirstAidVersionChecker {
    * Get all editions for a user (for comparison/migration)
    */
   async getUserEditions(userId: string) {
-    return this.prisma.firstAidEdition.findMany({
-      where: {
-        userId,
-      },
-      orderBy: {
-        year: 'desc',
-      },
+    // Return all editions available; not user-scoped in current schema
+    return this.prisma.firstAidSection.findMany({
+      select: { id: true, year: true, edition: true, createdAt: true },
+      orderBy: { year: 'desc' },
     })
   }
 
@@ -195,22 +188,16 @@ export class FirstAidVersionChecker {
     console.log(`🔍 Checking updates for all users with First Aid content`)
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`)
 
-    // Get all users with First Aid editions
-    const editions = await this.prisma.firstAidEdition.findMany({
-      where: {
-        isActive: true,
-      },
-      distinct: ['userId'],
-      select: {
-        userId: true,
-      },
+    // Get all users; FirstAidSection is not user-scoped in the current schema
+    const users = await this.prisma.user.findMany({
+      select: { id: true },
     })
 
     const results = new Map<string, VersionComparisonResult>()
 
-    for (const edition of editions) {
-      const result = await this.checkForUpdates(edition.userId)
-      results.set(edition.userId, result)
+    for (const user of users) {
+      const result = await this.checkForUpdates(user.id)
+      results.set(user.id, result)
     }
 
     const usersWithUpdates = Array.from(results.values()).filter((r) => r.updateAvailable).length

@@ -354,7 +354,8 @@ describe('PeerCalibrationAnalyzer', () => {
       } as any)
 
       // User has calibration metrics
-      vi.mocked(prisma.calibrationMetric.findMany)
+      jest
+        .mocked(prisma.calibrationMetric.findMany)
         .mockResolvedValueOnce([
           { correlationCoeff: 0.7, sampleSize: 15 },
           { correlationCoeff: 0.8, sampleSize: 10 },

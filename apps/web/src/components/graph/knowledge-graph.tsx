@@ -150,7 +150,7 @@ export default function KnowledgeGraph({
       // Find direct relationships for focus mode
       const directRelationships = new Set<string>()
       if (isFocused) {
-        graphEdges.forEach((edge) => {
+        graphEdges.forEach((edge: any) => {
           if (edge.fromConceptId === node.id) {
             directRelationships.add(edge.toConceptId)
           }
@@ -243,7 +243,7 @@ export default function KnowledgeGraph({
    */
   const onConnect = useCallback(
     (params: Connection) => {
-      setEdges((eds) => addEdge(params, eds))
+      setEdges((eds: any) => addEdge(params, eds))
     },
     [setEdges],
   )
@@ -315,10 +315,10 @@ export default function KnowledgeGraph({
                   backgroundColor: 'oklch(0.6 0.15 240)',
                   color: 'white',
                 }}
-                onMouseOver={(e) => {
+                onMouseOver={(e: any) => {
                   e.currentTarget.style.backgroundColor = 'oklch(0.5 0.15 240)'
                 }}
-                onMouseOut={(e) => {
+                onMouseOut={(e: any) => {
                   e.currentTarget.style.backgroundColor = 'oklch(0.6 0.15 240)'
                 }}
               >
@@ -336,14 +336,14 @@ export default function KnowledgeGraph({
           >
             <div className="text-xs space-y-1">
               <div className="font-semibold text-gray-900">
-                {nodes.find((n) => n.id === selectedNode)?.data.name}
+                {nodes.find((n: any) => n.id === selectedNode)?.data.name}
               </div>
               <div className="text-gray-600">
-                {nodes.find((n) => n.id === selectedNode)?.data.description || 'No description'}
+                {nodes.find((n: any) => n.id === selectedNode)?.data.description || 'No description'}
               </div>
-              {nodes.find((n) => n.id === selectedNode)?.data.category && (
+              {nodes.find((n: any) => n.id === selectedNode)?.data.category && (
                 <div className="text-gray-500 capitalize">
-                  Category: {nodes.find((n) => n.id === selectedNode)?.data.category}
+                  Category: {nodes.find((n: any) => n.id === selectedNode)?.data.category}
                 </div>
               )}
             </div>

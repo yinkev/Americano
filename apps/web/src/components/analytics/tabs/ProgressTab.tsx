@@ -92,7 +92,7 @@ export default function ProgressTab() {
   if (!data) return null
 
   // Transform metrics data for Recharts (pivot from long to wide format)
-  const chartData = data.metrics.map((metric) => ({
+  const chartData = data.metrics.map((metric: any) => ({
     date: metric.date,
     formattedDate: format(parseISO(metric.date), 'MMM d'),
     comprehension: metric.comprehension,
@@ -234,7 +234,7 @@ export default function ProgressTab() {
                     boxShadow: '0 4px 12px rgba(31,38,135,0.15)',
                   }}
                   formatter={(value: number) => [`${value.toFixed(1)}`, '']}
-                  labelFormatter={(label) => `Date: ${label}`}
+                  labelFormatter={(label: any) => `Date: ${label}`}
                 />
                 <Legend
                   wrapperStyle={{
@@ -271,8 +271,8 @@ export default function ProgressTab() {
                 />
 
                 {/* Milestone markers */}
-                {data.milestones.map((milestone) => {
-                  const dataPoint = chartData.find((d) => d.date === milestone.date)
+                {data.milestones.map((milestone: any) => {
+                  const dataPoint = chartData.find((d: any) => d.date === milestone.date)
                   if (!dataPoint) return null
 
                   return (
@@ -535,7 +535,7 @@ function ProgressSkeleton() {
 
       {/* Stats skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3].map((i: any) => (
           <Card
             key={i}
             className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0"

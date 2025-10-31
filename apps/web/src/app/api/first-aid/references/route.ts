@@ -183,7 +183,6 @@ async function getSectionReferences(
       id: true,
       content: true,
       chunkIndex: true,
-      metadata: true,
     },
     orderBy: {
       chunkIndex: 'asc',

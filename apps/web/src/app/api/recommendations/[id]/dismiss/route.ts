@@ -16,7 +16,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const { id: recommendationId } = await params
 
     // Check if recommendation exists
-    const recommendation = await prisma.contentRecommendation.findUnique({
+    const recommendation = await prisma.content_recommendations.findUnique({
       where: { id: recommendationId },
     })
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // Update recommendation status to DISMISSED
-    await prisma.contentRecommendation.update({
+    await prisma.content_recommendations.update({
       where: { id: recommendationId },
       data: {
         status: 'DISMISSED',

@@ -11,7 +11,6 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { WeakAreasPanel } from '@/components/dashboard/weak-areas-panel'
 import { MasteryDistribution } from '@/components/progress/mastery-distribution'
-import { PerformanceTrendChart } from '@/components/progress/performance-trend-chart'
 
 interface MasterySummary {
   notStarted: number

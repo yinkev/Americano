@@ -17,7 +17,7 @@ import { logSearchQuery } from '@/lib/search-analytics-service'
 // Mock Prisma
 jest.mock('@/lib/db', () => ({
   prisma: {
-    searchQuery: {
+    search_queries: {
       create: jest.fn(),
       findMany: jest.fn(),
       count: jest.fn(),
@@ -31,7 +31,7 @@ import { prisma } from '@/lib/db'
 type AsyncMock<TReturn = any> = jest.MockedFunction<(...args: any[]) => Promise<TReturn>>
 
 type SearchQueryMock = {
-  searchQuery: {
+  search_queries: {
     create: AsyncMock<any>
     findMany: AsyncMock<any[]>
     count: AsyncMock<number>
@@ -48,7 +48,7 @@ describe('Search Analytics Logging', () => {
 
   describe('logSearchQuery', () => {
     it('should log search query with all required fields', async () => {
-      mockPrisma.searchQuery.create.mockResolvedValue({
+      mockPrisma.search_queries.create.mockResolvedValue({
         id: 'query-001',
         userId: 'user-001',
         query: 'cardiac conduction system',
@@ -70,8 +70,8 @@ describe('Search Analytics Logging', () => {
         timestamp: new Date(),
       })
 
-      expect(mockPrisma.searchQuery.create).toHaveBeenCalledTimes(1)
-      expect(mockPrisma.searchQuery.create).toHaveBeenCalledWith({
+      expect(mockPrisma.search_queries.create).toHaveBeenCalledTimes(1)
+      expect(mockPrisma.search_queries.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           userId: 'user-001',
           query: 'cardiac conduction system',
@@ -87,7 +87,7 @@ describe('Search Analytics Logging', () => {
         courseIds: ['course-001'],
       }
 
-      mockPrisma.searchQuery.create.mockResolvedValue({} as any)
+      mockPrisma.search_queries.create.mockResolvedValue({} as any)
 
       await logSearchQuery({
         userId: 'user-001',
@@ -98,7 +98,7 @@ describe('Search Analytics Logging', () => {
         timestamp: new Date(),
       })
 
-      expect(mockPrisma.searchQuery.create).toHaveBeenCalledWith({
+      expect(mockPrisma.search_queries.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           filters: filters,
         }),
@@ -106,7 +106,7 @@ describe('Search Analytics Logging', () => {
     })
 
     it('should handle optional topResultId', async () => {
-      mockPrisma.searchQuery.create.mockResolvedValue({} as any)
+      mockPrisma.search_queries.create.mockResolvedValue({} as any)
 
       await logSearchQuery({
         userId: 'user-001',
@@ -118,7 +118,7 @@ describe('Search Analytics Logging', () => {
         timestamp: new Date(),
       })
 
-      expect(mockPrisma.searchQuery.create).toHaveBeenCalledWith({
+      expect(mockPrisma.search_queries.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           topResultId: undefined,
         }),
@@ -126,7 +126,7 @@ describe('Search Analytics Logging', () => {
     })
 
     it('should capture response time metrics', async () => {
-      mockPrisma.searchQuery.create.mockResolvedValue({} as any)
+      mockPrisma.search_queries.create.mockResolvedValue({} as any)
 
       const responseTimeMs = 850
 
@@ -139,7 +139,7 @@ describe('Search Analytics Logging', () => {
         timestamp: new Date(),
       })
 
-      expect(mockPrisma.searchQuery.create).toHaveBeenCalledWith({
+      expect(mockPrisma.search_queries.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           responseTimeMs: 850,
         }),
@@ -147,7 +147,7 @@ describe('Search Analytics Logging', () => {
     })
 
     it('should handle database errors gracefully', async () => {
-      mockPrisma.searchQuery.create.mockRejectedValue(new Error('Database connection failed'))
+      mockPrisma.search_queries.create.mockRejectedValue(new Error('Database connection failed'))
 
       // Should not throw - logging errors should be silent
       await expect(
@@ -164,7 +164,7 @@ describe('Search Analytics Logging', () => {
 
     it('should be non-blocking and async', async () => {
       // Simulate slow database operation
-      mockPrisma.searchQuery.create.mockImplementation(
+      mockPrisma.search_queries.create.mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({} as any), 100)),
       )
 
@@ -206,7 +206,7 @@ describe('Search Analytics Logging', () => {
         },
       ]
 
-      mockPrisma.searchQuery.findMany.mockResolvedValue(mockQueries as any)
+      mockPrisma.search_queries.findMany.mockResolvedValue(mockQueries as any)
 
       const history = await prisma.searchQuery.findMany({
         where: { userId: 'user-001' },
@@ -219,7 +219,7 @@ describe('Search Analytics Logging', () => {
     })
 
     it('should count total searches for a user', async () => {
-      mockPrisma.searchQuery.count.mockResolvedValue(42)
+      mockPrisma.search_queries.count.mockResolvedValue(42)
 
       const count = await prisma.searchQuery.count({
         where: { userId: 'user-001' },
@@ -229,7 +229,7 @@ describe('Search Analytics Logging', () => {
     })
 
     it('should filter searches by date range', async () => {
-      mockPrisma.searchQuery.findMany.mockResolvedValue([])
+      mockPrisma.search_queries.findMany.mockResolvedValue([])
 
       await prisma.searchQuery.findMany({
         where: {
@@ -241,7 +241,7 @@ describe('Search Analytics Logging', () => {
         },
       })
 
-      expect(mockPrisma.searchQuery.findMany).toHaveBeenCalledWith({
+      expect(mockPrisma.search_queries.findMany).toHaveBeenCalledWith({
         where: expect.objectContaining({
           timestamp: expect.objectContaining({
             gte: expect.any(Date),
@@ -254,7 +254,7 @@ describe('Search Analytics Logging', () => {
 
   describe('Privacy Considerations', () => {
     it('should only log searches for authenticated users', async () => {
-      mockPrisma.searchQuery.create.mockResolvedValue({} as any)
+      mockPrisma.search_queries.create.mockResolvedValue({} as any)
 
       // Requires userId
       await logSearchQuery({
@@ -266,31 +266,31 @@ describe('Search Analytics Logging', () => {
         timestamp: new Date(),
       })
 
-      expect(mockPrisma.searchQuery.create).toHaveBeenCalled()
+      expect(mockPrisma.search_queries.create).toHaveBeenCalled()
     })
 
     it('should allow users to clear their search history', async () => {
-      mockPrisma.searchQuery.deleteMany.mockResolvedValue({ count: 10 })
+      mockPrisma.search_queries.deleteMany.mockResolvedValue({ count: 10 })
 
       const result = await prisma.searchQuery.deleteMany({
         where: { userId: 'user-001' },
       })
 
       expect(result.count).toBe(10)
-      expect(mockPrisma.searchQuery.deleteMany).toHaveBeenCalledWith({
+      expect(mockPrisma.search_queries.deleteMany).toHaveBeenCalledWith({
         where: { userId: 'user-001' },
       })
     })
 
     it('should not expose other users search history', async () => {
-      mockPrisma.searchQuery.findMany.mockResolvedValue([])
+      mockPrisma.search_queries.findMany.mockResolvedValue([])
 
       await prisma.searchQuery.findMany({
         where: { userId: 'user-001' },
       })
 
       // Verify it filters by userId
-      expect(mockPrisma.searchQuery.findMany).toHaveBeenCalledWith({
+      expect(mockPrisma.search_queries.findMany).toHaveBeenCalledWith({
         where: expect.objectContaining({
           userId: 'user-001',
         }),
@@ -324,7 +324,7 @@ describe('Search Analytics Logging', () => {
     })
 
     it('should identify searches with no results', async () => {
-      mockPrisma.searchQuery.findMany.mockResolvedValue([
+      mockPrisma.search_queries.findMany.mockResolvedValue([
         {
           id: 'query-001',
           query: 'obscure medical term',
@@ -346,7 +346,7 @@ describe('Search Analytics Logging', () => {
 
   describe('Performance Tracking', () => {
     it('should log queries exceeding performance threshold', async () => {
-      mockPrisma.searchQuery.findMany.mockResolvedValue([
+      mockPrisma.search_queries.findMany.mockResolvedValue([
         {
           id: 'slow-query-001',
           query: 'complex search',
@@ -383,7 +383,7 @@ describe('Search Analytics Logging', () => {
 
   describe('Data Validation', () => {
     it('should validate query length before logging', async () => {
-      mockPrisma.searchQuery.create.mockResolvedValue({} as any)
+      mockPrisma.search_queries.create.mockResolvedValue({} as any)
 
       const longQuery = 'a'.repeat(1000)
 
@@ -397,11 +397,11 @@ describe('Search Analytics Logging', () => {
       })
 
       // Should still attempt to log (database schema will enforce limits)
-      expect(mockPrisma.searchQuery.create).toHaveBeenCalled()
+      expect(mockPrisma.search_queries.create).toHaveBeenCalled()
     })
 
     it('should handle special characters in queries', async () => {
-      mockPrisma.searchQuery.create.mockResolvedValue({} as any)
+      mockPrisma.search_queries.create.mockResolvedValue({} as any)
 
       const specialQuery = 'What is the α-helix structure? (β-sheet comparison)'
 
@@ -414,7 +414,7 @@ describe('Search Analytics Logging', () => {
         timestamp: new Date(),
       })
 
-      expect(mockPrisma.searchQuery.create).toHaveBeenCalledWith({
+      expect(mockPrisma.search_queries.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           query: specialQuery,
         }),

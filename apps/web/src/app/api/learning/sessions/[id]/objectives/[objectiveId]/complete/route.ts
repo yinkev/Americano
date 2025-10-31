@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 import type { Prisma } from '@/generated/prisma'
 import { withErrorHandler } from '@/lib/api-error'
-import { errorResponse, successResponse } from '@/lib/api-response'
+import { successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
 import {
   getMissionObjectives,
@@ -15,8 +15,6 @@ const completeObjectiveSchema = z.object({
   confidenceRating: z.number().min(1).max(5),
   notes: z.string().optional(),
   timeSpentMs: z.number().min(0),
-  comprehensionScore: z.number().min(0).max(100).optional(), // Story 4.1 Task 6.7
-  clinicalScenarioScore: z.number().min(0).max(100).optional(), // Story 4.2 Task 7.7
   clinicalScenarioTime: z.number().min(0).optional(), // Story 4.2 Task 7.6 (seconds)
 })
 
@@ -68,9 +66,6 @@ export async function POST(
       selfAssessment: validatedData.selfAssessment,
       confidenceRating: validatedData.confidenceRating,
       notes: validatedData.notes,
-      comprehensionScore: validatedData.comprehensionScore, // Story 4.1 Task 6.7
-      clinicalScenarioScore: validatedData.clinicalScenarioScore, // Story 4.2 Task 7.7
-      clinicalScenarioTime: validatedData.clinicalScenarioTime, // Story 4.2 Task 7.6
     })
 
     // Increment objective index
@@ -78,7 +73,7 @@ export async function POST(
     const nextObjective = newIndex < missionObjectives.length ? missionObjectives[newIndex] : null
 
     // Update session
-    const updatedSession = await prisma.studySession.update({
+    await prisma.studySession.update({
       where: { id: resolvedParams.id },
       data: {
         currentObjectiveIndex: newIndex,

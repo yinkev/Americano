@@ -26,13 +26,13 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer } from '@/components/ui/chart-container'
-import { InsightCard } from '@/components/ui/insight-card'
+import { InsightCard, type InsightPriority } from '@/components/ui/insight-card'
 import { MetricCard } from '@/components/ui/metric-card'
 import { Separator } from '@/components/ui/separator'
 import { TrendIndicator } from '@/components/ui/trend-indicator'
 
 export interface SearchInsight {
-  type: 'positive' | 'warning' | 'info'
+  priority: InsightPriority
   title: string
   description: string
   action?: {
@@ -76,7 +76,7 @@ export function SearchInsightsDashboard({
     const timer = setTimeout(() => {
       setInsights([
         {
-          type: 'positive',
+          priority: 'success',
           title: 'High Search Success Rate',
           description: '87% of searches return 5+ relevant results',
           action: {
@@ -85,7 +85,7 @@ export function SearchInsightsDashboard({
           },
         },
         {
-          type: 'warning',
+          priority: 'warning',
           title: 'Low Result Queries Detected',
           description: '12 queries returned fewer than 3 results this week',
           action: {
@@ -94,7 +94,7 @@ export function SearchInsightsDashboard({
           },
         },
         {
-          type: 'info',
+          priority: 'info',
           title: 'Search Pattern Identified',
           description: 'Users frequently search for anatomy after pathology topics',
         },
@@ -202,10 +202,10 @@ export function SearchInsightsDashboard({
           {insights.map((insight, index) => (
             <InsightCard
               key={index}
-              type={insight.type}
+              priority={insight.priority}
               title={insight.title}
               description={insight.description}
-              action={insight.action}
+              actions={insight.action ? [insight.action] : undefined}
             />
           ))}
         </div>

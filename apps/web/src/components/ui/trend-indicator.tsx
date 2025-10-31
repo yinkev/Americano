@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import type { HTMLMotionProps } from 'framer-motion'
 import { Minus, TrendingDown, TrendingUp } from 'lucide-react'
 import * as React from 'react'
 import { cn } from '@/lib/utils'
@@ -13,7 +14,7 @@ export type TrendDirection = 'up' | 'down' | 'neutral'
 /**
  * Props for the TrendIndicator component
  */
-export interface TrendIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface TrendIndicatorProps extends Omit<HTMLMotionProps<'div'>, 'animate'> {
   /**
    * Trend direction (up, down, neutral)
    */
@@ -32,13 +33,20 @@ export interface TrendIndicatorProps extends React.HTMLAttributes<HTMLDivElement
    */
   showPercentage?: boolean
   /**
+   * Show the value (alias for showPercentage)
+   */
+  showValue?: boolean
+  /**
    * Size variant
    */
   size?: 'sm' | 'md' | 'lg'
   /**
    * Whether to animate the component on mount
    */
-  animate?: boolean
+  /**
+   * Whether to apply entrance animation
+   */
+  animated?: boolean
   /**
    * Label for screen readers
    */
@@ -77,7 +85,7 @@ export const TrendIndicator = React.forwardRef<HTMLDivElement, TrendIndicatorPro
       upIsGood = true,
       showPercentage = true,
       size = 'md',
-      animate: shouldAnimate = true,
+      animated = true,
       ariaLabel,
       className,
       ...props
@@ -112,7 +120,7 @@ export const TrendIndicator = React.forwardRef<HTMLDivElement, TrendIndicatorPro
       </>
     )
 
-    const containerProps = {
+    const containerProps: Omit<HTMLMotionProps<'div'>, 'ref'> & { ref: typeof ref } = {
       ref,
       className: cn('inline-flex items-center gap-1', colorClass, className),
       role: 'status',
@@ -120,23 +128,22 @@ export const TrendIndicator = React.forwardRef<HTMLDivElement, TrendIndicatorPro
       ...props,
     }
 
-    if (shouldAnimate) {
-      return (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{
+    const motionAnimationProps: Partial<HTMLMotionProps<'div'>> = animated
+      ? {
+          initial: { opacity: 0, scale: 0.8 },
+          animate: { opacity: 1, scale: 1 },
+          transition: {
             duration: 0.3,
             ease: [0.4, 0, 0.2, 1],
-          }}
-          {...containerProps}
-        >
-          {content}
-        </motion.div>
-      )
-    }
+          },
+        }
+      : {}
 
-    return <div {...containerProps}>{content}</div>
+    return (
+      <motion.div {...containerProps} {...motionAnimationProps}>
+        {content}
+      </motion.div>
+    )
   },
 )
 

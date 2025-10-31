@@ -5,9 +5,17 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
+type SwitchProps = React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root> & {
+  id?: string
+  className?: string
+  checked?: boolean
+  onCheckedChange?: (checked: boolean) => void
+  disabled?: boolean
+}
+
 const Switch = React.forwardRef<
   React.ElementRef<typeof SwitchPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>
+  SwitchProps
 >(({ className, ...props }, ref) => (
   <SwitchPrimitives.Root
     className={cn(

@@ -350,7 +350,7 @@ export default function UnderstandingAnalyticsPage() {
                 />
                 <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: colors.mutedForeground }} />
                 <Tooltip
-                  content={({ active, payload }) => {
+                  content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload
                       return (
@@ -417,7 +417,7 @@ export default function UnderstandingAnalyticsPage() {
                 <XAxis dataKey="day" label={{ value: 'Days', position: 'insideBottom', offset: -5 }} />
                 <YAxis domain={[60, 95]} />
                 <Tooltip
-                  content={({ active, payload }) => {
+                  content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload
                       return (

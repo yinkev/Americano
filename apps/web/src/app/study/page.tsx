@@ -17,6 +17,8 @@ import { ObjectiveContentPanel } from '@/components/study/objective-content-pane
 import { ObjectiveTimer } from '@/components/study/objective-timer'
 import { ObjectiveTransition } from '@/components/study/objective-transition'
 import { PomodoroTimer } from '@/components/study/pomodoro-timer'
+import { RealtimeOrchestrationPanel } from '@/components/study/realtime-orchestration-panel'
+import { CognitiveLoadIndicator } from '@/components/study/cognitive-load-indicator'
 import { SessionResumeDialog } from '@/components/study/session-resume-dialog'
 import { SessionSettingsPanel } from '@/components/study/session-settings-panel'
 import { SessionTimer } from '@/components/study/session-timer'
@@ -34,6 +36,7 @@ import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
 import { useStudySession } from '@/hooks/use-study-session'
+import { useStudyOrchestration } from '@/hooks/use-study-orchestration'
 import { useSessionStore } from '@/store/use-session-store'
 import { useUserStore } from '@/store/use-user-store'
 import type { ResponseEvaluationResponse, ValidationPromptData } from '@/types/validation'
@@ -144,6 +147,15 @@ export default function StudyPage() {
   const [objectivesCompletedCount, setObjectivesCompletedCount] = useState(0)
   const contentPanelRef = useRef<HTMLDivElement>(null)
   const isAdvancingRef = useRef(false)
+
+  // Map local StudyPhase to store/orchestration-supported unions
+  const toSnapshotPhase = (
+    phase: StudyPhase,
+  ): 'content' | 'comprehension' | 'cards' | 'assessment' =>
+    phase === 'adaptive' ? 'assessment' : phase
+
+  const toOrchestrationPhase = (phase: StudyPhase): 'content' | 'cards' | 'assessment' =>
+    phase === 'adaptive' ? 'assessment' : phase === 'comprehension' ? 'content' : phase
 
   // Orchestration dialog state
   const [showIntelligentBreak, setShowIntelligentBreak] = useState(false)
@@ -296,8 +308,8 @@ export default function StudyPage() {
       startObjectiveTimer()
 
       // Record phase change with orchestration (Story 5.3)
-      studyOrchestration.recordPhaseChange(studyPhase)
-    }
+      studyOrchestration.recordPhaseChange(toOrchestrationPhase(studyPhase))
+  }
   }, [studyPhase, sessionId, mission, startObjectiveTimer, studyOrchestration])
 
   const isPaused = !!pausedAt
@@ -355,7 +367,7 @@ export default function StudyPage() {
       const scrollPosition = contentPanelRef.current?.scrollTop || 0
       captureSessionSnapshot({
         currentObjectiveIndex,
-        studyPhase,
+        studyPhase: toSnapshotPhase(studyPhase),
         contentScrollPosition: scrollPosition,
         cardQueuePosition: 0, // TODO: Get from card review component
       })
@@ -1418,7 +1430,7 @@ export default function StudyPage() {
               <RealtimeOrchestrationPanel
                 sessionId={sessionId}
                 missionId={missionId}
-                currentPhase={studyPhase}
+                currentPhase={toOrchestrationPhase(studyPhase)}
                 onBreakRecommendation={handleOrchestrationBreakRecommendation}
                 onContentAdaptation={handleOrchestrationContentAdaptation}
                 onSessionRecommendation={handleOrchestrationSessionRecommendation}

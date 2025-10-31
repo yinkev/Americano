@@ -20,7 +20,7 @@
     "test:integration": "RUN_DB_INTEGRATION=1 jest -c jest.config.ts __tests__/integration --runInBand",
     "aggregate:calibration": "tsx scripts/aggregate-calibration-metrics.ts",
     "aggregate:calibration:backfill": "tsx scripts/aggregate-calibration-metrics.ts --days 7",
-    "generate-types": "cd ../api && python scripts/generate_types.py"
+    "generate-types": "cd ../api && source venv/bin/activate && python scripts/generate_types.py"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.4.0",
@@ -53,6 +53,7 @@
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
     "d3": "^7.9.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
@@ -79,6 +80,8 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "tslib": "^2.8.1",
+    "uuid": "^13.0.0",
+    "winston": "^3.18.3",
     "zod": "^4.1.12",
     "zustand": "^5.0.8"
   },
@@ -99,6 +102,7 @@
     "@types/node-cron": "^3.0.11",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "@types/uuid": "^11.0.0",
     "autoprefixer": "^10.4.21",
     "babel-jest": "^30.2.0",
     "jest": "^30.2.0",
@@ -114,6 +118,7 @@
     "ts-jest": "^29.4.5",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "until-async": "^3.0.2"
+    "until-async": "^3.0.2",
+    "vitest": "^4.0.5"
   }
 }

@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useRef } from 'react'
 import { useSessionStore } from '@/store/use-session-store'
+import { realtimeOrchestrationService, type SessionEvent } from '@/services/realtime-orchestration'
 
 interface PerformanceEvent {
   type: 'answer' | 'navigation' | 'interaction' | 'pause' | 'resume'
@@ -47,13 +48,7 @@ export function usePerformanceMonitoring(options: UsePerformanceMonitoringOption
     minSampleSize = 5,
   } = options
 
-  const {
-    orchestration,
-    recordSessionEvent,
-    sessionId,
-    currentObjective,
-    updatePerformanceMetrics,
-  } = useSessionStore()
+  const { sessionId, currentObjective } = useSessionStore()
 
   // Performance event history
   const performanceEvents = useRef<PerformanceEvent[]>([])
@@ -71,7 +66,7 @@ export function usePerformanceMonitoring(options: UsePerformanceMonitoringOption
   // Record a performance event
   const recordEvent = useCallback(
     (event: Omit<PerformanceEvent, 'timestamp'>) => {
-      if (!enabled || !sessionId || !orchestration.isActive) return
+      if (!enabled || !sessionId) return
 
       const fullEvent: PerformanceEvent = {
         ...event,
@@ -86,30 +81,23 @@ export function usePerformanceMonitoring(options: UsePerformanceMonitoringOption
         cleanOldEvents()
       }
 
-      // Record in orchestration service
-      // Only record event types that are supported by recordSessionEvent
-      if (['pause', 'resume', 'objective_complete', 'card_review', 'answer'].includes(event.type)) {
-        recordSessionEvent({
-          type: event.type as 'pause' | 'resume' | 'objective_complete' | 'card_review' | 'answer',
+      // Record in orchestration service for supported event types
+      if (['pause', 'resume', 'answer'].includes(event.type)) {
+        const orchestrationEvent: SessionEvent = {
+          // Cast is safe due to includes() guard above
+          type: event.type as SessionEvent['type'],
+          timestamp: new Date(),
           data: event.data,
-        })
+        }
+        realtimeOrchestrationService.recordEvent(orchestrationEvent)
       }
 
-      // Update performance metrics
-      const metrics = calculatePerformanceMetrics()
-      updatePerformanceMetrics({
-        currentScore: calculateOverallScore(metrics),
-        trend: metrics.trend,
-        fatigueLevel: metrics.fatigueIndicator,
-        engagementScore: metrics.engagementScore,
-      })
+      // Local performance metrics are available to consumers via
+      // getCurrentMetrics(); no global store update here.
     },
     [
       enabled,
       sessionId,
-      orchestration.isActive,
-      recordSessionEvent,
-      updatePerformanceMetrics,
       cleanOldEvents,
     ],
   )

@@ -38,10 +38,10 @@ export async function GET(
     startDate.setHours(0, 0, 0, 0)
 
     // Fetch comprehension metrics for objective
+    // NOTE: ComprehensionMetric doesn't have userId field - it's concept-based, not user-based
     const metrics = await prisma.comprehensionMetric.findMany({
       where: {
         objectiveId,
-        userId,
         date: {
           gte: startDate,
         },

@@ -63,7 +63,7 @@ export function ObjectiveCompletionDialog({
         {label}
       </label>
       <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
+        {[1, 2, 3, 4, 5].map((star: any) => (
           <button
             key={star}
             type="button"
@@ -82,7 +82,7 @@ export function ObjectiveCompletionDialog({
   )
 
   return (
-    <Dialog open={open} onOpenChange={(open) => !open && onCancel()}>
+    <Dialog open={open} onOpenChange={(open: any) => !open && onCancel()}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Complete Objective</DialogTitle>
@@ -108,7 +108,7 @@ export function ObjectiveCompletionDialog({
             </label>
             <Textarea
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(e: any) => setNotes(e.target.value)}
               placeholder="What did you learn? What was challenging?"
               rows={3}
             />

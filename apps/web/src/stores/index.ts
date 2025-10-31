@@ -82,7 +82,8 @@ export {
   selectGraphPreferences,
   selectGraphViewMode,
   selectRelationshipFilters,
-  selectSavedSearches,
+  // Alias to avoid collision with search store selector
+  selectSavedSearches as selectGraphSavedSearches,
   selectSearchHistory,
   selectSearchQuery,
   selectSelectedNode,

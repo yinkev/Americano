@@ -20,7 +20,7 @@
 import type {
   ConceptRelationship,
   ContentChunk,
-  ContentRecommendation,
+  content_recommendations,
   ContentSourceType,
   LearningObjective,
   RecommendationStatus,
@@ -406,19 +406,27 @@ export class RecommendationEngine {
    */
   private async getUserFeedbackScore(userId: string, contentId: string): Promise<number> {
     try {
-      const feedback = await prisma.recommendationFeedback.findMany({
+      // Find recommendation records for this user/content, then fetch their feedback by recommendationId
+      const recommendations = await prisma.content_recommendations.findMany({
+        where: { userId, recommendedContentId: contentId },
+        select: { id: true },
+      })
+
+      const recommendationIds = recommendations.map((r) => r.id)
+
+      if (recommendationIds.length === 0) return 0.5
+
+      const feedback = await prisma.recommendation_feedback.findMany({
         where: {
           userId,
-          recommendation: {
-            recommendedContentId: contentId,
-          },
+          recommendationId: { in: recommendationIds },
         },
         select: { rating: true },
       })
 
       if (feedback.length === 0) return 0.5 // Default neutral score
 
-      const avgRating = feedback.reduce((sum, f) => sum + f.rating, 0) / feedback.length
+      const avgRating = feedback.reduce((sum: number, f: any) => sum + f.rating, 0) / feedback.length
       return avgRating / 5 // Normalize to 0-1
     } catch (error) {
       console.error('[RecommendationEngine] Error getting user feedback:', error)
@@ -441,17 +449,28 @@ export class RecommendationEngine {
   > {
     try {
       // Get user's feedback patterns
-      const recentFeedback = await prisma.recommendationFeedback.findMany({
+      const recentFeedback = await prisma.recommendation_feedback.findMany({
         where: {
           userId,
           createdAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
           },
         },
-        include: {
-          recommendation: true,
-        },
+        select: { rating: true, recommendationId: true },
       })
+
+      // Map recommendationId -> recommendedContentId to compare against candidates
+      const recIds = Array.from(new Set(recentFeedback.map((fb) => fb.recommendationId)))
+      const recIdToContentId = recIds.length
+        ? new Map(
+            (
+              await prisma.content_recommendations.findMany({
+                where: { id: { in: recIds } },
+                select: { id: true, recommendedContentId: true },
+              })
+            ).map((r) => [r.id, r.recommendedContentId] as const),
+          )
+        : new Map<string, string>()
 
       // Apply feedback adjustments
       return recommendations
@@ -460,12 +479,12 @@ export class RecommendationEngine {
 
           // Find similar rated content
           const similarFeedback = recentFeedback.filter(
-            (fb) => fb.recommendation.recommendedContentId === rec.candidate.contentId,
+            (fb) => recIdToContentId.get(fb.recommendationId) === rec.candidate.contentId,
           )
 
           if (similarFeedback.length > 0) {
             const avgRating =
-              similarFeedback.reduce((sum, fb) => sum + fb.rating, 0) / similarFeedback.length
+              similarFeedback.reduce((sum: number, fb: any) => sum + fb.rating, 0) / similarFeedback.length
 
             if (avgRating >= 4) {
               // Highly rated similar content - boost by 15%
@@ -500,13 +519,13 @@ export class RecommendationEngine {
     userId: string,
     contextType: string,
     contextId: string,
-  ): Promise<ContentRecommendation[]> {
+  ): Promise<content_recommendations[]> {
     try {
       const created = await Promise.all(
         recommendations.map(async (rec) => {
           const reasoning = this.generateReasoning(rec.candidate, rec.scores, rec.finalScore)
 
-          return prisma.contentRecommendation.create({
+          return prisma.content_recommendations.create({
             data: {
               userId,
               recommendedContentId: rec.candidate.contentId,
@@ -568,7 +587,7 @@ export class RecommendationEngine {
    * Format recommendations for API response
    */
   private formatRecommendations(
-    recommendations: ContentRecommendation[],
+    recommendations: content_recommendations[],
   ): RecommendationResponse[] {
     return recommendations.map((rec) => ({
       id: rec.id,

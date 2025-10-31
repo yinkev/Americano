@@ -6,15 +6,11 @@ import { prisma } from '@/lib/db'
 import { calculateMetacognitiveEngagementScore } from '@/lib/reflection-config'
 
 // Zod validation schema for query parameters
+// Use proper defaults without optional(), and coerce limit → number.
 const getReflectionsSchema = z.object({
-  period: z.enum(['7d', '30d', '90d', 'all']).optional().default('30d'),
+  period: z.enum(['7d', '30d', '90d', 'all']).default('30d'),
   objectiveId: z.string().cuid().optional(),
-  limit: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().int().min(1).max(100))
-    .optional()
-    .default('50'),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
 })
 
 /**
@@ -44,9 +40,9 @@ export async function GET(request: NextRequest) {
     // Parse and validate query parameters
     const searchParams = request.nextUrl.searchParams
     const queryParams = {
-      period: searchParams.get('period') || '30d',
+      period: searchParams.get('period') ?? undefined,
       objectiveId: searchParams.get('objectiveId') || undefined,
-      limit: searchParams.get('limit') || '50',
+      limit: searchParams.get('limit') ?? undefined,
     }
 
     const validatedParams = getReflectionsSchema.parse(queryParams)

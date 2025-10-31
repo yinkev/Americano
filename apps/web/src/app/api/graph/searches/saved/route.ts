@@ -22,19 +22,10 @@ export async function GET(request: NextRequest) {
     const savedSearches = await prisma.savedSearch.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
-      include: {
-        alerts: {
-          where: {
-            viewed: false,
-          },
-          orderBy: { createdAt: 'desc' },
-          take: 5, // Latest 5 unviewed alerts
-        },
-      },
     })
 
     // Count unread alerts per search
-    const searchesWithAlertCounts = savedSearches.map((search) => ({
+    const searches = savedSearches.map((search) => ({
       id: search.id,
       name: search.name,
       query: search.query,
@@ -45,14 +36,12 @@ export async function GET(request: NextRequest) {
       resultCount: search.resultCount,
       createdAt: search.createdAt,
       updatedAt: search.updatedAt,
-      unreadAlertCount: search.alerts.length,
-      recentAlerts: search.alerts,
     }))
 
     return NextResponse.json({
       success: true,
-      searches: searchesWithAlertCounts,
-      total: searchesWithAlertCounts.length,
+      searches,
+      total: searches.length,
     })
   } catch (error) {
     console.error('List saved searches API error:', error)

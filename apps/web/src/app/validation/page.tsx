@@ -59,6 +59,7 @@ import {
   useGenerateScenario,
   useScenarioMetrics,
 } from '@/lib/api/hooks/validation'
+import type { ScenarioMetricsResponse } from '@/lib/api/hooks/types/generated'
 import { cn } from '@/lib/utils'
 
 // ============================================================================
@@ -139,7 +140,10 @@ export default function ValidationPage() {
   const generateScenario = useGenerateScenario()
   const evaluateScenario = useEvaluateScenario()
   const generateChallenge = useGenerateChallenge()
+  // Query data may be typed as unknown by React Query defaults.
+  // Cast to the expected API response shape for safe property access.
   const { data: metrics } = useScenarioMetrics()
+  const metricsData = metrics as ScenarioMetricsResponse | undefined
 
   // ============================================================================
   // Handlers
@@ -527,17 +531,17 @@ export default function ValidationPage() {
       </Tabs>
 
       {/* Session Stats */}
-      {metrics && (
+      {metricsData ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
           <StatCard
             label="Total Sessions"
-            value={metrics.total_scenarios_completed}
+            value={metricsData.total_scenarios_completed}
             variant="primary"
             size="sm"
           />
           <StatCard
             label="Average Score"
-            value={metrics.average_score}
+            value={metricsData.average_score}
             formatValue={(v) => `${v}%`}
             variant="success"
             size="sm"
@@ -549,7 +553,7 @@ export default function ValidationPage() {
             size="sm"
           />
         </div>
-      )}
+      ) : null}
     </div>
   )
 

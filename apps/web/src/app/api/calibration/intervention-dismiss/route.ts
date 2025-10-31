@@ -21,7 +21,7 @@ import {
 const RequestSchema = z.object({
   userId: z.string().min(1, 'User ID is required'),
   interventionType: z.nativeEnum(InterventionType, {
-    errorMap: () => ({ message: 'Invalid intervention type' }),
+    message: 'Invalid intervention type',
   }),
   correlationAtDismissal: z.number().min(-1).max(1),
   assessmentCount: z.number().int().min(0),
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         errorResponse(
           ErrorCodes.VALIDATION_ERROR,
           'Invalid request body',
-          validationResult.error.errors,
+          validationResult.error.issues,
         ),
         { status: 400 },
       )

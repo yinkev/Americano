@@ -119,7 +119,7 @@ export default function RelationshipsTab() {
               </p>
             ) : (
               <div className="space-y-3">
-                {data.foundational.map((obj) => (
+                {data.foundational.map((obj: any) => (
                   <div
                     key={obj.objectiveId}
                     className="flex items-center justify-between p-3 rounded-xl bg-[oklch(0.97_0.05_145)] border border-[oklch(0.85_0.10_145)]"
@@ -163,7 +163,7 @@ export default function RelationshipsTab() {
               </p>
             ) : (
               <div className="space-y-3">
-                {data.bottlenecks.map((obj) => (
+                {data.bottlenecks.map((obj: any) => (
                   <div
                     key={obj.objectiveId}
                     className="flex items-center justify-between p-3 rounded-xl bg-[oklch(0.97_0.10_25)] border border-[oklch(0.85_0.15_25)]"
@@ -206,8 +206,8 @@ export default function RelationshipsTab() {
           <NetworkGraph
             matrix={data.correlationMatrix}
             labels={data.objectiveNames}
-            foundational={data.foundational.map((f) => f.objectiveId)}
-            bottlenecks={data.bottlenecks.map((b) => b.objectiveId)}
+            foundational={data.foundational.map((f: any) => f.objectiveId)}
+            bottlenecks={data.bottlenecks.map((b: any) => b.objectiveId)}
           />
         </CardContent>
       </Card>
@@ -311,7 +311,7 @@ function CorrelationHeatmap({ matrix, labels, onCellClick }: CorrelationHeatmapP
             name="Objective"
             domain={[0, labels.length - 1]}
             ticks={labels.map((_, i) => i)}
-            tickFormatter={(value) => labels[value] || ''}
+            tickFormatter={(value: any) => labels[value] || ''}
             angle={-45}
             textAnchor="end"
             height={100}
@@ -324,7 +324,7 @@ function CorrelationHeatmap({ matrix, labels, onCellClick }: CorrelationHeatmapP
             name="Objective"
             domain={[0, labels.length - 1]}
             ticks={labels.map((_, i) => i)}
-            tickFormatter={(value) => labels[value] || ''}
+            tickFormatter={(value: any) => labels[value] || ''}
             width={100}
             tick={{ fontSize: 11 }}
             stroke="oklch(0.6 0.05 240)"
@@ -332,7 +332,7 @@ function CorrelationHeatmap({ matrix, labels, onCellClick }: CorrelationHeatmapP
           <ZAxis type="number" dataKey="z" range={[100, 400]} />
           <Tooltip
             cursor={{ strokeDasharray: '3 3' }}
-            content={({ active, payload }) => {
+            content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
               if (active && payload && payload.length) {
                 const data = payload[0].payload
                 return (
@@ -603,7 +603,7 @@ function RelationshipsSkeleton() {
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {[1, 2].map((i) => (
+        {[1, 2].map((i: any) => (
           <Card
             key={i}
             className="bg-white/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-2xl border-0"
@@ -613,7 +613,7 @@ function RelationshipsSkeleton() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {[1, 2, 3].map((j) => (
+                {[1, 2, 3].map((j: any) => (
                   <div key={j} className="h-16 bg-[oklch(0.95_0.05_240)] rounded animate-pulse" />
                 ))}
               </div>

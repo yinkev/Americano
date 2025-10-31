@@ -17,27 +17,27 @@
  * - Cache hit rate: >60%
  */
 
-import { createHash } from 'crypto'
+import { createHash } from "crypto";
 
 /**
  * Concept reference structure matching FirstAidMapping
  */
 export interface ConceptReference {
-  id: string
-  firstAidSectionId: string
-  edition: string
-  system: string
-  section: string
-  subsection?: string | null
-  pageNumber: number
-  content: string
-  similarity: number
-  confidence: number
-  priority: 'HIGH_YIELD' | 'STANDARD' | 'SUGGESTED'
-  rationale: string
-  isHighYield: boolean
-  mnemonics?: string[] | null
-  clinicalCorrelations?: string[] | null
+  id: string;
+  firstAidSectionId: string;
+  edition: string;
+  system: string;
+  section: string;
+  subsection?: string | null;
+  pageNumber: number;
+  content: string;
+  similarity: number;
+  confidence: number;
+  priority: "HIGH_YIELD" | "STANDARD" | "SUGGESTED";
+  rationale: string;
+  isHighYield: boolean;
+  mnemonics?: string[] | null;
+  clinicalCorrelations?: string[] | null;
 }
 
 /**
@@ -45,44 +45,44 @@ export interface ConceptReference {
  */
 interface CachedReference {
   /** Cached concept references */
-  references: ConceptReference[]
+  references: ConceptReference[];
   /** When this entry was cached */
-  cachedAt: number
+  cachedAt: number;
   /** TTL in milliseconds */
-  ttl: number
+  ttl: number;
   /** Number of times this entry was accessed */
-  hitCount: number
+  hitCount: number;
   /** Last access timestamp for LRU */
-  lastAccessedAt: number
+  lastAccessedAt: number;
   /** Edition this cache entry is for */
-  edition?: string
+  edition?: string;
 }
 
 /**
  * Cache statistics for monitoring
  */
 export interface CacheStats {
-  hits: number
-  misses: number
-  hitRate: number
-  size: number
-  maxSize: number
-  evictions: number
-  avgTTL: number
-  avgHitCount: number
-  memoryUsageEstimate: string
+  hits: number;
+  misses: number;
+  hitRate: number;
+  size: number;
+  maxSize: number;
+  evictions: number;
+  avgTTL: number;
+  avgHitCount: number;
+  memoryUsageEstimate: string;
 }
 
 /**
  * Cache key generation parameters
  */
 interface CacheKeyParams {
-  type: 'concept' | 'guideline' | 'scroll' | 'section'
-  conceptId?: string
-  guidelineId?: string
-  section?: string
-  position?: number
-  edition?: string
+  type: "concept" | "guideline" | "scroll" | "section";
+  conceptId?: string;
+  guidelineId?: string;
+  section?: string;
+  position?: number;
+  edition?: string;
 }
 
 /**
@@ -106,15 +106,15 @@ interface CacheKeyParams {
  * ```
  */
 export class FirstAidCache {
-  private cache: Map<string, CachedReference>
-  private accessOrder: string[] // Track access order for LRU
-  private maxSize: number
+  private cache: Map<string, CachedReference>;
+  private accessOrder: string[]; // Track access order for LRU
+  private maxSize: number;
   private stats: {
-    hits: number
-    misses: number
-    evictions: number
-    totalHitCount: number
-  }
+    hits: number;
+    misses: number;
+    evictions: number;
+    totalHitCount: number;
+  };
 
   /**
    * TTL configurations for different cache types
@@ -128,24 +128,24 @@ export class FirstAidCache {
     SCROLL_POSITION: 30 * 60 * 1000,
     /** Stable guidelines (not recently edited): 24 hours */
     STABLE_GUIDELINE: 24 * 60 * 60 * 1000,
-  }
+  };
 
-  private static readonly DEFAULT_MAX_SIZE = 100
-  private static readonly CLEANUP_INTERVAL = 5 * 60 * 1000 // 5 minutes
+  private static readonly DEFAULT_MAX_SIZE = 100;
+  private static readonly CLEANUP_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
   constructor(maxSize: number = FirstAidCache.DEFAULT_MAX_SIZE) {
-    this.cache = new Map()
-    this.accessOrder = []
-    this.maxSize = maxSize
+    this.cache = new Map();
+    this.accessOrder = [];
+    this.maxSize = maxSize;
     this.stats = {
       hits: 0,
       misses: 0,
       evictions: 0,
       totalHitCount: 0,
-    }
+    };
 
     // Start periodic cleanup of expired entries
-    this.startCleanupInterval()
+    this.startCleanupInterval();
   }
 
   /**
@@ -157,37 +157,37 @@ export class FirstAidCache {
    * Performance target: <5ms
    */
   get(key: string): ConceptReference[] | null {
-    const startTime = performance.now()
-    const entry = this.cache.get(key)
+    const startTime = performance.now();
+    const entry = this.cache.get(key);
 
     if (!entry) {
-      this.stats.misses++
-      return null
+      this.stats.misses++;
+      return null;
     }
 
     // Check if entry has expired
-    const now = Date.now()
+    const now = Date.now();
     if (now - entry.cachedAt > entry.ttl) {
       // Entry expired, remove from cache
-      this.cache.delete(key)
-      this.removeFromAccessOrder(key)
-      this.stats.misses++
-      return null
+      this.cache.delete(key);
+      this.removeFromAccessOrder(key);
+      this.stats.misses++;
+      return null;
     }
 
     // Cache hit - update access order and metrics
-    this.updateAccessOrder(key)
-    entry.hitCount++
-    entry.lastAccessedAt = now
-    this.stats.hits++
-    this.stats.totalHitCount++
+    this.updateAccessOrder(key);
+    entry.hitCount++;
+    entry.lastAccessedAt = now;
+    this.stats.hits++;
+    this.stats.totalHitCount++;
 
-    const elapsed = performance.now() - startTime
+    const elapsed = performance.now() - startTime;
     if (elapsed > 5) {
-      console.warn(`⚠️  Cache get exceeded 5ms target: ${elapsed.toFixed(2)}ms`)
+      console.warn(`⚠️  Cache get exceeded 5ms target: ${elapsed.toFixed(2)}ms`);
     }
 
-    return entry.references
+    return entry.references;
   }
 
   /**
@@ -201,15 +201,15 @@ export class FirstAidCache {
     key: string,
     references: ConceptReference[],
     options: {
-      ttl?: number
-      edition?: string
-      isStableGuideline?: boolean
+      ttl?: number;
+      edition?: string;
+      isStableGuideline?: boolean;
     } = {},
   ): void {
-    const { ttl = FirstAidCache.TTL_CONFIG.CONCEPT, edition, isStableGuideline = false } = options
+    const { ttl = FirstAidCache.TTL_CONFIG.CONCEPT, edition, isStableGuideline = false } = options;
 
     // Use extended TTL for stable guidelines
-    const effectiveTTL = isStableGuideline ? FirstAidCache.TTL_CONFIG.STABLE_GUIDELINE : ttl
+    const effectiveTTL = isStableGuideline ? FirstAidCache.TTL_CONFIG.STABLE_GUIDELINE : ttl;
 
     const entry: CachedReference = {
       references,
@@ -218,15 +218,15 @@ export class FirstAidCache {
       hitCount: 0,
       lastAccessedAt: Date.now(),
       edition,
-    }
+    };
 
     // Evict oldest entry if cache is full
     if (this.cache.size >= this.maxSize && !this.cache.has(key)) {
-      this.evictOldest()
+      this.evictOldest();
     }
 
-    this.cache.set(key, entry)
-    this.updateAccessOrder(key)
+    this.cache.set(key, entry);
+    this.updateAccessOrder(key);
   }
 
   /**
@@ -235,8 +235,8 @@ export class FirstAidCache {
    * @param conceptId - Concept ID to invalidate
    */
   invalidateConcept(conceptId: string): void {
-    const pattern = `concept:${conceptId}`
-    this.invalidateByPattern(pattern)
+    const pattern = `concept:${conceptId}`;
+    this.invalidateByPattern(pattern);
   }
 
   /**
@@ -246,8 +246,8 @@ export class FirstAidCache {
    * @param guidelineId - Guideline ID to invalidate
    */
   invalidateGuideline(guidelineId: string): void {
-    const pattern = `guideline:${guidelineId}`
-    this.invalidateByPattern(pattern)
+    const pattern = `guideline:${guidelineId}`;
+    this.invalidateByPattern(pattern);
   }
 
   /**
@@ -257,30 +257,30 @@ export class FirstAidCache {
    * @param edition - Edition to invalidate (e.g., "2026")
    */
   invalidateEdition(edition: string): void {
-    const keysToDelete: string[] = []
+    const keysToDelete: string[] = [];
 
     // Convert to array to avoid iterator issues
-    const entries = Array.from(this.cache.entries())
+    const entries = Array.from(this.cache.entries());
     for (const [key, entry] of entries) {
       if (entry.edition === edition) {
-        keysToDelete.push(key)
+        keysToDelete.push(key);
       }
     }
 
     for (const key of keysToDelete) {
-      this.cache.delete(key)
-      this.removeFromAccessOrder(key)
+      this.cache.delete(key);
+      this.removeFromAccessOrder(key);
     }
 
-    console.log(`🗑️  Invalidated ${keysToDelete.length} cache entries for edition ${edition}`)
+    console.log(`🗑️  Invalidated ${keysToDelete.length} cache entries for edition ${edition}`);
   }
 
   /**
    * Invalidate all cache entries
    */
   clear(): void {
-    this.cache.clear()
-    this.accessOrder = []
+    this.cache.clear();
+    this.accessOrder = [];
   }
 
   /**
@@ -313,49 +313,49 @@ export class FirstAidCache {
    * ```
    */
   generateKey(params: CacheKeyParams): string {
-    const { type, conceptId, guidelineId, section, position, edition } = params
+    const { type, conceptId, guidelineId, section, position, edition } = params;
 
-    let key = ''
+    let key = "";
 
     switch (type) {
-      case 'concept':
-        if (!conceptId) throw new Error('conceptId required for concept cache key')
-        key = `concept:${conceptId}`
-        break
+      case "concept":
+        if (!conceptId) throw new Error("conceptId required for concept cache key");
+        key = `concept:${conceptId}`;
+        break;
 
-      case 'guideline':
-        if (!guidelineId) throw new Error('guidelineId required for guideline cache key')
-        key = `guideline:${guidelineId}`
+      case "guideline":
+        if (!guidelineId) throw new Error("guidelineId required for guideline cache key");
+        key = `guideline:${guidelineId}`;
         if (section) {
-          key += `:section:${section}`
+          key += `:section:${section}`;
         }
-        break
+        break;
 
-      case 'scroll': {
-        if (!guidelineId) throw new Error('guidelineId required for scroll cache key')
-        if (position === undefined) throw new Error('position required for scroll cache key')
+      case "scroll": {
+        if (!guidelineId) throw new Error("guidelineId required for scroll cache key");
+        if (position === undefined) throw new Error("position required for scroll cache key");
         // Round position to nearest 100px for better cache hit rate
-        const roundedPosition = Math.floor(position / 100) * 100
-        key = `scroll:${guidelineId}:${roundedPosition}`
-        break
+        const roundedPosition = Math.floor(position / 100) * 100;
+        key = `scroll:${guidelineId}:${roundedPosition}`;
+        break;
       }
 
-      case 'section':
-        if (!guidelineId) throw new Error('guidelineId required for section cache key')
-        if (!section) throw new Error('section required for section cache key')
-        key = `section:${guidelineId}:${section}`
-        break
+      case "section":
+        if (!guidelineId) throw new Error("guidelineId required for section cache key");
+        if (!section) throw new Error("section required for section cache key");
+        key = `section:${guidelineId}:${section}`;
+        break;
 
       default:
-        throw new Error(`Unknown cache key type: ${type}`)
+        throw new Error(`Unknown cache key type: ${type}`);
     }
 
     // Append edition if specified
     if (edition) {
-      key += `:edition:${edition}`
+      key += `:edition:${edition}`;
     }
 
-    return key
+    return key;
   }
 
   /**
@@ -364,25 +364,25 @@ export class FirstAidCache {
    * @returns Cache statistics including hit rate, size, and memory usage
    */
   getStats(): CacheStats {
-    const totalRequests = this.stats.hits + this.stats.misses
-    const hitRate = totalRequests > 0 ? this.stats.hits / totalRequests : 0
+    const totalRequests = this.stats.hits + this.stats.misses;
+    const hitRate = totalRequests > 0 ? this.stats.hits / totalRequests : 0;
 
     // Calculate average TTL
-    let totalTTL = 0
-    let totalHitCount = 0
+    let totalTTL = 0;
+    let totalHitCount = 0;
     // Convert to array to avoid iterator issues
-    const values = Array.from(this.cache.values())
+    const values = Array.from(this.cache.values());
     for (const entry of values) {
-      totalTTL += entry.ttl
-      totalHitCount += entry.hitCount
+      totalTTL += entry.ttl;
+      totalHitCount += entry.hitCount;
     }
-    const avgTTL = this.cache.size > 0 ? totalTTL / this.cache.size : 0
-    const avgHitCount = this.cache.size > 0 ? totalHitCount / this.cache.size : 0
+    const avgTTL = this.cache.size > 0 ? totalTTL / this.cache.size : 0;
+    const avgHitCount = this.cache.size > 0 ? totalHitCount / this.cache.size : 0;
 
     // Estimate memory usage
     // Rough estimate: each ConceptReference ~2KB, metadata ~0.5KB
-    const estimatedMemoryBytes = this.cache.size * 2500 // 2.5KB per entry
-    const memoryUsageEstimate = this.formatBytes(estimatedMemoryBytes)
+    const estimatedMemoryBytes = this.cache.size * 2500; // 2.5KB per entry
+    const memoryUsageEstimate = this.formatBytes(estimatedMemoryBytes);
 
     return {
       hits: this.stats.hits,
@@ -394,7 +394,7 @@ export class FirstAidCache {
       avgTTL,
       avgHitCount,
       memoryUsageEstimate,
-    }
+    };
   }
 
   /**
@@ -406,7 +406,7 @@ export class FirstAidCache {
       misses: 0,
       evictions: 0,
       totalHitCount: 0,
-    }
+    };
   }
 
   /**
@@ -416,25 +416,25 @@ export class FirstAidCache {
    * @returns true if key exists and is not expired
    */
   has(key: string): boolean {
-    const entry = this.cache.get(key)
-    if (!entry) return false
+    const entry = this.cache.get(key);
+    if (!entry) return false;
 
     // Check expiration
-    const now = Date.now()
+    const now = Date.now();
     if (now - entry.cachedAt > entry.ttl) {
-      this.cache.delete(key)
-      this.removeFromAccessOrder(key)
-      return false
+      this.cache.delete(key);
+      this.removeFromAccessOrder(key);
+      return false;
     }
 
-    return true
+    return true;
   }
 
   /**
    * Get cache entry count
    */
   get size(): number {
-    return this.cache.size
+    return this.cache.size;
   }
 
   /**
@@ -444,23 +444,23 @@ export class FirstAidCache {
    * @param pattern - Pattern to match (e.g., "concept:abc", "guideline:xyz")
    */
   private invalidateByPattern(pattern: string): void {
-    const keysToDelete: string[] = []
+    const keysToDelete: string[] = [];
 
     // Convert to array to avoid iterator issues
-    const keys = Array.from(this.cache.keys())
+    const keys = Array.from(this.cache.keys());
     for (const key of keys) {
       if (key.startsWith(pattern)) {
-        keysToDelete.push(key)
+        keysToDelete.push(key);
       }
     }
 
     for (const key of keysToDelete) {
-      this.cache.delete(key)
-      this.removeFromAccessOrder(key)
+      this.cache.delete(key);
+      this.removeFromAccessOrder(key);
     }
 
     if (keysToDelete.length > 0) {
-      console.log(`🗑️  Invalidated ${keysToDelete.length} cache entries matching "${pattern}"`)
+      console.log(`🗑️  Invalidated ${keysToDelete.length} cache entries matching "${pattern}"`);
     }
   }
 
@@ -469,17 +469,17 @@ export class FirstAidCache {
    * Moves key to end of access order (most recently used)
    */
   private updateAccessOrder(key: string): void {
-    this.removeFromAccessOrder(key)
-    this.accessOrder.push(key)
+    this.removeFromAccessOrder(key);
+    this.accessOrder.push(key);
   }
 
   /**
    * Remove key from access order array
    */
   private removeFromAccessOrder(key: string): void {
-    const index = this.accessOrder.indexOf(key)
+    const index = this.accessOrder.indexOf(key);
     if (index !== -1) {
-      this.accessOrder.splice(index, 1)
+      this.accessOrder.splice(index, 1);
     }
   }
 
@@ -487,12 +487,12 @@ export class FirstAidCache {
    * Evict oldest (least recently used) entry from cache
    */
   private evictOldest(): void {
-    if (this.accessOrder.length === 0) return
+    if (this.accessOrder.length === 0) return;
 
-    const oldestKey = this.accessOrder[0]
-    this.cache.delete(oldestKey)
-    this.accessOrder.shift()
-    this.stats.evictions++
+    const oldestKey = this.accessOrder[0];
+    this.cache.delete(oldestKey);
+    this.accessOrder.shift();
+    this.stats.evictions++;
   }
 
   /**
@@ -500,11 +500,11 @@ export class FirstAidCache {
    * Runs every 5 minutes
    */
   private startCleanupInterval(): void {
-    if (typeof setInterval === 'undefined') return // Skip in non-browser environments
+    if (typeof setInterval === "undefined") return; // Skip in non-browser environments
 
     setInterval(() => {
-      this.cleanupExpiredEntries()
-    }, FirstAidCache.CLEANUP_INTERVAL)
+      this.cleanupExpiredEntries();
+    }, FirstAidCache.CLEANUP_INTERVAL);
   }
 
   /**
@@ -512,24 +512,24 @@ export class FirstAidCache {
    * Called periodically by cleanup interval
    */
   private cleanupExpiredEntries(): void {
-    const now = Date.now()
-    const keysToDelete: string[] = []
+    const now = Date.now();
+    const keysToDelete: string[] = [];
 
     // Convert to array to avoid iterator issues
-    const entries = Array.from(this.cache.entries())
+    const entries = Array.from(this.cache.entries());
     for (const [key, entry] of entries) {
       if (now - entry.cachedAt > entry.ttl) {
-        keysToDelete.push(key)
+        keysToDelete.push(key);
       }
     }
 
     for (const key of keysToDelete) {
-      this.cache.delete(key)
-      this.removeFromAccessOrder(key)
+      this.cache.delete(key);
+      this.removeFromAccessOrder(key);
     }
 
     if (keysToDelete.length > 0) {
-      console.log(`🧹 Cleaned up ${keysToDelete.length} expired cache entries`)
+      console.log(`🧹 Cleaned up ${keysToDelete.length} expired cache entries`);
     }
   }
 
@@ -537,16 +537,16 @@ export class FirstAidCache {
    * Format bytes to human-readable string
    */
   private formatBytes(bytes: number): string {
-    if (bytes < 1024) return `${bytes} B`
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   }
 
   /**
    * Destroy cache instance and cleanup resources
    */
   destroy(): void {
-    this.clear()
+    this.clear();
     // Note: Cannot clear interval in this implementation
     // Consider using a cleanup callback if needed
   }
@@ -575,7 +575,7 @@ export class FirstAidCache {
  * }
  * ```
  */
-export const firstAidCache = new FirstAidCache()
+export const firstAidCache = new FirstAidCache();
 
 /**
  * Helper function to determine if a guideline is stable
@@ -585,8 +585,8 @@ export const firstAidCache = new FirstAidCache()
  * @returns true if guideline is stable
  */
 export function isStableGuideline(lastEditedAt: Date): boolean {
-  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000
-  return lastEditedAt.getTime() < thirtyDaysAgo
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  return lastEditedAt.getTime() < thirtyDaysAgo;
 }
 
 /**
@@ -613,26 +613,26 @@ export async function prefetchAdjacentPositions(
   fetchFn: (position: number) => Promise<ConceptReference[]>,
 ): Promise<void> {
   // Prefetch next 3 positions (300px ahead)
-  const positions = [currentPosition + 100, currentPosition + 200, currentPosition + 300]
+  const positions = [currentPosition + 100, currentPosition + 200, currentPosition + 300];
 
   for (const position of positions) {
     const key = firstAidCache.generateKey({
-      type: 'scroll',
+      type: "scroll",
       guidelineId,
       position,
-    })
+    });
 
     // Skip if already cached
-    if (firstAidCache.has(key)) continue
+    if (firstAidCache.has(key)) continue;
 
     try {
-      const references = await fetchFn(position)
+      const references = await fetchFn(position);
       firstAidCache.set(key, references, {
         ttl: FirstAidCache.TTL_CONFIG.SCROLL_POSITION,
-      })
+      });
     } catch (error) {
       // Silently fail prefetch - not critical
-      console.debug('Prefetch failed for position', position, error)
+      console.debug("Prefetch failed for position", position, error);
     }
   }
 }

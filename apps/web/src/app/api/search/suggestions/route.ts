@@ -218,7 +218,7 @@ async function getRecentSearches(
       distinct: ['query'], // Avoid duplicate queries
     })
 
-    return searches.map((search) => ({
+    return searches.map((search: any) => ({
       text: search.query,
       category: 'recent' as const,
       resultCount: search.resultCount,
