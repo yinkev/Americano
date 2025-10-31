@@ -204,10 +204,26 @@ export const analyticsKeys = {
   successProbability: (objectiveId: string, userId: string, plannedHours: number) =>
     [...analyticsKeys.all, 'success-probability', objectiveId, userId, plannedHours] as const,
   recommendations: (userId: string) => [...analyticsKeys.all, 'recommendations', userId] as const,
-  predictions: (userId: string) => [...analyticsKeys.all, 'predictions', userId] as const,
-  patterns: (userId: string) => [...analyticsKeys.all, 'patterns', userId] as const,
-  longitudinal: (userId: string, dateRange?: string) =>
-    [...analyticsKeys.all, 'longitudinal', userId, dateRange] as const,
+  predictions: (userId: string, dateRange?: string, examType?: string) =>
+    [
+      ...analyticsKeys.all,
+      'predictions',
+      userId,
+      dateRange ?? '__default-range',
+      examType ?? '__all-exams',
+    ] as const,
+  patterns: (userId: string, dateRange?: string) =>
+    [...analyticsKeys.all, 'patterns', userId, dateRange ?? '__default-range'] as const,
+  longitudinal: (userId: string, dateRange?: string, dimensions?: string[] | null) =>
+    [
+      ...analyticsKeys.all,
+      'longitudinal',
+      userId,
+      dateRange ?? '__default-range',
+      Array.isArray(dimensions) && dimensions.length > 0
+        ? dimensions.join(',')
+        : '__all-dimensions',
+    ] as const,
   correlations: (userId: string) => [...analyticsKeys.all, 'correlations', userId] as const,
   peerBenchmark: (userId: string, objectiveId?: string) =>
     [...analyticsKeys.all, 'peer-benchmark', userId, objectiveId] as const,

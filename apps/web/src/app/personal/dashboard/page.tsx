@@ -33,6 +33,7 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer } from '@/components/ui/chart-container'
@@ -45,6 +46,7 @@ import {
   usePeerBenchmark,
   useWeeklySummary,
 } from '@/lib/api/hooks/analytics'
+import { getDataSource } from '@/lib/api/hooks/analytics.shared'
 import { typography } from '@/lib/design-tokens'
 import { useAnalyticsStore } from '@/stores/analytics'
 
@@ -99,6 +101,12 @@ const DailyInsightCard = ({
     )
   }
 
+  const source = getDataSource(data)
+  const actionItems = Array.isArray(data?.action_items)
+    ? Array.from(data.action_items)
+    : []
+  const description = data?.description ?? data?.reasoning
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -107,24 +115,33 @@ const DailyInsightCard = ({
     >
       <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <Lightbulb className="size-5 text-blue-600" />
-            <CardTitle className="text-blue-900">Today's Priority</CardTitle>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Lightbulb className="size-5 text-blue-600" />
+              <div>
+                <CardTitle className="text-blue-900">Today&apos;s Priority</CardTitle>
+                <CardDescription className="text-blue-700">
+                  {data?.priority_objective_name || 'No priority set'}
+                </CardDescription>
+              </div>
+            </div>
+            {source === 'mock' && (
+              <Badge variant="outline" className="text-xs text-blue-700">
+                Mock data
+              </Badge>
+            )}
           </div>
-          <CardDescription className="text-blue-700">
-            {data?.priority_objective_name || 'No priority set'}
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <p className="text-sm text-blue-800">{data?.reasoning}</p>
+            {description && <p className="text-sm text-blue-800">{description}</p>}
             <div className="flex items-center gap-2 text-xs text-blue-700">
               <Calendar className="size-4" />
-              <span>Est. {data?.estimated_time_minutes || 0} minutes</span>
+              <span>Est. {data?.estimated_time_minutes ?? 0} minutes</span>
             </div>
-            {data?.action_items && (
+            {actionItems.length > 0 && (
               <ul className="space-y-1 text-sm text-blue-800">
-                {data.action_items.map((item: string, idx: number) => (
+                {actionItems.map((item: string, idx: number) => (
                   <li key={idx} className="flex items-start gap-2">
                     <span className="text-blue-500">•</span>
                     {item}
@@ -151,6 +168,7 @@ const WeeklyTop3Card = ({
   loading: boolean
 }) => {
   const items = Array.isArray(data) ? (data as any[]) : []
+  const source = Array.isArray(data) ? getDataSource(data) : undefined
   if (loading) {
     return (
       <Card>
@@ -176,11 +194,20 @@ const WeeklyTop3Card = ({
     >
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <Target className="size-5 text-green-600" />
-            <CardTitle>Weekly Focus (Top 3)</CardTitle>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Target className="size-5 text-green-600" />
+              <div>
+                <CardTitle>Weekly Focus (Top 3)</CardTitle>
+                <CardDescription>Objectives to prioritize this week</CardDescription>
+              </div>
+            </div>
+            {source === 'mock' && (
+              <Badge variant="outline" className="text-xs text-green-700">
+                Mock data
+              </Badge>
+            )}
           </div>
-          <CardDescription>Objectives to prioritize this week</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
