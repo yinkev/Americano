@@ -23,6 +23,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { MockDataBadge } from '@/components/analytics/MockDataBadge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -188,6 +189,7 @@ export function ModelPerformanceMetrics({ isAdmin = false }: Props) {
               Detailed metrics for model v{data.modelVersion} • {data.totalPredictions} predictions
             </p>
           </div>
+          <MockDataBadge />
         </div>
       </CardHeader>
 

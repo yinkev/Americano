@@ -22,6 +22,7 @@
 
 import type { NextRequest } from 'next/server'
 import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
+import { createMockAnalyticsMetadata } from '@/lib/mock-data-metadata'
 import { burnoutPreventionEngine } from '@/subsystems/behavioral-analytics/burnout-prevention-engine'
 
 /**
@@ -114,6 +115,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
             recoveryDeficit: 0.05,
           },
           executionTimeMs: Math.round(executionTime),
+          mock: createMockAnalyticsMetadata({ endpoint: 'analytics/burnout-risk' }),
         },
       }),
       {

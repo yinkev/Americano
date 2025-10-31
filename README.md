@@ -307,6 +307,23 @@ cd services/ml-service
 pytest
 ```
 
+## Analytics Mock Data Architecture
+
+- All Next.js analytics routes enrich their payloads with provenance data created by
+  [`createMockAnalyticsMetadata`](apps/web/src/lib/mock-data-metadata.ts). This ensures every
+  response contains a `metadata.mock` object with the dataset identifier, endpoint name, and a
+  timestamp so clients know the numbers originate from the Prisma seed demo dataset.
+- Front-end analytics components render a visible “Mock data” badge through
+  [`MockDataBadge`](apps/web/src/components/analytics/MockDataBadge.tsx). The badge is controlled by
+  the `NEXT_PUBLIC_ANALYTICS_MOCK_MODE` flag (enabled by default) so teams can hide demo affordances
+  once real telemetry is wired up.
+- When migrating to production analytics:
+  1. Replace the Prisma seed queries with the real analytics pipeline.
+  2. Update the metadata helper to report `isMockData: false` or remove it entirely.
+  3. Set `NEXT_PUBLIC_ANALYTICS_MOCK_MODE=off` (see `.env.example`).
+  4. Re-run the web (`npm run test:ci`) and ML (`pytest`) suites to ensure the CI job that targets
+     analytics changes continues to pass.
+
 ### 5. Commit and Push
 ```bash
 git add .

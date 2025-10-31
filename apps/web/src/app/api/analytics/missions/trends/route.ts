@@ -12,6 +12,7 @@ import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
+import { createMockAnalyticsMetadata } from '@/lib/mock-data-metadata'
 
 // Zod validation schema
 const TrendsQuerySchema = z.object({
@@ -92,6 +93,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
           start: format(startDate, 'yyyy-MM-dd'),
           end: format(endDate, 'yyyy-MM-dd'),
         },
+        mock: createMockAnalyticsMetadata({ endpoint: 'analytics/missions/trends' }),
       },
     }),
   )

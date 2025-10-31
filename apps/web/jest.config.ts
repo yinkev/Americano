@@ -46,7 +46,10 @@ const config: Config = {
       displayName: 'node-api',
       testEnvironment: 'node',
       setupFilesAfterEnv: ['<rootDir>/jest.setup-node-api.ts'],
-      testMatch: ['<rootDir>/__tests__/api/**/*.test.[jt]s?(x)'],
+      testMatch: [
+        '<rootDir>/__tests__/api/**/*.test.[jt]s?(x)',
+        '<rootDir>/tests/api/**/*.test.[jt]s?(x)',
+      ],
       ...baseConfig,
     },
   ],

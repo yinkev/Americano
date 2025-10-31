@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { withErrorHandler } from '@/lib/api-error'
 import { successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
+import { createMockAnalyticsMetadata } from '@/lib/mock-data-metadata'
 
 // Validation schema
 const analyticsSchema = z.object({
@@ -178,6 +179,10 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       timeOfDay: timeOfDayMinutes,
       totalSessions: sessions.length,
       totalStudyTime: Math.round(sessions.reduce((acc, s) => acc + (s.durationMs || 0), 0) / 60000),
+      metadata: {
+        period,
+        mock: createMockAnalyticsMetadata({ endpoint: 'analytics/study-time' }),
+      },
     }),
   )
 })
