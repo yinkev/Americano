@@ -1,0 +1,1065 @@
+{
+  "FailurePattern": {
+    "id": "fp-001",
+    "user_id": "user-123",
+    "pattern_type": "recent_mistakes",
+    "pattern_description": "Repeated misses on cardiac pharmacology reasoning.",
+    "affected_objectives": [
+      "obj-101",
+      "obj-205"
+    ],
+    "frequency": 4,
+    "remediation": "Revisit anti-arrhythmic classes with applied cases.",
+    "detected_at": "2025-01-02T09:00:00Z"
+  },
+  "FeedbackRequest": {
+    "actual_struggle": true,
+    "feedback_type": "HELPFUL",
+    "comments": "Prediction correctly flagged my confusion during the case."
+  },
+  "FeedbackResponse": {
+    "feedback_recorded": true,
+    "prediction_id": "pred-778",
+    "feedback_id": "fdbk-222",
+    "model_accuracy_update": 0.02,
+    "message": "Thanks for the confirmation\u2014model weights updated.",
+    "submitted_at": "2025-01-03T12:00:00Z"
+  },
+  "StructuredFeedback": {
+    "misconception_explained": "You focused on arrhythmia pattern without considering electrolyte imbalance.",
+    "correct_concept": "Evaluate potassium levels when rhythm disturbances are present.",
+    "clinical_context": "Hypokalemia commonly presents with fatigue and ventricular ectopy.",
+    "memory_anchor": "Use the mnemonic 'LOW K = Slow K' to recall conduction delays.",
+    "memory_anchor_type": "mnemonic"
+  },
+  "PatternDetectionRequest": {
+    "user_id": "user-123",
+    "min_frequency": 2
+  },
+  "PatternDetectionResponse": {
+    "patterns": [
+      {
+        "id": "fp-001",
+        "user_id": "user-123",
+        "pattern_type": "recent_mistakes",
+        "pattern_description": "Repeated misses on cardiac pharmacology reasoning.",
+        "affected_objectives": [
+          "obj-101",
+          "obj-205"
+        ],
+        "frequency": 4,
+        "remediation": "Revisit anti-arrhythmic classes with applied cases.",
+        "detected_at": "2025-01-02T09:00:00Z"
+      }
+    ],
+    "total_patterns": 1,
+    "detection_timestamp": "2025-01-03T08:00:00Z"
+  },
+  "RetryScheduleRequest": {
+    "failure_id": "fail-901",
+    "failed_at": "2025-01-01T15:30:00Z"
+  },
+  "RetryScheduleResponse": {
+    "failure_id": "fail-901",
+    "retry_dates": [
+      "2025-01-02",
+      "2025-01-04",
+      "2025-01-08",
+      "2025-01-15",
+      "2025-01-31"
+    ],
+    "retry_intervals_days": [
+      1,
+      3,
+      7,
+      14,
+      30
+    ],
+    "reasoning": "Spacing follows evidence-based retention schedule.",
+    "variation_strategy": "Introduce scenario variants with new lab values."
+  },
+  "AIInsight": {
+    "category": "pattern",
+    "observation": "Confidence remains high despite declining accuracy on endocrine items.",
+    "action": "Schedule adaptive cases emphasizing thyroid physiology.",
+    "confidence": 0.78
+  },
+  "AnalyticsRequest": {
+    "user_id": "user-123",
+    "date_range": "30d"
+  },
+  "CalibrationIssue": {
+    "objective_id": "obj-205",
+    "objective_name": "Interpret arrhythmia management algorithms",
+    "calibration_delta": 0.28,
+    "category": "overconfident",
+    "description": "Confidence outpaces accuracy on emergent pacing decisions."
+  },
+  "ComparisonRequest": {
+    "user_id": "user-123",
+    "date_range": "30d"
+  },
+  "ComparisonResponse": {
+    "user_id": "user-123",
+    "memorization_trend": [
+      {
+        "date": "2024-12-28",
+        "score": 0.82
+      },
+      {
+        "date": "2024-12-31",
+        "score": 0.84
+      }
+    ],
+    "understanding_trend": [
+      {
+        "date": "2024-12-28",
+        "score": 0.68
+      },
+      {
+        "date": "2024-12-31",
+        "score": 0.7
+      }
+    ],
+    "gaps": [
+      {
+        "objective_id": "obj-205",
+        "objective_name": "Interpret arrhythmia management algorithms",
+        "memorization_score": 0.9,
+        "understanding_score": 0.64,
+        "gap": 0.26,
+        "severity": "high"
+      }
+    ],
+    "correlation_coefficient": 0.61,
+    "generated_at": "2025-01-03T07:00:00Z"
+  },
+  "MemorizationVsUnderstandingGap": {
+    "objective_id": "obj-205",
+    "objective_name": "Interpret arrhythmia management algorithms",
+    "memorization_score": 0.9,
+    "understanding_score": 0.64,
+    "gap": 0.26,
+    "severity": "high"
+  },
+  "ComparisonResult": {
+    "user_percentile": 62,
+    "user_score": 0.74,
+    "peer_average": 0.79,
+    "peer_std_dev": 0.05,
+    "dimension_comparisons": [
+      {
+        "dimension": "terminology",
+        "user_score": 0.81,
+        "peer_average": 0.78,
+        "percentile": 68
+      },
+      {
+        "dimension": "application",
+        "user_score": 0.69,
+        "peer_average": 0.8,
+        "percentile": 45
+      }
+    ],
+    "strengths_vs_peers": [
+      "terminology"
+    ],
+    "gaps_vs_peers": [
+      "application"
+    ],
+    "peer_group_size": 152,
+    "generated_at": "2025-01-03T07:10:00Z"
+  },
+  "DimensionComparison": {
+    "dimension": "terminology",
+    "user_score": 0.81,
+    "peer_average": 0.78,
+    "percentile": 68
+  },
+  "ComprehensionPattern": {
+    "user_id": "user-123",
+    "strengths": [
+      {
+        "objective_id": "obj-150",
+        "objective_name": "Explain ventricular action potentials",
+        "score": 0.86,
+        "percentile_rank": 88
+      }
+    ],
+    "weaknesses": [
+      {
+        "objective_id": "obj-205",
+        "objective_name": "Interpret arrhythmia management algorithms",
+        "score": 0.64,
+        "percentile_rank": 32
+      }
+    ],
+    "calibration_issues": [
+      {
+        "objective_id": "obj-205",
+        "objective_name": "Interpret arrhythmia management algorithms",
+        "calibration_delta": 0.28,
+        "category": "overconfident",
+        "description": "Confidence outpaces accuracy on emergent pacing decisions."
+      }
+    ],
+    "ai_insights": [
+      {
+        "category": "pattern",
+        "observation": "Confidence remains high despite declining accuracy on endocrine items.",
+        "action": "Schedule adaptive cases emphasizing thyroid physiology.",
+        "confidence": 0.78
+      },
+      {
+        "category": "focus",
+        "observation": "Peer percentile drops sharply after week two of the rotation.",
+        "action": "Add weekly reflection prompts to capture reasoning steps.",
+        "confidence": 0.72
+      },
+      {
+        "category": "celebrate",
+        "observation": "Steady improvement in interpreting telemetry strips.",
+        "action": "Maintain spaced review cadence to lock in gains.",
+        "confidence": 0.81
+      }
+    ],
+    "analysis_date_range": [
+      "2024-12-20",
+      "2025-01-03"
+    ],
+    "generated_at": "2025-01-03T07:15:00Z"
+  },
+  "ObjectiveStrength": {
+    "objective_id": "obj-150",
+    "objective_name": "Explain ventricular action potentials",
+    "score": 0.86,
+    "percentile_rank": 88
+  },
+  "ObjectiveWeakness": {
+    "objective_id": "obj-205",
+    "objective_name": "Interpret arrhythmia management algorithms",
+    "score": 0.64,
+    "percentile_rank": 32
+  },
+  "CorrelationMatrix": {
+    "user_id": "user-123",
+    "matrix": [
+      [
+        1.0,
+        0.62
+      ],
+      [
+        0.62,
+        1.0
+      ]
+    ],
+    "objective_ids": [
+      "obj-150",
+      "obj-205"
+    ],
+    "objective_names": [
+      "Explain ventricular action potentials",
+      "Interpret arrhythmia management algorithms"
+    ],
+    "foundational_objectives": [
+      {
+        "objective_id": "obj-150",
+        "reason": "High correlation with downstream reasoning"
+      }
+    ],
+    "bottleneck_objectives": [
+      {
+        "objective_id": "obj-205",
+        "reason": "Low score with strong dependencies"
+      }
+    ],
+    "recommended_study_sequence": [
+      "obj-150",
+      "obj-205"
+    ],
+    "generated_at": "2025-01-03T07:20:00Z"
+  },
+  "CorrelationsRequest": {
+    "user_id": "user-123"
+  },
+  "DailyInsight": {
+    "user_id": "user-123",
+    "priority_objective_id": "obj-205",
+    "priority_objective_name": "Interpret arrhythmia management algorithms",
+    "insight_category": "dangerous_gap",
+    "title": "Close the pacing gap",
+    "description": "Your pacing decisions fall behind peers despite high confidence.",
+    "action_items": [
+      "Review ACLS pacing indications",
+      "Simulate a bradycardia emergency with decision tree"
+    ],
+    "estimated_time_minutes": 35,
+    "generated_at": "2025-01-03T07:30:00Z"
+  },
+  "DashboardMetricSummary": {
+    "current_score": 0.76,
+    "trend": "up",
+    "sparkline": [
+      0.7,
+      0.71,
+      0.72,
+      0.74,
+      0.76,
+      0.77,
+      0.78
+    ],
+    "change_percentage": 0.06
+  },
+  "DashboardRequest": {
+    "user_id": "user-123",
+    "date_range": "30d",
+    "course_id": "cardio-core",
+    "topic": "arrhythmia"
+  },
+  "DashboardResponse": {
+    "user_id": "user-123",
+    "comprehension": {
+      "current_score": 0.74,
+      "trend": "up",
+      "sparkline": [
+        0.68,
+        0.69,
+        0.7,
+        0.71,
+        0.73,
+        0.74,
+        0.75
+      ],
+      "change_percentage": 0.07
+    },
+    "reasoning": {
+      "current_score": 0.72,
+      "trend": "stable",
+      "sparkline": [
+        0.7,
+        0.71,
+        0.72,
+        0.72,
+        0.72,
+        0.73,
+        0.72
+      ]
+    },
+    "failure": {
+      "current_score": 0.66,
+      "trend": "down",
+      "sparkline": [
+        0.72,
+        0.7,
+        0.69,
+        0.68,
+        0.67,
+        0.66,
+        0.65
+      ],
+      "change_percentage": -0.08
+    },
+    "calibration": {
+      "current_score": 0.58,
+      "trend": "up",
+      "sparkline": [
+        0.5,
+        0.52,
+        0.54,
+        0.55,
+        0.56,
+        0.57,
+        0.58
+      ],
+      "change_percentage": 0.16
+    },
+    "adaptive": {
+      "current_score": 0.8,
+      "trend": "up",
+      "sparkline": [
+        0.74,
+        0.75,
+        0.76,
+        0.78,
+        0.79,
+        0.8,
+        0.81
+      ],
+      "change_percentage": 0.09
+    },
+    "mastery": {
+      "count": 24,
+      "total": 60,
+      "percentage": 0.4
+    },
+    "generated_at": "2025-01-03T07:35:00Z"
+  },
+  "MasterySummary": {
+    "count": 24,
+    "total": 60,
+    "percentage": 0.4
+  },
+  "DashboardSummary": {
+    "overall_score": 0.73,
+    "total_sessions": 48,
+    "total_questions": 620,
+    "mastery_breakdown": {
+      "beginner": 12,
+      "proficient": 30,
+      "expert": 18
+    },
+    "recent_trends": [
+      {
+        "date": "2024-12-28",
+        "score": 0.69
+      },
+      {
+        "date": "2025-01-03",
+        "score": 0.73
+      }
+    ],
+    "calibration_status": "overconfident",
+    "top_strengths": [
+      "Telemetry interpretation",
+      "Electrolyte physiology"
+    ],
+    "improvement_areas": [
+      "Arrhythmia management"
+    ],
+    "generated_at": "2025-01-03T07:36:00Z"
+  },
+  "MasteryBreakdown": {
+    "beginner": 12,
+    "proficient": 30,
+    "expert": 18
+  },
+  "TrendPoint": {
+    "date": "2025-01-03",
+    "score": 0.73
+  },
+  "ExamSuccessPrediction": {
+    "probability": 0.67,
+    "confidence_interval": [
+      0.6,
+      0.74
+    ],
+    "contributing_factors": {
+      "comprehension": 0.24,
+      "reasoning": 0.26,
+      "mastery": 0.1,
+      "calibration": 0.07
+    },
+    "recommendation": "Focus on bridging reasoning gaps through targeted cases."
+  },
+  "ContributingFactors": {
+    "comprehension": 0.24,
+    "reasoning": 0.26,
+    "mastery": 0.1,
+    "calibration": 0.07
+  },
+  "ForgettingRiskPrediction": {
+    "objective_id": "obj-210",
+    "objective_name": "Manage acute coronary syndrome",
+    "retention_probability": 0.42,
+    "days_since_review": 18,
+    "strength_score": 0.35,
+    "risk_level": "high",
+    "recommended_review_date": "2025-01-05"
+  },
+  "GrowthTrajectory": {
+    "objective_id": "obj-205",
+    "objective_name": "Interpret arrhythmia management algorithms",
+    "slope": 0.04,
+    "intercept": 0.38,
+    "r_squared": 0.71,
+    "predicted_days_to_mastery": 21
+  },
+  "ImprovementRate": {
+    "period": "week",
+    "rate": 0.05,
+    "trend": "accelerating"
+  },
+  "InterventionSuggestion": {
+    "pattern_detected": "bottleneck_detected",
+    "intervention_type": "spaced_repetition",
+    "description": "Schedule spaced telemetry drills with escalating complexity.",
+    "priority": "high",
+    "estimated_time_hours": 1.5
+  },
+  "LongitudinalMetric": {
+    "user_id": "user-123",
+    "metrics": [
+      {
+        "timestamp": "2024-12-15",
+        "score": 0.62
+      },
+      {
+        "timestamp": "2025-01-01",
+        "score": 0.71
+      }
+    ],
+    "milestones": [
+      {
+        "objective_id": "obj-180",
+        "objective_name": "Interpret telemetry strips",
+        "milestone_type": "major_improvement",
+        "date_achieved": "2024-12-22",
+        "description": "Improved by 15 points after bootcamp.",
+        "score_before": 0.55,
+        "score_after": 0.7
+      }
+    ],
+    "regressions": [
+      {
+        "objective_id": "obj-210",
+        "objective_name": "Manage acute coronary syndrome",
+        "score_before": 0.78,
+        "score_after": 0.68,
+        "decline_amount": 0.1,
+        "date_detected": "2024-12-29",
+        "possible_causes": [
+          "Shift schedule disruption"
+        ]
+      }
+    ],
+    "growth_trajectory": [
+      {
+        "objective_id": "obj-205",
+        "objective_name": "Interpret arrhythmia management algorithms",
+        "slope": 0.04,
+        "intercept": 0.38,
+        "r_squared": 0.71,
+        "predicted_days_to_mastery": 21
+      }
+    ],
+    "improvement_rates": {
+      "week": {
+        "period": "week",
+        "rate": 0.05,
+        "trend": "accelerating"
+      },
+      "month": {
+        "period": "month",
+        "rate": 0.12,
+        "trend": "stable"
+      }
+    },
+    "date_range": [
+      "2024-11-30",
+      "2025-01-03"
+    ],
+    "generated_at": "2025-01-03T07:40:00Z"
+  },
+  "Milestone": {
+    "objective_id": "obj-180",
+    "objective_name": "Interpret telemetry strips",
+    "milestone_type": "major_improvement",
+    "date_achieved": "2024-12-22",
+    "description": "Improved by 15 points after bootcamp.",
+    "score_before": 0.55,
+    "score_after": 0.7
+  },
+  "Regression": {
+    "objective_id": "obj-210",
+    "objective_name": "Manage acute coronary syndrome",
+    "score_before": 0.78,
+    "score_after": 0.68,
+    "decline_amount": 0.1,
+    "date_detected": "2024-12-29",
+    "possible_causes": [
+      "Shift schedule disruption"
+    ]
+  },
+  "ImprovementRates": {
+    "week": {
+      "period": "week",
+      "rate": 0.05,
+      "trend": "accelerating"
+    },
+    "month": {
+      "period": "month",
+      "rate": 0.12,
+      "trend": "stable"
+    }
+  },
+  "LongitudinalRequest": {
+    "user_id": "user-123",
+    "date_range": "90d",
+    "dimensions": [
+      "comprehension",
+      "mastery"
+    ]
+  },
+  "MasteryDatePrediction": {
+    "objective_id": "obj-205",
+    "objective_name": "Interpret arrhythmia management algorithms",
+    "current_score": 0.64,
+    "predicted_mastery_date": "2025-01-24",
+    "days_to_mastery": 21,
+    "weekly_improvement_rate": 0.04,
+    "confidence": "moderate"
+  },
+  "ModelAccuracy": {
+    "metric_name": "forgetting_risk",
+    "mean_absolute_error": 0.06,
+    "r_squared": 0.72,
+    "sample_size": 1250,
+    "last_updated": "2025-01-02"
+  },
+  "PatternsRequest": {
+    "user_id": "user-123",
+    "date_range": "30d"
+  },
+  "PeerBenchmark": {
+    "user_id": "user-123",
+    "objective_id": "obj-205",
+    "peer_distribution": {
+      "mean": 0.79,
+      "median": 0.8,
+      "std_dev": 0.04,
+      "quartiles": {
+        "p25": 0.76,
+        "p50": 0.8,
+        "p75": 0.83
+      },
+      "q1": 0.76,
+      "q2": 0.8,
+      "q3": 0.83,
+      "iqr": 0.07,
+      "whisker_low": 0.655,
+      "whisker_high": 0.935,
+      "sample_size": 152,
+      "last_calculated": "2025-01-02T00:00:00Z"
+    },
+    "user_percentile": 45,
+    "relative_strengths": [
+      {
+        "objective_id": "obj-150",
+        "objective_name": "Explain ventricular action potentials",
+        "user_score": 0.86,
+        "user_percentile": 88,
+        "category": "top_quartile"
+      }
+    ],
+    "relative_weaknesses": [
+      {
+        "objective_id": "obj-205",
+        "objective_name": "Interpret arrhythmia management algorithms",
+        "user_score": 0.64,
+        "user_percentile": 32,
+        "category": "bottom_quartile"
+      }
+    ],
+    "generated_at": "2025-01-03T07:45:00Z"
+  },
+  "PeerDistribution": {
+    "mean": 0.79,
+    "median": 0.8,
+    "std_dev": 0.04,
+    "quartiles": {
+      "p25": 0.76,
+      "p50": 0.8,
+      "p75": 0.83
+    },
+    "q1": 0.76,
+    "q2": 0.8,
+    "q3": 0.83,
+    "iqr": 0.07,
+    "whisker_low": 0.655,
+    "whisker_high": 0.935,
+    "sample_size": 152,
+    "last_calculated": "2025-01-02T00:00:00Z"
+  },
+  "Quartiles": {
+    "p25": 0.76,
+    "p50": 0.8,
+    "p75": 0.83
+  },
+  "RelativePerformance": {
+    "objective_id": "obj-205",
+    "objective_name": "Interpret arrhythmia management algorithms",
+    "user_score": 0.64,
+    "user_percentile": 32,
+    "category": "bottom_quartile"
+  },
+  "PeerBenchmarkRequest": {
+    "user_id": "user-123",
+    "objective_id": "obj-205"
+  },
+  "PredictionsRequest": {
+    "user_id": "user-123",
+    "date_range": "30d",
+    "exam_type": "Step-2"
+  },
+  "RecommendationData": {
+    "user_id": "user-123",
+    "daily_insight": {
+      "user_id": "user-123",
+      "priority_objective_id": "obj-205",
+      "priority_objective_name": "Interpret arrhythmia management algorithms",
+      "insight_category": "dangerous_gap",
+      "title": "Close the pacing gap",
+      "description": "Your pacing decisions fall behind peers despite high confidence.",
+      "action_items": [
+        "Review ACLS pacing indications",
+        "Simulate a bradycardia emergency with decision tree",
+        "Practice sedation dosing calculations"
+      ],
+      "estimated_time_minutes": 35,
+      "generated_at": "2025-01-03T07:30:00Z"
+    },
+    "weekly_top3": [
+      {
+        "objective_id": "obj-205",
+        "objective_name": "Interpret arrhythmia management algorithms",
+        "rationale": "High urgency gap with strong downstream impact.",
+        "estimated_hours": 3.5
+      },
+      {
+        "objective_id": "obj-210",
+        "objective_name": "Manage acute coronary syndrome",
+        "rationale": "Recent regression detected with rising forgetting risk.",
+        "estimated_hours": 2.0
+      },
+      {
+        "objective_id": "obj-150",
+        "objective_name": "Explain ventricular action potentials",
+        "rationale": "Maintain strength while supporting dependent topics.",
+        "estimated_hours": 1.5
+      }
+    ],
+    "interventions": [
+      {
+        "pattern_detected": "bottleneck_detected",
+        "intervention_type": "spaced_repetition",
+        "description": "Schedule spaced telemetry drills with escalating complexity.",
+        "priority": "high",
+        "estimated_time_hours": 1.5
+      }
+    ],
+    "time_estimates": [
+      {
+        "objective_id": "obj-205",
+        "objective_name": "Interpret arrhythmia management algorithms",
+        "current_score": 0.64,
+        "hours_to_mastery": 6,
+        "weeks_to_mastery": 3
+      }
+    ],
+    "exam_success_probability": 0.67,
+    "generated_at": "2025-01-03T07:50:00Z"
+  },
+  "WeeklyTopObjective": {
+    "objective_id": "obj-205",
+    "objective_name": "Interpret arrhythmia management algorithms",
+    "rationale": "High urgency gap with strong downstream impact.",
+    "estimated_hours": 3.5
+  },
+  "TimeToMasteryEstimate": {
+    "objective_id": "obj-205",
+    "objective_name": "Interpret arrhythmia management algorithms",
+    "current_score": 0.64,
+    "hours_to_mastery": 6,
+    "weeks_to_mastery": 3
+  },
+  "RecommendationsRequest": {
+    "user_id": "user-123"
+  },
+  "RelativeStrength": {
+    "objective_id": "obj-150",
+    "objective_name": "Explain ventricular action potentials",
+    "user_percentile": 88,
+    "peer_avg": 72,
+    "advantage": 16
+  },
+  "RelativeWeakness": {
+    "objective_id": "obj-205",
+    "objective_name": "Interpret arrhythmia management algorithms",
+    "user_percentile": 32,
+    "peer_avg": 68,
+    "disadvantage": 36
+  },
+  "UnderstandingPrediction": {
+    "user_id": "user-123",
+    "exam_success": {
+      "probability": 0.67,
+      "confidence_interval": [
+        0.6,
+        0.74
+      ],
+      "contributing_factors": {
+        "comprehension": 0.24,
+        "reasoning": 0.26,
+        "mastery": 0.1,
+        "calibration": 0.07
+      },
+      "recommendation": "Focus on bridging reasoning gaps through targeted cases."
+    },
+    "forgetting_risks": [
+      {
+        "objective_id": "obj-210",
+        "objective_name": "Manage acute coronary syndrome",
+        "retention_probability": 0.42,
+        "days_since_review": 18,
+        "strength_score": 0.35,
+        "risk_level": "high",
+        "recommended_review_date": "2025-01-05"
+      }
+    ],
+    "mastery_dates": [
+      {
+        "objective_id": "obj-205",
+        "objective_name": "Interpret arrhythmia management algorithms",
+        "current_score": 0.64,
+        "predicted_mastery_date": "2025-01-24",
+        "days_to_mastery": 21,
+        "weekly_improvement_rate": 0.04,
+        "confidence": "moderate"
+      }
+    ],
+    "model_accuracy": {
+      "forgetting_risk": {
+        "metric_name": "forgetting_risk",
+        "mean_absolute_error": 0.06,
+        "r_squared": 0.72,
+        "sample_size": 1250,
+        "last_updated": "2025-01-02"
+      }
+    },
+    "generated_at": "2025-01-03T07:55:00Z"
+  },
+  "ModelAccuracy1": {
+    "forgetting_risk": {
+      "metric_name": "forgetting_risk",
+      "mean_absolute_error": 0.06,
+      "r_squared": 0.72,
+      "sample_size": 1250,
+      "last_updated": "2025-01-02"
+    }
+  },
+  "AlertResponse": {
+    "id": "alert-1001",
+    "type": "PROACTIVE_WARNING",
+    "title": "High forgetting risk",
+    "message": "Acute coronary syndrome retention is trending down.",
+    "severity": "MEDIUM",
+    "priority": 3,
+    "prediction_id": "pred-778",
+    "intervention_id": null,
+    "created_at": "2025-01-03T07:56:00Z"
+  },
+  "PredictionDetail": {
+    "id": "pred-778",
+    "user_id": "user-123",
+    "learning_objective_id": "obj-205",
+    "topic_id": "topic-acs",
+    "prediction_date": "2025-01-03",
+    "predicted_struggle_probability": 0.71,
+    "prediction_confidence": 0.63,
+    "prediction_status": "PENDING",
+    "feature_vector": {
+      "recent_score": 0.62,
+      "confidence_delta": 0.28
+    },
+    "risk_level": "HIGH",
+    "reasoning": "Sharp decline after night rotation with limited reviews.",
+    "objective_name": "Interpret arrhythmia management algorithms",
+    "course_name": "Cardiology Core",
+    "indicators": [
+      {
+        "label": "Confidence spike",
+        "value": 0.3
+      },
+      {
+        "label": "Review gap",
+        "value": 14
+      }
+    ]
+  },
+  "FeatureVector": {
+    "recent_score": 0.62,
+    "confidence_delta": 0.28,
+    "weekly_sessions": 3
+  },
+  "PredictionRequest": {
+    "user_id": "user-123",
+    "days_ahead": 14
+  },
+  "PredictionResponse": {
+    "predictions": [
+      {
+        "id": "pred-778",
+        "user_id": "user-123",
+        "learning_objective_id": "obj-205",
+        "topic_id": "topic-acs",
+        "prediction_date": "2025-01-03",
+        "predicted_struggle_probability": 0.71,
+        "prediction_confidence": 0.63,
+        "prediction_status": "PENDING",
+        "feature_vector": {
+          "recent_score": 0.62,
+          "confidence_delta": 0.28
+        },
+        "risk_level": "HIGH",
+        "reasoning": "Sharp decline after night rotation with limited reviews.",
+        "objective_name": "Interpret arrhythmia management algorithms",
+        "course_name": "Cardiology Core",
+        "indicators": [
+          {
+            "label": "Confidence spike",
+            "value": 0.3
+          },
+          {
+            "label": "Review gap",
+            "value": 14
+          }
+        ]
+      }
+    ],
+    "alerts": [
+      {
+        "id": "alert-1001",
+        "type": "PROACTIVE_WARNING",
+        "title": "High forgetting risk",
+        "message": "Acute coronary syndrome retention is trending down.",
+        "severity": "MEDIUM",
+        "priority": 3,
+        "prediction_id": "pred-778",
+        "intervention_id": null,
+        "created_at": "2025-01-03T07:56:00Z"
+      }
+    ],
+    "total_count": 1,
+    "high_risk_count": 1,
+    "medium_risk_count": 0,
+    "low_risk_count": 0,
+    "generated_at": "2025-01-03T07:57:00Z"
+  },
+  "InterventionApplyRequest": {
+    "mission_id": "mission-55"
+  },
+  "InterventionApplyResponse": {
+    "success": true,
+    "intervention_id": "intrv-88",
+    "mission_id": "mission-55",
+    "message": "Intervention scheduled for next simulation block.",
+    "applied_at": "2025-01-03T08:00:00Z"
+  },
+  "InterventionResponse": {
+    "id": "intrv-88",
+    "prediction_id": "pred-778",
+    "user_id": "user-123",
+    "intervention_type": "SPACED_REPETITION_BOOST",
+    "description": "Push telemetry spaced reviews over the next two weeks.",
+    "reasoning": "Addresses forgetting risk before upcoming OSCE.",
+    "priority": 2,
+    "status": "PENDING",
+    "applied_at": null,
+    "applied_to_mission_id": "mission-55",
+    "effectiveness": null,
+    "created_at": "2025-01-03T07:58:00Z"
+  },
+  "ModelPerformanceResponse": {
+    "accuracy": 0.81,
+    "precision": 0.76,
+    "recall": 0.69,
+    "f1_score": 0.72,
+    "auc_roc": 0.83,
+    "calibration": {
+      "0.1": [
+        0.12,
+        0.11,
+        0.1
+      ],
+      "0.5": [
+        0.52,
+        0.5,
+        0.48
+      ],
+      "0.9": [
+        0.88,
+        0.9,
+        0.91
+      ]
+    },
+    "model_type": "logistic_regression",
+    "model_version": "2025.1",
+    "last_updated": "2025-01-02T00:00:00Z",
+    "data_points": 45210,
+    "feature_importance": {
+      "recent_score": 0.32,
+      "confidence_delta": 0.24,
+      "days_since_review": 0.19
+    },
+    "accuracy_trend": [
+      {
+        "date": "2024-11-01",
+        "accuracy": 0.77
+      },
+      {
+        "date": "2025-01-01",
+        "accuracy": 0.81
+      }
+    ]
+  },
+  "Calibration": {
+    "0.1": [
+      0.12,
+      0.11,
+      0.1
+    ],
+    "0.5": [
+      0.52,
+      0.5,
+      0.48
+    ],
+    "0.9": [
+      0.88,
+      0.9,
+      0.91
+    ]
+  },
+  "StruggleReductionResponse": {
+    "baseline_rate": 0.42,
+    "current_rate": 0.28,
+    "reduction_percentage": 0.333,
+    "timeline": [
+      {
+        "date": "2024-12-15",
+        "struggle_rate": 0.41,
+        "struggles_count": 52,
+        "topics_studied": 18
+      },
+      {
+        "date": "2025-01-02",
+        "struggle_rate": 0.28,
+        "struggles_count": 31,
+        "topics_studied": 22
+      }
+    ],
+    "intervention_effectiveness": [
+      {
+        "intervention_type": "SPACED_REPETITION_BOOST",
+        "effect": 0.18
+      },
+      {
+        "intervention_type": "COGNITIVE_LOAD_REDUCE",
+        "effect": 0.07
+      }
+    ],
+    "period": "30d",
+    "baseline_period_start": "2024-11-30",
+    "baseline_period_end": "2024-12-14",
+    "current_period_start": "2024-12-15",
+    "current_period_end": "2025-01-13",
+    "total_predictions": 420,
+    "total_interventions_applied": 96,
+    "user_feedback_count": 58
+  },
+  "TimelinePoint": {
+    "date": "2025-01-02",
+    "struggle_rate": 0.28,
+    "struggles_count": 31,
+    "topics_studied": 22
+  }
+}
