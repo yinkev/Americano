@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { withErrorHandler } from '@/lib/api-response'
 import { withCache } from '@/lib/cache'
 import { resolveAnalyticsProvider } from '@/lib/analytics-provider'
-import { getMockComprehensionPattern } from '@/lib/mocks/analytics'
+import { getMockComprehensionPattern, respondWithMock } from '@/lib/mocks/analytics'
 import { prisma } from '@/lib/db'
 import { ensureRedisInitialized } from '@/lib/init-redis'
 
@@ -90,12 +90,18 @@ async function handleRequest(request: NextRequest, input: PatternsInput) {
   const provider = resolveAnalyticsProvider(request)
 
   if (provider === 'mock') {
-    return Response.json(getMockComprehensionPattern(input.userId))
+    return respondWithMock(getMockComprehensionPattern(input.userId))
   }
 
   const legacyPatterns = await fetchLegacyPatterns(input)
-  const mockData = getMockComprehensionPattern(input.userId)
-  return Response.json({ ...mockData, legacy_patterns: { patterns: legacyPatterns, count: legacyPatterns.length } })
+  const mockEnvelope = getMockComprehensionPattern(input.userId)
+  return respondWithMock({
+    metadata: mockEnvelope.metadata,
+    payload: {
+      ...mockEnvelope.payload,
+      legacy_patterns: { patterns: legacyPatterns, count: legacyPatterns.length },
+    },
+  })
 }
 
 export const POST = withErrorHandler(async (request: NextRequest) => {

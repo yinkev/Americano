@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { ApiError, ErrorCodes, withErrorHandler } from '@/lib/api-response'
 import { resolveAnalyticsProvider } from '@/lib/analytics-provider'
-import { getMockCorrelationMatrix } from '@/lib/mocks/analytics'
+import { getMockCorrelationMatrix, respondWithMock } from '@/lib/mocks/analytics'
 
 const CorrelationsSchema = z.object({
   userId: z.string().min(1, 'user_id is required'),
@@ -28,7 +28,7 @@ function buildResponse(input: CorrelationsInput, request: NextRequest) {
   const provider = resolveAnalyticsProvider(request)
 
   if (provider === 'mock') {
-    return Response.json(getMockCorrelationMatrix(input.userId))
+    return respondWithMock(getMockCorrelationMatrix(input.userId))
   }
 
   throw new ApiError('Legacy analytics provider is not implemented for correlation analytics.', 501, ErrorCodes.INTERNAL_ERROR)
