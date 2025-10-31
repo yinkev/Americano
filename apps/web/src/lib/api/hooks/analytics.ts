@@ -19,7 +19,7 @@
 
 'use client'
 
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { api } from '../client'
 import type {
   ComparisonResult,
@@ -36,18 +36,71 @@ import type {
   PeerBenchmarkRequest,
   PredictionsRequest,
   RecommendationData,
-  RecommendationsRequest,
   TimeToMasteryEstimate,
   UnderstandingPrediction,
   WeeklyTopObjective,
 } from './types/generated'
 import {
+  attachSource,
+  type AnalyticsDateRange,
+  type SourceTagged,
+  type SuccessProbabilityResponse,
+} from './analytics.shared'
+import {
+  createMockComparison,
+  createMockCorrelations,
+  createMockDailyInsight,
+  createMockDashboard,
+  createMockInterventions,
+  createMockLongitudinal,
+  createMockPatterns,
+  createMockPeerBenchmark,
+  createMockPredictions,
+  createMockRecommendations,
+  createMockSuccessProbability,
+  createMockTimeToMastery,
+  createMockWeeklySummary,
+} from './analytics.mock-data'
+import {
   analyticsKeys,
-  createMutationOptions,
   frequentQueryOptions,
   moderateQueryOptions,
   stableQueryOptions,
 } from './utils'
+
+type MockableData = Record<string, unknown> | any[]
+type LongitudinalDimension = 'comprehension' | 'reasoning' | 'calibration' | 'mastery'
+
+async function fetchWithMock<T extends MockableData>(
+  request: () => Promise<T>,
+  mock: () => SourceTagged<T>,
+  label: string,
+): Promise<SourceTagged<T>> {
+  try {
+    const data = await request()
+    return attachSource(data, 'api')
+  } catch (error) {
+    console.warn(`[analytics] ${label} request failed – using mock data`, error)
+    return mock()
+  }
+}
+
+async function fetchNullableWithMock<T extends Record<string, unknown>>(
+  request: () => Promise<T | null>,
+  mock: () => SourceTagged<T>,
+  label: string,
+): Promise<SourceTagged<T> | null> {
+  try {
+    const data = await request()
+    if (!data) {
+      return null
+    }
+    return attachSource(data, 'api')
+  } catch (error) {
+    console.warn(`[analytics] ${label} request failed – using mock data`, error)
+    return mock()
+  }
+}
 
 // ============================================================================
 // Daily Insight
@@ -77,11 +130,15 @@ import {
  * ```
  */
 export function useDailyInsight(userId: string | null) {
+  const resolvedUserId = userId ?? 'demo-user'
   return useQuery({
     queryKey: analyticsKeys.dailyInsight(userId || ''),
-    queryFn: async (): Promise<DailyInsight> => {
-      return api.post<DailyInsight>('/analytics/daily-insight', { user_id: userId })
-    },
+    queryFn: () =>
+      fetchWithMock(
+        () => api.post<DailyInsight>('/analytics/daily-insight', { user_id: userId as string }),
+        () => createMockDailyInsight(resolvedUserId),
+        'daily insight',
+      ),
     ...frequentQueryOptions,
     enabled: !!userId,
     refetchInterval: 60 * 60 * 1000, // Refresh every hour
@@ -112,11 +169,16 @@ export function useDailyInsight(userId: string | null) {
  * ```
  */
 export function useWeeklySummary(userId: string | null) {
+  const resolvedUserId = userId ?? 'demo-user'
   return useQuery({
     queryKey: analyticsKeys.weeklySummary(userId || ''),
-    queryFn: async (): Promise<WeeklyTopObjective[]> => {
-      return api.post<WeeklyTopObjective[]>('/analytics/weekly-summary', { user_id: userId })
-    },
+    queryFn: () =>
+      fetchWithMock(
+        () =>
+          api.post<WeeklyTopObjective[]>('/analytics/weekly-summary', { user_id: userId as string }),
+        () => createMockWeeklySummary(resolvedUserId),
+        'weekly summary',
+      ),
     ...frequentQueryOptions,
     enabled: !!userId,
     refetchInterval: 60 * 60 * 1000, // Refresh every hour
@@ -152,11 +214,16 @@ export function useWeeklySummary(userId: string | null) {
  * ```
  */
 export function useInterventions(userId: string | null) {
+  const resolvedUserId = userId ?? 'demo-user'
   return useQuery({
     queryKey: analyticsKeys.interventions(userId || ''),
-    queryFn: async (): Promise<InterventionSuggestion[]> => {
-      return api.post<InterventionSuggestion[]>('/analytics/interventions', { user_id: userId })
-    },
+    queryFn: () =>
+      fetchWithMock(
+        () =>
+          api.post<InterventionSuggestion[]>('/analytics/interventions', { user_id: userId as string }),
+        () => createMockInterventions(resolvedUserId),
+        'interventions',
+      ),
     ...frequentQueryOptions,
     enabled: !!userId,
   })
@@ -189,13 +256,18 @@ export function useInterventions(userId: string | null) {
  * ```
  */
 export function useTimeToMastery(objectiveId: string | null, userId: string | null) {
+  const resolvedObjectiveId = objectiveId ?? 'objective-demo'
   return useQuery({
     queryKey: analyticsKeys.timeToMastery(objectiveId || '', userId || ''),
-    queryFn: async (): Promise<TimeToMasteryEstimate | null> => {
-      return api.get<TimeToMasteryEstimate | null>(`/analytics/time-to-mastery/${objectiveId}`, {
-        user_id: userId || undefined,
-      })
-    },
+    queryFn: () =>
+      fetchNullableWithMock(
+        () =>
+          api.get<TimeToMasteryEstimate | null>(`/analytics/time-to-mastery/${objectiveId}`, {
+            user_id: userId || undefined,
+          }),
+        () => createMockTimeToMastery(resolvedObjectiveId),
+        'time to mastery',
+      ),
     ...frequentQueryOptions,
     enabled: !!objectiveId && !!userId,
   })
@@ -235,19 +307,19 @@ export function useSuccessProbability(
   userId: string | null,
   plannedHours: number,
 ) {
+  const resolvedObjectiveId = objectiveId ?? 'objective-demo'
   return useQuery({
     queryKey: analyticsKeys.successProbability(objectiveId || '', userId || '', plannedHours),
-    queryFn: async (): Promise<{
-      objective_id: string
-      planned_study_hours: number
-      success_probability: number
-      confidence_level: 'high' | 'medium' | 'low'
-    }> => {
-      return api.get(`/analytics/success-probability/${objectiveId}`, {
-        user_id: userId || undefined,
-        planned_hours: plannedHours,
-      })
-    },
+    queryFn: () =>
+      fetchWithMock(
+        () =>
+          api.get<SuccessProbabilityResponse>(`/analytics/success-probability/${objectiveId}`, {
+            user_id: userId || undefined,
+            planned_hours: plannedHours,
+          }),
+        () => createMockSuccessProbability(resolvedObjectiveId, plannedHours),
+        'success probability',
+      ),
     ...frequentQueryOptions,
     enabled: !!objectiveId && !!userId && plannedHours > 0,
   })
@@ -283,11 +355,18 @@ export function useSuccessProbability(
  * ```
  */
 export function useRecommendations(userId: string | null) {
+  const resolvedUserId = userId ?? 'demo-user'
   return useQuery({
     queryKey: analyticsKeys.recommendations(userId || ''),
-    queryFn: async (): Promise<RecommendationData> => {
-      return api.post<RecommendationData>('/analytics/recommendations', { user_id: userId })
-    },
+    queryFn: () =>
+      fetchWithMock(
+        () =>
+          api.post<RecommendationData>('/analytics/recommendations', {
+            user_id: userId as string,
+          }),
+        () => createMockRecommendations(resolvedUserId),
+        'recommendations',
+      ),
     ...frequentQueryOptions,
     enabled: !!userId,
   })
@@ -336,18 +415,27 @@ export function useRecommendations(userId: string | null) {
  */
 export function usePredictions(
   userId: string | null,
-  dateRange?: string,
+  dateRange?: AnalyticsDateRange,
   examType?: string,
 ) {
+  const resolvedUserId = userId ?? 'demo-user'
   return useQuery({
-    queryKey: analyticsKeys.predictions(userId || ''),
-    queryFn: async (): Promise<UnderstandingPrediction> => {
-      return api.post<UnderstandingPrediction>('/analytics/predictions', {
-        user_id: userId,
-        date_range: dateRange,
-        exam_type: examType,
-      } as PredictionsRequest)
-    },
+    queryKey: analyticsKeys.predictions(userId || '', dateRange, examType),
+    queryFn: () =>
+      fetchWithMock(
+        () => {
+          const payload: PredictionsRequest = { user_id: userId as string }
+          if (dateRange) {
+            payload.date_range = dateRange
+          }
+          if (examType) {
+            payload.exam_type = examType
+          }
+          return api.post<UnderstandingPrediction>('/analytics/predictions', payload)
+        },
+        () => createMockPredictions(resolvedUserId),
+        'predictions',
+      ),
     ...moderateQueryOptions, // 15 min cache (expensive ML)
     enabled: !!userId,
   })
@@ -388,15 +476,22 @@ export function usePredictions(
  * }
  * ```
  */
-export function usePatterns(userId: string | null, dateRange?: string) {
+export function usePatterns(userId: string | null, dateRange?: AnalyticsDateRange) {
+  const resolvedUserId = userId ?? 'demo-user'
   return useQuery({
-    queryKey: analyticsKeys.patterns(userId || ''),
-    queryFn: async (): Promise<ComprehensionPattern> => {
-      return api.post<ComprehensionPattern>('/analytics/patterns', {
-        user_id: userId,
-        date_range: dateRange,
-      } as PatternsRequest)
-    },
+    queryKey: analyticsKeys.patterns(userId || '', dateRange),
+    queryFn: () =>
+      fetchWithMock(
+        () => {
+          const payload: PatternsRequest = { user_id: userId as string }
+          if (dateRange) {
+            payload.date_range = dateRange
+          }
+          return api.post<ComprehensionPattern>('/analytics/patterns', payload)
+        },
+        () => createMockPatterns(resolvedUserId, dateRange ?? '30d'),
+        'patterns',
+      ),
     ...moderateQueryOptions,
     enabled: !!userId,
   })
@@ -438,16 +533,29 @@ export function usePatterns(userId: string | null, dateRange?: string) {
  * }
  * ```
  */
-export function useLongitudinal(userId: string | null, dateRange?: string, dimensions?: string) {
+export function useLongitudinal(
+  userId: string | null,
+  dateRange?: AnalyticsDateRange,
+  dimensions?: LongitudinalDimension[],
+) {
+  const resolvedUserId = userId ?? 'demo-user'
   return useQuery({
-    queryKey: analyticsKeys.longitudinal(userId || '', dateRange),
-    queryFn: async (): Promise<LongitudinalMetric> => {
-      return api.post<LongitudinalMetric>('/analytics/longitudinal', {
-        user_id: userId,
-        date_range: dateRange,
-        dimensions,
-      } as LongitudinalRequest)
-    },
+    queryKey: analyticsKeys.longitudinal(userId || '', dateRange, dimensions),
+    queryFn: () =>
+      fetchWithMock(
+        () => {
+          const payload: LongitudinalRequest = { user_id: userId as string }
+          if (dateRange) {
+            payload.date_range = dateRange
+          }
+          if (dimensions && dimensions.length) {
+            payload.dimensions = dimensions
+          }
+          return api.post<LongitudinalMetric>('/analytics/longitudinal', payload)
+        },
+        () => createMockLongitudinal(resolvedUserId, dateRange ?? '90d'),
+        'longitudinal',
+      ),
     ...frequentQueryOptions,
     enabled: !!userId,
   })
@@ -490,13 +598,18 @@ export function useLongitudinal(userId: string | null, dateRange?: string, dimen
  * ```
  */
 export function useCorrelations(userId: string | null) {
+  const resolvedUserId = userId ?? 'demo-user'
   return useQuery({
     queryKey: analyticsKeys.correlations(userId || ''),
-    queryFn: async (): Promise<CorrelationMatrix> => {
-      return api.post<CorrelationMatrix>('/analytics/correlations', {
-        user_id: userId,
-      } as CorrelationsRequest)
-    },
+    queryFn: () =>
+      fetchWithMock(
+        () =>
+          api.post<CorrelationMatrix>('/analytics/correlations', {
+            user_id: userId as string,
+          } as CorrelationsRequest),
+        () => createMockCorrelations(resolvedUserId),
+        'correlations',
+      ),
     ...moderateQueryOptions,
     enabled: !!userId,
   })
@@ -546,14 +659,19 @@ export function useCorrelations(userId: string | null) {
  * ```
  */
 export function usePeerBenchmark(userId: string | null, objectiveId?: string) {
+  const resolvedUserId = userId ?? 'demo-user'
   return useQuery({
     queryKey: analyticsKeys.peerBenchmark(userId || '', objectiveId),
-    queryFn: async (): Promise<PeerBenchmark> => {
-      return api.post<PeerBenchmark>('/analytics/peer-benchmark', {
-        user_id: userId,
-        objective_id: objectiveId,
-      } as PeerBenchmarkRequest)
-    },
+    queryFn: () =>
+      fetchWithMock(
+        () =>
+          api.post<PeerBenchmark>('/analytics/peer-benchmark', {
+            user_id: userId as string,
+            objective_id: objectiveId,
+          } as PeerBenchmarkRequest),
+        () => createMockPeerBenchmark(resolvedUserId, objectiveId),
+        'peer benchmark',
+      ),
     ...stableQueryOptions, // 30 min cache (peer data changes slowly)
     enabled: !!userId,
     retry: 1, // Don't retry multiple times if < 50 users
@@ -607,15 +725,20 @@ export function usePeerBenchmark(userId: string | null, objectiveId?: string) {
  * }
  * ```
  */
-export function useUnderstandingDashboard(userId: string | null, timeRange?: string) {
+export function useUnderstandingDashboard(userId: string | null, timeRange?: AnalyticsDateRange) {
+  const resolvedUserId = userId ?? 'demo-user'
   return useQuery({
     queryKey: analyticsKeys.dashboard(userId || '', timeRange),
-    queryFn: async (): Promise<DashboardSummary> => {
-      return api.get<DashboardSummary>('/analytics/understanding/dashboard', {
-        user_id: userId || undefined,
-        time_range: timeRange,
-      })
-    },
+    queryFn: () =>
+      fetchWithMock(
+        () =>
+          api.get<DashboardSummary>('/analytics/understanding/dashboard', {
+            user_id: userId || undefined,
+            time_range: timeRange,
+          }),
+        () => createMockDashboard(resolvedUserId, timeRange ?? '30d'),
+        'understanding dashboard',
+      ),
     ...frequentQueryOptions,
     enabled: !!userId,
   })
@@ -675,14 +798,19 @@ export function useUnderstandingDashboard(userId: string | null, timeRange?: str
  * ```
  */
 export function useUnderstandingComparison(userId: string | null, peerGroup?: string) {
+  const resolvedUserId = userId ?? 'demo-user'
   return useQuery({
     queryKey: analyticsKeys.comparison(userId || '', peerGroup),
-    queryFn: async (): Promise<ComparisonResult> => {
-      return api.get<ComparisonResult>('/analytics/understanding/comparison', {
-        user_id: userId || undefined,
-        peer_group: peerGroup,
-      })
-    },
+    queryFn: () =>
+      fetchWithMock(
+        () =>
+          api.get<ComparisonResult>('/analytics/understanding/comparison', {
+            user_id: userId || undefined,
+            peer_group: peerGroup,
+          }),
+        () => createMockComparison(resolvedUserId, peerGroup ?? 'all'),
+        'understanding comparison',
+      ),
     ...stableQueryOptions, // 30 min cache (peer comparisons change slowly)
     enabled: !!userId,
     retry: 1, // Don't retry multiple times if < 50 users
