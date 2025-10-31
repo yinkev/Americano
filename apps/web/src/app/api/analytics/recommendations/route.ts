@@ -1,138 +1,120 @@
-/**
- * Story 3.5: Recommendation Analytics API
- * GET /api/analytics/recommendations - Get recommendation performance analytics
- */
-
-import { type NextRequest, NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { ApiError, ErrorCodes, errorResponse, successResponse } from '@/lib/api-response'
+import { withErrorHandler } from '@/lib/api-response'
+import { resolveAnalyticsProvider } from '@/lib/analytics-provider'
+import { getMockRecommendationData } from '@/lib/mocks/analytics'
 import { prisma } from '@/lib/db'
 
-// ============================================
-// Validation Schema
-// ============================================
+type Period = '7d' | '30d' | '90d'
 
-const QuerySchema = z.object({
-  period: z.enum(['7d', '30d', '90d']).optional().default('7d'),
+const RecommendationSchema = z.object({
+  userId: z.string().min(1, 'user_id is required'),
+  period: z.enum(['7d', '30d', '90d']).default('7d'),
 })
 
-// ============================================
-// GET Handler
-// ============================================
+type RecommendationInput = z.infer<typeof RecommendationSchema>
 
-export async function GET(request: NextRequest) {
-  try {
-    // Hard-coded user for MVP
-    const userId = 'kevy@americano.dev'
+function parseBody(body: unknown): RecommendationInput {
+  const value = body && typeof body === 'object' ? (body as Record<string, unknown>) : {}
+  return RecommendationSchema.parse({
+    userId: (value.user_id ?? value.userId ?? '') as string,
+    period: (value.period as Period | undefined) ?? '7d',
+  })
+}
 
-    // Parse and validate query parameters
-    const { searchParams } = new URL(request.url)
-    const queryParams = Object.fromEntries(searchParams.entries())
+function parseQuery(request: NextRequest): RecommendationInput {
+  const params = request.nextUrl.searchParams
+  return RecommendationSchema.parse({
+    userId: params.get('user_id') ?? params.get('userId') ?? '',
+    period: (params.get('period') as Period | null) ?? '7d',
+  })
+}
 
-    const validatedParams = QuerySchema.safeParse(queryParams)
+async function fetchLegacyMetrics(userId: string, period: Period) {
+  const daysMap: Record<Period, number> = { '7d': 7, '30d': 30, '90d': 90 }
+  const days = daysMap[period]
+  const startDate = new Date()
+  startDate.setDate(startDate.getDate() - days)
 
-    if (!validatedParams.success) {
-      return NextResponse.json(
-        errorResponse(
-          ErrorCodes.VALIDATION_ERROR,
-          'Invalid query parameters',
-          validatedParams.error.issues,
-        ),
-        { status: 400 },
-      )
-    }
+  const recommendations = await prisma.content_recommendations.findMany({
+    where: {
+      userId,
+      createdAt: { gte: startDate },
+    },
+  })
 
-    const { period } = validatedParams.data
+  const totalRecommendations = recommendations.length
+  const viewedCount = recommendations.filter((r: any) => r.viewedAt !== null).length
+  const dismissedCount = recommendations.filter((r: any) => r.status === 'DISMISSED').length
 
-    // Calculate date range
-    const daysMap = { '7d': 7, '30d': 30, '90d': 90 }
-    const days = daysMap[period]
-    const startDate = new Date()
-    startDate.setDate(startDate.getDate() - days)
+  const clickEvents = await prisma.behavioralEvent.findMany({
+    where: {
+      userId,
+      eventType: 'RECOMMENDATION_CLICKED',
+      timestamp: { gte: startDate },
+    },
+  })
+  const clickedCount = clickEvents.length
 
-    // Fetch recommendations in period
-    const recommendations = await prisma.content_recommendations.findMany({
-      where: {
-        userId,
-        createdAt: { gte: startDate },
-      },
-      include: {
-      },
-    })
+  const ctr = totalRecommendations > 0 ? clickedCount / totalRecommendations : 0
 
-    // Calculate metrics
-    const totalRecommendations = recommendations.length
-    const viewedCount = recommendations.filter((r: any) => r.viewedAt !== null).length
-    const dismissedCount = recommendations.filter((r: any) => r.status === 'DISMISSED').length
+  const allFeedback = recommendations.flatMap((r: any) => r.feedback ?? [])
+  const avgRating =
+    allFeedback.length > 0
+      ? allFeedback.reduce((sum: number, f: any) => sum + f.rating, 0) / allFeedback.length
+      : 0
 
-    // Fetch behavioral events for click tracking
-    const clickEvents = await prisma.behavioralEvent.findMany({
-      where: {
-        userId,
-        eventType: 'RECOMMENDATION_CLICKED',
-        timestamp: { gte: startDate },
-      },
-    })
-    const clickedCount = clickEvents.length
+  const avgEngagementTimeMs = 0
 
-    // Calculate CTR (click-through rate)
-    const ctr = totalRecommendations > 0 ? clickedCount / totalRecommendations : 0
+  const sourceTypeCounts: Record<string, number> = {}
+  for (const rec of recommendations) {
+    sourceTypeCounts[rec.sourceType] = (sourceTypeCounts[rec.sourceType] || 0) + 1
+  }
 
-    // Calculate average rating
-    const allFeedback = recommendations.flatMap((r: any) => r.feedback)
-    const avgRating =
-      allFeedback.length > 0
-        ? allFeedback.reduce((sum: number, f: any) => sum + f.rating, 0) / allFeedback.length
-        : 0
+  const topSources = Object.entries(sourceTypeCounts)
+    .map(([type, count]) => ({ type, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5)
 
-    // Calculate average engagement time (placeholder - would track actual time)
-    const avgEngagementTimeMs = 0 // Would calculate from time-on-content tracking
+  const improvementCorrelation = 0
 
-    // Calculate top source types
-    const sourceTypeCounts: Record<string, number> = {}
-    for (const rec of recommendations) {
-      sourceTypeCounts[rec.sourceType] = (sourceTypeCounts[rec.sourceType] || 0) + 1
-    }
-
-    const topSources = Object.entries(sourceTypeCounts)
-      .map(([type, count]) => ({ type, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5)
-
-    // Calculate improvement correlation (placeholder)
-    // Would correlate recommendation engagement with performance metrics
-    const improvementCorrelation = 0 // Placeholder
-
-    return NextResponse.json(
-      successResponse({
-        period,
-        startDate,
-        endDate: new Date(),
-        metrics: {
-          totalRecommendations,
-          viewedCount,
-          clickedCount,
-          dismissedCount,
-          ctr: parseFloat(ctr.toFixed(3)),
-          avgRating: parseFloat(avgRating.toFixed(2)),
-          avgEngagementTimeMs,
-          topSources,
-          improvementCorrelation,
-        },
-      }),
-    )
-  } catch (error) {
-    console.error('[GET /api/analytics/recommendations] Error:', error)
-
-    if (error instanceof ApiError) {
-      return NextResponse.json(errorResponse(error.code, error.message), {
-        status: error.statusCode,
-      })
-    }
-
-    return NextResponse.json(
-      errorResponse(ErrorCodes.INTERNAL_ERROR, 'Failed to fetch recommendation analytics'),
-      { status: 500 },
-    )
+  return {
+    period,
+    startDate,
+    endDate: new Date(),
+    metrics: {
+      totalRecommendations,
+      viewedCount,
+      clickedCount,
+      dismissedCount,
+      ctr: parseFloat(ctr.toFixed(3)),
+      avgRating: parseFloat(avgRating.toFixed(2)),
+      avgEngagementTimeMs,
+      topSources,
+      improvementCorrelation,
+    },
   }
 }
+
+async function handleRequest(request: NextRequest, input: RecommendationInput) {
+  const provider = resolveAnalyticsProvider(request)
+
+  if (provider === 'mock') {
+    return Response.json(getMockRecommendationData(input.userId))
+  }
+
+  const legacyMetrics = await fetchLegacyMetrics(input.userId, input.period)
+  const mockData = getMockRecommendationData(input.userId)
+  return Response.json({ ...mockData, legacy_metrics: legacyMetrics })
+}
+
+export const POST = withErrorHandler(async (request: NextRequest) => {
+  const raw = await request.json().catch(() => ({}))
+  const input = parseBody(raw)
+  return handleRequest(request, input)
+})
+
+export const GET = withErrorHandler(async (request: NextRequest) => {
+  const input = parseQuery(request)
+  return handleRequest(request, input)
+})
