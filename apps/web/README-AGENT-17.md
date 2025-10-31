@@ -174,6 +174,14 @@ You'll know you're done when:
 3. **Document component usage** - Create component examples
 4. **Set up CI/CD** - Automate type checking and linting
 
+### Mock analytics data instrumentation
+- API handlers now attach provenance via `createMockAnalyticsMetadata` to surface `metadata.mock` on
+  every analytics payload. Location: `src/lib/mock-data-metadata.ts`.
+- Analytics UI modules render the shared `MockDataBadge` so users see the “Mock data” affordance by
+  default. Toggle visibility with `NEXT_PUBLIC_ANALYTICS_MOCK_MODE` (`on` by default).
+- Migration path: swap Prisma seed lookups for real analytics, flip the env flag to `off`, and keep
+  the badge-driven tests passing to guarantee production telemetry is wired correctly.
+
 ---
 
 ## 📞 Questions?

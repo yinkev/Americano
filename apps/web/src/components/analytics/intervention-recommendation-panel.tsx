@@ -18,6 +18,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { useState } from 'react'
+import { MockDataBadge } from '@/components/analytics/MockDataBadge'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -122,9 +123,12 @@ export function InterventionRecommendationPanel() {
       <CardHeader className="p-4 pb-0">
         <div className="flex items-start justify-between gap-4">
           <CardTitle className="font-heading text-[16px]">Recommended Actions</CardTitle>
-          <Badge variant="secondary" className="shrink-0">
-            {interventions.filter((i) => !i.applied).length} Available
-          </Badge>
+          <div className="flex items-center gap-2">
+            <MockDataBadge />
+            <Badge variant="secondary" className="shrink-0">
+              {interventions.filter((i) => !i.applied).length} Available
+            </Badge>
+          </div>
         </div>
 
         {/* Auto-Apply Toggle */}

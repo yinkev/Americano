@@ -5,6 +5,7 @@ import type { NextRequest } from 'next/server'
 import { ApiError, withErrorHandler } from '@/lib/api-error'
 import { successResponse } from '@/lib/api-response'
 import { prisma } from '@/lib/db'
+import { createMockAnalyticsMetadata } from '@/lib/mock-data-metadata'
 
 /**
  * GET /api/analytics/export
@@ -114,6 +115,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       totalInsights: insights.length,
       hasLearningProfile: !!learningProfile,
       exportFormat: 'behavioral-patterns-v1.0',
+      mock: createMockAnalyticsMetadata({ endpoint: 'analytics/export' }),
     },
   }
 

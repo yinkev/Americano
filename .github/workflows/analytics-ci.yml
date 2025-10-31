@@ -1,0 +1,64 @@
+name: Analytics CI
+
+on:
+  pull_request:
+    paths:
+      - 'apps/web/src/app/api/analytics/**'
+      - 'apps/web/src/components/analytics/**'
+      - 'apps/web/src/app/analytics/**'
+      - 'apps/web/tests/api/analytics/**'
+      - 'apps/web/src/lib/mock-data-metadata.ts'
+      - 'apps/web/jest.config.ts'
+      - 'apps/ml-service/**'
+      - 'services/ml-service/**'
+      - '.github/workflows/analytics-ci.yml'
+  push:
+    branches: ['**']
+    paths:
+      - 'apps/web/src/app/api/analytics/**'
+      - 'apps/web/src/components/analytics/**'
+      - 'apps/web/src/app/analytics/**'
+      - 'apps/web/tests/api/analytics/**'
+      - 'apps/web/src/lib/mock-data-metadata.ts'
+      - 'apps/web/jest.config.ts'
+      - 'apps/ml-service/**'
+      - 'services/ml-service/**'
+      - '.github/workflows/analytics-ci.yml'
+
+jobs:
+  analytics-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Lint repository
+        run: npm run lint
+
+      - name: Run web analytics tests
+        run: |
+          cd apps/web
+          npm run test:ci
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ML service dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r apps/ml-service/requirements.txt
+
+      - name: Run ML service tests
+        run: |
+          cd apps/ml-service
+          pytest
