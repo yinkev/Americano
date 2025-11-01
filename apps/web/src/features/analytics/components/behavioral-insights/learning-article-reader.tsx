@@ -51,7 +51,7 @@ interface LearningArticle {
 }
 
 interface LearningArticleReaderProps {
-  userId: string
+  userId: string | null
   isLoading?: boolean
 }
 
@@ -131,12 +131,21 @@ export function LearningArticleReader({
   const [sourcesExpanded, setSourcesExpanded] = useState(false)
 
   useEffect(() => {
+    if (!userId) {
+      setArticle(null)
+      setError(null)
+      setIsLoading(false)
+      return
+    }
+
+    let isMounted = true
+
     const fetchArticle = async () => {
       try {
         setIsLoading(true)
         setError(null)
         const response = await fetch(
-          `/api/analytics/behavioral-insights/learning-science/${selectedArticleId}?userId=${userId}`,
+          `/api/analytics/behavioral-insights/learning-science/${selectedArticleId}?userId=${encodeURIComponent(userId)}`,
         )
 
         if (!response.ok) {
@@ -144,19 +153,30 @@ export function LearningArticleReader({
         }
 
         const data = await response.json()
+        if (!isMounted) {
+          return
+        }
+
         if (data.success && data.article) {
           setArticle(data.article)
         } else {
           throw new Error('Invalid response format')
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        if (isMounted) {
+          setError(err instanceof Error ? err.message : 'Unknown error')
+        }
       } finally {
-        setIsLoading(false)
+        if (isMounted) {
+          setIsLoading(false)
+        }
       }
     }
 
     fetchArticle()
+    return () => {
+      isMounted = false
+    }
   }, [selectedArticleId, userId])
 
   // Error state

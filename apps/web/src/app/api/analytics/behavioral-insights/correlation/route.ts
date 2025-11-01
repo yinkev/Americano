@@ -13,6 +13,7 @@
 
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { getCurrentUserId } from '@/lib/auth'
 import { AcademicPerformanceIntegration } from '@/subsystems/behavioral-analytics/academic-performance-integration'
 
 /**
@@ -23,10 +24,17 @@ const QuerySchema = z.object({
     .string()
     .optional()
     .transform((val) => (val ? parseInt(val, 10) : 12))
-    .refine((val) => val >= 8 && val <= 52, {
+    .refine((val) => !Number.isNaN(val) && val >= 8 && val <= 52, {
       message: 'weeks must be between 8 and 52',
     }),
   metric: z.enum(['behavioral', 'mission']).optional().default('behavioral'),
+  userId: z
+    .string()
+    .optional()
+    .transform((val) => (val ? val.trim() : undefined))
+    .refine((val) => val === undefined || val.length > 0, {
+      message: 'userId cannot be empty',
+    }),
 })
 
 /**
@@ -79,6 +87,7 @@ function successResponse(data: CorrelationResponse) {
  * Query Parameters:
  * - weeks: Number of weeks to analyze (8-52, default 12)
  * - metric: Type of metric to correlate ("behavioral" | "mission", default "behavioral")
+ * - userId: Optional user identifier (defaults to current authenticated user)
  *
  * Response:
  * {
@@ -103,6 +112,7 @@ export async function GET(request: NextRequest) {
     const queryParams = {
       weeks: searchParams.get('weeks'),
       metric: searchParams.get('metric'),
+      userId: searchParams.get('userId'),
     }
 
     const validatedParams = QuerySchema.safeParse(queryParams)
@@ -115,10 +125,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const { weeks, metric } = validatedParams.data
+    const { weeks, metric, userId: queryUserId } = validatedParams.data
 
-    // Hardcoded user ID for MVP (single user)
-    const userId = 'kevy@americano.dev'
+    const userId = queryUserId ?? (await getCurrentUserId())
 
     // Calculate correlation using AcademicPerformanceIntegration subsystem
     let correlationResult

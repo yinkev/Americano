@@ -43,7 +43,7 @@ interface CorrelationData {
 }
 
 interface PerformanceCorrelationChartProps {
-  userId: string
+  userId: string | null
   isLoading?: boolean
 }
 
@@ -122,12 +122,21 @@ export function PerformanceCorrelationChart({
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!userId) {
+      setCorrelations([])
+      setError(null)
+      setIsLoading(false)
+      return
+    }
+
+    let isMounted = true
+
     const fetchCorrelations = async () => {
       try {
         setIsLoading(true)
         setError(null)
         const response = await fetch(
-          `/api/analytics/behavioral-insights/correlation?userId=${userId}`,
+          `/api/analytics/behavioral-insights/correlation?userId=${encodeURIComponent(userId)}`,
         )
 
         if (!response.ok) {
@@ -135,19 +144,30 @@ export function PerformanceCorrelationChart({
         }
 
         const data = await response.json()
+        if (!isMounted) {
+          return
+        }
+
         if (data.success && data.correlations) {
           setCorrelations(data.correlations)
         } else {
           throw new Error('Invalid response format')
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        if (isMounted) {
+          setError(err instanceof Error ? err.message : 'Unknown error')
+        }
       } finally {
-        setIsLoading(false)
+        if (isMounted) {
+          setIsLoading(false)
+        }
       }
     }
 
     fetchCorrelations()
+    return () => {
+      isMounted = false
+    }
   }, [userId])
 
   // Empty state
