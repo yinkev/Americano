@@ -13,6 +13,7 @@
 
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { getCurrentUserId } from '@/lib/auth'
 import { AcademicPerformanceIntegration } from '@/subsystems/behavioral-analytics/academic-performance-integration'
 
 /**
@@ -27,6 +28,11 @@ const QuerySchema = z.object({
       message: 'weeks must be between 8 and 52',
     }),
   metric: z.enum(['behavioral', 'mission']).optional().default('behavioral'),
+  userId: z
+    .string()
+    .trim()
+    .min(1, { message: 'userId must be a non-empty string' })
+    .optional(),
 })
 
 /**
@@ -98,11 +104,14 @@ function successResponse(data: CorrelationResponse) {
  */
 export async function GET(request: NextRequest) {
   try {
+    const sessionUserId = await getCurrentUserId()
+
     // Parse and validate query parameters
     const { searchParams } = new URL(request.url)
     const queryParams = {
       weeks: searchParams.get('weeks'),
       metric: searchParams.get('metric'),
+      userId: searchParams.get('userId') ?? undefined,
     }
 
     const validatedParams = QuerySchema.safeParse(queryParams)
@@ -115,10 +124,24 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const { weeks, metric } = validatedParams.data
+    const { weeks, metric, userId: requestedUserId } = validatedParams.data
 
-    // Hardcoded user ID for MVP (single user)
-    const userId = 'kevy@americano.dev'
+    const authorizedUserIds = new Set<string>([sessionUserId])
+
+    const configuredAuthorized = (process.env.ANALYTICS_AUTHORIZED_ACCOUNT_IDS || '')
+      .split(',')
+      .map((id) => id.trim())
+      .filter((id) => id.length > 0)
+
+    for (const authorizedId of configuredAuthorized) {
+      authorizedUserIds.add(authorizedId)
+    }
+
+    if (requestedUserId && !authorizedUserIds.has(requestedUserId)) {
+      return errorResponse('You are not authorized to access analytics for this user.', 403)
+    }
+
+    const userId = requestedUserId ?? sessionUserId
 
     // Calculate correlation using AcademicPerformanceIntegration subsystem
     let correlationResult
