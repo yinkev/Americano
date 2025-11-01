@@ -43,6 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { assertApiSuccess, type ApiResponse } from '@/features/analytics/api/assert-api-success'
 import { colors, typography } from '@/lib/design-tokens'
 
 type GoalType =
@@ -60,9 +61,9 @@ interface BehavioralGoal {
   goalType: GoalType
   targetValue: number
   currentValue: number
-  deadline: Date
+  deadline: string
   status: GoalStatus
-  createdAt: Date
+  createdAt: string
 }
 
 interface BehavioralGoalsSectionProps {
@@ -165,12 +166,13 @@ export function BehavioralGoalsSection({
           throw new Error('Failed to fetch goals')
         }
 
-        const data = await response.json()
-        if (data.success && data.goals) {
-          setGoals(data.goals)
-        } else {
-          throw new Error('Invalid response format')
-        }
+        const {
+          success,
+          data,
+          message,
+        } = (await response.json()) as ApiResponse<{ goals: BehavioralGoal[] }>
+        assertApiSuccess({ success, data, message }, 'Failed to fetch goals')
+        setGoals(data.goals)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {
@@ -201,15 +203,18 @@ export function BehavioralGoalsSection({
         throw new Error('Failed to create goal')
       }
 
-      const data = await response.json()
-      if (data.success && data.goal) {
-        setGoals([...goals, data.goal])
-        setDialogOpen(false)
-        // Reset form
-        setGoalType('INCREASE_RETENTION')
-        setTargetValue('80')
-        setDeadline(format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'))
-      }
+      const {
+        success,
+        data,
+        message,
+      } = (await response.json()) as ApiResponse<{ goal: BehavioralGoal }>
+      assertApiSuccess({ success, data, message }, 'Failed to create goal')
+      setGoals((prev) => [...prev, data.goal])
+      setDialogOpen(false)
+      // Reset form
+      setGoalType('INCREASE_RETENTION')
+      setTargetValue('80')
+      setDeadline(format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'))
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to create goal')
     } finally {

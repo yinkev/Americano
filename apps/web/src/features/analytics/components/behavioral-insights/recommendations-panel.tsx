@@ -25,6 +25,7 @@ import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { assertApiSuccess, type ApiResponse } from '@/features/analytics/api/assert-api-success'
 import { colors, typography } from '@/lib/design-tokens'
 
 type RecommendationCategory = 'TIMING' | 'DURATION' | 'CONTENT' | 'DIFFICULTY' | 'STRATEGY'
@@ -39,7 +40,7 @@ interface Recommendation {
   confidence: number
   evidence: string[]
   actionable: boolean
-  appliedAt: Date | null
+  appliedAt: string | null
 }
 
 interface RecommendationsPanelProps {
@@ -240,14 +241,15 @@ export function RecommendationsPanel({
           throw new Error('Failed to fetch recommendations')
         }
 
-        const data = await response.json()
-        if (data.success && data.recommendations) {
-          // Sort by priority (highest first)
-          const sorted = [...data.recommendations].sort((a, b) => b.priority - a.priority)
-          setRecommendations(sorted.slice(0, 5)) // Top 5
-        } else {
-          throw new Error('Invalid response format')
-        }
+        const {
+          success,
+          data,
+          message,
+        } = (await response.json()) as ApiResponse<{ recommendations: Recommendation[] }>
+        assertApiSuccess({ success, data, message }, 'Failed to fetch recommendations')
+        // Sort by priority (highest first)
+        const sorted = [...data.recommendations].sort((a, b) => b.priority - a.priority)
+        setRecommendations(sorted.slice(0, 5)) // Top 5
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {
@@ -276,13 +278,22 @@ export function RecommendationsPanel({
         throw new Error('Failed to apply recommendation')
       }
 
-      const data = await response.json()
-      if (data.success) {
-        // Update local state
-        setRecommendations(
-          recommendations.map((rec) => (rec.id === id ? { ...rec, appliedAt: new Date() } : rec)),
-        )
-      }
+      const {
+        success,
+        data,
+        message,
+      } = (await response.json()) as ApiResponse<{ recommendation?: Recommendation }>
+      assertApiSuccess({ success, data, message }, 'Failed to apply recommendation')
+      // Update local state
+      setRecommendations((prev) =>
+        prev.map((rec) => {
+          if (rec.id !== id) return rec
+          if (data.recommendation) {
+            return { ...rec, ...data.recommendation }
+          }
+          return { ...rec, appliedAt: new Date().toISOString() }
+        }),
+      )
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to apply recommendation')
     } finally {
