@@ -43,7 +43,7 @@ interface Recommendation {
 }
 
 interface RecommendationsPanelProps {
-  userId: string
+  userId: string | null
   isLoading?: boolean
 }
 
@@ -228,12 +228,21 @@ export function RecommendationsPanel({
   const [applyingId, setApplyingId] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!userId) {
+      setRecommendations([])
+      setError(null)
+      setIsLoading(false)
+      return
+    }
+
+    let isMounted = true
+
     const fetchRecommendations = async () => {
       try {
         setIsLoading(true)
         setError(null)
         const response = await fetch(
-          `/api/analytics/behavioral-insights/recommendations?userId=${userId}`,
+          `/api/analytics/behavioral-insights/recommendations?userId=${encodeURIComponent(userId)}`,
         )
 
         if (!response.ok) {
@@ -241,6 +250,10 @@ export function RecommendationsPanel({
         }
 
         const data = await response.json()
+        if (!isMounted) {
+          return
+        }
+
         if (data.success && data.recommendations) {
           // Sort by priority (highest first)
           const sorted = [...data.recommendations].sort((a, b) => b.priority - a.priority)
@@ -249,16 +262,27 @@ export function RecommendationsPanel({
           throw new Error('Invalid response format')
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        if (isMounted) {
+          setError(err instanceof Error ? err.message : 'Unknown error')
+        }
       } finally {
-        setIsLoading(false)
+        if (isMounted) {
+          setIsLoading(false)
+        }
       }
     }
 
     fetchRecommendations()
+    return () => {
+      isMounted = false
+    }
   }, [userId])
 
   const handleApply = async (id: string) => {
+    if (!userId) {
+      setError('User is not available for applying recommendations')
+      return
+    }
     try {
       setApplyingId(id)
       const response = await fetch(
