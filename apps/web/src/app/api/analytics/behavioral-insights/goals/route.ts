@@ -11,6 +11,7 @@ import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { ApiError } from '@/lib/api-error'
 import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
+import { getCurrentUserId } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { GoalManager } from '@/subsystems/behavioral-analytics/goal-manager'
 
@@ -49,13 +50,16 @@ const CreateGoalSchema = z.object({
  * - goals: array of BehavioralGoal objects
  */
 export const GET = withErrorHandler(async (request: NextRequest) => {
-  // Extract and validate userId
+  // Extract optional userId and validate against authenticated user
   const searchParams = request.nextUrl.searchParams
-  const userId = searchParams.get('userId')
+  const requestedUserId = searchParams.get('userId') ?? undefined
+  const sessionUserId = await getCurrentUserId()
 
-  if (!userId) {
-    throw ApiError.badRequest('userId query parameter is required')
+  if (requestedUserId && requestedUserId !== sessionUserId) {
+    throw ApiError.forbidden('Forbidden: userId does not match the authenticated user')
   }
+
+  const userId = requestedUserId ?? sessionUserId
 
   // Query behavioral goals
   const goals = await prisma.behavioralGoal.findMany({
@@ -95,6 +99,12 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   // Parse and validate request body
   const body = await request.json()
   const validatedBody = CreateGoalSchema.parse(body)
+
+  const sessionUserId = await getCurrentUserId()
+
+  if (validatedBody.userId !== sessionUserId) {
+    throw ApiError.forbidden('Forbidden: userId does not match the authenticated user')
+  }
 
   // Validate deadline is not in the past
   if (validatedBody.deadline < new Date()) {

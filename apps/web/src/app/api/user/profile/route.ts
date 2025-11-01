@@ -5,6 +5,7 @@
 import type { NextRequest } from 'next/server'
 import { ApiError, withErrorHandler } from '@/lib/api-error'
 import { errorResponse, successResponse } from '@/lib/api-response'
+import { getCurrentUserId } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { updateUserProfileSchema, validateRequest } from '@/lib/validation'
 
@@ -15,9 +16,10 @@ import { updateUserProfileSchema, validateRequest } from '@/lib/validation'
  * @returns User profile data
  */
 export const GET = withErrorHandler(async (request: NextRequest) => {
-  // For MVP: Use hardcoded Kevy user (auth deferred)
-  const user = await prisma.user.findFirst({
-    where: { email: 'kevy@americano.dev' },
+  const userId = await getCurrentUserId()
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
     select: {
       id: true,
       email: true,
@@ -63,9 +65,10 @@ export const PATCH = withErrorHandler(async (request: NextRequest) => {
   // Validate request body
   const data = await validateRequest(request, updateUserProfileSchema)
 
-  // For MVP: Use hardcoded Kevy user (auth deferred)
-  const existingUser = await prisma.user.findFirst({
-    where: { email: 'kevy@americano.dev' },
+  const userId = await getCurrentUserId()
+
+  const existingUser = await prisma.user.findUnique({
+    where: { id: userId },
   })
 
   if (!existingUser) {

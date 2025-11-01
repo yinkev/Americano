@@ -43,7 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { assertApiSuccess, type ApiResponse } from '@/features/analytics/api/assert-api-success'
+import { extractApiData, type ApiResponse } from '@/features/analytics/api/assert-api-success'
 import { colors, typography } from '@/lib/design-tokens'
 
 type GoalType =
@@ -177,16 +177,19 @@ export function BehavioralGoalsSection({
           throw new Error('Failed to fetch goals')
         }
 
-        const data = await response.json()
+        const json = (await response.json()) as ApiResponse<{
+          goals: BehavioralGoal[]
+          count: number
+        }>
         if (!isMounted) {
           return
         }
 
-        if (data.success && data.goals) {
-          setGoals(data.goals)
-        } else {
+        const data = extractApiData(json, 'Failed to fetch goals')
+        if (!Array.isArray(data.goals)) {
           throw new Error('Invalid response format')
         }
+        setGoals(data.goals)
       } catch (err) {
         if (isMounted) {
           setError(err instanceof Error ? err.message : 'Unknown error')
@@ -228,12 +231,8 @@ export function BehavioralGoalsSection({
         throw new Error('Failed to create goal')
       }
 
-      const {
-        success,
-        data,
-        message,
-      } = (await response.json()) as ApiResponse<{ goal: BehavioralGoal }>
-      assertApiSuccess({ success, data, message }, 'Failed to create goal')
+      const json = (await response.json()) as ApiResponse<{ goal: BehavioralGoal }>
+      const data = extractApiData(json, 'Failed to create goal')
       setGoals((prev) => [...prev, data.goal])
       setDialogOpen(false)
       // Reset form

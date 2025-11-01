@@ -10,12 +10,13 @@
 import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
+import { getCurrentUserId } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import type { LearningStyleProfile, PersonalizedForgettingCurve } from '@/types/prisma-json'
 
 // Query parameter validation
 const ArticleQuerySchema = z.object({
-  userId: z.string().min(1, 'userId is required'),
+  userId: z.string().min(1).optional(),
 })
 
 /**
@@ -566,10 +567,19 @@ export const GET = withErrorHandler(
     // Extract and validate query parameters
     const searchParams = request.nextUrl.searchParams
     const queryParams = ArticleQuerySchema.parse({
-      userId: searchParams.get('userId') || '',
+      userId: searchParams.get('userId') || undefined,
     })
 
-    const { userId } = queryParams
+    const sessionUserId = await getCurrentUserId()
+
+    if (queryParams.userId && queryParams.userId !== sessionUserId) {
+      return Response.json(
+        errorResponse('Forbidden: userId does not match the authenticated user', 'FORBIDDEN'),
+        { status: 403 },
+      )
+    }
+
+    const userId = queryParams.userId ?? sessionUserId
 
     // Fetch article by slug (articleId is the slug)
     const article = await prisma.learningArticle.findUnique({

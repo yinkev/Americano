@@ -10,6 +10,7 @@ import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 import type { Prisma } from '@/generated/prisma'
 import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
+import { getCurrentUserId } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { RecommendationsEngine } from '@/subsystems/behavioral-analytics/recommendations-engine'
 import type {
@@ -49,6 +50,8 @@ export const POST = withErrorHandler(
     const body = await request.json()
     const validatedBody = ApplyRecommendationSchema.parse(body)
 
+    const sessionUserId = await getCurrentUserId()
+
     // Fetch recommendation
     const recommendation = await prisma.recommendation.findUnique({
       where: { id },
@@ -56,6 +59,12 @@ export const POST = withErrorHandler(
 
     if (!recommendation) {
       return Response.json(errorResponse('Recommendation not found', 'NOT_FOUND'), { status: 404 })
+    }
+
+    if (recommendation.userId !== sessionUserId) {
+      return Response.json(errorResponse('Forbidden: Recommendation does not belong to user', 'FORBIDDEN'), {
+        status: 403,
+      })
     }
 
     if (recommendation.appliedAt) {

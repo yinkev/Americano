@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { assertApiSuccess, type ApiResponse } from '@/features/analytics/api/assert-api-success'
+import { extractApiData, type ApiResponse } from '@/features/analytics/api/assert-api-success'
 import { colors, typography } from '@/lib/design-tokens'
 
 type ArticleCategory =
@@ -153,16 +153,16 @@ export function LearningArticleReader({
           throw new Error('Failed to fetch article')
         }
 
-        const data = await response.json()
+        const json = (await response.json()) as ApiResponse<{ article: LearningArticle }>
         if (!isMounted) {
           return
         }
 
-        if (data.success && data.article) {
-          setArticle(data.article)
-        } else {
+        const data = extractApiData(json, 'Failed to fetch article')
+        if (!data.article) {
           throw new Error('Invalid response format')
         }
+        setArticle(data.article)
       } catch (err) {
         if (isMounted) {
           setError(err instanceof Error ? err.message : 'Unknown error')
