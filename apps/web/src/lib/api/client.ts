@@ -1,5 +1,10 @@
 /* API client (timeouts/abort, request id). Safe to merge. */
 import { ApiError, toApiError } from './errors'
+import {
+  ANALYTICS_MOCK_METADATA_HEADER,
+  ANALYTICS_MOCK_METADATA_SYMBOL,
+  type AnalyticsMockMetadata,
+} from '../mocks/analytics'
 
 // Prefer NEXT_PUBLIC_API_BASE_URL; fall back to legacy NEXT_PUBLIC_API_URL; default to '/api'
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || '/api'
@@ -8,6 +13,35 @@ export type JsonValue = unknown
 export type Query = Record<string, string | number | boolean | null | undefined>
 
 const DEFAULT_TIMEOUT_MS = 10_000
+
+function attachAnalyticsMetadata(target: unknown, headerValue: string | null) {
+  if (!headerValue || !target || typeof target !== 'object') {
+    return
+  }
+
+  let metadata: AnalyticsMockMetadata | undefined
+  try {
+    metadata = JSON.parse(headerValue) as AnalyticsMockMetadata
+  } catch (error) {
+    console.warn('[api] Unable to parse analytics metadata header', error)
+    return
+  }
+
+  if (!metadata) {
+    return
+  }
+
+  try {
+    Object.defineProperty(target, ANALYTICS_MOCK_METADATA_SYMBOL, {
+      value: metadata,
+      configurable: true,
+      enumerable: false,
+      writable: false,
+    })
+  } catch (error) {
+    console.warn('[api] Unable to attach analytics metadata', error)
+  }
+}
 
 function randomId(bytes = 8) {
   if (typeof crypto !== 'undefined' && 'getRandomValues' in crypto) {
@@ -66,7 +100,11 @@ export async function request<T = JsonValue>(
     if (!resp.ok) throw await toApiError(resp, { url, method })
     if (resp.status === 204) return undefined as T
     const ct = resp.headers.get('Content-Type') || ''
-    if (ct.includes('application/json')) return (await resp.json()) as T
+    if (ct.includes('application/json')) {
+      const data = (await resp.json()) as T
+      attachAnalyticsMetadata(data, resp.headers.get(ANALYTICS_MOCK_METADATA_HEADER))
+      return data
+    }
     return (await resp.text()) as T
   } catch (err: any) {
     if (err?.name === 'AbortError' || err instanceof TypeError) {

@@ -67,9 +67,29 @@ import {
   moderateQueryOptions,
   stableQueryOptions,
 } from './utils'
+import {
+  ANALYTICS_MOCK_METADATA_SYMBOL,
+  type AnalyticsMockMetadata,
+} from '@/lib/mocks/analytics'
 
 type MockableData = Record<string, unknown> | any[]
 type LongitudinalDimension = 'comprehension' | 'reasoning' | 'calibration' | 'mastery'
+
+export function resolveAnalyticsSource(data: MockableData | null | undefined): DataSource {
+  if (!data || typeof data !== 'object') {
+    return 'api'
+  }
+
+  const metadata = Reflect.get(data, ANALYTICS_MOCK_METADATA_SYMBOL) as
+    | AnalyticsMockMetadata
+    | undefined
+
+  if (metadata?.source === 'mock') {
+    return 'mock'
+  }
+
+  return 'api'
+}
 
 async function fetchWithMock<T extends MockableData>(
   request: () => Promise<T>,
@@ -78,7 +98,7 @@ async function fetchWithMock<T extends MockableData>(
 ): Promise<SourceTagged<T>> {
   try {
     const data = await request()
-    return attachSource(data, 'api')
+    return attachSource(data, resolveAnalyticsSource(data))
   } catch (error) {
     console.warn(`[analytics] ${label} request failed – using mock data`, error)
     return mock()
@@ -95,7 +115,7 @@ async function fetchNullableWithMock<T extends Record<string, unknown>>(
     if (!data) {
       return null
     }
-    return attachSource(data, 'api')
+    return attachSource(data, resolveAnalyticsSource(data))
   } catch (error) {
     console.warn(`[analytics] ${label} request failed – using mock data`, error)
     return mock()

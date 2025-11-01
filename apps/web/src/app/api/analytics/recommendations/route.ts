@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { withErrorHandler } from '@/lib/api-response'
 import { resolveAnalyticsProvider } from '@/lib/analytics-provider'
-import { getMockRecommendationData } from '@/lib/mocks/analytics'
+import { getMockRecommendationData, respondWithMock } from '@/lib/mocks/analytics'
 import { prisma } from '@/lib/db'
 
 type Period = '7d' | '30d' | '90d'
@@ -100,12 +100,15 @@ async function handleRequest(request: NextRequest, input: RecommendationInput) {
   const provider = resolveAnalyticsProvider(request)
 
   if (provider === 'mock') {
-    return Response.json(getMockRecommendationData(input.userId))
+    return respondWithMock(getMockRecommendationData(input.userId))
   }
 
   const legacyMetrics = await fetchLegacyMetrics(input.userId, input.period)
-  const mockData = getMockRecommendationData(input.userId)
-  return Response.json({ ...mockData, legacy_metrics: legacyMetrics })
+  const mockEnvelope = getMockRecommendationData(input.userId)
+  return respondWithMock({
+    metadata: mockEnvelope.metadata,
+    payload: { ...mockEnvelope.payload, legacy_metrics: legacyMetrics },
+  })
 }
 
 export const POST = withErrorHandler(async (request: NextRequest) => {

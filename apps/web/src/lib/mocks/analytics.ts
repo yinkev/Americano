@@ -68,13 +68,13 @@ import type {
   Calibration,
   StruggleReductionResponse,
   TimelinePoint,
-} from '../../types/api-generated';
+} from '../../types/api-generated'
 import {
   ANALYTICS_MOCK_METADATA,
   getAnalyticsMock,
   type AnalyticsMockKey,
   type AnalyticsMockMetadata,
-} from '@americano/api-client/mocks/analytics';
+} from '@americano/api-client/mocks/analytics'
 
 type AnalyticsMockRegistry = {
   FailurePattern: FailurePattern;
@@ -148,10 +148,13 @@ type AnalyticsMockRegistry = {
   TimelinePoint: TimelinePoint;
 };
 
-type MetadataEnvelope<T> = {
+export type MetadataEnvelope<T> = {
   metadata: AnalyticsMockMetadata;
   payload: T;
-};
+}
+
+export const ANALYTICS_MOCK_METADATA_HEADER = 'x-analytics-metadata'
+export const ANALYTICS_MOCK_METADATA_SYMBOL = Symbol.for('americano.analytics.mockMetadata')
 
 const METADATA = ANALYTICS_MOCK_METADATA;
 
@@ -189,7 +192,7 @@ const mergePayload = <T>(base: T, overrides?: Partial<T>): T => {
 const withMetadata = <T>(payload: T): MetadataEnvelope<T> => ({
   metadata: METADATA,
   payload,
-});
+})
 
 export function getMockAnalyticsPayload<K extends keyof AnalyticsMockRegistry>(
   key: K,
@@ -201,10 +204,21 @@ export function getMockAnalyticsPayload<K extends keyof AnalyticsMockRegistry>(
 }
 
 export const getMockDailyInsight = (userId?: string) =>
-  getMockAnalyticsPayload('DailyInsight', userId ? { user_id: userId } : undefined);
+  getMockAnalyticsPayload('DailyInsight', userId ? { user_id: userId } : undefined)
+
+export const getMockWeeklySummary = (userId?: string) => {
+  const envelope = getMockRecommendationData(userId)
+  const objectives: WeeklyTopObjective[] = Array.isArray(envelope.payload.weekly_top3)
+    ? envelope.payload.weekly_top3.map((objective) => ({ ...objective }))
+    : []
+  return {
+    metadata: envelope.metadata,
+    payload: objectives,
+  }
+}
 
 export const getMockRecommendationData = (userId?: string) =>
-  getMockAnalyticsPayload('RecommendationData', userId ? { user_id: userId } : undefined);
+  getMockAnalyticsPayload('RecommendationData', userId ? { user_id: userId } : undefined)
 
 export const getMockUnderstandingPrediction = (userId?: string) =>
   getMockAnalyticsPayload('UnderstandingPrediction', userId ? { user_id: userId } : undefined);
@@ -232,7 +246,13 @@ export const getMockPeerBenchmark = (userId?: string, objectiveId?: string | nul
 };
 
 export const getMockLongitudinalMetric = (userId?: string) =>
-  getMockAnalyticsPayload('LongitudinalMetric', userId ? { user_id: userId } : undefined);
+  getMockAnalyticsPayload('LongitudinalMetric', userId ? { user_id: userId } : undefined)
+
+export const getMockComprehensionPattern = (userId?: string) =>
+  getMockAnalyticsPayload('ComprehensionPattern', userId ? { user_id: userId } : undefined)
+
+export const getMockCorrelationMatrix = (userId?: string) =>
+  getMockAnalyticsPayload('CorrelationMatrix', userId ? { user_id: userId } : undefined)
 
 export const getMockPredictionResponse = () => getMockAnalyticsPayload('PredictionResponse');
 
@@ -257,4 +277,24 @@ export const getMockRelativeStrength = () => getMockAnalyticsPayload('RelativeSt
 
 export const getMockRelativeWeakness = () => getMockAnalyticsPayload('RelativeWeakness');
 
-export type { AnalyticsMockRegistry, MetadataEnvelope };
+export function respondWithMock<T>(
+  envelope: MetadataEnvelope<T>,
+  init?: ResponseInit,
+): Response {
+  const headers = new Headers(init?.headers)
+  headers.set(ANALYTICS_MOCK_METADATA_HEADER, JSON.stringify(envelope.metadata))
+  return Response.json(envelope.payload, {
+    ...init,
+    headers,
+  })
+}
+
+export function respondWithMockPayload<T>(
+  payload: T,
+  metadata: AnalyticsMockMetadata,
+  init?: ResponseInit,
+): Response {
+  return respondWithMock({ payload, metadata }, init)
+}
+
+export type { AnalyticsMockRegistry, MetadataEnvelope }

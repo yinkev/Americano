@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { ApiError, ErrorCodes, withErrorHandler } from '@/lib/api-response'
 import { resolveAnalyticsProvider } from '@/lib/analytics-provider'
-import { getMockPeerBenchmark } from '@/lib/mocks/analytics'
+import { getMockPeerBenchmark, respondWithMock } from '@/lib/mocks/analytics'
 
 const PeerBenchmarkSchema = z.object({
   userId: z.string().min(1, 'user_id is required'),
@@ -31,7 +31,7 @@ function buildResponse(input: PeerBenchmarkInput, request: NextRequest) {
   const provider = resolveAnalyticsProvider(request)
 
   if (provider === 'mock') {
-    return Response.json(getMockPeerBenchmark(input.userId, input.objectiveId ?? undefined))
+    return respondWithMock(getMockPeerBenchmark(input.userId, input.objectiveId ?? undefined))
   }
 
   throw new ApiError('Legacy analytics provider is not implemented for peer benchmarks.', 501, ErrorCodes.INTERNAL_ERROR)

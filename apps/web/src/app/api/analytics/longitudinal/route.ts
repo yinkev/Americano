@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { ApiError, ErrorCodes, withErrorHandler } from '@/lib/api-response'
 import { resolveAnalyticsProvider } from '@/lib/analytics-provider'
-import { getMockLongitudinalMetric } from '@/lib/mocks/analytics'
+import { getMockLongitudinalMetric, respondWithMock } from '@/lib/mocks/analytics'
 
 const LongitudinalSchema = z.object({
   userId: z.string().min(1, 'user_id is required'),
@@ -39,7 +39,7 @@ function buildResponse(input: LongitudinalInput, request: NextRequest) {
   const provider = resolveAnalyticsProvider(request)
 
   if (provider === 'mock') {
-    return Response.json(getMockLongitudinalMetric(input.userId))
+    return respondWithMock(getMockLongitudinalMetric(input.userId))
   }
 
   throw new ApiError('Legacy analytics provider is not implemented for longitudinal analytics.', 501, ErrorCodes.INTERNAL_ERROR)
