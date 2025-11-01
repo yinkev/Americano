@@ -8,6 +8,13 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server'
+import { resolveAnalyticsProvider } from '@/lib/analytics-provider'
+import {
+  getMockModelPerformanceResponse,
+  respondWithMock,
+  respondWithMockPayload,
+  type MetadataEnvelope,
+} from '@/lib/mocks/analytics'
 
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000'
 
@@ -19,6 +26,13 @@ const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000'
  * - userId (default: kevy@americano.dev)
  */
 export async function GET(req: NextRequest) {
+  const provider = resolveAnalyticsProvider(req)
+  const mockEnvelope = getMockModelPerformanceResponse()
+
+  if (provider === 'mock') {
+    return respondWithMock(mockEnvelope)
+  }
+
   try {
     const searchParams = req.nextUrl.searchParams
     const queryString = searchParams.toString()
@@ -35,6 +49,11 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await response.json()
+    const maybeMockResponse = respondIfMock(data, mockEnvelope.metadata)
+    if (maybeMockResponse) {
+      return maybeMockResponse
+    }
+
     return NextResponse.json(data)
   } catch (error) {
     console.error('ML service error:', error)
@@ -47,4 +66,25 @@ export async function GET(req: NextRequest) {
       { status: 503 },
     )
   }
+}
+
+type MockMetadata = MetadataEnvelope<unknown>['metadata']
+
+function respondIfMock(data: unknown, fallbackMetadata: MockMetadata): Response | null {
+  if (
+    data &&
+    typeof data === 'object' &&
+    'dataSource' in data &&
+    (data as { dataSource?: unknown }).dataSource === 'mock'
+  ) {
+    const mockData = data as {
+      metadata?: MockMetadata
+      payload?: unknown
+    }
+    const metadata = mockData.metadata ?? fallbackMetadata
+    const payload = mockData.payload ?? data
+    return respondWithMockPayload(payload, metadata)
+  }
+
+  return null
 }

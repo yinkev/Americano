@@ -6,13 +6,77 @@
  */
 
 import { NextRequest } from 'next/server'
+import { http, HttpResponse } from 'msw'
 import { POST } from '@/app/api/analytics/predictions/[id]/feedback/route'
-import { create503Handler, createErrorHandler, server } from '../../setup'
+import { getMockAnalyticsPayload } from '@/lib/mocks/analytics'
+import { create503Handler, createErrorHandler, server, setupMSW } from '../../setup'
+
+setupMSW()
+
+const ANALYTICS_PROVIDER_HEADER = 'x-analytics-provider'
+const METADATA_HEADER = 'x-analytics-metadata'
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL ?? 'http://localhost:8000'
+
+function createLegacyRequest(url: string, init?: RequestInit) {
+  const headers = new Headers(init?.headers ?? {})
+  headers.set(ANALYTICS_PROVIDER_HEADER, 'legacy')
+  return new NextRequest(url, { ...init, headers })
+}
 
 describe('POST /api/analytics/predictions/[id]/feedback', () => {
+  describe('Metadata envelopes', () => {
+    it('returns mock feedback envelope with metadata header when provider is mock', async () => {
+      const envelope = getMockAnalyticsPayload('FeedbackResponse')
+      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/pred-1/feedback', {
+        method: 'POST',
+        headers: {
+          [ANALYTICS_PROVIDER_HEADER]: 'mock',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ actualStruggle: true, feedbackType: 'HELPFUL' }),
+      })
+
+      const response = await POST(request, { params: Promise.resolve({ id: 'pred-1' }) })
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+
+    it('attaches metadata header when legacy provider receives mock feedback payload', async () => {
+      const envelope = getMockAnalyticsPayload('FeedbackResponse')
+      server.use(
+        http.post(`${ML_SERVICE_URL}/predictions/:id/feedback`, async ({ params }) =>
+          HttpResponse.json({
+            dataSource: 'mock',
+            metadata: envelope.metadata,
+            payload: envelope.payload,
+            id: params.id,
+          }),
+        ),
+      )
+
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/pred-1/feedback', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ actualStruggle: true, feedbackType: 'HELPFUL' }),
+      })
+
+      const response = await POST(request, { params: Promise.resolve({ id: 'pred-1' }) })
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+  })
+
   describe('Success Cases', () => {
     it('should submit prediction feedback successfully', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions/pred-1/feedback',
         {
           method: 'POST',
@@ -35,7 +99,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
     })
 
     it('should handle feedback without comments', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions/pred-2/feedback',
         {
           method: 'POST',
@@ -55,7 +119,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
     })
 
     it('should handle inaccurate prediction feedback', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions/pred-3/feedback',
         {
           method: 'POST',
@@ -81,7 +145,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
         createErrorHandler('post', '/predictions/invalid-id/feedback', 404, 'Prediction not found'),
       )
 
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions/invalid-id/feedback',
         {
           method: 'POST',
@@ -104,7 +168,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
         createErrorHandler('post', '/predictions/pred-1/feedback', 400, 'Invalid feedback type'),
       )
 
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions/pred-1/feedback',
         {
           method: 'POST',
@@ -132,7 +196,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
         ),
       )
 
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions/pred-1/feedback',
         {
           method: 'POST',
@@ -153,7 +217,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
     it('should handle 503 service unavailable', async () => {
       server.use(create503Handler('post', '/predictions/pred-1/feedback'))
 
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions/pred-1/feedback',
         {
           method: 'POST',
@@ -175,7 +239,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
       const originalEnv = process.env.ML_SERVICE_URL
       process.env.ML_SERVICE_URL = 'http://invalid-host-xyz:9999'
 
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions/pred-1/feedback',
         {
           method: 'POST',
@@ -199,7 +263,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
   describe('Edge Cases', () => {
     it('should handle very long comments', async () => {
       const longComment = 'A'.repeat(5000)
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions/pred-1/feedback',
         {
           method: 'POST',
@@ -216,7 +280,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
     })
 
     it('should handle special characters in prediction ID', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions/pred-123-abc/feedback',
         {
           method: 'POST',
@@ -243,7 +307,7 @@ describe('POST /api/analytics/predictions/[id]/feedback', () => {
       ]
 
       for (const feedbackType of feedbackTypes) {
-        const request = new NextRequest(
+        const request = createLegacyRequest(
           'http://localhost:3000/api/analytics/predictions/pred-1/feedback',
           {
             method: 'POST',

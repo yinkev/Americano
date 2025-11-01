@@ -6,16 +6,66 @@
  */
 
 import { NextRequest } from 'next/server'
+import { http, HttpResponse } from 'msw'
 import { GET } from '@/app/api/analytics/predictions/route'
+import { getMockPredictionResponse } from '@/lib/mocks/analytics'
 import { create503Handler, createErrorHandler, server, setupMSW } from '../../setup'
 
 // Initialize MSW server
 setupMSW()
 
+const ANALYTICS_PROVIDER_HEADER = 'x-analytics-provider'
+const METADATA_HEADER = 'x-analytics-metadata'
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL ?? 'http://localhost:8000'
+
+function createLegacyRequest(url: string, init?: RequestInit) {
+  const headers = new Headers(init?.headers ?? {})
+  headers.set(ANALYTICS_PROVIDER_HEADER, 'legacy')
+  return new NextRequest(url, { ...init, headers })
+}
+
 describe('GET /api/analytics/predictions', () => {
+  describe('Metadata envelopes', () => {
+    it('returns mock predictions with metadata header when provider is mock', async () => {
+      const envelope = getMockPredictionResponse()
+      const request = new NextRequest('http://localhost:3000/api/analytics/predictions', {
+        headers: { [ANALYTICS_PROVIDER_HEADER]: 'mock' },
+      })
+
+      const response = await GET(request)
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+
+    it('returns metadata header when legacy provider receives mock data source', async () => {
+      const envelope = getMockPredictionResponse()
+      server.use(
+        http.get(`${ML_SERVICE_URL}/predictions`, () =>
+          HttpResponse.json({
+            dataSource: 'mock',
+            metadata: envelope.metadata,
+            payload: envelope.payload,
+          }),
+        ),
+      )
+
+      const response = await GET(createLegacyRequest('http://localhost:3000/api/analytics/predictions'))
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+  })
+
   describe('Success Cases', () => {
     it('should return predictions with default parameters', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -32,7 +82,7 @@ describe('GET /api/analytics/predictions', () => {
     })
 
     it('should pass query parameters to FastAPI service', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions?userId=test@example.com&status=CONFIRMED&minProbability=0.7',
       )
 
@@ -47,7 +97,7 @@ describe('GET /api/analytics/predictions', () => {
     it('should handle empty results gracefully', async () => {
       server.use(createErrorHandler('get', '/predictions', 200, ''))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions')
 
       const response = await GET(request)
 
@@ -59,7 +109,7 @@ describe('GET /api/analytics/predictions', () => {
     it('should handle 404 from FastAPI service', async () => {
       server.use(createErrorHandler('get', '/predictions', 404, 'Predictions not found'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -71,7 +121,7 @@ describe('GET /api/analytics/predictions', () => {
     it('should handle 500 from FastAPI service', async () => {
       server.use(createErrorHandler('get', '/predictions', 500, 'Internal server error'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -83,7 +133,7 @@ describe('GET /api/analytics/predictions', () => {
     it('should handle 503 service unavailable', async () => {
       server.use(create503Handler('get', '/predictions'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -97,7 +147,7 @@ describe('GET /api/analytics/predictions', () => {
       const originalEnv = process.env.ML_SERVICE_URL
       process.env.ML_SERVICE_URL = 'http://invalid-host-xyz:9999'
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -113,7 +163,7 @@ describe('GET /api/analytics/predictions', () => {
     it('should handle malformed JSON responses', async () => {
       server.use(createErrorHandler('get', '/predictions', 200, 'not-json'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions')
 
       const response = await GET(request)
 
@@ -124,7 +174,7 @@ describe('GET /api/analytics/predictions', () => {
 
   describe('Edge Cases', () => {
     it('should handle special characters in query parameters', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/predictions?userId=test%2Buser%40example.com',
       )
 
@@ -134,7 +184,7 @@ describe('GET /api/analytics/predictions', () => {
     })
 
     it('should handle large result sets', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -145,7 +195,7 @@ describe('GET /api/analytics/predictions', () => {
 
     it('should handle concurrent requests', async () => {
       const requests = Array.from({ length: 5 }, () =>
-        GET(new NextRequest('http://localhost:3000/api/analytics/predictions')),
+        GET(createLegacyRequest('http://localhost:3000/api/analytics/predictions')),
       )
 
       const responses = await Promise.all(requests)

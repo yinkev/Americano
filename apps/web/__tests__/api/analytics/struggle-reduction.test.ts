@@ -6,13 +6,65 @@
  */
 
 import { NextRequest } from 'next/server'
+import { http, HttpResponse } from 'msw'
 import { GET } from '@/app/api/analytics/struggle-reduction/route'
-import { create503Handler, createErrorHandler, server } from '../../setup'
+import { getMockStruggleReductionResponse } from '@/lib/mocks/analytics'
+import { create503Handler, createErrorHandler, server, setupMSW } from '../../setup'
+
+setupMSW()
+
+const ANALYTICS_PROVIDER_HEADER = 'x-analytics-provider'
+const METADATA_HEADER = 'x-analytics-metadata'
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL ?? 'http://localhost:8000'
+
+function createLegacyRequest(url: string, init?: RequestInit) {
+  const headers = new Headers(init?.headers ?? {})
+  headers.set(ANALYTICS_PROVIDER_HEADER, 'legacy')
+  return new NextRequest(url, { ...init, headers })
+}
 
 describe('GET /api/analytics/struggle-reduction', () => {
+  describe('Metadata envelopes', () => {
+    it('returns mock struggle reduction data with metadata header when provider is mock', async () => {
+      const envelope = getMockStruggleReductionResponse()
+      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction', {
+        headers: { [ANALYTICS_PROVIDER_HEADER]: 'mock' },
+      })
+
+      const response = await GET(request)
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+
+    it('attaches metadata header when legacy provider receives mock struggle reduction data', async () => {
+      const envelope = getMockStruggleReductionResponse()
+      server.use(
+        http.get(`${ML_SERVICE_URL}/struggle-reduction`, () =>
+          HttpResponse.json({
+            dataSource: 'mock',
+            metadata: envelope.metadata,
+            payload: envelope.payload,
+          }),
+        ),
+      )
+
+      const response = await GET(createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction'))
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+  })
+
   describe('Success Cases', () => {
     it('should return struggle reduction metrics', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -27,7 +79,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     })
 
     it('should return metrics with correct data types', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -41,7 +93,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     })
 
     it('should include timeline data', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -53,7 +105,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     })
 
     it('should include intervention effectiveness data', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -66,7 +118,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     })
 
     it('should handle period query parameter - week', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/struggle-reduction?period=week',
       )
 
@@ -79,7 +131,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     })
 
     it('should handle period query parameter - month', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/struggle-reduction?period=month',
       )
 
@@ -91,7 +143,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     })
 
     it('should handle period query parameter - all', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/struggle-reduction?period=all',
       )
 
@@ -103,7 +155,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     })
 
     it('should pass userId query parameter', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/struggle-reduction?userId=custom@example.com',
       )
 
@@ -119,7 +171,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     it('should handle 404 user not found', async () => {
       server.use(createErrorHandler('get', '/struggle-reduction', 404, 'User not found'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -138,7 +190,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
         ),
       )
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -152,7 +204,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
         createErrorHandler('get', '/struggle-reduction', 500, 'Failed to calculate reduction'),
       )
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -164,7 +216,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     it('should handle 503 service unavailable', async () => {
       server.use(create503Handler('get', '/struggle-reduction'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -177,7 +229,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
       const originalEnv = process.env.ML_SERVICE_URL
       process.env.ML_SERVICE_URL = 'http://invalid-host-xyz:9999'
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -191,7 +243,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
   describe('Metric Validation', () => {
     it('should return rates within valid ranges (0-1)', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -204,7 +256,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     })
 
     it('should show improvement (current rate less than baseline)', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -215,7 +267,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     })
 
     it('should have timeline with decreasing struggle rates', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -233,7 +285,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     })
 
     it('should have intervention effectiveness within valid range', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')
 
       const response = await GET(request)
       const data = await response.json()
@@ -251,7 +303,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
   describe('Edge Cases', () => {
     it('should handle special characters in userId', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/struggle-reduction?userId=test%2Buser%40example.com',
       )
 
@@ -261,7 +313,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
     })
 
     it('should handle invalid period parameter gracefully', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/struggle-reduction?period=invalid',
       )
 
@@ -273,7 +325,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
 
     it('should handle concurrent requests', async () => {
       const requests = Array.from({ length: 3 }, () =>
-        GET(new NextRequest('http://localhost:3000/api/analytics/struggle-reduction')),
+        GET(createLegacyRequest('http://localhost:3000/api/analytics/struggle-reduction')),
       )
 
       const responses = await Promise.all(requests)
@@ -287,7 +339,7 @@ describe('GET /api/analytics/struggle-reduction', () => {
       const periods = ['week', 'month', 'all']
 
       for (const period of periods) {
-        const request = new NextRequest(
+        const request = createLegacyRequest(
           `http://localhost:3000/api/analytics/struggle-reduction?period=${period}`,
         )
 

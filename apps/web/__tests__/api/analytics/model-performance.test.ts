@@ -6,13 +6,65 @@
  */
 
 import { NextRequest } from 'next/server'
+import { http, HttpResponse } from 'msw'
 import { GET } from '@/app/api/analytics/model-performance/route'
-import { create503Handler, createErrorHandler, server } from '../../setup'
+import { getMockModelPerformanceResponse } from '@/lib/mocks/analytics'
+import { create503Handler, createErrorHandler, server, setupMSW } from '../../setup'
+
+setupMSW()
+
+const ANALYTICS_PROVIDER_HEADER = 'x-analytics-provider'
+const METADATA_HEADER = 'x-analytics-metadata'
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL ?? 'http://localhost:8000'
+
+function createLegacyRequest(url: string, init?: RequestInit) {
+  const headers = new Headers(init?.headers ?? {})
+  headers.set(ANALYTICS_PROVIDER_HEADER, 'legacy')
+  return new NextRequest(url, { ...init, headers })
+}
 
 describe('GET /api/analytics/model-performance', () => {
+  describe('Metadata envelopes', () => {
+    it('returns mock model performance with metadata header when provider is mock', async () => {
+      const envelope = getMockModelPerformanceResponse()
+      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance', {
+        headers: { [ANALYTICS_PROVIDER_HEADER]: 'mock' },
+      })
+
+      const response = await GET(request)
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+
+    it('attaches metadata header when legacy provider receives mock model performance data', async () => {
+      const envelope = getMockModelPerformanceResponse()
+      server.use(
+        http.get(`${ML_SERVICE_URL}/model-performance`, () =>
+          HttpResponse.json({
+            dataSource: 'mock',
+            metadata: envelope.metadata,
+            payload: envelope.payload,
+          }),
+        ),
+      )
+
+      const response = await GET(createLegacyRequest('http://localhost:3000/api/analytics/model-performance'))
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+  })
+
   describe('Success Cases', () => {
     it('should return model performance metrics', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -27,7 +79,7 @@ describe('GET /api/analytics/model-performance', () => {
     })
 
     it('should return metrics with correct data types', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -42,7 +94,7 @@ describe('GET /api/analytics/model-performance', () => {
     })
 
     it('should include trend data', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -55,7 +107,7 @@ describe('GET /api/analytics/model-performance', () => {
     })
 
     it('should include lastUpdated timestamp', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -67,7 +119,7 @@ describe('GET /api/analytics/model-performance', () => {
     })
 
     it('should pass userId query parameter', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/model-performance?userId=custom@example.com',
       )
 
@@ -83,7 +135,7 @@ describe('GET /api/analytics/model-performance', () => {
     it('should handle 404 user not found', async () => {
       server.use(createErrorHandler('get', '/model-performance', 404, 'User not found'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -102,7 +154,7 @@ describe('GET /api/analytics/model-performance', () => {
         ),
       )
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -116,7 +168,7 @@ describe('GET /api/analytics/model-performance', () => {
         createErrorHandler('get', '/model-performance', 500, 'Failed to calculate metrics'),
       )
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -128,7 +180,7 @@ describe('GET /api/analytics/model-performance', () => {
     it('should handle 503 service unavailable', async () => {
       server.use(create503Handler('get', '/model-performance'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -141,7 +193,7 @@ describe('GET /api/analytics/model-performance', () => {
       const originalEnv = process.env.ML_SERVICE_URL
       process.env.ML_SERVICE_URL = 'http://invalid-host-xyz:9999'
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -155,7 +207,7 @@ describe('GET /api/analytics/model-performance', () => {
 
   describe('Metric Validation', () => {
     it('should return metrics within valid ranges (0-1)', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -172,7 +224,7 @@ describe('GET /api/analytics/model-performance', () => {
     })
 
     it('should have positive data points count', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -182,7 +234,7 @@ describe('GET /api/analytics/model-performance', () => {
     })
 
     it('should have trend data with valid dates', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/model-performance')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/model-performance')
 
       const response = await GET(request)
       const data = await response.json()
@@ -198,7 +250,7 @@ describe('GET /api/analytics/model-performance', () => {
 
   describe('Edge Cases', () => {
     it('should handle special characters in userId', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/model-performance?userId=test%2Buser%40example.com',
       )
 
@@ -209,7 +261,7 @@ describe('GET /api/analytics/model-performance', () => {
 
     it('should handle concurrent requests', async () => {
       const requests = Array.from({ length: 5 }, () =>
-        GET(new NextRequest('http://localhost:3000/api/analytics/model-performance')),
+        GET(createLegacyRequest('http://localhost:3000/api/analytics/model-performance')),
       )
 
       const responses = await Promise.all(requests)
