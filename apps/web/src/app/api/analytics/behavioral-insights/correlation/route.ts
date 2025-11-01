@@ -127,7 +127,17 @@ export async function GET(request: NextRequest) {
 
     const { weeks, metric, userId: queryUserId } = validatedParams.data
 
-    const userId = queryUserId ?? (await getCurrentUserId())
+    const sessionUserId = await getCurrentUserId()
+
+    if (!sessionUserId) {
+      return errorResponse('Unable to resolve authenticated user', 401)
+    }
+
+    if (queryUserId && queryUserId !== sessionUserId) {
+      return errorResponse('Forbidden: userId does not match the authenticated user', 403)
+    }
+
+    const userId = sessionUserId
 
     // Calculate correlation using AcademicPerformanceIntegration subsystem
     let correlationResult

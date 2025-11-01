@@ -27,7 +27,9 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
     mockGetCurrentUserId.mockResolvedValue('session-user')
   })
 
-  it('uses the provided userId query parameter when present', async () => {
+  it('allows the caller to specify their own userId', async () => {
+    mockGetCurrentUserId.mockResolvedValueOnce('test-user')
+
     const request = new NextRequest(
       'http://localhost/api/analytics/behavioral-insights/correlation?userId=test-user',
     )
@@ -35,8 +37,8 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
     const response = await GET(request)
     await response.json()
 
+    expect(mockGetCurrentUserId).toHaveBeenCalledTimes(1)
     expect(mockCorrelate).toHaveBeenCalledWith('test-user', 12)
-    expect(mockGetCurrentUserId).not.toHaveBeenCalled()
   })
 
   it('falls back to the current session user when userId is absent', async () => {
@@ -47,6 +49,19 @@ describe('GET /api/analytics/behavioral-insights/correlation', () => {
 
     expect(mockGetCurrentUserId).toHaveBeenCalledTimes(1)
     expect(mockCorrelate).toHaveBeenCalledWith('session-user', 12)
+  })
+
+  it('rejects requests that attempt to impersonate another user', async () => {
+    const request = new NextRequest(
+      'http://localhost/api/analytics/behavioral-insights/correlation?userId=someone-else',
+    )
+
+    const response = await GET(request)
+    const body = await response.json()
+
+    expect(response.status).toBe(403)
+    expect(body.success).toBe(false)
+    expect(mockCorrelate).not.toHaveBeenCalled()
   })
 
   it('returns a validation error when userId is empty', async () => {
