@@ -35,15 +35,13 @@ import {
   PerformanceCorrelationChart,
   RecommendationsPanel,
 } from '@/features/analytics/components/behavioral-insights'
+import { useCurrentUser } from '@/hooks/use-current-user'
 import { useLongitudinal, usePatterns, usePeerBenchmark } from '@/lib/api/hooks/analytics'
 import { typography } from '@/lib/design-tokens'
 import { useAnalyticsStore } from '@/stores/analytics'
 import type { UseQueryResult } from '@tanstack/react-query'
 import type { ComprehensionPattern, LongitudinalMetric, PeerBenchmark } from '@/lib/api/hooks/types/generated'
 import type { ObjectiveStrength } from '@/types/api-generated'
-
-// Hardcoded user ID for MVP - replace with actual auth
-const DEFAULT_USER_ID = 'user-kevy'
 
 /**
  * Animated metric grid with stagger effect
@@ -70,13 +68,20 @@ const MetricGrid = ({ children }: { children: React.ReactNode }) => {
 export default function BehavioralInsightsDashboard() {
   const [activeTab, setActiveTab] = useState('patterns')
 
+  const {
+    data: currentUser,
+    isLoading: userLoading,
+    error: userError,
+  } = useCurrentUser()
+  const currentUserId = currentUser?.id ?? null
+
   // Filters from Zustand store
   const timeRange = useAnalyticsStore((state) => state.timeRange)
 
   // React Query hooks for data fetching (explicitly typed)
-  const patternsQuery = usePatterns(DEFAULT_USER_ID, timeRange)
-  const longitudinalQuery = useLongitudinal(DEFAULT_USER_ID, timeRange)
-  const benchmarkQuery = usePeerBenchmark(DEFAULT_USER_ID)
+  const patternsQuery = usePatterns(currentUserId, timeRange)
+  const longitudinalQuery = useLongitudinal(currentUserId, timeRange)
+  const benchmarkQuery = usePeerBenchmark(currentUserId)
 
   const patternsData = patternsQuery.data as ComprehensionPattern | undefined
   const patternsLoading = patternsQuery.isLoading
@@ -100,10 +105,19 @@ export default function BehavioralInsightsDashboard() {
   }
 
   // Loading state for entire dashboard
-  const isLoading = patternsLoading || longitudinalLoading || benchmarkLoading
+  const isLoading =
+    userLoading ||
+    !currentUserId ||
+    patternsLoading ||
+    longitudinalLoading ||
+    benchmarkLoading
 
   // Error state
-  const error = patternsError || longitudinalError || benchmarkError
+  const error =
+    (userError as Error | null | undefined) ??
+    (patternsError as Error | null | undefined) ??
+    (longitudinalError as Error | null | undefined) ??
+    (benchmarkError as Error | null | undefined)
 
   // Show error state if API fails
   if (error) {
@@ -343,10 +357,10 @@ export default function BehavioralInsightsDashboard() {
 
             <div className="space-y-6">
               {/* Performance Correlation Chart */}
-              <PerformanceCorrelationChart userId={DEFAULT_USER_ID} isLoading={isLoading} />
+              <PerformanceCorrelationChart userId={currentUserId} isLoading={isLoading} />
 
               {/* Behavioral Goals */}
-              <BehavioralGoalsSection userId={DEFAULT_USER_ID} isLoading={isLoading} />
+              <BehavioralGoalsSection userId={currentUserId} isLoading={isLoading} />
             </div>
           </motion.div>
         </TabsContent>
@@ -365,10 +379,10 @@ export default function BehavioralInsightsDashboard() {
 
             <div className="space-y-6">
               {/* Recommendations Panel */}
-              <RecommendationsPanel userId={DEFAULT_USER_ID} isLoading={isLoading} />
+              <RecommendationsPanel userId={currentUserId} isLoading={isLoading} />
 
               {/* Learning Article Reader */}
-              <LearningArticleReader userId={DEFAULT_USER_ID} isLoading={isLoading} />
+              <LearningArticleReader userId={currentUserId} isLoading={isLoading} />
             </div>
           </motion.div>
         </TabsContent>

@@ -1,82 +1,80 @@
 import { NextRequest } from 'next/server'
-import { getCurrentUserId } from '@/lib/auth'
-import type { CorrelationResult } from '@/subsystems/behavioral-analytics/academic-performance-integration'
-import { AcademicPerformanceIntegration } from '@/subsystems/behavioral-analytics/academic-performance-integration'
 import { GET } from '../correlation/route'
+import { AcademicPerformanceIntegration } from '@/subsystems/behavioral-analytics/academic-performance-integration'
+import { getCurrentUserId } from '@/lib/auth'
 
-jest.mock('@/lib/auth', () => ({
-  getCurrentUserId: jest.fn(),
-}))
+jest.mock('@/subsystems/behavioral-analytics/academic-performance-integration')
+jest.mock('@/lib/auth')
 
-jest.mock('@/subsystems/behavioral-analytics/academic-performance-integration', () => ({
-  AcademicPerformanceIntegration: {
-    correlatePerformance: jest.fn(),
-  },
-}))
+const mockCorrelate = AcademicPerformanceIntegration
+  .correlatePerformance as jest.Mock
+const mockGetCurrentUserId = getCurrentUserId as jest.Mock
+
+const mockCorrelationResult = {
+  coefficient: 0.42,
+  pValue: 0.01,
+  interpretation: 'moderate positive',
+  confidenceInterval: [0.2, 0.6] as [number, number],
+  timeSeriesData: [],
+  insights: [],
+  dataQuality: { sampleSize: 20, weeksOfData: 12, missingDataPoints: 0 },
+}
 
 describe('GET /api/analytics/behavioral-insights/correlation', () => {
-  const sessionUserId = 'user-123'
-  const correlationResult: CorrelationResult = {
-    coefficient: 0.84,
-    pValue: 0.01,
-    interpretation: 'strong positive',
-    confidenceInterval: [0.7, 0.92],
-    timeSeriesData: [],
-    insights: [],
-    dataQuality: {
-      sampleSize: 12,
-      weeksOfData: 12,
-      missingDataPoints: 0,
-    },
-  }
-
-  const createRequest = (path: string) => new NextRequest(`http://localhost${path}`)
-
   beforeEach(() => {
-    jest.resetAllMocks()
-    jest.mocked(getCurrentUserId).mockResolvedValue(sessionUserId)
-    jest
-      .mocked(AcademicPerformanceIntegration.correlatePerformance)
-      .mockResolvedValue(correlationResult)
-    delete process.env.ANALYTICS_AUTHORIZED_ACCOUNT_IDS
+    jest.clearAllMocks()
+    mockCorrelate.mockResolvedValue(mockCorrelationResult)
+    mockGetCurrentUserId.mockResolvedValue('session-user')
   })
 
-  afterEach(() => {
-    delete process.env.ANALYTICS_AUTHORIZED_ACCOUNT_IDS
+  it('allows the caller to specify their own userId', async () => {
+    mockGetCurrentUserId.mockResolvedValueOnce('test-user')
+
+    const request = new NextRequest(
+      'http://localhost/api/analytics/behavioral-insights/correlation?userId=test-user',
+    )
+
+    const response = await GET(request)
+    await response.json()
+
+    expect(mockGetCurrentUserId).toHaveBeenCalledTimes(1)
+    expect(mockCorrelate).toHaveBeenCalledWith('test-user', 12)
   })
 
-  it('uses the session user when no override is provided', async () => {
-    const response = await GET(createRequest('/api/analytics/behavioral-insights/correlation'))
+  it('falls back to the current session user when userId is absent', async () => {
+    const request = new NextRequest('http://localhost/api/analytics/behavioral-insights/correlation')
+
+    const response = await GET(request)
+    await response.json()
+
+    expect(mockGetCurrentUserId).toHaveBeenCalledTimes(1)
+    expect(mockCorrelate).toHaveBeenCalledWith('session-user', 12)
+  })
+
+  it('rejects requests that attempt to impersonate another user', async () => {
+    const request = new NextRequest(
+      'http://localhost/api/analytics/behavioral-insights/correlation?userId=someone-else',
+    )
+
+    const response = await GET(request)
     const body = await response.json()
 
-    expect(response.status).toBe(200)
-    expect(body.success).toBe(true)
-    expect(AcademicPerformanceIntegration.correlatePerformance).toHaveBeenCalledWith(
-      sessionUserId,
-      12,
-    )
-  })
-
-  it('rejects overrides that target unauthorized users', async () => {
-    const response = await GET(
-      createRequest('/api/analytics/behavioral-insights/correlation?userId=other-user'),
-    )
-
     expect(response.status).toBe(403)
-    expect(AcademicPerformanceIntegration.correlatePerformance).not.toHaveBeenCalled()
+    expect(body.success).toBe(false)
+    expect(mockCorrelate).not.toHaveBeenCalled()
   })
 
-  it('allows overrides for explicitly authorized accounts', async () => {
-    process.env.ANALYTICS_AUTHORIZED_ACCOUNT_IDS = 'other-user'
-
-    const response = await GET(
-      createRequest('/api/analytics/behavioral-insights/correlation?userId=other-user'),
+  it('returns a validation error when userId is empty', async () => {
+    const request = new NextRequest(
+      'http://localhost/api/analytics/behavioral-insights/correlation?userId=%20%20%20',
     )
 
-    expect(response.status).toBe(200)
-    expect(AcademicPerformanceIntegration.correlatePerformance).toHaveBeenCalledWith(
-      'other-user',
-      12,
-    )
+    const response = await GET(request)
+    const body = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(body.success).toBe(false)
+    expect(mockCorrelate).not.toHaveBeenCalled()
   })
 })
+

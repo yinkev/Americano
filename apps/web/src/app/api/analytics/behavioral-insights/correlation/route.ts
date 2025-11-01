@@ -24,15 +24,17 @@ const QuerySchema = z.object({
     .string()
     .optional()
     .transform((val) => (val ? parseInt(val, 10) : 12))
-    .refine((val) => val >= 8 && val <= 52, {
+    .refine((val) => !Number.isNaN(val) && val >= 8 && val <= 52, {
       message: 'weeks must be between 8 and 52',
     }),
   metric: z.enum(['behavioral', 'mission']).optional().default('behavioral'),
   userId: z
     .string()
-    .trim()
-    .min(1, { message: 'userId must be a non-empty string' })
-    .optional(),
+    .optional()
+    .transform((val) => (val ? val.trim() : undefined))
+    .refine((val) => val === undefined || val.length > 0, {
+      message: 'userId cannot be empty',
+    }),
 })
 
 /**
@@ -85,6 +87,7 @@ function successResponse(data: CorrelationResponse) {
  * Query Parameters:
  * - weeks: Number of weeks to analyze (8-52, default 12)
  * - metric: Type of metric to correlate ("behavioral" | "mission", default "behavioral")
+ * - userId: Optional user identifier (defaults to current authenticated user)
  *
  * Response:
  * {
@@ -111,7 +114,7 @@ export async function GET(request: NextRequest) {
     const queryParams = {
       weeks: searchParams.get('weeks'),
       metric: searchParams.get('metric'),
-      userId: searchParams.get('userId') ?? undefined,
+      userId: searchParams.get('userId'),
     }
 
     const validatedParams = QuerySchema.safeParse(queryParams)
@@ -124,24 +127,19 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const { weeks, metric, userId: requestedUserId } = validatedParams.data
+    const { weeks, metric, userId: queryUserId } = validatedParams.data
 
-    const authorizedUserIds = new Set<string>([sessionUserId])
+    const sessionUserId = await getCurrentUserId()
 
-    const configuredAuthorized = (process.env.ANALYTICS_AUTHORIZED_ACCOUNT_IDS || '')
-      .split(',')
-      .map((id) => id.trim())
-      .filter((id) => id.length > 0)
-
-    for (const authorizedId of configuredAuthorized) {
-      authorizedUserIds.add(authorizedId)
+    if (!sessionUserId) {
+      return errorResponse('Unable to resolve authenticated user', 401)
     }
 
-    if (requestedUserId && !authorizedUserIds.has(requestedUserId)) {
-      return errorResponse('You are not authorized to access analytics for this user.', 403)
+    if (queryUserId && queryUserId !== sessionUserId) {
+      return errorResponse('Forbidden: userId does not match the authenticated user', 403)
     }
 
-    const userId = requestedUserId ?? sessionUserId
+    const userId = sessionUserId
 
     // Calculate correlation using AcademicPerformanceIntegration subsystem
     let correlationResult

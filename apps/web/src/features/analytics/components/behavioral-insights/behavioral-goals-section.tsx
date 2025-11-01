@@ -67,7 +67,7 @@ interface BehavioralGoal {
 }
 
 interface BehavioralGoalsSectionProps {
-  userId: string
+  userId: string | null
   isLoading?: boolean
 }
 
@@ -156,34 +156,59 @@ export function BehavioralGoalsSection({
   )
 
   useEffect(() => {
+    if (!userId) {
+      setGoals([])
+      setError(null)
+      setIsLoading(false)
+      return
+    }
+
+    let isMounted = true
+
     const fetchGoals = async () => {
       try {
         setIsLoading(true)
         setError(null)
-        const response = await fetch(`/api/analytics/behavioral-insights/goals?userId=${userId}`)
+        const response = await fetch(
+          `/api/analytics/behavioral-insights/goals?userId=${encodeURIComponent(userId)}`,
+        )
 
         if (!response.ok) {
           throw new Error('Failed to fetch goals')
         }
 
-        const {
-          success,
-          data,
-          message,
-        } = (await response.json()) as ApiResponse<{ goals: BehavioralGoal[] }>
-        assertApiSuccess({ success, data, message }, 'Failed to fetch goals')
-        setGoals(data.goals)
+        const data = await response.json()
+        if (!isMounted) {
+          return
+        }
+
+        if (data.success && data.goals) {
+          setGoals(data.goals)
+        } else {
+          throw new Error('Invalid response format')
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        if (isMounted) {
+          setError(err instanceof Error ? err.message : 'Unknown error')
+        }
       } finally {
-        setIsLoading(false)
+        if (isMounted) {
+          setIsLoading(false)
+        }
       }
     }
 
     fetchGoals()
+    return () => {
+      isMounted = false
+    }
   }, [userId])
 
   const handleCreateGoal = async () => {
+    if (!userId) {
+      setError('User is not available for goal creation')
+      return
+    }
     try {
       setIsCreating(true)
       const response = await fetch('/api/analytics/behavioral-insights/goals', {

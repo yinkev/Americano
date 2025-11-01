@@ -26,6 +26,7 @@ import { ChartContainer } from '@/components/ui/chart-container'
 import { EmptyState } from '@/components/ui/empty-state'
 import { MetricCard } from '@/components/ui/metric-card'
 import { Progress } from '@/components/ui/progress'
+import { useCurrentUser } from '@/hooks/use-current-user'
 import { usePatterns, usePredictions } from '@/lib/api/hooks/analytics'
 import type {
   AIInsight,
@@ -35,9 +36,6 @@ import type {
 import type { UseQueryResult } from '@tanstack/react-query'
 import { typography } from '@/lib/design-tokens'
 import { useAnalyticsStore } from '@/stores/analytics'
-
-// Hardcoded user ID for MVP
-const DEFAULT_USER_ID = 'user-kevy'
 
 /**
  * Animated metric grid with stagger effect
@@ -153,6 +151,13 @@ const InsufficientDataMessage = () => {
 }
 
 export default function LearningPatternsPage() {
+  const {
+    data: currentUser,
+    isLoading: userLoading,
+    error: userError,
+  } = useCurrentUser()
+  const currentUserId = currentUser?.id ?? null
+
   // Filters from Zustand store
   const timeRange = useAnalyticsStore((state) => state.timeRange)
 
@@ -161,13 +166,13 @@ export default function LearningPatternsPage() {
     data: patternsData,
     isLoading: patternsLoading,
     error: patternsError,
-  } = usePatterns(DEFAULT_USER_ID, timeRange) as UseQueryResult<ComprehensionPattern, unknown>
+  } = usePatterns(currentUserId, timeRange) as UseQueryResult<ComprehensionPattern, unknown>
 
   const {
     data: predictionsData,
     isLoading: predictionsLoading,
     error: predictionsError,
-  } = usePredictions(DEFAULT_USER_ID) as UseQueryResult<UnderstandingPrediction, unknown>
+  } = usePredictions(currentUserId) as UseQueryResult<UnderstandingPrediction, unknown>
 
   // Derive metrics from API data
   const metrics = {
@@ -179,10 +184,13 @@ export default function LearningPatternsPage() {
   }
 
   // Loading state
-  const isLoading = patternsLoading || predictionsLoading
+  const isLoading = userLoading || !currentUserId || patternsLoading || predictionsLoading
 
   // Error state
-  const error = patternsError || predictionsError
+  const error =
+    (userError as Error | null | undefined) ??
+    (patternsError as Error | null | undefined) ??
+    (predictionsError as Error | null | undefined)
 
   // Check if sufficient data exists
   const hasSufficientData = ((patternsData?.strengths?.length ?? 0) > 0)
