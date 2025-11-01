@@ -107,6 +107,8 @@ function successResponse(data: CorrelationResponse) {
  */
 export async function GET(request: NextRequest) {
   try {
+    const sessionUserId = await getCurrentUserId()
+
     // Parse and validate query parameters
     const { searchParams } = new URL(request.url)
     const queryParams = {

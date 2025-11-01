@@ -172,6 +172,9 @@ export function PerformanceCorrelationChart({
         } else {
           throw new Error('Invalid response format')
         }
+
+        const { data } = json as { data: CorrelationData }
+        setCorrelationData(data)
       } catch (err) {
         if (isMounted) {
           setError(err instanceof Error ? err.message : 'Unknown error')

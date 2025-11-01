@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { assertApiSuccess, type ApiResponse } from '@/features/analytics/api/assert-api-success'
 import { colors, typography } from '@/lib/design-tokens'
 
 type ArticleCategory =
@@ -47,7 +48,7 @@ interface LearningArticle {
   readingTime: number
   sources: string[]
   relatedPatterns: string[]
-  personalizedContent: string
+  personalizedContent: string | null
 }
 
 interface LearningArticleReaderProps {
