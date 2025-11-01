@@ -6,13 +6,76 @@
  */
 
 import { NextRequest } from 'next/server'
+import { http, HttpResponse } from 'msw'
 import { POST } from '@/app/api/analytics/predictions/generate/route'
-import { create503Handler, createErrorHandler, server } from '../../setup'
+import { getMockPredictionResponse } from '@/lib/mocks/analytics'
+import { create503Handler, createErrorHandler, server, setupMSW } from '../../setup'
+
+setupMSW()
+
+const ANALYTICS_PROVIDER_HEADER = 'x-analytics-provider'
+const METADATA_HEADER = 'x-analytics-metadata'
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL ?? 'http://localhost:8000'
+
+function createLegacyRequest(url: string, init?: RequestInit) {
+  const headers = new Headers(init?.headers ?? {})
+  headers.set(ANALYTICS_PROVIDER_HEADER, 'legacy')
+  return new NextRequest(url, { ...init, headers })
+}
 
 describe('POST /api/analytics/predictions/generate', () => {
+  describe('Metadata envelopes', () => {
+    it('returns mock predictions when provider is mock with metadata header', async () => {
+      const envelope = getMockPredictionResponse()
+      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+        method: 'POST',
+        headers: {
+          [ANALYTICS_PROVIDER_HEADER]: 'mock',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ userId: 'mock-user' }),
+      })
+
+      const response = await POST(request)
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+
+    it('attaches metadata header when legacy provider receives mock data source', async () => {
+      const envelope = getMockPredictionResponse()
+      server.use(
+        http.post(`${ML_SERVICE_URL}/predictions/generate`, async () =>
+          HttpResponse.json({
+            dataSource: 'mock',
+            metadata: envelope.metadata,
+            payload: envelope.payload,
+          }),
+        ),
+      )
+
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ userId: 'legacy-user' }),
+      })
+
+      const response = await POST(request)
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+  })
+
   describe('Success Cases', () => {
     it('should generate predictions for user', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
         body: JSON.stringify({
           userId: 'test@example.com',
@@ -32,7 +95,7 @@ describe('POST /api/analytics/predictions/generate', () => {
     })
 
     it('should use default daysAhead when not provided', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
         body: JSON.stringify({
           userId: 'test@example.com',
@@ -47,7 +110,7 @@ describe('POST /api/analytics/predictions/generate', () => {
     })
 
     it('should return predictions with correct structure', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
         body: JSON.stringify({
           userId: 'kevy@americano.dev',
@@ -73,7 +136,7 @@ describe('POST /api/analytics/predictions/generate', () => {
     it('should handle 400 bad request from FastAPI', async () => {
       server.use(createErrorHandler('post', '/predictions/generate', 400, 'Invalid request body'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
         body: JSON.stringify({ invalid: 'data' }),
       })
@@ -95,7 +158,7 @@ describe('POST /api/analytics/predictions/generate', () => {
         ),
       )
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
         body: JSON.stringify({}),
       })
@@ -117,7 +180,7 @@ describe('POST /api/analytics/predictions/generate', () => {
         ),
       )
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
         body: JSON.stringify({
           userId: 'test@example.com',
@@ -134,7 +197,7 @@ describe('POST /api/analytics/predictions/generate', () => {
     it('should handle 503 service unavailable', async () => {
       server.use(create503Handler('post', '/predictions/generate'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
         body: JSON.stringify({
           userId: 'test@example.com',
@@ -152,7 +215,7 @@ describe('POST /api/analytics/predictions/generate', () => {
       const originalEnv = process.env.ML_SERVICE_URL
       process.env.ML_SERVICE_URL = 'http://invalid-host-xyz:9999'
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
         body: JSON.stringify({
           userId: 'test@example.com',
@@ -169,7 +232,7 @@ describe('POST /api/analytics/predictions/generate', () => {
     })
 
     it('should handle malformed JSON in request body', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
         body: 'not-valid-json',
       })
@@ -187,7 +250,7 @@ describe('POST /api/analytics/predictions/generate', () => {
       const testCases = [0, 1, 7, 14, 30, 365]
 
       for (const daysAhead of testCases) {
-        const request = new NextRequest(
+        const request = createLegacyRequest(
           'http://localhost:3000/api/analytics/predictions/generate',
           {
             method: 'POST',
@@ -204,7 +267,7 @@ describe('POST /api/analytics/predictions/generate', () => {
     })
 
     it('should handle special characters in userId', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
         body: JSON.stringify({
           userId: 'test+user@example.com',
@@ -217,7 +280,7 @@ describe('POST /api/analytics/predictions/generate', () => {
     })
 
     it('should handle large daysAhead values', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/predictions/generate', {
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/predictions/generate', {
         method: 'POST',
         body: JSON.stringify({
           userId: 'test@example.com',

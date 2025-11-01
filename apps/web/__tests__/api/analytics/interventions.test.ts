@@ -6,13 +6,65 @@
  */
 
 import { NextRequest } from 'next/server'
+import { http, HttpResponse } from 'msw'
 import { GET } from '@/app/api/analytics/interventions/route'
-import { create503Handler, createErrorHandler, server } from '../../setup'
+import { getMockInterventionResponse } from '@/lib/mocks/analytics'
+import { create503Handler, createErrorHandler, server, setupMSW } from '../../setup'
+
+setupMSW()
+
+const ANALYTICS_PROVIDER_HEADER = 'x-analytics-provider'
+const METADATA_HEADER = 'x-analytics-metadata'
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL ?? 'http://localhost:8000'
+
+function createLegacyRequest(url: string, init?: RequestInit) {
+  const headers = new Headers(init?.headers ?? {})
+  headers.set(ANALYTICS_PROVIDER_HEADER, 'legacy')
+  return new NextRequest(url, { ...init, headers })
+}
 
 describe('GET /api/analytics/interventions', () => {
+  describe('Metadata envelopes', () => {
+    it('returns mock interventions with metadata header when provider is mock', async () => {
+      const envelope = getMockInterventionResponse()
+      const request = new NextRequest('http://localhost:3000/api/analytics/interventions', {
+        headers: { [ANALYTICS_PROVIDER_HEADER]: 'mock' },
+      })
+
+      const response = await GET(request)
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+
+    it('attaches metadata header when legacy provider receives mock data', async () => {
+      const envelope = getMockInterventionResponse()
+      server.use(
+        http.get(`${ML_SERVICE_URL}/interventions`, () =>
+          HttpResponse.json({
+            dataSource: 'mock',
+            metadata: envelope.metadata,
+            payload: envelope.payload,
+          }),
+        ),
+      )
+
+      const response = await GET(createLegacyRequest('http://localhost:3000/api/analytics/interventions'))
+      const data = await response.json()
+      const metadata = response.headers.get(METADATA_HEADER)
+
+      expect(metadata).toBeTruthy()
+      expect(JSON.parse(metadata ?? '{}')).toEqual(envelope.metadata)
+      expect(data).toEqual(envelope.payload)
+    })
+  })
+
   describe('Success Cases', () => {
     it('should return active interventions', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/interventions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/interventions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -24,7 +76,7 @@ describe('GET /api/analytics/interventions', () => {
     })
 
     it('should return interventions with correct structure', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/interventions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/interventions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -44,7 +96,7 @@ describe('GET /api/analytics/interventions', () => {
     })
 
     it('should pass userId query parameter', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/interventions?userId=custom@example.com',
       )
 
@@ -58,7 +110,7 @@ describe('GET /api/analytics/interventions', () => {
     it('should handle empty intervention list', async () => {
       server.use(createErrorHandler('get', '/interventions', 200, ''))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/interventions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/interventions')
 
       const response = await GET(request)
 
@@ -70,7 +122,7 @@ describe('GET /api/analytics/interventions', () => {
     it('should handle 404 not found', async () => {
       server.use(createErrorHandler('get', '/interventions', 404, 'No interventions found'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/interventions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/interventions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -82,7 +134,7 @@ describe('GET /api/analytics/interventions', () => {
     it('should handle 500 internal server error', async () => {
       server.use(createErrorHandler('get', '/interventions', 500, 'Failed to fetch interventions'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/interventions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/interventions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -94,7 +146,7 @@ describe('GET /api/analytics/interventions', () => {
     it('should handle 503 service unavailable', async () => {
       server.use(create503Handler('get', '/interventions'))
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/interventions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/interventions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -107,7 +159,7 @@ describe('GET /api/analytics/interventions', () => {
       const originalEnv = process.env.ML_SERVICE_URL
       process.env.ML_SERVICE_URL = 'http://invalid-host-xyz:9999'
 
-      const request = new NextRequest('http://localhost:3000/api/analytics/interventions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/interventions')
 
       const response = await GET(request)
       const data = await response.json()
@@ -121,7 +173,7 @@ describe('GET /api/analytics/interventions', () => {
 
   describe('Edge Cases', () => {
     it('should handle special characters in userId', async () => {
-      const request = new NextRequest(
+      const request = createLegacyRequest(
         'http://localhost:3000/api/analytics/interventions?userId=test%2Buser%40example.com',
       )
 
@@ -132,7 +184,7 @@ describe('GET /api/analytics/interventions', () => {
 
     it('should handle concurrent requests', async () => {
       const requests = Array.from({ length: 3 }, () =>
-        GET(new NextRequest('http://localhost:3000/api/analytics/interventions')),
+        GET(createLegacyRequest('http://localhost:3000/api/analytics/interventions')),
       )
 
       const responses = await Promise.all(requests)
@@ -143,7 +195,7 @@ describe('GET /api/analytics/interventions', () => {
     })
 
     it('should validate intervention types', async () => {
-      const request = new NextRequest('http://localhost:3000/api/analytics/interventions')
+      const request = createLegacyRequest('http://localhost:3000/api/analytics/interventions')
 
       const response = await GET(request)
       const data = await response.json()
