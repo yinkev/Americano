@@ -10,3 +10,11 @@ export function assertApiSuccess<TData>(
     throw new Error(response.message ?? fallbackMessage)
   }
 }
+
+export function extractApiData<TData>(
+  response: ApiResponse<TData>,
+  fallbackMessage = 'Request failed',
+): TData {
+  assertApiSuccess(response, fallbackMessage)
+  return response.data
+}

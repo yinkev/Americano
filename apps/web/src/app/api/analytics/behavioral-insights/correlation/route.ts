@@ -107,8 +107,6 @@ function successResponse(data: CorrelationResponse) {
  */
 export async function GET(request: NextRequest) {
   try {
-    const sessionUserId = await getCurrentUserId()
-
     // Parse and validate query parameters
     const { searchParams } = new URL(request.url)
     const queryParams = {
@@ -131,15 +129,11 @@ export async function GET(request: NextRequest) {
 
     const sessionUserId = await getCurrentUserId()
 
-    if (!sessionUserId) {
-      return errorResponse('Unable to resolve authenticated user', 401)
-    }
-
     if (queryUserId && queryUserId !== sessionUserId) {
       return errorResponse('Forbidden: userId does not match the authenticated user', 403)
     }
 
-    const userId = sessionUserId
+    const userId = queryUserId ?? sessionUserId
 
     // Calculate correlation using AcademicPerformanceIntegration subsystem
     let correlationResult

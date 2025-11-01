@@ -8,14 +8,15 @@
 
 import type { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { errorResponse, successResponse, withErrorHandler } from '@/lib/api-response'
+import { successResponse, withErrorHandler } from '@/lib/api-response'
+import { ApiError } from '@/lib/api-error'
 import { CACHE_TTL, withCache } from '@/lib/cache'
-import { prisma } from '@/lib/db'
+import { getCurrentUserId } from '@/lib/auth'
 import { RecommendationsEngine } from '@/subsystems/behavioral-analytics/recommendations-engine'
 
 // Zod validation schema for query parameters
 const RecommendationsQuerySchema = z.object({
-  userId: z.string().min(1, 'userId is required'),
+  userId: z.string().min(1).optional(),
   includeApplied: z
     .string()
     .optional()
@@ -44,16 +45,24 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   // Extract and validate query parameters
   const searchParams = request.nextUrl.searchParams
   const params = RecommendationsQuerySchema.parse({
-    userId: searchParams.get('userId') || '',
+    userId: searchParams.get('userId') || undefined,
     includeApplied: searchParams.get('includeApplied') || undefined,
     limit: searchParams.get('limit') || undefined,
   })
 
+  const sessionUserId = await getCurrentUserId()
+
+  if (params.userId && params.userId !== sessionUserId) {
+    throw ApiError.forbidden('Forbidden: userId does not match the authenticated user')
+  }
+
+  const userId = params.userId ?? sessionUserId
+
   // Generate recommendations with caching (5 min TTL)
-  const cacheKey = `user:${params.userId}:recommendations:${params.includeApplied}:${params.limit}`
+  const cacheKey = `user:${userId}:recommendations:${params.includeApplied}:${params.limit}`
 
   const result = await withCache(cacheKey, CACHE_TTL.MEDIUM, async () => {
-    const recommendations = await RecommendationsEngine.generateRecommendations(params.userId)
+    const recommendations = await RecommendationsEngine.generateRecommendations(userId)
 
     // Filter out applied recommendations if requested
     let filteredRecommendations = recommendations

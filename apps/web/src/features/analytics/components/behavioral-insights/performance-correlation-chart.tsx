@@ -33,6 +33,7 @@ import {
 import type { TooltipProps } from 'recharts'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { extractApiData, type ApiResponse } from '@/features/analytics/api/assert-api-success'
 import { colors, typography } from '@/lib/design-tokens'
 
 interface CorrelationPoint {
@@ -51,6 +52,16 @@ interface CorrelationQuality {
   sampleSize: number
   weeksOfData: number
   missingDataPoints: number
+}
+
+interface CorrelationResponse {
+  coefficient: number
+  pValue: number
+  interpretation: string
+  confidenceInterval: [number, number]
+  timeSeriesData: CorrelationPoint[]
+  insights: string[]
+  dataQuality: CorrelationQuality
 }
 
 interface PerformanceCorrelationChartProps {
@@ -134,47 +145,40 @@ export function PerformanceCorrelationChart({
           throw new Error('Failed to fetch correlation data')
         }
 
-        const body = await response.json()
+        const json = (await response.json()) as ApiResponse<CorrelationResponse>
         if (!isMounted) {
           return
         }
 
-        if (body.success && body.data) {
-          const result = body.data
-          const series = Array.isArray(result.timeSeriesData) ? result.timeSeriesData : []
-          setPoints(series)
+        const data = extractApiData(json, 'Failed to fetch correlation data')
+        const series = Array.isArray(data.timeSeriesData) ? data.timeSeriesData : []
+        setPoints(series)
 
-          if (typeof result.coefficient === 'number' && typeof result.pValue === 'number') {
-            setSummary({
-              coefficient: result.coefficient,
-              pValue: result.pValue,
-              interpretation: result.interpretation ?? 'Correlation analysis ready',
-            })
-          } else {
-            setSummary(null)
-          }
-
-          if (
-            result.dataQuality &&
-            typeof result.dataQuality.sampleSize === 'number' &&
-            typeof result.dataQuality.weeksOfData === 'number'
-          ) {
-            setQuality({
-              sampleSize: result.dataQuality.sampleSize,
-              weeksOfData: result.dataQuality.weeksOfData,
-              missingDataPoints: result.dataQuality.missingDataPoints ?? 0,
-            })
-          } else {
-            setQuality(null)
-          }
-
-          setInsights(Array.isArray(result.insights) ? result.insights : [])
+        if (typeof data.coefficient === 'number' && typeof data.pValue === 'number') {
+          setSummary({
+            coefficient: data.coefficient,
+            pValue: data.pValue,
+            interpretation: data.interpretation ?? 'Correlation analysis ready',
+          })
         } else {
-          throw new Error('Invalid response format')
+          setSummary(null)
         }
 
-        const { data } = json as { data: CorrelationData }
-        setCorrelationData(data)
+        if (
+          data.dataQuality &&
+          typeof data.dataQuality.sampleSize === 'number' &&
+          typeof data.dataQuality.weeksOfData === 'number'
+        ) {
+          setQuality({
+            sampleSize: data.dataQuality.sampleSize,
+            weeksOfData: data.dataQuality.weeksOfData,
+            missingDataPoints: data.dataQuality.missingDataPoints ?? 0,
+          })
+        } else {
+          setQuality(null)
+        }
+
+        setInsights(Array.isArray(data.insights) ? data.insights : [])
       } catch (err) {
         if (isMounted) {
           setError(err instanceof Error ? err.message : 'Unknown error')
